@@ -448,6 +448,7 @@ pub(crate) fn phrase_is_attested_for_learning(text: &str) -> bool {
             } else {
                 crate::hot_field::HotFieldSnapshot::current().learning_surface_is_attested(&word)
                     || crate::russian_lexicon::is_known_russian_word_or_form(&word)
+                    || crate::russian_lexicon::is_reference_backed_russian_form(&word)
             }
         })
 }
@@ -492,6 +493,9 @@ mod tests {
     #[test]
     fn raw_phrase_learning_requires_attested_surfaces() {
         assert!(phrase_is_attested_for_learning("на улице идёт дождь"));
+        assert!(phrase_is_attested_for_learning(
+            "Вообще делай проект рефакторинга"
+        ));
         assert!(!phrase_is_attested_for_learning("на улице идёт дожть"));
         assert!(!phrase_is_attested_for_learning("звгрузи пакет"));
     }

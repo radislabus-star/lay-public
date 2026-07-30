@@ -3,7 +3,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PACKAGE="${1:?usage: install-l11-shadow-package.sh PACKAGE [MANIFEST]}"
-MANIFEST="${2:-$ROOT/data/lexical_grokking/lay_l11_ru_composite_en300k_shadow_v2.manifest.json}"
+MANIFEST="${2:-$ROOT/data/lexical_grokking/lay_l11_ru_composite_en300k_shadow_v4.manifest.json}"
 INSTALL_DIR="${LAY_L11_MODEL_DIR:-$HOME/.local/share/lay/nanda_wave/l1.1}"
 
 readarray -t metadata < <(

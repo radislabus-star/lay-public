@@ -258,6 +258,95 @@ Runtime authority changed:
 
 - `false`
 
+## 13. Canonical V7 full-lemma package, 2026-07-30
+
+The final L1.1 base contains one seed for every admitted Russian lemma. The
+canonical L2 compiler then materializes non-L1 wordforms inside L2 instead of
+requiring L1.1 to duplicate the complete morphology surface set.
+
+```text
+L1.1 WordCenter                           852,582
+morphology source bindings             3,255,785
+unique morphology surfaces             1,875,032
+lemma centers                              93,672
+unseeded lemmas                                  0
+L1-bound forms                            517,257
+L2-materialized forms                   1,357,775
+competition edges                          54,407
+context modes                                 123
+package bytes                         130,595,163
+package SHA-256  436b2b8cc99f16c48f240f5fbeef0a64dc2ccb7c84b898e948d34f0adaf3e41e
+compile wall                                20.42s
+compile peak RSS                       3,514,936 KiB
+compile swap                                     0
+```
+
+Full heldout:
+
+```text
+evaluated scenes                        2,501,613
+unresolved                                      0
+target lattice coverage                   99.9977%
+winner top-1                              45.8284%
+false authority                                  0
+hot p50 / p99                         21 / 97 us
+proof workers                                   20
+proof wall                                  17.77s
+proof peak RSS                         3,881,396 KiB
+```
+
+| POS | Cases | Target coverage | Winner top-1 | False authority |
+|---|---:|---:|---:|---:|
+| adjective | 1,592,125 | 100.000% | 38.812% | 0 |
+| noun | 554,148 | 100.000% | 80.545% | 0 |
+| pronoun | 46 | 100.000% | 52.174% | 0 |
+| verb | 355,294 | 99.984% | 23.124% | 0 |
+
+The low winner percentage is not an error hidden by aggregate coverage. L2
+keeps morphologically valid alternatives tied where local evidence cannot
+choose safely; L3 and the verifier remain responsible for wider context and
+edit authority. Near-neighbor proof is `20/20`.
+
+The old morphology shadow runtime and same-lemma donor are removed from the
+live ownership graph. The executable route is:
+
+```text
+L1.1 bounded lattice
+-> StandaloneL2Field V7
+-> one Winner | Tied | Abstain readout
+-> L3
+-> verifier
+```
+
+Tested: complete source corpus, all lemma reachability, full heldout,
+per-POS denominators, near-neighbor field, package latency and zero false
+authority. Not tested here: broad semantic sentence understanding or a global
+IBus restart. Runtime authority did not change during the remote proof.
+
+Code verification:
+
+```text
+lexical_grokking unit tests                 103/103
+l2_field unit tests                          30/30
+context_phase unit tests                     70/70
+new/changed owner tests                       5/5
+typing transition contracts                 20/20
+text mutation monopoly contracts            15/15
+IBus committed-tail and double-Shift        18/18
+daemon full-undo preservation                 1/1
+```
+
+The broad correction-core comparison remains `WATCH`: clean `0.2.329` and this
+change fail the same 22 test names in the same remote environment. Baseline was
+`89 passed / 22 failed`; this change is `90 passed / 22 failed` because its new
+semantic-drift owner regression passes. No new wide failure was introduced.
+
+Exact receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_CANONICAL_RU_FULL_V7_ALL_LEMMAS_2026-07-30.json
+```
+
 ## 13. 2026-07-29 Standalone RU L2 V6 Evidence Authority
 
 ### 13.1 Kernel Ownership

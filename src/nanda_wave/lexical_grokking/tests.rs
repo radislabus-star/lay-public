@@ -770,6 +770,16 @@ fn append_only_manifest_adds_centers_and_applies_tombstones_without_rewriting_ba
         host.restore("кристаллизатор", 8)["result"]["authority"],
         false
     );
+    assert_eq!(
+        host.lattice_seed_rows("время", 8)[0].1,
+        "время",
+        "an exact base surface must remain the first composite seed"
+    );
+    assert_eq!(
+        host.lattice_seed_rows("кристаллизатор", 8)[0].1,
+        "кристаллизатор",
+        "an exact delta surface must remain the first composite seed"
+    );
     let benchmark = super::runtime::benchmark_package(&manifest_path, "кристаллизатор", 3, 8)
         .expect("benchmark composite");
     assert_eq!(benchmark["delta_count"], 1);

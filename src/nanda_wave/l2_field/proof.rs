@@ -218,7 +218,8 @@ pub(crate) fn prove_package(
         let seeds = terminals
             .iter()
             .map(|terminal_id| L2LexicalSeed {
-                terminal_id: *terminal_id,
+                terminal_id: Some(*terminal_id),
+                surface: None,
                 evidence_milli: 1_000,
             })
             .collect::<Vec<_>>();
@@ -347,7 +348,8 @@ fn evaluate_morphology_scenes(
             .iter()
             .take(32)
             .map(|terminal_id| L2LexicalSeed {
-                terminal_id: *terminal_id,
+                terminal_id: Some(*terminal_id),
+                surface: None,
                 evidence_milli: 1_000,
             })
             .collect::<Vec<_>>();

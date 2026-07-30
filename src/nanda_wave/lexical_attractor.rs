@@ -421,7 +421,7 @@ mod tests {
     }
 
     #[test]
-    fn l2_pipeline_exposes_attractor_candidate_but_keeps_existing_layout_owner() {
+    fn l2_pipeline_exposes_attractor_candidate_and_canonical_layout_l2_owner() {
         let l1 = crate::nanda_wave::l1::run_l1("мы djn ");
         let candidates = crate::nanda_wave::l2::run_l2_with_options(
             "мы djn ",
@@ -435,7 +435,8 @@ mod tests {
                 && candidate.text == "мы вот"));
         assert!(candidates
             .iter()
-            .any(|candidate| candidate.source == "LayoutWordCell32" && candidate.text == "мы вот"));
+            .any(|candidate| candidate.source == "layout_then_l2_word_center"
+                && candidate.text == "мы вот"));
     }
 
     #[test]

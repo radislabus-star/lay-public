@@ -11,7 +11,7 @@ pub(crate) use bridge::{cold_probe_surfaces, shadow_text_candidates, shadow_text
 pub(crate) use runtime::L2FieldAuthority;
 
 const DEFAULT_L2_MODEL_DIR_SUFFIX: &str = ".local/share/lay/nanda_wave/l2";
-const DEFAULT_L2_PACKAGE_NAME: &str = "LAY-L2-RU-FULL-v6.bin";
+const DEFAULT_L2_PACKAGE_NAME: &str = "LAY-L2-RU-FULL-v7.bin";
 
 pub fn default_l2_model_dir() -> std::path::PathBuf {
     if let Some(explicit) = std::env::var_os("LAY_L2_MODEL_DIR") {
@@ -121,7 +121,8 @@ pub fn query_canonical_l2_package(
     let seeds = resolved_seeds
         .iter()
         .map(|(_, terminal_id)| runtime::L2LexicalSeed {
-            terminal_id: *terminal_id,
+            terminal_id: Some(*terminal_id),
+            surface: None,
             evidence_milli: 1_000,
         })
         .collect::<Vec<_>>();
@@ -169,6 +170,82 @@ pub fn query_canonical_l2_package(
     }))
 }
 
+pub fn export_unseeded_l11_seed_corpus(
+    l1_package_path: &std::path::Path,
+    morphology_corpus_path: &std::path::Path,
+    output_path: &std::path::Path,
+) -> std::io::Result<serde_json::Value> {
+    let l1 = crate::nanda_wave::L1RestorationHost::load(l1_package_path)?;
+    let source = std::fs::read_to_string(morphology_corpus_path)?;
+    let corpus = teacher::L2TeacherCorpus::parse_tsv(&source).map_err(std::io::Error::other)?;
+    let unique_surfaces = corpus
+        .forms
+        .iter()
+        .map(|form| form.surface.clone())
+        .collect::<std::collections::BTreeSet<_>>();
+    let (terminal_map, resolver_workers) = resolve_l1_terminals(&l1, &unique_surfaces);
+    let mut unseeded_lemmas = 0_usize;
+    let mut seed_surfaces = std::collections::BTreeSet::<String>::new();
+    let mut start = 0_usize;
+    while start < corpus.forms.len() {
+        let lemma = corpus.forms[start].lemma.as_str();
+        let mut end = start + 1;
+        while end < corpus.forms.len() && corpus.forms[end].lemma == lemma {
+            end += 1;
+        }
+        let forms = &corpus.forms[start..end];
+        if !forms
+            .iter()
+            .any(|form| terminal_map.contains_key(&form.surface))
+        {
+            unseeded_lemmas += 1;
+            let seed = forms
+                .iter()
+                .min_by_key(|form| {
+                    (
+                        form.surface != form.lemma,
+                        form.surface.chars().count(),
+                        form.surface.as_str(),
+                    )
+                })
+                .expect("non-empty lemma form group");
+            seed_surfaces.insert(seed.surface.clone());
+        }
+        start = end;
+    }
+    let mut bytes = seed_surfaces
+        .iter()
+        .map(String::as_str)
+        .collect::<Vec<_>>()
+        .join("\n")
+        .into_bytes();
+    if !bytes.is_empty() {
+        bytes.push(b'\n');
+    }
+    if let Some(parent) = output_path.parent() {
+        std::fs::create_dir_all(parent)?;
+    }
+    let temporary = output_path.with_extension(format!("tmp.{}", std::process::id()));
+    std::fs::write(&temporary, &bytes)?;
+    std::fs::rename(&temporary, output_path)?;
+    Ok(serde_json::json!({
+        "kind": "l2_unseeded_l11_seed_corpus_export",
+        "l1_package": l1_package_path,
+        "l1_corpus_fingerprint": l1.corpus_fingerprint(),
+        "morphology_corpus": morphology_corpus_path,
+        "source_forms": corpus.forms.len(),
+        "source_unique_surfaces": unique_surfaces.len(),
+        "source_lemmas": corpus.forms.iter().map(|form| form.lemma.as_str()).collect::<std::collections::BTreeSet<_>>().len(),
+        "l1_bound_surfaces": terminal_map.len(),
+        "unseeded_lemmas": unseeded_lemmas,
+        "delta_seed_surfaces": seed_surfaces.len(),
+        "resolver_workers": resolver_workers,
+        "output": output_path,
+        "output_bytes": bytes.len(),
+        "runtime_authority_changed": false,
+    }))
+}
+
 pub fn compile_canonical_l2_package(
     l1_package_path: &std::path::Path,
     morphology_corpus_path: &std::path::Path,
@@ -204,35 +281,18 @@ pub fn compile_canonical_l2_package(
                 .filter(|(_, terminal_id)| *terminal_id != model::NO_L1_TERMINAL)
                 .collect::<std::collections::BTreeMap<_, _>>()
         });
-    let resolver_workers = std::thread::available_parallelism()
-        .map(usize::from)
-        .unwrap_or(1)
-        .min(unique_surfaces.len().max(1));
     let terminal_map = if let Some(terminals) = reusable_terminals.as_ref() {
         terminals.clone()
     } else {
-        let surfaces = unique_surfaces.into_iter().collect::<Vec<_>>();
-        let chunk_size = surfaces.len().div_ceil(resolver_workers);
-        std::thread::scope(|scope| {
-            let handles = surfaces
-                .chunks(chunk_size.max(1))
-                .map(|chunk| {
-                    let l1 = &l1;
-                    scope.spawn(move || {
-                        chunk
-                            .iter()
-                            .filter_map(|surface| {
-                                Some((surface.clone(), l1.terminal_for_exact_surface(surface)?))
-                            })
-                            .collect::<Vec<_>>()
-                    })
-                })
-                .collect::<Vec<_>>();
-            handles
-                .into_iter()
-                .flat_map(|handle| handle.join().expect("L2 terminal resolver worker"))
-                .collect::<std::collections::BTreeMap<_, _>>()
-        })
+        resolve_l1_terminals(&l1, &unique_surfaces).0
+    };
+    let resolver_workers = if reusable_terminals.is_some() {
+        0
+    } else {
+        std::thread::available_parallelism()
+            .map(usize::from)
+            .unwrap_or(1)
+            .min(unique_surfaces.len().max(1))
     };
     let (package, report) = compiler::compile_l2_package(&corpus, l1_fingerprint, |surface| {
         terminal_map.get(surface).copied()
@@ -276,4 +336,36 @@ pub fn compile_canonical_l2_package(
         "heldout_scenes": report.heldout_scenes,
         "runtime_authority_changed": false,
     }))
+}
+
+fn resolve_l1_terminals(
+    l1: &crate::nanda_wave::L1RestorationHost,
+    unique_surfaces: &std::collections::BTreeSet<String>,
+) -> (std::collections::BTreeMap<String, u32>, usize) {
+    let workers = std::thread::available_parallelism()
+        .map(usize::from)
+        .unwrap_or(1)
+        .min(unique_surfaces.len().max(1));
+    let surfaces = unique_surfaces.iter().cloned().collect::<Vec<_>>();
+    let chunk_size = surfaces.len().div_ceil(workers);
+    let terminals = std::thread::scope(|scope| {
+        let handles = surfaces
+            .chunks(chunk_size.max(1))
+            .map(|chunk| {
+                scope.spawn(move || {
+                    chunk
+                        .iter()
+                        .filter_map(|surface| {
+                            Some((surface.clone(), l1.terminal_for_exact_surface(surface)?))
+                        })
+                        .collect::<Vec<_>>()
+                })
+            })
+            .collect::<Vec<_>>();
+        handles
+            .into_iter()
+            .flat_map(|handle| handle.join().expect("L2 terminal resolver worker"))
+            .collect::<std::collections::BTreeMap<_, _>>()
+    });
+    (terminals, workers)
 }

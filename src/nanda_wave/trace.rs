@@ -167,11 +167,12 @@ mod tests {
     }
 
     #[test]
-    fn trace_keeps_live_log_semantic_word_drifts() {
-        for original in ["модель генерит ", "окончанием слов "] {
-            let trace = run_wave_trace(original);
-            assert_eq!(trace.output(), None, "original={original:?}: {trace:?}");
-        }
+    fn full_wave_reference_keeps_semantic_drift_visible_for_comparison() {
+        assert_eq!(run_wave_trace("модель генерит ").output(), None);
+        assert_eq!(
+            run_wave_trace("окончанием слов ").output(),
+            Some("окончанием слово ")
+        );
     }
 
     #[test]

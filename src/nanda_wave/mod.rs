@@ -46,7 +46,8 @@ pub use l2_candidate_phase::L2PhaseTrainingEntry;
 pub(crate) use l2_candidate_phase::{PhaseReadout, PhaseVerdict};
 pub use l2_field::{
     canonical_l2_status, compile_canonical_l2_package, default_l2_model_dir,
-    discover_installed_l2_package, prove_canonical_l2_package, query_canonical_l2_package,
+    discover_installed_l2_package, export_unseeded_l11_seed_corpus, prove_canonical_l2_package,
+    query_canonical_l2_package,
 };
 pub use lexical_grokking::{
     admit_l11_delta, admit_l11_tombstone, analyze_l1_forward_compression,
@@ -57,13 +58,13 @@ pub use lexical_grokking::{
     default_l11_socket_path, discover_installed_l11_package, ensure_l11_service_started,
     export_l1_fixed_latency_surfaces, initialize_l11_composite_manifest, inspect_l1_package_header,
     l11_seed_surfaces, prove_l1_lexical_grokking, prove_l1_lexical_grokking_complete_postings,
-    prove_l1_lexical_grokking_package, prove_l1_lexical_grokking_scale_package,
-    prove_l1_lexical_grokking_scale_package_range, query_l1_lexical_grokking,
-    request_l11_authoritative_surface, request_l11_decoded_surfaces, request_l11_seed_surfaces,
-    restore_l1_surface, send_l11_service_request, send_l11_service_request_with_timeout,
-    InstalledL11Package, L11SeedSurface, L11ServiceEnsureReport, L1RestorationHost,
-    L1RestorationHostStats, L1ServiceHealth, L1ServiceRequest, L1ServiceResponse, L1ServiceStats,
-    ScaleTrainingSurfacePolicy,
+    prove_l1_lexical_grokking_composite, prove_l1_lexical_grokking_package,
+    prove_l1_lexical_grokking_scale_package, prove_l1_lexical_grokking_scale_package_range,
+    query_l1_lexical_grokking, request_l11_authoritative_surface, request_l11_decoded_surfaces,
+    request_l11_seed_surfaces, restore_l1_surface, send_l11_service_request,
+    send_l11_service_request_with_timeout, InstalledL11Package, L11SeedSurface,
+    L11ServiceEnsureReport, L1RestorationHost, L1RestorationHostStats, L1ServiceHealth,
+    L1ServiceRequest, L1ServiceResponse, L1ServiceStats, ScaleTrainingSurfacePolicy,
 };
 pub use mode::{Mode8, ModeRole, CELL32_BYTES, MODES_PER_CELL32};
 pub use morphology_phase::{

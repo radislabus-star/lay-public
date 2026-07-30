@@ -407,8 +407,7 @@ fn l4_memory_owns_complete_transition_targets_and_cold_initialization() {
         "L4 transition identity must cover the complete changed target, not only its last token"
     );
     assert!(
-        decision_signals.contains("transition_target_text(&event.original")
-            && decision_signals.contains("candidate_text: &transition_target"),
+        decision_signals.contains("candidate_text: &candidate.replacement"),
         "TransitionDecisionCore must address signed memory with the typed target region"
     );
     assert!(

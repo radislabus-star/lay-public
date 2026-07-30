@@ -111,6 +111,41 @@ fn main() -> io::Result<()> {
         );
         return Ok(());
     }
+    if let Some(morphology_corpus) = arg_path(&args, "--export-l2-unseeded-l11-corpus") {
+        let l1_package = arg_path(&args, "--memory")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--memory is required"))?;
+        let output = arg_path(&args, "--out")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--out is required"))?;
+        let report = lay::nanda_wave::export_unseeded_l11_seed_corpus(
+            &l1_package,
+            &morphology_corpus,
+            &output,
+        )?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if let Some(manifest) = arg_path(&args, "--prove-l11-composite") {
+        let base_corpus = arg_path(&args, "--base-corpus").ok_or_else(|| {
+            io::Error::new(io::ErrorKind::InvalidInput, "--base-corpus is required")
+        })?;
+        let delta_corpus = arg_path(&args, "--delta-corpus").ok_or_else(|| {
+            io::Error::new(io::ErrorKind::InvalidInput, "--delta-corpus is required")
+        })?;
+        let report = lay::nanda_wave::prove_l1_lexical_grokking_composite(
+            &base_corpus,
+            &delta_corpus,
+            &manifest,
+            arg_usize(&args, "--heldout-per-class").unwrap_or(20_000),
+        )?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
     if let Some(package) = arg_path(&args, "--analyze-l1-forward-compression") {
         let report = lay::nanda_wave::analyze_l1_forward_compression(&package)?;
         println!(

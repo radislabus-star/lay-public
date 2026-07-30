@@ -23,16 +23,6 @@ impl L2FieldBridgeKind {
         "L2FieldShadowSurface"
     }
 
-    #[cfg(test)]
-    pub(crate) const fn morph_source_id(self) -> &'static str {
-        "L2FieldShadowMorphology"
-    }
-
-    #[cfg(test)]
-    pub(crate) const fn near_neighbor_source_id(self) -> &'static str {
-        "L2FieldShadowNearNeighbor"
-    }
-
     pub(crate) const fn readout_source_id(self) -> &'static str {
         "L2FieldShadowReadout"
     }
@@ -67,9 +57,10 @@ pub(crate) enum L2FieldAuthority {
     Abstain,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub(crate) struct L2LexicalSeed {
-    pub(crate) terminal_id: u32,
+    pub(crate) terminal_id: Option<u32>,
+    pub(crate) surface: Option<String>,
     pub(crate) evidence_milli: i32,
 }
 
@@ -233,15 +224,24 @@ impl StandaloneL2Field {
         let mode = context_mode(context);
         let context_mode_id = self.context_by_key.get(&mode.stable_key).copied();
         let wave = scene_wave(context);
-        let seed_evidence = seeds
-            .iter()
-            .filter_map(|seed| {
-                Some((
-                    *self.form_by_terminal.get(&seed.terminal_id)?,
-                    seed.evidence_milli,
-                ))
-            })
-            .collect::<BTreeMap<_, _>>();
+        let mut seed_evidence = BTreeMap::<u32, i32>::new();
+        for seed in seeds {
+            let form_ref = seed
+                .terminal_id
+                .and_then(|terminal_id| self.form_by_terminal.get(&terminal_id).copied())
+                .or_else(|| {
+                    seed.surface
+                        .as_deref()
+                        .and_then(|surface| self.form_ref_for_surface(surface))
+                });
+            let Some(form_ref) = form_ref else {
+                continue;
+            };
+            seed_evidence
+                .entry(form_ref)
+                .and_modify(|evidence| *evidence = (*evidence).max(seed.evidence_milli))
+                .or_insert(seed.evidence_milli);
+        }
         let mut active_forms = seed_evidence.keys().copied().collect::<BTreeSet<_>>();
         let mut lemma_seed_evidence = BTreeMap::<u32, (i32, u16, u16)>::new();
         for form_ref in &active_forms {
@@ -719,7 +719,8 @@ mod standalone_tests {
         let readout = field.readout(
             "нет _",
             &[L2LexicalSeed {
-                terminal_id: 17,
+                terminal_id: Some(17),
+                surface: None,
                 evidence_milli: 900,
             }],
             8,
@@ -749,7 +750,8 @@ mod standalone_tests {
         let readout = field.readout(
             "нет _",
             &[L2LexicalSeed {
-                terminal_id: 17,
+                terminal_id: Some(17),
+                surface: None,
                 evidence_milli: 900,
             }],
             8,
@@ -765,6 +767,36 @@ mod standalone_tests {
             .expect("winner candidate");
         assert_eq!(winner.surface, "дома");
         assert_eq!(winner.l1_terminal_id, None);
+    }
+
+    #[test]
+    fn standalone_field_resolves_append_only_l1_seed_by_surface() {
+        let corpus = L2TeacherCorpus::parse_tsv(
+            "F\tрефакторинг\tрефакторинг\tnoun:nom:sg\n\
+             F\tрефакторинг\tрефакторинга\tnoun:gen:sg\n\
+             T\tрефакторинг\tрефакторинг\tnoun:nom:sg\t_ нужен\n\
+             H\tрефакторинг\tрефакторинга\tnoun:gen:sg\tпроект _\n",
+        )
+        .expect("teacher");
+        let (package, _) = compile_l2_package(&corpus, 99, |surface| {
+            (surface == "рефакторинг").then_some(17)
+        })
+        .expect("compile");
+        let field = StandaloneL2Field::from_package(package).expect("load");
+        let readout = field.readout(
+            "проект _",
+            &[L2LexicalSeed {
+                terminal_id: Some(900_000),
+                surface: Some("рефакторинга".to_string()),
+                evidence_milli: 1_000,
+            }],
+            8,
+        );
+
+        assert!(readout
+            .candidates
+            .iter()
+            .any(|candidate| candidate.surface == "рефакторинга"));
     }
 
     #[test]
@@ -788,7 +820,8 @@ mod standalone_tests {
         let readout = field.readout(
             "_ сюда",
             &[L2LexicalSeed {
-                terminal_id: 17,
+                terminal_id: Some(17),
+                surface: None,
                 evidence_milli: 1_000,
             }],
             8,
@@ -817,7 +850,8 @@ mod standalone_tests {
         let readout = field.readout(
             "совсем неизвестная сцена _",
             &[L2LexicalSeed {
-                terminal_id: 17,
+                terminal_id: Some(17),
+                surface: None,
                 evidence_milli: 900,
             }],
             8,
@@ -846,11 +880,13 @@ mod standalone_tests {
             "вижу _",
             &[
                 L2LexicalSeed {
-                    terminal_id: 17,
+                    terminal_id: Some(17),
+                    surface: None,
                     evidence_milli: 1_000,
                 },
                 L2LexicalSeed {
-                    terminal_id: 23,
+                    terminal_id: Some(23),
+                    surface: None,
                     evidence_milli: 1_000,
                 },
             ],

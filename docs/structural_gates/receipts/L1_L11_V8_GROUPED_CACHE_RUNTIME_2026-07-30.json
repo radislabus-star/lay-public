@@ -1,0 +1,45 @@
+{
+  "receipt": "L1_L11_V8_GROUPED_CACHE_RUNTIME_2026-07-30",
+  "date": "2026-07-30",
+  "scope": "runtime-only V8 shard miss grouping and single-lock cached reverse frontier",
+  "package_sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+  "quality_parity": {
+    "heldout_per_class": 2000,
+    "before_sha256": "79f979fae94806c08fc746372557df03846633ad4c91f028f38cbd6f37ff5cb4",
+    "after_sha256": "79f979fae94806c08fc746372557df03846633ad4c91f028f38cbd6f37ff5cb4",
+    "verdict": "EXACT"
+  },
+  "hot_benchmark": {
+    "surface": "вреям",
+    "iterations": 10000,
+    "limit": 64,
+    "before": {"p50_us": 1876, "p90_us": 2934, "p99_us": 13987, "max_us": 45017, "rss_kib": 177404},
+    "after": {"p50_us": 1960, "p90_us": 2670, "p99_us": 3514, "max_us": 4655, "rss_kib": 176208},
+    "hot_p99_gate_us": 5000,
+    "verdict": "PASS"
+  },
+  "separate_first_touch_metric": {
+    "full_proof_p50_us": 7070,
+    "full_proof_p99_us": 12314,
+    "full_proof_max_us": 19507,
+    "verdict": "WATCH_NOT_HOT"
+  },
+  "mechanism": [
+    "group requested atom cache misses by compressed shard",
+    "decompress each missed shard once per batch",
+    "collect cached reverse arcs under one mutex acquisition",
+    "preserve deterministic scoring and package bytes"
+  ],
+  "not_tested": [
+    "multi-day cache residency",
+    "latency with admitted delta overlays",
+    "direct edit authority"
+  ],
+  "runtime_authority_changed": false,
+  "evidence": [
+    "/home/e/build/lay-l1-shadow/artifacts/l11-l2-global-compaction-2026-07-30/hot-10k.json",
+    "/home/e/build/lay-l1-shadow/artifacts/l11-l2-global-compaction-2026-07-30/hot-10k-optimized.json",
+    "/home/e/build/lay-l1-shadow/artifacts/l11-l2-global-compaction-2026-07-30/proof-2k.json",
+    "/home/e/build/lay-l1-shadow/artifacts/l11-l2-global-compaction-2026-07-30/proof-2k-optimized.json"
+  ]
+}

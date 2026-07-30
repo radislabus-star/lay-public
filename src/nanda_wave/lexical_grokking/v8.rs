@@ -4,7 +4,7 @@
 //! independently addressable forward-posting section. Runtime code can mmap
 //! the package and decode only postings touched by the current surface.
 
-use std::collections::{HashMap, VecDeque};
+use std::collections::{BTreeMap, HashMap, VecDeque};
 use std::fs::{self, File};
 use std::io;
 use std::path::Path;
@@ -183,15 +183,7 @@ impl V8Artifact {
     fn decode_posting_uncached(&self, atom_id: u32) -> Result<Arc<[WaveCoupling]>, String> {
         let item = read_index(self.bytes.as_slice(), self.header, atom_id)?;
         let shard = self.shard(item.shard_id)?;
-        let start = item.offset as usize;
-        let end = start.saturating_add(item.byte_len as usize);
-        let decoded = posting_codec::decode_posting(
-            shard
-                .get(start..end)
-                .ok_or_else(|| "invalid V8 posting range inside shard".to_string())?,
-            item.relation_count as usize,
-        )?;
-        Ok(decoded.into())
+        decode_posting_from_shard(item, &shard)
     }
 
     fn admit_posting(
@@ -257,15 +249,43 @@ impl V8Artifact {
             .enumerate()
             .filter(|(index, _)| resolved[*index].is_none())
             .collect::<Vec<_>>();
-        let decoded = runtime_pool_install(|| {
-            missing
-                .par_iter()
-                .map(|(index, atom_id)| {
-                    self.decode_posting_uncached(*atom_id)
+        let mut shard_groups = BTreeMap::<u32, Vec<(usize, u32, V8PostingIndex)>>::new();
+        for (index, atom_id) in missing {
+            let item = read_index(self.bytes.as_slice(), self.header, atom_id)?;
+            shard_groups
+                .entry(item.shard_id)
+                .or_default()
+                .push((index, atom_id, item));
+        }
+        let shard_groups = shard_groups.into_values().collect::<Vec<_>>();
+        let decode_group = |group: &Vec<(usize, u32, V8PostingIndex)>| -> Result<Vec<_>, String> {
+            let shard_id = group
+                .first()
+                .map(|(_, _, item)| item.shard_id)
+                .ok_or_else(|| "empty V8 posting shard group".to_string())?;
+            let shard = self.shard(shard_id)?;
+            group
+                .iter()
+                .map(|(index, atom_id, item)| {
+                    decode_posting_from_shard(*item, &shard)
                         .map(|posting| (*index, *atom_id, posting))
                 })
-                .collect::<Result<Vec<_>, _>>()
-        })?;
+                .collect()
+        };
+        let decoded_groups = if shard_groups.len() <= 1 {
+            shard_groups
+                .iter()
+                .map(decode_group)
+                .collect::<Result<Vec<_>, _>>()?
+        } else {
+            runtime_pool_install(|| {
+                shard_groups
+                    .par_iter()
+                    .map(decode_group)
+                    .collect::<Result<Vec<_>, _>>()
+            })?
+        };
+        let decoded = decoded_groups.into_iter().flatten().collect::<Vec<_>>();
         if cache_budget == 0 {
             for (index, _, posting) in decoded {
                 resolved[index] = Some(posting);
@@ -360,6 +380,21 @@ impl V8Artifact {
         }
         Ok(shard)
     }
+}
+
+fn decode_posting_from_shard(
+    item: V8PostingIndex,
+    shard: &[u8],
+) -> Result<Arc<[WaveCoupling]>, String> {
+    let start = item.offset as usize;
+    let end = start.saturating_add(item.byte_len as usize);
+    let decoded = posting_codec::decode_posting(
+        shard
+            .get(start..end)
+            .ok_or_else(|| "invalid V8 posting range inside shard".to_string())?,
+        item.relation_count as usize,
+    )?;
+    Ok(decoded.into())
 }
 
 pub(super) fn is_v8(bytes: &[u8]) -> bool {
@@ -898,10 +933,15 @@ mod tests {
         let input = directory.join("fixture.v7.bin");
         let output = directory.join("fixture.v8.bin");
         fs::write(&input, &v7).expect("write V7 fixture");
-        build_lazy_v8_package(&input, &output).expect("build V8 fixture");
+        build_lazy_v8_package_with_shard_size(&input, &output, 32)
+            .expect("build shard-grouped V8 fixture");
 
         let bytes = fs::read(&output).expect("read V8 fixture");
         let header = read_header(&bytes).expect("read V8 header");
+        assert!(
+            header.shard_count < header.index_count,
+            "fixture must exercise multiple postings decoded from one shard"
+        );
         let base = format::decode_compact_base(base_bytes(&bytes, header).expect("V8 base"))
             .expect("decode compact V8 base");
         assert_eq!(base.centers.len(), package.centers.len());
@@ -933,10 +973,16 @@ mod tests {
             );
         }
         for surface in ["время", "вреям", "работат", "downlod"] {
+            let expected = eager.readout(surface, 8, ReadoutMode::Full);
             assert_eq!(
                 lazy.readout(surface, 8, ReadoutMode::Full),
-                eager.readout(surface, 8, ReadoutMode::Full),
+                expected,
                 "V8 readout differs for {surface}"
+            );
+            assert_eq!(
+                lazy.readout(surface, 8, ReadoutMode::Full),
+                expected,
+                "cached V8 readout differs for {surface}"
             );
         }
         let _ = fs::remove_dir_all(directory);

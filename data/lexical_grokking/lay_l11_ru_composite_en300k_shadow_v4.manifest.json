@@ -1,0 +1,55 @@
+{
+  "package_id": "LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4",
+  "layer": "L1.1 bilingual lexical source",
+  "status": "CRYSTALLIZED_V8_WORKING_GATE_PASS_AUTHORITY_WATCH",
+  "runtime_authority": false,
+  "corpus_artifact": "/home/e/build/lay-l1-shadow/artifacts/l11-l2-global-compaction-2026-07-30/corpus-852582.txt",
+  "corpus_bytes": 14262280,
+  "corpus_sha256": "abb9d71495acc27b7619b24621568ea72263f9bd40201aab9fffa1188fbff8f6",
+  "corpus_components": [
+    {
+      "artifact": "data/lexical_grokking/lay_l11_ru_composite_en300k_shadow_v2.txt",
+      "surfaces": 835410,
+      "bytes": 13838244,
+      "sha256": "162f1471f6a1f635aec634e2644123597ae60a46158314d7d9765474c552ee65"
+    },
+    {
+      "artifact": "data/lexical_grokking/lay_l11_l2_missing_lemma_seeds_ru_v1.txt",
+      "surfaces": 17172,
+      "bytes": 424036,
+      "sha256": "b0cf122c585ed1124c327c39caef6c62ff02485b8eebd0ff4aab31afd53ee1bf"
+    }
+  ],
+  "unique_surfaces": 852582,
+  "ru_surfaces": 552582,
+  "en_surfaces": 300000,
+  "cross_source_duplicates": 0,
+  "base_terminal_range": [
+    0,
+    835410
+  ],
+  "l2_seed_terminal_range": [
+    835410,
+    852582
+  ],
+  "source_packages": [
+    "LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v3",
+    "LAY-L2-RU-MISSING-LEMMA-SEEDS-v1"
+  ],
+  "l1_1_crystallized": true,
+  "crystal_format": "V8 lazy-sharded-postings-32",
+  "crystal_artifact": "/home/e/build/lay-l1-shadow/artifacts/l11-l2-global-compaction-2026-07-30/package.v8.bin",
+  "crystal_bytes": 190139182,
+  "crystal_sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+  "proof_receipt": "docs/structural_gates/receipts/L1_L11_GLOBAL_COMPACTION_852582_2026-07-30.json",
+  "proof_verdict": "PASS_shadow",
+  "split_language_proof": {
+    "ru_receipt": "docs/structural_gates/receipts/L1_L11_COMPOSITE_V2_V7_RU535410_2026-07-26.json",
+    "ru_verdict": "PASS_shadow",
+    "en_receipt": "docs/structural_gates/receipts/L1_L11_COMPOSITE_V2_V7_EN300000_2026-07-26.json",
+    "en_verdict": "PASS_shadow",
+    "added_ru_seed_receipt": "docs/structural_gates/receipts/L2_CANONICAL_RU_FULL_V7_ALL_LEMMAS_2026-07-30.json"
+  },
+  "release_shadow_installable": true,
+  "promotion_verdict": "PASS_SHADOW_RUNTIME_ONLY_MODEL_AUTHORITY_WATCH"
+}

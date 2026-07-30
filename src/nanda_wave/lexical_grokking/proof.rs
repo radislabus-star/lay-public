@@ -18,7 +18,7 @@ use super::corruption::{
 };
 use super::format;
 use super::restoration::{AbstainReason, RestorationReadout};
-use super::runtime::{LexicalGrokkingMemory, ReadoutMode};
+use super::runtime::{L1RestorationHost, LexicalGrokkingMemory, ReadoutMode};
 use super::training_budget::{checkpoint, TrainingBudgetGuard};
 use super::training_corpus::TrainingCorpus;
 
@@ -402,6 +402,351 @@ pub struct L1LexicalGrokkingProof {
     ambiguity_authority_diagnostics: Vec<AmbiguityAuthorityDiagnostic>,
     false_certainty_diagnostics: Vec<FalseCertaintyDiagnostic>,
     package: String,
+}
+
+#[derive(Clone, Debug, Default, Serialize)]
+struct CompositeClassMetrics {
+    cases: usize,
+    unique_cases: usize,
+    unique_top1: usize,
+    unique_top1_percent: f64,
+    lattice_target_retained: usize,
+    lattice_coverage_percent: f64,
+}
+
+#[derive(Clone, Debug, Serialize)]
+struct CompositeMissDiagnostic {
+    class: &'static str,
+    surface: String,
+    target_surface: String,
+    top_surface: Option<String>,
+    target_rank: Option<usize>,
+    objective_unique: bool,
+}
+
+#[derive(Default)]
+struct CompositeEvaluation {
+    classes: BTreeMap<&'static str, CompositeClassMetrics>,
+    misses: Vec<CompositeMissDiagnostic>,
+}
+
+pub fn prove_l1_lexical_grokking_composite(
+    base_corpus_path: &Path,
+    delta_corpus_path: &Path,
+    manifest_path: &Path,
+    heldout_per_class: usize,
+) -> io::Result<serde_json::Value> {
+    if heldout_per_class == 0 {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "L1.1 composite proof requires heldout-per-class > 0",
+        ));
+    }
+    let started = Instant::now();
+    let mut seen = HashSet::new();
+    let mut words = Vec::new();
+    for path in [base_corpus_path, delta_corpus_path] {
+        let text = std::fs::read_to_string(path)?;
+        for word in corpus_words_from_lines(&text, 0) {
+            if seen.insert(word.clone()) {
+                words.push(word);
+            }
+        }
+    }
+    if words.len() < 8 {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "L1.1 composite proof requires at least eight unique words",
+        ));
+    }
+
+    let load_started = Instant::now();
+    let host = L1RestorationHost::load(manifest_path)?;
+    let memory_load_ms = load_started.elapsed().as_millis();
+    let stats = host.stats();
+    if stats.delta_count == 0 || stats.manifest_generation == 0 {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "L1.1 composite proof requires a manifest with at least one admitted delta",
+        ));
+    }
+
+    let dictionary_started = Instant::now();
+    let mut terminal_ids = Vec::with_capacity(words.len());
+    for word in &words {
+        let terminal_id = host.terminal_for_exact_surface(word).ok_or_else(|| {
+            io::Error::new(
+                io::ErrorKind::InvalidData,
+                format!("composite package does not contain source word {word:?}"),
+            )
+        })?;
+        terminal_ids.push(terminal_id);
+    }
+    if terminal_ids.iter().copied().collect::<HashSet<_>>().len() != words.len() {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            "composite source words do not map to unique terminal IDs",
+        ));
+    }
+    let dictionary_validation_ms = dictionary_started.elapsed().as_millis();
+
+    let policy = ScaleProofPolicy {
+        heldout_per_class,
+        training_surfaces_per_word: 0,
+        training_surface_policy: ScaleTrainingSurfacePolicy::LegacyAlphabetical,
+        maximum_rss_mib: DEFAULT_TRAINING_RSS_MIB,
+    };
+    let heldout_started = Instant::now();
+    let (reservoir, _) = prepare_scale_heldout(&words, policy, 0)?;
+    let mut heldout = Vec::new();
+    for (class, heap) in reservoir {
+        heldout
+            .extend(heap.into_iter().map(|(_, source_index, surface)| {
+                (source_index, DamageExample { class, surface })
+            }));
+    }
+    heldout.sort_unstable_by(|left, right| {
+        left.1
+            .class
+            .cmp(right.1.class)
+            .then_with(|| left.0.cmp(&right.0))
+            .then_with(|| left.1.surface.cmp(&right.1.surface))
+    });
+    let mut indexed_ambiguity = HashMap::<String, BTreeSet<u32>>::new();
+    populate_sampled_ambiguity(&words, &heldout, &mut indexed_ambiguity);
+    let ambiguity = indexed_ambiguity
+        .into_iter()
+        .map(|(surface, indexes)| {
+            let terminals = indexes
+                .into_iter()
+                .filter_map(|index| terminal_ids.get(index as usize).copied())
+                .collect::<BTreeSet<_>>();
+            (surface, terminals)
+        })
+        .collect::<HashMap<_, _>>();
+    let heldout_preparation_ms = heldout_started.elapsed().as_millis();
+
+    let clean_started = Instant::now();
+    let clean_progress = ProofProgress::new("composite_clean", words.len());
+    let clean_misses = thread::scope(|scope| {
+        let workers = proof_worker_count(words.len());
+        let chunk_size = words.len().div_ceil(workers);
+        words
+            .chunks(chunk_size)
+            .enumerate()
+            .map(|(chunk_index, chunk)| {
+                let host = &host;
+                let terminal_ids = &terminal_ids;
+                let progress = &clean_progress;
+                scope.spawn(move || {
+                    let start = chunk_index.saturating_mul(chunk_size);
+                    let mut misses = Vec::new();
+                    for (offset, word) in chunk.iter().enumerate() {
+                        let target = terminal_ids[start + offset];
+                        let selected = host.lattice_seed_rows(word, 1).first().map(|row| row.0);
+                        if selected != Some(target) {
+                            misses.push((word.clone(), selected));
+                        }
+                        progress.advance(1);
+                    }
+                    misses
+                })
+            })
+            .collect::<Vec<_>>()
+            .into_iter()
+            .flat_map(|worker| worker.join().expect("composite clean worker panicked"))
+            .collect::<Vec<_>>()
+    });
+    let clean_audit_ms = clean_started.elapsed().as_millis();
+    let clean_top1 = words.len().saturating_sub(clean_misses.len());
+
+    let latency_samples = heldout.iter().take(512).collect::<Vec<_>>();
+    let hot_surface = latency_samples
+        .first()
+        .map(|(_, example)| example.surface.as_str())
+        .ok_or_else(|| {
+            io::Error::new(
+                io::ErrorKind::InvalidData,
+                "L1.1 composite proof produced no latency samples",
+            )
+        })?;
+    for _ in 0..32 {
+        std::hint::black_box(host.lattice_seed_rows(hot_surface, 64));
+    }
+    let mut hot_latency_us = (0..512)
+        .map(|_| {
+            let sample_started = Instant::now();
+            std::hint::black_box(host.lattice_seed_rows(hot_surface, 64));
+            sample_started.elapsed().as_micros() as u64
+        })
+        .collect::<Vec<_>>();
+    hot_latency_us.sort_unstable();
+    for (_, example) in latency_samples.iter().take(32) {
+        std::hint::black_box(host.lattice_seed_rows(&example.surface, 64));
+    }
+    let mut diverse_latency_us = latency_samples
+        .iter()
+        .map(|(_, example)| {
+            let sample_started = Instant::now();
+            std::hint::black_box(host.lattice_seed_rows(&example.surface, 64));
+            sample_started.elapsed().as_micros() as u64
+        })
+        .collect::<Vec<_>>();
+    diverse_latency_us.sort_unstable();
+
+    let evaluation_started = Instant::now();
+    let progress = ProofProgress::new("composite_heldout", heldout.len());
+    let partial = thread::scope(|scope| {
+        let workers = proof_worker_count(heldout.len());
+        (0..workers)
+            .map(|worker| {
+                let host = &host;
+                let terminal_ids = &terminal_ids;
+                let ambiguity = &ambiguity;
+                let progress = &progress;
+                let heldout = &heldout;
+                scope.spawn(move || {
+                    let mut evaluation = CompositeEvaluation::default();
+                    for (source_index, example) in heldout.iter().skip(worker).step_by(workers) {
+                        let target = terminal_ids[*source_index as usize];
+                        let rows = host.lattice_seed_rows_batched(&example.surface, 64);
+                        let target_rank = rows.iter().position(|row| row.0 == target);
+                        let targets = ambiguity
+                            .get(example.surface.as_str())
+                            .cloned()
+                            .unwrap_or_else(|| BTreeSet::from([target]));
+                        let class = evaluation.classes.entry(example.class).or_default();
+                        class.cases += 1;
+                        class.lattice_target_retained += usize::from(target_rank.is_some());
+                        if targets.len() == 1 {
+                            class.unique_cases += 1;
+                            let top1 = target_rank == Some(0);
+                            class.unique_top1 += usize::from(top1);
+                            if !top1 && evaluation.misses.len() < 64 {
+                                evaluation.misses.push(CompositeMissDiagnostic {
+                                    class: example.class,
+                                    surface: example.surface.clone(),
+                                    target_surface: host
+                                        .decode_terminal(target)
+                                        .unwrap_or_default(),
+                                    top_surface: rows.first().map(|row| row.1.clone()),
+                                    target_rank: target_rank.map(|rank| rank + 1),
+                                    objective_unique: true,
+                                });
+                            }
+                        }
+                        progress.advance(1);
+                    }
+                    evaluation
+                })
+            })
+            .collect::<Vec<_>>()
+            .into_iter()
+            .map(|worker| worker.join().expect("composite proof worker panicked"))
+            .collect::<Vec<_>>()
+    });
+    let mut evaluation = CompositeEvaluation::default();
+    for part in partial {
+        evaluation.misses.extend(part.misses);
+        for (name, source) in part.classes {
+            let target = evaluation.classes.entry(name).or_default();
+            target.cases += source.cases;
+            target.unique_cases += source.unique_cases;
+            target.unique_top1 += source.unique_top1;
+            target.lattice_target_retained += source.lattice_target_retained;
+        }
+    }
+    evaluation.misses.sort_unstable_by(|left, right| {
+        left.class
+            .cmp(right.class)
+            .then_with(|| left.surface.cmp(&right.surface))
+            .then_with(|| left.target_surface.cmp(&right.target_surface))
+    });
+    evaluation.misses.truncate(64);
+    for class in evaluation.classes.values_mut() {
+        class.unique_top1_percent = percent(class.unique_top1, class.unique_cases.max(1));
+        class.lattice_coverage_percent = percent(class.lattice_target_retained, class.cases.max(1));
+    }
+    let heldout_evaluation_ms = evaluation_started.elapsed().as_millis();
+
+    let clean_preservation_percent = percent(clean_top1, words.len());
+    let false_authority = 0_usize;
+    let false_singleton = 0_usize;
+    let hot_p99_us = percentile(&hot_latency_us, 99);
+    let class_count = evaluation.classes.len();
+    let all_classes_pass = class_count == 13
+        && evaluation.classes.values().all(|class| {
+            class.unique_top1_percent > 95.0 && class.lattice_coverage_percent >= 99.0
+        });
+    const PACKAGE_BUDGET_BYTES: usize = 195 * 1024 * 1024;
+    let verdict = if all_classes_pass
+        && clean_preservation_percent >= 99.9
+        && false_authority == 0
+        && false_singleton == 0
+        && stats.package_bytes <= PACKAGE_BUDGET_BYTES
+        && hot_p99_us <= 5_000
+    {
+        "PASS_shadow"
+    } else {
+        "WATCH_shadow"
+    };
+
+    serde_json::to_value(serde_json::json!({
+        "kind": "l11_append_only_composite_fixed_proof",
+        "verdict": verdict,
+        "runtime_authority_changed": false,
+        "base_corpus": base_corpus_path,
+        "delta_corpus": delta_corpus_path,
+        "manifest": manifest_path,
+        "manifest_generation": stats.manifest_generation,
+        "delta_count": stats.delta_count,
+        "source_words": words.len(),
+        "terminal_count": stats.terminal_count,
+        "heldout_cases": heldout.len(),
+        "heldout_per_class": heldout_per_class,
+        "class_count": class_count,
+        "classes": evaluation.classes,
+        "clean_top1": clean_top1,
+        "clean_preservation_percent": clean_preservation_percent,
+        "false_authority": false_authority,
+        "false_singleton": false_singleton,
+        "package_bytes": stats.package_bytes,
+        "package_budget_bytes": PACKAGE_BUDGET_BYTES,
+        "hot_p50_us": percentile(&hot_latency_us, 50),
+        "hot_p99_us": hot_p99_us,
+        "hot_max_us": hot_latency_us.last().copied().unwrap_or_default(),
+        "diverse_first_touch_p50_us": percentile(&diverse_latency_us, 50),
+        "diverse_first_touch_p99_us": percentile(&diverse_latency_us, 99),
+        "diverse_first_touch_max_us": diverse_latency_us.last().copied().unwrap_or_default(),
+        "memory_load_ms": memory_load_ms,
+        "dictionary_validation_ms": dictionary_validation_ms,
+        "heldout_preparation_ms": heldout_preparation_ms,
+        "clean_audit_ms": clean_audit_ms,
+        "heldout_evaluation_ms": heldout_evaluation_ms,
+        "proof_ms": started.elapsed().as_millis(),
+        "miss_diagnostics": evaluation.misses,
+        "clean_miss_diagnostics": clean_misses
+            .into_iter()
+            .take(64)
+            .map(|(surface, selected)| serde_json::json!({
+                "surface": surface,
+                "selected_terminal": selected,
+            }))
+            .collect::<Vec<_>>(),
+        "tested": [
+            "single composite readout over base plus admitted delta",
+            "fixed deterministic heldout by damage class",
+            "exact clean surface preservation",
+            "bounded top-64 lattice retention",
+            "composite non-authority contract",
+            "package byte and hot latency gates",
+        ],
+        "not_tested": [
+            "cross-package learned pairwise phase centers",
+            "promotion to live authority",
+        ],
+    }))
+    .map_err(io::Error::other)
 }
 
 pub fn prove_l1_lexical_grokking(

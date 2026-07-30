@@ -2080,6 +2080,13 @@ impl LexicalGrokkingMemory {
             }
             return None;
         }
+        if let Some(reverse) = self.cached_frontier_reverse(frontier) {
+            for ((terminal_id, activation), relations) in frontier.iter_mut().zip(&reverse) {
+                *activation =
+                    self.activation_for_terminal_with_reverse(*terminal_id, observed, relations);
+            }
+            return Some(reverse);
+        }
         let refreshed = v8::runtime_pool_install(|| {
             frontier
                 .par_iter()
@@ -2099,6 +2106,20 @@ impl LexicalGrokkingMemory {
             reverse.push(relations);
         }
         Some(reverse)
+    }
+
+    fn cached_frontier_reverse(
+        &self,
+        frontier: &[(u32, ForwardActivation)],
+    ) -> Option<Vec<Arc<[WaveCoupling]>>> {
+        if reverse_cache_bytes() == 0 {
+            return None;
+        }
+        let cache = self.reverse_cache.lock().ok()?;
+        frontier
+            .iter()
+            .map(|(terminal_id, _)| cache.entries.get(terminal_id).cloned())
+            .collect()
     }
 
     fn forward_couplings(&self, atom_id: u32) -> CouplingView<'_> {
@@ -2489,7 +2510,74 @@ impl L1RestorationHost {
     }
 
     pub fn lattice_seed_rows(&self, surface: &str, limit: usize) -> Vec<(u32, String, u32)> {
+        self.lattice_seed_rows_with_parallel_packages(surface, limit, true)
+    }
+
+    pub(super) fn lattice_seed_rows_batched(
+        &self,
+        surface: &str,
+        limit: usize,
+    ) -> Vec<(u32, String, u32)> {
+        self.lattice_seed_rows_with_parallel_packages(surface, limit, false)
+    }
+
+    fn lattice_seed_rows_with_parallel_packages(
+        &self,
+        surface: &str,
+        limit: usize,
+        parallel_packages: bool,
+    ) -> Vec<(u32, String, u32)> {
         let limit = limit.max(1);
+        let exact_terminal = self.terminal_for_exact_surface(surface);
+        if limit == 1 {
+            if let Some(terminal_id) = exact_terminal {
+                if let Some(surface) = self.decode_terminal(terminal_id) {
+                    return vec![(terminal_id, surface, u32::MAX)];
+                }
+            }
+        }
+        let mut rows = if parallel_packages {
+            if let [overlay] = self.overlays.as_slice() {
+                let (mut base, delta) = v8::runtime_pool_install(|| {
+                    rayon::join(
+                        || memory_seed_rows(&self.memory, 0, surface, limit),
+                        || {
+                            memory_seed_rows(
+                                &overlay.memory,
+                                overlay.terminal_offset,
+                                surface,
+                                limit,
+                            )
+                        },
+                    )
+                });
+                base.extend(delta);
+                base
+            } else {
+                self.sequential_seed_rows(surface, limit)
+            }
+        } else {
+            self.sequential_seed_rows(surface, limit)
+        };
+        rows.retain(|row| !self.is_tombstoned(&row.surface));
+        rows.sort_unstable_by(|left, right| {
+            (right.terminal_id == exact_terminal.unwrap_or(u32::MAX))
+                .cmp(&(left.terminal_id == exact_terminal.unwrap_or(u32::MAX)))
+                .then_with(|| left.local_rank.cmp(&right.local_rank))
+                .then_with(|| left.geometry_distance.cmp(&right.geometry_distance))
+                .then_with(|| right.score_milli.cmp(&left.score_milli))
+                .then_with(|| left.surface.cmp(&right.surface))
+                .then_with(|| left.terminal_id.cmp(&right.terminal_id))
+        });
+        let mut seen = BTreeSet::new();
+        rows.retain(|row| seen.insert(normalize_lexical_surface(&row.surface)));
+        rows.truncate(limit);
+        rows.into_iter()
+            .map(|row| (row.terminal_id, row.surface, row.score_milli))
+            .collect()
+    }
+
+    fn sequential_seed_rows(&self, surface: &str, limit: usize) -> Vec<LatticeSeedRow> {
         let mut rows = memory_seed_rows(&self.memory, 0, surface, limit);
         for overlay in &self.overlays {
             rows.extend(memory_seed_rows(
@@ -2499,19 +2587,6 @@ impl L1RestorationHost {
                 limit,
             ));
         }
-        rows.retain(|(_, candidate_surface, _)| !self.is_tombstoned(candidate_surface));
-        rows.sort_unstable_by(|left, right| {
-            right
-                .2
-                .cmp(&left.2)
-                .then_with(|| left.1.cmp(&right.1))
-                .then_with(|| left.0.cmp(&right.0))
-        });
-        let mut seen = BTreeSet::new();
-        rows.retain(|(_, candidate_surface, _)| {
-            seen.insert(normalize_lexical_surface(candidate_surface))
-        });
-        rows.truncate(limit);
         rows
     }
 
@@ -2561,19 +2636,34 @@ impl L1RestorationHost {
     }
 }
 
+struct LatticeSeedRow {
+    terminal_id: u32,
+    surface: String,
+    score_milli: u32,
+    geometry_distance: u8,
+    local_rank: u16,
+}
+
 fn memory_seed_rows(
     memory: &LexicalGrokkingMemory,
     terminal_offset: u32,
     surface: &str,
     limit: usize,
-) -> Vec<(u32, String, u32)> {
+) -> Vec<LatticeSeedRow> {
     memory
         .readout(surface, limit, ReadoutMode::Full)
         .into_iter()
-        .filter_map(|candidate| {
+        .enumerate()
+        .filter_map(|(local_rank, candidate)| {
             let terminal_id = terminal_offset.checked_add(candidate.terminal_id)?;
             let surface = memory.decode_terminal(candidate.terminal_id)?;
-            Some((terminal_id, surface, lattice_seed_score(candidate)))
+            Some(LatticeSeedRow {
+                terminal_id,
+                surface,
+                score_milli: lattice_seed_score(candidate),
+                geometry_distance: candidate.geometry_distance,
+                local_rank: local_rank.min(u16::MAX as usize) as u16,
+            })
         })
         .collect()
 }

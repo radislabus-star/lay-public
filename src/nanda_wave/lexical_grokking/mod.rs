@@ -34,8 +34,8 @@ pub use proof::{
     crystallize_l1_lexical_grokking, crystallize_l1_lexical_grokking_with_rss_budget,
     crystallize_l1_lexical_grokking_with_surface_policy, export_l1_fixed_latency_surfaces,
     prove_l1_lexical_grokking, prove_l1_lexical_grokking_complete_postings,
-    prove_l1_lexical_grokking_package, prove_l1_lexical_grokking_scale_package,
-    prove_l1_lexical_grokking_scale_package_range,
+    prove_l1_lexical_grokking_composite, prove_l1_lexical_grokking_package,
+    prove_l1_lexical_grokking_scale_package, prove_l1_lexical_grokking_scale_package_range,
 };
 pub use runtime::{
     benchmark_diverse_restoration as benchmark_l1_diverse_restoration,

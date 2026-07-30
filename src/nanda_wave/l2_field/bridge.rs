@@ -311,7 +311,8 @@ fn apply_standalone_l2_field(
         .iter()
         .filter_map(|seed| {
             Some(L2LexicalSeed {
-                terminal_id: seed.terminal_id?,
+                terminal_id: seed.terminal_id,
+                surface: Some(seed.surface.to_lowercase()),
                 evidence_milli: i32::try_from(seed.score_milli.min(i32::MAX as u32)).ok()?,
             })
         })
@@ -537,86 +538,6 @@ impl ShadowCohortReadout {
 }
 
 #[cfg(test)]
-fn apply_shadow_same_lemma_morphology(
-    context_prefix: &str,
-    surface_candidates: &mut Vec<crate::nanda_wave::l2::L2ImeWordCandidate>,
-) -> Option<ShadowCohortReadout> {
-    let candidate_surfaces = surface_candidates
-        .iter()
-        .map(|candidate| candidate.surface.to_lowercase())
-        .collect::<Vec<_>>();
-    let readout = crate::nanda_wave::morphology_phase::shadow_same_lemma_surface_readout(
-        context_prefix,
-        &candidate_surfaces,
-    )?;
-    match readout {
-        crate::nanda_wave::morphology_phase::SameLemmaSurfaceReadout::Winner {
-            winner_surface,
-            cohort_surfaces,
-        } => {
-            let cohort = cohort_surfaces
-                .iter()
-                .cloned()
-                .collect::<std::collections::BTreeSet<_>>();
-            surface_candidates.retain(|candidate| {
-                let surface = candidate.surface.to_lowercase();
-                !cohort.contains(&surface) || surface == winner_surface
-            });
-            Some(ShadowCohortReadout::Winner {
-                winner_surface,
-                cohort_surfaces,
-            })
-        }
-        crate::nanda_wave::morphology_phase::SameLemmaSurfaceReadout::Tied { cohort_surfaces } => {
-            Some(ShadowCohortReadout::Tied { cohort_surfaces })
-        }
-        crate::nanda_wave::morphology_phase::SameLemmaSurfaceReadout::Abstain {
-            cohort_surfaces,
-        } => Some(ShadowCohortReadout::Abstain { cohort_surfaces }),
-    }
-}
-
-#[cfg(test)]
-fn promote_shadow_same_lemma_morphology(
-    candidates: &mut [UnifiedCorrectionCandidate],
-    readout: &ShadowCohortReadout,
-) {
-    let Some(winner_surface) = readout.winner_surface() else {
-        return;
-    };
-    for candidate in candidates {
-        let Some((_, word)) =
-            crate::word_reader::split_last_trimmed_ws_token(&candidate.replacement)
-        else {
-            continue;
-        };
-        let (_, word, _) = crate::word_reader::split_word_punctuation(word);
-        if word.to_lowercase() != winner_surface {
-            continue;
-        }
-        let source_id = L2FieldBridgeKind::Shadow.morph_source_id().to_string();
-        if candidate.source_id == source_id {
-            break;
-        }
-        let evidence_present = candidate
-            .evidence
-            .iter()
-            .any(|evidence| evidence.source_id == source_id);
-        candidate.source_id = source_id.clone();
-        if !evidence_present {
-            candidate.evidence.push(CandidateEvidence {
-                source: candidate.source,
-                origin: candidate.origin,
-                source_id,
-                error_class: candidate.error_class,
-                gate: candidate.gate.clone(),
-            });
-        }
-        break;
-    }
-}
-
-#[cfg(test)]
 fn apply_shadow_near_neighbor_lexical(
     token: &str,
     surface_candidates: &mut Vec<crate::nanda_wave::l2::L2ImeWordCandidate>,
@@ -736,48 +657,6 @@ fn shadow_near_neighbor_strength(
         + (candidate.usage_prior * 320.0).round() as i64
         + distance_bonus
         + transposition_bonus
-}
-
-#[cfg(test)]
-fn promote_shadow_near_neighbor_lexical(
-    candidates: &mut [UnifiedCorrectionCandidate],
-    readout: &ShadowCohortReadout,
-) {
-    let Some(winner_surface) = readout.winner_surface() else {
-        return;
-    };
-    for candidate in candidates {
-        let Some((_, word)) =
-            crate::word_reader::split_last_trimmed_ws_token(&candidate.replacement)
-        else {
-            continue;
-        };
-        let (_, word, _) = crate::word_reader::split_word_punctuation(word);
-        if word.to_lowercase() != winner_surface {
-            continue;
-        }
-        let source_id = L2FieldBridgeKind::Shadow
-            .near_neighbor_source_id()
-            .to_string();
-        if candidate.source_id == source_id {
-            break;
-        }
-        let evidence_present = candidate
-            .evidence
-            .iter()
-            .any(|evidence| evidence.source_id == source_id);
-        candidate.source_id = source_id.clone();
-        if !evidence_present {
-            candidate.evidence.push(CandidateEvidence {
-                source: candidate.source,
-                origin: candidate.origin,
-                source_id,
-                error_class: candidate.error_class,
-                gate: candidate.gate.clone(),
-            });
-        }
-        break;
-    }
 }
 
 #[cfg(test)]

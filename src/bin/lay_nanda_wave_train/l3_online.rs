@@ -90,13 +90,10 @@ pub(super) fn run(args: &[String]) -> io::Result<()> {
     let paths = Paths::discover()?;
     fs::create_dir_all(&paths.root)?;
     ensure_manifest(&paths)?;
+    let state_exists = paths.state.is_file();
     let mut state = load_state(&paths.state)?;
 
-    if state.source_offset == 0 {
-        state.source_offset = fs::metadata(&paths.usage_events)
-            .map(|metadata| metadata.len())
-            .unwrap_or_default();
-        save_state(&paths.state, &state)?;
+    if initialize_source_offset(&paths, &mut state, state_exists)? {
         println!(
             "{}",
             serde_json::json!({
@@ -117,6 +114,21 @@ pub(super) fn run(args: &[String]) -> io::Result<()> {
         }
         thread::sleep(Duration::from_millis(poll_ms));
     }
+}
+
+fn initialize_source_offset(
+    paths: &Paths,
+    state: &mut OnlineState,
+    state_exists: bool,
+) -> io::Result<bool> {
+    if state_exists {
+        return Ok(false);
+    }
+    state.source_offset = fs::metadata(&paths.usage_events)
+        .map(|metadata| metadata.len())
+        .unwrap_or_default();
+    save_state(&paths.state, state)?;
+    Ok(true)
 }
 
 fn process_once(paths: &Paths, state: &mut OnlineState) -> io::Result<()> {
@@ -417,6 +429,7 @@ fn unix_time() -> u64 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::time::{SystemTime, UNIX_EPOCH};
 
     #[test]
     fn accepted_fix_requires_context_and_one_tail_change() {
@@ -468,5 +481,39 @@ mod tests {
         assert!(proof_passed(
             &serde_json::json!({"verdict": "PASS", "false_supports": 0})
         ));
+    }
+
+    #[test]
+    fn empty_journal_initialization_does_not_skip_first_appended_events() {
+        let unique = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let root = std::env::temp_dir().join(format!("lay-l3-online-empty-{unique}"));
+        let wave = root.join("wave");
+        let online = wave.join("l3-online");
+        fs::create_dir_all(&online).unwrap();
+        let paths = Paths {
+            root: online.clone(),
+            usage_events: wave.join("events.jsonl"),
+            corrections: wave.join("corrections.jsonl"),
+            base: wave.join("base.nwpc"),
+            manifest: wave.join("runtime.json"),
+            state: online.join("state.json"),
+        };
+        fs::write(&paths.usage_events, []).unwrap();
+        let mut state = OnlineState::default();
+        assert!(initialize_source_offset(&paths, &mut state, false).unwrap());
+        assert_eq!(state.source_offset, 0);
+
+        fs::write(&paths.usage_events, b"{\"kind\":\"accepted_fix\"}\n").unwrap();
+        assert!(!initialize_source_offset(&paths, &mut state, true).unwrap());
+        assert_eq!(state.source_offset, 0);
+        assert!(
+            !read_appended_text(&paths.usage_events, &mut state.source_offset)
+                .unwrap()
+                .is_empty()
+        );
+        let _ = fs::remove_dir_all(root);
     }
 }

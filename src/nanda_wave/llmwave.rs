@@ -1229,6 +1229,7 @@ fn is_known_russian_learning_token(token: &str) -> bool {
     crate::lexicon::is_common_ru_word(&lower)
         || crate::russian_lexicon::russian_tiny_dictionary().contains(&lower)
         || crate::russian_lexicon::is_known_russian_word_or_form(&lower)
+        || crate::russian_lexicon::is_reference_backed_russian_form(&lower)
 }
 
 fn ends_with_unfinished_short_word(tokens: &[String]) -> bool {

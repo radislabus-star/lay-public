@@ -1,0 +1,76 @@
+{
+  "receipt": "L2_CANONICAL_RU_FULL_V7_ALL_LEMMAS_2026-07-30",
+  "date": "2026-07-30",
+  "scope": "canonical standalone Russian L2 over the global 852582-center L1.1 base",
+  "package": {
+    "path": "/home/e/build/lay-l1-shadow/artifacts/l11-l2-global-compaction-2026-07-30/LAY-L2-RU-FULL-v7.bin",
+    "bytes": 130595163,
+    "sha256": "436b2b8cc99f16c48f240f5fbeef0a64dc2ccb7c84b898e948d34f0adaf3e41e",
+    "lemma_centers": 93672,
+    "admitted_forms": 1875032,
+    "l1_bound_forms": 517257,
+    "l2_materialized_forms": 1357775,
+    "competition_edges": 54407,
+    "context_modes": 123,
+    "unseeded_lemmas": 0
+  },
+  "compile": {
+    "workers": 20,
+    "wall_seconds": 20.42,
+    "average_cpu_percent": 335,
+    "peak_rss_kib": 3514936,
+    "swap_bytes": 0
+  },
+  "proof": {
+    "workers": 20,
+    "evaluated": 2501613,
+    "unresolved": 0,
+    "target_coverage_percent": 99.99768149589885,
+    "winner_top1_percent": 45.82839152179014,
+    "false_authority": 0,
+    "hot_p50_us": 21,
+    "hot_p99_us": 97,
+    "wall_seconds": 17.77,
+    "average_cpu_percent": 533,
+    "peak_rss_kib": 3881396,
+    "swap_bytes": 0,
+    "near_neighbor": "PASS_20_OF_20"
+  },
+  "per_pos": {
+    "adjective": {"cases": 1592125, "target_coverage_percent": 100.0, "winner_top1_percent": 38.811713904373086, "false_authority": 0},
+    "noun": {"cases": 554148, "target_coverage_percent": 100.0, "winner_top1_percent": 80.54454766596649, "false_authority": 0},
+    "pronoun": {"cases": 46, "target_coverage_percent": 100.0, "winner_top1_percent": 52.17391304347826, "false_authority": 0},
+    "verb": {"cases": 355294, "target_coverage_percent": 99.98367549128328, "winner_top1_percent": 23.123948054287435, "false_authority": 0}
+  },
+  "ownership": {
+    "old_morphology_shadow_runtime_removed": true,
+    "old_same_lemma_donor_removed": true,
+    "live_target_route": "L1.1 bounded lattice -> StandaloneL2Field -> one local readout -> L3 -> verifier"
+  },
+  "verification": {
+    "lexical_grokking": "PASS_103_OF_103",
+    "l2_field": "PASS_30_OF_30",
+    "context_phase": "PASS_70_OF_70",
+    "changed_owner_tests": "PASS_5_OF_5",
+    "typing_transition_contracts": "PASS_20_OF_20",
+    "text_mutation_monopoly_contracts": "PASS_15_OF_15",
+    "ibus_committed_tail": "PASS_18_OF_18",
+    "daemon_full_undo": "PASS_1_OF_1",
+    "wide_correction_core_baseline": "WATCH_89_PASS_22_FAIL",
+    "wide_correction_core_current": "WATCH_90_PASS_22_FAIL",
+    "new_wide_failure_names": 0
+  },
+  "not_tested": [
+    "broad sentence semantics",
+    "global IBus restart",
+    "automatic edit authority beyond the verifier"
+  ],
+  "runtime_authority_changed": false,
+  "verdict": "PASS_SHADOW_CANONICAL_PACKAGE",
+  "evidence": [
+    "/home/e/build/lay-l1-shadow/artifacts/l11-l2-global-compaction-2026-07-30/l2-v7-compile.json",
+    "/home/e/build/lay-l1-shadow/artifacts/l11-l2-global-compaction-2026-07-30/l2-v7-compile.time",
+    "/home/e/build/lay-l1-shadow/artifacts/l11-l2-global-compaction-2026-07-30/l2-v7-proof.json",
+    "/home/e/build/lay-l1-shadow/artifacts/l11-l2-global-compaction-2026-07-30/l2-v7-proof.time"
+  ]
+}

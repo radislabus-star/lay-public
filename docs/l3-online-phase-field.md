@@ -490,16 +490,12 @@ Exact receipt:
 docs/structural_gates/receipts/L3_ONLINE_SCHEMA1_WORKER_2026-07-28.json
 ```
 
-The repository schema-4 candidate is not installable at this checkpoint.
-`data/lexicon/l3_context_phase_v1.nwpc` is `30,698,796 B` with SHA-256
-`a71d58a0a01f9c5f8fae4328e1e5011043f3e95ac1d5ee760a0dc56b81cd9ad7`,
-while its manifest declares `18,016,360 B` and SHA-256
-`11bc615ede0dd87f52748dd5eababa5d4eaece54a47bb36f3fb0f09fd30006bd`.
-Installation must retain the proven installed schema-1 base until that
-artifact and receipt are rebuilt consistently. The installer now verifies
-declared byte size, SHA-256, and heldout `PASS` before creating any runtime
-temporary file. An isolated mismatch test exited with status 1 and preserved
-the existing destination byte-for-byte.
+This mismatch was resolved on 2026-07-30. The schema-4 artifact and manifest now
+both declare `30,698,796 B` and SHA-256
+`a71d58a0a01f9c5f8fae4328e1e5011043f3e95ac1d5ee760a0dc56b81cd9ad7`.
+The manifest carries the exact 80k heldout `PASS` evidence from the v20 build.
+The installer still verifies size, SHA-256 and heldout verdict before creating
+any runtime temporary file.
 
 ### Payment Relation Delta Experiment: 2026-07-28
 
@@ -731,3 +727,43 @@ pair learner, directed dominance graph and proof controls. It is still a cold
 candidate: the package remains unpublished until a remote heldout corpus shows
 fewer false top-1 winners than the no-pairwise control, zero worsened cases,
 permutation parity and the existing L3 safety gates.
+
+## Schema-4 online delta checkpoint, 2026-07-30
+
+An isolated HOME used the proven schema-4 base and an initially empty usage
+journal. This exposed and fixed a generic initialization defect: numeric offset
+zero was incorrectly treated as "state absent", so the first appended batch
+could be skipped. Initialization now depends on durable state-file existence.
+
+```text
+base bytes                              30,698,796
+base SHA-256  a71d58a0a01f9c5f8fae4328e1e5011043f3e95ac1d5ee760a0dc56b81cd9ad7
+base signature schema                           4
+independent contextual scenes                   2
+corpus passes                                   1
+delta bytes                                 1,488
+delta signature schema                          4
+wall                                        0.34s
+CPU                                            90%
+peak RSS                                  197,752 KiB
+false supports                                  0
+verdict                                     WATCH
+admitted deltas                                 0
+base rewritten                              false
+base SHA before/after                    identical
+```
+
+`WATCH` is the correct result: the relation did not meet targeted authority,
+therefore the manifest remained empty and runtime behavior did not change.
+No product, brand, phrase or word-specific scoring exception was added.
+
+Tested: empty-journal first append, schema inheritance, one-pass compile,
+targeted proof, five safety sentinels, immutable base and admission gate.
+Not tested: automatic PASS from real user traffic, multi-day service stability,
+or full 80k proof after a promoted delta.
+
+Exact receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L3_SCHEMA4_ONLINE_DELTA_2026-07-30.json
+```

@@ -1,0 +1,54 @@
+{
+  "receipt": "L3_SCHEMA4_ONLINE_DELTA_2026-07-30",
+  "date": "2026-07-30",
+  "scope": "schema-4 bounded online delta from the first append after an empty journal",
+  "base": {
+    "path": "/home/e/build/lay-l1-shadow/data/lexicon/l3_context_phase_v1.nwpc",
+    "bytes": 30698796,
+    "sha256": "a71d58a0a01f9c5f8fae4328e1e5011043f3e95ac1d5ee760a0dc56b81cd9ad7",
+    "signature_schema": 4,
+    "rewritten": false,
+    "sha_before_after_identical": true
+  },
+  "isolated_smoke": {
+    "home": "/tmp/lay-l3-schema4-online-20260730",
+    "historical_events_replayed": false,
+    "independent_scenes": 2,
+    "corpus_passes": 1,
+    "delta_bytes": 1488,
+    "delta_signature_schema": 4,
+    "wall_seconds": 0.34,
+    "cpu_percent": 90,
+    "peak_rss_kib": 197752,
+    "false_supports": 0,
+    "safety_cases": 5,
+    "verdict": "WATCH",
+    "admitted_delta_count": 0
+  },
+  "defect_fixed": {
+    "mechanism": "state file existence distinguishes initialization from a valid zero source offset",
+    "word_specific_rules": 0,
+    "regression_test": "empty_journal_initialization_does_not_skip_first_appended_events"
+  },
+  "tested": [
+    "empty journal initialization",
+    "first appended batch retained",
+    "schema-4 inheritance",
+    "one-pass delta compile",
+    "targeted proof",
+    "five safety sentinels",
+    "WATCH admission gate",
+    "immutable base"
+  ],
+  "not_tested": [
+    "automatic PASS from real traffic",
+    "multi-day service stability",
+    "80k fixed heldout after an admitted delta"
+  ],
+  "runtime_authority_changed": false,
+  "evidence": [
+    "/tmp/lay-l3-schema4-online-20260730/once.jsonl",
+    "/tmp/lay-l3-schema4-online-20260730/once.time",
+    "/tmp/lay-l3-schema4-online-20260730/.local/share/lay/nanda_wave/l3-online/delta-00000001-1785408210.proof.json"
+  ]
+}

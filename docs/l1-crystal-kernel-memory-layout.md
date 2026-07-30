@@ -3025,3 +3025,106 @@ Exact receipt:
 ```text
 /home/ubu/projects/lay/docs/structural_gates/receipts/L1_L11_V8_SHARD1_BATCH_RUNTIME_2026-07-29.json
 ```
+
+### Global L1.1 + L2 seed compaction, 2026-07-30
+
+The `17,172` Russian lemmas that had no L1.1 seed were exported by the generic
+L2 compiler and appended to the existing bilingual corpus. No damaged spelling
+or word-specific correction rule was added. A separate delta was tested first,
+but cross-package rank merging remained `WATCH`; the accepted representation is
+one deterministic V8 base.
+
+```text
+base RU surfaces                         535,410
+added RU L2 lemma seeds                   17,172
+EN surfaces                              300,000
+WordCenter total                         852,582
+AtomId total                             218,763
+forward relations                    110,928,005
+reverse relations                     87,972,901
+V8 shard width                                  32 atoms
+package                              190,139,182 B = 181.33 MiB
+package budget headroom                14,333,138 B
+package SHA-256  47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9
+raw corpus stored in package                    no
+training damaged surfaces                         0
+```
+
+The full fixed proof used `20` workers and all `260,000` heldout cases. It took
+`17m 07.94s`, averaged `1205%` CPU, peaked at `1,418,204 KiB` RSS and used no
+swap.
+
+| Damage class | Unique top-1 | Lattice | False certainty |
+|---|---:|---:|---:|
+| adjacent transposition | 99.958% | 99.995% | 0 |
+| double substitution | 97.889% | 100.000% | 0 |
+| extra letter | 98.883% | 100.000% | 0 |
+| layout projection | 98.323% | 99.905% | 0 |
+| letter substitution | 99.956% | 99.995% | 0 |
+| missing letter | 99.257% | 99.850% | 0 |
+| non-adjacent transposition | 97.248% | 100.000% | 0 |
+| omission + transposition | 97.028% | 99.535% | 0 |
+| prefix truncation | 98.266% | 99.990% | 0 |
+| punctuation suffix | 100.000% | 100.000% | 0 |
+| repeated fragment | 98.808% | 100.000% | 0 |
+| sparse multi-omission | 96.694% | 99.670% | 0 |
+| suffix truncation | 99.142% | 100.000% | 0 |
+
+```text
+unique top-1 >95%                         PASS 13/13
+lattice >=99%                             PASS 13/13
+clean preservation                        100.000%
+false authority                                   0
+false singleton                                   0
+aggregate top-1                              86.790%
+aggregate top-8                              96.560%
+aggregate top-64                             99.918%
+verdict                                  PASS_shadow
+```
+
+#### Grouped cache runtime
+
+The learned package and all scores remained byte-identical. Runtime cache
+misses are now grouped by shard, and cached reverse arcs are collected under
+one mutex acquisition. The 2k quality projection before and after this change
+has the same SHA-256:
+
+```text
+79f979fae94806c08fc746372557df03846633ad4c91f028f38cbd6f37ff5cb4
+```
+
+Repeated hot benchmark, same package and same surface:
+
+| Runtime | p50 | p90 | p99 | max | RSS |
+|---|---:|---:|---:|---:|---:|
+| before | 1.876 ms | 2.934 ms | 13.987 ms | 45.017 ms | 177,404 KiB |
+| grouped cache | 1.960 ms | 2.670 ms | 3.514 ms | 4.655 ms | 176,208 KiB |
+
+The dedicated hot gate is therefore `PASS`. The diverse first-touch path from
+the full quality proof remains slower (`p99 12.314 ms`) and is recorded
+separately; it is not represented as hot latency.
+
+Tested:
+
+```text
+full fixed quality proof                  yes
+all 13 class denominators                 20,000 each
+quality parity after runtime-only change  exact
+hot repeated readout                      10,000 iterations
+L2 seed reachability                      all 93,672 lemmas
+```
+
+Not tested by this checkpoint:
+
+```text
+L1.1 direct edit authority
+an admitted non-empty L1.1 delta in the full 260k proof
+long-running cache behavior over multiple days
+```
+
+Runtime authority did not change. Exact receipts:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L1_L11_GLOBAL_COMPACTION_852582_2026-07-30.json
+/home/ubu/projects/lay/docs/structural_gates/receipts/L1_L11_V8_GROUPED_CACHE_RUNTIME_2026-07-30.json
+```

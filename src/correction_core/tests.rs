@@ -375,6 +375,21 @@ mod tests {
     }
 
     #[test]
+    fn live_l2_field_owner_blocks_reference_only_semantic_word_drift() {
+        let pipeline = default_typing_assist_pipeline();
+        for input in ["модель генерит ", "окончанием слов "] {
+            let mut req = request(input, &pipeline, CorrectionMode::DeterministicThenNanda);
+            req.nanda_candidate_route = CandidateReadoutRoute::live_default();
+            let resolution = resolve_text_correction(req);
+
+            assert_eq!(
+                resolution.decision, None,
+                "live owner must preserve an already valid phrase: {resolution:#?}"
+            );
+        }
+    }
+
+    #[test]
     fn live_l2_field_shadow_route_applies_adjacent_transposition_center() {
         let previous_policy = crate::hot_field::process_policy();
         crate::hot_field::set_process_policy(
