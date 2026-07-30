@@ -25,10 +25,9 @@ use crate::lexical_surface_atoms::{surface_atom_projection, SurfaceFieldEncoder}
 use crate::stable_hash::mix64_golden;
 
 pub(crate) use compiler::{
-    apply_feedback_overlay, build_feedback_corpus, compile_context_phase_reader,
-    compile_context_phase_reader_with_surface_field,
-    compile_context_phase_reader_with_surface_field_and_schema,
-    surface_field_from_corrections_path,
+    apply_feedback_overlay, build_feedback_corpus,
+    compile_context_phase_delta_reader_with_projection_base, compile_context_phase_reader,
+    compile_context_phase_reader_with_surface_field, surface_field_from_corrections_path,
 };
 #[cfg(test)]
 pub(crate) use compiler::{compile_context_phase, ContextPhaseCompileInput};
@@ -36,7 +35,9 @@ pub(crate) use composite::{admit_delta, compact_manifest, initialize_manifest, L
 pub(crate) use format::{read_package, write_package};
 pub(crate) use proof::build_and_prove_context_phase_path_with_surface_field;
 pub(crate) use proof::{
-    build_and_prove_context_phase_path, prove_context_phase_package_path, prove_context_phase_path,
+    build_and_prove_context_phase_path, prove_context_phase_package_delta_path,
+    prove_context_phase_package_path, prove_context_phase_package_path_with_surface_field,
+    prove_context_phase_path,
 };
 pub(crate) use surface_field::SurfaceMutationField;
 

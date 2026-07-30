@@ -221,6 +221,19 @@ pub(crate) fn hot_layout_candidate_with_noisy_projection(
     )
 }
 
+pub(crate) fn hot_short_layout_candidates(original: &str) -> Vec<WordCandidate> {
+    let tail = original.trim_end();
+    if tail.is_empty() {
+        return Vec::new();
+    }
+    let (prefix, token) = split_last_ws_token(tail).unwrap_or(("", tail));
+    if token.trim().is_empty() {
+        return Vec::new();
+    }
+    let context = TailContext::from_text(tail);
+    layout_adapter::short_token_candidates(prefix, token, &context, &[])
+}
+
 pub fn run_l2_refined_with_feedback(
     original: &str,
     l1: &[WavePacket],

@@ -1,0 +1,88 @@
+{
+  "receipt": "L3_LAYOUT_PAIRWISE_DELTA_2026-07-30",
+  "date": "2026-07-30",
+  "scope": "generic one-symbol layout lattice and proof-gated pairwise L3 delta",
+  "base": {
+    "path": "/home/e/build/lay-l1-shadow/data/lexicon/l3_context_phase_v1.nwpc",
+    "bytes": 30698796,
+    "sha256": "a71d58a0a01f9c5f8fae4328e1e5011043f3e95ac1d5ee760a0dc56b81cd9ad7",
+    "signature_schema": 4,
+    "rewritten": false
+  },
+  "delta": {
+    "tracked_path": "/home/ubu/projects/lay/data/lexicon/l3_context_relation_layout_v1.nwpc",
+    "training_corpus": "/home/ubu/projects/lay/data/lexicon/l3_relation_layout_pairwise_v1.txt",
+    "remote_path": "/home/e/build/lay-l1-shadow/artifacts/l3-layout-lattice-v2-20260730/delta-pairwise-balanced-v3.nwpc",
+    "bytes": 2192,
+    "sha256": "1fb40b13b968108dd0e31756fb25b325cbecd472b03dfbd4262cff4ae30b878b",
+    "corpus_fragments": 128,
+    "corpus_passes": 1,
+    "transitions": 512,
+    "projection_base_semantic_states": 18857,
+    "emitted_semantic_states": 0,
+    "emitted_candidate_profiles": 0,
+    "emitted_signature_profiles": 0,
+    "emitted_pair_profiles": 1,
+    "pair_centers": 16,
+    "compile_wall_millis": 93,
+    "compile_peak_rss_bytes": 156938240
+  },
+  "targeted_proof": {
+    "improve_cases": 1,
+    "improved": 1,
+    "safety_cases": 5,
+    "target_failures": 0,
+    "false_supports": 0,
+    "verdict": "PASS"
+  },
+  "full_differential_proof": {
+    "corpus_lines": 80000,
+    "corpus_sha256": "56243b510c93930632c069d440d49c49a5ec58422d622523a0d5130dd085eac7",
+    "surface_rows": 2349,
+    "surface_sha256": "9aef85b94831ea72e5027816f9a8258ef3039d218bfc20459a664259cd120673",
+    "heldout_fragments": 15704,
+    "lattice_transitions": 50592,
+    "compared_transitions": 41064,
+    "baseline_supports": 1665,
+    "candidate_supports": 1665,
+    "baseline_top1": 1616,
+    "candidate_top1": 1616,
+    "lost_target_profiles": 0,
+    "lost_supports": 0,
+    "lost_top1": 0,
+    "new_false_supports": 0,
+    "new_false_top1": 0,
+    "wall_seconds": 25.54,
+    "cpu_percent": 1437,
+    "peak_rss_kib": 219232,
+    "verdict": "PASS"
+  },
+  "absolute_package_proof": {
+    "baseline_verdict_on_current_l2_lattice": "WATCH",
+    "reason": "the current L2 lattice denominator differs from the historical base build",
+    "claim_scope": "not used as the delta promotion verdict"
+  },
+  "tested": [
+    "generic one-symbol L2 candidate birth",
+    "visual and keyboard alternatives remain tied without L3 evidence",
+    "frozen base semantic projection",
+    "pairwise-only delta emission",
+    "targeted improvement and five safety sentinels",
+    "full transition-by-transition differential proof",
+    "immutable base and append-only manifest admission"
+  ],
+  "not_tested": [
+    "multi-day daemon stability",
+    "all possible one-symbol visual ambiguities",
+    "automatic promotion from unreviewed user traffic"
+  ],
+  "word_or_product_specific_runtime_rules": 0,
+  "direct_l3_apply_authority": false,
+  "runtime_field_changed": false,
+  "promotion_eligible": true,
+  "evidence": [
+    "/home/e/build/lay-l1-shadow/artifacts/l3-layout-lattice-v2-20260730/compile-pairwise-balanced-v3.json",
+    "/home/e/build/lay-l1-shadow/artifacts/l3-layout-lattice-v2-20260730/proof-targeted-pairwise-balanced-v3.json",
+    "/home/e/build/lay-l1-shadow/artifacts/l3-layout-lattice-v2-20260730/proof-full-differential-final.json"
+  ]
+}

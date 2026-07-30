@@ -223,6 +223,7 @@ fn attempt_relation(
         &delta,
         2,
         2,
+        false,
     )?;
     let proof = lay::nanda_wave::prove_l3_context_delta_targeted(
         &paths.manifest,

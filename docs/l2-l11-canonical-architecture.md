@@ -1140,6 +1140,60 @@ Runtime authority changed:
 
 - `false`
 
+## 15. 2026-07-30 One-symbol layout birth for L3 context
+
+`L2FieldShadow` now births the complete bounded one-symbol layout lattice
+instead of asking the multi-character layout helper for one winner. For a
+single ASCII key, `short_token_candidates` supplies the exact keyboard
+projection and configured visual alternatives. The bridge preserves trailing
+whitespace and sends every surviving surface through ordinary transition
+admission.
+
+```text
+one-symbol surface
+-> L2 short-token candidates
+-> bounded competing surfaces
+-> transition admission
+-> L3 sentence-context pressure
+-> Winner | Tied | ABSTAIN
+-> verifier
+```
+
+No one-symbol candidate receives authority from its birth order. When two
+layout alternatives remain close and L3 has no pairwise certificate or strong
+phrase evidence, transition admission keeps the result unresolved. This
+prevents an arbitrary first candidate from becoming an autocorrection.
+
+The same candidate constructor is used by the cold L3 probe, so learning and
+runtime no longer disagree about the `b` lattice. The visual replacements are
+the existing configured lexical surfaces, not a product or sentence-specific
+branch.
+
+Measured:
+
+```text
+generic candidate birth test                    PASS
+unknown-context abstain test                     PASS
+L3 context-phase tests                         74/74
+targeted L3 relation proof                       PASS
+full 80k differential L3 proof                   PASS
+new false authority                                 0
+```
+
+What was not tested:
+
+- every one-symbol visual ambiguity;
+- multi-day live service behavior;
+- physical input in every toolkit.
+
+Runtime authority changed during this experiment: `false`.
+
+Receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L3_LAYOUT_PAIRWISE_DELTA_2026-07-30.json
+```
+
 ## 2.3 Local Readout Safety Gate Inside `L2FieldShadow`
 
 What was tested for this code step:

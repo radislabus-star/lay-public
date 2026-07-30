@@ -510,16 +510,57 @@ fn main() -> io::Result<()> {
             .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--memory is required"))?;
         let max_fragments = arg_usize(&args, "--max-fragments").unwrap_or(0);
         let min_profile_support = arg_u32(&args, "--min-profile-support").unwrap_or(2);
+        let surface_evidence = arg_path(&args, "--surface-evidence");
+        let min_surface_support = arg_u32(&args, "--min-surface-support").unwrap_or(2);
         let report = lay::nanda_wave::prove_l3_context_phase_package(
             &corpus,
             &package,
             max_fragments,
             min_profile_support,
+            surface_evidence.as_deref(),
+            min_surface_support,
         )?;
         println!(
             "{}",
             serde_json::to_string_pretty(&report).map_err(io::Error::other)?
         );
+        return Ok(());
+    }
+    if let Some(corpus) = arg_path(&args, "--prove-l3-context-phase-delta-full") {
+        let baseline = arg_path(&args, "--baseline-memory").ok_or_else(|| {
+            io::Error::new(io::ErrorKind::InvalidInput, "--baseline-memory is required")
+        })?;
+        let candidate = arg_path(&args, "--memory")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--memory is required"))?;
+        let surface_evidence = arg_path(&args, "--surface-evidence").ok_or_else(|| {
+            io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "--surface-evidence is required",
+            )
+        })?;
+        let receipt = arg_path(&args, "--out-receipt").ok_or_else(|| {
+            io::Error::new(io::ErrorKind::InvalidInput, "--out-receipt is required")
+        })?;
+        let max_fragments = arg_usize(&args, "--max-fragments").unwrap_or(0);
+        let min_surface_support = arg_u32(&args, "--min-surface-support").unwrap_or(2);
+        let report = lay::nanda_wave::prove_l3_context_phase_delta_full(
+            &corpus,
+            &baseline,
+            &candidate,
+            &surface_evidence,
+            max_fragments,
+            min_surface_support,
+            &receipt,
+        )?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        if report.get("verdict").and_then(serde_json::Value::as_str) != Some("PASS") {
+            return Err(io::Error::other(
+                "full L3 delta differential proof did not pass",
+            ));
+        }
         return Ok(());
     }
     if let Some(corpus) = arg_path(&args, "--build-and-prove-l3-context-phase") {
@@ -564,34 +605,32 @@ fn main() -> io::Result<()> {
         return Ok(());
     }
     if let Some(corpus) = arg_path(&args, "--compile-l3-context-delta") {
+        let manifest = arg_path(&args, "--manifest").ok_or_else(|| {
+            io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "--compile-l3-context-delta requires --manifest RUNTIME.json",
+            )
+        })?;
         let out = arg_path(&args, "--out")
             .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--out is required"))?;
-        let max_fragments = arg_usize(&args, "--max-fragments").unwrap_or(0);
         let min_profile_support = arg_u32(&args, "--min-profile-support").unwrap_or(2);
         let min_surface_support = arg_u32(&args, "--min-surface-support").unwrap_or(2);
+        let pairwise_only = args.iter().any(|arg| arg == "--pairwise-only-delta");
         let surface_evidence = arg_path(&args, "--surface-evidence").ok_or_else(|| {
             io::Error::new(
                 io::ErrorKind::InvalidInput,
                 "--compile-l3-context-delta requires --surface-evidence CORRECTIONS.jsonl",
             )
         })?;
-        let mut report = lay::nanda_wave::compile_l3_context_phase_memory_with_surface_evidence(
+        let report = lay::nanda_wave::compile_l3_context_delta_for_manifest(
+            &manifest,
             &corpus,
             &surface_evidence,
             &out,
-            max_fragments,
             min_profile_support,
             min_surface_support,
+            pairwise_only,
         )?;
-        if let Some(object) = report.as_object_mut() {
-            object.insert(
-                "kind".to_string(),
-                serde_json::json!("l3_context_delta_compile"),
-            );
-            object.insert("base_loaded".to_string(), serde_json::json!(false));
-            object.insert("base_rewritten".to_string(), serde_json::json!(false));
-            object.insert("runtime_authority".to_string(), serde_json::json!(false));
-        }
         println!(
             "{}",
             serde_json::to_string_pretty(&report).map_err(io::Error::other)?

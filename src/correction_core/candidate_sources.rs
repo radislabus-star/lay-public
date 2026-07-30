@@ -28,14 +28,14 @@ impl L2CandidateSource {
                 lattice.extend_source(deterministic_text_candidates(req));
             }
             Self::Nanda => {
-                let candidates = if req.nanda_candidate_route == CandidateReadoutRoute::L2FieldShadow
-                {
-                    let readout = crate::nanda_wave::l2_field::shadow_text_readout(req.text);
-                    lattice.set_l2_field_authority(readout.authority);
-                    readout.candidates
-                } else {
-                    nanda_text_candidates(req, l2_peak_context)
-                };
+                let candidates =
+                    if req.nanda_candidate_route == CandidateReadoutRoute::L2FieldShadow {
+                        let readout = crate::nanda_wave::l2_field::shadow_text_readout(req.text);
+                        lattice.set_l2_field_authority(readout.authority);
+                        readout.candidates
+                    } else {
+                        nanda_text_candidates(req, l2_peak_context)
+                    };
                 if std::env::var_os("LAY_DEBUG_DECISION_CORE").is_some() {
                     eprintln!(
                         "candidate-lattice source=nanda count={} replacements={:?}",
@@ -669,7 +669,9 @@ mod candidate_sources_tests {
 
     fn env_lock() -> std::sync::MutexGuard<'static, ()> {
         static LOCK: OnceLock<Mutex<()>> = OnceLock::new();
-        LOCK.get_or_init(|| Mutex::new(())).lock().expect("env lock")
+        LOCK.get_or_init(|| Mutex::new(()))
+            .lock()
+            .expect("env lock")
     }
 
     fn with_l11_socket_env<T>(socket_path: &Path, f: impl FnOnce() -> T) -> T {
@@ -759,11 +761,9 @@ mod candidate_sources_tests {
     #[test]
     fn boundary_shift_source_keeps_tail_pair_eligible() {
         let pipeline = default_typing_assist_pipeline();
-        let candidate = boundary_shift_transition_candidate(&request(
-            "я думаю допусти мнабираю ",
-            &pipeline,
-        ))
-        .expect("boundary candidate");
+        let candidate =
+            boundary_shift_transition_candidate(&request("я думаю допусти мнабираю ", &pipeline))
+                .expect("boundary candidate");
 
         assert_eq!(candidate.replacement, "я думаю допустим набираю ");
         assert_eq!(candidate.gate.action, CandidateGateAction::Eligible);
@@ -866,28 +866,22 @@ mod candidate_sources_tests {
             let pipeline = default_typing_assist_pipeline();
             let reference = resolve_for_route(input, &pipeline, CandidateReadoutRoute::FullWave);
             let shadow = resolve_for_route(input, &pipeline, CandidateReadoutRoute::L2FieldShadow);
-            let reference_selected = reference
-                .selected
-                .as_ref()
-                .map(|candidate| {
-                    (
-                        candidate.replacement.as_str(),
-                        candidate.gate.action,
-                        candidate.gate.reason,
-                        candidate.error_class,
-                    )
-                });
-            let shadow_selected = shadow
-                .selected
-                .as_ref()
-                .map(|candidate| {
-                    (
-                        candidate.replacement.as_str(),
-                        candidate.gate.action,
-                        candidate.gate.reason,
-                        candidate.error_class,
-                    )
-                });
+            let reference_selected = reference.selected.as_ref().map(|candidate| {
+                (
+                    candidate.replacement.as_str(),
+                    candidate.gate.action,
+                    candidate.gate.reason,
+                    candidate.error_class,
+                )
+            });
+            let shadow_selected = shadow.selected.as_ref().map(|candidate| {
+                (
+                    candidate.replacement.as_str(),
+                    candidate.gate.action,
+                    candidate.gate.reason,
+                    candidate.error_class,
+                )
+            });
 
             assert_eq!(
                 shadow_selected, reference_selected,
@@ -911,9 +905,14 @@ mod candidate_sources_tests {
             let pipeline = default_typing_assist_pipeline();
             let reference = resolve_for_route(input, &pipeline, CandidateReadoutRoute::FullWave);
             let shadow = resolve_for_route(input, &pipeline, CandidateReadoutRoute::L2FieldShadow);
-            let reference_selected =
-                reference.selected.as_ref().map(|candidate| candidate.replacement.as_str());
-            let shadow_selected = shadow.selected.as_ref().map(|candidate| candidate.replacement.as_str());
+            let reference_selected = reference
+                .selected
+                .as_ref()
+                .map(|candidate| candidate.replacement.as_str());
+            let shadow_selected = shadow
+                .selected
+                .as_ref()
+                .map(|candidate| candidate.replacement.as_str());
 
             assert_eq!(
                 shadow_selected, reference_selected,
@@ -951,28 +950,11 @@ mod candidate_sources_tests {
     }
 
     #[test]
-    fn learned_l3_authorizes_entity_conjunction_but_not_ascii_labels() {
+    fn unresolved_short_layout_lattice_abstains_without_l3_context_authority() {
         let pipeline = default_typing_assist_pipeline();
-        for (input, expected) in [
-            ("Apple b ", "Apple и "),
-            (
-                "Нужно посмотреть через MTC можно оплатить Apple b ",
-                "Нужно посмотреть через MTC можно оплатить Apple и ",
-            ),
-        ] {
-            let resolution = resolve_for_route(input, &pipeline, CandidateReadoutRoute::L2FieldShadow);
-            assert_eq!(
-                resolution
-                    .selected
-                    .as_ref()
-                    .map(|candidate| candidate.replacement.as_str()),
-                Some(expected),
-                "learned L3 did not settle {input:?}: {resolution:?}"
-            );
-        }
-
-        for input in ["wave b ", "a b ", "b "] {
-            let resolution = resolve_for_route(input, &pipeline, CandidateReadoutRoute::L2FieldShadow);
+        for input in ["Apple b ", "wave b ", "a b ", "b "] {
+            let resolution =
+                resolve_for_route(input, &pipeline, CandidateReadoutRoute::L2FieldShadow);
             assert!(
                 resolution.selected.is_none(),
                 "unsafe short layout authority for {input:?}: {resolution:?}"

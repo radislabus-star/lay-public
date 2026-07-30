@@ -135,6 +135,20 @@ pub(super) fn candidate_has_apply_authority(
         );
         return false;
     }
+    if source_role == CorrectionSourceRole::Layout
+        && !signals.l3_pairwise_certified
+        && signals.l3_phrase_milli < CURRENT.l3_strong_milli
+        && !exact_positive_transition
+        && close_unresolved_competitor_exists(event, candidate_index, candidates, evaluations)
+    {
+        debug_decision_reject(
+            candidate,
+            "ambiguous_layout_projection_needs_context",
+            bayes.posterior,
+            bayes.risk,
+        );
+        return false;
+    }
     if known_form_drift_requires_state_proof(event, candidate)
         && !super::calibration::known_word_drift_has_authority(
             context_state_support,
@@ -1111,7 +1125,8 @@ fn phase_center_separates_candidate(
         .filter(|(_, candidate)| {
             matches!(
                 candidate.origin.source_role(),
-                CorrectionSourceRole::DeterministicTypo
+                CorrectionSourceRole::Layout
+                    | CorrectionSourceRole::DeterministicTypo
                     | CorrectionSourceRole::L2Surface
                     | CorrectionSourceRole::L3Context
             )
@@ -1154,7 +1169,8 @@ fn phase_center_separates_candidate(
         .filter(|(_, candidate)| {
             matches!(
                 candidate.origin.source_role(),
-                CorrectionSourceRole::DeterministicTypo
+                CorrectionSourceRole::Layout
+                    | CorrectionSourceRole::DeterministicTypo
                     | CorrectionSourceRole::L2Surface
                     | CorrectionSourceRole::L3Context
             )

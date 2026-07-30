@@ -767,3 +767,104 @@ Exact receipt:
 ```text
 /home/ubu/projects/lay/docs/structural_gates/receipts/L3_SCHEMA4_ONLINE_DELTA_2026-07-30.json
 ```
+
+## Pairwise-only layout delta checkpoint, 2026-07-30
+
+The live L2 one-symbol route and the cold L3 teacher now observe the same
+bounded lattice. For Latin `b`, the field emits the keyboard projection and
+the configured visual alternatives. Candidate identity still comes from L2;
+L3 receives only the competing surfaces and the full sentence context.
+
+The first delta attempt was rejected even though its targeted proof passed.
+It emitted `5` semantic states and `32` unary candidate profiles. A full
+transition-by-transition comparison found `2` lost supports and `2` lost
+top-1 outcomes hidden by equal aggregate top-1. This is the reason aggregate
+parity is not a sufficient delta gate.
+
+The accepted package uses a typed `pairwise_only` delta:
+
+```text
+immutable schema-4 base
+-> inherit 18,857 semantic projection states during learning
+-> learn both directions of the `и | в` competition from sentence scenes
+-> emit no semantic or unary state
+-> emit one exact pair profile with 16 bounded phase centers
+-> targeted proof
+-> full differential proof
+-> append-only manifest admission
+```
+
+Measured facts:
+
+```text
+teacher fragments                             128
+corpus passes                                   1
+training transitions                          512
+delta bytes                                  2,192
+semantic states emitted                         0
+candidate/signature profiles emitted          0/0
+pair profiles / centers                      1/16
+compile wall                                  93 ms
+compile peak RSS                        156,938,240 B
+targeted improve                              1/1
+targeted safety cases                         5/5
+targeted false supports                         0
+full heldout lattice transitions           50,592
+full compared transitions                  41,064
+base -> candidate top-1                1,616 -> 1,616
+base -> candidate supports             1,665 -> 1,665
+lost profile / support / top-1                0/0/0
+new false support / top-1                       0/0
+full differential wall                     25.54 s
+full differential CPU                       1437%
+full differential peak RSS              219,232 KiB
+targeted verdict                              PASS
+full differential verdict                     PASS
+```
+
+The old base package reports `WATCH` under the current absolute package proof
+because the L2 lattice denominator has changed since the base was built. That
+historical drift is recorded separately and is not relabeled as PASS. Delta
+promotion uses the fixed current lattice once and compares every transition
+between the immutable base and candidate package.
+
+This is not an `Apple` rule and not a phrase replacement table. The training
+corpus contains balanced conjunction and preposition scenes; the package
+contains hashes and phase centers only. Unknown and technical scenes remain
+`Tied` or `ABSTAIN`. L3 still has no direct text-apply authority.
+
+The proof-gated installer repeats the targeted proof after copying the delta
+to its final runtime path, then admits it to the append-only manifest:
+
+```bash
+/home/ubu/projects/lay/scripts/install-l3-context-delta.sh \
+  --delta /home/ubu/projects/lay/data/lexicon/l3_context_relation_layout_v1.nwpc \
+  --cases /home/ubu/projects/lay/data/test_input/l3_incremental_relation_delta_gate.tsv \
+  --scope relation-layout-pairwise-v1
+```
+
+The installer never restarts IBus and never rewrites the immutable base.
+
+Tested:
+
+- L2 birth of both short layout hypotheses;
+- training/runtime one-symbol lattice parity;
+- balanced pair directions;
+- targeted improvement and five safety sentinels;
+- exact 80,000-line corpus and 2,349-row surface field;
+- full differential non-regression;
+- immutable base and proof-gated append-only admission.
+
+Not tested:
+
+- multi-day daemon stability;
+- every possible one-symbol visual ambiguity;
+- automatic admission from unreviewed user traffic.
+
+Runtime authority changed during this experiment: `false`.
+
+Exact receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L3_LAYOUT_PAIRWISE_DELTA_2026-07-30.json
+```

@@ -455,6 +455,7 @@ impl Drop for L2ProbePool {
 pub(super) struct OnlineContextPhaseLearner {
     config: OnlineContextPhaseConfig,
     semantic: HashMap<u64, SemanticBuilder>,
+    inherited_semantic: BTreeSet<u64>,
     profiles: HashMap<u64, ProfileBuilder>,
     signature_profiles: HashMap<u64, ProfileBuilder>,
     pair_profiles: HashMap<PairKey, PairProfileBuilder>,
@@ -490,6 +491,7 @@ impl OnlineContextPhaseLearner {
         Self {
             config,
             semantic: HashMap::new(),
+            inherited_semantic: BTreeSet::new(),
             profiles: HashMap::new(),
             signature_profiles: HashMap::new(),
             pair_profiles: HashMap::new(),
@@ -511,6 +513,26 @@ impl OnlineContextPhaseLearner {
             surface_field,
             stats: OnlineContextPhaseStats::default(),
         }
+    }
+
+    pub(super) fn new_with_projection_base(
+        config: OnlineContextPhaseConfig,
+        surface_field: Arc<SurfaceMutationField>,
+        base: &ContextPhasePackage,
+    ) -> Self {
+        let mut learner = Self::new_with_surface_field(config, surface_field);
+        for state in &base.semantic_states {
+            learner.inherited_semantic.insert(state.token_hash);
+            learner.semantic.insert(
+                state.token_hash,
+                SemanticBuilder {
+                    sum: state.center.clone(),
+                    center: state.center.clone(),
+                    support: state.support.max(2),
+                },
+            );
+        }
+        learner
     }
 
     #[cfg(test)]
@@ -841,6 +863,7 @@ impl OnlineContextPhaseLearner {
         let mut semantic_states = self
             .semantic
             .iter()
+            .filter(|(token_hash, _)| !self.inherited_semantic.contains(token_hash))
             .filter(|(_, builder)| builder.support >= 2)
             .map(|(token_hash, builder)| TokenSemanticState {
                 token_hash: *token_hash,
@@ -954,7 +977,9 @@ impl OnlineContextPhaseLearner {
     }
 
     pub(super) fn semantic_state_count(&self) -> usize {
-        self.semantic.len()
+        self.semantic
+            .len()
+            .saturating_sub(self.inherited_semantic.len())
     }
 
     pub(super) fn phase_center_count(&self) -> usize {
@@ -1600,6 +1625,18 @@ pub(super) fn l2_lattice_probe(
             };
         };
         let projected = crate::dict::convert(target, direction).to_lowercase();
+        if std::env::var_os("LAY_L3_REAL_L2_PROBE").is_some() {
+            let damaged = one_letter_real_probe_surfaces(target, projected);
+            return real_l2_lattice_competitors(
+                &context_prefix,
+                &normalized_target,
+                damaged,
+                limit,
+                |context_prefix, damaged| {
+                    crate::nanda_wave::l2_field::cold_probe_surfaces(context_prefix, damaged)
+                },
+            );
+        }
         if projected != normalized_target && seen.insert(projected.clone()) {
             competitors.push(projected);
         }
@@ -1641,6 +1678,22 @@ pub(super) fn l2_lattice_probe(
         competitors,
         target_retained: true,
     }
+}
+
+fn one_letter_real_probe_surfaces(target: &str, projected: String) -> Vec<String> {
+    let mut damaged = vec![projected];
+    let normalized_target = target.to_lowercase();
+    if [
+        crate::lexicon::visual_b_default_replacement(),
+        crate::lexicon::visual_b_after_ascii_replacement(),
+    ]
+    .contains(&normalized_target.as_str())
+    {
+        damaged.push("b".to_string());
+    }
+    damaged.sort();
+    damaged.dedup();
+    damaged
 }
 
 fn real_l2_lattice_competitors<F>(
@@ -2141,5 +2194,57 @@ mod tests {
         );
         assert_eq!(lattice.competitors, ["дожди", "дождя", "дождик"]);
         assert!(lattice.target_retained);
+    }
+
+    #[test]
+    fn real_one_letter_probe_observes_the_same_layout_lattice_as_runtime() {
+        let lattice = real_l2_lattice_competitors(
+            "покупатель выбрал Nimbus",
+            "и",
+            vec!["b".to_string()],
+            4,
+            |context, damaged| {
+                assert_eq!(context, "покупатель выбрал Nimbus");
+                assert_eq!(damaged, "b");
+                vec!["и".to_string(), "в".to_string()]
+            },
+        );
+
+        assert_eq!(lattice.competitors, ["в"]);
+        assert!(lattice.target_retained);
+    }
+
+    #[test]
+    fn visual_one_letter_targets_share_the_same_damaged_surface() {
+        assert_eq!(one_letter_real_probe_surfaces("и", "b".to_string()), ["b"]);
+        assert_eq!(
+            one_letter_real_probe_surfaces("в", "d".to_string()),
+            ["b", "d"]
+        );
+        assert_eq!(one_letter_real_probe_surfaces("а", "f".to_string()), ["f"]);
+    }
+
+    #[test]
+    fn delta_projection_base_is_frozen_and_not_reemitted() {
+        let token_hash = hash_text("оплата");
+        let center = phase_vector(91);
+        let base = ContextPhasePackage {
+            semantic_states: vec![TokenSemanticState {
+                token_hash,
+                support: 8,
+                center: center.clone(),
+            }],
+            signature_schema: super::super::SIGNATURE_SCHEMA_RELATION_ROLES,
+            ..ContextPhasePackage::default()
+        };
+        let learner = OnlineContextPhaseLearner::new_with_projection_base(
+            OnlineContextPhaseConfig::production(2),
+            Arc::new(SurfaceMutationField::default()),
+            &base,
+        );
+
+        assert_eq!(learner.semantic_state_count(), 0);
+        assert_eq!(learner.semantic[&token_hash].center, center);
+        assert!(learner.snapshot().semantic_states.is_empty());
     }
 }

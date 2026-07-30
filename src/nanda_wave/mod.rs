@@ -167,6 +167,7 @@ pub fn compile_l3_context_delta_for_manifest(
     output_path: &std::path::Path,
     min_profile_support: u32,
     min_surface_support: u32,
+    pairwise_only: bool,
 ) -> std::io::Result<serde_json::Value> {
     let baseline = context_phase::L3CompositeMemory::load_manifest(manifest_path)?;
     let signature_schema = baseline.package().signature_schema;
@@ -176,16 +177,20 @@ pub fn compile_l3_context_delta_for_manifest(
     )?;
     let surface_report = surface_field.report();
     let corpus = std::fs::File::open(corpus_path)?;
-    let (package, report) =
-        context_phase::compile_context_phase_reader_with_surface_field_and_schema(
+    let (mut package, report) =
+        context_phase::compile_context_phase_delta_reader_with_projection_base(
             corpus,
-            0,
             min_profile_support,
-            0,
             signature_schema,
             std::sync::Arc::new(surface_field),
+            baseline.package(),
             |_, _| Ok(()),
         )?;
+    if pairwise_only {
+        package.semantic_states.clear();
+        package.profiles.clear();
+        package.signature_profiles.clear();
+    }
     context_phase::write_package(output_path, &package)?;
     let mut value = serde_json::to_value(report).map_err(std::io::Error::other)?;
     if let Some(object) = value.as_object_mut() {
@@ -203,6 +208,44 @@ pub fn compile_l3_context_delta_for_manifest(
         object.insert(
             "signature_schema".to_string(),
             serde_json::json!(signature_schema),
+        );
+        object.insert(
+            "projection_base_semantic_states".to_string(),
+            serde_json::json!(baseline.package().semantic_states.len()),
+        );
+        object.insert(
+            "projection_base_inherited".to_string(),
+            serde_json::json!(true),
+        );
+        object.insert(
+            "delta_mode".to_string(),
+            serde_json::json!(if pairwise_only {
+                "pairwise_only"
+            } else {
+                "general"
+            }),
+        );
+        object.insert(
+            "emitted_semantic_states".to_string(),
+            serde_json::json!(package.semantic_states.len()),
+        );
+        object.insert(
+            "emitted_candidate_profiles".to_string(),
+            serde_json::json!(package.profiles.len()),
+        );
+        object.insert(
+            "emitted_signature_profiles".to_string(),
+            serde_json::json!(package.signature_profiles.len()),
+        );
+        object.insert(
+            "emitted_pair_profiles".to_string(),
+            serde_json::json!(package.pair_profiles.len()),
+        );
+        object.insert(
+            "artifact_bytes".to_string(),
+            serde_json::json!(std::fs::metadata(output_path)
+                .map(|meta| meta.len())
+                .unwrap_or_default()),
         );
         object.insert(
             "surface_field".to_string(),
@@ -533,22 +576,104 @@ pub fn prove_l3_context_phase_package(
     package_path: &std::path::Path,
     max_fragments: usize,
     min_profile_support: u32,
+    surface_evidence_path: Option<&std::path::Path>,
+    min_surface_support: u32,
 ) -> std::io::Result<serde_json::Value> {
-    let report = context_phase::prove_context_phase_package_path(
-        corpus_path,
-        package_path,
-        max_fragments,
-        min_profile_support,
-    )?;
+    let (report, surface_report) = if let Some(path) = surface_evidence_path {
+        let surface_field =
+            context_phase::surface_field_from_corrections_path(path, min_surface_support)?;
+        let surface_report = surface_field.report();
+        (
+            context_phase::prove_context_phase_package_path_with_surface_field(
+                corpus_path,
+                package_path,
+                max_fragments,
+                min_profile_support,
+                &surface_field,
+            )?,
+            Some(surface_report),
+        )
+    } else {
+        (
+            context_phase::prove_context_phase_package_path(
+                corpus_path,
+                package_path,
+                max_fragments,
+                min_profile_support,
+            )?,
+            None,
+        )
+    };
     let mut value = serde_json::to_value(report).map_err(std::io::Error::other)?;
     if let Some(object) = value.as_object_mut() {
         object.insert("corpus".to_string(), serde_json::json!(corpus_path));
         object.insert("package".to_string(), serde_json::json!(package_path));
         object.insert(
+            "surface_evidence".to_string(),
+            serde_json::json!(surface_evidence_path),
+        );
+        object.insert(
+            "surface_field".to_string(),
+            surface_report.map_or(serde_json::Value::Null, |report| {
+                serde_json::json!({
+                    "source_rows": report.source_rows,
+                    "admitted_rows": report.admitted_rows,
+                    "mode_count": report.mode_count,
+                    "raw_words_stored": false,
+                })
+            }),
+        );
+        object.insert(
             "read_as".to_string(),
             serde_json::json!("frozen package against separate heldout surface; no training"),
         );
     }
+    Ok(value)
+}
+
+pub fn prove_l3_context_phase_delta_full(
+    corpus_path: &std::path::Path,
+    baseline_path: &std::path::Path,
+    candidate_path: &std::path::Path,
+    surface_evidence_path: &std::path::Path,
+    max_fragments: usize,
+    min_surface_support: u32,
+    receipt_path: &std::path::Path,
+) -> std::io::Result<serde_json::Value> {
+    let surface_field = context_phase::surface_field_from_corrections_path(
+        surface_evidence_path,
+        min_surface_support,
+    )?;
+    let surface_report = surface_field.report();
+    let report = context_phase::prove_context_phase_package_delta_path(
+        corpus_path,
+        baseline_path,
+        candidate_path,
+        max_fragments,
+        &surface_field,
+    )?;
+    let mut value = serde_json::to_value(report).map_err(std::io::Error::other)?;
+    if let Some(object) = value.as_object_mut() {
+        object.insert("corpus".to_string(), serde_json::json!(corpus_path));
+        object.insert("baseline".to_string(), serde_json::json!(baseline_path));
+        object.insert("candidate".to_string(), serde_json::json!(candidate_path));
+        object.insert(
+            "surface_evidence".to_string(),
+            serde_json::json!(surface_evidence_path),
+        );
+        object.insert(
+            "surface_field".to_string(),
+            serde_json::json!({
+                "source_rows": surface_report.source_rows,
+                "admitted_rows": surface_report.admitted_rows,
+                "mode_count": surface_report.mode_count,
+                "raw_words_stored": false,
+            }),
+        );
+    }
+    let mut bytes = serde_json::to_vec_pretty(&value).map_err(std::io::Error::other)?;
+    bytes.push(b'\n');
+    crate::private_file::write_private_bytes(receipt_path, &bytes)?;
     Ok(value)
 }
 

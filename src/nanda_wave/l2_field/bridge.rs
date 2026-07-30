@@ -29,7 +29,7 @@ pub(crate) fn shadow_text_candidates(original: &str) -> Vec<UnifiedCorrectionCan
 
 pub(crate) fn shadow_text_readout(original: &str) -> L2FieldShadowReadout {
     let mut readout = shadow_owned_text_candidates(original);
-    if let Some(candidate) = short_layout_candidate(original) {
+    for candidate in short_layout_candidates(original) {
         if let Some(existing) = readout
             .candidates
             .iter_mut()
@@ -60,39 +60,54 @@ pub(crate) fn cold_probe_surfaces(context_prefix: &str, damaged_surface: &str) -
                 .collect()
         })
         .unwrap_or_default();
+    surfaces.extend(
+        short_layout_candidates(&original)
+            .into_iter()
+            .filter_map(|candidate| {
+                split_last_alphabetic_token(&candidate.replacement)
+                    .map(|(_, token)| token.to_lowercase())
+            }),
+    );
     surfaces.sort();
     surfaces.dedup();
     surfaces
 }
 
-fn short_layout_candidate(original: &str) -> Option<UnifiedCorrectionCandidate> {
-    let (_, token) = split_last_alphabetic_token(original)?;
+fn short_layout_candidates(original: &str) -> Vec<UnifiedCorrectionCandidate> {
+    let Some((_, token)) = split_last_alphabetic_token(original) else {
+        return Vec::new();
+    };
     if token.chars().count() != 1 || original.split_whitespace().count() < 2 {
-        return None;
+        return Vec::new();
     }
-    let candidate = crate::nanda_wave::l2::hot_layout_candidate(original)?;
-    let replacement = candidate.text;
-    let origin = candidate.origin;
-    let error_class = action_operator::classify_token_transition(
-        original,
-        &replacement,
-        origin,
-        TypingErrorClass::WrongLayout,
-    );
-    let gate = TransitionDecisionCore::admit_candidate_proposal(
-        original,
-        &replacement,
-        error_class,
-        origin,
-    );
-    Some(UnifiedCorrectionCandidate::new(
-        replacement,
-        CorrectionDecisionSource::Nanda,
-        origin,
-        candidate.source,
-        error_class,
-        gate,
-    ))
+    crate::nanda_wave::l2::hot_short_layout_candidates(original)
+        .into_iter()
+        .filter_map(|candidate| {
+            let (_, projected_token) = split_last_alphabetic_token(&candidate.text)?;
+            let replacement = replace_last_text_word(original, projected_token)?;
+            let origin = candidate.origin;
+            let error_class = action_operator::classify_token_transition(
+                original,
+                &replacement,
+                origin,
+                TypingErrorClass::WrongLayout,
+            );
+            let gate = TransitionDecisionCore::admit_candidate_proposal(
+                original,
+                &replacement,
+                error_class,
+                origin,
+            );
+            Some(UnifiedCorrectionCandidate::new(
+                replacement,
+                CorrectionDecisionSource::Nanda,
+                origin,
+                L2FieldBridgeKind::Shadow.surface_source_id(),
+                error_class,
+                gate,
+            ))
+        })
+        .collect()
 }
 
 fn shadow_owned_text_candidates(original: &str) -> L2FieldShadowReadout {

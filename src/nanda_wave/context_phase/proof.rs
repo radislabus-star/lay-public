@@ -163,6 +163,81 @@ pub(crate) struct ContextPhaseProofReport {
     pub(crate) verdict: &'static str,
 }
 
+#[derive(Clone, Debug, Serialize)]
+pub(crate) struct ContextPhaseDifferentialProofReport {
+    pub(crate) kind: &'static str,
+    pub(crate) heldout_fragments: usize,
+    pub(crate) lattice_transitions: usize,
+    pub(crate) compared_transitions: usize,
+    pub(crate) baseline_target_profiles: usize,
+    pub(crate) candidate_target_profiles: usize,
+    pub(crate) lost_target_profiles: usize,
+    pub(crate) baseline_supports: usize,
+    pub(crate) candidate_supports: usize,
+    pub(crate) lost_supports: usize,
+    pub(crate) gained_supports: usize,
+    pub(crate) baseline_top1: usize,
+    pub(crate) candidate_top1: usize,
+    pub(crate) lost_top1: usize,
+    pub(crate) gained_top1: usize,
+    pub(crate) baseline_false_supports: usize,
+    pub(crate) candidate_false_supports: usize,
+    pub(crate) new_false_supports: usize,
+    pub(crate) baseline_false_top1: usize,
+    pub(crate) candidate_false_top1: usize,
+    pub(crate) new_false_top1: usize,
+    pub(crate) raw_words_stored: bool,
+    pub(crate) runtime_authority: bool,
+    pub(crate) verdict: &'static str,
+}
+
+#[derive(Default)]
+struct DifferentialTotals {
+    lattice_transitions: usize,
+    compared_transitions: usize,
+    baseline_target_profiles: usize,
+    candidate_target_profiles: usize,
+    lost_target_profiles: usize,
+    baseline_supports: usize,
+    candidate_supports: usize,
+    lost_supports: usize,
+    gained_supports: usize,
+    baseline_top1: usize,
+    candidate_top1: usize,
+    lost_top1: usize,
+    gained_top1: usize,
+    baseline_false_supports: usize,
+    candidate_false_supports: usize,
+    new_false_supports: usize,
+    baseline_false_top1: usize,
+    candidate_false_top1: usize,
+    new_false_top1: usize,
+}
+
+impl DifferentialTotals {
+    fn merge(&mut self, other: Self) {
+        self.lattice_transitions += other.lattice_transitions;
+        self.compared_transitions += other.compared_transitions;
+        self.baseline_target_profiles += other.baseline_target_profiles;
+        self.candidate_target_profiles += other.candidate_target_profiles;
+        self.lost_target_profiles += other.lost_target_profiles;
+        self.baseline_supports += other.baseline_supports;
+        self.candidate_supports += other.candidate_supports;
+        self.lost_supports += other.lost_supports;
+        self.gained_supports += other.gained_supports;
+        self.baseline_top1 += other.baseline_top1;
+        self.candidate_top1 += other.candidate_top1;
+        self.lost_top1 += other.lost_top1;
+        self.gained_top1 += other.gained_top1;
+        self.baseline_false_supports += other.baseline_false_supports;
+        self.candidate_false_supports += other.candidate_false_supports;
+        self.new_false_supports += other.new_false_supports;
+        self.baseline_false_top1 += other.baseline_false_top1;
+        self.candidate_false_top1 += other.candidate_false_top1;
+        self.new_false_top1 += other.new_false_top1;
+    }
+}
+
 #[derive(Default)]
 struct ProofTotals {
     lattice_transitions: usize,
@@ -398,12 +473,28 @@ pub(crate) fn prove_context_phase_package_path(
     max_fragments: usize,
     min_profile_support: u32,
 ) -> io::Result<ContextPhaseProofReport> {
+    prove_context_phase_package_path_with_surface_field(
+        corpus_path,
+        package_path,
+        max_fragments,
+        min_profile_support,
+        &SurfaceMutationField::default(),
+    )
+}
+
+pub(crate) fn prove_context_phase_package_path_with_surface_field(
+    corpus_path: &Path,
+    package_path: &Path,
+    max_fragments: usize,
+    min_profile_support: u32,
+    surface_field: &SurfaceMutationField,
+) -> io::Result<ContextPhaseProofReport> {
     let package = super::read_package(package_path)?;
     let (totals, heldout_fragments) = evaluate_heldout_stream(
         std::fs::File::open(corpus_path)?,
         max_fragments,
         &package,
-        &SurfaceMutationField::default(),
+        surface_field,
     )?;
     Ok(report_from_totals(
         totals,
@@ -412,6 +503,110 @@ pub(crate) fn prove_context_phase_package_path(
         min_profile_support.max(2),
         0,
     ))
+}
+
+pub(crate) fn prove_context_phase_package_delta_path(
+    corpus_path: &Path,
+    baseline_path: &Path,
+    candidate_path: &Path,
+    max_fragments: usize,
+    surface_field: &SurfaceMutationField,
+) -> io::Result<ContextPhaseDifferentialProofReport> {
+    let baseline = super::read_package(baseline_path)?;
+    let candidate = super::read_package(candidate_path)?;
+    if baseline.signature_schema != candidate.signature_schema {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "L3 differential proof requires matching signature schemas",
+        ));
+    }
+    let workers = proof_worker_count();
+    let (totals, heldout_fragments) = thread::scope(|scope| {
+        let mut senders = Vec::with_capacity(workers);
+        let mut handles = Vec::with_capacity(workers);
+        for _ in 0..workers {
+            let (sender, receiver) = sync_channel::<Vec<String>>(2);
+            senders.push(sender);
+            let baseline = &baseline;
+            let candidate = &candidate;
+            handles.push(scope.spawn(move || {
+                let mut totals = DifferentialTotals::default();
+                while let Ok(tokens) = receiver.recv() {
+                    evaluate_fragment_delta(
+                        baseline,
+                        candidate,
+                        &tokens,
+                        surface_field,
+                        &mut totals,
+                    );
+                }
+                totals
+            }));
+        }
+
+        let mut heldout_fragments = 0_usize;
+        let mut next_worker = 0_usize;
+        let stream_result = super::stream::visit_tokenized_fragments(
+            std::fs::File::open(corpus_path)?,
+            max_fragments,
+            |ordinal, tokens| {
+                if !is_heldout(ordinal) {
+                    return Ok(());
+                }
+                heldout_fragments = heldout_fragments.saturating_add(1);
+                senders[next_worker]
+                    .send(tokens.to_vec())
+                    .map_err(|_| io::Error::other("L3 differential proof worker stopped"))?;
+                next_worker = (next_worker + 1) % workers;
+                Ok(())
+            },
+        );
+        drop(senders);
+
+        let mut totals = DifferentialTotals::default();
+        for handle in handles {
+            totals.merge(
+                handle
+                    .join()
+                    .map_err(|_| io::Error::other("L3 differential proof worker panicked"))?,
+            );
+        }
+        stream_result?;
+        Ok::<_, io::Error>((totals, heldout_fragments))
+    })?;
+
+    let passed = totals.compared_transitions > 0
+        && totals.lost_target_profiles == 0
+        && totals.lost_supports == 0
+        && totals.lost_top1 == 0
+        && totals.new_false_supports == 0
+        && totals.new_false_top1 == 0;
+    Ok(ContextPhaseDifferentialProofReport {
+        kind: "l3_context_phase_full_differential_proof",
+        heldout_fragments,
+        lattice_transitions: totals.lattice_transitions,
+        compared_transitions: totals.compared_transitions,
+        baseline_target_profiles: totals.baseline_target_profiles,
+        candidate_target_profiles: totals.candidate_target_profiles,
+        lost_target_profiles: totals.lost_target_profiles,
+        baseline_supports: totals.baseline_supports,
+        candidate_supports: totals.candidate_supports,
+        lost_supports: totals.lost_supports,
+        gained_supports: totals.gained_supports,
+        baseline_top1: totals.baseline_top1,
+        candidate_top1: totals.candidate_top1,
+        lost_top1: totals.lost_top1,
+        gained_top1: totals.gained_top1,
+        baseline_false_supports: totals.baseline_false_supports,
+        candidate_false_supports: totals.candidate_false_supports,
+        new_false_supports: totals.new_false_supports,
+        baseline_false_top1: totals.baseline_false_top1,
+        candidate_false_top1: totals.candidate_false_top1,
+        new_false_top1: totals.new_false_top1,
+        raw_words_stored: false,
+        runtime_authority: false,
+        verdict: if passed { "PASS" } else { "WATCH" },
+    })
 }
 
 fn train_and_prove<R, F>(
@@ -724,6 +919,96 @@ fn evaluate_fragment(
         );
         totals.magnitude_only_pairwise_top1 += correct_is_unique_top(&magnitude_only) as usize;
         totals.magnitude_only_pairwise_false_top1 += false_candidate_wins(&magnitude_only) as usize;
+    }
+}
+
+fn evaluate_fragment_delta(
+    baseline: &ContextPhasePackage,
+    candidate: &ContextPhasePackage,
+    tokens: &[String],
+    surface_field: &SurfaceMutationField,
+    totals: &mut DifferentialTotals,
+) {
+    for index in 1..tokens.len() {
+        let target = &tokens[index];
+        let lattice = l2_lattice_probe(&tokens[..index], target, MAX_COMPETITORS, surface_field);
+        if lattice.competitors.is_empty() || !lattice.target_retained {
+            continue;
+        }
+        totals.lattice_transitions = totals.lattice_transitions.saturating_add(1);
+        let mut candidates = Vec::with_capacity(lattice.competitors.len() + 1);
+        candidates.push(target.as_str());
+        candidates.extend(lattice.competitors.iter().map(String::as_str));
+        let baseline_readouts = baseline.score_candidates_with_mode(
+            &tokens[..index],
+            &candidates,
+            ContextPhaseMode::Full,
+        );
+        let candidate_readouts = candidate.score_candidates_with_mode(
+            &tokens[..index],
+            &candidates,
+            ContextPhaseMode::Full,
+        );
+        let baseline_profile = baseline_readouts
+            .first()
+            .is_some_and(|readout| readout.profile_present);
+        let candidate_profile = candidate_readouts
+            .first()
+            .is_some_and(|readout| readout.profile_present);
+        totals.baseline_target_profiles += baseline_profile as usize;
+        totals.candidate_target_profiles += candidate_profile as usize;
+        totals.lost_target_profiles += (baseline_profile && !candidate_profile) as usize;
+        if !baseline_profile && !candidate_profile {
+            continue;
+        }
+        totals.compared_transitions = totals.compared_transitions.saturating_add(1);
+
+        let baseline_support = baseline_readouts
+            .first()
+            .is_some_and(|readout| readout.disposition == ContextPhaseDisposition::Support);
+        let candidate_support = candidate_readouts
+            .first()
+            .is_some_and(|readout| readout.disposition == ContextPhaseDisposition::Support);
+        totals.baseline_supports += baseline_support as usize;
+        totals.candidate_supports += candidate_support as usize;
+        totals.lost_supports += (baseline_support && !candidate_support) as usize;
+        totals.gained_supports += (!baseline_support && candidate_support) as usize;
+
+        let baseline_top1 = correct_is_unique_top(&baseline_readouts);
+        let candidate_top1 = correct_is_unique_top(&candidate_readouts);
+        totals.baseline_top1 += baseline_top1 as usize;
+        totals.candidate_top1 += candidate_top1 as usize;
+        totals.lost_top1 += (baseline_top1 && !candidate_top1) as usize;
+        totals.gained_top1 += (!baseline_top1 && candidate_top1) as usize;
+
+        let baseline_false_supports = baseline_readouts
+            .iter()
+            .skip(1)
+            .filter(|readout| readout.disposition == ContextPhaseDisposition::Support)
+            .count();
+        let candidate_false_supports = candidate_readouts
+            .iter()
+            .skip(1)
+            .filter(|readout| readout.disposition == ContextPhaseDisposition::Support)
+            .count();
+        totals.baseline_false_supports += baseline_false_supports;
+        totals.candidate_false_supports += candidate_false_supports;
+        totals.new_false_supports += baseline_readouts
+            .iter()
+            .zip(&candidate_readouts)
+            .skip(1)
+            .filter(|(baseline, candidate)| {
+                baseline.disposition != ContextPhaseDisposition::Support
+                    && candidate.disposition == ContextPhaseDisposition::Support
+            })
+            .count();
+
+        let baseline_false_top1 = false_candidate_winner_index(&baseline_readouts);
+        let candidate_false_top1 = false_candidate_winner_index(&candidate_readouts);
+        totals.baseline_false_top1 += baseline_false_top1.is_some() as usize;
+        totals.candidate_false_top1 += candidate_false_top1.is_some() as usize;
+        totals.new_false_top1 +=
+            candidate_false_top1.is_some_and(|winner| Some(winner) != baseline_false_top1) as usize;
     }
 }
 
@@ -1142,5 +1427,39 @@ mod tests {
             ..ProofTotals::default()
         };
         assert_eq!(promotion_verdict(&totals, MIN_SUPPORT_COVERAGE_PPM), "PASS");
+    }
+
+    #[test]
+    fn identical_packages_have_zero_differential_regressions() {
+        let corpus = [
+            "на улице снова идет дождь",
+            "вечером на улице идет дождь",
+            "утром на улице идет дождь",
+            "сегодня на улице идет дождь",
+            "завтра на улице идет дождь",
+        ]
+        .join("\n");
+        let (package, _) =
+            super::super::compile_context_phase(super::super::ContextPhaseCompileInput {
+                corpus_text: &corpus,
+                max_fragments: 0,
+                min_profile_support: 2,
+            });
+        let field =
+            SurfaceMutationField::from_corrections_jsonl(r#"{"from":"дожь","to":"дождь"}"#, 1)
+                .expect("valid differential surface field");
+        let tokens = ["сегодня", "на", "улице", "идет", "дождь"]
+            .into_iter()
+            .map(str::to_string)
+            .collect::<Vec<_>>();
+        let mut totals = DifferentialTotals::default();
+        evaluate_fragment_delta(&package, &package, &tokens, &field, &mut totals);
+        assert_eq!(totals.lost_target_profiles, 0);
+        assert_eq!(totals.lost_supports, 0);
+        assert_eq!(totals.lost_top1, 0);
+        assert_eq!(totals.new_false_supports, 0);
+        assert_eq!(totals.new_false_top1, 0);
+        assert_eq!(totals.baseline_supports, totals.candidate_supports);
+        assert_eq!(totals.baseline_top1, totals.candidate_top1);
     }
 }

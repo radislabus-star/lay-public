@@ -330,6 +330,57 @@ pub(crate) fn compile_context_phase_reader_with_surface_field_and_schema<R, F>(
     snapshot_every_fragments: usize,
     signature_schema: u32,
     surface_field: Arc<SurfaceMutationField>,
+    snapshot: F,
+) -> io::Result<(ContextPhasePackage, ContextPhaseCompileReport)>
+where
+    R: Read,
+    F: FnMut(&ContextPhasePackage, &ContextPhaseProgressReport) -> io::Result<()>,
+{
+    compile_context_phase_reader_with_projection_base(
+        reader,
+        max_fragments,
+        min_profile_support,
+        snapshot_every_fragments,
+        signature_schema,
+        surface_field,
+        None,
+        snapshot,
+    )
+}
+
+pub(crate) fn compile_context_phase_delta_reader_with_projection_base<R, F>(
+    reader: R,
+    min_profile_support: u32,
+    signature_schema: u32,
+    surface_field: Arc<SurfaceMutationField>,
+    base: &ContextPhasePackage,
+    snapshot: F,
+) -> io::Result<(ContextPhasePackage, ContextPhaseCompileReport)>
+where
+    R: Read,
+    F: FnMut(&ContextPhasePackage, &ContextPhaseProgressReport) -> io::Result<()>,
+{
+    compile_context_phase_reader_with_projection_base(
+        reader,
+        0,
+        min_profile_support,
+        0,
+        signature_schema,
+        surface_field,
+        Some(base),
+        snapshot,
+    )
+}
+
+#[allow(clippy::too_many_arguments)]
+fn compile_context_phase_reader_with_projection_base<R, F>(
+    reader: R,
+    max_fragments: usize,
+    min_profile_support: u32,
+    snapshot_every_fragments: usize,
+    signature_schema: u32,
+    surface_field: Arc<SurfaceMutationField>,
+    projection_base: Option<&ContextPhasePackage>,
     mut snapshot: F,
 ) -> io::Result<(ContextPhasePackage, ContextPhaseCompileReport)>
 where
@@ -341,8 +392,16 @@ where
         min_profile_support,
         signature_schema,
     );
-    let mut learner =
-        super::online::OnlineContextPhaseLearner::new_with_surface_field(config, surface_field);
+    let mut learner = match projection_base {
+        Some(base) => super::online::OnlineContextPhaseLearner::new_with_projection_base(
+            config,
+            surface_field,
+            base,
+        ),
+        None => {
+            super::online::OnlineContextPhaseLearner::new_with_surface_field(config, surface_field)
+        }
+    };
     let l2_pool = super::online::L2ProbePool::new();
     let mut pending_l2 = Vec::new();
     let mut batch_fragments = 0_usize;
