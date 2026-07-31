@@ -55,31 +55,43 @@ impl LayIbusEngine {
     pub(super) fn arm_pending_ime_completion_learning(
         &mut self,
         context_tail: String,
+        typed_prefix: String,
         accepted_word: String,
         with_space: bool,
     ) {
         self.pending_ime_completion_learning = with_space.then_some(PendingImeCompletionLearning {
             context_tail,
+            typed_prefix,
             accepted_word,
+            editing: false,
         });
     }
 
-    pub(super) fn reject_pending_ime_completion_before_backspace(&mut self) {
-        let Some(pending) = self.pending_ime_completion_learning.take() else {
+    pub(super) fn begin_pending_ime_completion_edit_before_backspace(&mut self) {
+        let Some(pending) = self.pending_ime_completion_learning.as_mut() else {
             return;
         };
+        if pending.editing {
+            return;
+        }
         let accepted_tail = format!("{} ", pending.accepted_word);
         if self.tail_buffer.ends_with(&accepted_tail) {
-            lay::typing_cpu::TypingCpu::record_rejected_completion(
-                &pending.context_tail,
-                &pending.accepted_word,
-            );
+            pending.editing = true;
+        } else {
+            self.pending_ime_completion_learning = None;
         }
     }
 
     /// A later word or terminal punctuation confirms that the explicitly
     /// accepted completion remained useful. This does not alter visible text.
     pub(super) fn confirm_pending_ime_completion_at_stable_boundary(&mut self) {
+        if self
+            .pending_ime_completion_learning
+            .as_ref()
+            .is_some_and(|pending| pending.editing)
+        {
+            return;
+        }
         let Some(pending) = self.pending_ime_completion_learning.take() else {
             return;
         };
@@ -90,6 +102,61 @@ impl LayIbusEngine {
                 &pending.accepted_word,
             );
         }
+    }
+
+    pub(super) fn finalize_pending_ime_completion_edit(
+        &mut self,
+        tail_before_boundary: &str,
+    ) -> bool {
+        let is_editing = self
+            .pending_ime_completion_learning
+            .as_ref()
+            .is_some_and(|pending| pending.editing);
+        if !is_editing {
+            return false;
+        }
+        let pending = self
+            .pending_ime_completion_learning
+            .take()
+            .expect("editing completion must remain pending");
+        let final_word = lay::nanda_wave::llmwave::tokenize(tail_before_boundary)
+            .into_iter()
+            .next_back();
+        match final_word {
+            Some(final_word) if final_word == pending.accepted_word => {
+                lay::typing_cpu::TypingCpu::record_accepted_completion(
+                    &pending.context_tail,
+                    &pending.accepted_word,
+                );
+                super::trace::record(
+                    r#"{"kind":"ibus_completion_edit","status":"accepted_unchanged"}"#,
+                );
+            }
+            Some(final_word) => {
+                lay::typing_cpu::TypingCpu::record_edited_completion(
+                    &pending.context_tail,
+                    &pending.typed_prefix,
+                    &pending.accepted_word,
+                    &final_word,
+                );
+                super::trace::record(format!(
+                    r#"{{"kind":"ibus_completion_edit","status":"finalized","suggested":{},"final":{}}}"#,
+                    serde_json::to_string(&pending.accepted_word)
+                        .unwrap_or_else(|_| "\"\"".to_string()),
+                    serde_json::to_string(&final_word).unwrap_or_else(|_| "\"\"".to_string()),
+                ));
+            }
+            None => {
+                lay::typing_cpu::TypingCpu::record_rejected_completion(
+                    &pending.context_tail,
+                    &pending.accepted_word,
+                );
+                super::trace::record(
+                    r#"{"kind":"ibus_completion_edit","status":"deleted_without_target"}"#,
+                );
+            }
+        }
+        true
     }
 
     pub(super) fn arm_visible_postcondition(&mut self, dispatched_at: Instant) {
@@ -735,14 +802,60 @@ mod tests {
             LayConfig::default(),
         );
 
-        engine.arm_pending_ime_completion_learning("ну".to_string(), "да".to_string(), true);
+        engine.arm_pending_ime_completion_learning(
+            "ну".to_string(),
+            "д".to_string(),
+            "да".to_string(),
+            true,
+        );
 
         let pending = engine
             .pending_ime_completion_learning
             .as_ref()
             .expect("Tab completion must remain provisional");
         assert_eq!(pending.context_tail, "ну");
+        assert_eq!(pending.typed_prefix, "д");
         assert_eq!(pending.accepted_word, "да");
+        assert!(!pending.editing);
+    }
+
+    #[test]
+    fn backspace_turns_tab_completion_into_an_edit_trajectory() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig::default(),
+        );
+        engine.tail_buffer = "это было прекрасный ".to_string();
+        engine.arm_pending_ime_completion_learning(
+            "это было".to_string(),
+            "прек".to_string(),
+            "прекрасный".to_string(),
+            true,
+        );
+
+        engine.begin_pending_ime_completion_edit_before_backspace();
+        engine.backspace_committed_tail_only();
+        engine.begin_pending_ime_completion_edit_before_backspace();
+
+        let pending = engine
+            .pending_ime_completion_learning
+            .as_ref()
+            .expect("edited completion must survive every Backspace until a boundary");
+        assert!(pending.editing);
+        assert_eq!(pending.typed_prefix, "прек");
+        assert_eq!(pending.accepted_word, "прекрасный");
+        assert_eq!(engine.tail_buffer, "это было прекрасный");
+
+        engine.backspace_committed_tail_only();
+        engine.backspace_committed_tail_only();
+        engine.push_tail_char('о');
+        engine.push_tail_char(' ');
+
+        assert_eq!(engine.tail_buffer, "это было прекрасно ");
+        assert!(engine.pending_ime_completion_learning.is_none());
     }
 
     #[test]
@@ -754,7 +867,12 @@ mod tests {
             true,
             LayConfig::default(),
         );
-        engine.arm_pending_ime_completion_learning("ну".to_string(), "да".to_string(), true);
+        engine.arm_pending_ime_completion_learning(
+            "ну".to_string(),
+            "д".to_string(),
+            "да".to_string(),
+            true,
+        );
 
         engine.reset_for_ibus_focus_change();
 

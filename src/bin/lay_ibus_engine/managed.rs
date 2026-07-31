@@ -18,7 +18,7 @@ impl LayIbusEngine {
     ) -> fdo::Result<bool> {
         self.clear_pending_ime_auto_undo();
         if keyval == KEY_BACKSPACE {
-            self.reject_pending_ime_completion_before_backspace();
+            self.begin_pending_ime_completion_edit_before_backspace();
             let handled = self.backspace(emitter).await?;
             self.trace_key("backspace", keyval, keycode, handled, None);
             return Ok(handled);
@@ -49,6 +49,8 @@ impl LayIbusEngine {
                 self.trace_key("enter_commit_passthrough", keyval, keycode, false, None);
                 return Ok(false);
             }
+            let tail_before_boundary = self.tail_buffer.clone();
+            self.finalize_pending_ime_completion_edit(&tail_before_boundary);
             self.close_committed_tail_field();
             self.clear_preedit(emitter).await?;
             self.trace_key("enter", keyval, keycode, false, None);

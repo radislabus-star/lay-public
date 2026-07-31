@@ -443,11 +443,16 @@ impl LayIbusEngine {
         self.preedit_fast.push(ch);
         self.last_tail_input_at = Some(Instant::now());
         if is_boundary {
+            let completion_edit_finalized = tail_before_boundary
+                .as_deref()
+                .is_some_and(|tail| self.finalize_pending_ime_completion_edit(tail));
             if let Some(tail_before_boundary) = tail_before_boundary.as_deref() {
-                self.record_ignored_precognition_at_boundary(
-                    tail_before_boundary,
-                    prediction_before_boundary.as_deref(),
-                );
+                if !completion_edit_finalized {
+                    self.record_ignored_precognition_at_boundary(
+                        tail_before_boundary,
+                        prediction_before_boundary.as_deref(),
+                    );
+                }
             }
             self.close_precognition_word_boundary();
             if ch.is_whitespace() {

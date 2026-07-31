@@ -1338,6 +1338,20 @@ pub fn record_accepted_ime_usage(context_tail: &str, accepted_text: &str) {
     usage_prior::record_accepted_ime_if_enabled(context_tail, accepted_text);
 }
 
+pub fn record_edited_ime_usage(
+    context_tail: &str,
+    typed_prefix: &str,
+    suggested_text: &str,
+    final_text: &str,
+) {
+    usage_prior::record_edited_ime_if_enabled(
+        context_tail,
+        typed_prefix,
+        suggested_text,
+        final_text,
+    );
+}
+
 pub fn record_confirmed_ime_prediction_usage(context_tail: &str, predicted_text: &str) {
     usage_prior::record_confirmed_ime_prediction_if_enabled(context_tail, predicted_text);
 }

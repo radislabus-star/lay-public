@@ -101,9 +101,19 @@ pub(crate) enum TypingMemoryEventKind {
     Typed,
     AcceptedFix,
     AcceptedIme,
+    EditedIme,
     ConfirmedImePrediction,
     RejectedIme,
     RejectedCandidate,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, serde::Deserialize, serde::Serialize)]
+pub(crate) struct CompletionEditTrace {
+    pub(crate) prefix: String,
+    pub(crate) accepted_suffix_chars: u32,
+    pub(crate) preserved_suffix_chars: u32,
+    pub(crate) deleted_chars: u32,
+    pub(crate) inserted_chars: u32,
 }
 
 /// Canonical learning key shared by feedback recording and live L4 readout.
@@ -156,6 +166,7 @@ pub(crate) struct TypingMemoryEvent {
     pub(crate) identity: TypingTransitionIdentity,
     /// Stable relation shape, intentionally independent from concrete words.
     pub(crate) surface: Option<String>,
+    pub(crate) completion_edit: Option<CompletionEditTrace>,
 }
 
 impl TypingMemoryEvent {
@@ -173,6 +184,7 @@ impl TypingMemoryEvent {
             operation: "typed".to_string(),
             identity: TypingTransitionIdentity::typed(),
             surface: None,
+            completion_edit: None,
         })
     }
 
@@ -204,6 +216,59 @@ impl TypingMemoryEvent {
             accepted_text,
             "completion",
         )
+    }
+
+    pub(crate) fn edited_ime(
+        context_tail: &str,
+        typed_prefix: &str,
+        suggested_text: &str,
+        final_text: &str,
+    ) -> Option<Self> {
+        let suggested = single_normalized_word(suggested_text)?;
+        let final_word = single_normalized_word(final_text)?;
+        if suggested == final_word {
+            return None;
+        }
+
+        let prefix = normalize_memory_word(typed_prefix);
+        let common_chars = common_prefix_chars(&suggested, &final_word);
+        let reusable_prefix_chars = if !prefix.is_empty()
+            && suggested.starts_with(&prefix)
+            && final_word.starts_with(&prefix)
+        {
+            prefix.chars().count()
+        } else {
+            0
+        };
+        let suggested_chars = suggested.chars().count();
+        let final_chars = final_word.chars().count();
+        let operation = "completion_edit";
+
+        Some(Self {
+            kind: TypingMemoryEventKind::EditedIme,
+            feedback: TypingMemoryFeedback::Accepted,
+            outcome: TypingMemoryOutcome::ConfirmedPositive,
+            word: final_word.clone(),
+            context: recent_context_words(context_tail),
+            from: Some(suggested.clone()),
+            to: Some(final_word.clone()),
+            source: "ime".to_string(),
+            operation: operation.to_string(),
+            identity: TypingTransitionIdentity::observed(&suggested, &final_word, operation),
+            surface: Some(transition_surface_key(
+                &suggested,
+                &final_word,
+                "ime",
+                operation,
+            )),
+            completion_edit: Some(CompletionEditTrace {
+                prefix,
+                accepted_suffix_chars: suggested_chars.saturating_sub(reusable_prefix_chars) as u32,
+                preserved_suffix_chars: common_chars.saturating_sub(reusable_prefix_chars) as u32,
+                deleted_chars: suggested_chars.saturating_sub(common_chars) as u32,
+                inserted_chars: final_chars.saturating_sub(common_chars) as u32,
+            }),
+        })
     }
 
     /// The visible IME candidate matched the word the user finished manually.
@@ -263,6 +328,7 @@ impl TypingMemoryEvent {
                         source,
                         operation,
                     )),
+                    completion_edit: None,
                 })
             })
             .collect()
@@ -299,6 +365,7 @@ fn accepted_events(
                 operation: operation.to_string(),
                 identity: TypingTransitionIdentity::observed(from, to, operation),
                 surface: Some(transition_surface_key(from, to, source, operation)),
+                completion_edit: None,
             }
         })
         .collect()
@@ -368,8 +435,22 @@ fn ime_events(
             operation: operation.to_string(),
             identity: TypingTransitionIdentity::observed(context_tail, text, operation),
             surface: None,
+            completion_edit: None,
         })
         .collect()
+}
+
+fn single_normalized_word(text: &str) -> Option<String> {
+    let mut words = normalized_words(text).into_iter();
+    let word = words.next()?;
+    words.next().is_none().then_some(word)
+}
+
+fn common_prefix_chars(left: &str, right: &str) -> usize {
+    left.chars()
+        .zip(right.chars())
+        .take_while(|(left, right)| left == right)
+        .count()
 }
 
 fn layout_projection_direction(from: &str, to: &str) -> LayoutProjectionDirection {
@@ -529,6 +610,28 @@ mod tests {
         assert_eq!(events[0].source, "ime");
         assert_eq!(events[0].operation, "prediction_match");
         assert_eq!(events[0].word, "да");
+    }
+
+    #[test]
+    fn edited_ime_preserves_partial_completion_geometry() {
+        let event = TypingMemoryEvent::edited_ime("это было", "прек", "прекрасный", "прекрасно")
+            .expect("one edited completion event");
+
+        assert_eq!(event.kind, TypingMemoryEventKind::EditedIme);
+        assert_eq!(event.word, "прекрасно");
+        assert_eq!(event.context, ["это", "было"]);
+        assert_eq!(event.from.as_deref(), Some("прекрасный"));
+        assert_eq!(event.to.as_deref(), Some("прекрасно"));
+        assert_eq!(event.source, "ime");
+        assert_eq!(event.operation, "completion_edit");
+        let trace = event
+            .completion_edit
+            .expect("typed completion edit geometry");
+        assert_eq!(trace.prefix, "прек");
+        assert_eq!(trace.accepted_suffix_chars, 6);
+        assert_eq!(trace.preserved_suffix_chars, 4);
+        assert_eq!(trace.deleted_chars, 2);
+        assert_eq!(trace.inserted_chars, 1);
     }
 
     #[test]

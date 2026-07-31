@@ -1359,3 +1359,147 @@ Exact receipt:
 ```text
 /home/ubu/projects/lay/docs/structural_gates/receipts/L3_ONLINE_JOURNAL_CURSOR_2026-07-31.json
 ```
+
+## Partial IME completion edits, 2026-07-31
+
+Release `0.2.337` separates an exactly accepted completion from a completion
+that the user accepted as a useful scaffold and then edited. The first
+Backspace after Tab no longer emits an immediate unary `rejected_ime`.
+The IME keeps a bounded in-memory trajectory until the next word boundary:
+
+```text
+typed prefix
++ suggested word
++ context before the prefix
++ editing flag
+```
+
+The canonical example is:
+
+```text
+прек[расный]
+-> Tab
+-> прекрасный
+-> Backspace removes the accepted trailing space
+-> Backspace, Backspace remove "ый"
+-> "о"
+-> прекрасно
+-> next word boundary
+```
+
+The emitted typed-memory event is one causal `edited_ime` relation:
+
+```text
+kind                         edited_ime
+source                       ime
+outcome                      confirmed_positive
+prefix                       прек
+from                         прекрасный
+to / word                    прекрасно
+accepted suffix chars        6
+preserved suffix chars       4
+deleted chars                2
+inserted chars               1
+```
+
+The ownership and learning route is:
+
+```text
+IBus provisional completion state
+-> Backspace changes provisional -> editing
+-> no learning event yet
+-> boundary observes the final committed word
+-> TypingMemoryEvent::EditedIme
+-> usage hot state:
+   -> positive evidence for the final word
+   -> positive exact transition suggested -> final
+   -> no global rejection of the still-valid suggested word
+-> L3 causal reducer:
+   -> contextual relation suggested -> final
+   -> at least 2 distinct scenes
+   -> one-pass mini-delta
+   -> targeted proof
+   -> frozen 80k differential
+   -> append-only admission only after both gates PASS
+```
+
+The typed prefix is removed from the context before the event is written.
+`это было прек[расный] -> прекрасно` therefore teaches the scene
+`это было прекрасно`, not `это было прек прекрасно`.
+
+The event keeps the useful shared surface indirectly: the final word receives
+positive evidence, while the suggested word is not placed in the global
+rejected-word bank. Only the proof-gated contextual pair may later make the
+suggested form lose in matching scenes. This follows the existing rule that a
+valid completion may lose one context without becoming globally invalid.
+
+Tested:
+
+- exact Unicode edit geometry for `прекрасный -> прекрасно`;
+- Backspace retains the pending completion instead of destroying its causal
+  chain;
+- the next boundary consumes the edit trajectory;
+- usage memory attracts `прекрасно` without globally rejecting
+  `прекрасный`;
+- L3 online receives one direct contextual relation and no synthetic
+  `rejected_ime` pairing;
+- cold feedback-corpus reconstruction retains the final selected phrase;
+- the existing double-Shift undo test remains PASS;
+- the full IBus baseline and changed tree have the same seven unrelated
+  environment-sensitive failures; no new failure was introduced.
+
+Not tested at this point:
+
+- a manually observed physical GUI Tab-edit-boundary sequence in a target
+  application after installing `0.2.337`;
+- admission of this relation from two real independent scenes;
+- calibration that uses the stored edit geometry to vary evidence weight.
+
+Verdict scope:
+
+- partial-completion causal capture: `PASS` in unit and integration tests;
+- global rejection of a partially useful valid suggestion: `0`;
+- L3 package or runtime manifest changed: `false`;
+- double-Shift ownership or behavior changed: `false`;
+- live observation authority changed: `true`, `edited_ime` is now a typed causal
+  input to usage memory and the online L3 reducer;
+- correction-decision authority changed at installation: `false`, no L3 delta
+  was admitted and the existing model manifest remained byte-identical.
+
+Installed runtime closure:
+
+```text
+installed release                                  0.2.337
+lay SHA-256                 59655bb6589c569962bd8d576a1d3890a7856018c5dd5c0c21b2c3a47c76b118
+lay-daemon SHA-256          32a8929497b12d9a1e2ec78e91b9ffac399d716d2357a353c2bc02b84cc92eee
+lay-ibus-engine SHA-256     0810456508d156f496181b5524223f8cab5bd05d2afae763f2fdcbd40a1faed5
+lay-nanda-wave-train SHA-256
+                            9e61e07febbcfa09b4fe199d1047e5c05202d23abf61548038ec1a8590aa44e2
+lay-daemon PID / RSS                         3,816,139 / 242.2 MiB
+L3 online PID / RSS                          3,816,143 /   0.4 MiB
+managed IBus PID before/after                3,816,776 / 3,818,488
+managed IBus RSS                                          139.9 MiB
+global ibus-daemon PID before/after                    3,793 / 3,793
+selected engine                                          lay-ime-ru
+loaded GNOME tray bridge version                            0.2.337
+L3 manifest SHA-256          8d28e83b2426b1c18cb5f8edc55a14d0e24f8f799abfc917a5c4675d211a0e9f
+L3 package SHA-256           a71d58a0a01f9c5f8fae4328e1e5011043f3e95ac1d5ee760a0dc56b81cd9ad7
+global IBus restarted                                      false
+```
+
+The GNOME extension's own `Version()` method returned `0.2.337` after its
+bounded disable/enable reload. The managed engine and global IBus PIDs did not
+change during that reload. `gnome-extensions info` still reports its older
+metadata-registry cache (`0.2.324`); this is not the loaded tray module version.
+
+The managed-engine replacement also exposed an unsafe lifecycle helper:
+`pkill -f` could match a controlling shell that merely mentioned
+`lay-ibus-engine`. The helper now selects the exact managed argv, verifies
+`/proc/<pid>/exe`, and sends `TERM` only to the selected PID. A real controlled
+restart preserved the global IBus PID and returned `lay-ime-ru`.
+
+Exact receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L3_PARTIAL_IME_COMPLETION_EDIT_2026-07-31.json
+```

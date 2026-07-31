@@ -197,7 +197,7 @@ pub(crate) fn build_feedback_corpus(
         })?;
         report.source_events += 1;
         match event.kind.as_str() {
-            "accepted_ime" | "confirmed_ime_prediction" => {
+            "accepted_ime" | "edited_ime" | "confirmed_ime_prediction" => {
                 report.accepted_source_events += 1;
             }
             "rejected_ime" | "rejected_candidate" => {
@@ -607,7 +607,7 @@ pub(crate) fn apply_feedback_overlay(
             )
         })?;
         match event.kind.as_str() {
-            "accepted_ime" | "confirmed_ime_prediction" => {
+            "accepted_ime" | "edited_ime" | "confirmed_ime_prediction" => {
                 report.source_events += 1;
                 report.positive_source_events += 1;
                 let context = event
@@ -827,5 +827,17 @@ mod tests {
         assert_eq!(report.skipped_duplicate_cap, 1);
         assert_eq!(report.skipped_unattested, 1);
         assert!(!report.raw_words_stored_in_packet);
+    }
+
+    #[test]
+    fn feedback_corpus_keeps_final_word_from_partial_ime_edit() {
+        let events = r#"{"kind":"edited_ime","word":"прекрасно","context":["это","было"],"from":"прекрасный","to":"прекрасно","source":"ime","operation":"completion_edit"}"#;
+
+        let (corpus, report) = build_feedback_corpus(events, 2).expect("feedback corpus");
+
+        assert_eq!(corpus, "это было прекрасно\n");
+        assert_eq!(report.accepted_source_events, 1);
+        assert_eq!(report.rejected_source_events, 0);
+        assert_eq!(report.corpus_lines, 1);
     }
 }

@@ -80,6 +80,7 @@ impl LayIbusEngine {
         }
 
         let accepted_word = replacement.unwrap_or_else(|| format!("{}{}", self.buffer, suffix));
+        let typed_prefix = self.buffer.clone();
         let accepted_text = if with_space {
             format!("{accepted_word} ")
         } else {
@@ -102,7 +103,12 @@ impl LayIbusEngine {
             trace::record(r#"{"kind":"ibus_completion_accept_blocked"}"#);
             return Ok(false);
         };
-        let context_tail = self.tail_buffer.clone();
+        let context_tail = self
+            .tail_buffer
+            .strip_suffix(&typed_prefix)
+            .unwrap_or(self.tail_buffer.as_str())
+            .trim_end()
+            .to_string();
         trace::record_completion_accept(
             "active_composition",
             accepted_word
@@ -119,7 +125,12 @@ impl LayIbusEngine {
             ActiveCompositionAuthority::VerifiedEdit(Box::new(authorized_edit)),
         )
         .await?;
-        self.arm_pending_ime_completion_learning(context_tail, accepted_word, with_space);
+        self.arm_pending_ime_completion_learning(
+            context_tail,
+            typed_prefix,
+            accepted_word,
+            with_space,
+        );
         Ok(true)
     }
 

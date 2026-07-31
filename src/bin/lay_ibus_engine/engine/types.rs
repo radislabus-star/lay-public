@@ -80,7 +80,9 @@ impl SystemOutcomeKind {
 #[derive(Debug, Clone)]
 pub(crate) struct PendingImeCompletionLearning {
     pub(crate) context_tail: String,
+    pub(crate) typed_prefix: String,
     pub(crate) accepted_word: String,
+    pub(crate) editing: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

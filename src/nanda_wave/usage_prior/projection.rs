@@ -9,6 +9,7 @@ enum UsageEventProjectionKind {
     Typed,
     AcceptedFix,
     AcceptedIme,
+    EditedIme,
     ConfirmedImePrediction,
     Rejected,
 }
@@ -54,6 +55,7 @@ impl<'a> UsageEventProjection<'a> {
             UsageEventKind::Typed => UsageEventProjectionKind::Typed,
             UsageEventKind::AcceptedFix => UsageEventProjectionKind::AcceptedFix,
             UsageEventKind::AcceptedIme => UsageEventProjectionKind::AcceptedIme,
+            UsageEventKind::EditedIme => UsageEventProjectionKind::EditedIme,
             UsageEventKind::ConfirmedImePrediction => {
                 UsageEventProjectionKind::ConfirmedImePrediction
             }
@@ -65,6 +67,7 @@ impl<'a> UsageEventProjection<'a> {
             UsageEventProjectionKind::Typed => 1,
             UsageEventProjectionKind::AcceptedFix => 6,
             UsageEventProjectionKind::AcceptedIme => 5,
+            UsageEventProjectionKind::EditedIme => 5,
             UsageEventProjectionKind::ConfirmedImePrediction => 3,
             UsageEventProjectionKind::Rejected => rejected_usage_weight(event.kind),
         };
@@ -92,6 +95,7 @@ impl<'a> UsageEventProjection<'a> {
             self.kind,
             UsageEventProjectionKind::AcceptedFix
                 | UsageEventProjectionKind::AcceptedIme
+                | UsageEventProjectionKind::EditedIme
                 | UsageEventProjectionKind::ConfirmedImePrediction
         )
     }
@@ -122,6 +126,9 @@ fn event_transition_target(event: &UsageEvent, fallback_word: &str) -> String {
 }
 
 fn event_transition_context(event: &UsageEvent) -> Vec<String> {
+    if matches!(event.kind, UsageEventKind::EditedIme) {
+        return event.context.clone();
+    }
     match (event.from.as_deref(), event.to.as_deref()) {
         (Some(from), Some(to)) => crate::typing_memory::transition_context_words(from, to),
         _ => event.context.clone(),
@@ -160,6 +167,7 @@ fn event_source(event: &UsageEvent) -> &str {
         UsageEventKind::Typed => "user",
         UsageEventKind::AcceptedFix => "autocorrect",
         UsageEventKind::AcceptedIme
+        | UsageEventKind::EditedIme
         | UsageEventKind::ConfirmedImePrediction
         | UsageEventKind::RejectedIme => "ime",
         UsageEventKind::RejectedCandidate => "candidate",
@@ -176,6 +184,7 @@ fn event_operation(event: &UsageEvent) -> &str {
         UsageEventKind::Typed => "typed",
         UsageEventKind::AcceptedFix => "replacement",
         UsageEventKind::AcceptedIme
+        | UsageEventKind::EditedIme
         | UsageEventKind::ConfirmedImePrediction
         | UsageEventKind::RejectedIme => "completion",
         UsageEventKind::RejectedCandidate => "candidate",

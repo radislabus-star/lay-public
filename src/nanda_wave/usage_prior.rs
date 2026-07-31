@@ -11,7 +11,8 @@ use crate::time::unix_timestamp;
 #[cfg(test)]
 use crate::typing_memory;
 use crate::typing_memory::{
-    normalize_memory_word, normalized_words, TypingMemoryEvent, TypingMemoryEventKind,
+    normalize_memory_word, normalized_words, CompletionEditTrace, TypingMemoryEvent,
+    TypingMemoryEventKind,
 };
 
 mod hot;
@@ -84,6 +85,8 @@ struct UsageEvent {
     layout_scope: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     outcome: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    completion_edit: Option<CompletionEditTrace>,
 }
 
 #[derive(Debug, Default, serde::Deserialize)]
@@ -112,6 +115,7 @@ impl UsageEvent {
                 TypingMemoryEventKind::Typed => UsageEventKind::Typed,
                 TypingMemoryEventKind::AcceptedFix => UsageEventKind::AcceptedFix,
                 TypingMemoryEventKind::AcceptedIme => UsageEventKind::AcceptedIme,
+                TypingMemoryEventKind::EditedIme => UsageEventKind::EditedIme,
                 TypingMemoryEventKind::ConfirmedImePrediction => {
                     UsageEventKind::ConfirmedImePrediction
                 }
@@ -135,6 +139,7 @@ impl UsageEvent {
                 .layout_scope
                 .map(|scope| scope.as_str().to_string()),
             outcome: Some(event.outcome.as_str().to_string()),
+            completion_edit: event.completion_edit.clone(),
         }
     }
 }
@@ -146,6 +151,7 @@ enum UsageEventKind {
     Typed,
     AcceptedFix,
     AcceptedIme,
+    EditedIme,
     ConfirmedImePrediction,
     RejectedIme,
     RejectedCandidate,
@@ -348,6 +354,23 @@ pub(crate) fn record_accepted_ime_if_enabled(context_tail: &str, accepted_text: 
         .collect::<Vec<_>>()
         .join(" ");
     super::llmwave::record_phrase_experience("space", &phrase);
+}
+
+pub(crate) fn record_edited_ime_if_enabled(
+    context_tail: &str,
+    typed_prefix: &str,
+    suggested_text: &str,
+    final_text: &str,
+) {
+    if !usage_learning_enabled() {
+        return;
+    }
+    let Some(event) =
+        TypingMemoryEvent::edited_ime(context_tail, typed_prefix, suggested_text, final_text)
+    else {
+        return;
+    };
+    record_typing_memory_event_if_enabled(&event);
 }
 
 pub(crate) fn record_confirmed_ime_prediction_if_enabled(context_tail: &str, predicted_text: &str) {
@@ -1131,6 +1154,7 @@ fn usage_event_payload_eq(left: &UsageEvent, right: &UsageEvent) -> bool {
         && left.to == right.to
         && left.source == right.source
         && left.operation == right.operation
+        && left.completion_edit == right.completion_edit
 }
 
 #[cfg(not(test))]
@@ -1855,6 +1879,7 @@ mod tests {
                 layout_direction: None,
                 layout_scope: None,
                 outcome: None,
+                completion_edit: None,
             },
             || panic!("initialized live cache must not reload cold counts"),
         );
@@ -1882,6 +1907,38 @@ mod tests {
                 .copied(),
             Some(6)
         );
+    }
+
+    #[test]
+    fn edited_ime_attracts_final_word_without_globally_rejecting_valid_suggestion() {
+        let event = TypingMemoryEvent::edited_ime("это было", "прек", "прекрасный", "прекрасно")
+            .expect("partial IME edit");
+        let persisted = UsageEvent::from_typing_memory_event(&event);
+        let text = format!("{}\n", serde_json::to_string(&persisted).unwrap());
+        let usage = snapshot_from_usage_events_for_tests(&text);
+
+        assert_eq!(persisted.kind, UsageEventKind::EditedIme);
+        assert_eq!(
+            persisted
+                .completion_edit
+                .as_ref()
+                .map(|trace| trace.preserved_suffix_chars),
+            Some(4)
+        );
+        assert!(usage.accepted_word_count("прекрасно") > 0);
+        assert_eq!(usage.rejected_word_prior("прекрасный"), 0.0);
+        let context = ["это", "было"].map(String::from);
+        let state = crate::transition_relation::signed_memory_state_id("прекрасный");
+        let transition = usage
+            .hot_readout(
+                &context,
+                "ime",
+                persisted.operator.as_deref().unwrap(),
+                &state,
+                "прекрасно",
+            )
+            .transition;
+        assert!(transition.attraction > transition.repulsion);
     }
 
     #[test]
@@ -2236,6 +2293,7 @@ mod tests {
             layout_direction: None,
             layout_scope: None,
             outcome: None,
+            completion_edit: None,
         };
         let second = UsageEvent {
             ts: 2,

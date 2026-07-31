@@ -80,6 +80,20 @@ impl TypingCpu {
         crate::nanda_wave::record_accepted_ime_usage(context_tail, accepted_text);
     }
 
+    pub fn record_edited_completion(
+        context_tail: &str,
+        typed_prefix: &str,
+        suggested_text: &str,
+        final_text: &str,
+    ) {
+        crate::nanda_wave::record_edited_ime_usage(
+            context_tail,
+            typed_prefix,
+            suggested_text,
+            final_text,
+        );
+    }
+
     pub fn record_confirmed_completion_prediction(context_tail: &str, predicted_text: &str) {
         crate::nanda_wave::record_confirmed_ime_prediction_usage(context_tail, predicted_text);
     }

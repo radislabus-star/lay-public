@@ -1,0 +1,88 @@
+{
+  "gate": "l3_partial_ime_completion_edit",
+  "date": "2026-07-31",
+  "release": "0.2.337",
+  "canonical_case": {
+    "typed_prefix": "прек",
+    "suggested": "прекрасный",
+    "final": "прекрасно",
+    "accepted_suffix_chars": 6,
+    "preserved_suffix_chars": 4,
+    "deleted_chars": 2,
+    "inserted_chars": 1,
+    "physical_backspaces": 3,
+    "physical_backspace_note": "the first Backspace removes the completion's accepted trailing space"
+  },
+  "learning_contract": {
+    "event_kind": "edited_ime",
+    "event_source": "ime",
+    "event_outcome": "confirmed_positive",
+    "final_word_evidence": "positive",
+    "exact_transition": "suggested -> final attraction",
+    "suggested_global_rejection": false,
+    "l3_relation": "contextual suggested -> final",
+    "minimum_distinct_scenes": 2,
+    "admission": "targeted proof PASS and frozen 80k differential PASS"
+  },
+  "tests": {
+    "typing_memory": "11/11 PASS",
+    "usage_prior": "32/32 PASS",
+    "context_compiler": "6/6 PASS",
+    "l3_online": "13/13 PASS",
+    "exact_ime_partial_edit": "1/1 PASS",
+    "double_shift_undo": "1/1 PASS",
+    "pending_tab_acceptance": "1/1 PASS",
+    "remote_check_lib_bins": "PASS",
+    "full_ibus_changed_tree": "145/152 PASS",
+    "full_ibus_baseline": "144/151 PASS",
+    "full_ibus_regression": "the same seven pre-existing environment-sensitive failures; zero new failures"
+  },
+  "remote_release_build": {
+    "host": "e@192.168.3.94",
+    "checkout": "/home/e/build/lay-l1-shadow",
+    "jobs": 20,
+    "wall_seconds": 109.67,
+    "cpu_percent": 196,
+    "max_rss_kib": 1579252,
+    "swap_events": 0
+  },
+  "installed_runtime": {
+    "lay_version": "0.2.337",
+    "lay_sha256": "59655bb6589c569962bd8d576a1d3890a7856018c5dd5c0c21b2c3a47c76b118",
+    "lay_daemon_sha256": "32a8929497b12d9a1e2ec78e91b9ffac399d716d2357a353c2bc02b84cc92eee",
+    "lay_ibus_engine_sha256": "0810456508d156f496181b5524223f8cab5bd05d2afae763f2fdcbd40a1faed5",
+    "lay_nanda_wave_train_sha256": "9e61e07febbcfa09b4fe199d1047e5c05202d23abf61548038ec1a8590aa44e2",
+    "lay_daemon_pid": 3816139,
+    "lay_daemon_memory_bytes": 254005248,
+    "l3_online_pid": 3816143,
+    "l3_online_memory_bytes": 430080,
+    "managed_ibus_pid_before": 3816776,
+    "managed_ibus_pid_after": 3818488,
+    "managed_ibus_rss_kib": 143216,
+    "global_ibus_pid_before": 3793,
+    "global_ibus_pid_after": 3793,
+    "selected_engine": "lay-ime-ru",
+    "loaded_gnome_tray_bridge_version": "0.2.337",
+    "gnome_extensions_metadata_cache_version": "0.2.324",
+    "global_ibus_restarted": false
+  },
+  "model_identity": {
+    "manifest_sha256": "8d28e83b2426b1c18cb5f8edc55a14d0e24f8f799abfc917a5c4675d211a0e9f",
+    "package_sha256": "a71d58a0a01f9c5f8fae4328e1e5011043f3e95ac1d5ee760a0dc56b81cd9ad7",
+    "delta_admitted": false
+  },
+  "lifecycle_fix": {
+    "rejected_match": "pkill -TERM -f '(^|/)lay-ibus-engine( |$)'",
+    "failure": "the broad full-command match can terminate a controlling shell that mentions the executable",
+    "accepted_match": "exact managed argv plus /proc/<pid>/exe verification and PID-specific TERM",
+    "controlled_restart": "PASS"
+  },
+  "not_tested": [
+    "manual physical GUI Tab-edit-boundary observation in a target application",
+    "admission from two real independent scenes",
+    "evidence calibration based on completion edit geometry"
+  ],
+  "runtime_observation_authority_changed": true,
+  "correction_decision_authority_changed": false,
+  "verdict": "INSTALLED_SHADOW_LEARNING_PASS"
+}

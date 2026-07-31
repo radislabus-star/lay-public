@@ -47,6 +47,8 @@ pub(super) struct PendingImeRejection {
 pub(super) struct OnlineFeedbackStats {
     parsed_events: u64,
     direct_correction_observations: u64,
+    #[serde(default)]
+    partial_ime_edit_observations: u64,
     causal_ime_choice_observations: u64,
     stored_ime_rejections: u64,
     expired_ime_rejections: u64,
@@ -103,6 +105,7 @@ impl Default for OnlineState {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) enum ObservationSource {
     DirectCorrection,
+    PartialImeEdit,
     CausalImeChoice,
 }
 
@@ -126,11 +129,22 @@ pub(super) fn relation_observation(
         remember_ime_rejection(state, event);
         return None;
     }
-    if let Some(observation) = direct_correction_observation(event) {
-        state.feedback.direct_correction_observations = state
-            .feedback
-            .direct_correction_observations
-            .saturating_add(1);
+    if let Some(observation) = direct_relation_observation(event) {
+        match observation.source {
+            ObservationSource::DirectCorrection => {
+                state.feedback.direct_correction_observations = state
+                    .feedback
+                    .direct_correction_observations
+                    .saturating_add(1);
+            }
+            ObservationSource::PartialImeEdit => {
+                state.feedback.partial_ime_edit_observations = state
+                    .feedback
+                    .partial_ime_edit_observations
+                    .saturating_add(1);
+            }
+            ObservationSource::CausalImeChoice => unreachable!("direct relation source"),
+        }
         return Some(observation);
     }
     let observation = causal_ime_choice_observation(state, event)?;
@@ -141,12 +155,13 @@ pub(super) fn relation_observation(
     Some(observation)
 }
 
-fn direct_correction_observation(event: &UsageEvent) -> Option<RelationObservation> {
-    if event.kind != "accepted_fix"
-        || event.outcome != "confirmed_positive"
-        || event.source != "user_correction"
-        || event.context.len() < 2
-    {
+fn direct_relation_observation(event: &UsageEvent) -> Option<RelationObservation> {
+    let source = match (event.kind.as_str(), event.source.as_str()) {
+        ("accepted_fix", "user_correction") => ObservationSource::DirectCorrection,
+        ("edited_ime", "ime") => ObservationSource::PartialImeEdit,
+        _ => return None,
+    };
+    if event.outcome != "confirmed_positive" || event.context.len() < 2 {
         return None;
     }
     let rejected = rejected_word(event)?;
@@ -172,7 +187,7 @@ fn direct_correction_observation(event: &UsageEvent) -> Option<RelationObservati
         rejected,
         expected,
         scene,
-        source: ObservationSource::DirectCorrection,
+        source,
     })
 }
 
@@ -340,6 +355,20 @@ mod tests {
     use super::*;
 
     #[test]
+    fn prior_online_state_defaults_partial_ime_edit_counter() {
+        let mut value = serde_json::to_value(OnlineState::default()).unwrap();
+        value
+            .get_mut("feedback")
+            .and_then(serde_json::Value::as_object_mut)
+            .expect("feedback object")
+            .remove("partial_ime_edit_observations");
+
+        let state: OnlineState = serde_json::from_value(value).unwrap();
+
+        assert_eq!(state.feedback.partial_ime_edit_observations, 0);
+    }
+
+    #[test]
     fn accepted_fix_requires_context_and_one_tail_change() {
         let event: UsageEvent = serde_json::from_str(
             r#"{"kind":"accepted_fix","outcome":"confirmed_positive","source":"user_correction","word":"ходу","context":["обновлять","модель","по"],"from":"обновлять модель по ход","to":"обновлять модель по ходу"}"#,
@@ -351,6 +380,22 @@ mod tests {
         assert_eq!(observation.expected, "ходу");
         assert_eq!(observation.scene, "обновлять модель по ходу");
         assert_eq!(observation.source, ObservationSource::DirectCorrection);
+    }
+
+    #[test]
+    fn edited_ime_is_one_direct_contextual_relation() {
+        let event: UsageEvent = serde_json::from_str(
+            r#"{"kind":"edited_ime","outcome":"confirmed_positive","source":"ime","word":"прекрасно","context":["это","было"],"from":"прекрасный","to":"прекрасно","completion_edit":{"prefix":"прек","accepted_suffix_chars":6,"preserved_suffix_chars":4,"deleted_chars":2,"inserted_chars":1}}"#,
+        )
+        .unwrap();
+        let mut state = OnlineState::default();
+        let observation = relation_observation(&mut state, &event).unwrap();
+        assert_eq!(observation.rejected, "прекрасный");
+        assert_eq!(observation.expected, "прекрасно");
+        assert_eq!(observation.scene, "это было прекрасно");
+        assert_eq!(observation.source, ObservationSource::PartialImeEdit);
+        assert_eq!(state.feedback.partial_ime_edit_observations, 1);
+        assert!(state.recent_ime_rejections.is_empty());
     }
 
     #[test]

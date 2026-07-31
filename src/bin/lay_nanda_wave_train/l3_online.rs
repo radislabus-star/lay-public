@@ -120,6 +120,7 @@ fn process_once(paths: &Paths, state: &mut OnlineState) -> io::Result<()> {
     }
     let mut observations = 0_usize;
     let mut direct_observations = 0_usize;
+    let mut partial_ime_edit_observations = 0_usize;
     let mut ime_choice_observations = 0_usize;
     for line in batch.text.lines() {
         let Ok(event) = serde_json::from_str::<UsageEvent>(line) else {
@@ -132,6 +133,9 @@ fn process_once(paths: &Paths, state: &mut OnlineState) -> io::Result<()> {
         match observation.source {
             ObservationSource::DirectCorrection => {
                 direct_observations = direct_observations.saturating_add(1)
+            }
+            ObservationSource::PartialImeEdit => {
+                partial_ime_edit_observations = partial_ime_edit_observations.saturating_add(1)
             }
             ObservationSource::CausalImeChoice => {
                 ime_choice_observations = ime_choice_observations.saturating_add(1)
@@ -157,6 +161,7 @@ fn process_once(paths: &Paths, state: &mut OnlineState) -> io::Result<()> {
                     "journal_overlap_lines": batch.overlap_lines,
                     "new_observations": observations,
                     "direct_correction_observations": direct_observations,
+                    "partial_ime_edit_observations": partial_ime_edit_observations,
                     "causal_ime_choice_observations": ime_choice_observations,
                     "pending_relations": state.pending.len(),
                     "recent_ime_rejections": state.recent_ime_rejections.len(),
@@ -200,6 +205,7 @@ fn replay_existing_feedback(
     let mut parsed_events = 0_usize;
     let mut observations = 0_usize;
     let mut direct_observations = 0_usize;
+    let mut partial_ime_edit_observations = 0_usize;
     let mut ime_choice_observations = 0_usize;
     for line in text.lines() {
         let Ok(event) = serde_json::from_str::<UsageEvent>(line) else {
@@ -214,6 +220,9 @@ fn replay_existing_feedback(
         match observation.source {
             ObservationSource::DirectCorrection => {
                 direct_observations = direct_observations.saturating_add(1)
+            }
+            ObservationSource::PartialImeEdit => {
+                partial_ime_edit_observations = partial_ime_edit_observations.saturating_add(1)
             }
             ObservationSource::CausalImeChoice => {
                 ime_choice_observations = ime_choice_observations.saturating_add(1)
@@ -231,6 +240,7 @@ fn replay_existing_feedback(
         "parsed_events": parsed_events,
         "relation_observations": observations,
         "direct_correction_observations": direct_observations,
+        "partial_ime_edit_observations": partial_ime_edit_observations,
         "causal_ime_choice_observations": ime_choice_observations,
         "pending_relations": state.pending.len(),
         "ready_relations": state.pending.values().filter(|relation| relation.scenes.len() >= MIN_SCENES).count(),

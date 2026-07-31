@@ -107,10 +107,16 @@ impl LayIbusEngine {
         if tail_token.is_empty() {
             return Ok(false);
         }
+        let context_tail = self
+            .tail_buffer
+            .strip_suffix(&tail_token)
+            .unwrap_or_default()
+            .trim_end()
+            .to_string();
+        let typed_prefix = tail_token.clone();
         let suffix_chars = committed_suffix.chars().count();
         trace::record_completion_accept("stuck_tail", suffix_chars, with_space);
         let mut accepted_text = format!("{}{}", tail_token, committed_suffix.trim());
-        let context_tail = self.tail_buffer.clone();
         if with_space {
             committed_suffix.push(' ');
             accepted_text.push(' ');
@@ -154,6 +160,7 @@ impl LayIbusEngine {
             .map_err(|e| fdo::Error::Failed(e.to_string()))?;
         self.arm_pending_ime_completion_learning(
             context_tail,
+            typed_prefix,
             accepted_text.trim().to_string(),
             with_space,
         );

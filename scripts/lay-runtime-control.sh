@@ -61,8 +61,21 @@ sync_ibus_engine() {
 }
 
 stop_lay_ibus_engine() {
-    # Linux comm is limited to 15 bytes; match the full executable argv.
-    pkill -TERM -f '(^|/)lay-ibus-engine( |$)' 2>/dev/null || true
+    local pid exe
+
+    # Linux comm is limited to 15 bytes. Match the exact managed argv, then
+    # verify the executable so a parent shell mentioning the name is untouched.
+    while IFS= read -r pid; do
+        [ -n "$pid" ] || continue
+        exe="$(readlink -f "/proc/$pid/exe" 2>/dev/null || true)"
+        case "$exe" in
+            */lay-ibus-engine)
+                kill -TERM "$pid" 2>/dev/null || true
+                ;;
+        esac
+    done < <(
+        pgrep -f '(^|/)lay-ibus-engine --ibus( --managed)?$' 2>/dev/null || true
+    )
 }
 
 select_lay_ime() {
