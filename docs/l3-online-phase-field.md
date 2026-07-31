@@ -1742,7 +1742,7 @@ Verdict scope:
 - historical contamination removal on an isolated production replay: `PASS`;
 - correction-decision authority changed: `false`;
 - live service migration: `PASS`;
-- post-install physical user event capture: not yet observed at this checkpoint.
+- post-install physical user event capture: `PASS`.
 
 Installed closure:
 
@@ -1764,6 +1764,9 @@ global ibus-daemon PID                                  3,793
 engine before / after                   lay-ime-ru / lay-ime-ru
 loaded tray bridge                                    0.2.339
 post-restart service warnings                              0
+post-install retained journal rows                         34
+post-install typed / confirmed rows                   18 / 16
+post-install exact duplicate rows                           0
 ```
 
 The final release binary also replayed a current journal snapshot in an

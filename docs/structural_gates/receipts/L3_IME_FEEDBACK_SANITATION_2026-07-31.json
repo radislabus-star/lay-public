@@ -120,6 +120,13 @@
     "lay_daemon_active": true,
     "l3_online_active": true,
     "post_restart_service_warnings": 0,
+    "post_install_event_capture": {
+      "rows": 34,
+      "typed": 18,
+      "confirmed_ime_prediction": 16,
+      "exact_duplicate_rows": 0,
+      "verdict": "PASS"
+    },
     "global_ibus_restarted": false
   },
   "correction_decision_authority_changed": false,
