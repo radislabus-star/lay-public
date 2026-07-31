@@ -1,0 +1,93 @@
+{
+  "gate": "l3_partial_ime_completion_edit_live_gtk",
+  "date": "2026-07-31",
+  "supersedes_live_scope_of": "L3_PARTIAL_IME_COMPLETION_EDIT_2026-07-31.json",
+  "failed_probe": {
+    "release": "0.2.337",
+    "prefix": "прек",
+    "selected_top_suffix": "расно",
+    "visible_result": "прекрасо ",
+    "edited_ime_events": 0,
+    "ibus_resets_after_native_backspace": 3,
+    "root_cause": "GTK sent IBus Reset after every unhandled committed-tail Backspace and reset_for_ibus_soft_reset discarded the pending edit trajectory",
+    "verdict": "LIVE_FAIL"
+  },
+  "fix": {
+    "release": "0.2.338",
+    "preserve": "only PendingImeCompletionLearning with editing=true across IBus soft Reset",
+    "discard_non_editing_soft_reset": true,
+    "discard_focus_reset": true,
+    "boundary_finalization": "exactly once"
+  },
+  "live_proof": {
+    "backend": "GTK4 Entry plus real lay-ime-ru and physical ydotool key events",
+    "prefix": "прек",
+    "candidate_selection": "Down selected suffix расный",
+    "accepted": "прекрасный",
+    "edit": "remove accepted trailing space, remove ый, insert о, then Space",
+    "visible_result": "прекрасно ",
+    "edited_ime_events": 1,
+    "event": {
+      "kind": "edited_ime",
+      "word": "прекрасно",
+      "from": "прекрасный",
+      "to": "прекрасно",
+      "source": "ime",
+      "operation": "completion_edit",
+      "outcome": "confirmed_positive",
+      "completion_edit": {
+        "prefix": "прек",
+        "accepted_suffix_chars": 6,
+        "preserved_suffix_chars": 4,
+        "deleted_chars": 2,
+        "inserted_chars": 1
+      }
+    },
+    "isolated_usage_journal": "/tmp/lay-edited-ime-live-338.etvX0P/events.jsonl",
+    "production_edited_ime_events_after": 0,
+    "synthetic_event_leaked_to_production": false,
+    "verdict": "PASS"
+  },
+  "remote_gate": {
+    "host": "e@192.168.3.94",
+    "checkout": "/home/e/build/lay-l1-shadow",
+    "jobs": 20,
+    "soft_reset_edit_test": "1/1 PASS",
+    "edit_trajectory_test": "1/1 PASS",
+    "pending_tab_test": "1/1 PASS",
+    "check_lib_bins": "PASS",
+    "isolated_smoke_lifecycle": "ru_p_enter 1/1 PASS",
+    "release_build_seconds": 109.75,
+    "release_build_cpu_percent": 196,
+    "release_build_max_rss_kib": 1560004,
+    "release_build_swaps": 0
+  },
+  "installed_runtime": {
+    "version": "0.2.338",
+    "lay_sha256": "c6599f8fb64b0a628da220431eb2abca4e8d7cdddebe03539790cd7619913ed0",
+    "lay_daemon_sha256": "758aa89d8991ed5effea9116f1185b348b535e6b2ba5d1b82482e4c9ee07e7ea",
+    "lay_ibus_engine_sha256": "3fdb9eb0c28075d47fcae710af23d16d6f0048d49259f37853a100012d9fe856",
+    "lay_nanda_wave_train_sha256": "2c3608561b190e0f4cd43ab8b4f98476ae92db321f7b067e10ae516eea492542",
+    "managed_ibus_pid": 4061087,
+    "managed_ibus_rss_kib": 143052,
+    "global_ibus_pid": 3793,
+    "loaded_tray_bridge_version": "0.2.338",
+    "lay_daemon_active": true,
+    "l3_online_active": true,
+    "global_ibus_restarted": false
+  },
+  "model_identity": {
+    "manifest_sha256": "8d28e83b2426b1c18cb5f8edc55a14d0e24f8f799abfc917a5c4675d211a0e9f",
+    "package_sha256": "a71d58a0a01f9c5f8fae4328e1e5011043f3e95ac1d5ee760a0dc56b81cd9ad7",
+    "delta_admitted": false
+  },
+  "not_tested": [
+    "online delta admission from two independent real user scenes",
+    "a correction-decision change caused by the observation",
+    "every supported client reset sequence",
+    "path-based TSV smoke with a locally built lay-test-input; the remote-built binary retained its remote compile-time fixture root"
+  ],
+  "runtime_observation_authority_changed": true,
+  "correction_decision_authority_changed": false,
+  "verdict": "LIVE_GTK_PASS"
+}

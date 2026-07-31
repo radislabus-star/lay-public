@@ -1503,3 +1503,111 @@ Exact receipt:
 ```text
 /home/ubu/projects/lay/docs/structural_gates/receipts/L3_PARTIAL_IME_COMPLETION_EDIT_2026-07-31.json
 ```
+
+## Partial IME edit live GTK closure, 2026-07-31
+
+The first physical GTK proof invalidated the source-only `0.2.337` verdict for
+the live route. A committed-tail Backspace is intentionally returned to the
+client, and GTK sends an IBus `Reset` after applying it. The old soft-reset
+handler discarded `pending_ime_completion_learning` after the first
+Backspace. The visible edit continued, but no `edited_ime` relation survived.
+
+Measured `0.2.337` failure:
+
+```text
+live GTK input prefix                                  прек
+top completion suffix                                расно
+physical result after the probe                  прекрасно
+edited_ime events                                        0
+IBus Reset calls after native Backspace                   3
+verdict                                           LIVE_FAIL
+```
+
+The probe intentionally used one Backspace too many for that top candidate;
+the important failure was not the resulting surface but the missing event.
+Trace evidence showed that every native Backspace was followed by `Reset`, and
+the pending edit was destroyed before the boundary.
+
+Release `0.2.338` changes only soft-reset ownership:
+
+```text
+ordinary pending completion + Reset                 discard
+active editing trajectory + soft Reset             preserve
+focus change                                        discard
+boundary                                            finalize once
+```
+
+This is bounded by the existing `editing` flag. The flag is set immediately
+before the first committed-tail Backspace. A normal soft reset before editing
+still clears the pending completion, and a focus reset always clears it.
+
+The exact isolated live proof selected the real second candidate instead of
+assuming a surface:
+
+```text
+typed prefix                                          прек
+candidate selected with Down                         расный
+Tab result                                      прекрасный + space
+edit                           Backspace x3 + "о" + Space
+visible GTK result                              прекрасно + space
+edited_ime event count                                  1
+from                                           прекрасный
+to                                              прекрасно
+accepted / preserved suffix chars                    6 / 4
+deleted / inserted chars                             2 / 1
+source / outcome                  ime / confirmed_positive
+```
+
+The engine wrote the proof event to an isolated temporary usage journal. The
+production `word_usage_events.jsonl` contained `0` `edited_ime` events before
+and after the smoke, so synthetic evidence did not enter user learning.
+
+Remote and installed evidence:
+
+```text
+soft-reset edit test                                  1/1 PASS
+existing edit trajectory test                         1/1 PASS
+pending Tab acceptance test                           1/1 PASS
+check --lib --bins                                         PASS
+isolated smoke lifecycle, ru_p_enter                  1/1 PASS
+remote release build                                  109.75 s
+remote build max RSS                              1,560,004 KiB
+remote build swap                                             0
+installed release                                       0.2.338
+managed IBus PID after all smoke                     4,061,087
+managed IBus RSS                                    143,052 KiB
+global ibus-daemon PID                                   3,793
+loaded tray bridge                                      0.2.338
+lay-daemon / L3 online                                active / active
+```
+
+The smoke lifecycle was tightened in the same pass. It now selects only exact
+managed-engine argv, verifies `/proc/<pid>/exe`, accepts Linux's
+` (deleted)` suffix after atomic binary replacement, writes usage evidence to
+temporary files, and restores the exact original IBus engine. Global IBus is
+never restarted.
+
+Not tested:
+
+- two independent real user scenes reaching online-delta admission;
+- a correction-decision change caused by the new observation;
+- every GTK, browser, Electron and terminal client reset sequence.
+
+A path-based TSV smoke was not counted because the test-input binary was built
+on the remote host and retained that host's compile-time fixture root. The
+path-independent `ru_p_enter` case was used for the lifecycle proof and passed;
+the exact partial-edit proof used direct physical events and passed separately.
+
+Verdict scope:
+
+- exact physical GTK partial-completion capture: `PASS`;
+- synthetic production-learning events: `0`;
+- observation authority changed: `true`;
+- correction-decision authority changed: `false`;
+- L3 package and manifest changed: `false`.
+
+Exact receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L3_PARTIAL_IME_COMPLETION_EDIT_LIVE_2026-07-31.json
+```

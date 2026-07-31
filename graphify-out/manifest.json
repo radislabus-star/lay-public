@@ -25,13 +25,13 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1785487645.5650697,
-    "ast_hash": "bb7c806ea273d67e757b2304381d2e68",
+    "mtime": 1785498998.6269605,
+    "ast_hash": "e82e7c440a46de56a3175882ff66ebde",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
-    "mtime": 1785487518.999803,
-    "ast_hash": "b5041b64bcc94456f3ed397e1f9f9770",
+    "mtime": 1785498998.6269605,
+    "ast_hash": "5d6c48cfa646422758943f56d3348864",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/recent_actions_menu.js": {
@@ -40,13 +40,13 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/settings.js": {
-    "mtime": 1785487518.999803,
-    "ast_hash": "e73c4a88f09a50dcea955bacf3fa5738",
+    "mtime": 1785498998.6279607,
+    "ast_hash": "d56e17132ffa2a59d909336480a107f0",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1785487519.0208032,
-    "ast_hash": "a383ad95fd11c163ca8a98680dd8e209",
+    "mtime": 1785498998.6289606,
+    "ast_hash": "a492296eb68554c6269a2c957eca91cf",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -125,8 +125,8 @@
     "semantic_hash": ""
   },
   "scripts/lay-runtime-control.sh": {
-    "mtime": 1785488122.3672132,
-    "ast_hash": "18b94a6e16da34229ee0d58317181839",
+    "mtime": 1785499233.8905997,
+    "ast_hash": "d5b2b1f5d140588262d9cec8b7b5e521",
     "semantic_hash": ""
   },
   "scripts/package-extension.sh": {
@@ -160,8 +160,8 @@
     "semantic_hash": "9a0f7c9210849f618bbddb80f785ab67"
   },
   "scripts/runtime_smoke/ime.py": {
-    "mtime": 1785144907.6018798,
-    "ast_hash": "480e6e063956070a3759e23f81a053b9",
+    "mtime": 1785499233.8905997,
+    "ast_hash": "bb41cfcdd03d65d6e9353d60964a2b59",
     "semantic_hash": ""
   },
   "scripts/runtime_smoke/ime_cases.py": {
@@ -965,13 +965,13 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/state.rs": {
-    "mtime": 1785142609.9225178,
-    "ast_hash": "4e20c9d69d9bd6640fa3d24a10cbded0",
+    "mtime": 1785498984.7248025,
+    "ast_hash": "a00c9ff95a105fe8240f99307d5e67ca",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/tail_memory.rs": {
-    "mtime": 1785487466.0732725,
-    "ast_hash": "896754f975a47663db5399e929946964",
+    "mtime": 1785498984.7248025,
+    "ast_hash": "a404f4868b3455b916f3b0e241ec10c0",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/text.rs": {
@@ -3650,8 +3650,8 @@
     "semantic_hash": ""
   },
   "docs/l3-online-phase-field.md": {
-    "mtime": 1785488376.211452,
-    "ast_hash": "b8a112efd27219e9ca9598c6b0125d09",
+    "mtime": 1785499662.582286,
+    "ast_hash": "2457cf6c505b42ece173247f526a79e4",
     "semantic_hash": ""
   },
   "src/nanda_wave/context_phase/surface_field.rs": {
@@ -5052,6 +5052,11 @@
   "docs/structural_gates/receipts/L3_PARTIAL_IME_COMPLETION_EDIT_2026-07-31.json": {
     "mtime": 1785488376.211452,
     "ast_hash": "3a39539457e2033f9e6a796636ff36d0",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L3_PARTIAL_IME_COMPLETION_EDIT_LIVE_2026-07-31.json": {
+    "mtime": 1785499662.583286,
+    "ast_hash": "5a7553d8e3de22ac6cbe006268400b85",
     "semantic_hash": ""
   }
 }

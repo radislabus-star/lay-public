@@ -3,6 +3,7 @@ from __future__ import annotations
 import contextlib
 import json
 import os
+import signal
 import subprocess
 import tempfile
 import time
@@ -10,13 +11,65 @@ from pathlib import Path
 
 
 def stop_all_lay_ibus_engines() -> None:
-    # Linux comm truncates names to 15 bytes, so `pkill -x lay-ibus-engine`
-    # cannot match this binary. Match the executable argv without touching IBus.
-    subprocess.run(
-        ["pkill", "-TERM", "-f", r"(^|/)lay-ibus-engine( |$)"],
-        stdout=subprocess.DEVNULL,
+    result = subprocess.run(
+        ["pgrep", "-f", r"(^|/)lay-ibus-engine --ibus( --managed)?$"],
+        stdout=subprocess.PIPE,
         stderr=subprocess.DEVNULL,
+        text=True,
     )
+    for raw_pid in result.stdout.splitlines():
+        try:
+            pid = int(raw_pid)
+            executable = os.readlink(f"/proc/{pid}/exe")
+        except (OSError, ValueError):
+            continue
+        executable = executable.removesuffix(" (deleted)")
+        if Path(executable).name == "lay-ibus-engine":
+            try:
+                os.kill(pid, signal.SIGTERM)
+            except ProcessLookupError:
+                pass
+
+
+def current_ibus_engine() -> str:
+    result = subprocess.run(
+        ["ibus", "engine"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        text=True,
+    )
+    return result.stdout.strip()
+
+
+def restore_ibus_engine(engine: str) -> None:
+    if not engine:
+        engine = "xkb:ru::rus"
+    if engine.startswith("lay-ime-"):
+        subprocess.run(
+            [
+                "gdbus",
+                "call",
+                "--session",
+                "--dest",
+                "org.gnome.Shell",
+                "--object-path",
+                "/io/github/radislabus_star/LayDaemon",
+                "--method",
+                "io.github.radislabus_star.LayDaemon.ActivateLayout",
+                engine,
+            ],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+    for _ in range(8):
+        subprocess.run(
+            ["ibus", "engine", engine],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        if current_ibus_engine() == engine:
+            return
+        time.sleep(0.15)
 
 
 @contextlib.contextmanager
@@ -32,6 +85,7 @@ def managed_ime_session(root: Path, ibus_engine_bin: Path | None):
         ).returncode
         == 0
     )
+    original_engine = current_ibus_engine()
     temp_dir = tempfile.TemporaryDirectory(prefix="lay-ime-managed-")
     engine = None
     try:
@@ -44,7 +98,15 @@ def managed_ime_session(root: Path, ibus_engine_bin: Path | None):
 
         config_path = Path(temp_dir.name) / "config.json"
         write_managed_ime_config(config_path)
-        env = {**os.environ, "LAY_CONFIG_PATH": str(config_path)}
+        env = {
+            **os.environ,
+            "LAY_CONFIG_PATH": str(config_path),
+            "LAY_NANDA_WORD_USAGE_EVENTS": str(Path(temp_dir.name) / "events.jsonl"),
+            "LAY_NANDA_WORD_USAGE_COUNTS": str(Path(temp_dir.name) / "counts.json"),
+            "LAY_NANDA_WORD_USAGE_FEEDBACK_COUNTS": str(
+                Path(temp_dir.name) / "feedback-counts.json"
+            ),
+        }
         engine = subprocess.Popen(
             [str(ibus_engine_bin), "--ibus", "--managed"],
             cwd=root,
@@ -60,11 +122,7 @@ def managed_ime_session(root: Path, ibus_engine_bin: Path | None):
         yield
     finally:
         stop_managed_ime(engine)
-        subprocess.run(
-            ["ibus", "engine", "xkb:ru::rus"],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-        )
+        restore_ibus_engine(original_engine)
         if daemon_was_active:
             subprocess.run(
                 ["systemctl", "--user", "restart", "lay-daemon"],

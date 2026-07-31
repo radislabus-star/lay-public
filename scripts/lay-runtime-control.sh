@@ -68,6 +68,7 @@ stop_lay_ibus_engine() {
     while IFS= read -r pid; do
         [ -n "$pid" ] || continue
         exe="$(readlink -f "/proc/$pid/exe" 2>/dev/null || true)"
+        exe="${exe% (deleted)}"
         case "$exe" in
             */lay-ibus-engine)
                 kill -TERM "$pid" 2>/dev/null || true

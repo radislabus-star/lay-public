@@ -859,6 +859,49 @@ mod tests {
     }
 
     #[test]
+    fn gtk_soft_resets_preserve_only_an_active_completion_edit() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig::default(),
+        );
+        engine.tail_buffer = "это было прекрасный ".to_string();
+        engine.arm_pending_ime_completion_learning(
+            "это было".to_string(),
+            "прек".to_string(),
+            "прекрасный".to_string(),
+            true,
+        );
+
+        engine.reset_for_ibus_soft_reset();
+        assert!(engine.pending_ime_completion_learning.is_none());
+
+        engine.arm_pending_ime_completion_learning(
+            "это было".to_string(),
+            "прек".to_string(),
+            "прекрасный".to_string(),
+            true,
+        );
+        for _ in 0..3 {
+            engine.begin_pending_ime_completion_edit_before_backspace();
+            engine.backspace_committed_tail_only();
+            engine.reset_for_ibus_soft_reset();
+            assert!(engine
+                .pending_ime_completion_learning
+                .as_ref()
+                .is_some_and(|pending| pending.editing));
+        }
+
+        engine.push_tail_char('о');
+        engine.push_tail_char(' ');
+
+        assert_eq!(engine.tail_buffer, "это было прекрасно ");
+        assert!(engine.pending_ime_completion_learning.is_none());
+    }
+
+    #[test]
     fn focus_reset_discards_pending_tab_completion_without_learning() {
         let mut engine = LayIbusEngine::new(
             "/test".to_string(),

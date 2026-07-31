@@ -265,7 +265,16 @@ impl LayIbusEngine {
     }
 
     pub(super) fn reset_for_ibus_soft_reset(&mut self) {
-        self.pending_ime_completion_learning = None;
+        // GTK resets the IBus context after an unhandled committed-tail
+        // Backspace. Keep only an edit trajectory that was armed immediately
+        // before that Backspace; focus changes still clear it unconditionally.
+        if !self
+            .pending_ime_completion_learning
+            .as_ref()
+            .is_some_and(|pending| pending.editing)
+        {
+            self.pending_ime_completion_learning = None;
+        }
         self.buffer.clear();
         self.composition_cursor = 0;
         self.preedit_suffix.clear();
