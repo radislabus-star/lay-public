@@ -1374,11 +1374,22 @@ pub(super) fn surface_motif_memory() -> &'static LexicalPhaseMemory {
 }
 
 pub(crate) fn l2_surface_foundation_contains(word: &str) -> bool {
-    surface_motif_memory().contains_surface(word)
+    optional_surface_foundation_contains(super::super::lexical_phase::default_memory(), word)
 }
 
 pub(crate) fn l2_surface_foundation_rank(word: &str) -> Option<usize> {
-    surface_motif_memory().surface_rank(word)
+    optional_surface_foundation_rank(super::super::lexical_phase::default_memory(), word)
+}
+
+fn optional_surface_foundation_contains(memory: Option<&LexicalPhaseMemory>, word: &str) -> bool {
+    memory.is_some_and(|memory| memory.contains_surface(word))
+}
+
+fn optional_surface_foundation_rank(
+    memory: Option<&LexicalPhaseMemory>,
+    word: &str,
+) -> Option<usize> {
+    memory.and_then(|memory| memory.surface_rank(word))
 }
 
 pub(crate) fn l2_surface_foundation_has_authority(word: &str) -> bool {
@@ -1398,6 +1409,12 @@ mod tests {
             risk: 0.20,
             support: Vec::new(),
         }
+    }
+
+    #[test]
+    fn missing_surface_artifact_cannot_create_learning_authority() {
+        assert!(!optional_surface_foundation_contains(None, "прекрасно"));
+        assert_eq!(optional_surface_foundation_rank(None, "прекрасно"), None);
     }
 
     #[test]

@@ -290,7 +290,14 @@ pub(crate) fn l2_center_contains_surface(word: &str) -> bool {
 }
 
 pub(crate) fn l2_decoder_contains_surface(word: &str) -> bool {
-    surface_motif_memory().contains_decoded_surface(word)
+    optional_decoder_contains_surface(super::super::lexical_phase::default_memory(), word)
+}
+
+fn optional_decoder_contains_surface(
+    memory: Option<&super::super::lexical_phase::LexicalPhaseMemory>,
+    word: &str,
+) -> bool {
+    memory.is_some_and(|memory| memory.contains_decoded_surface(word))
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -440,5 +447,10 @@ mod tests {
             LexicalReadoutMode::CompletionOnly
         )
         .is_none());
+    }
+
+    #[test]
+    fn missing_decoder_artifact_cannot_crash_feedback_admission() {
+        assert!(!optional_decoder_contains_surface(None, "прекрасно"));
     }
 }

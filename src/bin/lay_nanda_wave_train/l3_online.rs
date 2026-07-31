@@ -7,7 +7,7 @@ mod proof_chain;
 
 use feedback::{
     enforce_relation_bound, insert_relation_observation, relation_observation, ObservationSource,
-    OnlineState, UsageEvent, MIN_SCENES, STATE_FORMAT,
+    OnlineState, UsageEvent, LEGACY_STATE_FORMAT, MIN_SCENES, STATE_FORMAT,
 };
 use proof_chain::attempt_relation;
 use std::fs;
@@ -60,7 +60,7 @@ pub(super) fn run(args: &[String]) -> io::Result<()> {
     fs::create_dir_all(&paths.root)?;
     ensure_manifest(&paths)?;
     let state_exists = paths.state.is_file();
-    let mut state = load_state(&paths.state)?;
+    let (mut state, migrated) = load_state(&paths.state)?;
 
     if initialize_source_cursor(&paths, &mut state, state_exists)? {
         println!(
@@ -74,7 +74,7 @@ pub(super) fn run(args: &[String]) -> io::Result<()> {
             })
         );
     }
-    if replay_existing {
+    if replay_existing || migrated {
         println!("{}", replay_existing_feedback(&paths, &mut state)?);
         save_state(&paths.state, &state)?;
     }
@@ -121,7 +121,6 @@ fn process_once(paths: &Paths, state: &mut OnlineState) -> io::Result<()> {
     let mut observations = 0_usize;
     let mut direct_observations = 0_usize;
     let mut partial_ime_edit_observations = 0_usize;
-    let mut ime_choice_observations = 0_usize;
     for line in batch.text.lines() {
         let Ok(event) = serde_json::from_str::<UsageEvent>(line) else {
             continue;
@@ -136,9 +135,6 @@ fn process_once(paths: &Paths, state: &mut OnlineState) -> io::Result<()> {
             }
             ObservationSource::PartialImeEdit => {
                 partial_ime_edit_observations = partial_ime_edit_observations.saturating_add(1)
-            }
-            ObservationSource::CausalImeChoice => {
-                ime_choice_observations = ime_choice_observations.saturating_add(1)
             }
         }
         insert_relation_observation(state, observation);
@@ -162,9 +158,9 @@ fn process_once(paths: &Paths, state: &mut OnlineState) -> io::Result<()> {
                     "new_observations": observations,
                     "direct_correction_observations": direct_observations,
                     "partial_ime_edit_observations": partial_ime_edit_observations,
-                    "causal_ime_choice_observations": ime_choice_observations,
+                    "causal_ime_choice_observations": 0,
                     "pending_relations": state.pending.len(),
-                    "recent_ime_rejections": state.recent_ime_rejections.len(),
+                    "recent_ime_rejections": 0,
                 })
             );
         }
@@ -206,7 +202,6 @@ fn replay_existing_feedback(
     let mut observations = 0_usize;
     let mut direct_observations = 0_usize;
     let mut partial_ime_edit_observations = 0_usize;
-    let mut ime_choice_observations = 0_usize;
     for line in text.lines() {
         let Ok(event) = serde_json::from_str::<UsageEvent>(line) else {
             continue;
@@ -224,9 +219,6 @@ fn replay_existing_feedback(
             ObservationSource::PartialImeEdit => {
                 partial_ime_edit_observations = partial_ime_edit_observations.saturating_add(1)
             }
-            ObservationSource::CausalImeChoice => {
-                ime_choice_observations = ime_choice_observations.saturating_add(1)
-            }
         }
         insert_relation_observation(state, observation);
     }
@@ -241,7 +233,7 @@ fn replay_existing_feedback(
         "relation_observations": observations,
         "direct_correction_observations": direct_observations,
         "partial_ime_edit_observations": partial_ime_edit_observations,
-        "causal_ime_choice_observations": ime_choice_observations,
+        "causal_ime_choice_observations": 0,
         "pending_relations": state.pending.len(),
         "ready_relations": state.pending.values().filter(|relation| relation.scenes.len() >= MIN_SCENES).count(),
         "runtime_authority": false,
@@ -262,18 +254,30 @@ fn ensure_manifest(paths: &Paths) -> io::Result<()> {
     Ok(())
 }
 
-fn load_state(path: &Path) -> io::Result<OnlineState> {
+fn load_state(path: &Path) -> io::Result<(OnlineState, bool)> {
     let Ok(bytes) = fs::read(path) else {
-        return Ok(OnlineState::default());
+        return Ok((OnlineState::default(), false));
     };
-    let state: OnlineState = serde_json::from_slice(&bytes).map_err(io::Error::other)?;
+    let mut state: OnlineState = serde_json::from_slice(&bytes).map_err(io::Error::other)?;
+    if state.format == LEGACY_STATE_FORMAT {
+        state.format = STATE_FORMAT.to_string();
+        state.source_offset = 0;
+        state.source_device = 0;
+        state.source_inode = 0;
+        state.source_tail_hashes.clear();
+        state.pending.clear();
+        state.event_ordinal = 0;
+        state.replayed_source_bytes = 0;
+        state.feedback = Default::default();
+        return Ok((state, true));
+    }
     if state.format != STATE_FORMAT {
         return Err(io::Error::new(
             io::ErrorKind::InvalidData,
             format!("unsupported L3 online state format: {}", state.format),
         ));
     }
-    Ok(state)
+    Ok((state, false))
 }
 
 fn save_state(path: &Path, state: &OnlineState) -> io::Result<()> {
@@ -292,6 +296,7 @@ fn arg_u64(args: &[String], flag: &str) -> Option<u64> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use feedback::PendingRelation;
     use std::time::{SystemTime, UNIX_EPOCH};
 
     #[test]
@@ -327,5 +332,39 @@ mod tests {
             .text
             .is_empty());
         let _ = fs::remove_dir_all(root);
+    }
+
+    #[test]
+    fn v1_state_migration_clears_heuristic_pending_but_preserves_admission_ordinal() {
+        let unique = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let path = std::env::temp_dir().join(format!("lay-l3-online-v1-{unique}.json"));
+        let mut old = OnlineState::default();
+        old.format = LEGACY_STATE_FORMAT.to_string();
+        old.generation = 7;
+        old.admitted_deltas = 3;
+        old.pending.insert(
+            "слово\u{1f}сайт".to_string(),
+            PendingRelation {
+                rejected: "слово".to_string(),
+                expected: "сайт".to_string(),
+                scenes: vec!["пример один".to_string(), "пример два".to_string()],
+                last_attempted_scenes: 2,
+                last_observed_ordinal: 20,
+            },
+        );
+        save_state(&path, &old).unwrap();
+
+        let (migrated, changed) = load_state(&path).unwrap();
+
+        assert!(changed);
+        assert_eq!(migrated.format, STATE_FORMAT);
+        assert!(migrated.pending.is_empty());
+        assert_eq!(migrated.generation, 7);
+        assert_eq!(migrated.admitted_deltas, 3);
+        assert_eq!(migrated.replayed_source_bytes, 0);
+        let _ = fs::remove_file(path);
     }
 }

@@ -214,7 +214,12 @@ pub(crate) fn build_feedback_corpus(
             .filter(|word| !word.is_empty())
             .collect::<Vec<_>>();
         let candidate = crate::typing_memory::normalize_memory_word(&event.word);
-        if candidate.is_empty() {
+        if candidate.is_empty()
+            || (matches!(
+                event.kind.as_str(),
+                "edited_ime" | "confirmed_ime_prediction"
+            ) && !crate::typing_memory::learning_target_is_attested(&candidate))
+        {
             report.skipped_unattested += 1;
             continue;
         }
@@ -623,6 +628,14 @@ pub(crate) fn apply_feedback_overlay(
                     report.skipped_unattested_context += 1;
                     continue;
                 }
+                if matches!(
+                    event.kind.as_str(),
+                    "edited_ime" | "confirmed_ime_prediction"
+                ) && !crate::typing_memory::learning_target_is_attested(&candidate)
+                {
+                    report.skipped_unattested_positive += 1;
+                    continue;
+                }
                 let mut phrase = context;
                 phrase.push(candidate);
                 if !crate::typing_memory::phrase_is_attested_for_learning(&phrase.join(" ")) {
@@ -839,5 +852,17 @@ mod tests {
         assert_eq!(report.accepted_source_events, 1);
         assert_eq!(report.rejected_source_events, 0);
         assert_eq!(report.corpus_lines, 1);
+    }
+
+    #[test]
+    fn feedback_corpus_rejects_unattested_prediction_and_edit_targets() {
+        let events = r#"{"kind":"confirmed_ime_prediction","word":"режимем","context":["в","норм"],"source":"ime","operation":"prediction_match"}
+{"kind":"edited_ime","word":"ивдешь","context":["косяков","не"],"from":"использовать","to":"ивдешь","source":"ime","operation":"completion_edit"}"#;
+
+        let (corpus, report) = build_feedback_corpus(events, 2).expect("feedback corpus");
+
+        assert!(corpus.is_empty());
+        assert_eq!(report.accepted_source_events, 2);
+        assert_eq!(report.skipped_unattested, 2);
     }
 }

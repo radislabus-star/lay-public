@@ -36,7 +36,7 @@ const USAGE_FEEDBACK_COUNTS_PATH: &str =
 const LEGACY_USAGE_PRIOR_PATH: &str = ".local/share/lay/learning_candidates.json";
 const USAGE_EVENTS_MAX_BYTES: u64 = 500 * 1024;
 const USAGE_EVENTS_FULL_REBUILD_MAX_BYTES: u64 = 8 * 1024 * 1024;
-const USAGE_COUNTS_SCHEMA_VERSION: u32 = 14;
+const USAGE_COUNTS_SCHEMA_VERSION: u32 = 15;
 const USAGE_COUNTS_MAX_WORDS: usize = 10_000;
 const USAGE_COUNTS_MAX_ACCEPTED_WORDS: usize = 5_000;
 const USAGE_COUNTS_MAX_CONTEXT_WORDS: usize = 12_000;
@@ -845,7 +845,14 @@ fn add_legacy_usage_counts(counts: &mut UsageCounts, text: &str) {
 }
 
 fn add_usage_event_counts(counts: &mut UsageCounts, text: &str) {
+    let mut seen = HashSet::new();
     for event in usage_events_from_jsonl(text) {
+        let Ok(key) = serde_json::to_string(&event) else {
+            continue;
+        };
+        if !seen.insert(key) {
+            continue;
+        }
         add_usage_event_count(counts, &event);
     }
 }
@@ -2112,7 +2119,7 @@ mod tests {
     }
 
     #[test]
-    fn rejected_ime_creates_negative_trace_without_promoting_word() {
+    fn unbound_rejected_ime_cannot_create_negative_learning() {
         let text = r#"{"ts":1,"kind":"rejected_ime","word":"даша","context":["ну"],"to":"даша","source":"ime","operation":"completion"}
 "#;
         let mut counts = UsageCounts::default();
@@ -2120,18 +2127,40 @@ mod tests {
 
         assert!(!counts.words.contains_key("даша"));
         assert!(!counts.accepted_words.contains_key("даша"));
-        assert_eq!(counts.rejected_words.get("даша"), Some(&8));
-        assert_eq!(
-            counts.rejected_context_words.get("ну\u{1f}даша").copied(),
-            Some(8)
-        );
+        assert!(!counts.rejected_words.contains_key("даша"));
+        assert!(!counts.rejected_context_words.contains_key("ну\u{1f}даша"));
 
         let usage = snapshot_from_usage_events_for_tests(text);
         let context = ["ну"].map(String::from);
         let signal = usage
             .hot_readout(&context, "L2LiveCandidateGate32", "completion", "*", "даша")
             .transition;
-        assert!(signal.repulsion > signal.attraction);
+        assert_eq!(signal.repulsion, signal.attraction);
+    }
+
+    #[test]
+    fn full_rebuild_deduplicates_same_second_same_payload_events() {
+        let text = r#"{"ts":10,"kind":"typed","word":"дождь","context":["на","улице"]}
+{"ts":10,"kind":"typed","word":"дождь","context":["на","улице"]}
+{"ts":11,"kind":"typed","word":"дождь","context":["на","улице"]}
+"#;
+        let mut counts = UsageCounts::default();
+
+        add_usage_event_counts(&mut counts, text);
+
+        assert_eq!(counts.words.get("дождь"), Some(&2));
+    }
+
+    #[test]
+    fn historical_unattested_prediction_positive_is_ignored() {
+        let text = r#"{"ts":1,"kind":"confirmed_ime_prediction","word":"режимем","context":["в","норм"],"source":"ime","operation":"prediction_match","outcome":"confirmed_positive"}
+"#;
+        let mut counts = UsageCounts::default();
+
+        add_usage_event_counts(&mut counts, text);
+
+        assert!(!counts.words.contains_key("режимем"));
+        assert!(!counts.accepted_words.contains_key("режимем"));
     }
 
     #[test]

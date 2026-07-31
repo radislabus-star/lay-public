@@ -37,6 +37,12 @@ impl<'a> UsageEventProjection<'a> {
         {
             return None;
         }
+        // Historical `rejected_ime` rows mix explicit deletion with a merely
+        // ignored visible prediction. They have no interaction identity, so
+        // they cannot safely create either global or contextual anti-evidence.
+        if matches!(event.kind, UsageEventKind::RejectedIme) {
+            return None;
+        }
         let word = event.word.as_deref().map(normalize_memory_word)?;
         if word.is_empty()
             || (matches!(event.kind, UsageEventKind::RejectedCandidate)
@@ -48,6 +54,10 @@ impl<'a> UsageEventProjection<'a> {
                 && word.chars().any(|ch| matches!(ch, 'а'..='я' | 'ё'))
                 && !crate::hot_field::HotFieldSnapshot::current()
                     .learning_surface_is_attested(&word))
+            || (matches!(
+                event.kind,
+                UsageEventKind::EditedIme | UsageEventKind::ConfirmedImePrediction
+            ) && !crate::typing_memory::learning_target_is_attested(&word))
         {
             return None;
         }
@@ -59,9 +69,8 @@ impl<'a> UsageEventProjection<'a> {
             UsageEventKind::ConfirmedImePrediction => {
                 UsageEventProjectionKind::ConfirmedImePrediction
             }
-            UsageEventKind::RejectedIme | UsageEventKind::RejectedCandidate => {
-                UsageEventProjectionKind::Rejected
-            }
+            UsageEventKind::RejectedIme => return None,
+            UsageEventKind::RejectedCandidate => UsageEventProjectionKind::Rejected,
         };
         let weight = match kind {
             UsageEventProjectionKind::Typed => 1,

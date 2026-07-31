@@ -1,12 +1,20 @@
 use serde::{Deserialize, Serialize};
-use std::collections::{BTreeMap, VecDeque};
+use std::collections::BTreeMap;
 
-pub(super) const STATE_FORMAT: &str = "lay-l3-online-v1";
+pub(super) const STATE_FORMAT: &str = "lay-l3-online-v2-direct-relations";
+pub(super) const LEGACY_STATE_FORMAT: &str = "lay-l3-online-v1";
 pub(super) const MIN_SCENES: usize = 2;
 const MAX_SCENES: usize = 8;
 const MAX_RELATIONS: usize = 128;
-const MAX_RECENT_IME_REJECTIONS: usize = 32;
-const MAX_IME_PAIR_EVENT_GAP: u64 = 16;
+
+#[derive(Clone, Debug, Deserialize)]
+struct CompletionEditTrace {
+    prefix: String,
+    accepted_suffix_chars: u32,
+    preserved_suffix_chars: u32,
+    deleted_chars: u32,
+    inserted_chars: u32,
+}
 
 #[derive(Clone, Debug, Deserialize)]
 pub(super) struct UsageEvent {
@@ -24,6 +32,8 @@ pub(super) struct UsageEvent {
     from: Option<String>,
     #[serde(default)]
     to: Option<String>,
+    #[serde(default)]
+    completion_edit: Option<CompletionEditTrace>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -34,13 +44,6 @@ pub(super) struct PendingRelation {
     pub(super) last_attempted_scenes: usize,
     #[serde(default)]
     pub(super) last_observed_ordinal: u64,
-}
-
-#[derive(Clone, Debug, Deserialize, Serialize)]
-pub(super) struct PendingImeRejection {
-    rejected: String,
-    context: Vec<String>,
-    event_ordinal: u64,
 }
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
@@ -74,8 +77,6 @@ pub(super) struct OnlineState {
     #[serde(default)]
     pub(super) event_ordinal: u64,
     #[serde(default)]
-    pub(super) recent_ime_rejections: VecDeque<PendingImeRejection>,
-    #[serde(default)]
     pub(super) admitted_deltas: u64,
     #[serde(default)]
     pub(super) replayed_source_bytes: u64,
@@ -94,7 +95,6 @@ impl Default for OnlineState {
             generation: 0,
             pending: BTreeMap::new(),
             event_ordinal: 0,
-            recent_ime_rejections: VecDeque::new(),
             admitted_deltas: 0,
             replayed_source_bytes: 0,
             feedback: OnlineFeedbackStats::default(),
@@ -106,7 +106,6 @@ impl Default for OnlineState {
 pub(super) enum ObservationSource {
     DirectCorrection,
     PartialImeEdit,
-    CausalImeChoice,
 }
 
 #[derive(Clone, Debug)]
@@ -123,35 +122,21 @@ pub(super) fn relation_observation(
 ) -> Option<RelationObservation> {
     state.event_ordinal = state.event_ordinal.saturating_add(1);
     state.feedback.parsed_events = state.feedback.parsed_events.saturating_add(1);
-    expire_ime_rejections(state);
-
-    if is_ime_rejection(event) {
-        remember_ime_rejection(state, event);
-        return None;
-    }
-    if let Some(observation) = direct_relation_observation(event) {
-        match observation.source {
-            ObservationSource::DirectCorrection => {
-                state.feedback.direct_correction_observations = state
-                    .feedback
-                    .direct_correction_observations
-                    .saturating_add(1);
-            }
-            ObservationSource::PartialImeEdit => {
-                state.feedback.partial_ime_edit_observations = state
-                    .feedback
-                    .partial_ime_edit_observations
-                    .saturating_add(1);
-            }
-            ObservationSource::CausalImeChoice => unreachable!("direct relation source"),
+    let observation = direct_relation_observation(event)?;
+    match observation.source {
+        ObservationSource::DirectCorrection => {
+            state.feedback.direct_correction_observations = state
+                .feedback
+                .direct_correction_observations
+                .saturating_add(1);
         }
-        return Some(observation);
+        ObservationSource::PartialImeEdit => {
+            state.feedback.partial_ime_edit_observations = state
+                .feedback
+                .partial_ime_edit_observations
+                .saturating_add(1);
+        }
     }
-    let observation = causal_ime_choice_observation(state, event)?;
-    state.feedback.causal_ime_choice_observations = state
-        .feedback
-        .causal_ime_choice_observations
-        .saturating_add(1);
     Some(observation)
 }
 
@@ -166,7 +151,11 @@ fn direct_relation_observation(event: &UsageEvent) -> Option<RelationObservation
     }
     let rejected = rejected_word(event)?;
     let expected = normalize_word(event.word.as_deref()?)?;
-    if rejected == expected {
+    if rejected == expected
+        || !lay::typing_cpu::TypingCpu::learning_target_is_attested(&expected)
+        || (source == ObservationSource::PartialImeEdit
+            && !completion_edit_geometry_is_valid(event, &rejected, &expected))
+    {
         return None;
     }
     let context = event
@@ -191,100 +180,28 @@ fn direct_relation_observation(event: &UsageEvent) -> Option<RelationObservation
     })
 }
 
-fn is_ime_rejection(event: &UsageEvent) -> bool {
-    event.kind == "rejected_ime"
-        && event.outcome == "reverted"
-        && event.source == "ime"
-        && event.word.is_some()
-}
-
-fn remember_ime_rejection(state: &mut OnlineState, event: &UsageEvent) {
-    let Some(rejected) = event.word.as_deref().and_then(normalize_word) else {
-        return;
+fn completion_edit_geometry_is_valid(event: &UsageEvent, suggested: &str, expected: &str) -> bool {
+    let Some(edit) = event.completion_edit.as_ref() else {
+        return false;
     };
-    let context = normalized_context(&event.context);
-    if context.len() < 2 {
-        return;
+    let Some(prefix) = normalize_word(&edit.prefix) else {
+        return false;
+    };
+    if !suggested.starts_with(&prefix) || !expected.starts_with(&prefix) {
+        return false;
     }
-    if let Some(existing) = state
-        .recent_ime_rejections
-        .iter_mut()
-        .find(|entry| entry.rejected == rejected && entry.context == context)
-    {
-        existing.event_ordinal = state.event_ordinal;
-        return;
-    }
-    if state.recent_ime_rejections.len() >= MAX_RECENT_IME_REJECTIONS {
-        state.recent_ime_rejections.pop_front();
-        state.feedback.expired_ime_rejections =
-            state.feedback.expired_ime_rejections.saturating_add(1);
-    }
-    state.recent_ime_rejections.push_back(PendingImeRejection {
-        rejected,
-        context,
-        event_ordinal: state.event_ordinal,
-    });
-    state.feedback.stored_ime_rejections = state.feedback.stored_ime_rejections.saturating_add(1);
-}
-
-fn causal_ime_choice_observation(
-    state: &mut OnlineState,
-    event: &UsageEvent,
-) -> Option<RelationObservation> {
-    if !matches!(
-        event.kind.as_str(),
-        "accepted_ime" | "confirmed_ime_prediction"
-    ) || event.outcome != "confirmed_positive"
-        || event.source != "ime"
-    {
-        return None;
-    }
-    let expected = event.word.as_deref().and_then(normalize_word)?;
-    let mut context = normalized_context(&event.context);
-    if event.kind == "accepted_ime"
-        && context
-            .last()
-            .is_some_and(|prefix| prefix != &expected && expected.starts_with(prefix))
-    {
-        context.pop();
-    }
-    if context.len() < 2 {
-        return None;
-    }
-    let index = state
-        .recent_ime_rejections
-        .iter()
-        .rposition(|entry| entry.context == context && entry.rejected != expected)?;
-    let rejected = state.recent_ime_rejections.remove(index)?;
-    let scene = context
-        .iter()
-        .cloned()
-        .chain(std::iter::once(expected.clone()))
-        .collect::<Vec<_>>()
-        .join(" ");
-    Some(RelationObservation {
-        rejected: rejected.rejected,
-        expected,
-        scene,
-        source: ObservationSource::CausalImeChoice,
-    })
-}
-
-fn expire_ime_rejections(state: &mut OnlineState) {
-    while state.recent_ime_rejections.front().is_some_and(|entry| {
-        state.event_ordinal.saturating_sub(entry.event_ordinal) > MAX_IME_PAIR_EVENT_GAP
-    }) {
-        state.recent_ime_rejections.pop_front();
-        state.feedback.expired_ime_rejections =
-            state.feedback.expired_ime_rejections.saturating_add(1);
-    }
-}
-
-fn normalized_context(tokens: &[String]) -> Vec<String> {
-    tokens
-        .iter()
-        .filter_map(|token| normalize_word(token))
-        .collect()
+    let prefix_chars = prefix.chars().count();
+    let suggested_chars = suggested.chars().count();
+    let expected_chars = expected.chars().count();
+    let common_chars = suggested
+        .chars()
+        .zip(expected.chars())
+        .take_while(|(left, right)| left == right)
+        .count();
+    edit.accepted_suffix_chars == suggested_chars.saturating_sub(prefix_chars) as u32
+        && edit.preserved_suffix_chars == common_chars.saturating_sub(prefix_chars) as u32
+        && edit.deleted_chars == suggested_chars.saturating_sub(common_chars) as u32
+        && edit.inserted_chars == expected_chars.saturating_sub(common_chars) as u32
 }
 
 pub(super) fn insert_relation_observation(
@@ -395,11 +312,10 @@ mod tests {
         assert_eq!(observation.scene, "это было прекрасно");
         assert_eq!(observation.source, ObservationSource::PartialImeEdit);
         assert_eq!(state.feedback.partial_ime_edit_observations, 1);
-        assert!(state.recent_ime_rejections.is_empty());
     }
 
     #[test]
-    fn rejected_ime_and_confirmed_choice_form_one_causal_relation() {
+    fn separate_rejection_and_prediction_cannot_form_a_relation() {
         let rejected: UsageEvent = serde_json::from_str(
             r#"{"kind":"rejected_ime","outcome":"reverted","source":"ime","word":"все","context":["ну","давай","запросим","ты"]}"#,
         )
@@ -411,17 +327,12 @@ mod tests {
         let mut state = OnlineState::default();
 
         assert!(relation_observation(&mut state, &rejected).is_none());
-        let observation = relation_observation(&mut state, &accepted).unwrap();
-
-        assert_eq!(observation.rejected, "все");
-        assert_eq!(observation.expected, "вроде");
-        assert_eq!(observation.scene, "ну давай запросим ты вроде");
-        assert_eq!(observation.source, ObservationSource::CausalImeChoice);
-        assert!(state.recent_ime_rejections.is_empty());
+        assert!(relation_observation(&mut state, &accepted).is_none());
+        assert_eq!(state.feedback.causal_ime_choice_observations, 0);
     }
 
     #[test]
-    fn accepted_ime_prefix_is_not_mistaken_for_sentence_context() {
+    fn accepted_ime_never_binds_a_prior_rejection() {
         let rejected: UsageEvent = serde_json::from_str(
             r#"{"kind":"rejected_ime","outcome":"reverted","source":"ime","word":"все","context":["ну","давай","запросим","ты"]}"#,
         )
@@ -433,9 +344,7 @@ mod tests {
         let mut state = OnlineState::default();
 
         assert!(relation_observation(&mut state, &rejected).is_none());
-        let observation = relation_observation(&mut state, &accepted).unwrap();
-
-        assert_eq!(observation.scene, "ну давай запросим ты вроде");
+        assert!(relation_observation(&mut state, &accepted).is_none());
     }
 
     #[test]
@@ -452,6 +361,29 @@ mod tests {
 
         assert!(relation_observation(&mut state, &rejected).is_none());
         assert!(relation_observation(&mut state, &accepted).is_none());
-        assert_eq!(state.recent_ime_rejections.len(), 1);
+    }
+
+    #[test]
+    fn production_log_typo_cannot_enter_partial_ime_learning() {
+        let event: UsageEvent = serde_json::from_str(
+            r#"{"kind":"edited_ime","outcome":"confirmed_positive","source":"ime","word":"зарегестрированы","context":["доступ","на","хостинге"],"from":"зарегестрировать","to":"зарегестрированы","completion_edit":{"prefix":"зарегест","accepted_suffix_chars":8,"preserved_suffix_chars":6,"deleted_chars":2,"inserted_chars":2}}"#,
+        )
+        .unwrap();
+        let mut state = OnlineState::default();
+
+        assert!(relation_observation(&mut state, &event).is_none());
+        assert_eq!(state.feedback.partial_ime_edit_observations, 0);
+    }
+
+    #[test]
+    fn forged_partial_ime_geometry_cannot_enter_learning() {
+        let event: UsageEvent = serde_json::from_str(
+            r#"{"kind":"edited_ime","outcome":"confirmed_positive","source":"ime","word":"прекрасно","context":["это","было"],"from":"прекрасный","to":"прекрасно","completion_edit":{"prefix":"другое","accepted_suffix_chars":6,"preserved_suffix_chars":4,"deleted_chars":2,"inserted_chars":1}}"#,
+        )
+        .unwrap();
+        let mut state = OnlineState::default();
+
+        assert!(relation_observation(&mut state, &event).is_none());
+        assert_eq!(state.feedback.partial_ime_edit_observations, 0);
     }
 }

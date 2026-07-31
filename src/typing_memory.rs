@@ -226,20 +226,17 @@ impl TypingMemoryEvent {
     ) -> Option<Self> {
         let suggested = single_normalized_word(suggested_text)?;
         let final_word = single_normalized_word(final_text)?;
-        if suggested == final_word {
+        if suggested == final_word || !learning_target_is_attested(&final_word) {
             return None;
         }
 
         let prefix = normalize_memory_word(typed_prefix);
-        let common_chars = common_prefix_chars(&suggested, &final_word);
-        let reusable_prefix_chars = if !prefix.is_empty()
-            && suggested.starts_with(&prefix)
-            && final_word.starts_with(&prefix)
+        if prefix.is_empty() || !suggested.starts_with(&prefix) || !final_word.starts_with(&prefix)
         {
-            prefix.chars().count()
-        } else {
-            0
-        };
+            return None;
+        }
+        let common_chars = common_prefix_chars(&suggested, &final_word);
+        let reusable_prefix_chars = prefix.chars().count();
         let suggested_chars = suggested.chars().count();
         let final_chars = final_word.chars().count();
         let operation = "completion_edit";
@@ -275,6 +272,9 @@ impl TypingMemoryEvent {
     /// This is weaker than an explicit Tab accept, but is still supervised
     /// evidence that the prediction was correct at the word boundary.
     pub(crate) fn confirmed_ime_prediction(context_tail: &str, predicted_text: &str) -> Vec<Self> {
+        if !learning_target_is_attested(predicted_text) {
+            return Vec::new();
+        }
         ime_events(
             TypingMemoryEventKind::ConfirmedImePrediction,
             TypingMemoryFeedback::Accepted,
@@ -534,6 +534,22 @@ pub(crate) fn phrase_is_attested_for_learning(text: &str) -> bool {
         })
 }
 
+/// Strong admission gate for explicit IME feedback. Generated morphology may
+/// help readout, but it is not enough to turn a user's typo into positive
+/// evidence. The final surface must already exist in an exact lexical bank.
+pub(crate) fn learning_target_is_attested(text: &str) -> bool {
+    let words = normalized_words(text);
+    !words.is_empty()
+        && words.into_iter().all(|word| {
+            if word.chars().all(|ch| ch.is_ascii_alphabetic() || ch == '-') {
+                crate::layout_autoswitch::is_known_english_layout_autoswitch_word(&word)
+            } else {
+                crate::hot_field::HotFieldSnapshot::current().learning_surface_is_attested(&word)
+                    || crate::nanda_wave::l2::l2_decoder_contains_surface(&word)
+            }
+        })
+}
+
 pub(crate) fn normalize_memory_word(word: &str) -> String {
     let trimmed = word
         .trim()
@@ -579,6 +595,43 @@ mod tests {
         ));
         assert!(!phrase_is_attested_for_learning("на улице идёт дожть"));
         assert!(!phrase_is_attested_for_learning("звгрузи пакет"));
+    }
+
+    #[test]
+    fn production_log_typos_are_not_attested_learning_targets() {
+        let valid = [
+            "прекрасно",
+            "хостинге",
+            "зарегистрированы",
+            "режиме",
+            "видишь",
+            "переписки",
+            "посмотреть",
+        ];
+        let missed = valid
+            .into_iter()
+            .filter(|word| !learning_target_is_attested(word))
+            .collect::<Vec<_>>();
+        assert!(
+            missed.is_empty(),
+            "valid forms are not attested: {missed:?}"
+        );
+        let typos = [
+            "зарегестрированы",
+            "такм",
+            "режимем",
+            "ивдешь",
+            "перписки",
+            "апосмотреть",
+        ];
+        let leaked = typos
+            .into_iter()
+            .filter(|typo| learning_target_is_attested(typo))
+            .collect::<Vec<_>>();
+        assert!(
+            leaked.is_empty(),
+            "production typos entered learning authority: {leaked:?}"
+        );
     }
 
     #[test]
@@ -632,6 +685,21 @@ mod tests {
         assert_eq!(trace.preserved_suffix_chars, 4);
         assert_eq!(trace.deleted_chars, 2);
         assert_eq!(trace.inserted_chars, 1);
+    }
+
+    #[test]
+    fn ime_feedback_rejects_unattested_targets_and_forged_prefixes() {
+        assert!(TypingMemoryEvent::edited_ime(
+            "в логах косяков не",
+            "ив",
+            "использовать",
+            "ивдешь"
+        )
+        .is_none());
+        assert!(
+            TypingMemoryEvent::edited_ime("это было", "чужой", "прекрасный", "прекрасно").is_none()
+        );
+        assert!(TypingMemoryEvent::confirmed_ime_prediction("ты проверь", "такм").is_empty());
     }
 
     #[test]

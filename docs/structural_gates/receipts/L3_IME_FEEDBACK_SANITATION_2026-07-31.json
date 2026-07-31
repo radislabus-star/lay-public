@@ -1,0 +1,127 @@
+{
+  "gate": "l3_ime_feedback_sanitation",
+  "date": "2026-07-31",
+  "release": "0.2.339",
+  "production_audit": {
+    "retained_journal_rows_at_audit": 2569,
+    "exact_duplicate_rows": 345,
+    "exact_duplicate_groups": 344,
+    "known_bad_positive_rows": 7,
+    "old_state_format": "lay-l3-online-v1",
+    "old_generation": 1,
+    "old_admitted_deltas": 0,
+    "old_pending_relations": 128,
+    "root_causes": [
+      "raw typed events had both daemon and IBus owners",
+      "rejected_ime had no interaction identity but was paired with a later unrelated accepted word",
+      "generated morphology was sufficient to promote an unattested typo as positive feedback"
+    ]
+  },
+  "contract": {
+    "raw_typed_owner": "lay-daemon",
+    "ignored_visible_prediction": "debug telemetry only",
+    "positive_prediction": "exact match plus exact lexical attestation",
+    "partial_completion_edit": "same trajectory plus exact prefix/from/to geometry plus exact lexical attestation",
+    "l3_relation_sources": [
+      "accepted_fix",
+      "valid edited_ime"
+    ],
+    "historical_rejected_ime": "ignored because no interaction identity exists",
+    "historical_duplicate_policy": "identical serialized payload counted once during cold rebuild",
+    "raw_journal_rewritten": false,
+    "usage_counts_schema": 15,
+    "online_state_format": "lay-l3-online-v2-direct-relations"
+  },
+  "isolated_production_replay": {
+    "snapshot_rows": 2569,
+    "old_pending_relations": 128,
+    "parsed_events": 2569,
+    "direct_correction_observations": 1,
+    "partial_ime_edit_observations": 4,
+    "causal_cross_event_observations": 0,
+    "new_pending_relations": 5,
+    "ready_relations": 0,
+    "generation": 1,
+    "admitted_deltas": 0,
+    "relations": [
+      "дтп -> lng",
+      "предложения -> предложении",
+      "русских -> русский",
+      "уничтожить -> уничтожил",
+      "хостинг -> хостинге"
+    ],
+    "runtime_authority_changed": false,
+    "verdict": "PASS"
+  },
+  "focused_tests": {
+    "usage_prior": "34/34 PASS",
+    "typing_memory": "15/15 PASS",
+    "context_phase_compiler": "7/7 PASS",
+    "l3_online": "16/16 PASS",
+    "single_raw_typed_owner": "1/1 PASS",
+    "production_typo_attestation": "1/1 PASS",
+    "missing_l2_artifact_is_conservative": "1/1 PASS"
+  },
+  "remote_release_gate": {
+    "host": "e@192.168.3.94",
+    "checkout": "/home/e/build/lay-l1-shadow",
+    "cargo_jobs": 20,
+    "usage_prior": "34/34 PASS",
+    "typing_memory": "15/15 PASS",
+    "context_phase_compiler": "7/7 PASS",
+    "l3_online": "16/16 PASS",
+    "missing_artifact_related_filter": "23/23 PASS",
+    "broad_lib": "1043/1083 PASS; 40 unresolved failures outside owning suites",
+    "release_build_seconds": 110.24,
+    "release_build_cpu_percent": 196,
+    "release_build_max_rss_kib": 1551976,
+    "release_build_swaps": 0
+  },
+  "missing_l2_artifact_smoke": {
+    "isolated_home": "/tmp/lay-l3-no-l2-final.tq4PaO",
+    "l2_artifact_present": false,
+    "parsed_events": 2565,
+    "pending_relations": 2,
+    "ready_relations": 0,
+    "admitted_deltas": 0,
+    "panic": false,
+    "verdict": "PASS_FAIL_CLOSED"
+  },
+  "not_tested": [
+    "two independent post-install user scenes reaching online admission",
+    "a correction-decision change caused by a newly admitted direct relation",
+    "every supported client lifecycle",
+    "unrelated data-dependent legacy IME candidate expectations in the broad preedit suite; representative failure reproduced from clean commit afa7ba7 before this change"
+  ],
+  "installed_runtime": {
+    "version": "0.2.339",
+    "lay_sha256": "cdf7f5e1b11a5654fc977770490adca53ab1e40607c1cd3902c7159e353cb4d9",
+    "lay_daemon_sha256": "252d3478de56fbc8ee0c5f7d0a3a97b8608a810e04e060fbaa13ccdb68f6f3ce",
+    "lay_ibus_engine_sha256": "c396e23dac1c80d7be74a0bf60f420077451a51a7e318d384783466f3d425945",
+    "lay_nanda_wave_train_sha256": "a4d1bc0f3b0fccef8bf23746ce0183239af472e920e032901350385776548335",
+    "state_backup": "/home/ubu/.local/share/lay/nanda_wave/l3-online/state.json.backup-20260731-220236-final-0.2.339",
+    "state_format": "lay-l3-online-v2-direct-relations",
+    "generation": 1,
+    "pending_relations": 5,
+    "ready_relations": 0,
+    "admitted_deltas": 0,
+    "usage_counts_schema": 15,
+    "known_bad_positive_surfaces_present": 0,
+    "lay_daemon_pid": 542957,
+    "lay_daemon_rss_kib": 160828,
+    "l3_online_pid": 542959,
+    "l3_online_rss_kib": 4580,
+    "managed_ibus_pid": 542987,
+    "managed_ibus_rss_kib": 139852,
+    "global_ibus_pid": 3793,
+    "engine_before": "lay-ime-ru",
+    "engine_after": "lay-ime-ru",
+    "loaded_tray_bridge_version": "0.2.339",
+    "lay_daemon_active": true,
+    "l3_online_active": true,
+    "post_restart_service_warnings": 0,
+    "global_ibus_restarted": false
+  },
+  "correction_decision_authority_changed": false,
+  "verdict": "PASS"
+}

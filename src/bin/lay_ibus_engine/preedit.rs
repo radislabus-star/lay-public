@@ -457,7 +457,6 @@ impl LayIbusEngine {
             self.close_precognition_word_boundary();
             if ch.is_whitespace() {
                 self.word_input_mode = None;
-                lay::typing_cpu::TypingCpu::record_typed_tail(&self.tail_buffer);
             }
         }
         trim_tail_buffer(&mut self.tail_buffer);
@@ -483,14 +482,25 @@ impl LayIbusEngine {
         let Some(predicted_word) = predicted_word.filter(|word| !word.is_empty()) else {
             return;
         };
-        if predicted_word == observed_word.to_lowercase() {
+        if predicted_word == observed_word
+            && lay::typing_cpu::TypingCpu::learning_target_is_attested(&observed_word)
+        {
             lay::typing_cpu::TypingCpu::record_confirmed_completion_prediction(
                 &context.join(" "),
                 &predicted_word,
             );
+            trace::record(r#"{"kind":"ibus_prediction_outcome","status":"confirmed_attested"}"#);
             return;
         }
-        lay::typing_cpu::TypingCpu::record_rejected_completion(&context.join(" "), &predicted_word);
+        let status = if predicted_word == observed_word {
+            "matched_unattested"
+        } else {
+            "ignored"
+        };
+        trace::record(format!(
+            r#"{{"kind":"ibus_prediction_outcome","status":{}}}"#,
+            serde_json::to_string(status).unwrap_or_else(|_| "\"ignored\"".to_string())
+        ));
     }
 
     #[cfg(test)]

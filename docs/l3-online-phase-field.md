@@ -1611,3 +1611,169 @@ Exact receipt:
 ```text
 /home/ubu/projects/lay/docs/structural_gates/receipts/L3_PARTIAL_IME_COMPLETION_EDIT_LIVE_2026-07-31.json
 ```
+
+## Direct-only IME feedback sanitation, 2026-07-31
+
+The first production journal audit after enabling partial completion edits
+found that event transport and learning authority were mixed incorrectly.
+There were two independent defects:
+
+```text
+raw typed owner                         lay-daemon + lay-ibus-engine
+exact duplicate rows in retained log                         345
+old L3 rejected-IME pairing       rejection N + later choice N+k
+old bounded pending relations                              128
+```
+
+The pairing had no interaction identity. A visible suggestion ignored by
+typing another word could therefore become anti-evidence, then the unrelated
+later word could become its positive target. Examples observed in the retained
+journal included `адрес -> апосмотреть`, `без -> браузер`,
+`использовать -> ивдешь`, and `по -> перписки`. This is a failed ownership
+model, not useful noisy evidence.
+
+Release `0.2.339` defines one producer and one admissible learning route:
+
+```text
+word boundary
+-> lay-daemon writes the one raw typed event
+
+visible IME prediction ignored
+-> bounded debug trace only
+-> no positive evidence
+-> no negative evidence
+
+prediction exactly matches the completed word
+-> exact lexical attestation
+-> weak confirmed_ime_prediction evidence
+
+Tab completion edited before the boundary
+-> same live edit trajectory
+-> exact prefix/from/to geometry
+-> exact lexical attestation of final surface
+-> one edited_ime relation
+
+accepted_fix or valid edited_ime
+-> direct contextual relation
+-> bounded pending bank
+-> targeted proof
+-> frozen full differential proof
+-> admission or WATCH
+```
+
+The exact-attestation gate accepts a final surface only when it exists in the
+English layout lexicon or an exact Russian HotField/L2 decoder bank. Generated
+morphology can still help readout, but cannot by itself turn an observed typo
+into positive learning authority. Production examples
+`зарегестрированы`, `режимем`, `перписки`, `апосмотреть`, `ивдешь`, and `такм`
+are rejected. Valid targets `прекрасно`, `хостинге`, `зарегистрированы`,
+`режиме`, `видишь`, `переписки`, and `посмотреть` remain admitted. A missing
+L2 lexical artifact now yields a conservative rejection instead of panicking
+inside feedback admission.
+
+Historical compatibility is deliberately conservative:
+
+```text
+rejected_ime without interaction identity           ignored
+unattested edited/prediction positive                ignored
+identical same-second event payload                  counted once
+raw append-only journal                              retained
+usage-count schema                                   14 -> 15
+L3 online state                         v1 heuristic -> v2 direct
+```
+
+The v1-to-v2 migration preserves the generation and admitted-delta count,
+clears only derived pending/cursor/counter state, and replays the retained
+journal through the direct-only reducer. It does not delete or rewrite the raw
+journal.
+
+An isolated replay of a production snapshot measured:
+
+```text
+parsed retained events                              2,569
+old pending relations                                 128
+new direct relation observations                        5
+new unique pending relations                            5
+ready for admission                                    0
+causal cross-event observations                         0
+admitted deltas                                         0
+runtime authority changed                           false
+```
+
+The five retained direct relations were
+`дтп -> lng`, `предложения -> предложении`, `русских -> русский`,
+`уничтожить -> уничтожил`, and `хостинг -> хостинге`, each with one independent
+scene. None can enter the runtime until the existing evidence and proof gates
+pass.
+
+Tested:
+
+- production typo and valid-form exact-attestation regression;
+- direct completion-edit geometry and forged-prefix rejection;
+- separate rejected/predicted events cannot form an L3 relation;
+- historical invalid positives are censored during cold rebuild;
+- exact duplicate payloads are counted once during cold rebuild;
+- v1 state migration preserves generation/admission identity and removes
+  heuristic pending state;
+- missing L2 decoder artifact returns no attestation instead of aborting;
+- usage-prior `34/34`, typing-memory `15/15`, context compiler `7/7`, and L3
+  online `16/16` focused suites.
+
+Not tested at this checkpoint:
+
+- two independent post-install user scenes reaching online admission;
+- a correction-decision change caused by a new direct relation;
+- every supported client lifecycle;
+- the unrelated data-dependent legacy IME candidate expectation failures in
+  the broad preedit suite. The representative
+  `four_letter_russian_prefix_can_use_wave_lookup` failure was reproduced from
+  clean commit `afa7ba7` (`0.2.338`) before these changes.
+
+The remote broad `--lib` run is not green: `1,043/1,083` passed and `40`
+route/data-dependent tests failed outside the owning suites. Only the
+representative IME failure above was independently reproduced on the clean
+parent, so the other 39 are recorded as unresolved baseline status rather than
+claimed as pre-existing. This release verdict is limited to the focused
+feedback ownership, migration, and fail-closed artifact gates listed above.
+
+Verdict scope:
+
+- learning-event ownership: `PASS`;
+- historical contamination removal on an isolated production replay: `PASS`;
+- correction-decision authority changed: `false`;
+- live service migration: `PASS`;
+- post-install physical user event capture: not yet observed at this checkpoint.
+
+Installed closure:
+
+```text
+release                                             0.2.339
+L3 online state                 lay-l3-online-v2-direct-relations
+pending relations                                128 -> 5
+ready relations                                         0
+admitted deltas                                         0
+usage-count schema                                  14 -> 15
+known bad positive surfaces present                      0
+remote release build                              110.24 s
+remote build max RSS                         1,551,976 KiB
+remote build swap                                         0
+lay-daemon PID / RSS                       542,957 / 160,828 KiB
+L3 online PID / RSS                       542,959 /   4,580 KiB
+managed IBus PID / RSS                    542,987 / 139,852 KiB
+global ibus-daemon PID                                  3,793
+engine before / after                   lay-ime-ru / lay-ime-ru
+loaded tray bridge                                    0.2.339
+post-restart service warnings                              0
+```
+
+The final release binary also replayed a current journal snapshot in an
+isolated HOME with no L2 lexical artifact. It processed `2,565` events,
+retained two relations supported by the common exact lexicon, admitted no
+delta, and exited normally. This is a fail-closed availability proof only; it
+does not replace the full-artifact five-relation replay above.
+
+Exact receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L3_IME_FEEDBACK_SANITATION_2026-07-31.json
+```

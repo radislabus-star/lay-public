@@ -91,7 +91,7 @@ fn whitespace_cancels_pending_inactive_preedit_flush() {
 }
 
 #[test]
-fn ignored_preedit_candidate_records_negative_usage_without_promoting_it() {
+fn ignored_preedit_candidate_does_not_create_learning_feedback() {
     let test_id = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .expect("clock")
@@ -126,25 +126,25 @@ fn ignored_preedit_candidate_records_negative_usage_without_promoting_it() {
     engine.preedit_candidates = vec!["ша".to_string()];
     engine.push_tail_char(' ');
 
-    let deadline = std::time::Instant::now() + std::time::Duration::from_millis(1300);
-    let text = loop {
-        if let Ok(text) = std::fs::read_to_string(&events_path) {
-            break text;
-        }
-        assert!(
-            std::time::Instant::now() < deadline,
-            "usage persistence did not flush within its active interval"
-        );
-        std::thread::sleep(std::time::Duration::from_millis(10));
-    };
-    assert!(text.contains(r#""kind":"rejected_ime""#), "{text}");
-    assert!(text.contains(r#""word":"даша""#), "{text}");
+    std::thread::sleep(std::time::Duration::from_millis(50));
+    let text = std::fs::read_to_string(&events_path).unwrap_or_default();
+    assert!(!text.contains(r#""kind":"rejected_ime""#), "{text}");
     assert!(!text.contains(r#""kind":"accepted_ime""#), "{text}");
+    assert!(
+        !text.contains(r#""kind":"confirmed_ime_prediction""#),
+        "{text}"
+    );
 
     std::env::remove_var("LAY_NANDA_WORD_USAGE_EVENTS");
     std::env::remove_var("LAY_NANDA_WORD_USAGE_COUNTS");
     let _ = std::fs::remove_file(events_path);
     let _ = std::fs::remove_file(counts_path);
+}
+
+#[test]
+fn daemon_is_the_only_raw_typed_usage_owner() {
+    let source = include_str!("../preedit.rs");
+    assert!(!source.contains("TypingCpu::record_typed_tail"));
 }
 
 #[test]
