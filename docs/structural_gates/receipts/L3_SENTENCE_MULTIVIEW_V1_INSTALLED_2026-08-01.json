@@ -1,0 +1,51 @@
+{
+  "gate": "l3_sentence_multiview_v1_installed_runtime",
+  "date": "2026-08-01",
+  "release": "0.2.344",
+  "commit": "9f549f32f53c6e420019ed06398ae976d04dde25",
+  "installed": {
+    "release_binaries_byte_parity": "10/10 PASS",
+    "cli_version": "lay 0.2.344",
+    "delta_path": "/home/ubu/.local/share/lay/nanda_wave/l3-context-deltas/l3_sentence_context_v1.nwpc",
+    "delta_bytes": 79660,
+    "delta_sha256": "ec6b38f257302beb263ffef51380487e055f92edfd719cbfafa17497e9162cb5",
+    "manifest": "/home/ubu/.local/share/lay/nanda_wave/l3_context_phase.runtime.json",
+    "manifest_sha256_before": "b635ff5b68eac55c508549503b727c5066c281144f5473b67627ab5dc520d546",
+    "manifest_sha256_after": "15a0242cde5a35d2a9c7e8af93fdc0018fffc87ad43db6e0d459d6cac0685eb1",
+    "manifest_delta_count": 2,
+    "manifest_total_delta_bytes": 81852
+  },
+  "loaded_composite": {
+    "signature_schema": 4,
+    "candidate_profiles": 12592,
+    "pair_profiles": 41647,
+    "semantic_states": 19023,
+    "transitions": 290367,
+    "compaction_recommended": false
+  },
+  "runtime_restart": {
+    "global_ibus_pid_before": 3793,
+    "global_ibus_pid_after": 3793,
+    "managed_ibus_engine_pid_before": 2489038,
+    "managed_ibus_engine_pid_after": 2489038,
+    "lay_daemon_pid_before": 2488510,
+    "lay_daemon_pid_after": 2688733,
+    "lay_daemon_active": true,
+    "lay_daemon_rss_kib": 158400,
+    "l11_serve_rss_kib": 126660,
+    "service_cgroup_memory_mib": 288.5
+  },
+  "not_tested": [
+    "broad Russian semantic understanding beyond the fixed 25-case sentence denominator",
+    "cross-scene L4 transfer",
+    "final six-client product matrix",
+    "synthetic global key injection during installation"
+  ],
+  "verdict_scope": {
+    "proof_gated_delta_admission": "PASS",
+    "atomic_binary_install": "PASS",
+    "composite_load": "PASS",
+    "global_ibus_preserved": "PASS",
+    "runtime_authority_metadata": false
+  }
+}

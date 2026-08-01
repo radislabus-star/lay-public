@@ -2127,3 +2127,23 @@ Remote artifact root:
 ```text
 /home/e/build/lay-l1-shadow/artifacts/l3-sentence-multiview-v1-2026-08-01
 ```
+
+### Installed runtime checkpoint
+
+Release `0.2.344` was installed from the remote release output with byte parity
+for all `10/10` installed binaries. The portable targeted and full receipts
+admitted the `79 660` byte delta without rewriting the base. The live manifest
+now contains `2` deltas totalling `81 852` bytes and loads as schema `4` with
+`12 592` candidate profiles and `41 647` pair profiles.
+
+Only `lay-daemon.service` was restarted. Global IBus stayed PID `3793` and the
+managed IBus engine stayed PID `2489038`; the daemon changed from PID `2488510`
+to `2688733` and became active with a measured `158 400 KiB` RSS plus
+`126 660 KiB` for the L1.1 service. No synthetic global key injection was used
+during installation.
+
+Exact installed-runtime receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L3_SENTENCE_MULTIVIEW_V1_INSTALLED_2026-08-01.json
+```

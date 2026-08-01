@@ -3650,8 +3650,8 @@
     "semantic_hash": ""
   },
   "docs/l3-online-phase-field.md": {
-    "mtime": 1785613988.1856048,
-    "ast_hash": "765dcfd81962d785f07acda0f1d97e98",
+    "mtime": 1785614325.1026888,
+    "ast_hash": "58b299c4aca349851fe8f8fca70405aa",
     "semantic_hash": ""
   },
   "src/nanda_wave/context_phase/surface_field.rs": {
@@ -5070,8 +5070,8 @@
     "semantic_hash": ""
   },
   "docs/lay-development-plan-after-0.2.340.md": {
-    "mtime": 1785613988.186605,
-    "ast_hash": "90ce008367b49cc0f792c4999c0ca73e",
+    "mtime": 1785614325.1026888,
+    "ast_hash": "6850dc3d76627bd4e42229fc907655eb",
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/PUBLIC_INSTALL_CANONICAL_L2_V13_2026-08-01.json": {
@@ -5132,6 +5132,11 @@
   "docs/structural_gates/receipts/L3_SENTENCE_MULTIVIEW_V1_RELEASE_2026-08-01.json": {
     "mtime": 1785613988.184605,
     "ast_hash": "c0a3beb684cbb86fd9cc458b7ee3472c",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L3_SENTENCE_MULTIVIEW_V1_INSTALLED_2026-08-01.json": {
+    "mtime": 1785614325.1016886,
+    "ast_hash": "644d19ef8c11f9d03ba606bbfd0b0cc2",
     "semantic_hash": ""
   }
 }
