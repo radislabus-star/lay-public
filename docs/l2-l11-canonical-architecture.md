@@ -548,6 +548,10 @@ public downloaded bytes                              135121803
 public downloaded SHA-256                            MATCH
 isolated cache-to-install route                      PASS
 isolated installed version                           0.2.341
+local installed version                              0.2.341
+local daemon / L3-online                      active / active
+local GNOME extension version                        0.2.341
+local IBus PID before / after               1630206 / 1630206
 ```
 
 What was not tested at this checkpoint:

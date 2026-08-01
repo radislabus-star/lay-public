@@ -37,6 +37,16 @@
       "installed_version": "0.2.341",
       "installed_bytes": 135121803,
       "installed_sha256": "bbe67a772b684e0f187483796fca248ac0b10576195b1aa524f0b2bde0f6601e"
+    },
+    "local_release_install": {
+      "status": "PASS",
+      "installed_version": "0.2.341",
+      "gnome_extension_version": "0.2.341",
+      "daemon_service": "active",
+      "l3_online_service": "active",
+      "ibus_pid_before": 1630206,
+      "ibus_pid_after": 1630206,
+      "installed_sha256": "bbe67a772b684e0f187483796fca248ac0b10576195b1aa524f0b2bde0f6601e"
     }
   },
   "not_tested": [

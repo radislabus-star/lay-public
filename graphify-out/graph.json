@@ -6922,7 +6922,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_boundary_runtime",
-      "community": 97,
+      "community": 96,
       "norm_label": "boundary_runtime.rs"
     },
     {
@@ -6932,7 +6932,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_boundary_runtime_deferred",
-      "community": 97,
+      "community": 96,
       "norm_label": "deferred.rs"
     },
     {
@@ -6942,7 +6942,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_boundary_runtime_deferred_try_handle_deferred_typing_assist",
-      "community": 97,
+      "community": 96,
       "norm_label": "try_handle_deferred_typing_assist()"
     },
     {
@@ -6952,7 +6952,7 @@
       "source_location": "L77",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_boundary_runtime_deferred_focused_ime_does_not_drop_verified_deferred_boundary_edit",
-      "community": 97,
+      "community": 96,
       "norm_label": "focused_ime_does_not_drop_verified_deferred_boundary_edit()"
     },
     {
@@ -6962,7 +6962,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_boundary_runtime_deferred_context",
-      "community": 97,
+      "community": 96,
       "norm_label": "context.rs"
     },
     {
@@ -6972,7 +6972,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_boundary_runtime_deferred_context_deferredtypingassistcontext",
-      "community": 97,
+      "community": 96,
       "norm_label": "deferredtypingassistcontext"
     },
     {
@@ -6982,7 +6982,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_boundary_runtime_deferred_context_rs_wordbuffer",
-      "community": 97,
+      "community": 96,
       "norm_label": "wordbuffer"
     },
     {
@@ -6992,7 +6992,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_boundary_runtime_deferred_context_rs_device",
-      "community": 97,
+      "community": 96,
       "norm_label": "device"
     },
     {
@@ -7002,7 +7002,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_boundary_runtime_deferred_context_rs_arc",
-      "community": 97,
+      "community": 96,
       "norm_label": "arc"
     },
     {
@@ -7012,7 +7012,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_boundary_runtime_deferred_context_rs_mutex",
-      "community": 97,
+      "community": 96,
       "norm_label": "mutex"
     },
     {
@@ -7022,7 +7022,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_boundary_runtime_deferred_context_rs_option",
-      "community": 97,
+      "community": 96,
       "norm_label": "option"
     },
     {
@@ -7032,7 +7032,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_boundary_runtime_deferred_context_rs_virtualdevice",
-      "community": 97,
+      "community": 96,
       "norm_label": "virtualdevice"
     },
     {
@@ -7042,7 +7042,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_boundary_runtime_deferred_context_rs_instant",
-      "community": 97,
+      "community": 96,
       "norm_label": "instant"
     },
     {
@@ -12202,7 +12202,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_manual_trigger_runtime_timeout",
-      "community": 96,
+      "community": 67,
       "norm_label": "timeout.rs"
     },
     {
@@ -12212,7 +12212,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_manual_trigger_runtime_timeout_fire_expired_pending_multi_tap",
-      "community": 96,
+      "community": 67,
       "norm_label": "fire_expired_pending_multi_tap()"
     },
     {
@@ -12992,7 +12992,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_field_context",
-      "community": 77,
+      "community": 45,
       "norm_label": "field_context.rs"
     },
     {
@@ -13002,7 +13002,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_field_context_window_input_state_keeps_separate_word_buffers",
-      "community": 77,
+      "community": 45,
       "norm_label": "window_input_state_keeps_separate_word_buffers()"
     },
     {
@@ -13012,7 +13012,7 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_field_context_text_field_context_keeps_unfinished_words_separate_inside_same_window",
-      "community": 77,
+      "community": 45,
       "norm_label": "text_field_context_keeps_unfinished_words_separate_inside_same_window()"
     },
     {
@@ -13022,7 +13022,7 @@
       "source_location": "L57",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_field_context_text_field_context_separates_fields_without_window_identity",
-      "community": 77,
+      "community": 45,
       "norm_label": "text_field_context_separates_fields_without_window_identity()"
     },
     {
@@ -13032,7 +13032,7 @@
       "source_location": "L76",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_field_context_text_field_context_does_not_accumulate_empty_slots",
-      "community": 77,
+      "community": 45,
       "norm_label": "text_field_context_does_not_accumulate_empty_slots()"
     },
     {
@@ -13042,7 +13042,7 @@
       "source_location": "L88",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_field_context_text_field_context_prunes_old_saved_slots",
-      "community": 77,
+      "community": 45,
       "norm_label": "text_field_context_prunes_old_saved_slots()"
     },
     {
@@ -13102,7 +13102,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_fixtures_fixture_row_by_id",
-      "community": 19,
+      "community": 189,
       "norm_label": "fixture_row_by_id()"
     },
     {
@@ -13302,7 +13302,7 @@
       "source_location": "L61",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_harness_key_event",
-      "community": 77,
+      "community": 45,
       "norm_label": "key_event()"
     },
     {
@@ -13332,7 +13332,7 @@
       "source_location": "L79",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_harness_push_text_as_layout",
-      "community": 77,
+      "community": 45,
       "norm_label": "push_text_as_layout()"
     },
     {
@@ -13582,7 +13582,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_learning",
-      "community": 77,
+      "community": 45,
       "norm_label": "learning.rs"
     },
     {
@@ -13592,7 +13592,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_learning_writes_learning_log_as_jsonl",
-      "community": 77,
+      "community": 45,
       "norm_label": "writes_learning_log_as_jsonl()"
     },
     {
@@ -13602,7 +13602,7 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_learning_learning_feedback_records_user_fix_after_lay_correction",
-      "community": 77,
+      "community": 45,
       "norm_label": "learning_feedback_records_user_fix_after_lay_correction()"
     },
     {
@@ -13612,7 +13612,7 @@
       "source_location": "L72",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_learning_learning_feedback_ignores_lay_output_without_user_edit",
-      "community": 77,
+      "community": 45,
       "norm_label": "learning_feedback_ignores_lay_output_without_user_edit()"
     },
     {
@@ -13622,7 +13622,7 @@
       "source_location": "L81",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_learning_learning_feedback_does_not_attach_space_to_non_space_correction",
-      "community": 77,
+      "community": 45,
       "norm_label": "learning_feedback_does_not_attach_space_to_non_space_correction()"
     },
     {
@@ -13632,7 +13632,7 @@
       "source_location": "L97",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_learning_learning_feedback_reconstructs_the_full_user_target_from_a_suffix_edit",
-      "community": 77,
+      "community": 45,
       "norm_label": "learning_feedback_reconstructs_the_full_user_target_from_a_suffix_edit()"
     },
     {
@@ -13642,7 +13642,7 @@
       "source_location": "L112",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_learning_writes_user_correction_learning_log_with_lay_context",
-      "community": 77,
+      "community": 45,
       "norm_label": "writes_user_correction_learning_log_with_lay_context()"
     },
     {
@@ -13652,7 +13652,7 @@
       "source_location": "L150",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_learning_repeated_user_correction_promotes_exact_rule",
-      "community": 77,
+      "community": 45,
       "norm_label": "repeated_user_correction_promotes_exact_rule()"
     },
     {
@@ -13662,7 +13662,7 @@
       "source_location": "L218",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_learning_learning_promotion_skips_unsafe_short_edits",
-      "community": 77,
+      "community": 45,
       "norm_label": "learning_promotion_skips_unsafe_short_edits()"
     },
     {
@@ -13702,7 +13702,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_runtime_state",
-      "community": 77,
+      "community": 20,
       "norm_label": "runtime_state.rs"
     },
     {
@@ -13722,7 +13722,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_runtime_state_idle_wait_uses_long_sleep_when_no_internal_deadlines",
-      "community": 77,
+      "community": 20,
       "norm_label": "idle_wait_uses_long_sleep_when_no_internal_deadlines()"
     },
     {
@@ -13732,7 +13732,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_runtime_state_idle_wait_keeps_multi_tap_deadline_precise",
-      "community": 77,
+      "community": 20,
       "norm_label": "idle_wait_keeps_multi_tap_deadline_precise()"
     },
     {
@@ -13742,7 +13742,7 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_runtime_state_idle_wait_returns_zero_when_a_deadline_is_due",
-      "community": 77,
+      "community": 20,
       "norm_label": "idle_wait_returns_zero_when_a_deadline_is_due()"
     },
     {
@@ -13752,7 +13752,7 @@
       "source_location": "L49",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_runtime_state_shift_state_cleanup_after_trigger_keeps_shortcuts_but_drops_caps",
-      "community": 77,
+      "community": 20,
       "norm_label": "shift_state_cleanup_after_trigger_keeps_shortcuts_but_drops_caps()"
     },
     {
@@ -13762,7 +13762,7 @@
       "source_location": "L65",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_runtime_state_marks_current_word_after_replay_for_next_toggle",
-      "community": 77,
+      "community": 20,
       "norm_label": "marks_current_word_after_replay_for_next_toggle()"
     },
     {
@@ -13772,7 +13772,7 @@
       "source_location": "L85",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_runtime_state_short_fragments_force_replay_without_llm",
-      "community": 77,
+      "community": 20,
       "norm_label": "short_fragments_force_replay_without_llm()"
     },
     {
@@ -13782,7 +13782,7 @@
       "source_location": "L95",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_runtime_state_typing_assist_after_space_is_suppressed_once_after_manual_replay",
-      "community": 77,
+      "community": 20,
       "norm_label": "typing_assist_after_space_is_suppressed_once_after_manual_replay()"
     },
     {
@@ -13812,7 +13812,7 @@
       "source_location": "L160",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_runtime_state_typing_assist_runs_on_space_release_when_pending",
-      "community": 77,
+      "community": 20,
       "norm_label": "typing_assist_runs_on_space_release_when_pending()"
     },
     {
@@ -13822,7 +13822,7 @@
       "source_location": "L179",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_runtime_state_edit_navigation_boundaries_reset_word_buffer_before_next_autocorrect",
-      "community": 77,
+      "community": 20,
       "norm_label": "edit_navigation_boundaries_reset_word_buffer_before_next_autocorrect()"
     },
     {
@@ -13832,7 +13832,7 @@
       "source_location": "L213",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_runtime_state_leading_cli_option_token_is_ignored_until_space",
-      "community": 77,
+      "community": 20,
       "norm_label": "leading_cli_option_token_is_ignored_until_space()"
     },
     {
@@ -13842,7 +13842,7 @@
       "source_location": "L245",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_runtime_state_multi_tap_scope_design_contract_maps_taps_to_scope",
-      "community": 77,
+      "community": 20,
       "norm_label": "multi_tap_scope_design_contract_maps_taps_to_scope()"
     },
     {
@@ -13852,7 +13852,7 @@
       "source_location": "L255",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_runtime_state_typing_after_replay_clears_toggle_shortcut",
-      "community": 77,
+      "community": 20,
       "norm_label": "typing_after_replay_clears_toggle_shortcut()"
     },
     {
@@ -14312,7 +14312,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_scoped_tail_replay_buffer",
-      "community": 77,
+      "community": 45,
       "norm_label": "replay_buffer.rs"
     },
     {
@@ -14382,7 +14382,7 @@
       "source_location": "L59",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_scoped_tail_replay_buffer_layout_decision_ignores_inserted_space",
-      "community": 77,
+      "community": 45,
       "norm_label": "layout_decision_ignores_inserted_space()"
     },
     {
@@ -14392,7 +14392,7 @@
       "source_location": "L79",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_scoped_tail_replay_buffer_shortcut_modified_text_keys_do_not_enter_word_buffer",
-      "community": 77,
+      "community": 45,
       "norm_label": "shortcut_modified_text_keys_do_not_enter_word_buffer()"
     },
     {
@@ -14402,7 +14402,7 @@
       "source_location": "L105",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_scoped_tail_replay_buffer_leading_plus_minus_symbols_do_not_attach_to_next_word",
-      "community": 77,
+      "community": 45,
       "norm_label": "leading_plus_minus_symbols_do_not_attach_to_next_word()"
     },
     {
@@ -14412,7 +14412,7 @@
       "source_location": "L129",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_scoped_tail_replay_buffer_visual_latin_word_with_cyrillic_c_homoglyph_replays_to_ru",
-      "community": 77,
+      "community": 45,
       "norm_label": "visual_latin_word_with_cyrillic_c_homoglyph_replays_to_ru()"
     },
     {
@@ -14862,7 +14862,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_scoped_tail_technical_hyphen_typing_assist",
-      "community": 77,
+      "community": 45,
       "norm_label": "typing_assist.rs"
     },
     {
@@ -14872,7 +14872,7 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_scoped_tail_technical_hyphen_typing_assist_typing_assist_converts_wrong_layout_ascii_hyphen_token",
-      "community": 77,
+      "community": 45,
       "norm_label": "typing_assist_converts_wrong_layout_ascii_hyphen_token()"
     },
     {
@@ -14882,7 +14882,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_scoped_tail_technical_hyphen_typing_assist_typing_assist_keeps_natural_cyrillic_hyphen_words",
-      "community": 19,
+      "community": 45,
       "norm_label": "typing_assist_keeps_natural_cyrillic_hyphen_words()"
     },
     {
@@ -15762,7 +15762,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_typing_assist_rules_typo_families_technical_prefix",
-      "community": 19,
+      "community": 45,
       "norm_label": "technical_prefix.rs"
     },
     {
@@ -15782,7 +15782,7 @@
       "source_location": "L48",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_tests_typing_assist_rules_typo_families_technical_prefix_typing_assist_does_not_move_normal_word_prefixes",
-      "community": 19,
+      "community": 45,
       "norm_label": "typing_assist_does_not_move_normal_word_prefixes()"
     },
     {
@@ -17492,7 +17492,7 @@
       "source_location": "L190",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_trigger_fsm_should_run_deferred_typing_assist_after_space",
-      "community": 97,
+      "community": 96,
       "norm_label": "should_run_deferred_typing_assist_after_space()"
     },
     {
@@ -18772,7 +18772,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_typing_assist_worker_tests",
-      "community": 434,
+      "community": 369,
       "norm_label": "typing_assist_worker_tests.rs"
     },
     {
@@ -18782,7 +18782,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_typing_assist_worker_tests_slow_no_correction",
-      "community": 434,
+      "community": 369,
       "norm_label": "slow_no_correction()"
     },
     {
@@ -18792,7 +18792,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_typing_assist_worker_tests_rs_wordbuffer",
-      "community": 434,
+      "community": 369,
       "norm_label": "wordbuffer"
     },
     {
@@ -18802,7 +18802,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_typing_assist_worker_tests_rs_option",
-      "community": 434,
+      "community": 369,
       "norm_label": "option"
     },
     {
@@ -18812,7 +18812,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_typing_assist_worker_tests_slow_started_no_correction",
-      "community": 434,
+      "community": 369,
       "norm_label": "slow_started_no_correction()"
     },
     {
@@ -18822,7 +18822,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_typing_assist_worker_tests_submit_never_runs_boundary_decision_on_key_thread",
-      "community": 434,
+      "community": 369,
       "norm_label": "submit_never_runs_boundary_decision_on_key_thread()"
     },
     {
@@ -18832,7 +18832,7 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "src_bin_lay_daemon_typing_assist_worker_tests_busy_worker_keeps_the_latest_boundary_snapshot",
-      "community": 434,
+      "community": 369,
       "norm_label": "busy_worker_keeps_the_latest_boundary_snapshot()"
     },
     {
@@ -38992,7 +38992,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_dict",
-      "community": 50,
+      "community": 466,
       "norm_label": "dict.rs"
     },
     {
@@ -39002,7 +39002,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "src_dict_direction",
-      "community": 50,
+      "community": 466,
       "norm_label": "direction"
     },
     {
@@ -39012,7 +39012,7 @@
       "source_location": "L73",
       "_origin": "ast",
       "id": "src_dict_build_us_to_ru",
-      "community": 50,
+      "community": 466,
       "norm_label": "build_us_to_ru()"
     },
     {
@@ -39022,7 +39022,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_dict_rs_hashmap",
-      "community": 50,
+      "community": 466,
       "norm_label": "hashmap"
     },
     {
@@ -39032,7 +39032,7 @@
       "source_location": "L93",
       "_origin": "ast",
       "id": "src_dict_build_ru_to_us",
-      "community": 50,
+      "community": 466,
       "norm_label": "build_ru_to_us()"
     },
     {
@@ -39042,7 +39042,7 @@
       "source_location": "L111",
       "_origin": "ast",
       "id": "src_dict_us_to_ru",
-      "community": 50,
+      "community": 466,
       "norm_label": "us_to_ru()"
     },
     {
@@ -39052,7 +39052,7 @@
       "source_location": "L116",
       "_origin": "ast",
       "id": "src_dict_ru_to_us",
-      "community": 50,
+      "community": 466,
       "norm_label": "ru_to_us()"
     },
     {
@@ -39062,7 +39062,7 @@
       "source_location": "L121",
       "_origin": "ast",
       "id": "src_dict_is_latin",
-      "community": 50,
+      "community": 466,
       "norm_label": "is_latin()"
     },
     {
@@ -39072,7 +39072,7 @@
       "source_location": "L125",
       "_origin": "ast",
       "id": "src_dict_detect_direction",
-      "community": 50,
+      "community": 466,
       "norm_label": "detect_direction()"
     },
     {
@@ -39082,7 +39082,7 @@
       "source_location": "L135",
       "_origin": "ast",
       "id": "src_dict_convert",
-      "community": 50,
+      "community": 466,
       "norm_label": "convert()"
     },
     {
@@ -39092,7 +39092,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_dict_rs_string",
-      "community": 50,
+      "community": 466,
       "norm_label": "string"
     },
     {
@@ -39182,7 +39182,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_engine",
-      "community": 130,
+      "community": 24,
       "norm_label": "engine.rs"
     },
     {
@@ -39192,7 +39192,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "src_engine_manualcorrectionpolicy",
-      "community": 130,
+      "community": 24,
       "norm_label": "manualcorrectionpolicy"
     },
     {
@@ -39202,7 +39202,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "src_engine_manualcorrectioninput",
-      "community": 130,
+      "community": 24,
       "norm_label": "manualcorrectioninput"
     },
     {
@@ -39252,7 +39252,7 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "src_engine_decide_manual_correction",
-      "community": 130,
+      "community": 24,
       "norm_label": "decide_manual_correction()"
     },
     {
@@ -39262,7 +39262,7 @@
       "source_location": "L80",
       "_origin": "ast",
       "id": "src_engine_manual_decoder_uses_ranked_known_ascii_layout_targets",
-      "community": 130,
+      "community": 24,
       "norm_label": "manual_decoder_uses_ranked_known_ascii_layout_targets()"
     },
     {
@@ -39272,7 +39272,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_engine_tests",
-      "community": 130,
+      "community": 24,
       "norm_label": "engine_tests.rs"
     },
     {
@@ -39282,7 +39282,7 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "src_engine_tests_ascii_events",
-      "community": 130,
+      "community": 24,
       "norm_label": "ascii_events()"
     },
     {
@@ -39292,7 +39292,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_engine_tests_rs_vec",
-      "community": 130,
+      "community": 24,
       "norm_label": "vec"
     },
     {
@@ -39302,7 +39302,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_engine_tests_ru_events",
-      "community": 130,
+      "community": 24,
       "norm_label": "ru_events()"
     },
     {
@@ -39312,7 +39312,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "src_engine_tests_manual_engine_is_platform_neutral_for_replay",
-      "community": 130,
+      "community": 24,
       "norm_label": "manual_engine_is_platform_neutral_for_replay()"
     },
     {
@@ -39322,7 +39322,7 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "src_engine_tests_manual_engine_keeps_good_prefix_for_smart_text",
-      "community": 130,
+      "community": 24,
       "norm_label": "manual_engine_keeps_good_prefix_for_smart_text()"
     },
     {
@@ -39332,7 +39332,7 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "src_engine_tests_manual_engine_replays_single_cyrillic_layout_word_to_ascii",
-      "community": 130,
+      "community": 24,
       "norm_label": "manual_engine_replays_single_cyrillic_layout_word_to_ascii()"
     },
     {
@@ -40822,7 +40822,7 @@
       "source_location": "L46",
       "_origin": "ast",
       "id": "src_keyboard_event_words_mapping_original_event_char",
-      "community": 45,
+      "community": 18,
       "norm_label": "original_event_char()"
     },
     {
@@ -40832,7 +40832,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_keyboard_event_words_mapping_rs_option",
-      "community": 45,
+      "community": 18,
       "norm_label": "option"
     },
     {
@@ -41152,7 +41152,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_keyboard_text_input_script_is_cyrillic_letter",
-      "community": 41,
+      "community": 434,
       "norm_label": "is_cyrillic_letter()"
     },
     {
@@ -41202,7 +41202,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_keyboard_tests",
-      "community": 24,
+      "community": 350,
       "norm_label": "keyboard_tests.rs"
     },
     {
@@ -41212,7 +41212,7 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "src_keyboard_tests_us_event",
-      "community": 24,
+      "community": 350,
       "norm_label": "us_event()"
     },
     {
@@ -41222,7 +41222,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_keyboard_tests_rs_keycode",
-      "community": 24,
+      "community": 350,
       "norm_label": "keycode"
     },
     {
@@ -41232,7 +41232,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "src_keyboard_tests_ru_event",
-      "community": 24,
+      "community": 350,
       "norm_label": "ru_event()"
     },
     {
@@ -41242,7 +41242,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "src_keyboard_tests_text_events",
-      "community": 24,
+      "community": 350,
       "norm_label": "text_events()"
     },
     {
@@ -41252,7 +41252,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_keyboard_tests_rs_vec",
-      "community": 24,
+      "community": 350,
       "norm_label": "vec"
     },
     {
@@ -41262,7 +41262,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "src_keyboard_tests_maps_wrong_layout_word_to_russian_target",
-      "community": 24,
+      "community": 350,
       "norm_label": "maps_wrong_layout_word_to_russian_target()"
     },
     {
@@ -41272,7 +41272,7 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "src_keyboard_tests_maps_shifted_ru_currency_key_to_us_dollar_on_replay",
-      "community": 24,
+      "community": 350,
       "norm_label": "maps_shifted_ru_currency_key_to_us_dollar_on_replay()"
     },
     {
@@ -41282,7 +41282,7 @@
       "source_location": "L56",
       "_origin": "ast",
       "id": "src_keyboard_tests_text_insert_can_type_russian_shifted_punctuation_on_ru_layout",
-      "community": 24,
+      "community": 350,
       "norm_label": "text_insert_can_type_russian_shifted_punctuation_on_ru_layout()"
     },
     {
@@ -41292,7 +41292,7 @@
       "source_location": "L65",
       "_origin": "ast",
       "id": "src_keyboard_tests_typing_key_excludes_shift_and_includes_space",
-      "community": 24,
+      "community": 350,
       "norm_label": "typing_key_excludes_shift_and_includes_space()"
     },
     {
@@ -41302,7 +41302,7 @@
       "source_location": "L72",
       "_origin": "ast",
       "id": "src_keyboard_tests_splits_text_insert_into_layout_runs",
-      "community": 24,
+      "community": 350,
       "norm_label": "splits_text_insert_into_layout_runs()"
     },
     {
@@ -41312,7 +41312,7 @@
       "source_location": "L83",
       "_origin": "ast",
       "id": "src_keyboard_tests_layout_decision_ignores_space",
-      "community": 24,
+      "community": 350,
       "norm_label": "layout_decision_ignores_space()"
     },
     {
@@ -41322,7 +41322,7 @@
       "source_location": "L108",
       "_origin": "ast",
       "id": "src_keyboard_tests_splits_event_words_without_trailing_space_word",
-      "community": 24,
+      "community": 350,
       "norm_label": "splits_event_words_without_trailing_space_word()"
     },
     {
@@ -41332,7 +41332,7 @@
       "source_location": "L118",
       "_origin": "ast",
       "id": "src_keyboard_tests_marks_only_typing_keys_layout",
-      "community": 24,
+      "community": 350,
       "norm_label": "marks_only_typing_keys_layout()"
     },
     {
@@ -41342,7 +41342,7 @@
       "source_location": "L135",
       "_origin": "ast",
       "id": "src_keyboard_tests_resyncs_single_current_word_layout_before_manual_replay",
-      "community": 24,
+      "community": 350,
       "norm_label": "resyncs_single_current_word_layout_before_manual_replay()"
     },
     {
@@ -41352,7 +41352,7 @@
       "source_location": "L148",
       "_origin": "ast",
       "id": "src_keyboard_tests_does_not_resync_completed_or_mixed_tail_layout",
-      "community": 24,
+      "community": 350,
       "norm_label": "does_not_resync_completed_or_mixed_tail_layout()"
     },
     {
@@ -42412,7 +42412,7 @@
       "source_location": "L158",
       "_origin": "ast",
       "id": "src_layout_autoswitch_cyrillic_is_plain_cyrillic_layout_token",
-      "community": 41,
+      "community": 434,
       "norm_label": "is_plain_cyrillic_layout_token()"
     },
     {
@@ -42502,7 +42502,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_layout_autoswitch_hyphen",
-      "community": 361,
+      "community": 349,
       "norm_label": "hyphen.rs"
     },
     {
@@ -42512,7 +42512,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "src_layout_autoswitch_hyphen_has_known_cyrillic_hyphen_fragment",
-      "community": 361,
+      "community": 349,
       "norm_label": "has_known_cyrillic_hyphen_fragment()"
     },
     {
@@ -42522,7 +42522,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "src_layout_autoswitch_hyphen_is_cyrillic_hyphenated_word_for_layout",
-      "community": 361,
+      "community": 349,
       "norm_label": "is_cyrillic_hyphenated_word_for_layout()"
     },
     {
@@ -42532,7 +42532,7 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "src_layout_autoswitch_hyphen_is_known_cyrillic_hyphenated_word",
-      "community": 361,
+      "community": 349,
       "norm_label": "is_known_cyrillic_hyphenated_word()"
     },
     {
@@ -42542,7 +42542,7 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "src_layout_autoswitch_hyphen_is_plausible_cyrillic_hyphenated_word",
-      "community": 361,
+      "community": 349,
       "norm_label": "is_plausible_cyrillic_hyphenated_word()"
     },
     {
@@ -42552,7 +42552,7 @@
       "source_location": "L62",
       "_origin": "ast",
       "id": "src_layout_autoswitch_hyphen_is_russian_hyphen_particle",
-      "community": 361,
+      "community": 349,
       "norm_label": "is_russian_hyphen_particle()"
     },
     {
@@ -42562,7 +42562,7 @@
       "source_location": "L66",
       "_origin": "ast",
       "id": "src_layout_autoswitch_hyphen_is_plain_cyrillic_technical_source",
-      "community": 361,
+      "community": 349,
       "norm_label": "is_plain_cyrillic_technical_source()"
     },
     {
@@ -42572,7 +42572,7 @@
       "source_location": "L75",
       "_origin": "ast",
       "id": "src_layout_autoswitch_hyphen_is_vowel_bearing_cyrillic_hyphen_token",
-      "community": 361,
+      "community": 349,
       "norm_label": "is_vowel_bearing_cyrillic_hyphen_token()"
     },
     {
@@ -44762,7 +44762,7 @@
       "source_location": "L81",
       "_origin": "ast",
       "id": "src_llm_tests_does_not_glue_long_latin_tail_to_russian_word",
-      "community": 63,
+      "community": 10,
       "norm_label": "does_not_glue_long_latin_tail_to_russian_word()"
     },
     {
@@ -44812,7 +44812,7 @@
       "source_location": "L127",
       "_origin": "ast",
       "id": "src_llm_tests_hybrid_keeps_valid_russian_phrase_without_partial_single_letter_flip",
-      "community": 63,
+      "community": 10,
       "norm_label": "hybrid_keeps_valid_russian_phrase_without_partial_single_letter_flip()"
     },
     {
@@ -44822,7 +44822,7 @@
       "source_location": "L136",
       "_origin": "ast",
       "id": "src_llm_tests_hybrid_keeps_domain_and_converts_neighbor_word",
-      "community": 63,
+      "community": 10,
       "norm_label": "hybrid_keeps_domain_and_converts_neighbor_word()"
     },
     {
@@ -44832,7 +44832,7 @@
       "source_location": "L145",
       "_origin": "ast",
       "id": "src_llm_tests_hybrid_keeps_mixed_case_ascii_brand_and_converts_neighbor_letter",
-      "community": 63,
+      "community": 10,
       "norm_label": "hybrid_keeps_mixed_case_ascii_brand_and_converts_neighbor_letter()"
     },
     {
@@ -52342,7 +52342,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_grammar_adapter",
-      "community": 120,
+      "community": 77,
       "norm_label": "grammar_adapter.rs"
     },
     {
@@ -52352,7 +52352,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_grammar_adapter_grammar_agreement_candidates",
-      "community": 120,
+      "community": 77,
       "norm_label": "grammar_agreement_candidates()"
     },
     {
@@ -52362,7 +52362,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_grammar_adapter_rs_vec",
-      "community": 120,
+      "community": 77,
       "norm_label": "vec"
     },
     {
@@ -52372,7 +52372,7 @@
       "source_location": "L52",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_grammar_adapter_clean_ru_token",
-      "community": 120,
+      "community": 77,
       "norm_label": "clean_ru_token()"
     },
     {
@@ -52382,7 +52382,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_grammar_adapter_rs_string",
-      "community": 120,
+      "community": 77,
       "norm_label": "string"
     },
     {
@@ -52392,7 +52392,7 @@
       "source_location": "L58",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_grammar_adapter_preposition_case_completion",
-      "community": 120,
+      "community": 77,
       "norm_label": "preposition_case_completion()"
     },
     {
@@ -52402,7 +52402,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_grammar_adapter_rs_option",
-      "community": 120,
+      "community": 77,
       "norm_label": "option"
     },
     {
@@ -52412,7 +52412,7 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_grammar_adapter_agree_adjective_like_tail",
-      "community": 120,
+      "community": 77,
       "norm_label": "agree_adjective_like_tail()"
     },
     {
@@ -52422,7 +52422,7 @@
       "source_location": "L97",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_grammar_adapter_has_russian_verb_tail",
-      "community": 120,
+      "community": 77,
       "norm_label": "has_russian_verb_tail()"
     },
     {
@@ -52432,7 +52432,7 @@
       "source_location": "L105",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_grammar_adapter_looks_like_plural_anchor",
-      "community": 120,
+      "community": 77,
       "norm_label": "looks_like_plural_anchor()"
     },
     {
@@ -52442,7 +52442,7 @@
       "source_location": "L114",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_grammar_adapter_looks_like_singular_anchor",
-      "community": 120,
+      "community": 77,
       "norm_label": "looks_like_singular_anchor()"
     },
     {
@@ -53932,7 +53932,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_taught_adapter",
-      "community": 121,
+      "community": 77,
       "norm_label": "taught_adapter.rs"
     },
     {
@@ -53942,7 +53942,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_taught_adapter_taughtcandidateinput",
-      "community": 121,
+      "community": 77,
       "norm_label": "taughtcandidateinput"
     },
     {
@@ -53972,7 +53972,7 @@
       "source_location": "L83",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_taught_adapter_should_run_taught_candidates",
-      "community": 121,
+      "community": 77,
       "norm_label": "should_run_taught_candidates()"
     },
     {
@@ -53982,7 +53982,7 @@
       "source_location": "L89",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_taught_adapter_taught_word_candidate",
-      "community": 121,
+      "community": 77,
       "norm_label": "taught_word_candidate()"
     },
     {
@@ -53992,7 +53992,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_taught_adapter_rs_option",
-      "community": 121,
+      "community": 77,
       "norm_label": "option"
     },
     {
@@ -54012,7 +54012,7 @@
       "source_location": "L157",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_taught_adapter_taught_risk",
-      "community": 121,
+      "community": 77,
       "norm_label": "taught_risk()"
     },
     {
@@ -54022,7 +54022,7 @@
       "source_location": "L183",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_taught_adapter_is_phrase_grammar_candidate",
-      "community": 120,
+      "community": 77,
       "norm_label": "is_phrase_grammar_candidate()"
     },
     {
@@ -54032,7 +54032,7 @@
       "source_location": "L211",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_taught_adapter_normalized_edit_ratio",
-      "community": 121,
+      "community": 77,
       "norm_label": "normalized_edit_ratio()"
     },
     {
@@ -54042,7 +54042,7 @@
       "source_location": "L217",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_taught_adapter_compact_text",
-      "community": 121,
+      "community": 77,
       "norm_label": "compact_text()"
     },
     {
@@ -54052,7 +54052,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_taught_adapter_rs_string",
-      "community": 121,
+      "community": 77,
       "norm_label": "string"
     },
     {
@@ -54062,7 +54062,7 @@
       "source_location": "L221",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_taught_adapter_unsafe_single_token_phrase_typo",
-      "community": 121,
+      "community": 77,
       "norm_label": "unsafe_single_token_phrase_typo()"
     },
     {
@@ -54972,7 +54972,7 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_candidate_phase_phaseverdict",
-      "community": 70,
+      "community": 14,
       "norm_label": "phaseverdict"
     },
     {
@@ -54982,7 +54982,7 @@
       "source_location": "L63",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_candidate_phase_phaseverdict_as_str",
-      "community": 70,
+      "community": 14,
       "norm_label": ".as_str()"
     },
     {
@@ -55002,7 +55002,7 @@
       "source_location": "L101",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_candidate_phase_phaseprofile",
-      "community": 70,
+      "community": 16,
       "norm_label": "phaseprofile"
     },
     {
@@ -55042,7 +55042,7 @@
       "source_location": "L126",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_candidate_phase_phaseevaluator",
-      "community": 70,
+      "community": 178,
       "norm_label": "phaseevaluator"
     },
     {
@@ -55052,7 +55052,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_candidate_phase_rs_option",
-      "community": 70,
+      "community": 16,
       "norm_label": "option"
     },
     {
@@ -55082,7 +55082,7 @@
       "source_location": "L153",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_candidate_phase_default_phase_memory_path",
-      "community": 70,
+      "community": 178,
       "norm_label": "default_phase_memory_path()"
     },
     {
@@ -55092,7 +55092,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_candidate_phase_rs_pathbuf",
-      "community": 70,
+      "community": 178,
       "norm_label": "pathbuf"
     },
     {
@@ -55102,7 +55102,7 @@
       "source_location": "L164",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_candidate_phase_write_phase_memory_from_entries",
-      "community": 178,
+      "community": 70,
       "norm_label": "write_phase_memory_from_entries()"
     },
     {
@@ -55112,7 +55112,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_candidate_phase_rs_path",
-      "community": 178,
+      "community": 70,
       "norm_label": "path"
     },
     {
@@ -55122,7 +55122,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_candidate_phase_rs_i",
-      "community": 178,
+      "community": 70,
       "norm_label": "i"
     },
     {
@@ -55142,7 +55142,7 @@
       "source_location": "L182",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_candidate_phase_write_phase_memory_from_labeled_entries",
-      "community": 178,
+      "community": 70,
       "norm_label": "write_phase_memory_from_labeled_entries()"
     },
     {
@@ -55172,7 +55172,7 @@
       "source_location": "L224",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_candidate_phase_shadow_readout_from_path",
-      "community": 178,
+      "community": 70,
       "norm_label": "shadow_readout_from_path()"
     },
     {
@@ -55202,7 +55202,7 @@
       "source_location": "L255",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_candidate_phase_phaseevaluator_readout",
-      "community": 70,
+      "community": 178,
       "norm_label": ".readout()"
     },
     {
@@ -55222,7 +55222,7 @@
       "source_location": "L274",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_candidate_phase_phase_memory_report_json",
-      "community": 178,
+      "community": 70,
       "norm_label": "phase_memory_report_json()"
     },
     {
@@ -55472,7 +55472,7 @@
       "source_location": "L982",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_candidate_phase_load_default_runtime",
-      "community": 70,
+      "community": 178,
       "norm_label": "load_default_runtime()"
     },
     {
@@ -55532,7 +55532,7 @@
       "source_location": "L1178",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_candidate_phase_phaseprofilebuilder_compile",
-      "community": 70,
+      "community": 16,
       "norm_label": ".compile()"
     },
     {
@@ -55572,7 +55572,7 @@
       "source_location": "L1330",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_candidate_phase_phaseruntime_readout_ablation",
-      "community": 70,
+      "community": 16,
       "norm_label": ".readout_ablation()"
     },
     {
@@ -55602,7 +55602,7 @@
       "source_location": "L1543",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_candidate_phase_phase_verdict_from_scores",
-      "community": 70,
+      "community": 16,
       "norm_label": "phase_verdict_from_scores()"
     },
     {
@@ -55612,7 +55612,7 @@
       "source_location": "L1558",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_candidate_phase_lexical_verdict_from_scores",
-      "community": 70,
+      "community": 14,
       "norm_label": "lexical_verdict_from_scores()"
     },
     {
@@ -55622,7 +55622,7 @@
       "source_location": "L1568",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_candidate_phase_lexical_verdict_from_margin",
-      "community": 70,
+      "community": 14,
       "norm_label": "lexical_verdict_from_margin()"
     },
     {
@@ -55752,7 +55752,7 @@
       "source_location": "L1712",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_candidate_phase_learned_margin_threshold",
-      "community": 70,
+      "community": 16,
       "norm_label": "learned_margin_threshold()"
     },
     {
@@ -55762,7 +55762,7 @@
       "source_location": "L1720",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_candidate_phase_learned_lexical_margin_threshold",
-      "community": 70,
+      "community": 16,
       "norm_label": "learned_lexical_margin_threshold()"
     },
     {
@@ -55822,7 +55822,7 @@
       "source_location": "L1805",
       "_origin": "ast",
       "id": "src_nanda_wave_l2_candidate_phase_concrete_surface_id",
-      "community": 70,
+      "community": 16,
       "norm_label": "concrete_surface_id()"
     },
     {
@@ -61862,7 +61862,7 @@
       "source_location": "L105",
       "_origin": "ast",
       "id": "src_nanda_wave_l4_phase_witness_surface_vector",
-      "community": 16,
+      "community": 155,
       "norm_label": "surface_vector()"
     },
     {
@@ -75082,7 +75082,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nanda_wave_mod_rs_option",
-      "community": 472,
+      "community": 125,
       "norm_label": "option"
     },
     {
@@ -75092,7 +75092,7 @@
       "source_location": "L366",
       "_origin": "ast",
       "id": "src_nanda_wave_mod_admit_l3_context_delta_with_full_proof",
-      "community": 391,
+      "community": 125,
       "norm_label": "admit_l3_context_delta_with_full_proof()"
     },
     {
@@ -75182,7 +75182,7 @@
       "source_location": "L730",
       "_origin": "ast",
       "id": "src_nanda_wave_mod_prove_l3_context_phase_package",
-      "community": 472,
+      "community": 125,
       "norm_label": "prove_l3_context_phase_package()"
     },
     {
@@ -75232,7 +75232,7 @@
       "source_location": "L944",
       "_origin": "ast",
       "id": "src_nanda_wave_mod_l3_context_phase_status_json",
-      "community": 472,
+      "community": 125,
       "norm_label": "l3_context_phase_status_json()"
     },
     {
@@ -75442,7 +75442,7 @@
       "source_location": "L1206",
       "_origin": "ast",
       "id": "src_nanda_wave_mod_l2transitionphaseshadowevaluator_load",
-      "community": 472,
+      "community": 125,
       "norm_label": ".load()"
     },
     {
@@ -75452,7 +75452,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nanda_wave_mod_rs_self",
-      "community": 472,
+      "community": 125,
       "norm_label": "self"
     },
     {
@@ -75502,7 +75502,7 @@
       "source_location": "L1281",
       "_origin": "ast",
       "id": "src_nanda_wave_mod_l2_transition_phase_report_json",
-      "community": 472,
+      "community": 125,
       "norm_label": "l2_transition_phase_report_json()"
     },
     {
@@ -75952,7 +75952,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nanda_wave_morphology_phase_field",
-      "community": 242,
+      "community": 406,
       "norm_label": "field.rs"
     },
     {
@@ -76122,7 +76122,7 @@
       "source_location": "L166",
       "_origin": "ast",
       "id": "src_nanda_wave_morphology_phase_field_morphologyfield_candidate_surfaces_for",
-      "community": 406,
+      "community": 94,
       "norm_label": ".candidate_surfaces_for()"
     },
     {
@@ -76132,7 +76132,7 @@
       "source_location": "L189",
       "_origin": "ast",
       "id": "src_nanda_wave_morphology_phase_field_morphologyfield_candidate_form_ids_for_lemma",
-      "community": 406,
+      "community": 94,
       "norm_label": ".candidate_form_ids_for_lemma()"
     },
     {
@@ -76182,7 +76182,7 @@
       "source_location": "L233",
       "_origin": "ast",
       "id": "src_nanda_wave_morphology_phase_field_morphologyfield_score_slots",
-      "community": 242,
+      "community": 94,
       "norm_label": ".score_slots()"
     },
     {
@@ -76292,7 +76292,7 @@
       "source_location": "L387",
       "_origin": "ast",
       "id": "src_nanda_wave_morphology_phase_field_calibrationobservation",
-      "community": 242,
+      "community": 406,
       "norm_label": "calibrationobservation"
     },
     {
@@ -76362,7 +76362,7 @@
       "source_location": "L481",
       "_origin": "ast",
       "id": "src_nanda_wave_morphology_phase_field_scene_wave",
-      "community": 242,
+      "community": 406,
       "norm_label": "scene_wave()"
     },
     {
@@ -76372,7 +76372,7 @@
       "source_location": "L515",
       "_origin": "ast",
       "id": "src_nanda_wave_morphology_phase_field_add_feature",
-      "community": 242,
+      "community": 406,
       "norm_label": "add_feature()"
     },
     {
@@ -76382,7 +76382,7 @@
       "source_location": "L529",
       "_origin": "ast",
       "id": "src_nanda_wave_morphology_phase_field_hash_text",
-      "community": 242,
+      "community": 406,
       "norm_label": "hash_text()"
     },
     {
@@ -76392,7 +76392,7 @@
       "source_location": "L536",
       "_origin": "ast",
       "id": "src_nanda_wave_morphology_phase_field_score_order",
-      "community": 242,
+      "community": 406,
       "norm_label": "score_order()"
     },
     {
@@ -76402,7 +76402,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nanda_wave_morphology_phase_field_rs_ordering",
-      "community": 242,
+      "community": 406,
       "norm_label": "ordering"
     },
     {
@@ -78902,7 +78902,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_nanda_wave_signal",
-      "community": 350,
+      "community": 121,
       "norm_label": "signal.rs"
     },
     {
@@ -78912,7 +78912,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_nanda_wave_signal_activemode",
-      "community": 350,
+      "community": 121,
       "norm_label": "activemode"
     },
     {
@@ -78922,7 +78922,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "src_nanda_wave_signal_activemode_label",
-      "community": 350,
+      "community": 121,
       "norm_label": ".label()"
     },
     {
@@ -78932,7 +78932,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nanda_wave_signal_rs_string",
-      "community": 350,
+      "community": 121,
       "norm_label": "string"
     },
     {
@@ -78952,7 +78952,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nanda_wave_signal_rs_vec",
-      "community": 350,
+      "community": 121,
       "norm_label": "vec"
     },
     {
@@ -78982,7 +78982,7 @@
       "source_location": "L53",
       "_origin": "ast",
       "id": "src_nanda_wave_signal_wavedecision",
-      "community": 350,
+      "community": 121,
       "norm_label": "wavedecision"
     },
     {
@@ -78992,7 +78992,7 @@
       "source_location": "L68",
       "_origin": "ast",
       "id": "src_nanda_wave_signal_layertrace",
-      "community": 350,
+      "community": 121,
       "norm_label": "layertrace"
     },
     {
@@ -79002,7 +79002,7 @@
       "source_location": "L74",
       "_origin": "ast",
       "id": "src_nanda_wave_signal_wavetrace",
-      "community": 350,
+      "community": 121,
       "norm_label": "wavetrace"
     },
     {
@@ -79012,7 +79012,7 @@
       "source_location": "L83",
       "_origin": "ast",
       "id": "src_nanda_wave_signal_wavetrace_output",
-      "community": 350,
+      "community": 121,
       "norm_label": ".output()"
     },
     {
@@ -79022,7 +79022,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nanda_wave_signal_rs_option",
-      "community": 350,
+      "community": 121,
       "norm_label": "option"
     },
     {
@@ -79922,7 +79922,7 @@
       "source_location": "L219",
       "_origin": "ast",
       "id": "src_nanda_wave_usage_prior_usagepriorsnapshot_phase_witness",
-      "community": 31,
+      "community": 65,
       "norm_label": ".phase_witness()"
     },
     {
@@ -79982,7 +79982,7 @@
       "source_location": "L247",
       "_origin": "ast",
       "id": "src_nanda_wave_usage_prior_usagepriorsnapshot_context_rejected_word_prior",
-      "community": 31,
+      "community": 84,
       "norm_label": ".context_rejected_word_prior()"
     },
     {
@@ -80082,7 +80082,7 @@
       "source_location": "L315",
       "_origin": "ast",
       "id": "src_nanda_wave_usage_prior_record_typed_tail_if_enabled",
-      "community": 84,
+      "community": 472,
       "norm_label": "record_typed_tail_if_enabled()"
     },
     {
@@ -80092,7 +80092,7 @@
       "source_location": "L325",
       "_origin": "ast",
       "id": "src_nanda_wave_usage_prior_record_accepted_fix_if_enabled",
-      "community": 84,
+      "community": 472,
       "norm_label": "record_accepted_fix_if_enabled()"
     },
     {
@@ -80102,7 +80102,7 @@
       "source_location": "L335",
       "_origin": "ast",
       "id": "src_nanda_wave_usage_prior_record_accepted_layout_projection_if_enabled",
-      "community": 84,
+      "community": 472,
       "norm_label": "record_accepted_layout_projection_if_enabled()"
     },
     {
@@ -80112,7 +80112,7 @@
       "source_location": "L344",
       "_origin": "ast",
       "id": "src_nanda_wave_usage_prior_record_accepted_ime_if_enabled",
-      "community": 84,
+      "community": 472,
       "norm_label": "record_accepted_ime_if_enabled()"
     },
     {
@@ -80122,7 +80122,7 @@
       "source_location": "L359",
       "_origin": "ast",
       "id": "src_nanda_wave_usage_prior_record_edited_ime_if_enabled",
-      "community": 84,
+      "community": 472,
       "norm_label": "record_edited_ime_if_enabled()"
     },
     {
@@ -80132,7 +80132,7 @@
       "source_location": "L376",
       "_origin": "ast",
       "id": "src_nanda_wave_usage_prior_record_confirmed_ime_prediction_if_enabled",
-      "community": 84,
+      "community": 472,
       "norm_label": "record_confirmed_ime_prediction_if_enabled()"
     },
     {
@@ -80142,7 +80142,7 @@
       "source_location": "L385",
       "_origin": "ast",
       "id": "src_nanda_wave_usage_prior_record_rejected_ime_if_enabled",
-      "community": 84,
+      "community": 472,
       "norm_label": "record_rejected_ime_if_enabled()"
     },
     {
@@ -80152,7 +80152,7 @@
       "source_location": "L394",
       "_origin": "ast",
       "id": "src_nanda_wave_usage_prior_record_rejected_candidate_if_enabled",
-      "community": 84,
+      "community": 472,
       "norm_label": "record_rejected_candidate_if_enabled()"
     },
     {
@@ -80162,7 +80162,7 @@
       "source_location": "L410",
       "_origin": "ast",
       "id": "src_nanda_wave_usage_prior_record_typing_memory_event_if_enabled",
-      "community": 84,
+      "community": 472,
       "norm_label": "record_typing_memory_event_if_enabled()"
     },
     {
@@ -80172,7 +80172,7 @@
       "source_location": "L417",
       "_origin": "ast",
       "id": "src_nanda_wave_usage_prior_word_usage_prior",
-      "community": 65,
+      "community": 84,
       "norm_label": "word_usage_prior()"
     },
     {
@@ -80192,7 +80192,7 @@
       "source_location": "L425",
       "_origin": "ast",
       "id": "src_nanda_wave_usage_prior_usage_learning_enabled",
-      "community": 84,
+      "community": 472,
       "norm_label": "usage_learning_enabled()"
     },
     {
@@ -80202,7 +80202,7 @@
       "source_location": "L429",
       "_origin": "ast",
       "id": "src_nanda_wave_usage_prior_ingest_usage_hot_state_if_stale",
-      "community": 65,
+      "community": 84,
       "norm_label": "ingest_usage_hot_state_if_stale()"
     },
     {
@@ -80402,7 +80402,7 @@
       "source_location": "L716",
       "_origin": "ast",
       "id": "src_nanda_wave_usage_prior_set_usage_cache_hot_from_counts",
-      "community": 65,
+      "community": 84,
       "norm_label": "set_usage_cache_hot_from_counts()"
     },
     {
@@ -80422,7 +80422,7 @@
       "source_location": "L727",
       "_origin": "ast",
       "id": "src_nanda_wave_usage_prior_usage_cache",
-      "community": 65,
+      "community": 84,
       "norm_label": "usage_cache()"
     },
     {
@@ -80432,7 +80432,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_nanda_wave_usage_prior_rs_mutex",
-      "community": 65,
+      "community": 84,
       "norm_label": "mutex"
     },
     {
@@ -80602,7 +80602,7 @@
       "source_location": "L1118",
       "_origin": "ast",
       "id": "src_nanda_wave_usage_prior_refresh_usage_cache_after_write",
-      "community": 65,
+      "community": 84,
       "norm_label": "refresh_usage_cache_after_write()"
     },
     {
@@ -80772,7 +80772,7 @@
       "source_location": "L1290",
       "_origin": "ast",
       "id": "src_nanda_wave_usage_prior_persist_usage_counts_snapshot_to_path",
-      "community": 31,
+      "community": 84,
       "norm_label": "persist_usage_counts_snapshot_to_path()"
     },
     {
@@ -81762,7 +81762,7 @@
       "source_location": "L498",
       "_origin": "ast",
       "id": "src_nanda_wave_usage_prior_hot_usagehotreadout",
-      "community": 114,
+      "community": 31,
       "norm_label": "usagehotreadout"
     },
     {
@@ -81792,7 +81792,7 @@
       "source_location": "L522",
       "_origin": "ast",
       "id": "src_nanda_wave_usage_prior_hot_usagecandidateprior",
-      "community": 31,
+      "community": 114,
       "norm_label": "usagecandidateprior"
     },
     {
@@ -82802,7 +82802,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_phrase_candidates",
-      "community": 17,
+      "community": 41,
       "norm_label": "phrase_candidates.rs"
     },
     {
@@ -82812,7 +82812,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "src_phrase_candidates_glued_phrase_part_candidates",
-      "community": 17,
+      "community": 41,
       "norm_label": "glued_phrase_part_candidates()"
     },
     {
@@ -82822,7 +82822,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_phrase_candidates_rs_vec",
-      "community": 17,
+      "community": 41,
       "norm_label": "vec"
     },
     {
@@ -82832,7 +82832,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_phrase_candidates_rs_string",
-      "community": 17,
+      "community": 41,
       "norm_label": "string"
     },
     {
@@ -82842,7 +82842,7 @@
       "source_location": "L59",
       "_origin": "ast",
       "id": "src_phrase_candidates_glued_part_fixes",
-      "community": 17,
+      "community": 41,
       "norm_label": "glued_part_fixes()"
     },
     {
@@ -82852,7 +82852,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_phrase_candidates_rs_iterator",
-      "community": 17,
+      "community": 41,
       "norm_label": "iterator"
     },
     {
@@ -82862,7 +82862,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_phrase_candidates_rs_item",
-      "community": 17,
+      "community": 41,
       "norm_label": "item"
     },
     {
@@ -82872,7 +82872,7 @@
       "source_location": "L63",
       "_origin": "ast",
       "id": "src_phrase_candidates_push_glued_phrase_part_candidate",
-      "community": 17,
+      "community": 41,
       "norm_label": "push_glued_phrase_part_candidate()"
     },
     {
@@ -83252,7 +83252,7 @@
       "source_location": "L114",
       "_origin": "ast",
       "id": "src_phrase_reader_guards_is_shouty_cyrillic_word",
-      "community": 41,
+      "community": 434,
       "norm_label": "is_shouty_cyrillic_word()"
     },
     {
@@ -83332,7 +83332,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_phrase_reader_known_word_missing",
-      "community": 41,
+      "community": 361,
       "norm_label": "known_word_missing.rs"
     },
     {
@@ -83342,7 +83342,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_phrase_reader_known_word_missing_correct_contextual_known_word_missing_letter",
-      "community": 41,
+      "community": 361,
       "norm_label": "correct_contextual_known_word_missing_letter()"
     },
     {
@@ -83352,7 +83352,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_phrase_reader_known_word_missing_rs_option",
-      "community": 41,
+      "community": 361,
       "norm_label": "option"
     },
     {
@@ -83362,7 +83362,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_phrase_reader_known_word_missing_rs_string",
-      "community": 41,
+      "community": 361,
       "norm_label": "string"
     },
     {
@@ -83582,7 +83582,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_phrase_reader_tests",
-      "community": 58,
+      "community": 10,
       "norm_label": "phrase_reader_tests.rs"
     },
     {
@@ -83592,7 +83592,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "src_phrase_reader_tests_splits_confident_glued_phrase_without_daemon_runtime",
-      "community": 58,
+      "community": 10,
       "norm_label": "splits_confident_glued_phrase_without_daemon_runtime()"
     },
     {
@@ -83602,7 +83602,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "src_phrase_reader_tests_glued_phrase_defers_to_whole_word_typo_candidate",
-      "community": 58,
+      "community": 10,
       "norm_label": "glued_phrase_defers_to_whole_word_typo_candidate()"
     },
     {
@@ -83612,7 +83612,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "src_phrase_reader_tests_splits_short_function_glued_to_be_form",
-      "community": 58,
+      "community": 10,
       "norm_label": "splits_short_function_glued_to_be_form()"
     },
     {
@@ -83622,7 +83622,7 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "src_phrase_reader_tests_splits_contextual_glued_tail_in_short_phrase",
-      "community": 58,
+      "community": 10,
       "norm_label": "splits_contextual_glued_tail_in_short_phrase()"
     },
     {
@@ -83632,7 +83632,7 @@
       "source_location": "L49",
       "_origin": "ast",
       "id": "src_phrase_reader_tests_merges_accidental_split_word_but_keeps_normal_pair",
-      "community": 58,
+      "community": 10,
       "norm_label": "merges_accidental_split_word_but_keeps_normal_pair()"
     },
     {
@@ -83642,7 +83642,7 @@
       "source_location": "L61",
       "_origin": "ast",
       "id": "src_phrase_reader_tests_moves_next_word_prefix_back_when_phrase_score_is_confident",
-      "community": 58,
+      "community": 10,
       "norm_label": "moves_next_word_prefix_back_when_phrase_score_is_confident()"
     },
     {
@@ -83652,7 +83652,7 @@
       "source_location": "L72",
       "_origin": "ast",
       "id": "src_phrase_reader_tests_keeps_normal_two_word_boundaries",
-      "community": 58,
+      "community": 10,
       "norm_label": "keeps_normal_two_word_boundaries()"
     },
     {
@@ -83982,7 +83982,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_ru_typo_case_rule",
-      "community": 361,
+      "community": 349,
       "norm_label": "case_rule.rs"
     },
     {
@@ -83992,7 +83992,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_ru_typo_case_rule_correct_cyrillic_word_case",
-      "community": 361,
+      "community": 349,
       "norm_label": "correct_cyrillic_word_case()"
     },
     {
@@ -84002,7 +84002,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_ru_typo_case_rule_rs_option",
-      "community": 361,
+      "community": 349,
       "norm_label": "option"
     },
     {
@@ -84012,7 +84012,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_ru_typo_case_rule_rs_string",
-      "community": 361,
+      "community": 349,
       "norm_label": "string"
     },
     {
@@ -84282,7 +84282,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_ru_typo_extra_scoring",
-      "community": 3,
+      "community": 349,
       "norm_label": "scoring.rs"
     },
     {
@@ -84292,7 +84292,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_ru_typo_extra_scoring_best_extra_letter_candidate",
-      "community": 3,
+      "community": 349,
       "norm_label": "best_extra_letter_candidate()"
     },
     {
@@ -84302,7 +84302,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_ru_typo_extra_scoring_rs_vec",
-      "community": 3,
+      "community": 349,
       "norm_label": "vec"
     },
     {
@@ -84312,7 +84312,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_ru_typo_extra_scoring_rs_string",
-      "community": 3,
+      "community": 349,
       "norm_label": "string"
     },
     {
@@ -84322,7 +84322,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_ru_typo_extra_scoring_rs_option",
-      "community": 3,
+      "community": 349,
       "norm_label": "option"
     },
     {
@@ -84332,7 +84332,7 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "src_ru_typo_extra_scoring_best_common_extra_letter_candidate",
-      "community": 3,
+      "community": 349,
       "norm_label": "best_common_extra_letter_candidate()"
     },
     {
@@ -84492,7 +84492,7 @@
       "source_location": "L67",
       "_origin": "ast",
       "id": "src_ru_typo_guards_looks_like_plausible_russian_past_tense",
-      "community": 41,
+      "community": 434,
       "norm_label": "looks_like_plausible_russian_past_tense()"
     },
     {
@@ -84702,7 +84702,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_ru_typo_missing_safety",
-      "community": 41,
+      "community": 434,
       "norm_label": "safety.rs"
     },
     {
@@ -84712,7 +84712,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_ru_typo_missing_safety_safe_missing_letter_candidates_impl",
-      "community": 41,
+      "community": 434,
       "norm_label": "safe_missing_letter_candidates_impl()"
     },
     {
@@ -84722,7 +84722,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_ru_typo_missing_safety_rs_iterator",
-      "community": 41,
+      "community": 434,
       "norm_label": "iterator"
     },
     {
@@ -84732,7 +84732,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_ru_typo_missing_safety_rs_item",
-      "community": 41,
+      "community": 434,
       "norm_label": "item"
     },
     {
@@ -84742,7 +84742,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_ru_typo_missing_safety_rs_string",
-      "community": 41,
+      "community": 434,
       "norm_label": "string"
     },
     {
@@ -84752,7 +84752,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "src_ru_typo_missing_safety_is_safe_missing_letter_candidate",
-      "community": 41,
+      "community": 434,
       "norm_label": "is_safe_missing_letter_candidate()"
     },
     {
@@ -84762,7 +84762,7 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "src_ru_typo_missing_safety_is_risky_consonant_insert_before_final_verb_tail",
-      "community": 41,
+      "community": 434,
       "norm_label": "is_risky_consonant_insert_before_final_verb_tail()"
     },
     {
@@ -84772,7 +84772,7 @@
       "source_location": "L47",
       "_origin": "ast",
       "id": "src_ru_typo_missing_safety_is_risky_vowel_insert_into_verb_tail",
-      "community": 41,
+      "community": 434,
       "norm_label": "is_risky_vowel_insert_into_verb_tail()"
     },
     {
@@ -84822,7 +84822,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_ru_typo_repeated",
-      "community": 459,
+      "community": 41,
       "norm_label": "repeated.rs"
     },
     {
@@ -84832,7 +84832,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "src_ru_typo_repeated_correct_repeated_letter",
-      "community": 459,
+      "community": 41,
       "norm_label": "correct_repeated_letter()"
     },
     {
@@ -84842,7 +84842,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_ru_typo_repeated_rs_option",
-      "community": 459,
+      "community": 41,
       "norm_label": "option"
     },
     {
@@ -84852,7 +84852,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_ru_typo_repeated_rs_string",
-      "community": 459,
+      "community": 41,
       "norm_label": "string"
     },
     {
@@ -84862,7 +84862,7 @@
       "source_location": "L61",
       "_origin": "ast",
       "id": "src_ru_typo_repeated_correct_short_repeated_function_word",
-      "community": 459,
+      "community": 41,
       "norm_label": "correct_short_repeated_function_word()"
     },
     {
@@ -84932,7 +84932,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_ru_typo_transposition",
-      "community": 3,
+      "community": 41,
       "norm_label": "transposition.rs"
     },
     {
@@ -84942,7 +84942,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "src_ru_typo_transposition_correct_adjacent_transposition",
-      "community": 3,
+      "community": 41,
       "norm_label": "correct_adjacent_transposition()"
     },
     {
@@ -84952,7 +84952,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_ru_typo_transposition_rs_option",
-      "community": 3,
+      "community": 41,
       "norm_label": "option"
     },
     {
@@ -84962,7 +84962,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_ru_typo_transposition_rs_string",
-      "community": 3,
+      "community": 41,
       "norm_label": "string"
     },
     {
@@ -84972,7 +84972,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_ru_typo_verb",
-      "community": 459,
+      "community": 41,
       "norm_label": "verb.rs"
     },
     {
@@ -84982,7 +84982,7 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "src_ru_typo_verb_correct_verb_ending_confusion",
-      "community": 459,
+      "community": 41,
       "norm_label": "correct_verb_ending_confusion()"
     },
     {
@@ -84992,7 +84992,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_ru_typo_verb_rs_option",
-      "community": 459,
+      "community": 41,
       "norm_label": "option"
     },
     {
@@ -85002,7 +85002,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_ru_typo_verb_rs_string",
-      "community": 459,
+      "community": 41,
       "norm_label": "string"
     },
     {
@@ -85012,7 +85012,7 @@
       "source_location": "L58",
       "_origin": "ast",
       "id": "src_ru_typo_verb_suffix_pairs",
-      "community": 459,
+      "community": 41,
       "norm_label": "suffix_pairs()"
     },
     {
@@ -85022,7 +85022,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_ru_typo_verb_rs_iterator",
-      "community": 459,
+      "community": 41,
       "norm_label": "iterator"
     },
     {
@@ -85032,7 +85032,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_ru_typo_verb_rs_item",
-      "community": 459,
+      "community": 41,
       "norm_label": "item"
     },
     {
@@ -85042,7 +85042,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_ru_typo_vowel",
-      "community": 466,
+      "community": 361,
       "norm_label": "vowel.rs"
     },
     {
@@ -85052,7 +85052,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "src_ru_typo_vowel_correct_vowel_confusion",
-      "community": 466,
+      "community": 361,
       "norm_label": "correct_vowel_confusion()"
     },
     {
@@ -85062,7 +85062,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_ru_typo_vowel_rs_option",
-      "community": 466,
+      "community": 361,
       "norm_label": "option"
     },
     {
@@ -85072,7 +85072,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_ru_typo_vowel_rs_string",
-      "community": 466,
+      "community": 361,
       "norm_label": "string"
     },
     {
@@ -85082,7 +85082,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "src_ru_typo_vowel_correct_contextual_past_tense_vowel_confusion",
-      "community": 466,
+      "community": 361,
       "norm_label": "correct_contextual_past_tense_vowel_confusion()"
     },
     {
@@ -85092,7 +85092,7 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "src_ru_typo_vowel_correct_vowel_confusion_impl",
-      "community": 466,
+      "community": 361,
       "norm_label": "correct_vowel_confusion_impl()"
     },
     {
@@ -85102,7 +85102,7 @@
       "source_location": "L41",
       "_origin": "ast",
       "id": "src_ru_typo_vowel_vowel_confusion_past_tense_candidate_exists",
-      "community": 466,
+      "community": 361,
       "norm_label": "vowel_confusion_past_tense_candidate_exists()"
     },
     {
@@ -85112,7 +85112,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_ru_typo_vowel_past_tense",
-      "community": 466,
+      "community": 361,
       "norm_label": "past_tense.rs"
     },
     {
@@ -85122,7 +85122,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_ru_typo_vowel_past_tense_has_same_simple_past_tense_tail",
-      "community": 466,
+      "community": 361,
       "norm_label": "has_same_simple_past_tense_tail()"
     },
     {
@@ -85132,7 +85132,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_russian_chars",
-      "community": 41,
+      "community": 434,
       "norm_label": "russian_chars.rs"
     },
     {
@@ -85142,7 +85142,7 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "src_russian_chars_is_russian_vowel",
-      "community": 41,
+      "community": 434,
       "norm_label": "is_russian_vowel()"
     },
     {
@@ -85152,7 +85152,7 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "src_russian_chars_same_letter_ignore_case",
-      "community": 41,
+      "community": 434,
       "norm_label": "same_letter_ignore_case()"
     },
     {
@@ -85402,7 +85402,7 @@
       "source_location": "L57",
       "_origin": "ast",
       "id": "src_russian_lexicon_forms_is_known_cyrillic_hyphen_part",
-      "community": 361,
+      "community": 349,
       "norm_label": "is_known_cyrillic_hyphen_part()"
     },
     {
@@ -85542,7 +85542,7 @@
       "source_location": "L191",
       "_origin": "ast",
       "id": "src_russian_lexicon_forms_is_known_short_accusative_a_form",
-      "community": 361,
+      "community": 349,
       "norm_label": "is_known_short_accusative_a_form()"
     },
     {
@@ -85552,7 +85552,7 @@
       "source_location": "L202",
       "_origin": "ast",
       "id": "src_russian_lexicon_forms_is_russian_consonant",
-      "community": 41,
+      "community": 434,
       "norm_label": "is_russian_consonant()"
     },
     {
@@ -86262,7 +86262,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_russian_typo_candidates",
-      "community": 41,
+      "community": 361,
       "norm_label": "russian_typo_candidates.rs"
     },
     {
@@ -86282,7 +86282,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_russian_typo_candidates_rs_vec",
-      "community": 41,
+      "community": 361,
       "norm_label": "vec"
     },
     {
@@ -86292,7 +86292,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_russian_typo_candidates_rs_string",
-      "community": 41,
+      "community": 361,
       "norm_label": "string"
     },
     {
@@ -86302,7 +86302,7 @@
       "source_location": "L46",
       "_origin": "ast",
       "id": "src_russian_typo_candidates_generate_missing_letter_candidates",
-      "community": 41,
+      "community": 361,
       "norm_label": "generate_missing_letter_candidates()"
     },
     {
@@ -86312,7 +86312,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_russian_typo_candidates_rs_iterator",
-      "community": 41,
+      "community": 361,
       "norm_label": "iterator"
     },
     {
@@ -86322,7 +86322,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_russian_typo_candidates_rs_item",
-      "community": 41,
+      "community": 361,
       "norm_label": "item"
     },
     {
@@ -86332,7 +86332,7 @@
       "source_location": "L62",
       "_origin": "ast",
       "id": "src_russian_typo_candidates_generate_extra_letter_candidates",
-      "community": 41,
+      "community": 361,
       "norm_label": "generate_extra_letter_candidates()"
     },
     {
@@ -86342,7 +86342,7 @@
       "source_location": "L108",
       "_origin": "ast",
       "id": "src_russian_typo_candidates_generate_vowel_confusion_candidates",
-      "community": 41,
+      "community": 361,
       "norm_label": "generate_vowel_confusion_candidates()"
     },
     {
@@ -86352,7 +86352,7 @@
       "source_location": "L127",
       "_origin": "ast",
       "id": "src_russian_typo_candidates_generate_hard_sign_candidates",
-      "community": 41,
+      "community": 361,
       "norm_label": "generate_hard_sign_candidates()"
     },
     {
@@ -86382,7 +86382,7 @@
       "source_location": "L169",
       "_origin": "ast",
       "id": "src_russian_typo_candidates_ru_vowel_confusion_replacements",
-      "community": 41,
+      "community": 361,
       "norm_label": "ru_vowel_confusion_replacements()"
     },
     {
@@ -86402,7 +86402,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "src_russian_typo_scoring_ngram_allows_ru_candidate",
-      "community": 459,
+      "community": 41,
       "norm_label": "ngram_allows_ru_candidate()"
     },
     {
@@ -86732,7 +86732,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_scoped_tail_word_flip",
-      "community": 153,
+      "community": 18,
       "norm_label": "word_flip.rs"
     },
     {
@@ -86742,7 +86742,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "src_scoped_tail_word_flip_flip_word_events",
-      "community": 153,
+      "community": 18,
       "norm_label": "flip_word_events()"
     },
     {
@@ -86752,7 +86752,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_scoped_tail_word_flip_rs_string",
-      "community": 153,
+      "community": 18,
       "norm_label": "string"
     },
     {
@@ -86762,7 +86762,7 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "src_scoped_tail_word_flip_repair_cyrillic_prefix_before_ascii_tail",
-      "community": 153,
+      "community": 18,
       "norm_label": "repair_cyrillic_prefix_before_ascii_tail()"
     },
     {
@@ -86772,7 +86772,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_scoped_tail_word_flip_rs_option",
-      "community": 153,
+      "community": 18,
       "norm_label": "option"
     },
     {
@@ -86782,7 +86782,7 @@
       "source_location": "L60",
       "_origin": "ast",
       "id": "src_scoped_tail_word_flip_has_ascii_tail_after_cyrillic_prefix",
-      "community": 153,
+      "community": 18,
       "norm_label": "has_ascii_tail_after_cyrillic_prefix()"
     },
     {
@@ -86792,7 +86792,7 @@
       "source_location": "L70",
       "_origin": "ast",
       "id": "src_scoped_tail_word_flip_normalize_mixed_word_to_last_layout",
-      "community": 153,
+      "community": 18,
       "norm_label": "normalize_mixed_word_to_last_layout()"
     },
     {
@@ -86802,7 +86802,7 @@
       "source_location": "L93",
       "_origin": "ast",
       "id": "src_scoped_tail_word_flip_dominant_mixed_word_layout",
-      "community": 153,
+      "community": 18,
       "norm_label": "dominant_mixed_word_layout()"
     },
     {
@@ -86812,7 +86812,7 @@
       "source_location": "L109",
       "_origin": "ast",
       "id": "src_scoped_tail_word_flip_push_with_overlap",
-      "community": 153,
+      "community": 18,
       "norm_label": "push_with_overlap()"
     },
     {
@@ -87802,7 +87802,7 @@
       "source_location": "L123",
       "_origin": "ast",
       "id": "src_text_edit_committed_tail_plan_committed_whitespace_insertions",
-      "community": 102,
+      "community": 10,
       "norm_label": "plan_committed_whitespace_insertions()"
     },
     {
@@ -87812,7 +87812,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_text_edit_committed_tail_rs_vec",
-      "community": 102,
+      "community": 10,
       "norm_label": "vec"
     },
     {
@@ -88342,7 +88342,7 @@
       "source_location": "L121",
       "_origin": "ast",
       "id": "src_text_edit_gate_plan_manual_edit",
-      "community": 222,
+      "community": 348,
       "norm_label": "plan_manual_edit()"
     },
     {
@@ -88402,7 +88402,7 @@
       "source_location": "L254",
       "_origin": "ast",
       "id": "src_text_edit_gate_gate_authorizes_last_token_replacement",
-      "community": 222,
+      "community": 348,
       "norm_label": "gate_authorizes_last_token_replacement()"
     },
     {
@@ -88642,7 +88642,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_text_edit_safety",
-      "community": 10,
+      "community": 459,
       "norm_label": "safety.rs"
     },
     {
@@ -88672,7 +88672,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "src_text_edit_safety_autocorrect_edit_safety",
-      "community": 10,
+      "community": 459,
       "norm_label": "autocorrect_edit_safety()"
     },
     {
@@ -88682,7 +88682,7 @@
       "source_location": "L109",
       "_origin": "ast",
       "id": "src_text_edit_safety_plan_preserves_unchanged_right_context",
-      "community": 10,
+      "community": 459,
       "norm_label": "plan_preserves_unchanged_right_context()"
     },
     {
@@ -88692,7 +88692,7 @@
       "source_location": "L134",
       "_origin": "ast",
       "id": "src_text_edit_safety_right_context_starts_at_token_boundary",
-      "community": 10,
+      "community": 459,
       "norm_label": "right_context_starts_at_token_boundary()"
     },
     {
@@ -88702,7 +88702,7 @@
       "source_location": "L141",
       "_origin": "ast",
       "id": "src_text_edit_safety_checked_delete_range",
-      "community": 10,
+      "community": 459,
       "norm_label": "checked_delete_range()"
     },
     {
@@ -88712,7 +88712,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_text_edit_safety_rs_option",
-      "community": 10,
+      "community": 459,
       "norm_label": "option"
     },
     {
@@ -88722,7 +88722,7 @@
       "source_location": "L151",
       "_origin": "ast",
       "id": "src_text_edit_safety_replacement_plan_has_valid_cursor",
-      "community": 10,
+      "community": 459,
       "norm_label": "replacement_plan_has_valid_cursor()"
     },
     {
@@ -88732,7 +88732,7 @@
       "source_location": "L163",
       "_origin": "ast",
       "id": "src_text_edit_safety_strong_boundary_edit_shape",
-      "community": 10,
+      "community": 459,
       "norm_label": "strong_boundary_edit_shape()"
     },
     {
@@ -88742,7 +88742,7 @@
       "source_location": "L195",
       "_origin": "ast",
       "id": "src_text_edit_safety_surface_preserving_right_to_left_boundary_shift",
-      "community": 10,
+      "community": 459,
       "norm_label": "surface_preserving_right_to_left_boundary_shift()"
     },
     {
@@ -88752,7 +88752,7 @@
       "source_location": "L245",
       "_origin": "ast",
       "id": "src_text_edit_safety_same_non_whitespace_surface",
-      "community": 10,
+      "community": 459,
       "norm_label": "same_non_whitespace_surface()"
     },
     {
@@ -88762,7 +88762,7 @@
       "source_location": "L252",
       "_origin": "ast",
       "id": "src_text_edit_safety_same_whitespace_signal",
-      "community": 10,
+      "community": 459,
       "norm_label": "same_whitespace_signal()"
     },
     {
@@ -88772,7 +88772,7 @@
       "source_location": "L259",
       "_origin": "ast",
       "id": "src_text_edit_safety_insertion_point_is_inside_word",
-      "community": 10,
+      "community": 459,
       "norm_label": "insertion_point_is_inside_word()"
     },
     {
@@ -88782,7 +88782,7 @@
       "source_location": "L268",
       "_origin": "ast",
       "id": "src_text_edit_safety_changed_non_last_word",
-      "community": 10,
+      "community": 459,
       "norm_label": "changed_non_last_word()"
     },
     {
@@ -88792,7 +88792,7 @@
       "source_location": "L283",
       "_origin": "ast",
       "id": "src_text_edit_safety_touched_word_count",
-      "community": 10,
+      "community": 459,
       "norm_label": "touched_word_count()"
     },
     {
@@ -88802,7 +88802,7 @@
       "source_location": "L300",
       "_origin": "ast",
       "id": "src_text_edit_safety_core_contains_space",
-      "community": 10,
+      "community": 459,
       "norm_label": "core_contains_space()"
     },
     {
@@ -89752,7 +89752,7 @@
       "source_location": "L75",
       "_origin": "ast",
       "id": "src_text_edit_tests_plans_minimal_two_word_prefix_and_suffix_edits",
-      "community": 58,
+      "community": 10,
       "norm_label": "plans_minimal_two_word_prefix_and_suffix_edits()"
     },
     {
@@ -90012,7 +90012,7 @@
       "source_location": "L428",
       "_origin": "ast",
       "id": "src_text_edit_tests_committed_tail_spacing_is_restored_before_planning",
-      "community": 58,
+      "community": 10,
       "norm_label": "committed_tail_spacing_is_restored_before_planning()"
     },
     {
@@ -90022,7 +90022,7 @@
       "source_location": "L439",
       "_origin": "ast",
       "id": "src_text_edit_tests_committed_separator_contract_detects_eaten_space",
-      "community": 58,
+      "community": 10,
       "norm_label": "committed_separator_contract_detects_eaten_space()"
     },
     {
@@ -91122,7 +91122,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "src_typing_assist_test_fixtures_fixture_rows",
-      "community": 58,
+      "community": 10,
       "norm_label": "fixture_rows()"
     },
     {
@@ -100472,7 +100472,7 @@
       "source_location": "L183",
       "_origin": "ast",
       "id": "src_word_reader_is_cyrillic_word",
-      "community": 361,
+      "community": 349,
       "norm_label": "is_cyrillic_word()"
     },
     {
@@ -101142,7 +101142,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_word_recognizer_tests",
-      "community": 58,
+      "community": 10,
       "norm_label": "word_recognizer_tests.rs"
     },
     {
@@ -101162,7 +101162,7 @@
       "source_location": "L56",
       "_origin": "ast",
       "id": "src_word_recognizer_tests_plain_layout_word_autocorrect_is_risky",
-      "community": 58,
+      "community": 10,
       "norm_label": "plain_layout_word_autocorrect_is_risky()"
     },
     {
@@ -101172,7 +101172,7 @@
       "source_location": "L70",
       "_origin": "ast",
       "id": "src_word_recognizer_tests_technical_and_mixed_tokens_are_not_plain_layout_risk",
-      "community": 58,
+      "community": 10,
       "norm_label": "technical_and_mixed_tokens_are_not_plain_layout_risk()"
     },
     {
@@ -101182,7 +101182,7 @@
       "source_location": "L83",
       "_origin": "ast",
       "id": "src_word_recognizer_tests_word_script",
-      "community": 58,
+      "community": 10,
       "norm_label": "word_script()"
     },
     {
@@ -101192,7 +101192,7 @@
       "source_location": "L95",
       "_origin": "ast",
       "id": "src_word_recognizer_tests_word_kind",
-      "community": 58,
+      "community": 10,
       "norm_label": "word_kind()"
     },
     {
@@ -101672,7 +101672,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_decoder_alternating_stress",
-      "community": 130,
+      "community": 24,
       "norm_label": "decoder_alternating_stress.rs"
     },
     {
@@ -101682,7 +101682,7 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "tests_decoder_alternating_stress_decode_manual_visible_tail",
-      "community": 130,
+      "community": 24,
       "norm_label": "decode_manual_visible_tail()"
     },
     {
@@ -101692,7 +101692,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_decoder_alternating_stress_rs_string",
-      "community": 130,
+      "community": 24,
       "norm_label": "string"
     },
     {
@@ -101702,7 +101702,7 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "tests_decoder_alternating_stress_manual_decoder_alternating_language_cases_choose_tokenwise_tail",
-      "community": 130,
+      "community": 24,
       "norm_label": "manual_decoder_alternating_language_cases_choose_tokenwise_tail()"
     },
     {
@@ -102302,7 +102302,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "tests_text_edit_gate_contract",
-      "community": 222,
+      "community": 348,
       "norm_label": "text_edit_gate_contract.rs"
     },
     {
@@ -102312,7 +102312,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "tests_text_edit_gate_contract_public_text_edit_gate_keeps_manual_replacement_behind_backend_capability",
-      "community": 222,
+      "community": 348,
       "norm_label": "public_text_edit_gate_keeps_manual_replacement_behind_backend_capability()"
     },
     {
@@ -102322,7 +102322,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "tests_text_edit_gate_contract_transition_proof_constructor_and_fields_are_not_public_capabilities",
-      "community": 222,
+      "community": 348,
       "norm_label": "transition_proof_constructor_and_fields_are_not_public_capabilities()"
     },
     {
@@ -102332,7 +102332,7 @@
       "source_location": "L56",
       "_origin": "ast",
       "id": "tests_text_edit_gate_contract_runtime_text_edits_use_narrow_typed_plans_not_generic_proof_construction",
-      "community": 222,
+      "community": 348,
       "norm_label": "runtime_text_edits_use_narrow_typed_plans_not_generic_proof_construction()"
     },
     {
@@ -102342,7 +102342,7 @@
       "source_location": "L90",
       "_origin": "ast",
       "id": "tests_text_edit_gate_contract_arbitrary_edit_action_cannot_self_seal_a_verified_receipt",
-      "community": 222,
+      "community": 348,
       "norm_label": "arbitrary_edit_action_cannot_self_seal_a_verified_receipt()"
     },
     {
@@ -102352,7 +102352,7 @@
       "source_location": "L102",
       "_origin": "ast",
       "id": "tests_text_edit_gate_contract_only_text_edit_gate_can_issue_or_attach_execution_receipts",
-      "community": 222,
+      "community": 348,
       "norm_label": "only_text_edit_gate_can_issue_or_attach_execution_receipts()"
     },
     {
@@ -102362,7 +102362,7 @@
       "source_location": "L128",
       "_origin": "ast",
       "id": "tests_text_edit_gate_contract_collect_rust_files",
-      "community": 222,
+      "community": 348,
       "norm_label": "collect_rust_files()"
     },
     {
@@ -102372,7 +102372,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_text_edit_gate_contract_rs_path",
-      "community": 222,
+      "community": 348,
       "norm_label": "path"
     },
     {
@@ -102382,7 +102382,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_text_edit_gate_contract_rs_vec",
-      "community": 222,
+      "community": 348,
       "norm_label": "vec"
     },
     {
@@ -102392,7 +102392,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "tests_text_edit_gate_contract_rs_pathbuf",
-      "community": 222,
+      "community": 348,
       "norm_label": "pathbuf"
     },
     {
@@ -107705,7 +107705,7 @@
       "label": "13. Pairwise Context Witness Boundary",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L568",
+      "source_location": "L572",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_13_pairwise_context_witness_boundary",
       "community": 34,
@@ -107715,7 +107715,7 @@
       "label": "13. Canonical V7 full-lemma package, 2026-07-30",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L597",
+      "source_location": "L601",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_13_canonical_v7_full_lemma_package_2026_07_30",
       "community": 34,
@@ -107725,7 +107725,7 @@
       "label": "13. 2026-07-29 Standalone RU L2 V6 Evidence Authority",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L686",
+      "source_location": "L690",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_13_2026_07_29_standalone_ru_l2_v6_evidence_authority",
       "community": 461,
@@ -107735,7 +107735,7 @@
       "label": "13.1 Kernel Ownership",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L688",
+      "source_location": "L692",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_13_1_kernel_ownership",
       "community": 461,
@@ -107745,7 +107745,7 @@
       "label": "13.2 Compiled Package",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L722",
+      "source_location": "L726",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_13_2_compiled_package",
       "community": 461,
@@ -107755,7 +107755,7 @@
       "label": "13.3 Fixed Heldout Proof",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L758",
+      "source_location": "L762",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_13_3_fixed_heldout_proof",
       "community": 461,
@@ -107765,7 +107765,7 @@
       "label": "13.4 Rejected Safety Experiments",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L803",
+      "source_location": "L807",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_13_4_rejected_safety_experiments",
       "community": 461,
@@ -107775,7 +107775,7 @@
       "label": "13.5 Verdict And Authority",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L818",
+      "source_location": "L822",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_13_5_verdict_and_authority",
       "community": 461,
@@ -107785,7 +107785,7 @@
       "label": "13.6 Full L1.1 -> L2 -> L3 -> Verifier Replay",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L839",
+      "source_location": "L843",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_13_6_full_l1_1_l2_l3_verifier_replay",
       "community": 461,
@@ -107795,7 +107795,7 @@
       "label": "13. 2026-07-28 IBus L2 Cache Budget",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L937",
+      "source_location": "L941",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_13_2026_07_28_ibus_l2_cache_budget",
       "community": 34,
@@ -107805,7 +107805,7 @@
       "label": "13. 2026-07-27 Full Russian Package And Live Lattice Boundary",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L1096",
+      "source_location": "L1100",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_13_2026_07_27_full_russian_package_and_live_lattice_boundary",
       "community": 34,
@@ -107815,7 +107815,7 @@
       "label": "14. 2026-07-27 L1.1 Service CPU And Lattice Transport Experiment",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L1169",
+      "source_location": "L1173",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_14_2026_07_27_l1_1_service_cpu_and_lattice_transport_experiment",
       "community": 34,
@@ -107825,7 +107825,7 @@
       "label": "13. 2026-07-27 Canonical Noun Package Full Safety Proof",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L1281",
+      "source_location": "L1285",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_13_2026_07_27_canonical_noun_package_full_safety_proof",
       "community": 34,
@@ -107835,7 +107835,7 @@
       "label": "14. 2026-07-27 Full Russian POS Teacher And Cross-Lemma Contract",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L1367",
+      "source_location": "L1371",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_14_2026_07_27_full_russian_pos_teacher_and_cross_lemma_contract",
       "community": 34,
@@ -107845,7 +107845,7 @@
       "label": "2.2 Second Internal Donor: Near-Neighbor Lexical Competition",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L1421",
+      "source_location": "L1425",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_2_2_second_internal_donor_near_neighbor_lexical_competition",
       "community": 34,
@@ -107855,7 +107855,7 @@
       "label": "15. 2026-07-30 One-symbol layout birth for L3 context",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L1479",
+      "source_location": "L1483",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_15_2026_07_30_one_symbol_layout_birth_for_l3_context",
       "community": 34,
@@ -107865,7 +107865,7 @@
       "label": "2.3 Local Readout Safety Gate Inside `L2FieldShadow`",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L1533",
+      "source_location": "L1537",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_2_3_local_readout_safety_gate_inside_l2fieldshadow",
       "community": 34,
@@ -107875,7 +107875,7 @@
       "label": "2.4 First Owner-Swap Pass: `L1.1` Seeded Birth Inside One Local Field",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L1599",
+      "source_location": "L1603",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_2_4_first_owner_swap_pass_l1_1_seeded_birth_inside_one_local_field",
       "community": 34,
@@ -107885,7 +107885,7 @@
       "label": "2.5 Live Owner Flip For IME And Daemon Local Correction",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L1676",
+      "source_location": "L1680",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_2_5_live_owner_flip_for_ime_and_daemon_local_correction",
       "community": 34,
@@ -107895,7 +107895,7 @@
       "label": "2.6 Divergence Buckets On Real Corrections Window",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L1729",
+      "source_location": "L1733",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_2_6_divergence_buckets_on_real_corrections_window",
       "community": 34,
@@ -107905,7 +107905,7 @@
       "label": "3. Ownership",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L1789",
+      "source_location": "L1793",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_3_ownership",
       "community": 433,
@@ -107915,7 +107915,7 @@
       "label": "3.1 L1.1 Ownership",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L1791",
+      "source_location": "L1795",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_3_1_l1_1_ownership",
       "community": 433,
@@ -107925,7 +107925,7 @@
       "label": "3.2 L2 Ownership",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L1811",
+      "source_location": "L1815",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_3_2_l2_ownership",
       "community": 433,
@@ -107935,7 +107935,7 @@
       "label": "3.3 L3 Ownership",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L1834",
+      "source_location": "L1838",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_3_3_l3_ownership",
       "community": 433,
@@ -107945,7 +107945,7 @@
       "label": "3.4 Verifier Ownership",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L1845",
+      "source_location": "L1849",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_3_4_verifier_ownership",
       "community": 433,
@@ -107955,7 +107955,7 @@
       "label": "4. Critique Of The Current Live Shape",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L1857",
+      "source_location": "L1861",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_4_critique_of_the_current_live_shape",
       "community": 34,
@@ -107965,7 +107965,7 @@
       "label": "5. Canonical L2 Memory",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L1889",
+      "source_location": "L1893",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_5_canonical_l2_memory",
       "community": 365,
@@ -107975,7 +107975,7 @@
       "label": "5.1 Main Memory Objects",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L1894",
+      "source_location": "L1898",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_5_1_main_memory_objects",
       "community": 365,
@@ -107985,7 +107985,7 @@
       "label": "5.2 FormCenterRef",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L1927",
+      "source_location": "L1931",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_5_2_formcenterref",
       "community": 365,
@@ -107995,7 +107995,7 @@
       "label": "5.3 LemmaCenter",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L1947",
+      "source_location": "L1951",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_5_3_lemmacenter",
       "community": 365,
@@ -108005,7 +108005,7 @@
       "label": "5.4 MorphBinding",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L1972",
+      "source_location": "L1976",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_5_4_morphbinding",
       "community": 365,
@@ -108015,7 +108015,7 @@
       "label": "5.5 LocalContextMode",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2001",
+      "source_location": "L2005",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_5_5_localcontextmode",
       "community": 365,
@@ -108025,7 +108025,7 @@
       "label": "5.6 SlotPhaseCenter",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2016",
+      "source_location": "L2020",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_5_6_slotphasecenter",
       "community": 365,
@@ -108035,7 +108035,7 @@
       "label": "5.7 NeighborCoupling",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2037",
+      "source_location": "L2041",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_5_7_neighborcoupling",
       "community": 365,
@@ -108045,7 +108045,7 @@
       "label": "5.8 CompetitionEdge",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2055",
+      "source_location": "L2059",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_5_8_competitionedge",
       "community": 365,
@@ -108055,7 +108055,7 @@
       "label": "5.9 TieCalibration",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2071",
+      "source_location": "L2075",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_5_9_tiecalibration",
       "community": 365,
@@ -108065,7 +108065,7 @@
       "label": "6. Canonical L2 Runtime Path",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2090",
+      "source_location": "L2094",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_6_canonical_l2_runtime_path",
       "community": 403,
@@ -108075,7 +108075,7 @@
       "label": "6.1 L2 Field Birth",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2110",
+      "source_location": "L2114",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_6_1_l2_field_birth",
       "community": 403,
@@ -108085,7 +108085,7 @@
       "label": "6.2 Same-Lemma Expansion",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2123",
+      "source_location": "L2127",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_6_2_same_lemma_expansion",
       "community": 403,
@@ -108095,7 +108095,7 @@
       "label": "6.3 Near-Neighbor Expansion",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2137",
+      "source_location": "L2141",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_6_3_near_neighbor_expansion",
       "community": 403,
@@ -108105,7 +108105,7 @@
       "label": "6.4 Local Readout",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2152",
+      "source_location": "L2156",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_6_4_local_readout",
       "community": 403,
@@ -108115,7 +108115,7 @@
       "label": "6.5 IME And Daemon Readout",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2172",
+      "source_location": "L2176",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_6_5_ime_and_daemon_readout",
       "community": 403,
@@ -108125,7 +108125,7 @@
       "label": "7. Proposed Code Ownership",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2184",
+      "source_location": "L2188",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_7_proposed_code_ownership",
       "community": 34,
@@ -108135,7 +108135,7 @@
       "label": "8. Proof Contract",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2230",
+      "source_location": "L2234",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_8_proof_contract",
       "community": 445,
@@ -108145,7 +108145,7 @@
       "label": "8.1 Required Proof Families",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2235",
+      "source_location": "L2239",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_8_1_required_proof_families",
       "community": 445,
@@ -108155,7 +108155,7 @@
       "label": "8.2 Required Scoreboard",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2247",
+      "source_location": "L2251",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_8_2_required_scoreboard",
       "community": 445,
@@ -108165,7 +108165,7 @@
       "label": "8.3 Runtime Promotion Gate",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2275",
+      "source_location": "L2279",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_8_3_runtime_promotion_gate",
       "community": 445,
@@ -108175,7 +108175,7 @@
       "label": "9. Cutover Plan",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2286",
+      "source_location": "L2290",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_9_cutover_plan",
       "community": 405,
@@ -108185,7 +108185,7 @@
       "label": "9.1 Stage A: Package Build",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2290",
+      "source_location": "L2294",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_9_1_stage_a_package_build",
       "community": 405,
@@ -108195,7 +108195,7 @@
       "label": "9.2 Stage B: Reference Compare Readout",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2302",
+      "source_location": "L2306",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_9_2_stage_b_reference_compare_readout",
       "community": 405,
@@ -108205,7 +108205,7 @@
       "label": "9.3 Stage C: A/B Receipts",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2314",
+      "source_location": "L2318",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_9_3_stage_c_a_b_receipts",
       "community": 405,
@@ -108215,7 +108215,7 @@
       "label": "9.4 Stage D: Runtime Flip",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2324",
+      "source_location": "L2328",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_9_4_stage_d_runtime_flip",
       "community": 405,
@@ -108225,7 +108225,7 @@
       "label": "9.5 Stage E: Remove Ownership Drift",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2337",
+      "source_location": "L2341",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_9_5_stage_e_remove_ownership_drift",
       "community": 405,
@@ -108235,7 +108235,7 @@
       "label": "10. Forbidden Behaviors",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2347",
+      "source_location": "L2351",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_10_forbidden_behaviors",
       "community": 34,
@@ -108245,7 +108245,7 @@
       "label": "11. Canonical Summary",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2359",
+      "source_location": "L2363",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_11_canonical_summary",
       "community": 34,
@@ -108255,7 +108255,7 @@
       "label": "12. 2026-07-27 Local Readout Safety Tightening",
       "file_type": "document",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2376",
+      "source_location": "L2380",
       "_origin": "ast",
       "id": "docs_l2_l11_canonical_architecture_12_2026_07_27_local_readout_safety_tightening",
       "community": 34,
@@ -412121,7 +412121,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2347",
+      "source_location": "L2351",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_l2_canonical_architecture_above_l1_1",
       "target": "docs_l2_l11_canonical_architecture_10_forbidden_behaviors",
@@ -412131,7 +412131,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2359",
+      "source_location": "L2363",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_l2_canonical_architecture_above_l1_1",
       "target": "docs_l2_l11_canonical_architecture_11_canonical_summary",
@@ -412141,7 +412141,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2376",
+      "source_location": "L2380",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_l2_canonical_architecture_above_l1_1",
       "target": "docs_l2_l11_canonical_architecture_12_2026_07_27_local_readout_safety_tightening",
@@ -412151,7 +412151,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L1281",
+      "source_location": "L1285",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_l2_canonical_architecture_above_l1_1",
       "target": "docs_l2_l11_canonical_architecture_13_2026_07_27_canonical_noun_package_full_safety_proof",
@@ -412161,7 +412161,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L1096",
+      "source_location": "L1100",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_l2_canonical_architecture_above_l1_1",
       "target": "docs_l2_l11_canonical_architecture_13_2026_07_27_full_russian_package_and_live_lattice_boundary",
@@ -412171,7 +412171,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L937",
+      "source_location": "L941",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_l2_canonical_architecture_above_l1_1",
       "target": "docs_l2_l11_canonical_architecture_13_2026_07_28_ibus_l2_cache_budget",
@@ -412181,7 +412181,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L686",
+      "source_location": "L690",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_l2_canonical_architecture_above_l1_1",
       "target": "docs_l2_l11_canonical_architecture_13_2026_07_29_standalone_ru_l2_v6_evidence_authority",
@@ -412191,7 +412191,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L597",
+      "source_location": "L601",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_l2_canonical_architecture_above_l1_1",
       "target": "docs_l2_l11_canonical_architecture_13_canonical_v7_full_lemma_package_2026_07_30",
@@ -412201,7 +412201,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L568",
+      "source_location": "L572",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_l2_canonical_architecture_above_l1_1",
       "target": "docs_l2_l11_canonical_architecture_13_pairwise_context_witness_boundary",
@@ -412221,7 +412221,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L1367",
+      "source_location": "L1371",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_l2_canonical_architecture_above_l1_1",
       "target": "docs_l2_l11_canonical_architecture_14_2026_07_27_full_russian_pos_teacher_and_cross_lemma_contract",
@@ -412231,7 +412231,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L1169",
+      "source_location": "L1173",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_l2_canonical_architecture_above_l1_1",
       "target": "docs_l2_l11_canonical_architecture_14_2026_07_27_l1_1_service_cpu_and_lattice_transport_experiment",
@@ -412241,7 +412241,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L1479",
+      "source_location": "L1483",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_l2_canonical_architecture_above_l1_1",
       "target": "docs_l2_l11_canonical_architecture_15_2026_07_30_one_symbol_layout_birth_for_l3_context",
@@ -412281,7 +412281,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L1421",
+      "source_location": "L1425",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_l2_canonical_architecture_above_l1_1",
       "target": "docs_l2_l11_canonical_architecture_2_2_second_internal_donor_near_neighbor_lexical_competition",
@@ -412291,7 +412291,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L1533",
+      "source_location": "L1537",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_l2_canonical_architecture_above_l1_1",
       "target": "docs_l2_l11_canonical_architecture_2_3_local_readout_safety_gate_inside_l2fieldshadow",
@@ -412301,7 +412301,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L1599",
+      "source_location": "L1603",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_l2_canonical_architecture_above_l1_1",
       "target": "docs_l2_l11_canonical_architecture_2_4_first_owner_swap_pass_l1_1_seeded_birth_inside_one_local_field",
@@ -412311,7 +412311,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L1676",
+      "source_location": "L1680",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_l2_canonical_architecture_above_l1_1",
       "target": "docs_l2_l11_canonical_architecture_2_5_live_owner_flip_for_ime_and_daemon_local_correction",
@@ -412321,7 +412321,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L1729",
+      "source_location": "L1733",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_l2_canonical_architecture_above_l1_1",
       "target": "docs_l2_l11_canonical_architecture_2_6_divergence_buckets_on_real_corrections_window",
@@ -412341,7 +412341,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L1789",
+      "source_location": "L1793",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_l2_canonical_architecture_above_l1_1",
       "target": "docs_l2_l11_canonical_architecture_3_ownership",
@@ -412351,7 +412351,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L1857",
+      "source_location": "L1861",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_l2_canonical_architecture_above_l1_1",
       "target": "docs_l2_l11_canonical_architecture_4_critique_of_the_current_live_shape",
@@ -412361,7 +412361,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L1889",
+      "source_location": "L1893",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_l2_canonical_architecture_above_l1_1",
       "target": "docs_l2_l11_canonical_architecture_5_canonical_l2_memory",
@@ -412371,7 +412371,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2090",
+      "source_location": "L2094",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_l2_canonical_architecture_above_l1_1",
       "target": "docs_l2_l11_canonical_architecture_6_canonical_l2_runtime_path",
@@ -412381,7 +412381,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2184",
+      "source_location": "L2188",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_l2_canonical_architecture_above_l1_1",
       "target": "docs_l2_l11_canonical_architecture_7_proposed_code_ownership",
@@ -412391,7 +412391,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2230",
+      "source_location": "L2234",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_l2_canonical_architecture_above_l1_1",
       "target": "docs_l2_l11_canonical_architecture_8_proof_contract",
@@ -412401,7 +412401,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2286",
+      "source_location": "L2290",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_l2_canonical_architecture_above_l1_1",
       "target": "docs_l2_l11_canonical_architecture_9_cutover_plan",
@@ -412431,7 +412431,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L688",
+      "source_location": "L692",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_13_2026_07_29_standalone_ru_l2_v6_evidence_authority",
       "target": "docs_l2_l11_canonical_architecture_13_1_kernel_ownership",
@@ -412441,7 +412441,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L722",
+      "source_location": "L726",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_13_2026_07_29_standalone_ru_l2_v6_evidence_authority",
       "target": "docs_l2_l11_canonical_architecture_13_2_compiled_package",
@@ -412451,7 +412451,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L758",
+      "source_location": "L762",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_13_2026_07_29_standalone_ru_l2_v6_evidence_authority",
       "target": "docs_l2_l11_canonical_architecture_13_3_fixed_heldout_proof",
@@ -412461,7 +412461,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L803",
+      "source_location": "L807",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_13_2026_07_29_standalone_ru_l2_v6_evidence_authority",
       "target": "docs_l2_l11_canonical_architecture_13_4_rejected_safety_experiments",
@@ -412471,7 +412471,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L818",
+      "source_location": "L822",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_13_2026_07_29_standalone_ru_l2_v6_evidence_authority",
       "target": "docs_l2_l11_canonical_architecture_13_5_verdict_and_authority",
@@ -412481,7 +412481,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L839",
+      "source_location": "L843",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_13_2026_07_29_standalone_ru_l2_v6_evidence_authority",
       "target": "docs_l2_l11_canonical_architecture_13_6_full_l1_1_l2_l3_verifier_replay",
@@ -412491,7 +412491,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L1791",
+      "source_location": "L1795",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_3_ownership",
       "target": "docs_l2_l11_canonical_architecture_3_1_l1_1_ownership",
@@ -412501,7 +412501,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L1811",
+      "source_location": "L1815",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_3_ownership",
       "target": "docs_l2_l11_canonical_architecture_3_2_l2_ownership",
@@ -412511,7 +412511,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L1834",
+      "source_location": "L1838",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_3_ownership",
       "target": "docs_l2_l11_canonical_architecture_3_3_l3_ownership",
@@ -412521,7 +412521,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L1845",
+      "source_location": "L1849",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_3_ownership",
       "target": "docs_l2_l11_canonical_architecture_3_4_verifier_ownership",
@@ -412531,7 +412531,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L1894",
+      "source_location": "L1898",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_5_canonical_l2_memory",
       "target": "docs_l2_l11_canonical_architecture_5_1_main_memory_objects",
@@ -412541,7 +412541,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L1927",
+      "source_location": "L1931",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_5_canonical_l2_memory",
       "target": "docs_l2_l11_canonical_architecture_5_2_formcenterref",
@@ -412551,7 +412551,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L1947",
+      "source_location": "L1951",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_5_canonical_l2_memory",
       "target": "docs_l2_l11_canonical_architecture_5_3_lemmacenter",
@@ -412561,7 +412561,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L1972",
+      "source_location": "L1976",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_5_canonical_l2_memory",
       "target": "docs_l2_l11_canonical_architecture_5_4_morphbinding",
@@ -412571,7 +412571,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2001",
+      "source_location": "L2005",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_5_canonical_l2_memory",
       "target": "docs_l2_l11_canonical_architecture_5_5_localcontextmode",
@@ -412581,7 +412581,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2016",
+      "source_location": "L2020",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_5_canonical_l2_memory",
       "target": "docs_l2_l11_canonical_architecture_5_6_slotphasecenter",
@@ -412591,7 +412591,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2037",
+      "source_location": "L2041",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_5_canonical_l2_memory",
       "target": "docs_l2_l11_canonical_architecture_5_7_neighborcoupling",
@@ -412601,7 +412601,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2055",
+      "source_location": "L2059",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_5_canonical_l2_memory",
       "target": "docs_l2_l11_canonical_architecture_5_8_competitionedge",
@@ -412611,7 +412611,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2071",
+      "source_location": "L2075",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_5_canonical_l2_memory",
       "target": "docs_l2_l11_canonical_architecture_5_9_tiecalibration",
@@ -412621,7 +412621,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2110",
+      "source_location": "L2114",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_6_canonical_l2_runtime_path",
       "target": "docs_l2_l11_canonical_architecture_6_1_l2_field_birth",
@@ -412631,7 +412631,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2123",
+      "source_location": "L2127",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_6_canonical_l2_runtime_path",
       "target": "docs_l2_l11_canonical_architecture_6_2_same_lemma_expansion",
@@ -412641,7 +412641,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2137",
+      "source_location": "L2141",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_6_canonical_l2_runtime_path",
       "target": "docs_l2_l11_canonical_architecture_6_3_near_neighbor_expansion",
@@ -412651,7 +412651,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2152",
+      "source_location": "L2156",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_6_canonical_l2_runtime_path",
       "target": "docs_l2_l11_canonical_architecture_6_4_local_readout",
@@ -412661,7 +412661,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2172",
+      "source_location": "L2176",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_6_canonical_l2_runtime_path",
       "target": "docs_l2_l11_canonical_architecture_6_5_ime_and_daemon_readout",
@@ -412671,7 +412671,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2235",
+      "source_location": "L2239",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_8_proof_contract",
       "target": "docs_l2_l11_canonical_architecture_8_1_required_proof_families",
@@ -412681,7 +412681,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2247",
+      "source_location": "L2251",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_8_proof_contract",
       "target": "docs_l2_l11_canonical_architecture_8_2_required_scoreboard",
@@ -412691,7 +412691,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2275",
+      "source_location": "L2279",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_8_proof_contract",
       "target": "docs_l2_l11_canonical_architecture_8_3_runtime_promotion_gate",
@@ -412701,7 +412701,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2290",
+      "source_location": "L2294",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_9_cutover_plan",
       "target": "docs_l2_l11_canonical_architecture_9_1_stage_a_package_build",
@@ -412711,7 +412711,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2302",
+      "source_location": "L2306",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_9_cutover_plan",
       "target": "docs_l2_l11_canonical_architecture_9_2_stage_b_reference_compare_readout",
@@ -412721,7 +412721,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2314",
+      "source_location": "L2318",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_9_cutover_plan",
       "target": "docs_l2_l11_canonical_architecture_9_3_stage_c_a_b_receipts",
@@ -412731,7 +412731,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2324",
+      "source_location": "L2328",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_9_cutover_plan",
       "target": "docs_l2_l11_canonical_architecture_9_4_stage_d_runtime_flip",
@@ -412741,7 +412741,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/l2-l11-canonical-architecture.md",
-      "source_location": "L2337",
+      "source_location": "L2341",
       "weight": 1.0,
       "source": "docs_l2_l11_canonical_architecture_9_cutover_plan",
       "target": "docs_l2_l11_canonical_architecture_9_5_stage_e_remove_ownership_drift",
@@ -416499,5 +416499,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "80b62b1b7675515f71f9e740201d49dcd4defcec"
+  "built_at_commit": "dc4dce798245c0c11c1bd56e38f0ca80f54c6264"
 }

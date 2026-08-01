@@ -3275,8 +3275,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1785597581.520874,
-    "ast_hash": "68f42d5a33a2dc7edb9640b41362621f",
+    "mtime": 1785597697.9265795,
+    "ast_hash": "8b52f6413cd55f39418b87b5363decd4",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -4695,8 +4695,8 @@
     "semantic_hash": ""
   },
   "docs/l2-l11-canonical-architecture.md": {
-    "mtime": 1785597486.47175,
-    "ast_hash": "9261489c546527b3d8f3d940d632b208",
+    "mtime": 1785597845.983376,
+    "ast_hash": "4499501ce30633e97e796a4b086b8ff6",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2_field/bridge.rs": {
@@ -5075,8 +5075,8 @@
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/PUBLIC_INSTALL_CANONICAL_L2_V13_2026-08-01.json": {
-    "mtime": 1785597486.47175,
-    "ast_hash": "b8c09606fb60d451d810bcb259547337",
+    "mtime": 1785597845.984376,
+    "ast_hash": "ea29841a3b22beb98058df9c4b05de5a",
     "semantic_hash": ""
   },
   "scripts/l2-package-contract.sh": {

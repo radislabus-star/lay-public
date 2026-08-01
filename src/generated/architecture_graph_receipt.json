@@ -131,7 +131,7 @@
       "src/nanda_wave/lexical_phase/format.rs:L109:normalize_surface()"
     ]
   },
-  "graph_fingerprint": "ce56519172fc4304458e002d583d386b363c6b2656c0fa09be4961c0ac26fa58",
+  "graph_fingerprint": "3f5eb6fd2fe26d801f582529b1550ae89d2a3fcc13f1f624ce2ee52ef28f60aa",
   "graph_links": 28434,
   "graph_nodes": 11170,
   "schema": "lay.architecture-graph-receipt.v1",
