@@ -2490,8 +2490,8 @@
     "semantic_hash": ""
   },
   ".github/workflows/ci.yml": {
-    "mtime": 1785597535.6272452,
-    "ast_hash": "bf1a2b7eed22fa36d84a50957822a0f3",
+    "mtime": 1785597683.4567354,
+    "ast_hash": "41b7b73cca2209caff46aaf54f5243f3",
     "semantic_hash": ""
   },
   "AGENTS.md": {
@@ -3275,8 +3275,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1784506285.437339,
-    "ast_hash": "18ec8094bbdf24f773779aed1e403dee",
+    "mtime": 1785597581.520874,
+    "ast_hash": "68f42d5a33a2dc7edb9640b41362621f",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {

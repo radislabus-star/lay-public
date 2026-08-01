@@ -10,6 +10,21 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
+  public-install:
+    name: Public installer regressions
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Shell syntax
+        run: bash -n install.sh scripts/*.sh
+
+      - name: Public issue regressions
+        run: |
+          bash scripts/test-public-issues.sh
+          bash scripts/test-install-release-binaries.sh
+
   check:
     name: Rust, tray, and extension checks
     runs-on: ubuntu-latest
@@ -43,11 +58,6 @@ jobs:
 
       - name: 50-pass architecture audit
         run: bash scripts/check-lay-audit-50.sh
-
-      - name: Public issue regressions
-        run: |
-          bash scripts/test-public-issues.sh
-          bash scripts/test-install-release-binaries.sh
 
       - name: Current architecture regressions
         run: |
