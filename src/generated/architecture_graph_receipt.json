@@ -4,19 +4,22 @@
       "evidence": [
         "src/typing_transition/candidate.rs:L9:L2CandidateLattice",
         "src/typing_transition/decision.rs:L26:TransitionDecisionCore",
-        "src/typing_transition/decision.rs:L43:.evaluate_candidates()",
+        "src/typing_transition/decision.rs:L50:.evaluate_candidates()",
+        "src/typing_transition/decision/live_field.rs:L44:TransitionDecisionCore",
         "src/typing_transition/live_candidate.rs:L115:.select_ime_readout()",
         "src/typing_transition/live_candidate.rs:L47:TransitionDecisionCore",
         "src/typing_transition/live_candidate.rs:L48:.select_live_completions()"
       ],
       "id": "decision-authority",
-      "status": "PASS",
-      "violations": []
+      "status": "WATCH",
+      "violations": [
+        "foreign_type_owner:TransitionDecisionCore:src/typing_transition/decision/live_field.rs"
+      ]
     },
     {
       "evidence": [
-        "src/bin/lay_ibus_engine/state.rs:L137:.with_winner_action()",
-        "src/bin/lay_ibus_engine/state.rs:L279:.replace_committed_tail()",
+        "src/bin/lay_ibus_engine/state.rs:L151:.with_winner_action()",
+        "src/bin/lay_ibus_engine/state.rs:L302:.replace_committed_tail()",
         "src/text_edit/structural_verifier.rs:L18:verify_visible_text_transition()",
         "src/text_edit/visible_tail.rs:L100:VisibleTailSnapshot",
         "src/text_edit/visible_tail.rs:L65:SnapshotIdentity"
@@ -39,8 +42,8 @@
         "src/bin/lay_daemon/layout_controller.rs:L174:call_replace_text()",
         "src/bin/lay_daemon/layout_controller.rs:L204:try_ime_replace_tail()",
         "src/bin/lay_daemon/text_output/replacement.rs:L77:apply_text_replacement_pipeline()",
-        "src/text_edit/executor.rs:L100:AuthorizedEdit",
-        "src/text_edit/executor.rs:L131:authorize_backend_edit()"
+        "src/text_edit/executor.rs:L108:AuthorizedEdit",
+        "src/text_edit/executor.rs:L139:authorize_backend_edit()"
       ],
       "id": "edit-plan-verifier",
       "status": "PASS",
@@ -48,20 +51,23 @@
     },
     {
       "evidence": [
-        "src/text_edit/executor.rs:L143",
-        "src/text_edit/gate.rs:L226",
-        "src/text_edit/gate.rs:L228",
+        "src/text_edit/executor.rs:L151",
+        "src/text_edit/gate.rs:L236",
+        "src/text_edit/gate.rs:L238",
+        "src/text_edit/gate.rs:L294",
         "src/text_edit/structural_verifier.rs:L79"
       ],
       "id": "typed-transition-capability",
-      "status": "PASS",
-      "violations": []
+      "status": "WATCH",
+      "violations": [
+        "visible_tail_receipt_constructor_sites:src/text_edit/gate.rs:L294,src/text_edit/structural_verifier.rs:L79"
+      ]
     },
     {
       "evidence": [
-        "src/bin/lay_ibus_engine/engine/types.rs:L36:PendingSystemOutcomeFeedback",
-        "src/bin/lay_ibus_engine/tail_memory.rs:L49:.arm_visible_postcondition_with_feedback()",
-        "src/bin/lay_ibus_engine/tail_memory.rs:L65:.observe_visible_postcondition()"
+        "src/bin/lay_ibus_engine/engine/types.rs:L40:PendingSystemOutcomeFeedback",
+        "src/bin/lay_ibus_engine/tail_memory.rs:L166:.arm_visible_postcondition_with_feedback()",
+        "src/bin/lay_ibus_engine/tail_memory.rs:L190:.observe_visible_postcondition()"
       ],
       "id": "observed-outcome-feedback",
       "status": "PASS",
@@ -69,17 +75,19 @@
     },
     {
       "evidence": [
-        "src/nanda_wave/lexical_phase/runtime.rs:L53:LexicalPhaseMemory",
+        "src/nanda_wave/lexical_phase/runtime.rs:L62:LexicalPhaseMemory",
         "src/typing_transition/candidate.rs:L9:L2CandidateLattice"
       ],
       "id": "hot-field-memory",
-      "status": "PASS",
-      "violations": []
+      "status": "WATCH",
+      "violations": [
+        "hot_full_word_authority:src/nanda_wave/lexical_phase/runtime.rs:Vec\\s*<\\s*String\\s*>"
+      ]
     },
     {
       "evidence": [
         "src/keyboard/text_input/script.rs:L1:is_cyrillic_letter()",
-        "src/lexical_surface_atoms.rs:L163:surface_atom_projection()",
+        "src/lexical_surface_atoms.rs:L157:surface_atom_projection()",
         "src/lexical_surface_atoms.rs:L34:SurfaceFieldEncoder"
       ],
       "id": "l1-surface-field",
@@ -98,8 +106,8 @@
     {
       "evidence": [
         "src/nanda_wave/l4_signed_memory.rs:L4:L4SignedMemorySignal",
-        "src/nanda_wave/usage_prior.rs:L143:UsagePriorSnapshot",
-        "src/typing_memory.rs:L27:TypingMemoryEvent"
+        "src/nanda_wave/usage_prior.rs:L185:UsagePriorSnapshot",
+        "src/typing_memory.rs:L156:TypingMemoryEvent"
       ],
       "id": "l3-l4-learning",
       "status": "PASS",
@@ -107,19 +115,26 @@
     },
     {
       "evidence": [
-        "graph_links:20756",
-        "graph_nodes:8353"
+        "graph_links:28434",
+        "graph_nodes:11170"
       ],
       "id": "fast-verifiable",
-      "status": "PASS",
-      "violations": []
+      "status": "WATCH",
+      "violations": [
+        "duplicate_symbol:normalize_surface():2"
+      ]
     }
   ],
-  "duplicate_symbols": {},
-  "graph_fingerprint": "073519e35b648c14523ce1805e35119ece09c6287fd50723e9973b4d96703a84",
-  "graph_links": 20756,
-  "graph_nodes": 8353,
+  "duplicate_symbols": {
+    "normalize_surface()": [
+      "src/nanda_wave/lexical_grokking/composite.rs:L442:normalize_surface()",
+      "src/nanda_wave/lexical_phase/format.rs:L109:normalize_surface()"
+    ]
+  },
+  "graph_fingerprint": "ce56519172fc4304458e002d583d386b363c6b2656c0fa09be4961c0ac26fa58",
+  "graph_links": 28434,
+  "graph_nodes": 11170,
   "schema": "lay.architecture-graph-receipt.v1",
-  "source_fingerprint": "4ac12a0b29ab4198cda8e2c9569088ca5fdfad68482573c969b2f997683409f5",
-  "verdict": "PASS"
+  "source_fingerprint": "8ee5cdb373bfb8c4d84a602a56500cc4ce04818b6e7631485dbbeb9e2bdade7d",
+  "verdict": "WATCH"
 }
