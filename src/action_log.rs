@@ -179,6 +179,22 @@ pub(crate) struct RecentActionCandidateScore {
     pub(crate) l4_phase_positive_centers: u8,
     #[serde(default)]
     pub(crate) l4_phase_negative_centers: u8,
+    #[serde(default)]
+    pub(crate) l4_cross_scene_package_loaded: bool,
+    #[serde(default)]
+    pub(crate) l4_cross_scene_profile_present: bool,
+    #[serde(default)]
+    pub(crate) l4_cross_scene_disposition: String,
+    #[serde(default)]
+    pub(crate) l4_cross_scene_recommendation: String,
+    #[serde(default)]
+    pub(crate) l4_cross_scene_margin_milli: i16,
+    #[serde(default)]
+    pub(crate) l4_cross_scene_threshold_milli: i16,
+    #[serde(default)]
+    pub(crate) l4_cross_scene_pair_margin_milli: i16,
+    #[serde(default)]
+    pub(crate) l4_cross_scene_automatic_apply: bool,
     pub(crate) risk_milli: i16,
     pub(crate) posterior_milli: i16,
     pub(crate) decision_rank_milli: i16,
@@ -352,6 +368,14 @@ impl RecentActionGateTrace {
                     l4_phase_witness_supported: score.l4_phase_witness_supported,
                     l4_phase_positive_centers: score.l4_phase_positive_centers,
                     l4_phase_negative_centers: score.l4_phase_negative_centers,
+                    l4_cross_scene_package_loaded: score.l4_cross_scene_package_loaded,
+                    l4_cross_scene_profile_present: score.l4_cross_scene_profile_present,
+                    l4_cross_scene_disposition: score.l4_cross_scene_disposition.to_string(),
+                    l4_cross_scene_recommendation: score.l4_cross_scene_recommendation.to_string(),
+                    l4_cross_scene_margin_milli: score.l4_cross_scene_margin_milli,
+                    l4_cross_scene_threshold_milli: score.l4_cross_scene_threshold_milli,
+                    l4_cross_scene_pair_margin_milli: score.l4_cross_scene_pair_margin_milli,
+                    l4_cross_scene_automatic_apply: score.l4_cross_scene_automatic_apply,
                     risk_milli: score.risk_milli,
                     posterior_milli: score.posterior_milli,
                     decision_rank_milli: score.decision_rank_milli,

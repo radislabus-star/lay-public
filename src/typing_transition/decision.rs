@@ -98,7 +98,7 @@ impl TransitionDecisionCore {
         if std::env::var_os("LAY_DEBUG_DECISION_CORE").is_some() {
             for (candidate, evaluation) in candidates.iter().zip(&evaluations) {
                 eprintln!(
-                    "decision-core-candidate origin={:?} source_id={} class={} gate={:?} rank={:.3} posterior={:.3} risk={:.3} explain={} opfit={} lost={} field={} attract={} repel={} uncertainty={} phase_competition={} lexical_ready={} operator_consensus={} usage={:.3} context={:.3} l3={} l3_disposition={} l3_pairwise={} l3_relation={} l4={} l4_state_specific={} l4_attract={} l4_repel={} l4_phase={} l4_phase_supported={} hidden={} hidden_classes={} hidden_selected={} hidden_probe={} hidden_certificate={} replacement={:?}",
+                    "decision-core-candidate origin={:?} source_id={} class={} gate={:?} rank={:.3} posterior={:.3} risk={:.3} explain={} opfit={} lost={} field={} attract={} repel={} uncertainty={} phase_competition={} lexical_ready={} operator_consensus={} usage={:.3} context={:.3} l3={} l3_disposition={} l3_pairwise={} l3_relation={} l4={} l4_state_specific={} l4_attract={} l4_repel={} l4_phase={} l4_phase_supported={} cross_scene={} cross_margin={} cross_recommendation={} cross_auto_apply={} hidden={} hidden_classes={} hidden_selected={} hidden_probe={} hidden_certificate={} replacement={:?}",
                     candidate.origin,
                     candidate.source_id,
                     candidate.error_class.as_str(),
@@ -130,6 +130,10 @@ impl TransitionDecisionCore {
                     evaluation.signals.l4_transition_repel_count,
                     evaluation.signals.l4_phase_witness_milli,
                     evaluation.signals.l4_phase_witness_supported,
+                    evaluation.signals.l4_cross_scene_disposition.as_str(),
+                    evaluation.signals.l4_cross_scene_margin_milli,
+                    evaluation.signals.l4_cross_scene_recommendation.as_str(),
+                    evaluation.signals.l4_cross_scene_automatic_apply,
                     evaluation.signals.l4_hidden_disposition.as_str(),
                     evaluation.signals.l4_hidden_semantic_classes,
                     evaluation.signals.l4_hidden_selected_class,
@@ -388,6 +392,16 @@ pub(crate) struct CandidateDecisionSignals {
     pub(crate) l4_phase_witness_supported: bool,
     pub(crate) l4_phase_positive_centers: u8,
     pub(crate) l4_phase_negative_centers: u8,
+    pub(crate) l4_cross_scene_package_loaded: bool,
+    pub(crate) l4_cross_scene_profile_present: bool,
+    pub(crate) l4_cross_scene_disposition:
+        crate::nanda_wave::l4_cross_scene::L4CrossSceneDisposition,
+    pub(crate) l4_cross_scene_recommendation:
+        crate::nanda_wave::l4_cross_scene::L4CrossSceneRecommendation,
+    pub(crate) l4_cross_scene_margin_milli: i16,
+    pub(crate) l4_cross_scene_threshold_milli: i16,
+    pub(crate) l4_cross_scene_pair_margin_milli: i16,
+    pub(crate) l4_cross_scene_automatic_apply: bool,
 }
 
 impl CandidateDecisionSignals {
@@ -433,6 +447,7 @@ fn candidate_decision_signals_from_readouts(
         context.usage,
         context.l2_peak_context,
     );
+    let cross_scene = l4_cross_scene_shadow_readout(event, candidate, relation, l3, l2_wave_peak);
     let non_field_rank_score = bayes.posterior
         + ((explanation.explanation_score_milli as f32 - 500.0) / 2_000.0)
         + transition_rank_bonus(&action, candidate)
@@ -503,6 +518,14 @@ fn candidate_decision_signals_from_readouts(
         l4_phase_witness_supported: l4_signed.phase_witness_supported,
         l4_phase_positive_centers: l4_signed.phase_positive_centers,
         l4_phase_negative_centers: l4_signed.phase_negative_centers,
+        l4_cross_scene_package_loaded: cross_scene.package_loaded,
+        l4_cross_scene_profile_present: cross_scene.profile_present,
+        l4_cross_scene_disposition: cross_scene.disposition,
+        l4_cross_scene_recommendation: cross_scene.recommendation,
+        l4_cross_scene_margin_milli: cross_scene.margin_milli,
+        l4_cross_scene_threshold_milli: cross_scene.threshold_milli,
+        l4_cross_scene_pair_margin_milli: cross_scene.pair_margin_milli,
+        l4_cross_scene_automatic_apply: cross_scene.recommendation.automatic_apply(),
     }
 }
 

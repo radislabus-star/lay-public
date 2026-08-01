@@ -200,6 +200,65 @@ fn l4_signed_signal_from_memory(
     }
 }
 
+fn l4_cross_scene_shadow_readout(
+    event: &TypingErrorEvent,
+    candidate: &UnifiedCorrectionCandidate,
+    relation: &TransitionRelationAtoms,
+    l3: L3Signal,
+    l2: L2WavePeakSignal,
+) -> crate::nanda_wave::l4_cross_scene::L4CrossSceneReadout {
+    let identity = crate::typing_memory::TypingTransitionIdentity::observed(
+        &event.original,
+        &candidate.replacement,
+        "replacement",
+    );
+    let context = crate::typing_memory::transition_context_words(
+        &event.original,
+        &candidate.replacement,
+    );
+    let l2_signal = if l2.signal > 0.0 && l2.positive_milli > l2.negative_milli {
+        crate::nanda_wave::l4_cross_scene::L4CrossSceneL2Signal::Support
+    } else if l2.signal < 0.0 && l2.negative_milli > l2.positive_milli {
+        crate::nanda_wave::l4_cross_scene::L4CrossSceneL2Signal::Repel
+    } else {
+        crate::nanda_wave::l4_cross_scene::L4CrossSceneL2Signal::Unknown
+    };
+    let profile = crate::nanda_wave::l4_cross_scene::L4CrossSceneProfileKey::new(
+        identity.operator,
+        identity.layout_direction,
+        identity.layout_scope,
+    );
+    let candidate_relation_id =
+        crate::nanda_wave::l4_cross_scene::candidate_relation_id(relation.atoms());
+    let keep_relation_id = crate::nanda_wave::l4_cross_scene::keep_relation_id();
+    let context_signal = crate::nanda_wave::l4_cross_scene::context_signal_from_text(
+        &context,
+        &candidate.replacement,
+    );
+    let relation_class = if l3.relation_class == 0 {
+        crate::nanda_wave::l4_cross_scene::relation_class_from_context(
+            &context,
+            &candidate.replacement,
+        )
+    } else {
+        l3.relation_class
+    };
+    crate::nanda_wave::l4_cross_scene::shadow_readout(
+        crate::nanda_wave::l4_cross_scene::L4CrossSceneInput {
+            profile,
+            context: &context,
+            from_text: &event.original,
+            to_text: &candidate.replacement,
+            relation_atoms: relation.atoms(),
+            candidate_relation_id,
+            keep_relation_id,
+            l3_relation_class: relation_class,
+            context_signal,
+            l2_signal,
+        },
+    )
+}
+
 fn transition_interference_readout(
     l2: L2WavePeakSignal,
     phase: crate::nanda_wave::PhaseReadout,

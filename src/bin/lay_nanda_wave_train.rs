@@ -71,6 +71,47 @@ fn main() -> io::Result<()> {
         );
         return Ok(());
     }
+    if args.iter().any(|arg| arg == "--compile-l4-cross-scene") {
+        let input = arg_path(&args, "--input")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--input is required"))?;
+        let output = arg_path(&args, "--out")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--out is required"))?;
+        let report = lay::nanda_wave::compile_l4_cross_scene_memory(&input, &output)?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if args.iter().any(|arg| arg == "--prove-l4-cross-scene") {
+        let russian = arg_path(&args, "--russian-words").ok_or_else(|| {
+            io::Error::new(io::ErrorKind::InvalidInput, "--russian-words is required")
+        })?;
+        let english = arg_path(&args, "--english-words").ok_or_else(|| {
+            io::Error::new(io::ErrorKind::InvalidInput, "--english-words is required")
+        })?;
+        let output = arg_path(&args, "--out")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--out is required"))?;
+        let report = lay::nanda_wave::prove_l4_cross_scene_memory(&russian, &english, &output)?;
+        if let Some(receipt) = arg_path(&args, "--receipt") {
+            let mut bytes = serde_json::to_vec_pretty(&report).map_err(io::Error::other)?;
+            bytes.push(b'\n');
+            lay::private_file::write_private_bytes(&receipt, &bytes)?;
+        }
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if let Some(package) = arg_path(&args, "--l4-cross-scene-status") {
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&lay::nanda_wave::l4_cross_scene_status_json(&package))
+                .map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
     if let Some(cases) = arg_path(&args, "--prove-l3-sentence-context") {
         let output = arg_path(&args, "--out")
             .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--out is required"))?;
@@ -932,6 +973,9 @@ fn print_usage() {
          Common safe inspection commands:\n\
            --canonical-l2-status\n\
            --l3-context-phase-status [--memory PATH]\n\
+           --l4-cross-scene-status PATH\n\
+           --compile-l4-cross-scene --input EVENTS.jsonl --out PACKAGE.bin\n\
+           --prove-l4-cross-scene --russian-words RU --english-words EN --out PACKAGE.bin\n\
            --reload-l3-context-composite\n\
            --version"
     );

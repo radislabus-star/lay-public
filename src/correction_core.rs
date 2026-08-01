@@ -377,6 +377,14 @@ pub(crate) struct CorrectionCandidateScoreTrace {
     pub(crate) l4_phase_witness_supported: bool,
     pub(crate) l4_phase_positive_centers: u8,
     pub(crate) l4_phase_negative_centers: u8,
+    pub(crate) l4_cross_scene_package_loaded: bool,
+    pub(crate) l4_cross_scene_profile_present: bool,
+    pub(crate) l4_cross_scene_disposition: &'static str,
+    pub(crate) l4_cross_scene_recommendation: &'static str,
+    pub(crate) l4_cross_scene_margin_milli: i16,
+    pub(crate) l4_cross_scene_threshold_milli: i16,
+    pub(crate) l4_cross_scene_pair_margin_milli: i16,
+    pub(crate) l4_cross_scene_automatic_apply: bool,
     pub(crate) risk_milli: i16,
     pub(crate) posterior_milli: i16,
     pub(crate) decision_rank_milli: i16,
@@ -666,6 +674,19 @@ impl CorrectionCandidateScoreTrace {
                     l4_phase_witness_supported: decision_signals.l4_phase_witness_supported,
                     l4_phase_positive_centers: decision_signals.l4_phase_positive_centers,
                     l4_phase_negative_centers: decision_signals.l4_phase_negative_centers,
+                    l4_cross_scene_package_loaded: decision_signals.l4_cross_scene_package_loaded,
+                    l4_cross_scene_profile_present: decision_signals.l4_cross_scene_profile_present,
+                    l4_cross_scene_disposition: decision_signals
+                        .l4_cross_scene_disposition
+                        .as_str(),
+                    l4_cross_scene_recommendation: decision_signals
+                        .l4_cross_scene_recommendation
+                        .as_str(),
+                    l4_cross_scene_margin_milli: decision_signals.l4_cross_scene_margin_milli,
+                    l4_cross_scene_threshold_milli: decision_signals.l4_cross_scene_threshold_milli,
+                    l4_cross_scene_pair_margin_milli: decision_signals
+                        .l4_cross_scene_pair_margin_milli,
+                    l4_cross_scene_automatic_apply: decision_signals.l4_cross_scene_automatic_apply,
                     risk_milli: crate::text_metrics::score_to_milli(score.risk),
                     posterior_milli: crate::text_metrics::score_to_milli(score.posterior),
                     decision_rank_milli: decision_signals.rank_milli,

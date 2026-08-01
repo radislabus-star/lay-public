@@ -10,7 +10,9 @@ use std::time::{SystemTime, UNIX_EPOCH};
 const CONTEXT_WORDS: usize = 5;
 static NEXT_CAUSAL_EPISODE: AtomicU64 = AtomicU64::new(1);
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Deserialize, serde::Serialize)]
+#[derive(
+    Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, serde::Deserialize, serde::Serialize,
+)]
 #[serde(rename_all = "snake_case")]
 #[repr(u8)]
 pub(crate) enum LayoutProjectionDirection {
@@ -59,7 +61,9 @@ impl LayoutProjectionDirection {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Deserialize, serde::Serialize)]
+#[derive(
+    Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, serde::Deserialize, serde::Serialize,
+)]
 #[serde(rename_all = "snake_case")]
 #[repr(u8)]
 pub(crate) enum LayoutProjectionScope {
@@ -219,7 +223,7 @@ pub(crate) struct TypingTransitionIdentity {
 }
 
 impl TypingTransitionIdentity {
-    fn observed(from: &str, to: &str, operation: &str) -> Self {
+    pub(crate) fn observed(from: &str, to: &str, operation: &str) -> Self {
         use crate::transition_relation::TransitionOperatorKind;
 
         let operator = TransitionOperatorKind::infer(from, to, operation);

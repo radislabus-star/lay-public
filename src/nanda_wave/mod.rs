@@ -15,6 +15,7 @@ pub mod l3;
 mod l3_context_metrics;
 pub(crate) mod l3_phrase_gate;
 pub(crate) mod l4_active_disambiguation;
+pub(crate) mod l4_cross_scene;
 pub mod l4_goal_state;
 pub(crate) mod l4_hidden_state;
 pub(crate) mod l4_phase_witness;
@@ -1504,6 +1505,63 @@ pub fn usage_memory_learned_report_json() -> serde_json::Value {
 
 pub fn usage_memory_typed_replay_report_json(path: Option<&std::path::Path>) -> serde_json::Value {
     usage_prior::usage_memory_typed_replay_report_json(path)
+}
+
+/// Compiles a bounded, candidate-relative L4 package from completed causal
+/// usage receipts. The package remains shadow-only and cannot grant edit
+/// authority.
+pub fn compile_l4_cross_scene_memory(
+    input: &std::path::Path,
+    output: &std::path::Path,
+) -> std::io::Result<serde_json::Value> {
+    let report = l4_cross_scene::compile_usage_events_path(
+        input,
+        output,
+        l4_cross_scene::CrossSceneCompileConfig::default(),
+    )?;
+    serde_json::to_value(report).map_err(std::io::Error::other)
+}
+
+/// Builds and proves transferable whole-token and grapheme layout scenes on a
+/// word-disjoint heldout split. Passing this proof still means SuggestOnly.
+pub fn prove_l4_cross_scene_memory(
+    russian_words: &std::path::Path,
+    english_words: &std::path::Path,
+    output: &std::path::Path,
+) -> std::io::Result<serde_json::Value> {
+    l4_cross_scene::prove_cross_scene_word_lists(russian_words, english_words, output)
+}
+
+pub fn l4_cross_scene_status_json(path: &std::path::Path) -> serde_json::Value {
+    match l4_cross_scene::read_package(path) {
+        Ok(package) => serde_json::json!({
+            "loaded": true,
+            "path": path,
+            "bytes": std::fs::metadata(path).map(|value| value.len()).unwrap_or_default(),
+            "profiles": package.profiles.len(),
+            "pair_profiles": package.pair_profiles.len(),
+            "source_observations": package.source_observations,
+            "joined_observations": package.joined_observations,
+            "positive_observations": package.positive_observations,
+            "negative_observations": package.negative_observations,
+            "reverted_observations": package.reverted_observations,
+            "ambiguity_observations": package.ambiguity_observations,
+            "censored_observations": package.censored_observations,
+            "runtime_authority": "shadow_suggest_only",
+            "automatic_apply_possible": false,
+        }),
+        Err(error) => serde_json::json!({
+            "loaded": false,
+            "path": path,
+            "error": error.to_string(),
+            "runtime_authority": "shadow_suggest_only",
+            "automatic_apply_possible": false,
+        }),
+    }
+}
+
+pub fn reload_l4_cross_scene_memory() -> bool {
+    l4_cross_scene::reload_shadow_package()
 }
 
 pub fn balanced_l2_surface_words<I>(source: I, limit: usize) -> Vec<String>

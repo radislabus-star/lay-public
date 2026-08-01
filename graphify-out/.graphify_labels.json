@@ -501,5 +501,11 @@
   "499": "personal_frequency_profile",
   "500": "DecisionOutput",
   "501": ".new",
-  "502": "coupling_order"
+  "502": "coupling_order",
+  "503": "types.rs",
+  "504": "record_recent_action",
+  "505": "l1.rs",
+  "506": "ManifestWriteLock",
+  "507": "personal_frequency_profile",
+  "508": "apply_l2_phase_shadow"
 }

@@ -149,6 +149,26 @@ state snapshot
 
 ## 5. Обучаемый Cross-Scene L4
 
+**Статус: выполнено как `PASS_SHADOW` 2026-08-01, release `0.2.346`.**
+Реализованы candidate-relative encoder на `64` фазовых ячейки, причинный join,
+latest-state consolidation, positive/anti/hard-negative/ambiguity banks,
+направленные pair profiles, bounded binary V1 и read-only hot reload. Поле
+подключено к `TransitionDecisionCore` только как диагностика
+`SuggestOnly | Keep`: оно не меняет birth, rank, admission или verifier.
+Полный heldout содержит `436` случаев; все `8/8` классов направления,
+знака и масштаба дали `100%`, false automatic projection `0`. Без anti-centers
+появились `218/218` false supports, с anti-centers осталось `0/218`.
+Package roundtrip, candidate readout order и runtime/evaluator parity прошли;
+пакет занимает `3 652` байта. Fixed dirty replay `2 466` случаев сохранил
+полный нормализованный JSON и `negative_false_apply = 0`.
+
+Органический live package не продвинут: из `2 437` строк текущего журнала
+только `9` образуют complete causal positives, negative/reverted evidence нет.
+Синтетический proof-пакет также не устанавливается. Runtime authority не
+менялась. Пять release-бинарников `0.2.346` установлены атомарно; global IBus,
+managed engine и daemon не перезапускались. Receipt:
+`/home/ubu/projects/lay/docs/structural_gates/receipts/L4_CROSS_SCENE_V1_SHADOW_2026-08-01.json`.
+
 1. Реализовать candidate-relative scene encoder.
 2. Обучать positive, anti и ambiguity centers только по причинным receipts.
 3. Сначала разрешить перенос только как `SuggestOnly`.

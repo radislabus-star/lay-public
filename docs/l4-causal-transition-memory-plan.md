@@ -61,7 +61,8 @@ Current proof boundary:
 exact historical feedback closure: PASS-shadow
 negative false apply with memory:  0
 negative false apply without L4:   228
-cross-scene phase transfer:         WATCH
+cross-scene equivalent-scene proof: PASS-shadow
+organic cross-scene promotion:      WATCH
 whole-lattice scene boost:          REJECTED
 ```
 
@@ -92,6 +93,82 @@ The rejected whole-lattice experiment raised support but increased false
 top-1 from 1 to 5. L4 therefore must not become an unconstrained score over
 every candidate. It must learn causal, typed and candidate-relative evidence.
 
+### 2.1 Cross-scene V1 checkpoint (`0.2.346`)
+
+The first bounded candidate-relative cross-scene field is implemented in
+`src/nanda_wave/l4_cross_scene/`. It uses a 64-cell typed phase vector and
+stores at most 4 positive, 4 negative, 2 hard-negative and 4 ambiguity centers
+per profile. Directed pair memory is bounded to 1,024 pair profiles. The
+runtime package contains typed operator, layout direction/scope, relation IDs,
+compact signed phase cells, support and calibrated thresholds; it contains no
+raw word, phrase, application or backend names.
+
+Runtime ownership remains deliberately narrow:
+
+```text
+L1/L2 candidate already exists
+-> L3 relation and context evidence
+-> L4 cross-scene readout
+-> Supported | Repelled | Ambiguous | Unknown
+-> SuggestOnly | Keep
+-> diagnostic signal inside TransitionDecisionCore
+```
+
+`SuggestOnly` cannot become `AuthorizedEdit`, does not add rank energy, does
+not change candidate birth and cannot bypass the verifier. The read-only
+runtime reloads an atomically replaced package at most once per second without
+restarting IBus or the daemon.
+
+Measured full-source proof on `e@192.168.3.94`:
+
+```text
+RU eligible source tokens:             2 096 840
+EN eligible source tokens:               269 648
+deterministic sample:                  512 + 512
+train / heldout per language:          410 / 102
+train-heldout word overlap:                    0
+training causal observations:              1 716
+heldout candidate-relative cases:             436
+whole-token RU->EN positive/negative: 102/102 at 100%
+whole-token EN->RU positive/negative: 102/102 at 100%
+grapheme RU->EN positive/negative:         7/7 at 100%
+grapheme EN->RU positive/negative:         7/7 at 100%
+false automatic projection:                         0
+without anti false supports:                 218/218
+with anti false supports:                      0/218
+no-context positive supports:                   8/218
+shuffled direction/sign positive supports:          0
+candidate readout order parity:                  PASS
+compact package roundtrip:                       PASS
+runtime/evaluator parity after i8 quantization:  PASS
+package:                                      3 652 B
+proof peak RSS:                           63 040 KiB
+proof elapsed:                                9.03 s
+```
+
+The learner now calibrates the already quantized runtime centers. This removes
+the measured defect where the high-precision learner passed all classes while
+the compact package produced different numeric readouts.
+
+The fixed 2,466-case dirty replay is semantically byte-identical to the typed
+L4 baseline after removing only the input path field. Normalized SHA-256 is
+`cd197d597144aeb4b52af5cefdc5f9872b9eef0aefdca7a3685ce8abba7fb43b`;
+`negative_false_apply` remains `0`. Release replay took `57.69 s`, used
+`158,556 KiB` peak RSS and performed no swaps.
+
+Organic evidence is not promoted. A read-only snapshot of the current live
+journal contained 2,437 rows but only 9 complete causal positives in 5 scenes,
+45 orphan semantic labels and no negative or reverted causal receipts. Its
+1,400-byte package is therefore a coverage receipt, not model authority. The
+synthetic heldout package is proof material and is not installed as live
+memory. Release binaries `0.2.346` are installed atomically without restarting
+global IBus, the managed engine or the daemon.
+
+Exact evidence:
+`/home/e/build/lay-l1-shadow/artifacts/l4-cross-scene-v1-2026-08-01/report.json`
+and
+`/home/ubu/projects/lay/docs/structural_gates/receipts/L4_CROSS_SCENE_V1_SHADOW_2026-08-01.json`.
+
 ## 3. Architectural Defects To Remove
 
 ### 3.1 Typed identity baseline closed
@@ -107,8 +184,9 @@ manual toggle versus automatic projection
 IME acceptance versus observed automatic result
 ```
 
-This closes representation parity only. Whether these identities transfer
-between unseen scenes remains the separate cross-scene proof.
+Typed V2 by itself closes representation parity only. Cross-scene V1 now proves
+bounded `SuggestOnly` transfer on heldout equivalent scenes; organic promotion
+still requires independent causal negative and reverted receipts.
 
 ### 3.2 Semantic state and execution state are mixed conceptually
 
@@ -662,10 +740,11 @@ typed event V2 replay parity: PASS
 typed causal chain:           PASS-structural
 hidden-state certificates:    LIVE
 phase witness bank:           LIVE-bounded
-cross-scene transfer:         WATCH
+cross-scene synthetic proof:  PASS-shadow
+cross-scene organic package:  WATCH-insufficient-evidence
 whole-lattice scene boost:    REJECTED
-whole-token layout transfer:  OPEN
-single-grapheme transfer:     OPEN
+whole-token layout transfer:  PASS-shadow-SuggestOnly
+single-grapheme transfer:     PASS-shadow-SuggestOnly
 ```
 
 ### DEBT QUEUE
@@ -673,11 +752,11 @@ single-grapheme transfer:     OPEN
 ```text
 DONE typed event/operator identity (`0.2.345`)
 DONE causal observed-state receipt chain (`0.2.345`, structural)
-P0 fixed layout and grapheme danger sets
-P1 scene encoder train/runtime parity
-P1 causal phase compiler and ablations
-P1 direction-specific whole-token layout transfer
-P1 single-grapheme SuggestOnly proof
+DONE fixed layout and grapheme danger sets
+DONE scene encoder train/runtime parity
+DONE causal phase compiler and ablations
+DONE direction-specific whole-token layout transfer
+DONE single-grapheme SuggestOnly proof
 P2 organic shadow coverage
 P2 learned apply calibration
 P2 tray/CLI learning report
