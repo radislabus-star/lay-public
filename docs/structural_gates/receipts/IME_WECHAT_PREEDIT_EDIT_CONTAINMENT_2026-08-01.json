@@ -1,0 +1,76 @@
+{
+  "receipt": "IME_WECHAT_PREEDIT_EDIT_CONTAINMENT_2026-08-01",
+  "date": "2026-08-01",
+  "scope": "WeChat committed-prefix Backspace ownership and accidental synthetic-input containment",
+  "failures": {
+    "dot_stream": {
+      "classification": "real_key_events_not_preedit_marker",
+      "retained_dot_key_events": 494,
+      "keyval": 46,
+      "keycode": 53,
+      "bounded_tail_chars_reached": 160,
+      "live_observation_seconds": 3,
+      "live_dot_events": 0,
+      "active_input_generator_found": false,
+      "historical_producer_identified": false
+    },
+    "completion_backspace": {
+      "old_route": "recompute and republish virtual suffix before returning Backspace to the client",
+      "new_route": "hide virtual suffix, clear candidate tracking, update committed-tail memory, then return Backspace without same-event republish"
+    }
+  },
+  "containment": {
+    "direct_lay_test_input_requires": "LAY_TEST_INPUT_ARMED=1",
+    "runtime_smoke_sets_arming_after_capture_launch": true,
+    "unarmed_exit_code": 1,
+    "unarmed_virtual_keyboard_created": false
+  },
+  "tests": {
+    "composition_edit": {
+      "passed": 6,
+      "failed": 0
+    },
+    "central_live_field_selector": {
+      "passed": 4,
+      "failed": 0
+    },
+    "full_lay_ibus_engine": {
+      "passed": 155,
+      "failed": 0
+    },
+    "wechat_shaped_prefix": "прек",
+    "wechat_shaped_suffix": "расный",
+    "tail_after_backspace": "пре",
+    "completion_state_empty_after_backspace": true,
+    "lay_test_input_check": "PASS",
+    "remote_host": "e@192.168.3.94",
+    "remote_jobs": 20,
+    "remote_release_build": "PASS",
+    "remote_release_elapsed_seconds": 119
+  },
+  "installed_runtime": {
+    "version": "0.2.340",
+    "lay_sha256": "9527f26f52d83afec8453871ff8b295f37f9db22544279171a025cb2deeaae69",
+    "lay_daemon_sha256": "66e7d80e7f9e3348ffda9de40092b5c6bc2e0daee7d1eae073705dea0f72caa6",
+    "lay_ibus_engine_sha256": "8b57cbc6a29b22628faab5a5c2d3b2010bd77c316f1aa55c3c9124249cb52dba",
+    "lay_test_input_sha256": "351c605a39977e6d04aec75307134a399086ae205aa76c5eeac8c3bce9bb2e33",
+    "lay_daemon_pid": 1630127,
+    "lay_ibus_engine_pid": 1630206,
+    "global_ibus_daemon_restarted": false,
+    "active_engine": "lay-ime-ru",
+    "rollback_directory": "/home/ubu/.local/lib/lay/rollback/0.2.340-prefinal-20260801-111148"
+  },
+  "not_tested": [
+    "physical post-install Backspace behavior in the user's current WeChat draft field",
+    "exact historical producer of the completed dot stream",
+    "all supported client lifecycle variants"
+  ],
+  "authority": {
+    "ime_event_ownership_changed": true,
+    "synthetic_test_input_policy_changed": true,
+    "live_candidate_display_gate_changed": true,
+    "trained_l1_l2_l3_package_authority_changed": false,
+    "runtime_installed_at_receipt_creation": true
+  },
+  "verdict": "PASS_CODE_WATCH_LIVE_WECHAT"
+}

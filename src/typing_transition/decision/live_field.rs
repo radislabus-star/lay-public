@@ -136,7 +136,6 @@ fn live_suffix_field_has_display_authority(candidate: &LiveCompletionProposal) -
         || candidate.accepted >= 2
         || candidate.context_usage >= 0.060
         || candidate.usage >= 0.095
-        || (candidate.score >= 0.90 && candidate.structural >= 0.46)
 }
 
 #[cfg(test)]
@@ -183,6 +182,21 @@ mod tests {
     fn ungrounded_single_letter_suffix_stays_hidden() {
         let mut candidate = proposal(4, "е");
         candidate.completed_state_known = false;
+
+        let admission = TransitionDecisionCore::admit_live_completion(&candidate);
+
+        assert!(admission.candidate_visible);
+        assert!(!admission.suffix_visible);
+        assert_eq!(admission.reason, "field_suffix_not_grounded");
+    }
+
+    #[test]
+    fn geometry_alone_cannot_authorize_an_unbound_single_letter_suffix() {
+        let mut candidate = proposal(4, "ю");
+        candidate.completed_state_known = false;
+        candidate.score = 0.99;
+        candidate.rank_score = 0.99;
+        candidate.structural = 0.99;
 
         let admission = TransitionDecisionCore::admit_live_completion(&candidate);
 

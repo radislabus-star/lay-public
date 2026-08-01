@@ -191,6 +191,7 @@ def run_case(
 
     sender_env = {
         **dict_env(),
+        "LAY_TEST_INPUT_ARMED": "1",
         "LAY_TEST_START_DELAY_MS": "3500",
         "LAY_TEST_INITIAL_LAYOUT": case.start_layout,
     }

@@ -20,18 +20,18 @@
     "semantic_hash": "236e46a80b6d2865de3d1816fb645158"
   },
   "extension/lay@radislabus-star.github.io/lay-impl.js": {
-    "mtime": 1785412320.3751335,
+    "mtime": 1785570853.108634,
     "ast_hash": "4b795e86b2cf94e522b648b448bb5e87",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1785523393.8894262,
-    "ast_hash": "696aac5b7bbf2b07bdad012143fb08f4",
+    "mtime": 1785570853.102348,
+    "ast_hash": "89421c037185adcdc03682236225728d",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
-    "mtime": 1785523393.8904262,
-    "ast_hash": "a1f435a1159fdad23bc4bccba59f8c4d",
+    "mtime": 1785570853.120385,
+    "ast_hash": "f3849fb97025aa014d03cb5312b6c13f",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/recent_actions_menu.js": {
@@ -40,13 +40,13 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/settings.js": {
-    "mtime": 1785523393.8914263,
-    "ast_hash": "9edcc412d958ba4852316a9227f0d926",
+    "mtime": 1785570853.1202316,
+    "ast_hash": "2c5a9c314e1a5de1af5960f2f187dfaa",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1785523393.8924263,
-    "ast_hash": "705c0c51f6bb5c235003be21d007a97b",
+    "mtime": 1785570853.1201196,
+    "ast_hash": "019cd89b2e9b572bfbad3a8033054fcb",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -145,8 +145,8 @@
     "semantic_hash": "f33fe11e542c7dde7360706248700138"
   },
   "scripts/run_runtime_smoke.py": {
-    "mtime": 1785142503.0214071,
-    "ast_hash": "8ad707a0d20b43e2d18ac8b9f3993a6b",
+    "mtime": 1785570683.3511462,
+    "ast_hash": "b29f1a5bfba3307b87aa92dedcff96ee",
     "semantic_hash": ""
   },
   "scripts/runtime_smoke/__init__.py": {
@@ -885,8 +885,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/composition_edit.rs": {
-    "mtime": 1784410223.8312051,
-    "ast_hash": "d130b7b120e7b6f5aa8f11eb42cd5737",
+    "mtime": 1785570683.346146,
+    "ast_hash": "a8b8c035f9a34a213ada0e454487ef4e",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/engine.rs": {
@@ -1060,9 +1060,9 @@
     "semantic_hash": "c6cce8f2aeff0b96719d312e5c2d15cc"
   },
   "src/bin/lay_test_input.rs": {
-    "mtime": 1780617504.7020607,
-    "ast_hash": "25895564ab2c150b06cdffb022daac6b",
-    "semantic_hash": "25895564ab2c150b06cdffb022daac6b"
+    "mtime": 1785570683.3491461,
+    "ast_hash": "a29d5712fc119ad580f2ff9ec4e559f8",
+    "semantic_hash": ""
   },
   "src/bin/lay_test_input/desktop_probe.rs": {
     "mtime": 1781870983.7876816,
@@ -2515,8 +2515,8 @@
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1785414052.8607612,
-    "ast_hash": "6076ecc637fe0c1f7599b6ac994cf257",
+    "mtime": 1785570853.1219776,
+    "ast_hash": "aa270608167c9283c08fc29769713338",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -3290,8 +3290,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/preedit/tests.rs": {
-    "mtime": 1785523468.1751153,
-    "ast_hash": "7ec6638930408be2e569a3d10e9d0182",
+    "mtime": 1785571702.5335772,
+    "ast_hash": "d2f94a283a798111b3f54c7a8b99a58b",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2/grammar_adapter.rs": {
@@ -3650,8 +3650,8 @@
     "semantic_hash": ""
   },
   "docs/l3-online-phase-field.md": {
-    "mtime": 1785524069.6588044,
-    "ast_hash": "9cb5de541d2ea26550a9cd6f3245bcea",
+    "mtime": 1785571936.552608,
+    "ast_hash": "9fd58b343762a11c078ec4be2030b73b",
     "semantic_hash": ""
   },
   "src/nanda_wave/context_phase/surface_field.rs": {
@@ -3670,8 +3670,8 @@
     "semantic_hash": ""
   },
   "src/typing_transition/decision/live_field.rs": {
-    "mtime": 1784640267.7445045,
-    "ast_hash": "f14cfe022719ecf823826f90eaffc3aa",
+    "mtime": 1785571595.238502,
+    "ast_hash": "b3df3ed39ebe5567cf7a92b55809c613",
     "semantic_hash": ""
   },
   "docs/lay-self-teacher-l3-plan.md": {
@@ -5060,8 +5060,13 @@
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/L3_IME_FEEDBACK_SANITATION_2026-07-31.json": {
-    "mtime": 1785524069.6598046,
-    "ast_hash": "3736dd501801c29d1435ba8b2adb82c9",
+    "mtime": 1785524798.200244,
+    "ast_hash": "ecf1d76c35f4114a5af16424a3e3045c",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/IME_WECHAT_PREEDIT_EDIT_CONTAINMENT_2026-08-01.json": {
+    "mtime": 1785571936.552608,
+    "ast_hash": "678c9edbb3e65d81ff7b5139e77e161c",
     "semantic_hash": ""
   }
 }

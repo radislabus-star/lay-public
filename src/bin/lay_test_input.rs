@@ -11,6 +11,9 @@
 //!   lay-test-input <name> — запускает ручной сценарий или builtin TSV из
 //!       data/test_input/builtin_scripts.tsv
 //!   lay-test-input list        — только создаёт kbd и держит, печатает путь
+//!
+//! Input scenarios require `LAY_TEST_INPUT_ARMED=1`. The runtime smoke
+//! harness sets it only after opening its isolated capture field.
 
 #[path = "lay_test_input/desktop_probe.rs"]
 mod desktop_probe;
@@ -36,6 +39,12 @@ fn main() -> std::io::Result<()> {
     if matches!(scenario.as_str(), "x11-report" | "report-x11") {
         print_x11_report();
         return Ok(());
+    }
+    if scenario != "list" && env::var("LAY_TEST_INPUT_ARMED").ok().as_deref() != Some("1") {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::PermissionDenied,
+            "refusing live synthetic input without LAY_TEST_INPUT_ARMED=1",
+        ));
     }
 
     let mut dev = build_virtual_keyboard()?;

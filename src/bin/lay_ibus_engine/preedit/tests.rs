@@ -428,31 +428,30 @@ fn three_letter_russian_prefix_does_not_emit_long_lexical_tail_without_l3() {
 }
 
 #[test]
-fn bracketed_mode_suppresses_three_letter_russian_lexical_noise() {
-    lay::nanda_wave::warm_up_l2_for_ime();
-    let mut engine = LayIbusEngine::new(
-        "/test".to_string(),
-        Arc::new(Mutex::new(Default::default())),
-        true,
-        true,
-        LayConfig {
-            text_backend: "ime".to_string(),
-            nanda_precognition: true,
-            ime_bracket_candidates: true,
-            correction_safety: "experimental".to_string(),
-            ..LayConfig::default()
-        },
-    );
-    for ch in "интересно инт".chars() {
-        engine.push_tail_char(ch);
-    }
-    engine.refresh_precognition_candidates();
-
-    assert!(
-        engine.preedit_candidates.is_empty(),
-        "bracket mode must not show weak three-letter Russian guesses: {:?}",
+fn bracketed_mode_is_display_only_and_does_not_create_a_second_candidate_gate() {
+    fn candidates(bracketed: bool) -> Vec<String> {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                nanda_precognition: true,
+                ime_bracket_candidates: bracketed,
+                correction_safety: "experimental".to_string(),
+                ..LayConfig::default()
+            },
+        );
+        for ch in "интересно инт".chars() {
+            engine.push_tail_char(ch);
+        }
+        engine.refresh_precognition_candidates();
         engine.preedit_candidates
-    );
+    }
+
+    lay::nanda_wave::warm_up_l2_for_ime();
+    assert_eq!(candidates(false), candidates(true));
 }
 
 #[test]
@@ -581,15 +580,17 @@ fn four_letter_russian_prefix_can_use_wave_lookup() {
     }
     engine.refresh_precognition_candidates();
 
-    assert!(
-        engine
-            .preedit_candidates
-            .iter()
-            .all(|suffix| suffix.chars().count() != 1
-                || is_allowed_visible_completion_suffix(suffix)),
-        "single-letter suffix guard must still apply: {:?}",
-        engine.preedit_candidates
-    );
+    for suffix in &engine.preedit_candidates {
+        if suffix.chars().count() == 1 && !is_allowed_visible_completion_suffix(suffix) {
+            let completed = format!("слов{suffix}");
+            assert!(
+                lay::lexicon::is_common_ru_word(&completed)
+                    || lay::russian_lexicon::is_known_russian_word_or_form(&completed),
+                "a weak one-letter suffix needs an attested completed center: {completed:?} from {:?}",
+                engine.preedit_candidates
+            );
+        }
+    }
 }
 
 #[test]
@@ -1061,7 +1062,7 @@ fn live_ime_does_not_project_typo_replacement_as_suffix() {
 }
 
 #[test]
-fn repeated_current_token_does_not_disable_shared_l2_readout() {
+fn repeated_current_token_does_not_leak_a_full_replacement_into_completion_preedit() {
     lay::nanda_wave::warm_up_l2_for_ime();
     let mut engine = LayIbusEngine::new(
         "/test".to_string(),
@@ -1081,12 +1082,8 @@ fn repeated_current_token_does_not_disable_shared_l2_readout() {
     engine.refresh_precognition_candidates();
 
     assert!(
-        engine
-            .preedit_replacement_targets
-            .iter()
-            .flatten()
-            .any(|target| target == "то есть"),
-        "a repeated token must still reach the shared L2 lattice: candidates={:?}, replacements={:?}",
+        engine.preedit_replacement_targets.iter().flatten().all(|target| target != "то есть"),
+        "the completion route must not render a boundary replacement: candidates={:?}, replacements={:?}",
         engine.preedit_candidates,
         engine.preedit_replacement_targets
     );
@@ -1207,7 +1204,7 @@ fn ime_preserves_shared_gate_rank_after_admission_score_saturates() {
 }
 
 #[test]
-fn ime_does_not_render_unbound_generated_word_forms() {
+fn ime_can_render_a_bound_morphology_surface_from_the_full_l2_field() {
     lay::nanda_wave::warm_up_l2_for_ime();
     let mut engine = LayIbusEngine::new(
         "/test".to_string(),
@@ -1227,8 +1224,8 @@ fn ime_does_not_render_unbound_generated_word_forms() {
     engine.refresh_precognition_candidates();
 
     assert!(
-        engine.preedit_candidates.is_empty(),
-        "an unbound generated surface must not become visible IME text: {:?}",
+        engine.preedit_candidates.iter().any(|suffix| suffix == "ю"),
+        "the attested жуть -> жутью morphology center must remain visible: {:?}",
         engine.preedit_candidates
     );
 }

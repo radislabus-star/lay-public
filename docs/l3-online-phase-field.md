@@ -1780,3 +1780,101 @@ Exact receipt:
 ```text
 /home/ubu/projects/lay/docs/structural_gates/receipts/L3_IME_FEEDBACK_SANITATION_2026-07-31.json
 ```
+
+## WeChat preedit editing and synthetic-input containment, 2026-08-01
+
+Two distinct failures were reported from the WeChat input field. They must not
+be represented as one model-quality problem.
+
+The first failure was external synthetic input. The private IBus trace retained
+`494` actual `keyval=46`, `keycode=53`, decoded `.` key events. These were real
+input events, not a preedit rendering marker. The retained tail reached its
+bounded `160` character capacity and the text was subsequently removed with
+Backspace. A three-second live observation found no continuing dot events and
+no active `lay-test-input`, `xdotool`, `ydotool` client, or runtime-smoke
+process. The exact historical producer cannot be proven from the old trace
+because it did not record input-device identity.
+
+The containment rule is now:
+
+```text
+direct lay-test-input scenario
+-> reject before virtual-keyboard creation
+
+isolated run_runtime_smoke.py capture
+-> set LAY_TEST_INPUT_ARMED=1 explicitly
+-> allow the bounded scenario
+```
+
+The long-running `ydotoold` service is not evidence of a producer by itself;
+it owns `/dev/uinput` but had no active client during diagnosis. Runtime `lay`
+does not depend on that service because `lay-daemon` owns its own virtual
+keyboard.
+
+The second failure was a real IME ownership defect. In managed committed-tail
+mode the typed prefix is already committed to the application, while the
+visible completion is a virtual IBus preedit suffix. The old Backspace route
+immediately recomputed and republished that suffix before returning the same
+Backspace to the client. A client that treats preedit cancellation as the key's
+effect therefore removed the prediction instead of the real prefix character.
+
+The corrected route is:
+
+```text
+typed prefix + visible virtual suffix
+-> Backspace
+-> hide preedit suffix
+-> clear candidate tracking
+-> update Lay committed-tail memory by one character
+-> return Backspace to the client
+-> do not republish a suffix in the same key event
+```
+
+The adjacent candidate readout was also checked against the current single-owner
+contract. Bracket rendering is presentation-only and cannot create a second
+candidate gate. A one-character suffix may be shown when the completed surface
+is an attested L2 center, including a corpus-backed morphology form such as
+`жуть -> жутью`. Geometry score alone cannot authorize an unbound
+one-character suffix. Full-token and split/glue replacements remain owned by
+the boundary/autocorrect route rather than the completion-suffix route.
+
+Measured code evidence:
+
+```text
+composition-edit focused tests                       6/6 PASS
+central live-field selector tests                     4/4 PASS
+full lay-ibus-engine tests                        155/155 PASS
+WeChat-shaped state: прек + расный -> пре          PASS
+preedit/candidate/replacement state after Backspace empty
+unarmed lay-test-input exit code                         1
+virtual keyboard created by rejected invocation         no
+lay-test-input compile                                PASS
+remote release build, CARGO_BUILD_JOBS=20             PASS
+final remote release build elapsed                   1m59s
+installed runtime version                          0.2.340
+installed lay-daemon PID                            1630127
+installed lay-ibus-engine PID                       1630206
+global ibus-daemon restarted                          false
+active engine after activation                   lay-ime-ru
+```
+
+What was not tested at this checkpoint:
+
+- physical post-install Backspace behavior inside the user's current WeChat
+  draft field;
+- the exact process that produced the already-finished historical dot stream;
+- every Electron, Chromium, GTK, Qt, terminal and native WeChat lifecycle.
+
+Verdict scope:
+
+- committed-prefix Backspace ownership: `PASS_CODE`;
+- accidental direct test-input containment: `PASS_CODE`;
+- single-character live candidate display gate: `PASS_CODE`;
+- live WeChat confirmation: `WATCH`;
+- trained L1.1, L2 or L3 package authority changed: `false`.
+
+Exact receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/IME_WECHAT_PREEDIT_EDIT_CONTAINMENT_2026-08-01.json
+```

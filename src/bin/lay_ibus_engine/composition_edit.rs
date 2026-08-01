@@ -26,14 +26,20 @@ impl LayIbusEngine {
             self.update_composition_preedit(emitter).await?;
             return Ok(true);
         }
+        // The visible completion is virtual preedit, while the typed prefix is
+        // already committed. Some clients (notably WeChat) otherwise consume
+        // Backspace as preedit cancellation and leave the real prefix intact.
+        // Hide the suffix first and do not republish it during the same key
+        // event, so this Backspace reaches the committed character.
+        self.clear_preedit(emitter).await?;
         self.backspace_committed_tail_only();
-        self.update_precognition_preedit(emitter).await?;
         Ok(false)
     }
 
     pub(super) fn backspace_committed_tail_only(&mut self) {
         self.tail_buffer.pop();
         self.preedit_fast.backspace();
+        self.clear_preedit_completion_state();
         if self.last_tail_token_text().is_empty() {
             self.word_input_mode = None;
         }
@@ -192,6 +198,25 @@ mod tests {
         assert_eq!(engine.buffer, "");
         assert_eq!(engine.tail_buffer, "тес");
         assert_eq!(engine.preedit_fast.token(), "тес");
+    }
+
+    #[test]
+    fn committed_tail_backspace_dismisses_virtual_completion_before_editing_prefix() {
+        let mut engine = engine();
+        for ch in "прек".chars() {
+            engine.push_tail_char(ch);
+        }
+        engine.preedit_suffix = "расный".to_string();
+        engine.preedit_candidates = vec!["расный".to_string()];
+        engine.preedit_replacement_targets = vec![None];
+
+        engine.backspace_committed_tail_only();
+
+        assert_eq!(engine.tail_buffer, "пре");
+        assert_eq!(engine.preedit_fast.token(), "пре");
+        assert!(engine.preedit_suffix.is_empty());
+        assert!(engine.preedit_candidates.is_empty());
+        assert!(engine.preedit_replacement_targets.is_empty());
     }
 
     #[test]
