@@ -11,8 +11,9 @@ use crate::time::unix_timestamp;
 #[cfg(test)]
 use crate::typing_memory;
 use crate::typing_memory::{
-    normalize_memory_word, normalized_words, CompletionEditTrace, TypingMemoryEvent,
-    TypingMemoryEventKind,
+    normalize_memory_word, normalized_words, CompletionEditTrace, LayoutProjectionDirection,
+    LayoutProjectionScope, TypingMemoryEvent, TypingMemoryEventKind, TypingMemoryEvidenceSource,
+    TypingMemoryOperation, TypingMemoryOutcome,
 };
 
 mod hot;
@@ -50,6 +51,7 @@ const USAGE_PERSIST_INTERVAL: Duration = Duration::from_millis(1000);
 const USAGE_PERSIST_CHANNEL_CAPACITY: usize = 8192;
 #[cfg(not(test))]
 const USAGE_PERSIST_PENDING_MAX_BYTES: usize = 64 * 1024;
+const TYPED_EVENT_SCHEMA_V2: u8 = 2;
 
 #[derive(Debug, serde::Deserialize)]
 struct LearningCandidate {
@@ -62,6 +64,8 @@ struct LearningCandidate {
 #[derive(Debug, Clone, Default, serde::Deserialize, serde::Serialize)]
 struct UsageEvent {
     ts: u64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    schema: Option<u8>,
     #[serde(skip_serializing_if = "Option::is_none")]
     episode_id: Option<String>,
     kind: UsageEventKind,
@@ -87,6 +91,18 @@ struct UsageEvent {
     layout_scope: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     outcome: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    evidence_source_code: Option<u8>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    operation_code: Option<u8>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    operator_code: Option<u8>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    layout_direction_code: Option<u8>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    layout_scope_code: Option<u8>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    outcome_code: Option<u8>,
     #[serde(skip_serializing_if = "Option::is_none")]
     completion_edit: Option<CompletionEditTrace>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -115,6 +131,7 @@ impl UsageEvent {
     fn from_typing_memory_event(event: &TypingMemoryEvent) -> Self {
         Self {
             ts: unix_timestamp(),
+            schema: Some(TYPED_EVENT_SCHEMA_V2),
             episode_id: event.episode_id.clone(),
             kind: match event.kind {
                 TypingMemoryEventKind::Typed => UsageEventKind::Typed,
@@ -131,8 +148,8 @@ impl UsageEvent {
             context: event.context.clone(),
             from: event.from.clone(),
             to: event.to.clone(),
-            source: Some(event.source.clone()),
-            operation: Some(event.operation.clone()),
+            source: Some(event.evidence_source.as_str().to_string()),
+            operation: Some(event.operation.as_str().to_string()),
             surface: event.surface.clone(),
             operator: Some(event.identity.learning_key()),
             layout_direction: event
@@ -144,9 +161,112 @@ impl UsageEvent {
                 .layout_scope
                 .map(|scope| scope.as_str().to_string()),
             outcome: Some(event.outcome.as_str().to_string()),
+            evidence_source_code: Some(event.evidence_source.code()),
+            operation_code: Some(event.operation.code()),
+            operator_code: Some(event.identity.operator as u8),
+            layout_direction_code: event
+                .identity
+                .layout_direction
+                .map(LayoutProjectionDirection::code),
+            layout_scope_code: event.identity.layout_scope.map(LayoutProjectionScope::code),
+            outcome_code: Some(event.outcome.code()),
             completion_edit: event.completion_edit.clone(),
             proposal: event.proposal.clone(),
         }
+    }
+
+    fn enrich_typed_v2(&mut self) {
+        self.schema = Some(TYPED_EVENT_SCHEMA_V2);
+        self.evidence_source_code = self
+            .source
+            .as_deref()
+            .map(TypingMemoryEvidenceSource::from_legacy)
+            .map(|source| source.code());
+        self.operation_code = self
+            .operation
+            .as_deref()
+            .map(TypingMemoryOperation::from_legacy)
+            .map(|operation| operation.code());
+        self.operator_code = self
+            .operator
+            .as_deref()
+            .and_then(crate::transition_relation::TransitionOperatorKind::from_str)
+            .map(|operator| operator as u8);
+        self.layout_direction_code = self
+            .layout_direction
+            .as_deref()
+            .and_then(LayoutProjectionDirection::from_str)
+            .map(LayoutProjectionDirection::code);
+        self.layout_scope_code = self
+            .layout_scope
+            .as_deref()
+            .and_then(LayoutProjectionScope::from_str)
+            .map(LayoutProjectionScope::code);
+        self.outcome_code = self
+            .outcome
+            .as_deref()
+            .and_then(TypingMemoryOutcome::from_str)
+            .map(TypingMemoryOutcome::code);
+    }
+
+    fn typed_v2_is_consistent(&self) -> bool {
+        if self.schema != Some(TYPED_EVENT_SCHEMA_V2) {
+            return false;
+        }
+        let source_ok = match (self.evidence_source_code, self.source.as_deref()) {
+            (Some(code), Some(source)) => {
+                TypingMemoryEvidenceSource::from_legacy(source).code() == code
+            }
+            (None, None) => true,
+            _ => false,
+        };
+        let operation_ok = match (self.operation_code, self.operation.as_deref()) {
+            (Some(code), Some(operation)) => {
+                TypingMemoryOperation::from_legacy(operation).code() == code
+            }
+            (None, None) => true,
+            _ => false,
+        };
+        let operator_ok = match (self.operator_code, self.operator.as_deref()) {
+            (Some(code), Some(operator)) => {
+                crate::transition_relation::TransitionOperatorKind::from_code(code)
+                    == crate::transition_relation::TransitionOperatorKind::from_str(operator)
+            }
+            (None, None) => true,
+            _ => false,
+        };
+        let direction_ok = typed_optional_code_matches(
+            self.layout_direction_code,
+            self.layout_direction.as_deref(),
+            LayoutProjectionDirection::from_code,
+            LayoutProjectionDirection::from_str,
+        );
+        let scope_ok = typed_optional_code_matches(
+            self.layout_scope_code,
+            self.layout_scope.as_deref(),
+            LayoutProjectionScope::from_code,
+            LayoutProjectionScope::from_str,
+        );
+        let outcome_ok = typed_optional_code_matches(
+            self.outcome_code,
+            self.outcome.as_deref(),
+            TypingMemoryOutcome::from_code,
+            TypingMemoryOutcome::from_str,
+        );
+        source_ok && operation_ok && operator_ok && direction_ok && scope_ok && outcome_ok
+    }
+}
+
+fn typed_optional_code_matches<T: PartialEq>(
+    code: Option<u8>,
+    label: Option<&str>,
+    from_code: impl Fn(u8) -> Option<T>,
+    from_str: impl Fn(&str) -> Option<T>,
+) -> bool {
+    match (code, label) {
+        (Some(code), Some(label)) => from_code(code) == from_str(label),
+        (None, None) => true,
+        _ => false,
     }
 }
 
@@ -163,7 +283,7 @@ enum UsageEventKind {
     RejectedCandidate,
 }
 
-#[derive(Debug, Clone, Default, serde::Deserialize, serde::Serialize)]
+#[derive(Debug, Clone, Default, PartialEq, Eq, serde::Deserialize, serde::Serialize)]
 struct UsageCounts {
     words: HashMap<String, u32>,
     #[serde(default)]
@@ -358,8 +478,8 @@ pub(crate) fn record_confirmed_user_correction_if_enabled(
 pub(crate) fn record_observed_system_apply_if_enabled(
     from: &str,
     to: &str,
-    source: &str,
-    operation: &str,
+    source: TypingMemoryEvidenceSource,
+    operation: TypingMemoryOperation,
 ) {
     if !usage_learning_enabled() || from == to {
         return;
@@ -634,6 +754,57 @@ pub fn usage_memory_learned_report_json() -> serde_json::Value {
         "causal_feedback": causal,
         "events_tail_bytes": text.len(),
         "authority": "ranking signal only; edit safety gate remains final"
+    })
+}
+
+/// Read-only migration proof for the typed L4 event envelope. It enriches an
+/// in-memory copy of the journal and compares the complete signed usage state;
+/// the source file is never rewritten.
+pub fn usage_memory_typed_replay_report_json(path: Option<&Path>) -> serde_json::Value {
+    let path = path
+        .map(Path::to_path_buf)
+        .or_else(usage_events_path)
+        .unwrap_or_default();
+    let text = read_usage_events_text(&path).unwrap_or_default();
+    let events = usage_events_from_jsonl(&text).collect::<Vec<_>>();
+    let mut baseline = UsageCounts::default();
+    for event in &events {
+        add_usage_event_count(&mut baseline, event);
+    }
+
+    let mut migrated = events.clone();
+    for event in &mut migrated {
+        event.enrich_typed_v2();
+    }
+    let invalid_typed_rows = migrated
+        .iter()
+        .filter(|event| !event.typed_v2_is_consistent())
+        .count();
+    let mut replay = UsageCounts::default();
+    for event in &migrated {
+        add_usage_event_count(&mut replay, event);
+    }
+    let replay_parity = baseline == replay;
+    serde_json::json!({
+        "kind": "l4_typed_event_replay",
+        "source": path,
+        "source_bytes": text.len(),
+        "rows": events.len(),
+        "typed_schema": TYPED_EVENT_SCHEMA_V2,
+        "typed_rows": migrated.len(),
+        "invalid_typed_rows": invalid_typed_rows,
+        "word_states": baseline.words.len(),
+        "transition_states": baseline.transition_observed.len(),
+        "signed_transition_states": baseline
+            .transition_attract
+            .keys()
+            .chain(baseline.transition_repel.keys())
+            .collect::<HashSet<_>>()
+            .len(),
+        "replay_parity": replay_parity,
+        "false_apply_behavior_changed": false,
+        "source_rewritten": false,
+        "verdict": if replay_parity && invalid_typed_rows == 0 { "PASS" } else { "FAIL" },
     })
 }
 
@@ -1913,6 +2084,7 @@ mod tests {
             &mut cache,
             &UsageEvent {
                 ts: 1,
+                schema: None,
                 episode_id: None,
                 kind: UsageEventKind::Typed,
                 word: Some("дождь".to_string()),
@@ -1926,6 +2098,12 @@ mod tests {
                 layout_direction: None,
                 layout_scope: None,
                 outcome: None,
+                evidence_source_code: None,
+                operation_code: None,
+                operator_code: None,
+                layout_direction_code: None,
+                layout_scope_code: None,
+                outcome_code: None,
                 completion_edit: None,
                 proposal: None,
             },
@@ -2256,6 +2434,82 @@ mod tests {
     }
 
     #[test]
+    fn typed_v2_event_replays_the_legacy_signed_state_exactly() {
+        let event = TypingMemoryEvent::accepted_layout_projection("ltkfq", "делай")
+            .into_iter()
+            .next()
+            .expect("layout event");
+        let typed = UsageEvent::from_typing_memory_event(&event);
+        assert_eq!(typed.schema, Some(TYPED_EVENT_SCHEMA_V2));
+        assert!(typed.typed_v2_is_consistent());
+
+        let mut legacy = typed.clone();
+        legacy.schema = None;
+        legacy.evidence_source_code = None;
+        legacy.operation_code = None;
+        legacy.operator_code = None;
+        legacy.layout_direction_code = None;
+        legacy.layout_scope_code = None;
+        legacy.outcome_code = None;
+
+        let mut typed_counts = UsageCounts::default();
+        let mut legacy_counts = UsageCounts::default();
+        add_usage_event_count(&mut typed_counts, &typed);
+        add_usage_event_count(&mut legacy_counts, &legacy);
+        assert_eq!(typed_counts, legacy_counts);
+
+        let encoded = serde_json::to_string(&typed).expect("encode typed event");
+        let decoded: UsageEvent = serde_json::from_str(&encoded).expect("decode typed event");
+        assert!(decoded.typed_v2_is_consistent());
+    }
+
+    #[test]
+    fn legacy_v1_event_remains_readable_without_typed_codes() {
+        let legacy = r#"{
+            "ts":1,
+            "kind":"accepted_fix",
+            "word":"делай",
+            "context":[],
+            "from":"ltkfq",
+            "to":"делай",
+            "source":"user_correction",
+            "operation":"replacement",
+            "operator":"layout_projection:en_to_ru:current_token",
+            "layout_direction":"en_to_ru",
+            "layout_scope":"current_token",
+            "outcome":"confirmed_positive"
+        }"#;
+        let event: UsageEvent = serde_json::from_str(legacy).expect("decode V1 usage event");
+
+        assert_eq!(event.schema, None);
+        assert_eq!(event.evidence_source_code, None);
+        assert!(UsageEventProjection::from_event(&event).is_some());
+
+        let mut migrated = event.clone();
+        migrated.enrich_typed_v2();
+        assert!(migrated.typed_v2_is_consistent());
+
+        let mut before = UsageCounts::default();
+        let mut after = UsageCounts::default();
+        add_usage_event_count(&mut before, &event);
+        add_usage_event_count(&mut after, &migrated);
+        assert_eq!(before, after);
+    }
+
+    #[test]
+    fn malformed_typed_v2_identity_fails_closed() {
+        let event = TypingMemoryEvent::accepted_layout_projection("ltkfq", "делай")
+            .into_iter()
+            .next()
+            .expect("layout event");
+        let mut persisted = UsageEvent::from_typing_memory_event(&event);
+        persisted.layout_direction_code = Some(LayoutProjectionDirection::RuToEn.code());
+
+        assert!(!persisted.typed_v2_is_consistent());
+        assert!(UsageEventProjection::from_event(&persisted).is_none());
+    }
+
+    #[test]
     fn usage_count_merge_preserves_signed_surface_memory() {
         let mut target = UsageCounts::default();
         let mut source = UsageCounts::default();
@@ -2351,6 +2605,7 @@ mod tests {
     fn adjacent_duplicate_usage_events_ignore_timestamp() {
         let first = UsageEvent {
             ts: 1,
+            schema: None,
             episode_id: None,
             kind: UsageEventKind::Typed,
             word: Some("лог".to_string()),
@@ -2364,6 +2619,12 @@ mod tests {
             layout_direction: None,
             layout_scope: None,
             outcome: None,
+            evidence_source_code: None,
+            operation_code: None,
+            operator_code: None,
+            layout_direction_code: None,
+            layout_scope_code: None,
+            outcome_code: None,
             completion_edit: None,
             proposal: None,
         };
@@ -2379,6 +2640,7 @@ mod tests {
     fn distinct_causal_episodes_are_not_adjacent_duplicates() {
         let first = UsageEvent {
             ts: 1,
+            schema: None,
             episode_id: Some("episode-1".to_string()),
             kind: UsageEventKind::AcceptedFix,
             word: Some("новости".to_string()),
@@ -2392,6 +2654,12 @@ mod tests {
             layout_direction: None,
             layout_scope: None,
             outcome: Some("confirmed_positive".to_string()),
+            evidence_source_code: None,
+            operation_code: None,
+            operator_code: None,
+            layout_direction_code: None,
+            layout_scope_code: None,
+            outcome_code: None,
             completion_edit: None,
             proposal: Some("новость".to_string()),
         };

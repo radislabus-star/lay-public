@@ -1,0 +1,65 @@
+{
+  "gate": "l4_typed_event_v2_replay_parity",
+  "date": "2026-08-01",
+  "release": "0.2.345",
+  "remote_host": "e@192.168.3.94",
+  "remote_checkout": "/home/e/build/lay-l1-shadow",
+  "tested": {
+    "typing_memory": "17/17 PASS",
+    "usage_prior": "38/38 PASS",
+    "typed_identity_contract": "PASS",
+    "causal_chain_contract": "PASS",
+    "legacy_v1_decoder": "PASS",
+    "malformed_v2_fail_closed": "PASS",
+    "real_journal_read_only_migration": "2456/2456 PASS",
+    "dirty_replay": "2466 cases, exact baseline/candidate JSON parity"
+  },
+  "measured": {
+    "source_journal_rows": 2456,
+    "source_journal_bytes": 511935,
+    "source_journal_sha256": "3e26b524b0e6a68cbc4f154b22cbe4835efea5a933efcde38fe28ed0d814bcb9",
+    "typed_rows": 2456,
+    "invalid_typed_rows": 0,
+    "word_states": 711,
+    "transition_states": 14698,
+    "signed_transition_states": 9416,
+    "replay_cases": 2466,
+    "baseline_json_sha256": "e20dd25f31cd64923f4061228696b836a88740ca2aba9916451c967395de5dba",
+    "candidate_json_sha256": "e20dd25f31cd64923f4061228696b836a88740ca2aba9916451c967395de5dba",
+    "negative_false_apply_before": 0,
+    "negative_false_apply_after": 0,
+    "negative_other_apply_inherited": 47,
+    "candidate_replay_elapsed_seconds": 57.70,
+    "candidate_replay_average_cpu_percent": 99,
+    "candidate_replay_peak_rss_kib": 157972,
+    "candidate_replay_swaps": 0,
+    "release_build_elapsed_seconds": 112.68,
+    "release_build_average_cpu_percent": 237,
+    "release_build_peak_rss_kib": 1587048,
+    "release_build_swaps": 0
+  },
+  "not_tested": [
+    "cross-scene L4 transfer",
+    "whole-token transfer authority",
+    "single-grapheme transfer authority",
+    "first-touch performance target",
+    "final six-client product matrix"
+  ],
+  "verdict_scope": {
+    "representation_migration": "PASS",
+    "replay_parity": "PASS",
+    "existing_negative_false_apply": "PASS",
+    "source_rewritten": false,
+    "runtime_decision_authority_changed": false,
+    "cross_scene_authority": "NOT_GRANTED"
+  },
+  "evidence": {
+    "remote_artifact_dir": "/home/e/build/lay-l1-shadow/artifacts/l4-typed-v2-2026-08-01",
+    "baseline_report": "/home/e/build/lay-l1-shadow/artifacts/l4-typed-v2-2026-08-01/baseline-with-memory.json",
+    "candidate_report": "/home/e/build/lay-l1-shadow/artifacts/l4-typed-v2-2026-08-01/candidate-with-memory.json",
+    "typed_replay_report": "/home/e/build/lay-l1-shadow/artifacts/l4-typed-v2-2026-08-01/typed-replay-report.json",
+    "candidate_build_telemetry": "/home/e/build/lay-l1-shadow/artifacts/l4-typed-v2-2026-08-01/candidate-build.time",
+    "candidate_replay_telemetry": "/home/e/build/lay-l1-shadow/artifacts/l4-typed-v2-2026-08-01/candidate-with-memory.time",
+    "release_build_telemetry": "/home/e/build/lay-l1-shadow/artifacts/l4-typed-v2-2026-08-01/release-build-0.2.345.time"
+  }
+}

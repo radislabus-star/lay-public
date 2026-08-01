@@ -234,16 +234,14 @@ impl LayIbusEngine {
                 lay::typing_cpu::TypingCpu::record_observed_system_apply(
                     &feedback.original,
                     &feedback.replacement,
-                    "layout",
-                    feedback.kind.operation(),
+                    lay::typing_cpu::ObservedSystemTransition::LayoutProjection,
                 );
             }
             SystemOutcomeKind::Correction => {
                 lay::typing_cpu::TypingCpu::record_observed_system_apply(
                     &feedback.original,
                     &feedback.replacement,
-                    "autocorrect",
-                    feedback.kind.operation(),
+                    lay::typing_cpu::ObservedSystemTransition::Correction,
                 );
             }
         }

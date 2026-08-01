@@ -46,6 +46,20 @@ struct Learned {
 
 fn main() -> io::Result<()> {
     let args = env::args().collect::<Vec<_>>();
+    if args
+        .iter()
+        .any(|arg| matches!(arg.as_str(), "-h" | "--help"))
+    {
+        print_usage();
+        return Ok(());
+    }
+    if args
+        .iter()
+        .any(|arg| matches!(arg.as_str(), "-V" | "--version"))
+    {
+        println!("lay-nanda-wave-train {}", env!("CARGO_PKG_VERSION"));
+        return Ok(());
+    }
     if args.iter().any(|arg| arg == "--watch-l3-context-online") {
         return l3_online::run(&args);
     }
@@ -909,6 +923,18 @@ fn main() -> io::Result<()> {
     write_phase_memory(&phase_out, phase_entries)?;
     print_summary(&dataset, &out, &phase_out, &learned, &live_report);
     Ok(())
+}
+
+fn print_usage() {
+    println!(
+        "usage: lay-nanda-wave-train [explicit training, proof, status, or composite command]\n\
+         \nRun with no arguments only to compile the legacy default training package.\n\
+         Common safe inspection commands:\n\
+           --canonical-l2-status\n\
+           --l3-context-phase-status [--memory PATH]\n\
+           --reload-l3-context-composite\n\
+           --version"
+    );
 }
 
 fn arg_usize(args: &[String], name: &str) -> Option<usize> {

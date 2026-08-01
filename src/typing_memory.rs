@@ -10,13 +10,15 @@ use std::time::{SystemTime, UNIX_EPOCH};
 const CONTEXT_WORDS: usize = 5;
 static NEXT_CAUSAL_EPISODE: AtomicU64 = AtomicU64::new(1);
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Deserialize, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+#[repr(u8)]
 pub(crate) enum LayoutProjectionDirection {
-    EnToRu,
-    RuToEn,
-    MixedToRu,
-    MixedToEn,
-    Unknown,
+    EnToRu = 1,
+    RuToEn = 2,
+    MixedToRu = 3,
+    MixedToEn = 4,
+    Unknown = 255,
 }
 
 impl LayoutProjectionDirection {
@@ -29,13 +31,41 @@ impl LayoutProjectionDirection {
             Self::Unknown => "unknown",
         }
     }
+
+    pub(crate) const fn code(self) -> u8 {
+        self as u8
+    }
+
+    pub(crate) const fn from_code(code: u8) -> Option<Self> {
+        Some(match code {
+            1 => Self::EnToRu,
+            2 => Self::RuToEn,
+            3 => Self::MixedToRu,
+            4 => Self::MixedToEn,
+            255 => Self::Unknown,
+            _ => return None,
+        })
+    }
+
+    pub(crate) fn from_str(value: &str) -> Option<Self> {
+        Some(match value {
+            "en_to_ru" => Self::EnToRu,
+            "ru_to_en" => Self::RuToEn,
+            "mixed_to_ru" => Self::MixedToRu,
+            "mixed_to_en" => Self::MixedToEn,
+            "unknown" => Self::Unknown,
+            _ => return None,
+        })
+    }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Deserialize, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+#[repr(u8)]
 pub(crate) enum LayoutProjectionScope {
-    Grapheme,
-    CurrentToken,
-    Phrase,
+    Grapheme = 1,
+    CurrentToken = 2,
+    Phrase = 3,
 }
 
 impl LayoutProjectionScope {
@@ -44,6 +74,135 @@ impl LayoutProjectionScope {
             Self::Grapheme => "grapheme",
             Self::CurrentToken => "current_token",
             Self::Phrase => "phrase",
+        }
+    }
+
+    pub(crate) const fn code(self) -> u8 {
+        self as u8
+    }
+
+    pub(crate) const fn from_code(code: u8) -> Option<Self> {
+        Some(match code {
+            1 => Self::Grapheme,
+            2 => Self::CurrentToken,
+            3 => Self::Phrase,
+            _ => return None,
+        })
+    }
+
+    pub(crate) fn from_str(value: &str) -> Option<Self> {
+        Some(match value {
+            "grapheme" => Self::Grapheme,
+            "current_token" => Self::CurrentToken,
+            "phrase" => Self::Phrase,
+            _ => return None,
+        })
+    }
+}
+
+/// Typed provenance for causal evidence. `Diagnostic` preserves old adapter
+/// labels for replay, but its payload is never semantic authority.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) enum TypingMemoryEvidenceSource {
+    User,
+    UserCorrection,
+    Layout,
+    Ime,
+    Autocorrect,
+    Candidate,
+    Diagnostic(String),
+}
+
+impl TypingMemoryEvidenceSource {
+    pub(crate) fn from_legacy(value: &str) -> Self {
+        match value {
+            "user" => Self::User,
+            "user_correction" => Self::UserCorrection,
+            "layout" => Self::Layout,
+            "ime" => Self::Ime,
+            "autocorrect" => Self::Autocorrect,
+            "candidate" => Self::Candidate,
+            other => Self::Diagnostic(other.to_string()),
+        }
+    }
+
+    pub(crate) fn as_str(&self) -> &str {
+        match self {
+            Self::User => "user",
+            Self::UserCorrection => "user_correction",
+            Self::Layout => "layout",
+            Self::Ime => "ime",
+            Self::Autocorrect => "autocorrect",
+            Self::Candidate => "candidate",
+            Self::Diagnostic(value) => value,
+        }
+    }
+
+    pub(crate) const fn code(&self) -> u8 {
+        match self {
+            Self::User => 1,
+            Self::UserCorrection => 2,
+            Self::Layout => 3,
+            Self::Ime => 4,
+            Self::Autocorrect => 5,
+            Self::Candidate => 6,
+            Self::Diagnostic(_) => 255,
+        }
+    }
+}
+
+/// Typed event operation. The canonical transferable identity remains
+/// `TransitionOperatorKind`; this enum preserves interaction semantics and a
+/// lossless compatibility label without letting callers branch on raw text.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) enum TypingMemoryOperation {
+    Typed,
+    Replacement,
+    Completion,
+    CompletionEdit,
+    PredictionMatch,
+    ImeAutoUndo,
+    LayoutProjection,
+    Diagnostic(String),
+}
+
+impl TypingMemoryOperation {
+    pub(crate) fn from_legacy(value: &str) -> Self {
+        match value {
+            "typed" => Self::Typed,
+            "replacement" => Self::Replacement,
+            "completion" => Self::Completion,
+            "completion_edit" => Self::CompletionEdit,
+            "prediction_match" => Self::PredictionMatch,
+            "ime_auto_undo" => Self::ImeAutoUndo,
+            "layout" | "layout_projection" => Self::LayoutProjection,
+            other => Self::Diagnostic(other.to_string()),
+        }
+    }
+
+    pub(crate) fn as_str(&self) -> &str {
+        match self {
+            Self::Typed => "typed",
+            Self::Replacement => "replacement",
+            Self::Completion => "completion",
+            Self::CompletionEdit => "completion_edit",
+            Self::PredictionMatch => "prediction_match",
+            Self::ImeAutoUndo => "ime_auto_undo",
+            Self::LayoutProjection => "layout",
+            Self::Diagnostic(value) => value,
+        }
+    }
+
+    pub(crate) const fn code(&self) -> u8 {
+        match self {
+            Self::Typed => 1,
+            Self::Replacement => 2,
+            Self::Completion => 3,
+            Self::CompletionEdit => 4,
+            Self::PredictionMatch => 5,
+            Self::ImeAutoUndo => 6,
+            Self::LayoutProjection => 7,
+            Self::Diagnostic(_) => 255,
         }
     }
 }
@@ -139,20 +298,52 @@ pub(crate) enum TypingMemoryFeedback {
 /// Only confirmed/reverted outcomes may later teach L4. Transport loss,
 /// stale snapshots and raw typing remain censored observations rather than
 /// negative semantic evidence.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Deserialize, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+#[repr(u8)]
 pub(crate) enum TypingMemoryOutcome {
-    ConfirmedPositive,
-    Reverted,
-    Censored,
+    ConfirmedPositive = 1,
+    ConfirmedNegative = 2,
+    Reverted = 3,
+    Ambiguous = 4,
+    Censored = 5,
 }
 
 impl TypingMemoryOutcome {
     pub(crate) const fn as_str(self) -> &'static str {
         match self {
             Self::ConfirmedPositive => "confirmed_positive",
+            Self::ConfirmedNegative => "confirmed_negative",
             Self::Reverted => "reverted",
+            Self::Ambiguous => "ambiguous",
             Self::Censored => "censored",
         }
+    }
+
+    pub(crate) const fn code(self) -> u8 {
+        self as u8
+    }
+
+    pub(crate) const fn from_code(code: u8) -> Option<Self> {
+        Some(match code {
+            1 => Self::ConfirmedPositive,
+            2 => Self::ConfirmedNegative,
+            3 => Self::Reverted,
+            4 => Self::Ambiguous,
+            5 => Self::Censored,
+            _ => return None,
+        })
+    }
+
+    pub(crate) fn from_str(value: &str) -> Option<Self> {
+        Some(match value {
+            "confirmed_positive" => Self::ConfirmedPositive,
+            "confirmed_negative" => Self::ConfirmedNegative,
+            "reverted" => Self::Reverted,
+            "ambiguous" => Self::Ambiguous,
+            "censored" => Self::Censored,
+            _ => return None,
+        })
     }
 }
 
@@ -165,8 +356,8 @@ pub(crate) struct TypingMemoryEvent {
     pub(crate) context: Vec<String>,
     pub(crate) from: Option<String>,
     pub(crate) to: Option<String>,
-    pub(crate) source: String,
-    pub(crate) operation: String,
+    pub(crate) evidence_source: TypingMemoryEvidenceSource,
+    pub(crate) operation: TypingMemoryOperation,
     pub(crate) identity: TypingTransitionIdentity,
     /// Stable relation shape, intentionally independent from concrete words.
     pub(crate) surface: Option<String>,
@@ -192,8 +383,8 @@ impl TypingMemoryEvent {
             context,
             from: None,
             to: None,
-            source: "user".to_string(),
-            operation: "typed".to_string(),
+            evidence_source: TypingMemoryEvidenceSource::User,
+            operation: TypingMemoryOperation::Typed,
             identity: TypingTransitionIdentity::typed(),
             surface: None,
             completion_edit: None,
@@ -208,8 +399,8 @@ impl TypingMemoryEvent {
             TypingMemoryEventKind::AcceptedFix,
             from,
             to,
-            "user_correction",
-            "replacement",
+            TypingMemoryEvidenceSource::UserCorrection,
+            TypingMemoryOperation::Replacement,
             TypingMemoryFeedback::Accepted,
             TypingMemoryOutcome::ConfirmedPositive,
             Some(&episode_id),
@@ -223,8 +414,8 @@ impl TypingMemoryEvent {
             TypingMemoryEventKind::AcceptedFix,
             from,
             to,
-            "layout",
-            "replacement",
+            TypingMemoryEvidenceSource::Layout,
+            TypingMemoryOperation::Replacement,
             TypingMemoryFeedback::Accepted,
             TypingMemoryOutcome::ConfirmedPositive,
             Some(&episode_id),
@@ -244,8 +435,8 @@ impl TypingMemoryEvent {
             TypingMemoryEventKind::AcceptedFix,
             original,
             accepted,
-            "user_correction",
-            operation,
+            TypingMemoryEvidenceSource::UserCorrection,
+            TypingMemoryOperation::from_legacy(operation),
             TypingMemoryFeedback::Accepted,
             TypingMemoryOutcome::ConfirmedPositive,
             Some(&episode_id),
@@ -256,14 +447,14 @@ impl TypingMemoryEvent {
     pub(crate) fn observed_system_apply(
         from: &str,
         to: &str,
-        source: &str,
-        operation: &str,
+        evidence_source: TypingMemoryEvidenceSource,
+        operation: TypingMemoryOperation,
     ) -> Vec<Self> {
         accepted_events(
             TypingMemoryEventKind::AcceptedFix,
             from,
             to,
-            source,
+            evidence_source,
             operation,
             TypingMemoryFeedback::Observed,
             TypingMemoryOutcome::Censored,
@@ -278,7 +469,7 @@ impl TypingMemoryEvent {
             TypingMemoryFeedback::Accepted,
             context_tail,
             accepted_text,
-            "completion",
+            TypingMemoryOperation::Completion,
         )
     }
 
@@ -303,7 +494,7 @@ impl TypingMemoryEvent {
         let reusable_prefix_chars = prefix.chars().count();
         let suggested_chars = suggested.chars().count();
         let final_chars = final_word.chars().count();
-        let operation = "completion_edit";
+        let operation = TypingMemoryOperation::CompletionEdit;
 
         Some(Self {
             kind: TypingMemoryEventKind::EditedIme,
@@ -313,14 +504,18 @@ impl TypingMemoryEvent {
             context: recent_context_words(context_tail),
             from: Some(suggested.clone()),
             to: Some(final_word.clone()),
-            source: "ime".to_string(),
-            operation: operation.to_string(),
-            identity: TypingTransitionIdentity::observed(&suggested, &final_word, operation),
+            evidence_source: TypingMemoryEvidenceSource::Ime,
+            operation: operation.clone(),
+            identity: TypingTransitionIdentity::observed(
+                &suggested,
+                &final_word,
+                operation.as_str(),
+            ),
             surface: Some(transition_surface_key(
                 &suggested,
                 &final_word,
                 "ime",
-                operation,
+                operation.as_str(),
             )),
             completion_edit: Some(CompletionEditTrace {
                 prefix,
@@ -346,7 +541,7 @@ impl TypingMemoryEvent {
             TypingMemoryFeedback::Accepted,
             context_tail,
             predicted_text,
-            "prediction_match",
+            TypingMemoryOperation::PredictionMatch,
         )
     }
 
@@ -356,7 +551,7 @@ impl TypingMemoryEvent {
             TypingMemoryFeedback::Rejected,
             context_tail,
             rejected_text,
-            "completion",
+            TypingMemoryOperation::Completion,
         )
     }
 
@@ -382,8 +577,8 @@ impl TypingMemoryEvent {
                     context,
                     from: Some(context_tail.trim().to_string()),
                     to: Some(rejected_text.trim().to_string()),
-                    source: source.to_string(),
-                    operation: operation.to_string(),
+                    evidence_source: TypingMemoryEvidenceSource::from_legacy(source),
+                    operation: TypingMemoryOperation::from_legacy(operation),
                     identity: TypingTransitionIdentity::observed(
                         context_tail,
                         rejected_text,
@@ -408,8 +603,8 @@ fn accepted_events(
     kind: TypingMemoryEventKind,
     from: &str,
     to: &str,
-    source: &str,
-    operation: &str,
+    evidence_source: TypingMemoryEvidenceSource,
+    operation: TypingMemoryOperation,
     feedback: TypingMemoryFeedback,
     outcome: TypingMemoryOutcome,
     episode_id: Option<&str>,
@@ -434,10 +629,15 @@ fn accepted_events(
                 context,
                 from: Some(from.trim().to_string()),
                 to: Some(to.trim().to_string()),
-                source: source.to_string(),
-                operation: operation.to_string(),
-                identity: TypingTransitionIdentity::observed(from, to, operation),
-                surface: Some(transition_surface_key(from, to, source, operation)),
+                evidence_source: evidence_source.clone(),
+                operation: operation.clone(),
+                identity: TypingTransitionIdentity::observed(from, to, operation.as_str()),
+                surface: Some(transition_surface_key(
+                    from,
+                    to,
+                    evidence_source.as_str(),
+                    operation.as_str(),
+                )),
                 completion_edit: None,
                 episode_id: episode_id.map(str::to_owned),
                 proposal: proposal.map(str::to_owned),
@@ -489,7 +689,7 @@ fn ime_events(
     feedback: TypingMemoryFeedback,
     context_tail: &str,
     text: &str,
-    operation: &str,
+    operation: TypingMemoryOperation,
 ) -> Vec<TypingMemoryEvent> {
     let context = recent_context_words(context_tail);
     let episode_id = next_causal_episode_id();
@@ -507,9 +707,9 @@ fn ime_events(
             context: context.clone(),
             from: None,
             to: Some(text.trim().to_string()),
-            source: "ime".to_string(),
-            operation: operation.to_string(),
-            identity: TypingTransitionIdentity::observed(context_tail, text, operation),
+            evidence_source: TypingMemoryEvidenceSource::Ime,
+            operation: operation.clone(),
+            identity: TypingTransitionIdentity::observed(context_tail, text, operation.as_str()),
             surface: None,
             completion_edit: None,
             episode_id: Some(episode_id.clone()),
@@ -732,8 +932,12 @@ mod tests {
         assert!(events
             .iter()
             .all(|event| event.outcome == TypingMemoryOutcome::ConfirmedPositive));
-        assert!(events.iter().all(|event| event.source == "user_correction"));
-        assert!(events.iter().all(|event| event.operation == "replacement"));
+        assert!(events
+            .iter()
+            .all(|event| { event.evidence_source == TypingMemoryEvidenceSource::UserCorrection }));
+        assert!(events
+            .iter()
+            .all(|event| event.operation == TypingMemoryOperation::Replacement));
         assert!(events.iter().all(|event| event.surface.is_some()));
         assert!(events[0].episode_id.is_some());
         assert!(events
@@ -752,7 +956,7 @@ mod tests {
 
         assert_eq!(events.len(), 1);
         assert_eq!(events[0].proposal.as_deref(), Some("читай новость"));
-        assert_eq!(events[0].operation, "ime_auto_undo");
+        assert_eq!(events[0].operation, TypingMemoryOperation::ImeAutoUndo);
         assert!(events[0].episode_id.is_some());
         assert_eq!(events[0].outcome, TypingMemoryOutcome::ConfirmedPositive);
     }
@@ -762,14 +966,17 @@ mod tests {
         let events = TypingMemoryEvent::observed_system_apply(
             "читай новсти",
             "читай новости",
-            "autocorrect",
-            "typing-assist",
+            TypingMemoryEvidenceSource::Autocorrect,
+            TypingMemoryOperation::Diagnostic("typing-assist".to_string()),
         );
 
         assert_eq!(events.len(), 1);
         assert_eq!(events[0].feedback, TypingMemoryFeedback::Observed);
         assert_eq!(events[0].outcome, TypingMemoryOutcome::Censored);
-        assert_eq!(events[0].source, "autocorrect");
+        assert_eq!(
+            events[0].evidence_source,
+            TypingMemoryEvidenceSource::Autocorrect
+        );
         assert_eq!(events[0].episode_id, None);
     }
 
@@ -783,8 +990,8 @@ mod tests {
             TypingMemoryEventKind::ConfirmedImePrediction
         );
         assert_eq!(events[0].feedback, TypingMemoryFeedback::Accepted);
-        assert_eq!(events[0].source, "ime");
-        assert_eq!(events[0].operation, "prediction_match");
+        assert_eq!(events[0].evidence_source, TypingMemoryEvidenceSource::Ime);
+        assert_eq!(events[0].operation, TypingMemoryOperation::PredictionMatch);
         assert_eq!(events[0].word, "да");
     }
 
@@ -800,8 +1007,8 @@ mod tests {
         assert_eq!(event.context, ["это", "было"]);
         assert_eq!(event.from.as_deref(), Some("прекрасный"));
         assert_eq!(event.to.as_deref(), Some("прекрасно"));
-        assert_eq!(event.source, "ime");
-        assert_eq!(event.operation, "completion_edit");
+        assert_eq!(event.evidence_source, TypingMemoryEvidenceSource::Ime);
+        assert_eq!(event.operation, TypingMemoryOperation::CompletionEdit);
         let trace = event
             .completion_edit
             .expect("typed completion edit geometry");
@@ -867,8 +1074,11 @@ mod tests {
 
         assert_eq!(events.len(), 1);
         assert_eq!(events[0].kind, TypingMemoryEventKind::AcceptedFix);
-        assert_eq!(events[0].source, "layout");
-        assert_eq!(events[0].operation, "replacement");
+        assert_eq!(
+            events[0].evidence_source,
+            TypingMemoryEvidenceSource::Layout
+        );
+        assert_eq!(events[0].operation, TypingMemoryOperation::Replacement);
         assert_eq!(events[0].from.as_deref(), Some("ltkfq"));
         assert_eq!(events[0].to.as_deref(), Some("делай"));
         assert_eq!(

@@ -140,6 +140,26 @@ impl TransitionOperatorKind {
         })
     }
 
+    pub(crate) fn from_str(value: &str) -> Option<Self> {
+        let value = value.split(':').next().unwrap_or(value);
+        Some(match value {
+            "layout_projection" => Self::LayoutProjection,
+            "adjacent_transposition" => Self::AdjacentTransposition,
+            "missing_letter_repair" => Self::MissingLetterRepair,
+            "repeated_letter_repair" => Self::RepeatedLetterRepair,
+            "extra_letter_repair" => Self::ExtraLetterRepair,
+            "letter_substitution" => Self::LetterSubstitution,
+            "boundary_split" => Self::BoundarySplit,
+            "boundary_merge" => Self::BoundaryMerge,
+            "accept_completion" => Self::AcceptCompletion,
+            "composite_typo" => Self::CompositeTypo,
+            "context_choice" => Self::ContextChoice,
+            "manual_toggle" => Self::ManualToggle,
+            "other" => Self::Other,
+            _ => return None,
+        })
+    }
+
     pub(crate) fn from_action_operator(action: &str) -> Self {
         match action {
             "flip_layout" | "fix_mixed_layout" => Self::LayoutProjection,

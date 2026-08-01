@@ -170,6 +170,16 @@ fn main() -> io::Result<()> {
         );
         return Ok(());
     }
+    if args.iter().any(|arg| arg == "--l4-typed-replay-report") {
+        let input = arg_value(&args, "--input").map(PathBuf::from);
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&lay::nanda_wave::usage_memory_typed_replay_report_json(
+                input.as_deref()
+            ))?
+        );
+        return Ok(());
+    }
     if args.iter().any(|arg| arg == "--compile-usage-feedback") {
         let input = arg_value(&args, "--input")
             .map(std::path::PathBuf::from)

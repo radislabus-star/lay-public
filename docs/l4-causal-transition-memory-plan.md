@@ -65,17 +65,40 @@ cross-scene phase transfer:         WATCH
 whole-lattice scene boost:          REJECTED
 ```
 
+Typed representation checkpoint (`0.2.345`):
+
+```text
+real V1 journal rows:             2 456
+read-only V2 typed rows:          2 456
+invalid typed rows:                   0
+word states:                        711
+transition states:               14 698
+signed transition states:         9 416
+dirty replay baseline/candidate:  byte-identical JSON
+negative false apply:                 0 -> 0
+runtime decision authority:       unchanged
+```
+
+The live-domain event now uses typed evidence source, interaction operation,
+transition operator, layout direction/scope and outcome. Stable `u8` codes are
+written in the V2 storage envelope beside lossless labels. The storage adapter
+still reads V1; a V2 code/label mismatch is rejected before projection. The
+receipt chain is structurally guarded as
+`VisibleTailSnapshot -> DecisionTransitionReceipt -> VerifiedTransitionReceipt
+-> AuthorizedEdit -> BackendDispatchReceipt -> PendingVisiblePostcondition ->
+typed observed outcome`.
+
 The rejected whole-lattice experiment raised support but increased false
 top-1 from 1 to 5. L4 therefore must not become an unconstrained score over
 every candidate. It must learn causal, typed and candidate-relative evidence.
 
 ## 3. Architectural Defects To Remove
 
-### 3.1 Stringly typed identity
+### 3.1 Typed identity baseline closed
 
-Feedback still carries `source` and `operation` strings. An accepted layout
-projection is represented as source `layout` plus operation `replacement`, so
-the following distinctions are lost:
+The live domain no longer carries raw `source/operation` identity. Legacy labels
+remain only in the backwards-compatible persistence envelope. The following
+distinctions are now independently encoded:
 
 ```text
 RU -> EN versus EN -> RU
@@ -84,7 +107,8 @@ manual toggle versus automatic projection
 IME acceptance versus observed automatic result
 ```
 
-These must become typed fields.
+This closes representation parity only. Whether these identities transfer
+between unseen scenes remains the separate cross-scene proof.
 
 ### 3.2 Semantic state and execution state are mixed conceptually
 
@@ -634,6 +658,8 @@ surface
 ```text
 exact feedback closure:       PASS-shadow
 negative replay closure:      PASS-shadow
+typed event V2 replay parity: PASS
+typed causal chain:           PASS-structural
 hidden-state certificates:    LIVE
 phase witness bank:           LIVE-bounded
 cross-scene transfer:         WATCH
@@ -645,8 +671,8 @@ single-grapheme transfer:     OPEN
 ### DEBT QUEUE
 
 ```text
-P0 typed event/operator identity
-P0 causal observed-state receipt chain
+DONE typed event/operator identity (`0.2.345`)
+DONE causal observed-state receipt chain (`0.2.345`, structural)
 P0 fixed layout and grapheme danger sets
 P1 scene encoder train/runtime parity
 P1 causal phase compiler and ablations

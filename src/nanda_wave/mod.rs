@@ -1502,6 +1502,10 @@ pub fn usage_memory_learned_report_json() -> serde_json::Value {
     usage_prior::usage_memory_learned_report_json()
 }
 
+pub fn usage_memory_typed_replay_report_json(path: Option<&std::path::Path>) -> serde_json::Value {
+    usage_prior::usage_memory_typed_replay_report_json(path)
+}
+
 pub fn balanced_l2_surface_words<I>(source: I, limit: usize) -> Vec<String>
 where
     I: IntoIterator<Item = String>,
@@ -1532,8 +1536,17 @@ pub fn record_confirmed_user_correction_usage(
     );
 }
 
-pub fn record_observed_system_apply_usage(from: &str, to: &str, source: &str, operation: &str) {
-    usage_prior::record_observed_system_apply_if_enabled(from, to, source, operation);
+pub fn record_observed_system_apply_usage(
+    from: &str,
+    to: &str,
+    transition: crate::typing_cpu::ObservedSystemTransition,
+) {
+    usage_prior::record_observed_system_apply_if_enabled(
+        from,
+        to,
+        transition.evidence_source(),
+        transition.operation(),
+    );
 }
 
 pub fn record_accepted_layout_projection_usage(from: &str, to: &str) {

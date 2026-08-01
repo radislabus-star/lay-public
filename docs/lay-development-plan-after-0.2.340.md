@@ -115,6 +115,19 @@ Installed receipt:
 
 ## 4. Типизированное ядро L4
 
+**Статус: выполнено 2026-08-01, release target `0.2.345`.** Live-domain
+`TypingMemoryEvent` больше не принимает строковые `source/operation`: provenance,
+interaction operation, transition operator, layout direction/scope и outcome
+представлены типами со стабильными `u8`-кодами. Persistent `UsageEvent` V2 хранит
+коды вместе с lossless legacy-label, читает V1 и fail-closed отклоняет
+противоречивый V2. Read-only replay типизировал `2 456 / 2 456` реальных строк,
+не переписал журнал и сохранил все `711` word states, `14 698` transition states
+и `9 416` signed transition states. На фиксированном dirty replay baseline и
+candidate дали одинаковый JSON SHA-256
+`e20dd25f31cd64923f4061228696b836a88740ca2aba9916451c967395de5dba`;
+`negative_false_apply = 0` до и после. Receipt:
+`/home/ubu/projects/lay/docs/structural_gates/receipts/L4_TYPED_EVENT_V2_REPLAY_PARITY_2026-08-01.json`.
+
 1. Заменить строковые `source/operation` на типы: `operator`, `direction`, `scope`, `outcome`, `evidence source`.
 2. Разделить `RU->EN` и `EN->RU`, whole-token и single-grapheme.
 3. Замкнуть цепочку:

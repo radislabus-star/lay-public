@@ -66,15 +66,6 @@ pub(crate) enum SystemOutcomeKind {
     Correction,
 }
 
-impl SystemOutcomeKind {
-    pub(crate) const fn operation(self) -> &'static str {
-        match self {
-            Self::LayoutProjection => "layout",
-            Self::Correction => "replacement",
-        }
-    }
-}
-
 /// A Tab completion is provisional until the user starts the next word.
 /// Deleting the accepted tail first means the candidate was not actually useful.
 #[derive(Debug, Clone)]

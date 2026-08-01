@@ -10,6 +10,28 @@ pub struct PhraseForecastCandidate {
     pub score: f32,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ObservedSystemTransition {
+    LayoutProjection,
+    Correction,
+}
+
+impl ObservedSystemTransition {
+    pub(crate) fn evidence_source(self) -> crate::typing_memory::TypingMemoryEvidenceSource {
+        match self {
+            Self::LayoutProjection => crate::typing_memory::TypingMemoryEvidenceSource::Layout,
+            Self::Correction => crate::typing_memory::TypingMemoryEvidenceSource::Autocorrect,
+        }
+    }
+
+    pub(crate) fn operation(self) -> crate::typing_memory::TypingMemoryOperation {
+        match self {
+            Self::LayoutProjection => crate::typing_memory::TypingMemoryOperation::LayoutProjection,
+            Self::Correction => crate::typing_memory::TypingMemoryOperation::Replacement,
+        }
+    }
+}
+
 /// Stateless library front door used by live typing adapters.
 pub struct TypingCpu;
 
@@ -115,15 +137,9 @@ impl TypingCpu {
     pub fn record_observed_system_apply(
         original: &str,
         replacement: &str,
-        source: &str,
-        operation: &str,
+        transition: ObservedSystemTransition,
     ) {
-        crate::nanda_wave::record_observed_system_apply_usage(
-            original,
-            replacement,
-            source,
-            operation,
-        );
+        crate::nanda_wave::record_observed_system_apply_usage(original, replacement, transition);
     }
 
     pub fn record_accepted_layout_projection(original: &str, replacement: &str) {

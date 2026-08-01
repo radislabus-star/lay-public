@@ -25,13 +25,13 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1785613440.2799463,
-    "ast_hash": "81ddf07a5acf009e68ad4523fe4c0245",
+    "mtime": 1785616188.148056,
+    "ast_hash": "f210e2f9d15f10a8032323ba2defbbae",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
-    "mtime": 1785613440.2817926,
-    "ast_hash": "c138a7985dfd0d5942aae4f8d83feb1a",
+    "mtime": 1785616188.148056,
+    "ast_hash": "3dfb6cfa958a65ae2aa816ac34144498",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/recent_actions_menu.js": {
@@ -40,13 +40,13 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/settings.js": {
-    "mtime": 1785613440.2819462,
-    "ast_hash": "faa6e42bdd5125b4acec86b3c956b9eb",
+    "mtime": 1785616188.149056,
+    "ast_hash": "55f97b7a63ff098b9d461b34ae5e6593",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1785613440.2829463,
-    "ast_hash": "a3dabc64f7d2cda6acbef8e7eb7e4545",
+    "mtime": 1785616188.149056,
+    "ast_hash": "e482f568c3fd164cc81b0881b291e162",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -970,8 +970,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/tail_memory.rs": {
-    "mtime": 1785606673.6419592,
-    "ast_hash": "21187faa05103ff04a3204e5d16c01fe",
+    "mtime": 1785614943.2144084,
+    "ast_hash": "f024dee2dc73f9853bf3704d18035f7f",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/text.rs": {
@@ -1005,8 +1005,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_nanda_wave_eval.rs": {
-    "mtime": 1785337682.7577398,
-    "ast_hash": "5e45b8c295d6c59cb6246fb89f6f8410",
+    "mtime": 1785615834.7844715,
+    "ast_hash": "96d8b553885f6532a69b567c1813a19f",
     "semantic_hash": ""
   },
   "src/bin/lay_nanda_wave_eval/candidate_quality.rs": {
@@ -1050,8 +1050,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_nanda_wave_train.rs": {
-    "mtime": 1785612027.7311952,
-    "ast_hash": "b7845addee79c5df9c56cf7ea7843825",
+    "mtime": 1785615834.8224716,
+    "ast_hash": "3044ce4ba72f34e6f3e1cbefb3dd7a5c",
     "semantic_hash": ""
   },
   "src/bin/lay_ngram_corpus.rs": {
@@ -1575,8 +1575,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/mod.rs": {
-    "mtime": 1785612806.8261726,
-    "ast_hash": "ab988ee96b0aafa96227af1f33cafa41",
+    "mtime": 1785615835.5794766,
+    "ast_hash": "396db2241e00ba48eaea922c359f3625",
     "semantic_hash": ""
   },
   "src/nanda_wave/mode.rs": {
@@ -1635,8 +1635,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/usage_prior.rs": {
-    "mtime": 1785606991.1984046,
-    "ast_hash": "524c9ab73333aee1c9f4f4690dce707e",
+    "mtime": 1785615827.2624218,
+    "ast_hash": "4b7f2d83400f0b8bb1cbdd4eaa4e056a",
     "semantic_hash": ""
   },
   "src/ngram.rs": {
@@ -2125,8 +2125,8 @@
     "semantic_hash": "c5eb584efd158316a5facacb4cb0574e"
   },
   "src/typing_memory.rs": {
-    "mtime": 1785607097.9317265,
-    "ast_hash": "f05478f95629083132c9927384520441",
+    "mtime": 1785615835.7064776,
+    "ast_hash": "ba5b10c4f0cb856c6446d2ee49fbb4e3",
     "semantic_hash": ""
   },
   "src/typing_pipeline.rs": {
@@ -3075,8 +3075,8 @@
     "semantic_hash": ""
   },
   "src/architecture_contract.rs": {
-    "mtime": 1784458234.7092934,
-    "ast_hash": "e34edece225eb0f5992bbc4d0bc1b8bb",
+    "mtime": 1785615827.2634218,
+    "ast_hash": "c46018cc1cd59dfc5494263948c52b26",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2/hot_memory.rs": {
@@ -3155,8 +3155,8 @@
     "semantic_hash": ""
   },
   "src/transition_relation.rs": {
-    "mtime": 1785338397.0445645,
-    "ast_hash": "eaf2f2a4a39c8e45fcef1abf712d4bb4",
+    "mtime": 1785614821.4182777,
+    "ast_hash": "542c47cbd59da5f4f60993f68faec20e",
     "semantic_hash": ""
   },
   "docs/structural_gates/structural/routes/l2_transition_phase.md": {
@@ -3370,8 +3370,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/engine/types.rs": {
-    "mtime": 1785486959.1111398,
-    "ast_hash": "9e73cdf45fc3a71f7cbc3d46c57524da",
+    "mtime": 1785614953.4783556,
+    "ast_hash": "dccb365e9f84fe66c318fad28ddd9e6f",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/correction_runtime/output/replay/action.rs": {
@@ -3405,8 +3405,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/usage_prior/projection.rs": {
-    "mtime": 1785607092.6146622,
-    "ast_hash": "eef1cd86554e1e4d48fb1beaa528cfa2",
+    "mtime": 1785614908.8436067,
+    "ast_hash": "ca0c35ac411b03edf979f13e6cd0820d",
     "semantic_hash": ""
   },
   "tests/test_architecture_graph_gate.py": {
@@ -3520,13 +3520,13 @@
     "semantic_hash": ""
   },
   "src/typing_cpu/mod.rs": {
-    "mtime": 1785248334.2392883,
-    "ast_hash": "777e577def5fee181e63349e5dbd53eb",
+    "mtime": 1785614943.2014084,
+    "ast_hash": "4b8019c42250d498235ac65f519e12d9",
     "semantic_hash": ""
   },
   "src/typing_cpu/runtime.rs": {
-    "mtime": 1785606663.3617983,
-    "ast_hash": "22aee55615e286f534887f80fc0f8be4",
+    "mtime": 1785615835.7014775,
+    "ast_hash": "ad231751e0d9c92f404fca7016b1458d",
     "semantic_hash": ""
   },
   "tests/input_gate_space_contract.rs": {
@@ -3665,8 +3665,8 @@
     "semantic_hash": ""
   },
   "docs/l4-causal-transition-memory-plan.md": {
-    "mtime": 1784591198.7163134,
-    "ast_hash": "c6c57239c8383bc4510176cce1d2c52e",
+    "mtime": 1785616188.145056,
+    "ast_hash": "751fc65d489d7134c4fc288e1bbc39bf",
     "semantic_hash": ""
   },
   "src/typing_transition/decision/live_field.rs": {
@@ -5070,8 +5070,8 @@
     "semantic_hash": ""
   },
   "docs/lay-development-plan-after-0.2.340.md": {
-    "mtime": 1785614325.1026888,
-    "ast_hash": "6850dc3d76627bd4e42229fc907655eb",
+    "mtime": 1785616188.1440558,
+    "ast_hash": "c24b792e3ef17d8bb4d06d76faaf3157",
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/PUBLIC_INSTALL_CANONICAL_L2_V13_2026-08-01.json": {
@@ -5137,6 +5137,11 @@
   "docs/structural_gates/receipts/L3_SENTENCE_MULTIVIEW_V1_INSTALLED_2026-08-01.json": {
     "mtime": 1785614325.1016886,
     "ast_hash": "644d19ef8c11f9d03ba606bbfd0b0cc2",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L4_TYPED_EVENT_V2_REPLAY_PARITY_2026-08-01.json": {
+    "mtime": 1785616188.146056,
+    "ast_hash": "0e1211452f2ce47ef512a310202abbe9",
     "semantic_hash": ""
   }
 }
