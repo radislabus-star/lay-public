@@ -533,7 +533,7 @@ mod known_word_transposition_tests {
             replacement,
             CorrectionDecisionSource::Nanda,
             CandidateOrigin::L2Surface,
-            "L2FieldShadowSurface",
+            "CanonicalL2FieldSurface",
             TypingErrorClass::AdjacentTransposition,
             CandidateGateDecision {
                 action: CandidateGateAction::Eligible,

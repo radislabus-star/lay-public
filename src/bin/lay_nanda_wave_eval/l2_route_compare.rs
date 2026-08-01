@@ -17,7 +17,7 @@ struct RouteComparisonRecord {
     input: String,
     target: Option<String>,
     reference: CorrectionResolution,
-    shadow: CorrectionResolution,
+    canonical: CorrectionResolution,
 }
 
 pub(crate) fn print_json(args: &[String]) -> io::Result<()> {
@@ -62,7 +62,11 @@ fn report_json(path: &Path, limit: usize, max_examples: usize, jobs: usize) -> i
                     input: input.to_string(),
                     target: full_user_target(&value),
                     reference: resolve_with_route(input, &cfg, CandidateReadoutRoute::FullWave),
-                    shadow: resolve_with_route(input, &cfg, CandidateReadoutRoute::L2FieldShadow),
+                    canonical: resolve_with_route(
+                        input,
+                        &cfg,
+                        CandidateReadoutRoute::CanonicalL2Field,
+                    ),
                 })
             })
             .collect::<Vec<_>>()
@@ -73,14 +77,14 @@ fn report_json(path: &Path, limit: usize, max_examples: usize, jobs: usize) -> i
     let mut gate_diverged = 0usize;
     let mut provenance_diverged = 0usize;
     let mut reference_apply = 0usize;
-    let mut shadow_apply = 0usize;
+    let mut canonical_apply = 0usize;
     let mut reference_matches_target = 0usize;
-    let mut shadow_matches_target = 0usize;
+    let mut canonical_matches_target = 0usize;
     let mut both_match_target = 0usize;
     let mut reference_apply_matches_target = 0usize;
-    let mut shadow_apply_matches_target = 0usize;
+    let mut canonical_apply_matches_target = 0usize;
     let mut reference_false_authority = 0usize;
-    let mut shadow_false_authority = 0usize;
+    let mut canonical_false_authority = 0usize;
     let mut examples = Vec::new();
 
     for record in records {
@@ -88,40 +92,41 @@ fn report_json(path: &Path, limit: usize, max_examples: usize, jobs: usize) -> i
             input,
             target,
             reference,
-            shadow,
+            canonical,
         } = record;
         let surface_changed =
-            selected_surface_diverged(reference.selected.as_ref(), shadow.selected.as_ref());
+            selected_surface_diverged(reference.selected.as_ref(), canonical.selected.as_ref());
         let gate_changed =
-            selected_gate_diverged(reference.selected.as_ref(), shadow.selected.as_ref());
+            selected_gate_diverged(reference.selected.as_ref(), canonical.selected.as_ref());
         let provenance_changed =
-            selected_provenance_diverged(reference.selected.as_ref(), shadow.selected.as_ref());
+            selected_provenance_diverged(reference.selected.as_ref(), canonical.selected.as_ref());
 
         surface_diverged += usize::from(surface_changed);
         gate_diverged += usize::from(gate_changed);
         provenance_diverged += usize::from(provenance_changed);
         let reference_applies = selected_apply(&reference);
-        let shadow_applies = selected_apply(&shadow);
+        let canonical_applies = selected_apply(&canonical);
         reference_apply += usize::from(reference_applies);
-        shadow_apply += usize::from(shadow_applies);
+        canonical_apply += usize::from(canonical_applies);
 
         let reference_target_match = target
             .as_deref()
             .is_some_and(|target| selected_matches_target(reference.selected.as_ref(), target));
-        let shadow_target_match = target
+        let canonical_target_match = target
             .as_deref()
-            .is_some_and(|target| selected_matches_target(shadow.selected.as_ref(), target));
+            .is_some_and(|target| selected_matches_target(canonical.selected.as_ref(), target));
         let has_user_target = target.is_some();
         let reference_apply_conflicts =
             has_user_target && reference_applies && !reference_target_match;
-        let shadow_apply_conflicts = has_user_target && shadow_applies && !shadow_target_match;
+        let canonical_apply_conflicts =
+            has_user_target && canonical_applies && !canonical_target_match;
         reference_matches_target += usize::from(reference_target_match);
-        shadow_matches_target += usize::from(shadow_target_match);
-        both_match_target += usize::from(reference_target_match && shadow_target_match);
+        canonical_matches_target += usize::from(canonical_target_match);
+        both_match_target += usize::from(reference_target_match && canonical_target_match);
         reference_apply_matches_target += usize::from(reference_applies && reference_target_match);
-        shadow_apply_matches_target += usize::from(shadow_applies && shadow_target_match);
+        canonical_apply_matches_target += usize::from(canonical_applies && canonical_target_match);
         reference_false_authority += usize::from(reference_apply_conflicts);
-        shadow_false_authority += usize::from(shadow_apply_conflicts);
+        canonical_false_authority += usize::from(canonical_apply_conflicts);
         records_used += 1;
 
         if examples.len() < max_examples
@@ -129,18 +134,21 @@ fn report_json(path: &Path, limit: usize, max_examples: usize, jobs: usize) -> i
                 || gate_changed
                 || provenance_changed
                 || reference_apply_conflicts
-                || shadow_apply_conflicts)
+                || canonical_apply_conflicts)
         {
             examples.push(json!({
                 "input": input,
                 "user_target": target,
                 "reference_apply_conflicts_user_target": reference_apply_conflicts,
-                "shadow_apply_conflicts_user_target": shadow_apply_conflicts,
+                "canonical_apply_conflicts_user_target": canonical_apply_conflicts,
                 "selected_surface_diverged": surface_changed,
                 "selected_gate_diverged": gate_changed,
                 "selected_provenance_diverged": provenance_changed,
                 "reference": resolution_summary_json(CandidateReadoutRoute::FullWave, &reference),
-                "shadow": resolution_summary_json(CandidateReadoutRoute::L2FieldShadow, &shadow),
+                "canonical": resolution_summary_json(
+                    CandidateReadoutRoute::CanonicalL2Field,
+                    &canonical,
+                ),
             }));
         }
     }
@@ -161,21 +169,21 @@ fn report_json(path: &Path, limit: usize, max_examples: usize, jobs: usize) -> i
             "gate_diverged": gate_diverged,
             "provenance_diverged": provenance_diverged,
             "reference_apply": reference_apply,
-            "shadow_apply": shadow_apply,
+            "canonical_apply": canonical_apply,
         },
         "user_target_match": {
             "reference": reference_matches_target,
-            "shadow": shadow_matches_target,
+            "canonical": canonical_matches_target,
             "both": both_match_target,
         },
         "authority_against_user_target": {
             "reference_apply_matches": reference_apply_matches_target,
-            "shadow_apply_matches": shadow_apply_matches_target,
+            "canonical_apply_matches": canonical_apply_matches_target,
             "reference_false_authority": reference_false_authority,
-            "shadow_false_authority": shadow_false_authority,
+            "canonical_false_authority": canonical_false_authority,
         },
         "examples": examples,
-        "read_as": "compare full-wave and l2-field-shadow on real lay_from inputs from corrections.jsonl after lexical-route removal; surface and gate parity matter more than provenance",
+        "read_as": "compare full-wave and canonical-l2-field on real lay_from inputs from corrections.jsonl; surface and gate parity matter more than provenance",
     }))
 }
 
@@ -287,7 +295,7 @@ fn candidate_summary_json(candidate: &UnifiedCorrectionCandidate) -> Value {
 
 fn route_name(route: CandidateReadoutRoute) -> &'static str {
     match route {
-        CandidateReadoutRoute::L2FieldShadow => "l2-field-shadow",
+        CandidateReadoutRoute::CanonicalL2Field => "canonical-l2-field",
         CandidateReadoutRoute::FullWave => "full-wave",
     }
 }

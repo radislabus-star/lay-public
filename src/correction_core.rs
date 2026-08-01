@@ -401,7 +401,7 @@ pub fn resolve_text_correction(req: CorrectionRequest<'_>) -> CorrectionResoluti
         source.push_candidates(&req, &mut lattice, l2_peak_context.as_ref());
     }
     if L2CandidateSource::for_mode(req.mode).contains(&L2CandidateSource::Deterministic) {
-        lattice.push_source(short_cyrillic_layout_shadow_candidate(&req));
+        lattice.push_source(short_cyrillic_layout_suggestion_candidate(&req));
     }
     let candidates_ready = Instant::now();
 

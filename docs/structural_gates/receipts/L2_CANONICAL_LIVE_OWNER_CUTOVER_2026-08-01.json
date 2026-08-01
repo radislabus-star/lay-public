@@ -1,0 +1,95 @@
+{
+  "kind": "l2_canonical_live_owner_cutover",
+  "date": "2026-08-01",
+  "verdict": "PASS_canonical_live_owner",
+  "baseline_commit": "a5188a5",
+  "release_target": "0.2.342",
+  "runtime_authority_changed": false,
+  "package_recompiled": false,
+  "artifact": {
+    "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-RU-FULL-v13.bin",
+    "bytes": 135121803,
+    "mib": 128.86,
+    "sha256_before": "bbe67a772b684e0f187483796fca248ac0b10576195b1aa524f0b2bde0f6601e",
+    "sha256_after": "bbe67a772b684e0f187483796fca248ac0b10576195b1aa524f0b2bde0f6601e"
+  },
+  "ownership": {
+    "live_route": "CanonicalL2Field",
+    "compare_reference": "FullWave",
+    "runtime": "StandaloneL2Field",
+    "package": "V13",
+    "live_donor_fallbacks": 0,
+    "removed_test_only_donor_tests": 8,
+    "bridge_lines_before": 1560,
+    "bridge_lines_after": 834
+  },
+  "semantic_parity": {
+    "inputs": 8,
+    "candidate_records_before": 86,
+    "candidate_records_after": 86,
+    "selected_surface_diverged": 0,
+    "selected_gate_diverged": 0,
+    "semantic_snapshot_sha256_before": "08e25753179ff608ef96ab968f8585803e337afc0d3701337fee69160ae1f418",
+    "semantic_snapshot_sha256_after": "08e25753179ff608ef96ab968f8585803e337afc0d3701337fee69160ae1f418",
+    "ignored_diagnostic_fields": [
+      "route name",
+      "source_id",
+      "gate reason text"
+    ],
+    "inputs_used": [
+      "врмея",
+      "посмтри",
+      "слои",
+      "докурчиват",
+      "Apple b",
+      "пукнт",
+      "смеа",
+      "вошеьные"
+    ]
+  },
+  "inherited_v13_quality_gate": {
+    "receipt": "/home/ubu/projects/lay/docs/structural_gates/receipts/L2_CANONICAL_RUSLIT_FULL_NEIGHBORS_V13_2026-07-30.json",
+    "same_lemma_false_authority": 0,
+    "near_neighbor_false_authority": 0
+  },
+  "remote_verification": {
+    "host": "e@192.168.3.94",
+    "cargo_jobs": 20,
+    "release_binaries": [
+      "lay",
+      "lay-daemon",
+      "lay-ibus-engine",
+      "lay-nanda-wave-eval"
+    ],
+    "release_build_wall_seconds": 110.43,
+    "release_build_cpu_percent": 203,
+    "release_build_max_rss_kib": 1563256,
+    "release_build_swaps": 0,
+    "focused_tests_passed": 26,
+    "focused_tests_failed": 0,
+    "focused_test_wall_seconds": 10.96,
+    "focused_test_cpu_percent": 156,
+    "focused_test_max_rss_kib": 1412604
+  },
+  "tested": [
+    "before/after warmed semantic route snapshot",
+    "canonical route and source ownership",
+    "standalone L2 format and runtime tests",
+    "package SHA retention",
+    "CLI canonical route name with legacy hidden alias"
+  ],
+  "not_tested": [
+    "new L2 training or crystallization",
+    "new L3 or L4 quality behavior",
+    "full product client matrix",
+    "two pre-existing environment-sensitive correction_core tests"
+  ],
+  "known_baseline_test_debt": {
+    "baseline_reproduced": true,
+    "tests": [
+      "live_l2_field_shadow_route_applies_adjacent_transposition_center",
+      "live_l2_field_shadow_route_births_nanda_candidates_without_full_wave_authority"
+    ],
+    "scope": "failures existed at baseline a5188a5 and are not ownership-cutover regressions"
+  }
+}

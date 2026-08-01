@@ -238,7 +238,7 @@ fn hidden_state_blocks_live_known_form_drifts_from_logs() {
     ] {
         let admission = admit(
             &event(input),
-            &l2_candidate(replacement, "L2FieldShadowSurface", error_class),
+            &l2_candidate(replacement, "CanonicalL2FieldSurface", error_class),
             2,
             CorrectionSourceRole::L2Surface,
             false,
@@ -267,7 +267,7 @@ fn hidden_state_blocks_short_transposition_fragments_from_logs() {
             &event(input),
             &l2_candidate(
                 replacement,
-                "L2FieldShadowSurface",
+                "CanonicalL2FieldSurface",
                 TypingErrorClass::AdjacentTransposition,
             ),
             2,
@@ -289,7 +289,7 @@ fn exact_l4_state_proof_allows_known_form_drift() {
         &event("новости "),
         &l2_candidate(
             "новость ",
-            "L2FieldShadowSurface",
+            "CanonicalL2FieldSurface",
             TypingErrorClass::LetterSubstitution,
         ),
         2,

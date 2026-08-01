@@ -9,26 +9,16 @@ use crate::typing_transition::{action as action_operator, decision::TransitionDe
 use crate::word_reader::{replace_last_text_word, split_last_alphabetic_token};
 
 use super::runtime::{
-    L2FieldAuthority, L2FieldBridgeKind, L2FieldShadowReadout, L2LexicalSeed, L2LocalVerdict,
+    CanonicalL2FieldReadout, L2FieldAuthority, L2LexicalSeed, L2LocalVerdict,
+    CANONICAL_L2_READOUT_SOURCE_ID, CANONICAL_L2_SURFACE_SOURCE_ID,
 };
 
-#[cfg(test)]
-const SHADOW_DONOR_WINNER_WEIGHT: i64 = 5;
-#[cfg(test)]
-const SAME_LEMMA_DONOR_TIED_BONUS: i64 = 72;
-#[cfg(test)]
-const SAME_LEMMA_DONOR_ABSTAIN_BONUS: i64 = 24;
-#[cfg(test)]
-const NEAR_NEIGHBOR_DONOR_TIED_BONUS: i64 = 56;
-#[cfg(test)]
-const NEAR_NEIGHBOR_DONOR_ABSTAIN_BONUS: i64 = 12;
-
-pub(crate) fn shadow_text_candidates(original: &str) -> Vec<UnifiedCorrectionCandidate> {
-    shadow_text_readout(original).candidates
+pub(crate) fn canonical_text_candidates(original: &str) -> Vec<UnifiedCorrectionCandidate> {
+    canonical_text_readout(original).candidates
 }
 
-pub(crate) fn shadow_text_readout(original: &str) -> L2FieldShadowReadout {
-    let mut readout = shadow_owned_text_candidates(original);
+pub(crate) fn canonical_text_readout(original: &str) -> CanonicalL2FieldReadout {
+    let mut readout = canonical_owned_text_candidates(original);
     for candidate in short_layout_candidates(original) {
         if let Some(existing) = readout
             .candidates
@@ -102,7 +92,7 @@ fn short_layout_candidates(original: &str) -> Vec<UnifiedCorrectionCandidate> {
                 replacement,
                 CorrectionDecisionSource::Nanda,
                 origin,
-                L2FieldBridgeKind::Shadow.surface_source_id(),
+                CANONICAL_L2_SURFACE_SOURCE_ID,
                 error_class,
                 gate,
             ))
@@ -110,15 +100,15 @@ fn short_layout_candidates(original: &str) -> Vec<UnifiedCorrectionCandidate> {
         .collect()
 }
 
-fn shadow_owned_text_candidates(original: &str) -> L2FieldShadowReadout {
+fn canonical_owned_text_candidates(original: &str) -> CanonicalL2FieldReadout {
     let started = std::time::Instant::now();
     let Some(field) = standalone_surface_field_readout(original, true) else {
-        return L2FieldShadowReadout::default();
+        return CanonicalL2FieldReadout::default();
     };
     let mut candidates =
         l2_surface_unified_candidates(original, &field.token, &field.surface_candidates);
-    promote_shadow_local_readout(&mut candidates, &field.local_readout);
-    demote_shadow_local_surface_cohort(&mut candidates, &field.local_readout);
+    promote_canonical_local_readout(&mut candidates, &field.local_readout);
+    demote_canonical_local_surface_cohort(&mut candidates, &field.local_readout);
     if std::env::var_os("LAY_L2_FIELD_TRACE").is_some() {
         let finished = std::time::Instant::now();
         eprintln!(
@@ -138,13 +128,13 @@ fn shadow_owned_text_candidates(original: &str) -> L2FieldShadowReadout {
     }
 
     let authority = field.local_readout.authority();
-    L2FieldShadowReadout::new(candidates, authority)
+    CanonicalL2FieldReadout::new(candidates, authority)
 }
 
 struct StandaloneSurfaceFieldReadout {
     token: String,
     surface_candidates: Vec<crate::nanda_wave::l2::L2ImeWordCandidate>,
-    local_readout: ShadowCohortReadout,
+    local_readout: CanonicalCohortReadout,
     seed_count: usize,
     surface_count: usize,
     seed_duration: std::time::Duration,
@@ -169,7 +159,7 @@ fn standalone_surface_field_readout(
         return None;
     }
     let (surface_candidates, l11_seeds) =
-        shadow_surface_seed_candidates(token, SHADOW_SURFACE_MATERIAL_LIMIT);
+        l11_surface_seed_candidates(token, SHADOW_SURFACE_MATERIAL_LIMIT);
     let seeds_ready = std::time::Instant::now();
     let seed_count = l11_seeds.len();
     let surface_count = surface_candidates.len();
@@ -197,7 +187,7 @@ fn standalone_surface_field_readout(
     })
 }
 
-fn shadow_surface_seed_candidates(
+fn l11_surface_seed_candidates(
     token: &str,
     material_limit: usize,
 ) -> (
@@ -319,7 +309,7 @@ fn apply_standalone_l2_field(
     surface_candidates: &mut Vec<crate::nanda_wave::l2::L2ImeWordCandidate>,
     seeds: &[crate::nanda_wave::L11SeedSurface],
     settle_winner: bool,
-) -> Option<ShadowCohortReadout> {
+) -> Option<CanonicalCohortReadout> {
     let field = super::installed_l2_field().ok()?;
     let lexical_surface_candidates = surface_candidates.clone();
     let lexical_seeds = seeds
@@ -397,7 +387,7 @@ fn apply_standalone_l2_field(
                 surface_candidates
                     .retain(|candidate| candidate.surface.eq_ignore_ascii_case(&winner_surface));
             }
-            Some(ShadowCohortReadout::Winner {
+            Some(CanonicalCohortReadout::Winner {
                 winner_surface,
                 cohort_surfaces,
             })
@@ -407,7 +397,8 @@ fn apply_standalone_l2_field(
                 .into_iter()
                 .filter_map(|form_ref| surfaces_by_form.get(&form_ref).cloned())
                 .collect::<Vec<_>>();
-            (!cohort_surfaces.is_empty()).then_some(ShadowCohortReadout::Tied { cohort_surfaces })
+            (!cohort_surfaces.is_empty())
+                .then_some(CanonicalCohortReadout::Tied { cohort_surfaces })
         }
         L2LocalVerdict::Abstain => {
             if let Some(readout) = settle_unique_l1_geometry(
@@ -418,7 +409,7 @@ fn apply_standalone_l2_field(
             ) {
                 return Some(readout);
             }
-            Some(ShadowCohortReadout::Abstain {
+            Some(CanonicalCohortReadout::Abstain {
                 cohort_surfaces: surfaces_by_form.into_values().collect(),
             })
         }
@@ -430,7 +421,7 @@ fn settle_unique_l1_geometry(
     lexical_candidates: &[crate::nanda_wave::l2::L2ImeWordCandidate],
     surface_candidates: &mut Vec<crate::nanda_wave::l2::L2ImeWordCandidate>,
     settle_winner: bool,
-) -> Option<ShadowCohortReadout> {
+) -> Option<CanonicalCohortReadout> {
     let normalized_token = token.to_lowercase();
     let mut nearest = lexical_candidates
         .iter()
@@ -453,12 +444,12 @@ fn settle_unique_l1_geometry(
             surface_candidates
                 .retain(|candidate| candidate.surface.eq_ignore_ascii_case(&winner_surface));
         }
-        return Some(ShadowCohortReadout::Winner {
+        return Some(CanonicalCohortReadout::Winner {
             winner_surface,
             cohort_surfaces: nearest,
         });
     }
-    Some(ShadowCohortReadout::Tied {
+    Some(CanonicalCohortReadout::Tied {
         cohort_surfaces: nearest,
     })
 }
@@ -494,7 +485,7 @@ fn l2_surface_unified_candidates(
                 replacement,
                 CorrectionDecisionSource::Nanda,
                 origin,
-                L2FieldBridgeKind::Shadow.surface_source_id(),
+                CANONICAL_L2_SURFACE_SOURCE_ID,
                 error_class,
                 gate,
             ))
@@ -520,7 +511,7 @@ fn short_surface_gate_guard(
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-enum ShadowCohortReadout {
+enum CanonicalCohortReadout {
     Winner {
         winner_surface: String,
         cohort_surfaces: Vec<String>,
@@ -533,7 +524,7 @@ enum ShadowCohortReadout {
     },
 }
 
-impl ShadowCohortReadout {
+impl CanonicalCohortReadout {
     fn winner_surface(&self) -> Option<&str> {
         match self {
             Self::Winner { winner_surface, .. } => Some(winner_surface.as_str()),
@@ -552,524 +543,9 @@ impl ShadowCohortReadout {
     }
 }
 
-#[cfg(test)]
-fn apply_shadow_near_neighbor_lexical(
-    token: &str,
-    surface_candidates: &mut Vec<crate::nanda_wave::l2::L2ImeWordCandidate>,
-) -> Option<ShadowCohortReadout> {
-    if surface_candidates.len() < 2 || !token.chars().all(crate::keyboard::is_cyrillic_letter) {
-        return None;
-    }
-    let normalized_token = token.to_lowercase();
-    let leader = surface_candidates.first()?;
-    let leader_surface = leader.surface.to_lowercase();
-    let leader_distance =
-        crate::text_metrics::damerau_levenshtein(&normalized_token, &leader_surface);
-    let cohort_indices = surface_candidates
-        .iter()
-        .enumerate()
-        .filter_map(|(index, candidate)| {
-            let surface = candidate.surface.to_lowercase();
-            let leader_gap = crate::text_metrics::damerau_levenshtein(&leader_surface, &surface);
-            let input_gap = crate::text_metrics::damerau_levenshtein(&normalized_token, &surface);
-            ((surface == leader_surface)
-                || ((1..=2).contains(&leader_gap)
-                    && surface
-                        .chars()
-                        .count()
-                        .abs_diff(leader_surface.chars().count())
-                        <= 2
-                    && input_gap <= leader_distance.saturating_add(1)))
-            .then_some(index)
-        })
-        .collect::<Vec<_>>();
-    if cohort_indices.len() < 2 {
-        return None;
-    }
-
-    let mut ranked = cohort_indices
-        .iter()
-        .filter_map(|index| {
-            let candidate = surface_candidates.get(*index)?;
-            let surface = candidate.surface.to_lowercase();
-            Some((
-                surface,
-                shadow_near_neighbor_strength(&normalized_token, candidate),
-                crate::text_metrics::damerau_levenshtein(
-                    &normalized_token,
-                    &candidate.surface.to_lowercase(),
-                ),
-                candidate.motif_overlap,
-                candidate.l2_overlap,
-                candidate.l1_overlap,
-            ))
-        })
-        .collect::<Vec<_>>();
-    ranked.sort_by(|left, right| {
-        right
-            .1
-            .cmp(&left.1)
-            .then_with(|| left.2.cmp(&right.2))
-            .then_with(|| right.3.cmp(&left.3))
-            .then_with(|| right.4.cmp(&left.4))
-            .then_with(|| right.5.cmp(&left.5))
-            .then_with(|| left.0.cmp(&right.0))
-    });
-    let winner = ranked.first()?;
-    let runner_up = ranked.get(1)?;
-    let margin = winner.1.saturating_sub(runner_up.1);
-    let cohort = cohort_indices
-        .iter()
-        .filter_map(|index| surface_candidates.get(*index))
-        .map(|candidate| candidate.surface.to_lowercase())
-        .collect::<std::collections::BTreeSet<_>>();
-    let cohort_surfaces = cohort.into_iter().collect::<Vec<_>>();
-    if normalized_token.chars().count() <= 3 {
-        return Some(ShadowCohortReadout::Tied { cohort_surfaces });
-    }
-    if winner.0 != leader_surface {
-        return Some(ShadowCohortReadout::Tied { cohort_surfaces });
-    }
-    if winner.1 < 1_050 || winner.2 > leader_distance.saturating_add(1) {
-        return Some(ShadowCohortReadout::Abstain { cohort_surfaces });
-    }
-    if margin < 220 || winner.2 > runner_up.2 || winner.3 < runner_up.3 {
-        return Some(ShadowCohortReadout::Tied { cohort_surfaces });
-    }
-    surface_candidates.retain(|candidate| {
-        let surface = candidate.surface.to_lowercase();
-        !cohort_surfaces.iter().any(|value| value == &surface) || surface == winner.0
-    });
-    Some(ShadowCohortReadout::Winner {
-        winner_surface: winner.0.clone(),
-        cohort_surfaces,
-    })
-}
-
-#[cfg(test)]
-fn shadow_near_neighbor_strength(
-    token: &str,
-    candidate: &crate::nanda_wave::l2::L2ImeWordCandidate,
-) -> i64 {
-    let surface = candidate.surface.to_lowercase();
-    let distance = crate::text_metrics::damerau_levenshtein(token, &surface);
-    let distance_bonus = match distance {
-        0 => 240,
-        1 => 180,
-        2 => 80,
-        3 => 20,
-        _ => 0,
-    };
-    let transposition_bonus = i64::from(
-        candidate.kind == crate::nanda_wave::l2::L2ImeWordCandidateKind::AdjacentTransposition,
-    ) * 48;
-    i64::from(candidate.score)
-        + i64::from((candidate.motif_overlap as u32).saturating_mul(192))
-        + i64::from((candidate.l2_overlap as u32).saturating_mul(128))
-        + i64::from((candidate.l1_overlap as u32).saturating_mul(64))
-        + i64::from(candidate.accepted_count.min(32).saturating_mul(18))
-        + (candidate.context_prior * 600.0).round() as i64
-        + (candidate.usage_prior * 320.0).round() as i64
-        + distance_bonus
-        + transposition_bonus
-}
-
-#[cfg(test)]
-fn apply_shadow_local_readout(
-    token: &str,
-    surface_candidates: &mut Vec<crate::nanda_wave::l2::L2ImeWordCandidate>,
-    same_lemma: Option<&ShadowCohortReadout>,
-    near_neighbor: Option<&ShadowCohortReadout>,
-) -> Option<ShadowCohortReadout> {
-    if surface_candidates.is_empty() {
-        return None;
-    }
-    let normalized_token = token.to_lowercase();
-    let mut ranked = surface_candidates
-        .iter()
-        .map(|candidate| {
-            let surface = candidate.surface.to_lowercase();
-            let score = shadow_local_readout_strength(
-                &normalized_token,
-                candidate,
-                same_lemma,
-                near_neighbor,
-            );
-            let distance = crate::text_metrics::damerau_levenshtein(&normalized_token, &surface);
-            (
-                surface,
-                score,
-                distance,
-                candidate.kind,
-                candidate.motif_overlap,
-                candidate.l2_overlap,
-                candidate.l1_overlap,
-            )
-        })
-        .collect::<Vec<_>>();
-    ranked.sort_by(|left, right| {
-        right
-            .1
-            .cmp(&left.1)
-            .then_with(|| left.2.cmp(&right.2))
-            .then_with(|| {
-                shadow_candidate_kind_rank(right.3).cmp(&shadow_candidate_kind_rank(left.3))
-            })
-            .then_with(|| right.4.cmp(&left.4))
-            .then_with(|| right.5.cmp(&left.5))
-            .then_with(|| right.6.cmp(&left.6))
-            .then_with(|| left.0.cmp(&right.0))
-    });
-    let best = ranked.first()?;
-    let cohort_surfaces = ranked
-        .iter()
-        .map(|candidate| candidate.0.clone())
-        .collect::<std::collections::BTreeSet<_>>()
-        .into_iter()
-        .collect::<Vec<_>>();
-    let support_floor = shadow_local_support_floor(&normalized_token, same_lemma, near_neighbor);
-    if best.1 < support_floor {
-        return Some(ShadowCohortReadout::Abstain { cohort_surfaces });
-    }
-    let tie_window = shadow_local_tie_window(same_lemma, near_neighbor);
-    let tied_surfaces = ranked
-        .iter()
-        .take_while(|candidate| best.1.saturating_sub(candidate.1) < tie_window)
-        .map(|candidate| candidate.0.clone())
-        .collect::<Vec<_>>();
-    if tied_surfaces.len() > 1 {
-        return Some(ShadowCohortReadout::Tied {
-            cohort_surfaces: tied_surfaces,
-        });
-    }
-    if matches!(near_neighbor, Some(ShadowCohortReadout::Tied { .. }))
-        && best.0.chars().count() == normalized_token.chars().count()
-    {
-        let competitive_missing_letter_surfaces = ranked
-            .iter()
-            .filter(|candidate| {
-                candidate.0.chars().count() == normalized_token.chars().count() + 1
-                    && candidate.2 <= best.2
-                    && candidate.4 >= best.4
-            })
-            .map(|candidate| candidate.0.clone())
-            .collect::<Vec<_>>();
-        if !competitive_missing_letter_surfaces.is_empty() {
-            let mut cohort_surfaces = vec![best.0.clone()];
-            cohort_surfaces.extend(competitive_missing_letter_surfaces);
-            cohort_surfaces.sort();
-            cohort_surfaces.dedup();
-            return Some(ShadowCohortReadout::Tied { cohort_surfaces });
-        }
-    }
-    if let Some(cohort_surfaces) =
-        shadow_local_growth_vs_same_length_conflict(&normalized_token, &ranked, tie_window)
-    {
-        return Some(ShadowCohortReadout::Tied { cohort_surfaces });
-    }
-    let donor_backed_winner = donor_winner_matches(best.0.as_str(), same_lemma)
-        || compact_donor_winner_matches(best.0.as_str(), near_neighbor, 3);
-    let transposition_backed_winner = matches!(
-        best.3,
-        crate::nanda_wave::l2::L2ImeWordCandidateKind::AdjacentTransposition
-    ) && best.2 <= 1;
-    if !donor_backed_winner && !transposition_backed_winner {
-        if let Some(cohort_surfaces) = shadow_local_competitive_cluster(&ranked, tie_window) {
-            return Some(ShadowCohortReadout::Tied { cohort_surfaces });
-        }
-    }
-    let self_backed_winner =
-        shadow_local_self_backed_winner(token, &ranked, support_floor, tie_window);
-    if !donor_backed_winner && !transposition_backed_winner && !self_backed_winner {
-        return Some(ShadowCohortReadout::Abstain { cohort_surfaces });
-    }
-    surface_candidates.retain(|candidate| candidate.surface.to_lowercase() == best.0);
-    Some(ShadowCohortReadout::Winner {
-        winner_surface: best.0.clone(),
-        cohort_surfaces,
-    })
-}
-
-#[cfg(test)]
-fn shadow_local_readout_strength(
-    token: &str,
-    candidate: &crate::nanda_wave::l2::L2ImeWordCandidate,
-    same_lemma: Option<&ShadowCohortReadout>,
-    near_neighbor: Option<&ShadowCohortReadout>,
-) -> i64 {
-    let surface = candidate.surface.to_lowercase();
-    let mut score = shadow_near_neighbor_strength(token, candidate);
-    score += donor_surface_bias(
-        surface.as_str(),
-        same_lemma,
-        SAME_LEMMA_DONOR_TIED_BONUS * SHADOW_DONOR_WINNER_WEIGHT,
-        SAME_LEMMA_DONOR_TIED_BONUS,
-        SAME_LEMMA_DONOR_ABSTAIN_BONUS,
-    );
-    score += donor_surface_bias(
-        surface.as_str(),
-        near_neighbor,
-        NEAR_NEIGHBOR_DONOR_TIED_BONUS * SHADOW_DONOR_WINNER_WEIGHT,
-        NEAR_NEIGHBOR_DONOR_TIED_BONUS,
-        NEAR_NEIGHBOR_DONOR_ABSTAIN_BONUS,
-    );
-    score
-}
-
-#[cfg(test)]
-fn donor_winner_matches(surface: &str, readout: Option<&ShadowCohortReadout>) -> bool {
-    matches!(
-        readout,
-        Some(ShadowCohortReadout::Winner { winner_surface, .. }) if winner_surface == surface
-    )
-}
-
-#[cfg(test)]
-fn compact_donor_winner_matches(
-    surface: &str,
-    readout: Option<&ShadowCohortReadout>,
-    max_cohort: usize,
-) -> bool {
-    matches!(
-        readout,
-        Some(ShadowCohortReadout::Winner {
-            winner_surface,
-            cohort_surfaces,
-        }) if winner_surface == surface && cohort_surfaces.len() <= max_cohort
-    )
-}
-
-#[cfg(test)]
-fn donor_surface_bias(
-    surface: &str,
-    readout: Option<&ShadowCohortReadout>,
-    winner_bonus: i64,
-    tied_bonus: i64,
-    abstain_bonus: i64,
-) -> i64 {
-    match readout {
-        Some(ShadowCohortReadout::Winner {
-            winner_surface,
-            cohort_surfaces,
-        }) if winner_surface == surface => winner_bonus,
-        Some(ShadowCohortReadout::Winner {
-            cohort_surfaces, ..
-        }) if cohort_surfaces.iter().any(|value| value == surface) => tied_bonus,
-        Some(ShadowCohortReadout::Tied { cohort_surfaces })
-            if cohort_surfaces.iter().any(|value| value == surface) =>
-        {
-            tied_bonus
-        }
-        Some(ShadowCohortReadout::Abstain { cohort_surfaces })
-            if cohort_surfaces.iter().any(|value| value == surface) =>
-        {
-            abstain_bonus
-        }
-        _ => 0,
-    }
-}
-
-#[cfg(test)]
-fn shadow_local_support_floor(
-    token: &str,
-    same_lemma: Option<&ShadowCohortReadout>,
-    near_neighbor: Option<&ShadowCohortReadout>,
-) -> i64 {
-    let len = token.chars().count();
-    let mut floor = if len <= 3 { 1_260 } else { 1_020 };
-    if matches!(same_lemma, Some(ShadowCohortReadout::Tied { .. })) {
-        floor += 120;
-    }
-    if matches!(near_neighbor, Some(ShadowCohortReadout::Tied { .. })) {
-        floor += 80;
-    }
-    floor
-}
-
-#[cfg(test)]
-fn shadow_local_tie_window(
-    same_lemma: Option<&ShadowCohortReadout>,
-    near_neighbor: Option<&ShadowCohortReadout>,
-) -> i64 {
-    let mut window = 220;
-    if matches!(same_lemma, Some(ShadowCohortReadout::Tied { .. })) {
-        window += 110;
-    }
-    if matches!(near_neighbor, Some(ShadowCohortReadout::Tied { .. })) {
-        window += 70;
-    }
-    window
-}
-
-#[cfg(test)]
-fn shadow_candidate_kind_rank(kind: crate::nanda_wave::l2::L2ImeWordCandidateKind) -> u8 {
-    match kind {
-        crate::nanda_wave::l2::L2ImeWordCandidateKind::AdjacentTransposition => 3,
-        crate::nanda_wave::l2::L2ImeWordCandidateKind::Replacement => 2,
-        crate::nanda_wave::l2::L2ImeWordCandidateKind::Completion => 1,
-    }
-}
-
-#[cfg(test)]
-fn shadow_local_self_backed_winner(
-    token: &str,
-    ranked: &[(
-        String,
-        i64,
-        usize,
-        crate::nanda_wave::l2::L2ImeWordCandidateKind,
-        usize,
-        usize,
-        usize,
-    )],
-    support_floor: i64,
-    tie_window: i64,
-) -> bool {
-    let Some(best) = ranked.first() else {
-        return false;
-    };
-    let token_len = token.chars().count();
-    let best_len = best.0.chars().count();
-    if token_len <= 3
-        || best.3 == crate::nanda_wave::l2::L2ImeWordCandidateKind::Completion
-        || best.1 < support_floor.saturating_add(180)
-        || best.4 == 0
-        || best.5 == 0
-    {
-        return false;
-    }
-    let max_distance = if token_len >= 7 { 2 } else { 1 };
-    if best.2 > max_distance {
-        return false;
-    }
-    let Some(runner_up) = ranked.get(1) else {
-        return true;
-    };
-    let margin = best.1.saturating_sub(runner_up.1);
-    if margin < tie_window.saturating_add(160) {
-        return false;
-    }
-    let competing_single_missing_letter = best_len == token_len
-        && ranked.iter().skip(1).any(|candidate| {
-            candidate.3 != crate::nanda_wave::l2::L2ImeWordCandidateKind::Completion
-                && candidate.0.chars().count() == token_len + 1
-                && candidate.2 == 1
-                && best.1.saturating_sub(candidate.1) < tie_window.saturating_add(260)
-                && candidate.4 > 0
-                && candidate.5 > 0
-        });
-    if competing_single_missing_letter {
-        return false;
-    }
-    best.2 < runner_up.2
-        || (best.2 == runner_up.2
-            && best.4 > runner_up.4
-            && (best.5 > runner_up.5 || best.6 > runner_up.6))
-}
-
-#[cfg(test)]
-fn shadow_local_competitive_cluster(
-    ranked: &[(
-        String,
-        i64,
-        usize,
-        crate::nanda_wave::l2::L2ImeWordCandidateKind,
-        usize,
-        usize,
-        usize,
-    )],
-    tie_window: i64,
-) -> Option<Vec<String>> {
-    let best = ranked.first()?;
-    let competitive = ranked
-        .iter()
-        .take_while(|candidate| best.1.saturating_sub(candidate.1) < tie_window.saturating_add(260))
-        .filter(|candidate| {
-            candidate.3 != crate::nanda_wave::l2::L2ImeWordCandidateKind::Completion
-                && candidate.2 <= best.2.saturating_add(1)
-                && candidate.4 > 0
-                && candidate.5 > 0
-        })
-        .collect::<Vec<_>>();
-    if competitive.len() < 3 {
-        return None;
-    }
-    let same_distance = competitive
-        .iter()
-        .filter(|candidate| candidate.2 == best.2)
-        .count();
-    let same_length = competitive
-        .iter()
-        .filter(|candidate| candidate.0.chars().count() == best.0.chars().count())
-        .count();
-    let mixed_lengths = competitive
-        .iter()
-        .any(|candidate| candidate.0.chars().count() != best.0.chars().count());
-    if same_distance < 2 && !(same_length >= 2 && mixed_lengths) {
-        return None;
-    }
-    let mut cohort_surfaces = competitive
-        .iter()
-        .map(|candidate| candidate.0.clone())
-        .collect::<Vec<_>>();
-    cohort_surfaces.sort();
-    cohort_surfaces.dedup();
-    Some(cohort_surfaces)
-}
-
-#[cfg(test)]
-fn shadow_local_growth_vs_same_length_conflict(
-    token: &str,
-    ranked: &[(
-        String,
-        i64,
-        usize,
-        crate::nanda_wave::l2::L2ImeWordCandidateKind,
-        usize,
-        usize,
-        usize,
-    )],
-    tie_window: i64,
-) -> Option<Vec<String>> {
-    let best = ranked.first()?;
-    let token_len = token.chars().count();
-    if token_len > 4 {
-        return None;
-    }
-    if best.0.chars().count() != token_len + 1 {
-        return None;
-    }
-    let growth_candidates = ranked
-        .iter()
-        .take_while(|candidate| best.1.saturating_sub(candidate.1) < tie_window.saturating_add(260))
-        .filter(|candidate| {
-            candidate.0.chars().count() == token_len + 1 && candidate.2 <= best.2.saturating_add(1)
-        })
-        .collect::<Vec<_>>();
-    if growth_candidates.len() < 3 {
-        return None;
-    }
-    let same_length_competitor = ranked.iter().find(|candidate| {
-        candidate.0.chars().count() == token_len
-            && candidate.2 <= best.2
-            && best.1.saturating_sub(candidate.1) < tie_window.saturating_add(320)
-    })?;
-    if same_length_competitor.2 >= best.2 && growth_candidates.len() < 4 {
-        return None;
-    }
-    let mut cohort_surfaces = growth_candidates
-        .iter()
-        .map(|candidate| candidate.0.clone())
-        .collect::<Vec<_>>();
-    cohort_surfaces.push(same_length_competitor.0.clone());
-    cohort_surfaces.sort();
-    cohort_surfaces.dedup();
-    Some(cohort_surfaces)
-}
-
-fn promote_shadow_local_readout(
+fn promote_canonical_local_readout(
     candidates: &mut [UnifiedCorrectionCandidate],
-    readout: &ShadowCohortReadout,
+    readout: &CanonicalCohortReadout,
 ) {
     let Some(winner_surface) = readout.winner_surface() else {
         return;
@@ -1086,7 +562,7 @@ fn promote_shadow_local_readout(
         {
             continue;
         }
-        let source_id = L2FieldBridgeKind::Shadow.readout_source_id().to_string();
+        let source_id = CANONICAL_L2_READOUT_SOURCE_ID.to_string();
         if candidate.source_id == source_id {
             break;
         }
@@ -1108,17 +584,17 @@ fn promote_shadow_local_readout(
     }
 }
 
-fn demote_shadow_local_surface_cohort(
+fn demote_canonical_local_surface_cohort(
     candidates: &mut [UnifiedCorrectionCandidate],
-    readout: &ShadowCohortReadout,
+    readout: &CanonicalCohortReadout,
 ) {
     let reason = match readout {
-        ShadowCohortReadout::Winner { .. } => return,
-        ShadowCohortReadout::Tied { .. } => "l2_field_shadow_local_tie",
-        ShadowCohortReadout::Abstain { .. } => "l2_field_shadow_local_abstain",
+        CanonicalCohortReadout::Winner { .. } => return,
+        CanonicalCohortReadout::Tied { .. } => "canonical_l2_field_local_tie",
+        CanonicalCohortReadout::Abstain { .. } => "canonical_l2_field_local_abstain",
     };
     for candidate in candidates {
-        if candidate.source_id != L2FieldBridgeKind::Shadow.surface_source_id() {
+        if candidate.source_id != CANONICAL_L2_SURFACE_SOURCE_ID {
             continue;
         }
         if candidate.gate.action == CandidateGateAction::Eligible {
@@ -1128,7 +604,7 @@ fn demote_shadow_local_surface_cohort(
             };
         }
         for evidence in &mut candidate.evidence {
-            if evidence.source_id == L2FieldBridgeKind::Shadow.surface_source_id()
+            if evidence.source_id == CANONICAL_L2_SURFACE_SOURCE_ID
                 && evidence.gate.action == CandidateGateAction::Eligible
             {
                 evidence.gate = CandidateGateDecision {
@@ -1230,20 +706,6 @@ mod tests {
         }
     }
 
-    fn lexical_candidate_with_kind(
-        surface: &str,
-        score: u32,
-        l1_overlap: usize,
-        l2_overlap: usize,
-        motif_overlap: usize,
-        kind: crate::nanda_wave::l2::L2ImeWordCandidateKind,
-    ) -> crate::nanda_wave::l2::L2ImeWordCandidate {
-        let mut candidate =
-            lexical_candidate(surface, score, l1_overlap, l2_overlap, motif_overlap);
-        candidate.kind = kind;
-        candidate
-    }
-
     fn unified_candidate(
         replacement: &str,
         origin: CandidateOrigin,
@@ -1274,7 +736,7 @@ mod tests {
 
         assert_eq!(
             readout,
-            Some(ShadowCohortReadout::Winner {
+            Some(CanonicalCohortReadout::Winner {
                 winner_surface: "время".to_string(),
                 cohort_surfaces: vec!["время".to_string()],
             })
@@ -1295,7 +757,7 @@ mod tests {
 
         assert_eq!(
             readout,
-            Some(ShadowCohortReadout::Tied {
+            Some(CanonicalCohortReadout::Tied {
                 cohort_surfaces: vec!["мзд".to_string(), "мзс".to_string()],
             })
         );
@@ -1308,19 +770,19 @@ mod tests {
             unified_candidate(
                 "проверка ",
                 CandidateOrigin::L2Surface,
-                L2FieldBridgeKind::Shadow.surface_source_id(),
+                CANONICAL_L2_SURFACE_SOURCE_ID,
             ),
             unified_candidate(
                 "проварка ",
                 CandidateOrigin::L2Surface,
-                L2FieldBridgeKind::Shadow.surface_source_id(),
+                CANONICAL_L2_SURFACE_SOURCE_ID,
             ),
         ];
-        let readout = ShadowCohortReadout::Abstain {
+        let readout = CanonicalCohortReadout::Abstain {
             cohort_surfaces: vec!["проверка".to_string()],
         };
 
-        demote_shadow_local_surface_cohort(&mut candidates, &readout);
+        demote_canonical_local_surface_cohort(&mut candidates, &readout);
 
         assert!(candidates
             .iter()
@@ -1368,193 +830,5 @@ mod tests {
 
         assert_eq!(candidates[0].gate.action, CandidateGateAction::Eligible);
         assert_eq!(candidates[1].gate.action, CandidateGateAction::SuggestOnly);
-    }
-
-    #[test]
-    fn shadow_near_neighbor_lexical_filters_clear_neighbor_drift() {
-        let mut candidates = vec![
-            lexical_candidate("посмотри", 1480, 8, 6, 4),
-            lexical_candidate("просмотри", 1180, 6, 4, 3),
-        ];
-
-        let readout = apply_shadow_near_neighbor_lexical("посмтри", &mut candidates);
-
-        assert_eq!(
-            readout,
-            Some(ShadowCohortReadout::Winner {
-                winner_surface: "посмотри".to_string(),
-                cohort_surfaces: vec!["посмотри".to_string(), "просмотри".to_string()],
-            })
-        );
-        assert_eq!(candidates.len(), 1);
-        assert_eq!(candidates[0].surface, "посмотри");
-    }
-
-    #[test]
-    fn shadow_near_neighbor_lexical_abstains_on_small_margin() {
-        let mut candidates = vec![
-            lexical_candidate("посмотри", 1240, 6, 4, 3),
-            lexical_candidate("просмотри", 1210, 6, 4, 3),
-        ];
-
-        let readout = apply_shadow_near_neighbor_lexical("посмтри", &mut candidates);
-
-        assert_eq!(
-            readout,
-            Some(ShadowCohortReadout::Tied {
-                cohort_surfaces: vec!["посмотри".to_string(), "просмотри".to_string()],
-            })
-        );
-        assert_eq!(candidates.len(), 2);
-    }
-
-    #[test]
-    fn shadow_near_neighbor_lexical_does_not_reselect_non_leader() {
-        let mut candidates = vec![
-            lexical_candidate("всю", 1220, 5, 3, 2),
-            lexical_candidate("васю", 1540, 8, 6, 4),
-        ];
-
-        let readout = apply_shadow_near_neighbor_lexical("всю", &mut candidates);
-
-        assert_eq!(
-            readout,
-            Some(ShadowCohortReadout::Tied {
-                cohort_surfaces: vec!["васю".to_string(), "всю".to_string()],
-            })
-        );
-        assert_eq!(candidates.len(), 2);
-    }
-
-    #[test]
-    fn shadow_local_readout_filters_clear_winner_with_general_donor_backing() {
-        let mut candidates = vec![
-            lexical_candidate("васю", 1540, 8, 6, 4),
-            lexical_candidate("всю", 1220, 5, 3, 2),
-        ];
-        let near_neighbor = ShadowCohortReadout::Winner {
-            winner_surface: "васю".to_string(),
-            cohort_surfaces: vec!["васю".to_string(), "всю".to_string()],
-        };
-
-        let readout =
-            apply_shadow_local_readout("всю", &mut candidates, None, Some(&near_neighbor));
-
-        assert_eq!(
-            readout,
-            Some(ShadowCohortReadout::Winner {
-                winner_surface: "васю".to_string(),
-                cohort_surfaces: vec!["васю".to_string(), "всю".to_string()],
-            })
-        );
-        assert_eq!(candidates.len(), 1);
-        assert_eq!(candidates[0].surface, "васю");
-    }
-
-    #[test]
-    fn shadow_local_readout_preserves_tied_local_field() {
-        let mut candidates = vec![
-            lexical_candidate("васю", 1360, 6, 4, 3),
-            lexical_candidate("всю", 1348, 6, 4, 3),
-        ];
-
-        let readout = apply_shadow_local_readout("всю", &mut candidates, None, None);
-
-        assert_eq!(
-            readout,
-            Some(ShadowCohortReadout::Tied {
-                cohort_surfaces: vec!["всю".to_string(), "васю".to_string()],
-            })
-        );
-        assert_eq!(candidates.len(), 2);
-    }
-
-    #[test]
-    fn shadow_local_readout_ties_dense_missing_letter_cluster_without_donor() {
-        let mut candidates = vec![
-            lexical_candidate_with_kind(
-                "соли",
-                1500,
-                7,
-                5,
-                3,
-                crate::nanda_wave::l2::L2ImeWordCandidateKind::AdjacentTransposition,
-            ),
-            lexical_candidate("слови", 1490, 7, 5, 3),
-            lexical_candidate("слоги", 1482, 7, 5, 3),
-            lexical_candidate("сложи", 1476, 7, 5, 3),
-        ];
-
-        let readout = apply_shadow_local_readout("слои", &mut candidates, None, None);
-
-        assert_eq!(
-            readout,
-            Some(ShadowCohortReadout::Tied {
-                cohort_surfaces: vec![
-                    "соли".to_string(),
-                    "слови".to_string(),
-                    "слоги".to_string(),
-                    "сложи".to_string(),
-                ],
-            })
-        );
-        assert_eq!(candidates.len(), 4);
-    }
-
-    #[test]
-    fn shadow_local_readout_ties_dense_long_form_cluster_without_donor() {
-        let mut candidates = vec![
-            lexical_candidate("докуривать", 2120, 14, 10, 8),
-            lexical_candidate("докручивать", 2106, 14, 10, 8),
-            lexical_candidate("докручивал", 2094, 14, 10, 8),
-            lexical_candidate("докручивает", 2088, 14, 10, 8),
-        ];
-
-        let readout = apply_shadow_local_readout("докурчиват", &mut candidates, None, None);
-
-        assert_eq!(
-            readout,
-            Some(ShadowCohortReadout::Tied {
-                cohort_surfaces: vec![
-                    "докуривать".to_string(),
-                    "докручивать".to_string(),
-                    "докручивал".to_string(),
-                    "докручивает".to_string(),
-                ],
-            })
-        );
-        assert_eq!(candidates.len(), 4);
-    }
-
-    #[test]
-    fn shadow_local_readout_ties_growth_cluster_against_same_length_competitor() {
-        let mut candidates = vec![
-            lexical_candidate("слови", 1540, 7, 5, 3),
-            lexical_candidate("слоги", 1532, 7, 5, 3),
-            lexical_candidate("сложи", 1526, 7, 5, 3),
-            lexical_candidate_with_kind(
-                "соли",
-                1518,
-                7,
-                5,
-                3,
-                crate::nanda_wave::l2::L2ImeWordCandidateKind::AdjacentTransposition,
-            ),
-        ];
-
-        let readout = apply_shadow_local_readout("слои", &mut candidates, None, None);
-
-        assert_eq!(
-            readout,
-            Some(ShadowCohortReadout::Tied {
-                cohort_surfaces: vec![
-                    "соли".to_string(),
-                    "слови".to_string(),
-                    "слоги".to_string(),
-                    "сложи".to_string(),
-                ],
-            })
-        );
-        assert_eq!(candidates.len(), 4);
     }
 }

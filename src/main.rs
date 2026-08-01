@@ -59,14 +59,15 @@ struct Args {
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, ValueEnum)]
 enum CandidateRouteArg {
-    L2FieldShadow,
+    #[value(alias = "l2-field-shadow")]
+    CanonicalL2Field,
     FullWave,
 }
 
 impl CandidateRouteArg {
     fn into_route(self) -> correction_core::CandidateReadoutRoute {
         match self {
-            Self::L2FieldShadow => correction_core::CandidateReadoutRoute::L2FieldShadow,
+            Self::CanonicalL2Field => correction_core::CandidateReadoutRoute::CanonicalL2Field,
             Self::FullWave => correction_core::CandidateReadoutRoute::FullWave,
         }
     }
@@ -461,7 +462,7 @@ fn candidate_summary_json(
 
 fn route_name(route: correction_core::CandidateReadoutRoute) -> &'static str {
     match route {
-        correction_core::CandidateReadoutRoute::L2FieldShadow => "l2-field-shadow",
+        correction_core::CandidateReadoutRoute::CanonicalL2Field => "canonical-l2-field",
         correction_core::CandidateReadoutRoute::FullWave => "full-wave",
     }
 }

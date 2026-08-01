@@ -29,8 +29,8 @@ impl L2CandidateSource {
             }
             Self::Nanda => {
                 let candidates =
-                    if req.nanda_candidate_route == CandidateReadoutRoute::L2FieldShadow {
-                        let readout = crate::nanda_wave::l2_field::shadow_text_readout(req.text);
+                    if req.nanda_candidate_route == CandidateReadoutRoute::CanonicalL2Field {
+                        let readout = crate::nanda_wave::l2_field::canonical_text_readout(req.text);
                         lattice.set_l2_field_authority(readout.authority);
                         readout.candidates
                     } else {
@@ -197,7 +197,7 @@ fn deterministic_composite_text_candidates(
     .collect()
 }
 
-fn short_cyrillic_layout_shadow_candidate(
+fn short_cyrillic_layout_suggestion_candidate(
     req: &CorrectionRequest<'_>,
 ) -> Option<UnifiedCorrectionCandidate> {
     if !req.auto_switch_layout {
@@ -629,8 +629,8 @@ fn nanda_text_candidates_for_route(
     _l2_peak_context: Option<&crate::nanda_wave::l2_wave_peak::L2CorrectionPeakContext>,
 ) -> Vec<UnifiedCorrectionCandidate> {
     match route {
-        CandidateReadoutRoute::L2FieldShadow => {
-            return crate::nanda_wave::l2_field::shadow_text_candidates(req.text);
+        CandidateReadoutRoute::CanonicalL2Field => {
+            return crate::nanda_wave::l2_field::canonical_text_candidates(req.text);
         }
         CandidateReadoutRoute::FullWave => {}
     }
@@ -783,11 +783,11 @@ mod candidate_sources_tests {
     }
 
     #[test]
-    fn l2_field_shadow_route_uses_shadow_surface_source_ids() {
+    fn canonical_l2_field_route_uses_owned_surface_source_ids() {
         let candidates = with_l11_socket_env_cleared(|| {
             nanda_text_candidates_for_route(
                 &request("пукнт ", &default_typing_assist_pipeline()),
-                CandidateReadoutRoute::L2FieldShadow,
+                CandidateReadoutRoute::CanonicalL2Field,
                 None,
             )
         });
@@ -796,24 +796,24 @@ mod candidate_sources_tests {
             candidates
                 .iter()
                 .any(|candidate| {
-                    candidate.source_id == "L2FieldShadowSurface"
+                    candidate.source_id == "CanonicalL2FieldSurface"
                         || candidate
                             .evidence
                             .iter()
-                            .any(|evidence| evidence.source_id == "L2FieldShadowSurface")
+                            .any(|evidence| evidence.source_id == "CanonicalL2FieldSurface")
                 }),
-            "shadow route must self-birth surface candidates inside its owned local field: {candidates:?}"
+            "canonical route must self-birth surface candidates inside its owned local field: {candidates:?}"
         );
         assert!(
             candidates
                 .iter()
-                .all(|candidate| candidate.source_id.starts_with("L2FieldShadow")),
-            "shadow route must emit only owned L2FieldShadow source ids for L2-owned candidates: {candidates:?}"
+                .all(|candidate| candidate.source_id.starts_with("CanonicalL2Field")),
+            "canonical route must emit only canonical L2 source ids: {candidates:?}"
         );
     }
 
     #[test]
-    fn l2_field_shadow_route_self_prepares_l11_candidate_without_peak_context() {
+    fn canonical_l2_field_self_prepares_l11_candidate_without_peak_context() {
         let response = crate::nanda_wave::L1ServiceResponse::Lattice {
             seeds: vec![crate::nanda_wave::L11SeedSurface {
                 terminal_id: Some(1),
@@ -827,7 +827,7 @@ mod candidate_sources_tests {
         let candidates = with_l11_socket_env(&socket_path, || {
             nanda_text_candidates_for_route(
                 &request("врмея ", &default_typing_assist_pipeline()),
-                CandidateReadoutRoute::L2FieldShadow,
+                CandidateReadoutRoute::CanonicalL2Field,
                 None,
             )
         });
@@ -837,11 +837,11 @@ mod candidate_sources_tests {
         let candidate = candidates
             .iter()
             .find(|candidate| candidate.replacement == "время ")
-            .expect("shadow field should internalize authoritative L1.1 seed");
+            .expect("canonical field should internalize authoritative L1.1 seed");
         assert!(
             matches!(
                 candidate.source_id.as_str(),
-                "L2FieldShadowSurface" | "L2FieldShadowReadout"
+                "CanonicalL2FieldSurface" | "CanonicalL2FieldReadout"
             ),
             "authoritative L1.1 seed must enter the owned L2 field, not survive as sidecar: {candidate:?}"
         );
@@ -849,23 +849,24 @@ mod candidate_sources_tests {
             candidate
                 .evidence
                 .iter()
-                .any(|evidence| evidence.source_id == "L2FieldShadowSurface"),
+                .any(|evidence| evidence.source_id == "CanonicalL2FieldSurface"),
             "authoritative L1.1 seed must still carry owned surface provenance: {candidate:?}"
         );
         assert!(
             candidates
                 .iter()
-                .all(|candidate| candidate.source_id != "L2FieldShadowL11"),
-            "shadow route should internalize L1.1 seed into the field, not emit a separate sidecar: {candidates:?}"
+                .all(|candidate| candidate.source_id != "CanonicalL2FieldL11"),
+            "canonical route should internalize L1.1 seed into the field, not emit a separate sidecar: {candidates:?}"
         );
     }
 
     #[test]
-    fn l2_field_shadow_route_keeps_nonleader_neighbor_regressions_unselected() {
+    fn canonical_l2_field_keeps_nonleader_neighbor_regressions_unselected() {
         for input in ["докурчиват ", "ЯДРА ", "ене ", "слои "] {
             let pipeline = default_typing_assist_pipeline();
             let reference = resolve_for_route(input, &pipeline, CandidateReadoutRoute::FullWave);
-            let shadow = resolve_for_route(input, &pipeline, CandidateReadoutRoute::L2FieldShadow);
+            let canonical =
+                resolve_for_route(input, &pipeline, CandidateReadoutRoute::CanonicalL2Field);
             let reference_selected = reference.selected.as_ref().map(|candidate| {
                 (
                     candidate.replacement.as_str(),
@@ -874,7 +875,7 @@ mod candidate_sources_tests {
                     candidate.error_class,
                 )
             });
-            let shadow_selected = shadow.selected.as_ref().map(|candidate| {
+            let canonical_selected = canonical.selected.as_ref().map(|candidate| {
                 (
                     candidate.replacement.as_str(),
                     candidate.gate.action,
@@ -884,48 +885,49 @@ mod candidate_sources_tests {
             });
 
             assert_eq!(
-                shadow_selected, reference_selected,
-                "shadow selected parity changed for {input:?}\nreference={:?}\nshadow={:?}",
-                reference.selected, shadow.selected
+                canonical_selected, reference_selected,
+                "canonical selected parity changed for {input:?}\nreference={:?}\ncanonical={:?}",
+                reference.selected, canonical.selected
             );
             assert!(
-                !shadow
+                !canonical
                     .candidates
                     .iter()
-                    .any(|candidate| candidate.source_id == "L2FieldShadowReadout"),
-                "shadow local readout must not collapse nonleader field for {input:?}: {:?}",
-                shadow.candidates
+                    .any(|candidate| candidate.source_id == "CanonicalL2FieldReadout"),
+                "canonical local readout must not collapse nonleader field for {input:?}: {:?}",
+                canonical.candidates
             );
         }
     }
 
     #[test]
-    fn l2_field_shadow_route_preserves_surface_parity_when_local_readout_abstains() {
+    fn canonical_l2_field_preserves_surface_parity_when_local_readout_abstains() {
         for input in ["смеа ", "сли, ", "вошеьные "] {
             let pipeline = default_typing_assist_pipeline();
             let reference = resolve_for_route(input, &pipeline, CandidateReadoutRoute::FullWave);
-            let shadow = resolve_for_route(input, &pipeline, CandidateReadoutRoute::L2FieldShadow);
+            let canonical =
+                resolve_for_route(input, &pipeline, CandidateReadoutRoute::CanonicalL2Field);
             let reference_selected = reference
                 .selected
                 .as_ref()
                 .map(|candidate| candidate.replacement.as_str());
-            let shadow_selected = shadow
+            let canonical_selected = canonical
                 .selected
                 .as_ref()
                 .map(|candidate| candidate.replacement.as_str());
 
             assert_eq!(
-                shadow_selected, reference_selected,
-                "shadow selected surface parity changed for {input:?}\nreference={:?}\nshadow={:?}",
-                reference.selected, shadow.selected
+                canonical_selected, reference_selected,
+                "canonical selected surface parity changed for {input:?}\nreference={:?}\ncanonical={:?}",
+                reference.selected, canonical.selected
             );
             assert!(
-                shadow
+                canonical
                     .selected
                     .as_ref()
-                    .is_none_or(|candidate| candidate.source_id == "L2FieldShadowSurface"),
-                "shadow should stay on surface owner when local readout abstains for {input:?}: {:?}",
-                shadow.selected
+                    .is_none_or(|candidate| candidate.source_id == "CanonicalL2FieldSurface"),
+                "canonical field should stay on surface owner when local readout abstains for {input:?}: {:?}",
+                canonical.selected
             );
         }
     }
@@ -935,7 +937,7 @@ mod candidate_sources_tests {
         let candidates = with_l11_socket_env_cleared(|| {
             nanda_text_candidates_for_route(
                 &request("Apple b ", &default_typing_assist_pipeline()),
-                CandidateReadoutRoute::L2FieldShadow,
+                CandidateReadoutRoute::CanonicalL2Field,
                 None,
             )
         });
@@ -944,7 +946,7 @@ mod candidate_sources_tests {
             .find(|candidate| candidate.replacement == "Apple и ")
             .expect("L2 field must preserve the exact b -> и layout projection");
 
-        assert_eq!(candidate.source_id, "L2FieldShadowSurface");
+        assert_eq!(candidate.source_id, "CanonicalL2FieldSurface");
         assert_eq!(candidate.origin, CandidateOrigin::Layout);
         assert_eq!(candidate.gate.action, CandidateGateAction::Eligible);
     }
@@ -954,7 +956,7 @@ mod candidate_sources_tests {
         let pipeline = default_typing_assist_pipeline();
         for input in ["Apple b ", "wave b ", "a b ", "b "] {
             let resolution =
-                resolve_for_route(input, &pipeline, CandidateReadoutRoute::L2FieldShadow);
+                resolve_for_route(input, &pipeline, CandidateReadoutRoute::CanonicalL2Field);
             assert!(
                 resolution.selected.is_none(),
                 "unsafe short layout authority for {input:?}: {resolution:?}"

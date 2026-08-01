@@ -7,7 +7,7 @@ mod proof;
 mod runtime;
 mod teacher;
 
-pub(crate) use bridge::{cold_probe_surfaces, shadow_text_candidates, shadow_text_readout};
+pub(crate) use bridge::{canonical_text_candidates, canonical_text_readout, cold_probe_surfaces};
 pub(crate) use runtime::L2FieldAuthority;
 
 const DEFAULT_L2_MODEL_DIR_SUFFIX: &str = ".local/share/lay/nanda_wave/l2";

@@ -16,13 +16,13 @@ pub(crate) enum CandidateOrigin {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum CandidateReadoutRoute {
-    L2FieldShadow,
+    CanonicalL2Field,
     FullWave,
 }
 
 impl CandidateReadoutRoute {
     pub const fn live_default() -> Self {
-        Self::L2FieldShadow
+        Self::CanonicalL2Field
     }
 
     pub const fn compare_reference() -> Self {
@@ -69,5 +69,22 @@ impl CandidateOrigin {
 
     pub(crate) const fn is_surface_or_context(self) -> bool {
         matches!(self, Self::L2Surface | Self::L3Context)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::CandidateReadoutRoute;
+
+    #[test]
+    fn canonical_l2_field_is_the_only_live_default_route() {
+        assert_eq!(
+            CandidateReadoutRoute::live_default(),
+            CandidateReadoutRoute::CanonicalL2Field
+        );
+        assert_eq!(
+            CandidateReadoutRoute::compare_reference(),
+            CandidateReadoutRoute::FullWave
+        );
     }
 }

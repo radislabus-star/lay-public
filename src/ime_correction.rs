@@ -342,10 +342,7 @@ mod tests {
         .expect("boundary decision");
 
         assert_eq!(decision.replacement, "то есть ");
-        assert_eq!(
-            decision.action.selected_source_id(),
-            Some("L2FieldShadowBoundary")
-        );
+        assert_eq!(decision.action.selected_source_id(), Some("glued_phrase"));
         assert!(
             decision.action.allow_apply(),
             "action={:?}",
@@ -369,10 +366,7 @@ mod tests {
         .expect("boundary decision");
 
         assert_eq!(decision.replacement, "то есть ");
-        assert_eq!(
-            decision.action.selected_source_id(),
-            Some("L2FieldShadowBoundary")
-        );
+        assert_eq!(decision.action.selected_source_id(), Some("glued_phrase"));
         assert!(
             decision.action.allow_apply(),
             "action={:?}",
@@ -393,10 +387,7 @@ mod tests {
         assert_eq!(decision.replacement, "то есть ");
         assert_eq!(decision.action.from_text(), "тоесть");
         assert_eq!(decision.action.to_text(), "то есть ");
-        assert_eq!(
-            decision.action.selected_source_id(),
-            Some("L2FieldShadowBoundary")
-        );
+        assert_eq!(decision.action.selected_source_id(), Some("glued_phrase"));
         assert!(
             decision.action.allow_apply(),
             "action={:?}",
@@ -456,21 +447,21 @@ mod tests {
     }
 
     #[test]
-    fn committed_tail_space_route_defaults_to_shadow_live_owner_for_l11_seeded_restore() {
+    fn committed_tail_space_route_defaults_to_canonical_l2_owner_for_l11_seeded_restore() {
         let cfg = config();
         let decision = decide_active_composition_autocorrect(ActiveCompositionAutocorrectRequest {
             text: "врмея ",
             committed_tail: "врмея",
             config: &cfg,
         })
-        .expect("shadow live-owner decision");
+        .expect("canonical live-owner decision");
 
         assert_eq!(decision.replacement, "время ");
         assert!(
             decision
                 .action
                 .selected_source_id()
-                .is_some_and(|source_id| source_id.starts_with("L2FieldShadow")),
+                .is_some_and(|source_id| source_id.starts_with("CanonicalL2Field")),
             "selected_source_id={:?} action={:?}",
             decision.action.selected_source_id(),
             decision.action

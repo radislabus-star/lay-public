@@ -1,21 +1,84 @@
 # L2 Canonical Architecture Above L1.1
 
-Status: live owner route for local IME/daemon correction is now
-`L1.1 bounded lattice -> one real L2 local field -> one local readout -> L3 -> verifier`;
-standalone packaged `L2` promotion remains separately gated.
+Status: canonical L2 ownership is closed for the live local IME/daemon route:
 
-Last source audit: 2026-07-26.
+```text
+L1.1 bounded lattice
+-> standalone V13 CanonicalL2Field
+-> one Winner | Tied | Abstain readout
+-> L3
+-> TransitionDecisionCore
+-> verifier
+```
 
-Runtime authority: enabled for the live local IME/daemon correction route
-through `CandidateReadoutRoute::L2FieldShadow`; old `CompactL2` route removal
-from executable/public selection is complete; standalone canonical `L2` package
-promotion remains pending.
+Last source audit: 2026-08-01.
 
-This document records the canonical internal shape of `L2` above `L1.1`. It is
-the owner contract for the local candidate field. The live local route now uses
-that owner contour, the old lexical `CompactL2` route is no longer executable
-through public route selection, and the full standalone `L2` package contract
-is still separately gated.
+Runtime authority: unchanged by the ownership cleanup. The live default is
+`CandidateReadoutRoute::CanonicalL2Field`; `FullWave` remains a compare-only
+reference. The immutable V13 package is loaded directly and was not rebuilt.
+There is no executable same-lemma or near-neighbor donor fallback in
+`src/nanda_wave/l2_field/bridge.rs`.
+
+Sections that describe `L2FieldShadow`, morphology donors, or near-neighbor
+donors are retained below as dated implementation history. They do not describe
+the current executable owner after 2026-08-01.
+
+## 0. Canonical Live Owner Closure, 2026-08-01
+
+The current code ownership is:
+
+```text
+CorrectionRequest
+-> CandidateReadoutRoute::CanonicalL2Field
+-> canonical_text_readout()
+-> bounded L1.1 seed surfaces
+-> StandaloneL2Field::readout() over immutable V13
+-> CanonicalL2FieldReadout { candidates, authority }
+-> one shared candidate lattice
+```
+
+Measured facts:
+
+- installed V13 bytes: `135121803` (`128.86 MiB`);
+- installed V13 SHA-256:
+  `bbe67a772b684e0f187483796fca248ac0b10576195b1aa524f0b2bde0f6601e`;
+- package SHA before and after the code cutover: identical;
+- warmed before/after semantic snapshot: `8 / 8` inputs identical;
+- candidate records compared: `86` before and `86` after;
+- semantic snapshot SHA-256 before and after:
+  `08e25753179ff608ef96ab968f8585803e337afc0d3701337fee69160ae1f418`;
+- selected-surface divergence: `0 / 8`;
+- selected-gate divergence: `0 / 8`;
+- standalone V13 fixed proof remains the quality authority:
+  same-lemma false authority `0`, near-neighbor false authority `0`;
+- focused `nanda_wave::l2_field` proof: `26 passed / 0 failed` after removal
+  of eight test-only donor tests and their dead implementation.
+- remote 20-job release build: `110.43 s`, average CPU `203%`, peak RSS
+  `1563256 KiB`, swaps `0`;
+- remote focused test build/run: `26 / 26` passed in `10.96 s`, average CPU
+  `156%`, peak RSS `1412604 KiB`.
+
+The before/after snapshot compares replacement, error class, gate action,
+winner/none, scoreboard, candidate count, and candidate ordering. Diagnostic
+route names, source IDs, and reason strings are intentionally renamed from
+`Shadow` to `Canonical`; they are not field geometry.
+
+What was not tested in this ownership-only change:
+
+- no L1.1 or L2 package was recompiled;
+- no new L2 quality training was run;
+- no L3/L4 behavior was promoted;
+- the pre-existing environment-sensitive tests for `звгрузи` and IME
+  transposition authority remain separate test debt; the same failure was
+  reproduced from baseline commit `a5188a5`.
+
+Verdict: `PASS_canonical_live_owner`.
+
+Exact receipt:
+
+`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_CANONICAL_LIVE_OWNER_CUTOVER_2026-08-01.json`
+
+Runtime authority changed: `false`.
 
 ## 1. Why This Document Exists
 

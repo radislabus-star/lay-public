@@ -36,6 +36,15 @@ HEAD == public/main
 
 ## 1. Закрыть Ownership L2
 
+**Статус: выполнено 2026-08-01, release target `0.2.342`.**
+
+Live owner переименован в `CanonicalL2Field`; test-only donor-reuse удалён,
+единственный исполняемый L2 readout загружает immutable standalone V13. На
+прогретом before/after snapshot совпали `8 / 8` входов и `86 / 86` candidate
+records; package SHA не изменился, inherited V13 false authority остаётся `0`.
+Receipt:
+`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_CANONICAL_LIVE_OWNER_CUTOVER_2026-08-01.json`.
+
 1. Переименовать live-маршрут `L2FieldShadow` в `CanonicalL2Field`.
 2. Удалить остаточный donor-reuse и старые fallback-маршруты.
 3. Оставить единственный источник L2: standalone V13 над lattice L1.1.

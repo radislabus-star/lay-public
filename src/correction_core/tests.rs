@@ -322,7 +322,7 @@ mod tests {
     }
 
     #[test]
-    fn live_l2_field_shadow_route_births_nanda_candidates_without_full_wave_authority() {
+    fn live_canonical_l2_field_births_nanda_candidates_without_full_wave_authority() {
         use std::time::Instant;
 
         let pipeline = default_typing_assist_pipeline();
@@ -338,15 +338,15 @@ mod tests {
                 && candidate.origin == CandidateOrigin::L2Surface
         }));
         assert!(candidates.iter().any(|candidate| {
-            candidate.source_id.starts_with("L2FieldShadow")
+            candidate.source_id.starts_with("CanonicalL2Field")
                 || candidate
                     .evidence
                     .iter()
-                    .any(|evidence| evidence.source_id.starts_with("L2FieldShadow"))
+                    .any(|evidence| evidence.source_id.starts_with("CanonicalL2Field"))
         }));
         assert!(candidates
             .iter()
-            .all(|candidate| candidate.source_id.starts_with("L2FieldShadow")));
+            .all(|candidate| candidate.source_id.starts_with("CanonicalL2Field")));
         assert!(candidates
             .iter()
             .any(|candidate| candidate.replacement == "загрузи "));
@@ -358,7 +358,8 @@ mod tests {
             Some("загрузи ")
         );
 
-        let sample_count = std::env::var("LAY_L2_FIELD_SHADOW_SAMPLES")
+        let sample_count = std::env::var("LAY_CANONICAL_L2_FIELD_SAMPLES")
+            .or_else(|_| std::env::var("LAY_L2_FIELD_SHADOW_SAMPLES"))
             .ok()
             .and_then(|value| value.parse::<usize>().ok())
             .unwrap_or(120)
@@ -384,16 +385,18 @@ mod tests {
         let p99 = timings[timings.len() * 99 / 100];
         let max = *timings.last().expect("latency samples");
         eprintln!(
-            "L2FieldShadow correction route: n={} p50={}us p90={}us p99={}us max={}us",
+            "CanonicalL2Field correction route: n={} p50={}us p90={}us p99={}us max={}us",
             timings.len(),
             p50,
             p90,
             p99,
             max
         );
-        if std::env::var_os("LAY_ENFORCE_L2_FIELD_SHADOW_LATENCY_BUDGET").is_some() {
-            assert!(p99 <= 5_000, "L2FieldShadow p99 exceeded budget: {p99}us");
-            assert!(max <= 10_000, "L2FieldShadow max exceeded budget: {max}us");
+        if std::env::var_os("LAY_ENFORCE_CANONICAL_L2_FIELD_LATENCY_BUDGET").is_some()
+            || std::env::var_os("LAY_ENFORCE_L2_FIELD_SHADOW_LATENCY_BUDGET").is_some()
+        {
+            assert!(p99 <= 5_000, "CanonicalL2Field p99 exceeded budget: {p99}us");
+            assert!(max <= 10_000, "CanonicalL2Field max exceeded budget: {max}us");
         }
     }
 
@@ -413,7 +416,7 @@ mod tests {
     }
 
     #[test]
-    fn live_l2_field_shadow_route_applies_adjacent_transposition_center() {
+    fn live_canonical_l2_field_applies_adjacent_transposition_center() {
         let previous_policy = crate::hot_field::process_policy();
         crate::hot_field::set_process_policy(
             crate::hot_field::HotFieldPolicy::daemon_for_text_backend(
@@ -1955,7 +1958,7 @@ mod tests {
     fn l2_field_cannot_delete_known_case_ending_without_context_proof() {
         let pipeline = default_typing_assist_pipeline();
         let mut req = request("в коде ", &pipeline, CorrectionMode::DeterministicThenNanda);
-        req.nanda_candidate_route = CandidateReadoutRoute::L2FieldShadow;
+        req.nanda_candidate_route = CandidateReadoutRoute::CanonicalL2Field;
         let resolution = resolve_text_correction(req);
 
         assert!(resolution.selected.is_none(), "resolution={resolution:#?}");
@@ -2008,7 +2011,7 @@ mod tests {
     }
 
     #[test]
-    fn live_l2_field_shadow_log_style_finished_form_is_not_auto_extended_to_infinitive() {
+    fn live_canonical_l2_field_log_style_finished_form_is_not_auto_extended_to_infinitive() {
         let previous_policy = crate::hot_field::process_policy();
         crate::hot_field::set_process_policy(
             crate::hot_field::HotFieldPolicy::daemon_for_text_backend(

@@ -314,7 +314,7 @@ mod tests {
                     insert: "поставим".to_string(),
                     move_right: 6,
                 },
-                selected_source_id: Some("L2FieldShadowReadout"),
+                selected_source_id: Some("CanonicalL2FieldReadout"),
                 selected_error_class: Some("adjacent-transposition"),
             },
             &receipt,

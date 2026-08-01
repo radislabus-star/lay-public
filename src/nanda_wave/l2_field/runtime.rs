@@ -13,28 +13,16 @@ use super::model::{
 const MAX_ACTIVE_LEMMAS: usize = 4;
 const INHERITED_L1_ATTENUATION_MILLI: i32 = 240;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) enum L2FieldBridgeKind {
-    Shadow,
-}
-
-impl L2FieldBridgeKind {
-    pub(crate) const fn surface_source_id(self) -> &'static str {
-        "L2FieldShadowSurface"
-    }
-
-    pub(crate) const fn readout_source_id(self) -> &'static str {
-        "L2FieldShadowReadout"
-    }
-}
+pub(crate) const CANONICAL_L2_SURFACE_SOURCE_ID: &str = "CanonicalL2FieldSurface";
+pub(crate) const CANONICAL_L2_READOUT_SOURCE_ID: &str = "CanonicalL2FieldReadout";
 
 #[derive(Debug, Clone, Default, PartialEq)]
-pub(crate) struct L2FieldShadowReadout {
+pub(crate) struct CanonicalL2FieldReadout {
     pub(crate) candidates: Vec<UnifiedCorrectionCandidate>,
     pub(crate) authority: L2FieldAuthority,
 }
 
-impl L2FieldShadowReadout {
+impl CanonicalL2FieldReadout {
     pub(crate) fn new(
         candidates: Vec<UnifiedCorrectionCandidate>,
         authority: L2FieldAuthority,
