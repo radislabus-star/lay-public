@@ -86,7 +86,6 @@ DELTA="$WORK/l3_self_teacher_delta_${RUN_ID}.nwpc"
 DELTA_CASES="$SELF_DIR/delta_gate_cases.tsv"
 TARGETED_RECEIPT="$WORK/targeted-proof.json"
 BASELINE_COMPACT="$WORK/l3_context_phase_baseline.nwpc"
-CANDIDATE_MANIFEST="$WORK/candidate.runtime.json"
 CANDIDATE_COMPACT="$WORK/l3_context_phase_candidate.nwpc"
 FULL_RECEIPT="$WORK/full-differential-proof.json"
 RUNTIME_STATUS="$WORK/runtime-status.json"
@@ -150,27 +149,20 @@ run_bin lay-nanda-wave-train --prove-l3-context-delta \
   --cases "$DELTA_CASES" \
   --out-receipt "$TARGETED_RECEIPT" >/dev/null || targeted_rc=$?
 
-run_bin lay-nanda-wave-train --init-l3-context-composite \
-  --manifest "$CANDIDATE_MANIFEST" \
-  --base "$BASELINE_COMPACT" >/dev/null
 if [[ "$targeted_rc" == "0" ]]; then
-  run_bin lay-nanda-wave-train --admit-l3-context-delta \
-    --manifest "$CANDIDATE_MANIFEST" \
+  run_bin lay-nanda-wave-train --snapshot-l3-context-candidate \
+    --manifest "$RUNTIME_MANIFEST" \
     --delta "$DELTA" \
-    --proof-receipt "$TARGETED_RECEIPT" \
-    --scope "self-teacher-$RUN_ID" >/dev/null
-  run_bin lay-nanda-wave-train --compact-l3-context-composite \
-    --manifest "$CANDIDATE_MANIFEST" \
     --out "$CANDIDATE_COMPACT" >/dev/null
 fi
 
 full_rc=1
 if [[ "$targeted_rc" == "0" && -s "$CANDIDATE_COMPACT" ]]; then
   full_rc=0
-  run_bin lay-nanda-wave-train --prove-l3-context-phase-delta-full \
+  run_bin lay-nanda-wave-train --prove-l3-context-composite-delta-full \
     "$FULL_PROOF_CORPUS" \
-    --baseline-memory "$BASELINE_COMPACT" \
-    --memory "$CANDIDATE_COMPACT" \
+    --manifest "$RUNTIME_MANIFEST" \
+    --delta "$DELTA" \
     --surface-evidence "$FULL_PROOF_SURFACE" \
     --min-surface-support 2 \
     --max-fragments 80000 \

@@ -531,19 +531,28 @@ fn exact_positive_l4_memory_can_promote_a_suggestion_to_authority_evaluation() {
 
     assert!(producer_allows_authority_evaluation(
         CandidateGateAction::Eligible,
+        false,
         neutral,
     ));
     assert!(!producer_allows_authority_evaluation(
         CandidateGateAction::SuggestOnly,
+        false,
         neutral,
     ));
     assert!(producer_allows_authority_evaluation(
         CandidateGateAction::SuggestOnly,
+        false,
         exact_positive,
     ));
     assert!(!producer_allows_authority_evaluation(
         CandidateGateAction::SuggestOnly,
+        false,
         exact_negative,
+    ));
+    assert!(producer_allows_authority_evaluation(
+        CandidateGateAction::SuggestOnly,
+        true,
+        neutral,
     ));
 }
 

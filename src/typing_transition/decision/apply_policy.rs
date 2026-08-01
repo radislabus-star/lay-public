@@ -5,10 +5,12 @@ use crate::typing_transition::L4SignedTransitionSignal;
 
 pub(super) fn producer_allows_authority_evaluation(
     action: CandidateGateAction,
+    l3_pairwise_certified: bool,
     l4_signal: L4SignedTransitionSignal,
 ) -> bool {
     action == CandidateGateAction::Eligible
-        || (action == CandidateGateAction::SuggestOnly && l4_signal.exact_positive())
+        || (action == CandidateGateAction::SuggestOnly
+            && (l3_pairwise_certified || l4_signal.exact_positive()))
 }
 
 pub(super) fn unresolved_competitor_blocks(

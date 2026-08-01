@@ -514,6 +514,22 @@ pub(crate) fn prove_context_phase_package_delta_path(
 ) -> io::Result<ContextPhaseDifferentialProofReport> {
     let baseline = super::read_package(baseline_path)?;
     let candidate = super::read_package(candidate_path)?;
+    prove_context_phase_package_delta(
+        corpus_path,
+        &baseline,
+        &candidate,
+        max_fragments,
+        surface_field,
+    )
+}
+
+pub(crate) fn prove_context_phase_package_delta(
+    corpus_path: &Path,
+    baseline: &ContextPhasePackage,
+    candidate: &ContextPhasePackage,
+    max_fragments: usize,
+    surface_field: &SurfaceMutationField,
+) -> io::Result<ContextPhaseDifferentialProofReport> {
     if baseline.signature_schema != candidate.signature_schema {
         return Err(io::Error::new(
             io::ErrorKind::InvalidInput,
@@ -527,8 +543,6 @@ pub(crate) fn prove_context_phase_package_delta_path(
         for _ in 0..workers {
             let (sender, receiver) = sync_channel::<Vec<String>>(2);
             senders.push(sender);
-            let baseline = &baseline;
-            let candidate = &candidate;
             handles.push(scope.spawn(move || {
                 let mut totals = DifferentialTotals::default();
                 while let Ok(tokens) = receiver.recv() {

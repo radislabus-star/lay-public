@@ -1,0 +1,48 @@
+{
+  "gate": "l3_sentence_multiview_v1_release",
+  "date": "2026-08-01",
+  "release": "0.2.344",
+  "remote_host": "e@192.168.3.94",
+  "remote_checkout": "/home/e/build/lay-l1-shadow",
+  "tested": {
+    "context_phase": "83/83 PASS",
+    "decision_core": "28/28 PASS",
+    "canonical_l2_bridge": "5/5 PASS",
+    "portable_delta_admission": "2/2 PASS",
+    "authority_contract": "20/20 PASS",
+    "protected_double_shift": "1/1 PASS",
+    "promotion_script_syntax": "PASS",
+    "release_binaries": [
+      "lay",
+      "lay-daemon",
+      "lay-ibus-engine",
+      "lay-nanda-wave-train",
+      "lay-nanda-wave-eval"
+    ]
+  },
+  "measured": {
+    "release_build_elapsed_seconds": 117.25,
+    "release_build_average_cpu_percent": 243,
+    "release_build_peak_rss_kib": 1621868,
+    "release_build_swaps": 0,
+    "delta_bytes": 79660,
+    "delta_sha256": "ec6b38f257302beb263ffef51380487e055f92edfd719cbfafa17497e9162cb5"
+  },
+  "not_tested": [
+    "broad Russian semantic understanding beyond the fixed 25-case sentence denominator",
+    "cross-scene L4 transfer",
+    "final six-client product matrix",
+    "installed runtime admission at this checkpoint"
+  ],
+  "verdict_scope": {
+    "code_and_targeted_release_gate": "PASS",
+    "frozen_80k_regression_gate": "PASS",
+    "runtime_authority_changed": false,
+    "release_installation": "PENDING"
+  },
+  "evidence": {
+    "targeted_receipt": "/home/ubu/projects/lay/docs/structural_gates/receipts/L3_SENTENCE_MULTIVIEW_V1_TARGETED_2026-08-01.json",
+    "full_80k_receipt": "/home/ubu/projects/lay/docs/structural_gates/receipts/L3_SENTENCE_MULTIVIEW_V1_FULL_80K_2026-08-01.json",
+    "remote_build_log": "/home/e/build/lay-l1-shadow/artifacts/l3-sentence-multiview-v1-2026-08-01/release-build-0.2.344.log"
+  }
+}

@@ -466,6 +466,27 @@ pub(crate) fn snapshot_manifest(
     }))
 }
 
+pub(crate) fn snapshot_manifest_with_delta(
+    manifest_path: &Path,
+    delta_path: &Path,
+    output_path: &Path,
+) -> io::Result<serde_json::Value> {
+    let memory = L3CompositeMemory::load_manifest(manifest_path)?;
+    let package = memory.compose_delta_path(delta_path)?;
+    let output_path = absolute_path(output_path)?;
+    super::write_package(&output_path, &package)?;
+    Ok(serde_json::json!({
+        "kind": "l3_composite_candidate_snapshot",
+        "manifest": manifest_path,
+        "delta": delta_path,
+        "output": output_path,
+        "baseline_deltas": memory.delta_paths.len(),
+        "candidate_delta_bytes": fs::metadata(delta_path)?.len(),
+        "manifest_rewritten": false,
+        "runtime_authority": false,
+    }))
+}
+
 fn write_manifest(path: &Path, manifest: &L3CompositeManifest) -> io::Result<()> {
     let _lock = acquire_manifest_write_lock(path)?;
     write_manifest_unlocked(path, manifest)

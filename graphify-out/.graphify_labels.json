@@ -486,9 +486,12 @@
   "484": "learning.rs",
   "485": ".manual_toggle_active_text_target",
   "486": "handle_pending_auto_undo",
-  "487": "CouplingView",
   "488": "LayIbusEngine",
   "489": "first_internal_transposition_typo",
   "490": "LayConfig",
-  "491": "DecisionOutput"
+  "491": "DecisionOutput",
+  "493": "types.rs",
+  "494": "config_path",
+  "495": ".bound_form_refs",
+  "497": "sentence.rs"
 }

@@ -57,6 +57,21 @@ fn main() -> io::Result<()> {
         );
         return Ok(());
     }
+    if let Some(cases) = arg_path(&args, "--prove-l3-sentence-context") {
+        let output = arg_path(&args, "--out")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--out is required"))?;
+        let report = lay::nanda_wave::build_and_prove_l3_sentence_context_memory(&cases, &output)?;
+        if let Some(receipt) = arg_path(&args, "--receipt") {
+            let mut bytes = serde_json::to_vec_pretty(&report).map_err(io::Error::other)?;
+            bytes.push(b'\n');
+            lay::private_file::write_private_bytes(&receipt, &bytes)?;
+        }
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
     if let Some(l2_package) = arg_path(&args, "--prove-canonical-l2") {
         let l1_package = arg_path(&args, "--memory")
             .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--memory is required"))?;
@@ -489,6 +504,33 @@ fn main() -> io::Result<()> {
     }
     if args
         .iter()
+        .any(|arg| arg == "--prove-l3-sentence-context-delta")
+    {
+        let manifest = arg_path(&args, "--manifest")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--manifest is required"))?;
+        let delta = arg_path(&args, "--delta")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--delta is required"))?;
+        let cases = arg_path(&args, "--cases")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--cases is required"))?;
+        let receipt = arg_path(&args, "--out-receipt").ok_or_else(|| {
+            io::Error::new(io::ErrorKind::InvalidInput, "--out-receipt is required")
+        })?;
+        let report = lay::nanda_wave::prove_l3_sentence_context_delta_targeted(
+            &manifest, &delta, &cases, &receipt,
+        )?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        if report.get("verdict").and_then(serde_json::Value::as_str) != Some("PASS") {
+            return Err(io::Error::other(
+                "targeted L3 sentence delta proof did not pass",
+            ));
+        }
+        return Ok(());
+    }
+    if args
+        .iter()
         .any(|arg| arg == "--compact-l3-context-composite")
     {
         let manifest = arg_path(&args, "--manifest")
@@ -511,6 +553,24 @@ fn main() -> io::Result<()> {
         let out = arg_path(&args, "--out")
             .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--out is required"))?;
         let report = lay::nanda_wave::snapshot_l3_context_composite(&manifest, &out)?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if args
+        .iter()
+        .any(|arg| arg == "--snapshot-l3-context-candidate")
+    {
+        let manifest = arg_path(&args, "--manifest")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--manifest is required"))?;
+        let delta = arg_path(&args, "--delta")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--delta is required"))?;
+        let out = arg_path(&args, "--out")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--out is required"))?;
+        let report =
+            lay::nanda_wave::snapshot_l3_context_composite_with_delta(&manifest, &delta, &out)?;
         println!(
             "{}",
             serde_json::to_string_pretty(&report).map_err(io::Error::other)?
@@ -593,6 +653,42 @@ fn main() -> io::Result<()> {
         if report.get("verdict").and_then(serde_json::Value::as_str) != Some("PASS") {
             return Err(io::Error::other(
                 "full L3 delta differential proof did not pass",
+            ));
+        }
+        return Ok(());
+    }
+    if let Some(corpus) = arg_path(&args, "--prove-l3-context-composite-delta-full") {
+        let manifest = arg_path(&args, "--manifest")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--manifest is required"))?;
+        let delta = arg_path(&args, "--delta")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--delta is required"))?;
+        let surface_evidence = arg_path(&args, "--surface-evidence").ok_or_else(|| {
+            io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "--surface-evidence is required",
+            )
+        })?;
+        let receipt = arg_path(&args, "--out-receipt").ok_or_else(|| {
+            io::Error::new(io::ErrorKind::InvalidInput, "--out-receipt is required")
+        })?;
+        let max_fragments = arg_usize(&args, "--max-fragments").unwrap_or(0);
+        let min_surface_support = arg_u32(&args, "--min-surface-support").unwrap_or(2);
+        let report = lay::nanda_wave::prove_l3_context_composite_delta_full(
+            &corpus,
+            &manifest,
+            &delta,
+            &surface_evidence,
+            max_fragments,
+            min_surface_support,
+            &receipt,
+        )?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        if report.get("verdict").and_then(serde_json::Value::as_str) != Some("PASS") {
+            return Err(io::Error::other(
+                "full L3 composite delta differential proof did not pass",
             ));
         }
         return Ok(());

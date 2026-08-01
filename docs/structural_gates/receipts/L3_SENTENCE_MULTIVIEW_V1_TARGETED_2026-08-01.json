@@ -1,0 +1,162 @@
+{
+  "architecture": "sentence_slot_phase_v1",
+  "base_rewritten": false,
+  "baseline_classes": {
+    "agreement": {
+      "ambiguity_cases": 0,
+      "ambiguity_retained": 0,
+      "ambiguity_retention_ppm": 1000000,
+      "cases": 4,
+      "false_authority": 0,
+      "target_lattice": 4,
+      "target_lattice_ppm": 1000000,
+      "unique_top1": 0,
+      "unique_top1_ppm": 0
+    },
+    "ambiguity": {
+      "ambiguity_cases": 5,
+      "ambiguity_retained": 5,
+      "ambiguity_retention_ppm": 1000000,
+      "cases": 5,
+      "false_authority": 0,
+      "target_lattice": 0,
+      "target_lattice_ppm": 1000000,
+      "unique_top1": 0,
+      "unique_top1_ppm": 1000000
+    },
+    "function_word": {
+      "ambiguity_cases": 0,
+      "ambiguity_retained": 0,
+      "ambiguity_retention_ppm": 1000000,
+      "cases": 4,
+      "false_authority": 0,
+      "target_lattice": 4,
+      "target_lattice_ppm": 1000000,
+      "unique_top1": 0,
+      "unique_top1_ppm": 0
+    },
+    "preposition_case": {
+      "ambiguity_cases": 0,
+      "ambiguity_retained": 0,
+      "ambiguity_retention_ppm": 1000000,
+      "cases": 4,
+      "false_authority": 0,
+      "target_lattice": 4,
+      "target_lattice_ppm": 1000000,
+      "unique_top1": 0,
+      "unique_top1_ppm": 0
+    },
+    "punctuation_order": {
+      "ambiguity_cases": 0,
+      "ambiguity_retained": 0,
+      "ambiguity_retention_ppm": 1000000,
+      "cases": 4,
+      "false_authority": 0,
+      "target_lattice": 4,
+      "target_lattice_ppm": 1000000,
+      "unique_top1": 0,
+      "unique_top1_ppm": 0
+    },
+    "verb_form": {
+      "ambiguity_cases": 0,
+      "ambiguity_retained": 0,
+      "ambiguity_retention_ppm": 1000000,
+      "cases": 4,
+      "false_authority": 0,
+      "target_lattice": 4,
+      "target_lattice_ppm": 1000000,
+      "unique_top1": 0,
+      "unique_top1_ppm": 0
+    }
+  },
+  "baseline_passed_cases": 5,
+  "baseline_sha256": "8b2b319cddc6337f5e3bdc6c88c7a73258ad134853462f673e4633c7fdcf1423",
+  "candidate_passed_cases": 25,
+  "cases": "data/nanda_training/l3_sentence_context_cases.tsv",
+  "classes": {
+    "agreement": {
+      "ambiguity_cases": 0,
+      "ambiguity_retained": 0,
+      "ambiguity_retention_ppm": 1000000,
+      "cases": 4,
+      "false_authority": 0,
+      "target_lattice": 4,
+      "target_lattice_ppm": 1000000,
+      "unique_top1": 4,
+      "unique_top1_ppm": 1000000
+    },
+    "ambiguity": {
+      "ambiguity_cases": 5,
+      "ambiguity_retained": 5,
+      "ambiguity_retention_ppm": 1000000,
+      "cases": 5,
+      "false_authority": 0,
+      "target_lattice": 0,
+      "target_lattice_ppm": 1000000,
+      "unique_top1": 0,
+      "unique_top1_ppm": 1000000
+    },
+    "function_word": {
+      "ambiguity_cases": 0,
+      "ambiguity_retained": 0,
+      "ambiguity_retention_ppm": 1000000,
+      "cases": 4,
+      "false_authority": 0,
+      "target_lattice": 4,
+      "target_lattice_ppm": 1000000,
+      "unique_top1": 4,
+      "unique_top1_ppm": 1000000
+    },
+    "preposition_case": {
+      "ambiguity_cases": 0,
+      "ambiguity_retained": 0,
+      "ambiguity_retention_ppm": 1000000,
+      "cases": 4,
+      "false_authority": 0,
+      "target_lattice": 4,
+      "target_lattice_ppm": 1000000,
+      "unique_top1": 4,
+      "unique_top1_ppm": 1000000
+    },
+    "punctuation_order": {
+      "ambiguity_cases": 0,
+      "ambiguity_retained": 0,
+      "ambiguity_retention_ppm": 1000000,
+      "cases": 4,
+      "false_authority": 0,
+      "target_lattice": 4,
+      "target_lattice_ppm": 1000000,
+      "unique_top1": 4,
+      "unique_top1_ppm": 1000000
+    },
+    "verb_form": {
+      "ambiguity_cases": 0,
+      "ambiguity_retained": 0,
+      "ambiguity_retention_ppm": 1000000,
+      "cases": 4,
+      "false_authority": 0,
+      "target_lattice": 4,
+      "target_lattice_ppm": 1000000,
+      "unique_top1": 4,
+      "unique_top1_ppm": 1000000
+    }
+  },
+  "delta": "artifacts/l3-sentence-multiview-v1-2026-08-01/lay-l3-sentence-v1.nwpc",
+  "delta_bytes": 79660,
+  "delta_sha256": "ec6b38f257302beb263ffef51380487e055f92edfd719cbfafa17497e9162cb5",
+  "failures": [],
+  "false_supports": 0,
+  "full_corpus_recompiled": false,
+  "heldout_rows": 25,
+  "heldout_scene_overlap": 0,
+  "improve_cases": 20,
+  "improved": 20,
+  "kind": "l3_context_delta_targeted_proof",
+  "manifest": "artifacts/l3-sentence-multiview-v1-2026-08-01/portable-baseline.runtime.json",
+  "proof_mode": "sentence_multiview_v1",
+  "regressions": 0,
+  "runtime_authority": false,
+  "safety_cases": 5,
+  "target_failures": 0,
+  "verdict": "PASS"
+}

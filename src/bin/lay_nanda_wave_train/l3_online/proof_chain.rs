@@ -104,9 +104,9 @@ pub(super) fn attempt_relation(
 
 fn prove_full_differential(
     paths: &Paths,
-    stem: &str,
+    _stem: &str,
     delta: &Path,
-    targeted_receipt: &Path,
+    _targeted_receipt: &Path,
     full_receipt: &Path,
 ) -> io::Result<serde_json::Value> {
     if !paths.full_proof_corpus.is_file() || !paths.full_proof_surface.is_file() {
@@ -124,33 +124,15 @@ fn prove_full_differential(
             full_receipt,
         );
     }
-    let baseline = paths.root.join(format!("{stem}.baseline.nwpc"));
-    let candidate_manifest = paths.root.join(format!("{stem}.candidate.runtime.json"));
-    let candidate = paths.root.join(format!("{stem}.candidate.nwpc"));
-    let result = (|| {
-        lay::nanda_wave::snapshot_l3_context_composite(&paths.manifest, &baseline)?;
-        lay::nanda_wave::initialize_l3_context_composite_manifest(&candidate_manifest, &baseline)?;
-        lay::nanda_wave::admit_l3_context_delta(
-            &candidate_manifest,
-            delta,
-            Some(targeted_receipt),
-            Some("local-online-proof-candidate"),
-        )?;
-        lay::nanda_wave::snapshot_l3_context_composite(&candidate_manifest, &candidate)?;
-        lay::nanda_wave::prove_l3_context_phase_delta_full(
-            &paths.full_proof_corpus,
-            &baseline,
-            &candidate,
-            &paths.full_proof_surface,
-            FULL_PROOF_MAX_FRAGMENTS,
-            FULL_PROOF_MIN_SURFACE_SUPPORT,
-            full_receipt,
-        )
-    })();
-    let _ = fs::remove_file(&baseline);
-    let _ = fs::remove_file(&candidate_manifest);
-    let _ = fs::remove_file(&candidate);
-    persist_bound_full_proof(result?, &paths.manifest, delta, full_receipt)
+    lay::nanda_wave::prove_l3_context_composite_delta_full(
+        &paths.full_proof_corpus,
+        &paths.manifest,
+        delta,
+        &paths.full_proof_surface,
+        FULL_PROOF_MAX_FRAGMENTS,
+        FULL_PROOF_MIN_SURFACE_SUPPORT,
+        full_receipt,
+    )
 }
 
 fn persist_bound_full_proof(

@@ -1996,3 +1996,134 @@ Exact receipt:
 ```text
 /home/ubu/projects/lay/docs/structural_gates/receipts/L3_ONLINE_CAUSAL_EPISODES_V3_2026-08-01.json
 ```
+
+## Sentence multiview field and portable delta proof, 2026-08-01
+
+L3 sentence authority is now a bounded field over the complete retained L2
+lattice, not a rule attached to a word or application. Candidate projection
+accepts exactly one changed token and requires every surrounding token and
+separator to remain unchanged.
+
+```text
+canonical L2 bounded lattice
+-> one changed sentence slot
+-> 14 typed scene views
+   full / punctuation / punctuation joint / punctuation crystal
+   immediate and governing left
+   immediate and following right
+   bridge / morphology / left morphology
+   left, right and following tails
+-> view-namespaced exact and L2-relation pair centers
+-> evidence reduce on the immutable base energy scale
+-> Winner | Tied | ABSTAIN
+```
+
+The scene encoder retains direction, punctuation class, slot position,
+neighbor role, bounded endings and two exact left governors. It does not store
+raw sentences in the package. Training receives an explicit causal target and
+all bounded competitors; a displayed or automatically applied candidate is
+never inferred to be ground truth.
+
+A small delta cannot replace broad-package calibration. The initial standalone
+package passed its own threshold but produced only `14/25` settled cases after
+composition because the immutable base pair threshold is higher. The accepted
+readout keeps that base threshold and combines weak evidence only when at least
+two independently namespaced views agree. Opposite evidence inside the base
+conflict band remains unresolved. No class-specific coefficient or lexical
+exception was introduced.
+
+Measured fixed proof:
+
+```text
+training rows                                      40
+heldout rows                                       25
+train/heldout exact scene overlap                   0
+agreement unique top-1                            4/4
+function word unique top-1                        4/4
+preposition/case unique top-1                     4/4
+punctuation/order unique top-1                    4/4
+verb form unique top-1                            4/4
+ambiguity retained                                5/5
+target lattice, every target class               100%
+false authority                                     0
+```
+
+Measured live-composite targeted proof:
+
+```text
+baseline passed cases                              5
+candidate passed cases                            25
+improved cases                                    20
+regressions                                        0
+target failures                                    0
+false supports                                     0
+delta bytes                                   79 660
+baseline logical SHA-256  8b2b319cddc6337f5e3bdc6c88c7a73258ad134853462f673e4633c7fdcf1423
+delta SHA-256             ec6b38f257302beb263ffef51380487e055f92edfd719cbfafa17497e9162cb5
+```
+
+Measured frozen 80k differential on `e@192.168.3.94`:
+
+```text
+heldout fragments                              15 704
+compared transitions                           49 153
+lost target profiles                                0
+lost supports                                       0
+lost top-1                                          0
+new false supports                                  0
+new false top-1                                     0
+elapsed including release LTO                119.21 s
+average CPU                                      267%
+peak RSS                                    1 611 280 KiB
+swaps                                               0
+verdict                                          PASS
+```
+
+Proof candidates are now composed directly as `baseline + delta` in memory;
+the proof path no longer performs a fake admission into a temporary manifest.
+Receipts bind both absolute paths and portable SHA-256 identities of the
+logical baseline package and delta. Cross-machine admission is allowed only
+when both content identities and delta byte count match.
+
+Tested:
+
+- sentence projection, direction and punctuation ownership;
+- supervised opposite-mode settlement;
+- all existing context-phase tests (`83/83` at the algorithm checkpoint);
+- fixed sentence gate on the standalone and real composite package;
+- frozen 80k zero-regression differential;
+- isolated full-receipt admission without changing the live manifest.
+- remote `0.2.344` focused gate: context `83/83`, DecisionCore `28/28`,
+  canonical L2 bridge `5/5`, portable admission `2/2`, authority contract
+  `20/20`, protected double Shift `1/1`;
+- remote release build of five runtime/proof binaries in `117.25 s`, average
+  process CPU `243%`, peak RSS `1 621 868 KiB`, swaps `0`.
+
+Not tested at this checkpoint:
+
+- broad corpus-scale Russian semantic understanding beyond the explicit
+  `25`-case fixed sentence denominator;
+- cross-scene L4 transfer;
+- the final six-client product matrix;
+- live runtime authority before installing release `0.2.344`.
+
+Verdict scope:
+
+- sentence multiview architecture: `PASS_code`;
+- fixed heldout and live-composite targeted gate: `PASS`;
+- frozen 80k differential: `PASS`;
+- runtime authority changed at this proof checkpoint: `false`.
+
+Exact receipts:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L3_SENTENCE_MULTIVIEW_V1_TARGETED_2026-08-01.json
+/home/ubu/projects/lay/docs/structural_gates/receipts/L3_SENTENCE_MULTIVIEW_V1_FULL_80K_2026-08-01.json
+/home/ubu/projects/lay/docs/structural_gates/receipts/L3_SENTENCE_MULTIVIEW_V1_RELEASE_2026-08-01.json
+```
+
+Remote artifact root:
+
+```text
+/home/e/build/lay-l1-shadow/artifacts/l3-sentence-multiview-v1-2026-08-01
+```

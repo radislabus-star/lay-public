@@ -102,13 +102,18 @@ fn short_layout_candidates(original: &str) -> Vec<UnifiedCorrectionCandidate> {
 
 fn canonical_owned_text_candidates(original: &str) -> CanonicalL2FieldReadout {
     let started = std::time::Instant::now();
-    let Some(field) = standalone_surface_field_readout(original, true) else {
+    // L2 owns its Winner/Tied/Abstain verdict, but L3 must observe the whole
+    // bounded cohort. Non-winners remain SuggestOnly below; retaining them is
+    // evidence visibility, not lexical apply authority.
+    let Some(field) = standalone_surface_field_readout(original, false) else {
         return CanonicalL2FieldReadout::default();
     };
     let mut candidates =
         l2_surface_unified_candidates(original, &field.token, &field.surface_candidates);
     promote_canonical_local_readout(&mut candidates, &field.local_readout);
     demote_canonical_local_surface_cohort(&mut candidates, &field.local_readout);
+    let authority = field.local_readout.authority();
+    apply_authority_to_candidate_lattice(&mut candidates, &authority);
     if std::env::var_os("LAY_L2_FIELD_TRACE").is_some() {
         let finished = std::time::Instant::now();
         eprintln!(
@@ -127,7 +132,6 @@ fn canonical_owned_text_candidates(original: &str) -> CanonicalL2FieldReadout {
         );
     }
 
-    let authority = field.local_readout.authority();
     CanonicalL2FieldReadout::new(candidates, authority)
 }
 

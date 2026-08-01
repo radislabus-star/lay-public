@@ -32,7 +32,7 @@ pub(crate) fn write_package(path: &Path, package: &ContextPhasePackage) -> io::R
     Ok(())
 }
 
-fn encode_package(package: &ContextPhasePackage) -> Vec<u8> {
+pub(crate) fn encode_package(package: &ContextPhasePackage) -> Vec<u8> {
     let mut bytes = Vec::with_capacity(
         HEADER_BYTES_V5
             + package.semantic_states.len() * (SEMANTIC_HEADER_BYTES + VECTOR_BYTES)

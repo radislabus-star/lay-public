@@ -402,10 +402,27 @@ fn validate_l3_targeted_proof_receipt(
         .get("manifest")
         .and_then(serde_json::Value::as_str)
         .map(std::path::PathBuf::from);
-    let delta_matches = receipt_delta.and_then(|path| std::fs::canonicalize(path).ok())
+    let delta_path_matches = receipt_delta.and_then(|path| std::fs::canonicalize(path).ok())
         == std::fs::canonicalize(delta_path).ok();
-    let manifest_matches = receipt_manifest.and_then(|path| std::fs::canonicalize(path).ok())
+    let manifest_path_matches = receipt_manifest.and_then(|path| std::fs::canonicalize(path).ok())
         == std::fs::canonicalize(manifest_path).ok();
+    let portable_content_matches = match (
+        receipt
+            .get("baseline_sha256")
+            .and_then(serde_json::Value::as_str),
+        receipt
+            .get("delta_sha256")
+            .and_then(serde_json::Value::as_str),
+    ) {
+        (Some(expected_baseline), Some(expected_delta)) => {
+            let baseline = context_phase::L3CompositeMemory::load_manifest(manifest_path)?;
+            context_phase::package_sha256(baseline.package()) == expected_baseline
+                && context_phase::package_path_sha256(delta_path)? == expected_delta
+        }
+        _ => false,
+    };
+    let delta_matches = delta_path_matches || portable_content_matches;
+    let manifest_matches = manifest_path_matches || portable_content_matches;
     let valid_receipt = receipt.get("kind").and_then(serde_json::Value::as_str)
         == Some("l3_context_delta_targeted_proof")
         && receipt.get("verdict").and_then(serde_json::Value::as_str) == Some("PASS")
@@ -445,10 +462,27 @@ fn validate_l3_full_proof_receipt(
         .get("manifest")
         .and_then(serde_json::Value::as_str)
         .map(std::path::PathBuf::from);
-    let delta_matches = receipt_delta.and_then(|path| std::fs::canonicalize(path).ok())
+    let delta_path_matches = receipt_delta.and_then(|path| std::fs::canonicalize(path).ok())
         == std::fs::canonicalize(delta_path).ok();
-    let manifest_matches = receipt_manifest.and_then(|path| std::fs::canonicalize(path).ok())
+    let manifest_path_matches = receipt_manifest.and_then(|path| std::fs::canonicalize(path).ok())
         == std::fs::canonicalize(manifest_path).ok();
+    let portable_content_matches = match (
+        receipt
+            .get("baseline_sha256")
+            .and_then(serde_json::Value::as_str),
+        receipt
+            .get("delta_sha256")
+            .and_then(serde_json::Value::as_str),
+    ) {
+        (Some(expected_baseline), Some(expected_delta)) => {
+            let baseline = context_phase::L3CompositeMemory::load_manifest(manifest_path)?;
+            context_phase::package_sha256(baseline.package()) == expected_baseline
+                && context_phase::package_path_sha256(delta_path)? == expected_delta
+        }
+        _ => false,
+    };
+    let delta_matches = delta_path_matches || portable_content_matches;
+    let manifest_matches = manifest_path_matches || portable_content_matches;
     let byte_count_matches = receipt
         .get("delta_bytes")
         .and_then(serde_json::Value::as_u64)
@@ -538,6 +572,70 @@ mod l3_delta_admission_tests {
         assert!(validate_l3_full_proof_receipt(&manifest, &delta, &receipt).is_err());
         let _ = fs::remove_dir_all(root);
     }
+
+    #[test]
+    fn portable_receipts_bind_to_composite_and_delta_content() {
+        let root = unique_root();
+        fs::create_dir_all(&root).unwrap();
+        let base = root.join("base.nwpc");
+        let delta = root.join("delta.nwpc");
+        let manifest = root.join("manifest.json");
+        let targeted = root.join("targeted.json");
+        let full = root.join("full.json");
+        context_phase::write_package(&base, &context_phase::ContextPhasePackage::default())
+            .unwrap();
+        context_phase::write_package(&delta, &context_phase::ContextPhasePackage::default())
+            .unwrap();
+        context_phase::initialize_manifest(&manifest, &base).unwrap();
+        let memory = context_phase::L3CompositeMemory::load_manifest(&manifest).unwrap();
+        let baseline_sha256 = context_phase::package_sha256(memory.package());
+        let delta_sha256 = context_phase::package_path_sha256(&delta).unwrap();
+        let remote_manifest = "/remote/proof/manifest.json";
+        let remote_delta = "/remote/proof/delta.nwpc";
+        fs::write(
+            &targeted,
+            serde_json::to_vec(&serde_json::json!({
+                "kind": "l3_context_delta_targeted_proof",
+                "verdict": "PASS",
+                "manifest": remote_manifest,
+                "delta": remote_delta,
+                "baseline_sha256": baseline_sha256.clone(),
+                "delta_sha256": delta_sha256.clone(),
+                "false_supports": 0,
+            }))
+            .unwrap(),
+        )
+        .unwrap();
+        fs::write(
+            &full,
+            serde_json::to_vec(&serde_json::json!({
+                "kind": "l3_context_phase_full_differential_proof",
+                "verdict": "PASS",
+                "manifest": remote_manifest,
+                "delta": remote_delta,
+                "baseline_sha256": baseline_sha256,
+                "delta_sha256": delta_sha256,
+                "delta_bytes": fs::metadata(&delta).unwrap().len(),
+                "lost_target_profiles": 0,
+                "lost_supports": 0,
+                "lost_top1": 0,
+                "new_false_supports": 0,
+                "new_false_top1": 0,
+            }))
+            .unwrap(),
+        )
+        .unwrap();
+
+        validate_l3_targeted_proof_receipt(&manifest, &delta, &targeted).unwrap();
+        validate_l3_full_proof_receipt(&manifest, &delta, &full).unwrap();
+
+        let mut invalid: serde_json::Value =
+            serde_json::from_slice(&fs::read(&full).unwrap()).unwrap();
+        invalid["delta_sha256"] = serde_json::json!("0".repeat(64));
+        fs::write(&full, serde_json::to_vec(&invalid).unwrap()).unwrap();
+        assert!(validate_l3_full_proof_receipt(&manifest, &delta, &full).is_err());
+        let _ = fs::remove_dir_all(root);
+    }
 }
 
 pub fn compact_l3_context_composite(
@@ -552,6 +650,14 @@ pub fn snapshot_l3_context_composite(
     output_base: &std::path::Path,
 ) -> std::io::Result<serde_json::Value> {
     context_phase::snapshot_manifest(manifest_path, output_base)
+}
+
+pub fn snapshot_l3_context_composite_with_delta(
+    manifest_path: &std::path::Path,
+    delta_path: &std::path::Path,
+    output_path: &std::path::Path,
+) -> std::io::Result<serde_json::Value> {
+    context_phase::snapshot_manifest_with_delta(manifest_path, delta_path, output_path)
 }
 
 pub fn reload_l3_context_composite() -> std::io::Result<serde_json::Value> {
@@ -575,6 +681,8 @@ pub fn prove_l3_context_delta_targeted(
             "L3 delta signature schema does not match the immutable base",
         ));
     }
+    let baseline_sha256 = context_phase::package_sha256(&base);
+    let delta_sha256 = context_phase::package_path_sha256(delta_path)?;
     let candidate = baseline.compose_delta_path(delta_path)?;
     let text = std::fs::read_to_string(cases_path)?;
     let mut improve_cases = 0_u64;
@@ -707,6 +815,8 @@ pub fn prove_l3_context_delta_targeted(
         "kind": "l3_context_delta_targeted_proof",
         "manifest": manifest_path,
         "delta": delta_path,
+        "baseline_sha256": baseline_sha256,
+        "delta_sha256": delta_sha256,
         "cases": cases_path,
         "improve_cases": improve_cases,
         "improved": improved,
@@ -723,6 +833,20 @@ pub fn prove_l3_context_delta_targeted(
     bytes.push(b'\n');
     crate::private_file::write_private_bytes(receipt_path, &bytes)?;
     Ok(report)
+}
+
+pub fn prove_l3_sentence_context_delta_targeted(
+    manifest_path: &std::path::Path,
+    delta_path: &std::path::Path,
+    cases_path: &std::path::Path,
+    receipt_path: &std::path::Path,
+) -> std::io::Result<serde_json::Value> {
+    context_phase::prove_sentence_context_delta_path(
+        manifest_path,
+        delta_path,
+        cases_path,
+        receipt_path,
+    )
 }
 
 /// Runs the heldout and ablation proof for an existing package without
@@ -826,6 +950,66 @@ pub fn prove_l3_context_phase_delta_full(
                 "raw_words_stored": false,
             }),
         );
+    }
+    let mut bytes = serde_json::to_vec_pretty(&value).map_err(std::io::Error::other)?;
+    bytes.push(b'\n');
+    crate::private_file::write_private_bytes(receipt_path, &bytes)?;
+    Ok(value)
+}
+
+pub fn prove_l3_context_composite_delta_full(
+    corpus_path: &std::path::Path,
+    manifest_path: &std::path::Path,
+    delta_path: &std::path::Path,
+    surface_evidence_path: &std::path::Path,
+    max_fragments: usize,
+    min_surface_support: u32,
+    receipt_path: &std::path::Path,
+) -> std::io::Result<serde_json::Value> {
+    let surface_field = context_phase::surface_field_from_corrections_path(
+        surface_evidence_path,
+        min_surface_support,
+    )?;
+    let surface_report = surface_field.report();
+    let baseline = context_phase::L3CompositeMemory::load_manifest(manifest_path)?;
+    let candidate = baseline.compose_delta_path(delta_path)?;
+    let baseline_sha256 = context_phase::package_sha256(baseline.package());
+    let delta_sha256 = context_phase::package_path_sha256(delta_path)?;
+    let report = context_phase::prove_context_phase_package_delta(
+        corpus_path,
+        baseline.package(),
+        &candidate,
+        max_fragments,
+        &surface_field,
+    )?;
+    let mut value = serde_json::to_value(report).map_err(std::io::Error::other)?;
+    if let Some(object) = value.as_object_mut() {
+        object.insert("corpus".to_string(), serde_json::json!(corpus_path));
+        object.insert("manifest".to_string(), serde_json::json!(manifest_path));
+        object.insert("delta".to_string(), serde_json::json!(delta_path));
+        object.insert(
+            "baseline_sha256".to_string(),
+            serde_json::json!(baseline_sha256),
+        );
+        object.insert("delta_sha256".to_string(), serde_json::json!(delta_sha256));
+        object.insert(
+            "delta_bytes".to_string(),
+            serde_json::json!(std::fs::metadata(delta_path)?.len()),
+        );
+        object.insert(
+            "surface_evidence".to_string(),
+            serde_json::json!(surface_evidence_path),
+        );
+        object.insert(
+            "surface_field".to_string(),
+            serde_json::json!({
+                "source_rows": surface_report.source_rows,
+                "admitted_rows": surface_report.admitted_rows,
+                "mode_count": surface_report.mode_count,
+                "raw_words_stored": false,
+            }),
+        );
+        object.insert("base_rewritten".to_string(), serde_json::json!(false));
     }
     let mut bytes = serde_json::to_vec_pretty(&value).map_err(std::io::Error::other)?;
     bytes.push(b'\n');
@@ -972,6 +1156,13 @@ pub fn prove_l3_context_phase_memory(
         min_profile_support,
     )?)
     .map_err(std::io::Error::other)
+}
+
+pub fn build_and_prove_l3_sentence_context_memory(
+    cases_path: &std::path::Path,
+    output_path: &std::path::Path,
+) -> std::io::Result<serde_json::Value> {
+    context_phase::build_and_prove_sentence_context_path(cases_path, output_path)
 }
 
 /// Builds the candidate field from the fixed support partition and publishes

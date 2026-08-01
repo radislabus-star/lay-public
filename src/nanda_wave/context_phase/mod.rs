@@ -9,6 +9,7 @@ mod composite;
 mod format;
 mod online;
 mod proof;
+mod sentence;
 mod stream;
 mod surface_field;
 
@@ -23,6 +24,7 @@ use super::phase_field::{
 };
 use crate::lexical_surface_atoms::{surface_atom_projection, SurfaceFieldEncoder};
 use crate::stable_hash::mix64_golden;
+use sha2::{Digest, Sha256};
 
 pub(crate) use compiler::{
     apply_feedback_overlay, build_feedback_corpus,
@@ -33,14 +35,17 @@ pub(crate) use compiler::{
 pub(crate) use compiler::{compile_context_phase, ContextPhaseCompileInput};
 pub(crate) use composite::{
     admit_delta, admit_delta_with_full_proof, compact_manifest, initialize_manifest,
-    snapshot_manifest, L3CompositeMemory,
+    snapshot_manifest, snapshot_manifest_with_delta, L3CompositeMemory,
 };
-pub(crate) use format::{read_package, write_package};
+pub(crate) use format::{encode_package, read_package, write_package};
 pub(crate) use proof::build_and_prove_context_phase_path_with_surface_field;
 pub(crate) use proof::{
-    build_and_prove_context_phase_path, prove_context_phase_package_delta_path,
-    prove_context_phase_package_path, prove_context_phase_package_path_with_surface_field,
-    prove_context_phase_path,
+    build_and_prove_context_phase_path, prove_context_phase_package_delta,
+    prove_context_phase_package_delta_path, prove_context_phase_package_path,
+    prove_context_phase_package_path_with_surface_field, prove_context_phase_path,
+};
+pub(crate) use sentence::{
+    build_and_prove_sentence_context_path, prove_sentence_context_delta_path,
 };
 pub(crate) use surface_field::SurfaceMutationField;
 
@@ -66,6 +71,19 @@ pub(crate) const MAX_SIGNATURE_PROFILES: usize = 16_384;
 pub(crate) const MAX_PAIR_CENTERS_PER_BANK: usize = 16;
 pub(crate) const MAX_HARD_PAIR_CENTERS_PER_BANK: usize = 4;
 const PAIR_CENTER_SPLIT_COHERENCE: f32 = 0.76;
+
+pub(crate) fn package_sha256(package: &ContextPhasePackage) -> String {
+    sha256_hex(&encode_package(package))
+}
+
+pub(crate) fn package_path_sha256(path: &Path) -> io::Result<String> {
+    Ok(sha256_hex(&std::fs::read(path)?))
+}
+
+fn sha256_hex(bytes: &[u8]) -> String {
+    let digest = Sha256::digest(bytes);
+    digest.iter().map(|byte| format!("{byte:02x}")).collect()
+}
 
 fn semantic_relation_weights(support: u32) -> (f32, f32) {
     if support < 2 {
@@ -165,6 +183,12 @@ pub(crate) enum PairEdgeOutcome {
     LowWins,
     HighWins,
     Conflict,
+}
+
+#[derive(Clone, Copy, Debug, Default)]
+struct PairEdgeEvidence {
+    outcome: PairEdgeOutcome,
+    confidence: f32,
 }
 
 #[derive(Default)]
@@ -516,6 +540,17 @@ impl ContextPhasePackage {
         candidates: &[&str],
         mode: ContextPhaseMode,
     ) -> Vec<ContextPhaseReadout> {
+        self.score_candidates_with_mode_and_pair_views(context_tokens, candidates, mode, None, None)
+    }
+
+    fn score_candidates_with_mode_and_pair_views(
+        &self,
+        context_tokens: &[String],
+        candidates: &[&str],
+        mode: ContextPhaseMode,
+        pair_views: Option<&[Vec<String>]>,
+        direct_pair_view_indices: Option<&[usize]>,
+    ) -> Vec<ContextPhaseReadout> {
         if self.is_empty() || context_tokens.is_empty() {
             return vec![ContextPhaseReadout::default(); candidates.len()];
         }
@@ -560,9 +595,39 @@ impl ContextPhasePackage {
         // A single preceding token cannot define the direction of an
         // otherwise tied pair. Keep its unary ranking, but defer pairwise
         // authority until the scene has at least two tokens.
+        let sentence_pair_views = pair_views.is_some();
+        let pair_scenes = pair_views
+            .map(|views| {
+                views
+                    .iter()
+                    .enumerate()
+                    .filter(|(_, view)| view.len() >= 2)
+                    .map(|(index, view)| {
+                        (
+                            index,
+                            self.context_vector_for_relation_roles(
+                                view,
+                                mode,
+                                relation_competition,
+                            ),
+                        )
+                    })
+                    .collect::<Vec<_>>()
+            })
+            .unwrap_or_else(|| vec![(usize::MAX, scene.clone())]);
+        let direct_pair_scenes = direct_pair_view_indices
+            .map(|indices| {
+                pair_scenes
+                    .iter()
+                    .filter(|(index, _)| indices.contains(index))
+                    .cloned()
+                    .collect::<Vec<_>>()
+            })
+            .unwrap_or_default();
         let pairwise = if self.pair_profiles.is_empty()
             || !mode.pairwise_enabled()
-            || context_tokens.len() < 2
+            || pair_scenes.is_empty()
+            || (!sentence_pair_views && context_tokens.len() < 2)
         {
             PairwiseDominance::default()
         } else {
@@ -584,7 +649,25 @@ impl ContextPhasePackage {
                     .then_with(|| left.0.cmp(&right.0))
             });
             pair_lattice.truncate(MAX_PAIR_CANDIDATES);
-            self.pairwise_dominance(&scene, &pair_lattice, mode)
+            if sentence_pair_views {
+                let all = self.pairwise_dominance_across_scenes(&pair_scenes, &pair_lattice, mode);
+                if direct_pair_scenes.is_empty() {
+                    all
+                } else {
+                    let direct = self.pairwise_dominance_across_scenes(
+                        &direct_pair_scenes,
+                        &pair_lattice,
+                        mode,
+                    );
+                    if direct.certified_winner().is_some() || !direct.conflicts.is_empty() {
+                        direct
+                    } else {
+                        all
+                    }
+                }
+            } else {
+                self.pairwise_dominance(&scene, &pair_lattice, mode)
+            }
         };
         let pairwise_certificate = pairwise.certified_winner();
 
@@ -662,10 +745,16 @@ impl ContextPhasePackage {
             // the unary relative evidence that made a survivor admissible.
             let pairwise_certified = pairwise_certificate
                 .is_some_and(|winner| winner == candidate_token_hash(candidates[index]));
+            let center_support_ready = readout.positive_center_support
+                >= if sentence_pair_views && pairwise_certified {
+                    1
+                } else {
+                    2
+                };
             (pairwise_certified
                 && (unary_competition_ready || context_tokens.len() >= 3)
                 && readout.positive_examples >= 2
-                && readout.positive_center_support >= 2
+                && center_support_ready
                 && !provisional_conflict)
                 || (unary_competition_ready
                     && readout.positive_examples >= 2
@@ -742,6 +831,52 @@ impl ContextPhasePackage {
         readouts
     }
 
+    pub(crate) fn score_sentence_candidates(
+        &self,
+        scene: &sentence::SentenceContextScene,
+        candidates: &[&str],
+    ) -> Vec<ContextPhaseReadout> {
+        let structured = self
+            .semantic_state(sentence::SentenceContextScene::anchor_hash())
+            .is_some_and(|state| state.support >= 2);
+        if structured {
+            let encoded = scene.encoded_tokens();
+            let pair_views = scene
+                .has_directional_context()
+                .then(|| scene.pair_views())
+                .unwrap_or_default();
+            let direct_pair_view_indices = scene.direct_pair_view_indices();
+            self.score_candidates_with_mode_and_pair_views(
+                &encoded,
+                candidates,
+                ContextPhaseMode::Full,
+                Some(&pair_views),
+                Some(&direct_pair_view_indices),
+            )
+        } else {
+            self.score_candidates(scene.legacy_left_tokens(), candidates)
+        }
+    }
+
+    pub(crate) fn sentence_pair_debug(
+        &self,
+        scene: &sentence::SentenceContextScene,
+        candidates: &[&str],
+    ) -> serde_json::Value {
+        serde_json::json!({
+            "views": scene
+                .pair_views()
+                .iter()
+                .enumerate()
+                .map(|(index, view)| serde_json::json!({
+                    "index": index,
+                    "tokens": view,
+                    "pair": self.pair_view_debug(view, candidates, index),
+                }))
+                .collect::<Vec<_>>(),
+        })
+    }
+
     pub(crate) fn pair_debug(
         &self,
         context_tokens: &[String],
@@ -787,6 +922,44 @@ impl ContextPhasePackage {
         })
     }
 
+    fn pair_view_debug(
+        &self,
+        context_tokens: &[String],
+        candidates: &[&str],
+        view_index: usize,
+    ) -> serde_json::Value {
+        if candidates.len() != 2 {
+            return serde_json::json!({"available": false});
+        }
+        let left = candidate_token_hash(candidates[0]);
+        let right = candidate_token_hash(candidates[1]);
+        let left_signature = self.candidate_signature(candidates[0]);
+        let right_signature = self.candidate_signature(candidates[1]);
+        let relation_competition = candidates
+            .iter()
+            .any(|candidate| relation_role_candidate(candidate));
+        let scene = self.context_vector_for_relation_roles(
+            context_tokens,
+            ContextPhaseMode::Full,
+            relation_competition,
+        );
+        let evidence = self.pair_view_edge_evidence(
+            &scene,
+            left,
+            right,
+            left_signature,
+            right_signature,
+            view_index,
+            true,
+        );
+        serde_json::json!({
+            "available": true,
+            "view_index": view_index,
+            "outcome": format!("{:?}", evidence.outcome),
+            "confidence_micro": (evidence.confidence * 1_000_000.0).round() as i64,
+        })
+    }
+
     fn pair_edge(
         &self,
         scene: &[PhaseCell],
@@ -825,12 +998,116 @@ impl ContextPhasePackage {
             .unwrap_or_else(|| exact.unwrap_or(PairEdgeOutcome::Unknown))
     }
 
+    fn pair_view_edge_evidence(
+        &self,
+        scene: &[PhaseCell],
+        left: u64,
+        right: u64,
+        left_signature: u64,
+        right_signature: u64,
+        view_index: usize,
+        hard_enabled: bool,
+    ) -> PairEdgeEvidence {
+        let view_left = pair_view_hash(left, view_index);
+        let view_right = pair_view_hash(right, view_index);
+        let Some(exact_key) = PairKey::new(view_left, view_right) else {
+            return PairEdgeEvidence {
+                outcome: PairEdgeOutcome::Tie,
+                confidence: 0.0,
+            };
+        };
+        let exact = self.pair_profile(exact_key).map(|profile| {
+            let mut evidence =
+                self.pair_view_raw_evidence_for_profile(scene, profile, hard_enabled);
+            evidence.outcome =
+                remap_pair_view_outcome(evidence.outcome, left, right, view_left, view_right);
+            evidence
+        });
+        if exact.is_some_and(|evidence| evidence.outcome != PairEdgeOutcome::Unknown) {
+            return exact.unwrap_or_default();
+        }
+
+        let view_left_signature = pair_view_hash(left_signature, view_index);
+        let view_right_signature = pair_view_hash(right_signature, view_index);
+        let Some(relation_key) = PairKey::relation(
+            view_left,
+            view_left_signature,
+            view_right,
+            view_right_signature,
+        ) else {
+            return exact.unwrap_or_default();
+        };
+        self.pair_profile(relation_key)
+            .map(|profile| {
+                let mut evidence = self.pair_view_raw_evidence_for_profile(scene, profile, false);
+                evidence.outcome = remap_relation_outcome(
+                    evidence.outcome,
+                    left,
+                    right,
+                    view_left_signature,
+                    view_right_signature,
+                );
+                evidence
+            })
+            .unwrap_or_else(|| exact.unwrap_or_default())
+    }
+
+    fn pair_view_raw_evidence_for_profile(
+        &self,
+        scene: &[PhaseCell],
+        profile: &ContextPairPhaseProfile,
+        hard_enabled: bool,
+    ) -> PairEdgeEvidence {
+        let gated = self.pair_edge_evidence_for_profile(scene, profile, hard_enabled);
+        if matches!(
+            gated.outcome,
+            PairEdgeOutcome::LowWins | PairEdgeOutcome::HighWins | PairEdgeOutcome::Conflict
+        ) {
+            return gated;
+        }
+        let low = strongest_center_with_min_support(scene, &profile.low_wins, 2)
+            .map(|(score, _)| score)
+            .unwrap_or(0.0);
+        let high = strongest_center_with_min_support(scene, &profile.high_wins, 2)
+            .map(|(score, _)| score)
+            .unwrap_or(0.0);
+        let confidence = (low - high).abs();
+        if confidence <= f32::EPSILON {
+            return PairEdgeEvidence {
+                outcome: if low > 0.0 || high > 0.0 {
+                    PairEdgeOutcome::Tie
+                } else {
+                    PairEdgeOutcome::Unknown
+                },
+                confidence,
+            };
+        }
+        PairEdgeEvidence {
+            outcome: if low > high {
+                PairEdgeOutcome::LowWins
+            } else {
+                PairEdgeOutcome::HighWins
+            },
+            confidence,
+        }
+    }
+
     fn pair_edge_for_profile(
         &self,
         scene: &[PhaseCell],
         profile: &ContextPairPhaseProfile,
         hard_enabled: bool,
     ) -> PairEdgeOutcome {
+        self.pair_edge_evidence_for_profile(scene, profile, hard_enabled)
+            .outcome
+    }
+
+    fn pair_edge_evidence_for_profile(
+        &self,
+        scene: &[PhaseCell],
+        profile: &ContextPairPhaseProfile,
+        hard_enabled: bool,
+    ) -> PairEdgeEvidence {
         let hard_low = hard_enabled
             .then(|| strongest_center_with_min_support(scene, &profile.hard_low_wins, 2))
             .flatten()
@@ -843,22 +1120,31 @@ impl ContextPhasePackage {
             .unwrap_or(0.0);
         let threshold = self.pairwise_threshold_micro.max(1) as f32 / 1_000_000.0;
         if hard_low >= threshold && hard_high >= threshold {
-            return PairEdgeOutcome::Conflict;
+            return PairEdgeEvidence {
+                outcome: PairEdgeOutcome::Conflict,
+                confidence: hard_low.min(hard_high),
+            };
         }
         // A hard bank is a counter-wave: it may remove a known false winner,
         // but support still requires the winner's unary L3 evidence below.
         if hard_low >= threshold {
-            return PairEdgeOutcome::LowWins;
+            return PairEdgeEvidence {
+                outcome: PairEdgeOutcome::LowWins,
+                confidence: hard_low,
+            };
         }
         if hard_high >= threshold {
-            return PairEdgeOutcome::HighWins;
+            return PairEdgeEvidence {
+                outcome: PairEdgeOutcome::HighWins,
+                confidence: hard_high,
+            };
         }
         let low = strongest_center_with_min_support(scene, &profile.low_wins, 2);
         let high = strongest_center_with_min_support(scene, &profile.high_wins, 2);
         let low_score = low.map(|(score, _)| score).unwrap_or(0.0);
         let high_score = high.map(|(score, _)| score).unwrap_or(0.0);
         if low_score <= 0.0 && high_score <= 0.0 {
-            return PairEdgeOutcome::Unknown;
+            return PairEdgeEvidence::default();
         }
         let (winner_support, directional_support) = if low_score > high_score {
             (
@@ -877,12 +1163,19 @@ impl ContextPhasePackage {
         let evidence_margin =
             directional_evidence_margin(threshold, winner_support, directional_support);
         if (low_score - high_score).abs() < evidence_margin {
-            return PairEdgeOutcome::Tie;
+            return PairEdgeEvidence {
+                outcome: PairEdgeOutcome::Tie,
+                confidence: (low_score - high_score).abs(),
+            };
         }
-        if low_score > high_score {
+        let outcome = if low_score > high_score {
             PairEdgeOutcome::LowWins
         } else {
             PairEdgeOutcome::HighWins
+        };
+        PairEdgeEvidence {
+            outcome,
+            confidence: (low_score - high_score).abs(),
         }
     }
 
@@ -892,20 +1185,36 @@ impl ContextPhasePackage {
         lattice: &[(u64, (i64, u64))],
         mode: ContextPhaseMode,
     ) -> PairwiseDominance {
+        self.pairwise_dominance_across_scenes(&[(usize::MAX, scene.to_vec())], lattice, mode)
+    }
+
+    fn pairwise_dominance_across_scenes(
+        &self,
+        scenes: &[(usize, Vec<PhaseCell>)],
+        lattice: &[(u64, (i64, u64))],
+        mode: ContextPhaseMode,
+    ) -> PairwiseDominance {
         let mut dominance = PairwiseDominance::default();
         if !mode.pairwise_enabled() {
             return dominance;
         }
-        let transformed_scene = pairwise_scene(scene, mode);
-        let scene = transformed_scene.as_deref().unwrap_or(scene);
+        let scenes = scenes
+            .iter()
+            .map(|(view_index, scene)| {
+                (
+                    *view_index,
+                    pairwise_scene(scene, mode).unwrap_or_else(|| scene.clone()),
+                )
+            })
+            .collect::<Vec<_>>();
         let mut edges = std::collections::BTreeMap::<u64, std::collections::BTreeSet<u64>>::new();
         dominance.lattice_size = lattice.len().min(u8::MAX as usize) as u8;
         for left in 0..lattice.len() {
             for right in left + 1..lattice.len() {
                 let (left_hash, (_, left_signature)) = lattice[left];
                 let (right_hash, (_, right_signature)) = lattice[right];
-                let outcome = self.pair_edge(
-                    scene,
+                let outcome = self.pair_edge_across_scenes(
+                    &scenes,
                     left_hash,
                     right_hash,
                     left_signature,
@@ -976,6 +1285,84 @@ impl ContextPhasePackage {
             }
         }
         dominance
+    }
+
+    fn pair_edge_across_scenes(
+        &self,
+        scenes: &[(usize, Vec<PhaseCell>)],
+        left: u64,
+        right: u64,
+        left_signature: u64,
+        right_signature: u64,
+        hard_enabled: bool,
+    ) -> PairEdgeOutcome {
+        if let [(view_index, scene)] = scenes {
+            if *view_index == usize::MAX {
+                return self.pair_edge(
+                    scene,
+                    left,
+                    right,
+                    left_signature,
+                    right_signature,
+                    hard_enabled,
+                );
+            }
+        }
+        let mut low_confidence = 0.0_f32;
+        let mut high_confidence = 0.0_f32;
+        let mut low_views = 0_u8;
+        let mut high_views = 0_u8;
+        let mut tied = false;
+        for (view_index, scene) in scenes {
+            let evidence = self.pair_view_edge_evidence(
+                scene,
+                left,
+                right,
+                left_signature,
+                right_signature,
+                *view_index,
+                hard_enabled,
+            );
+            match evidence.outcome {
+                PairEdgeOutcome::Conflict => return PairEdgeOutcome::Conflict,
+                PairEdgeOutcome::LowWins => {
+                    low_confidence += evidence.confidence;
+                    low_views = low_views.saturating_add(1);
+                }
+                PairEdgeOutcome::HighWins => {
+                    high_confidence += evidence.confidence;
+                    high_views = high_views.saturating_add(1);
+                }
+                PairEdgeOutcome::Tie => tied = true,
+                PairEdgeOutcome::Unknown => {}
+            }
+        }
+        let conflict_band = self.pairwise_threshold_micro.max(1) as f32 / 1_000_000.0;
+        const MIN_DIRECTIONAL_VIEWS: u8 = 2;
+        if low_confidence > 0.0 && high_confidence > 0.0 {
+            if (low_confidence - high_confidence).abs() < conflict_band {
+                PairEdgeOutcome::Conflict
+            } else if low_confidence > high_confidence
+                && low_confidence - high_confidence >= conflict_band
+                && low_views >= MIN_DIRECTIONAL_VIEWS
+            {
+                PairEdgeOutcome::LowWins
+            } else if high_confidence - low_confidence >= conflict_band
+                && high_views >= MIN_DIRECTIONAL_VIEWS
+            {
+                PairEdgeOutcome::HighWins
+            } else {
+                PairEdgeOutcome::Tie
+            }
+        } else if low_confidence >= conflict_band && low_views >= MIN_DIRECTIONAL_VIEWS {
+            PairEdgeOutcome::LowWins
+        } else if high_confidence >= conflict_band && high_views >= MIN_DIRECTIONAL_VIEWS {
+            PairEdgeOutcome::HighWins
+        } else if tied || low_confidence > 0.0 || high_confidence > 0.0 {
+            PairEdgeOutcome::Tie
+        } else {
+            PairEdgeOutcome::Unknown
+        }
     }
 
     fn raw_readout(
@@ -1412,6 +1799,32 @@ fn reverse_pair_outcome(outcome: PairEdgeOutcome) -> PairEdgeOutcome {
     }
 }
 
+fn remap_pair_view_outcome(
+    outcome: PairEdgeOutcome,
+    left_hash: u64,
+    right_hash: u64,
+    view_left_hash: u64,
+    view_right_hash: u64,
+) -> PairEdgeOutcome {
+    let view_low_winner = match outcome {
+        PairEdgeOutcome::LowWins => true,
+        PairEdgeOutcome::HighWins => false,
+        PairEdgeOutcome::Unknown | PairEdgeOutcome::Tie | PairEdgeOutcome::Conflict => {
+            return outcome;
+        }
+    };
+    let left_wins = if view_low_winner {
+        view_left_hash < view_right_hash
+    } else {
+        view_left_hash > view_right_hash
+    };
+    if (left_hash < right_hash) == left_wins {
+        PairEdgeOutcome::LowWins
+    } else {
+        PairEdgeOutcome::HighWins
+    }
+}
+
 /// Generalized banks are oriented by compact L2 state signatures. Dominance
 /// storage is still oriented by lexical hash for deterministic graph keys, so
 /// this maps the learned signature-side winner back to that graph axis.
@@ -1527,7 +1940,11 @@ fn relation_script_mismatch(context_tokens: &[String], candidate: &str) -> bool 
         return false;
     }
     let (mut cyrillic, mut latin) = (0_usize, 0_usize);
-    for character in context_tokens.iter().flat_map(|token| token.chars()) {
+    for character in context_tokens
+        .iter()
+        .filter(|token| !sentence::is_sentence_marker(token))
+        .flat_map(|token| token.chars())
+    {
         if matches!(character, '\u{0400}'..='\u{052f}') {
             cyrillic += 1;
         } else if character.is_ascii_alphabetic() {
@@ -1620,10 +2037,14 @@ fn compact_surface_phase_class(token: &str) -> u64 {
 }
 
 fn context_tokens_for_authority(package: &ContextPhasePackage, context_tokens: &[String]) -> usize {
+    let sentence_encoder_known = package
+        .semantic_state(sentence::SentenceContextScene::anchor_hash())
+        .is_some_and(|state| state.support >= 2);
     context_tokens
         .iter()
         .filter(|token| {
-            package.semantic_state(context_exact_hash(token)).is_some()
+            (sentence_encoder_known && sentence::is_sentence_structural_marker(token))
+                || package.semantic_state(context_exact_hash(token)).is_some()
                 || (package.signature_schema >= SIGNATURE_SCHEMA_RELATION_ROLES
                     && package
                         .semantic_state(context_role_hash(token))
@@ -1638,6 +2059,15 @@ pub(super) fn context_exact_hash(token: &str) -> u64 {
     } else {
         hash_text(token)
     }
+}
+
+pub(super) fn pair_view_hash(value: u64, view_index: usize) -> u64 {
+    mix64_golden(
+        value
+            ^ 0x4c33_5041_4952_5657_u64
+            ^ (view_index as u64 + 1).wrapping_mul(0x9e37_79b9_7f4a_7c15),
+    )
+    .max(1)
 }
 
 pub(super) fn context_atom_hashes(tokens: &[String], schema: u32) -> Vec<u64> {
@@ -1834,6 +2264,25 @@ pub(crate) fn readout_candidates_with_package(
     original: &str,
     replacements: &[&str],
 ) -> Vec<ContextPhaseReadout> {
+    if let Some(projection) = sentence::project_candidate_lattice(original, replacements) {
+        let valid_tokens = projection
+            .candidates
+            .iter()
+            .filter_map(Option::as_deref)
+            .collect::<Vec<_>>();
+        let mut valid_readouts = package
+            .score_sentence_candidates(&projection.scene, &valid_tokens)
+            .into_iter();
+        return projection
+            .candidates
+            .into_iter()
+            .map(|token| {
+                token
+                    .map(|_| valid_readouts.next().unwrap_or_default())
+                    .unwrap_or_default()
+            })
+            .collect();
+    }
     let original_tokens = if package.signature_schema >= SIGNATURE_SCHEMA_RELATION_ROLES {
         tokenize_context_text(original)
     } else {

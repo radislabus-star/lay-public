@@ -89,6 +89,19 @@ atomic runtime reload        PASS
 
 ## 3. Расширить L3 до контекста предложения
 
+**Статус: реализация, proof и удалённая release-сборка выполнены 2026-08-01,
+release `0.2.344`; runtime admission выполняется после установки release.** Поле кодирует
+левый/правый контекст, пунктуацию, порядок и морфослот в `14` ограниченных
+представлениях. На фиксированном heldout `25/25` случаев прошли, включая `5/5`
+неоднозначных; переносимый composite proof улучшил `20` случаев без регрессий,
+а frozen 80k differential дал нули по всем пяти regression counters. Delta
+занимает `79 660` байт. Receipts:
+`/home/ubu/projects/lay/docs/structural_gates/receipts/L3_SENTENCE_MULTIVIEW_V1_TARGETED_2026-08-01.json`
+и
+`/home/ubu/projects/lay/docs/structural_gates/receipts/L3_SENTENCE_MULTIVIEW_V1_FULL_80K_2026-08-01.json`.
+Remote release gate: `83/83 + 28/28 + 5/5 + 2/2 + 20/20 + 1/1 PASS`;
+build `117.25 s`, average CPU `243%`, peak RSS `1 621 868 KiB`, swaps `0`.
+
 1. Кодировать левый и правый контекст, пунктуацию, порядок слов и морфологический слот.
 2. Строить отношения между всеми кандидатами L2, а не только выбранной парой.
 3. Научить поле различать союз, предлог, окончание, форму глагола и соседние сущности.

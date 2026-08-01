@@ -320,12 +320,12 @@ fn candidate_admission_only_marks_eligibility_and_core_selects_transition() {
         decision.contains("pub(crate) fn admit_candidate_proposal(")
             && decision.contains("producer_allows_authority_evaluation(")
             && apply_policy.contains("action == CandidateGateAction::Eligible")
-            && apply_policy.contains(
-                "action == CandidateGateAction::SuggestOnly && l4_signal.exact_positive()",
-            )
+            && apply_policy.contains("l3_pairwise_certified: bool")
+            && apply_policy.contains("action == CandidateGateAction::SuggestOnly")
+            && apply_policy.contains("l3_pairwise_certified || l4_signal.exact_positive()")
             && decision.contains("candidate_has_apply_authority")
             && !decision.contains("fn authorize_gate"),
-        "only TransitionDecisionCore may admit proposals and choose an eligible or exact-L4-attested candidate"
+        "only TransitionDecisionCore may admit proposals and choose an eligible, L3-pair-certified, or exact-L4-attested candidate"
     );
     assert!(
         !correction.contains("CandidateGateAction::Apply")

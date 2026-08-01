@@ -1,3 +1,5 @@
+mod sentence;
+
 use std::collections::{BTreeSet, HashMap, VecDeque};
 use std::io;
 use std::sync::mpsc::{channel, sync_channel, Receiver, SyncSender};
