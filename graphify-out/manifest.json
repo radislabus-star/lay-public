@@ -4695,8 +4695,8 @@
     "semantic_hash": ""
   },
   "docs/l2-l11-canonical-architecture.md": {
-    "mtime": 1785596955.5054283,
-    "ast_hash": "b2e03ec54619e9803643e862542c17d0",
+    "mtime": 1785597486.47175,
+    "ast_hash": "9261489c546527b3d8f3d940d632b208",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2_field/bridge.rs": {
@@ -5075,8 +5075,8 @@
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/PUBLIC_INSTALL_CANONICAL_L2_V13_2026-08-01.json": {
-    "mtime": 1785596955.5064282,
-    "ast_hash": "378a83e76d9886fb2de107a636b1f500",
+    "mtime": 1785597486.47175,
+    "ast_hash": "b8c09606fb60d451d810bcb259547337",
     "semantic_hash": ""
   },
   "scripts/l2-package-contract.sh": {

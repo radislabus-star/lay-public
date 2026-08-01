@@ -532,7 +532,7 @@ binary is installed and checked again on the atomic package copy. Offline
 updates reuse an already verified installation. Missing or corrupt input stops
 before a partial binary installation.
 
-Measured code checks before publishing the external asset:
+Measured release checks:
 
 ```text
 clean-checkout fixture download and install          PASS
@@ -541,18 +541,23 @@ corrupt package rejection                            PASS
 no binary installed on package failure               PASS
 public install/update/uninstall regressions          PASS
 real local V13 bytes and SHA-256                      MATCH
-public HTTPS release-asset download                  PENDING
+remote release build, 20 Cargo jobs                  PASS, 1m59s
+public anonymous HTTPS asset download                PASS, 23.27s
+download resolver peak RSS                           13,920 KiB
+public downloaded bytes                              135121803
+public downloaded SHA-256                            MATCH
+isolated cache-to-install route                      PASS
+isolated installed version                           0.2.341
 ```
 
 What was not tested at this checkpoint:
 
-- the public HTTPS asset, because the release is created only after the
-  installer commit exists;
-- a complete fresh-machine Cargo build, service activation and desktop login;
+- a completely blank operating-system installation including dependency
+  installation, service activation and a new desktop login;
 - any new L2 quality behavior, because package bytes and runtime authority are
   intentionally unchanged.
 
-Verdict scope: `PASS_code_asset_pending`. Runtime authority changed: `false`.
+Verdict scope: `PASS_public_install`. Runtime authority changed: `false`.
 
 Exact receipt:
 

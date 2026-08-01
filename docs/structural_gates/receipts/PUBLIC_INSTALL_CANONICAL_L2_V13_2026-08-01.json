@@ -3,7 +3,7 @@
   "date": "2026-08-01",
   "issue": "https://github.com/radislabus-star/lay-public/issues/40",
   "release": "0.2.341",
-  "verdict": "PASS_code_asset_pending",
+  "verdict": "PASS_public_install",
   "runtime_authority_changed": false,
   "artifact": {
     "name": "LAY-L2-RU-FULL-v13.bin",
@@ -19,11 +19,28 @@
     "failure_before_partial_binary_install": "PASS",
     "public_issue_regressions": "PASS",
     "real_local_artifact_contract": "MATCH",
-    "public_https_download": "PENDING"
+    "remote_release_build": {
+      "status": "PASS",
+      "cargo_jobs": 20,
+      "wall_seconds": 119
+    },
+    "public_https_download": {
+      "status": "PASS",
+      "anonymous": true,
+      "wall_seconds": 23.27,
+      "peak_rss_kib": 13920,
+      "bytes": 135121803,
+      "sha256": "bbe67a772b684e0f187483796fca248ac0b10576195b1aa524f0b2bde0f6601e"
+    },
+    "isolated_cache_install": {
+      "status": "PASS",
+      "installed_version": "0.2.341",
+      "installed_bytes": 135121803,
+      "installed_sha256": "bbe67a772b684e0f187483796fca248ac0b10576195b1aa524f0b2bde0f6601e"
+    }
   },
   "not_tested": [
-    "public HTTPS release asset before the installer commit is published",
-    "complete fresh-machine Cargo build and desktop service activation",
+    "dependency installation, service activation and login on a completely blank operating system",
     "new L2 quality behavior because model bytes are unchanged"
   ]
 }
