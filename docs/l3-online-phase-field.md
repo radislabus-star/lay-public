@@ -1877,3 +1877,122 @@ Exact receipt:
 ```text
 /home/ubu/projects/lay/docs/structural_gates/receipts/IME_WECHAT_PREEDIT_EDIT_CONTAINMENT_2026-08-01.json
 ```
+
+## Causal episode identity and impact-first L3 admission, 2026-08-01
+
+The post-`0.2.340` audit found one remaining ownership violation before any new
+L3 delta could be trusted. A successful automatic postcondition called
+`record_user_correction`, so the model's own applied correction was serialized
+as `source=user_correction`, `outcome=confirmed_positive`. Visible application
+success proves transport, not user acceptance.
+
+Release target `0.2.343` separates observation from causal feedback:
+
+```text
+automatic correction/layout apply
+-> source autocorrect/layout
+-> outcome censored
+-> no causal episode id
+-> no usage or L3 learning authority
+
+explicit selection/correction/rollback/completion edit
+-> one episode_id shared by records from the same action
+-> confirmed or reverted outcome
+-> proposal kept separately from typed source and final target
+```
+
+The online state format is now:
+
+```text
+lay-l3-online-v3-causal-episodes
+
+PendingRelation
+  rejected candidate
+  expected candidate
+  up to 8 independent episode ids
+  up to 8 distinct normalized scenes
+  last attempted episode count
+  last observed ordinal
+```
+
+A relation reaches the impact probe only when both denominators pass:
+
+```text
+independent causal episodes >= 2
+distinct scenes             >= 2
+retry episode counts        2 / 4 / 8
+```
+
+Replayed rows with the same `episode_id` cannot create duplicate evidence.
+Legacy rows without an id receive a deterministic identity from their retained
+timestamp and payload; identical historical duplicates therefore collapse.
+Migration from v2 maps each already accepted distinct scene to one conservative
+legacy episode and does not replay the journal a second time.
+
+The impact-aware selector publishes the smallest possible unit, exactly one
+relation. It orders eligible relations by scene diversity, independent episode
+count and recency. Selection is not authority: the existing targeted proof must
+show positive movement with zero targeted false supports, and the frozen 80k
+differential must then report all five regression counters as zero. Only that
+single relation can be appended to the manifest.
+
+L3 manifest mutation now uses the same durability contract as L1.1:
+
+```text
+exclusive flock over read-modify-write
+-> private temporary file
+-> file fsync
+-> atomic rename
+-> parent-directory fsync
+-> lazy runtime stamp reload
+```
+
+Measured pre-install state:
+
+```text
+live state format                           v2 direct relations
+pending relations                                           9
+relations with one scene                                    9
+relations ready for proof                                   0
+admitted online deltas                                      0
+
+isolated v2 -> v3 migration relations                 9 -> 9
+isolated episode histogram                     1 episode: 9
+isolated scene histogram                          1 scene: 9
+isolated ready relations                                  0
+runtime manifest SHA before/after                  identical
+runtime authority changed                              false
+```
+
+Tested at this checkpoint:
+
+- automatic apply is censored and cannot enter online authority;
+- correction proposal is distinct from typed source and accepted target;
+- causal records from one action share one episode identity;
+- duplicate journal rows cannot duplicate an episode;
+- episode independence and scene diversity are conjunctive;
+- deterministic v2-to-v3 state migration;
+- one-relation impact selection;
+- concurrent manifest writers retain both deltas;
+- local focused suites: typing memory `15/15`, usage memory `35/35`, L3 online
+  `22/22`, composite manifest `5/5`.
+
+Not tested at this checkpoint:
+
+- remote release build and focused replay;
+- installed v3 producer/state migration;
+- a real relation with two independent scenes;
+- targeted/full proof and atomic runtime reload for a newly admitted real delta.
+
+Verdict scope:
+
+- causal episode and manifest ownership: `PASS_code`;
+- current real-user delta: `WATCH_insufficient_independent_evidence`;
+- L3 base/package/manifest changed: `false`;
+- runtime decision authority changed: `false`.
+
+Exact receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L3_ONLINE_CAUSAL_EPISODES_V3_2026-08-01.json
+```

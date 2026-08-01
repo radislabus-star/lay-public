@@ -1,0 +1,112 @@
+{
+  "kind": "l3_online_causal_episodes_v3",
+  "date": "2026-08-01",
+  "baseline_commit": "f573ce2",
+  "release_target": "0.2.343",
+  "verdict": "PASS_code_WATCH_live_delta",
+  "runtime_authority_changed": false,
+  "base_recompiled": false,
+  "manifest_changed": false,
+  "defect_closed": {
+    "old_route": "automatic visible postcondition -> record_user_correction -> confirmed_positive",
+    "problem": "model application success was mislabeled as user ground truth",
+    "new_route": "automatic visible postcondition -> censored system observation",
+    "false_user_authority_after": 0
+  },
+  "causal_contract": {
+    "state_format": "lay-l3-online-v3-causal-episodes",
+    "minimum_independent_episodes": 2,
+    "minimum_distinct_scenes": 2,
+    "maximum_episodes_per_relation": 8,
+    "maximum_scenes_per_relation": 8,
+    "retry_episode_counts": [2, 4, 8],
+    "shown_prediction_is_ground_truth": false,
+    "automatic_apply_is_ground_truth": false,
+    "confirmed_actions": [
+      "selection",
+      "user correction",
+      "rollback",
+      "edited completion"
+    ]
+  },
+  "selector": {
+    "maximum_relations_per_delta": 1,
+    "ordering": [
+      "distinct scene count",
+      "independent episode count",
+      "last observed ordinal",
+      "deterministic relation key"
+    ],
+    "targeted_improvement_required": true,
+    "targeted_false_supports_max": 0,
+    "full_proof_fragments": 80000,
+    "lost_target_profiles_max": 0,
+    "lost_supports_max": 0,
+    "lost_top1_max": 0,
+    "new_false_supports_max": 0,
+    "new_false_top1_max": 0
+  },
+  "manifest_write_contract": {
+    "exclusive_flock": true,
+    "temporary_file_fsync": true,
+    "atomic_rename": true,
+    "parent_directory_fsync": true,
+    "lazy_runtime_stamp_reload": true
+  },
+  "preinstall_live_state": {
+    "format": "lay-l3-online-v2-direct-relations",
+    "pending_relations": 9,
+    "relations_with_one_scene": 9,
+    "ready_relations": 0,
+    "admitted_deltas": 0
+  },
+  "isolated_real_state_migration": {
+    "home": "/tmp/lay-l3-v3-migration.1Gv5yD",
+    "format_after": "lay-l3-online-v3-causal-episodes",
+    "relations_before": 9,
+    "relations_after": 9,
+    "relations_with_one_episode": 9,
+    "relations_with_one_scene": 9,
+    "ready_relations": 0,
+    "admitted_deltas": 0,
+    "manifest_sha256_before": "b635ff5b68eac55c508549503b727c5066c281144f5473b67627ab5dc520d546",
+    "manifest_sha256_after": "b635ff5b68eac55c508549503b727c5066c281144f5473b67627ab5dc520d546"
+  },
+  "local_focused_tests": {
+    "typing_memory": "15/15 PASS",
+    "usage_memory": "35/35 PASS",
+    "l3_online": "22/22 PASS",
+    "composite_manifest": "5/5 PASS"
+  },
+  "remote_release_gate": {
+    "host": "e@192.168.3.94",
+    "cargo_build_jobs": 20,
+    "typing_memory": "15/15 PASS",
+    "usage_memory": "35/35 PASS",
+    "l3_online": "22/22 PASS",
+    "composite_manifest": "5/5 PASS",
+    "ibus_visible_postcondition": "1/1 PASS",
+    "protected_double_shift_contract": "5/5 PASS",
+    "release_binaries": [
+      "lay",
+      "lay-daemon",
+      "lay-ibus-engine",
+      "lay-nanda-wave-train",
+      "lay-nanda-wave-eval"
+    ],
+    "release_version": "0.2.343",
+    "elapsed_seconds": 144.14,
+    "user_cpu_seconds": 311.48,
+    "system_cpu_seconds": 8.95,
+    "average_cpu_percent": 222,
+    "peak_rss_kib": 1577212,
+    "swaps": 0,
+    "exit_status": 0
+  },
+  "not_tested": [
+    "installed v3 producer and state migration",
+    "real relation with two independent scenes",
+    "targeted and frozen 80k proof for a newly admitted real delta",
+    "cross-process runtime reload after a real delta admission"
+  ]
+}

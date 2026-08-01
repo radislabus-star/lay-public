@@ -4,12 +4,15 @@ mod feedback;
 mod journal;
 #[path = "l3_online/proof_chain.rs"]
 mod proof_chain;
+#[path = "l3_online/selector.rs"]
+mod selector;
 
 use feedback::{
     enforce_relation_bound, insert_relation_observation, relation_observation, ObservationSource,
-    OnlineState, UsageEvent, LEGACY_STATE_FORMAT, MIN_SCENES, STATE_FORMAT,
+    OnlineState, UsageEvent, DIRECT_STATE_FORMAT, LEGACY_STATE_FORMAT, STATE_FORMAT,
 };
 use proof_chain::attempt_relation;
+use selector::select_impact_probe;
 use std::fs;
 use std::io;
 use std::path::{Path, PathBuf};
@@ -142,11 +145,7 @@ fn process_once(paths: &Paths, state: &mut OnlineState) -> io::Result<()> {
     enforce_relation_bound(state);
     save_state(&paths.state, state)?;
 
-    let ready = state.pending.iter().find_map(|(key, relation)| {
-        let count = relation.scenes.len();
-        (count >= MIN_SCENES && count > relation.last_attempted_scenes && count.is_power_of_two())
-            .then(|| key.clone())
-    });
+    let ready = select_impact_probe(state);
     let Some(key) = ready else {
         if observations > 0 || batch.mode != journal::JournalReadMode::Append {
             println!(
@@ -176,7 +175,7 @@ fn process_once(paths: &Paths, state: &mut OnlineState) -> io::Result<()> {
         state.pending.remove(&key);
         state.admitted_deltas = state.admitted_deltas.saturating_add(1);
     } else if let Some(relation) = state.pending.get_mut(&key) {
-        relation.last_attempted_scenes = relation.scenes.len();
+        relation.last_attempted_episodes = relation.independent_episodes();
     }
     save_state(&paths.state, state)?;
     println!("{report}");
@@ -235,7 +234,7 @@ fn replay_existing_feedback(
         "partial_ime_edit_observations": partial_ime_edit_observations,
         "causal_ime_choice_observations": 0,
         "pending_relations": state.pending.len(),
-        "ready_relations": state.pending.values().filter(|relation| relation.scenes.len() >= MIN_SCENES).count(),
+        "ready_relations": state.pending.values().filter(|relation| relation.ready_for_impact_probe()).count(),
         "runtime_authority": false,
     }))
 }
@@ -269,6 +268,20 @@ fn load_state(path: &Path) -> io::Result<(OnlineState, bool)> {
         state.event_ordinal = 0;
         state.replayed_source_bytes = 0;
         state.feedback = Default::default();
+        return Ok((state, true));
+    }
+    if state.format == DIRECT_STATE_FORMAT {
+        state.format = STATE_FORMAT.to_string();
+        for (key, relation) in &mut state.pending {
+            if relation.episode_ids.is_empty() {
+                relation.episode_ids = relation
+                    .scenes
+                    .iter()
+                    .enumerate()
+                    .map(|(index, _)| format!("v2-{key}-{index}"))
+                    .collect();
+            }
+        }
         return Ok((state, true));
     }
     if state.format != STATE_FORMAT {
@@ -351,7 +364,8 @@ mod tests {
                 rejected: "слово".to_string(),
                 expected: "сайт".to_string(),
                 scenes: vec!["пример один".to_string(), "пример два".to_string()],
-                last_attempted_scenes: 2,
+                episode_ids: vec!["old-1".to_string(), "old-2".to_string()],
+                last_attempted_episodes: 2,
                 last_observed_ordinal: 20,
             },
         );
@@ -365,6 +379,38 @@ mod tests {
         assert_eq!(migrated.generation, 7);
         assert_eq!(migrated.admitted_deltas, 3);
         assert_eq!(migrated.replayed_source_bytes, 0);
+        let _ = fs::remove_file(path);
+    }
+
+    #[test]
+    fn v2_state_migration_preserves_direct_relations_as_independent_episodes() {
+        let unique = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let path = std::env::temp_dir().join(format!("lay-l3-online-v2-{unique}.json"));
+        let mut old = OnlineState::default();
+        old.format = DIRECT_STATE_FORMAT.to_string();
+        old.pending.insert(
+            "слово\u{1f}сайт".to_string(),
+            PendingRelation {
+                rejected: "слово".to_string(),
+                expected: "сайт".to_string(),
+                scenes: vec!["пример один".to_string(), "пример два".to_string()],
+                episode_ids: Vec::new(),
+                last_attempted_episodes: 0,
+                last_observed_ordinal: 20,
+            },
+        );
+        save_state(&path, &old).unwrap();
+
+        let (migrated, changed) = load_state(&path).unwrap();
+
+        assert!(changed);
+        assert_eq!(migrated.format, STATE_FORMAT);
+        let relation = migrated.pending.values().next().unwrap();
+        assert_eq!(relation.independent_episodes(), 2);
+        assert_eq!(relation.distinct_scenes(), 2);
         let _ = fs::remove_file(path);
     }
 }

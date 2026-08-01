@@ -1,13 +1,16 @@
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 
-pub(super) const STATE_FORMAT: &str = "lay-l3-online-v2-direct-relations";
+pub(super) const STATE_FORMAT: &str = "lay-l3-online-v3-causal-episodes";
+pub(super) const DIRECT_STATE_FORMAT: &str = "lay-l3-online-v2-direct-relations";
 pub(super) const LEGACY_STATE_FORMAT: &str = "lay-l3-online-v1";
+pub(super) const MIN_EPISODES: usize = 2;
 pub(super) const MIN_SCENES: usize = 2;
 const MAX_SCENES: usize = 8;
+const MAX_EPISODES: usize = 8;
 const MAX_RELATIONS: usize = 128;
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 struct CompletionEditTrace {
     prefix: String,
     accepted_suffix_chars: u32,
@@ -16,8 +19,12 @@ struct CompletionEditTrace {
     inserted_chars: u32,
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub(super) struct UsageEvent {
+    #[serde(default)]
+    ts: u64,
+    #[serde(default)]
+    episode_id: Option<String>,
     #[serde(default)]
     kind: String,
     #[serde(default)]
@@ -34,6 +41,8 @@ pub(super) struct UsageEvent {
     to: Option<String>,
     #[serde(default)]
     completion_edit: Option<CompletionEditTrace>,
+    #[serde(default)]
+    proposal: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -41,9 +50,30 @@ pub(super) struct PendingRelation {
     pub(super) rejected: String,
     pub(super) expected: String,
     pub(super) scenes: Vec<String>,
-    pub(super) last_attempted_scenes: usize,
+    #[serde(default)]
+    pub(super) episode_ids: Vec<String>,
+    #[serde(default, alias = "last_attempted_scenes")]
+    pub(super) last_attempted_episodes: usize,
     #[serde(default)]
     pub(super) last_observed_ordinal: u64,
+}
+
+impl PendingRelation {
+    pub(super) fn independent_episodes(&self) -> usize {
+        self.episode_ids.len()
+    }
+
+    pub(super) fn distinct_scenes(&self) -> usize {
+        self.scenes.len()
+    }
+
+    pub(super) fn ready_for_impact_probe(&self) -> bool {
+        let episodes = self.independent_episodes();
+        episodes >= MIN_EPISODES
+            && self.distinct_scenes() >= MIN_SCENES
+            && episodes > self.last_attempted_episodes
+            && episodes.is_power_of_two()
+    }
 }
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
@@ -113,6 +143,7 @@ pub(super) struct RelationObservation {
     rejected: String,
     expected: String,
     scene: String,
+    episode_id: String,
     pub(super) source: ObservationSource,
 }
 
@@ -149,7 +180,7 @@ fn direct_relation_observation(event: &UsageEvent) -> Option<RelationObservation
     if event.outcome != "confirmed_positive" || event.context.len() < 2 {
         return None;
     }
-    let rejected = rejected_word(event)?;
+    let rejected = proposed_word(event).or_else(|| rejected_word(event))?;
     let expected = normalize_word(event.word.as_deref()?)?;
     if rejected == expected
         || !lay::typing_cpu::TypingCpu::learning_target_is_attested(&expected)
@@ -176,6 +207,7 @@ fn direct_relation_observation(event: &UsageEvent) -> Option<RelationObservation
         rejected,
         expected,
         scene,
+        episode_id: causal_episode_id(event),
         source,
     })
 }
@@ -213,10 +245,17 @@ pub(super) fn insert_relation_observation(
         rejected: observation.rejected,
         expected: observation.expected,
         scenes: Vec::new(),
-        last_attempted_scenes: 0,
+        episode_ids: Vec::new(),
+        last_attempted_episodes: 0,
         last_observed_ordinal: state.event_ordinal,
     });
     relation.last_observed_ordinal = state.event_ordinal;
+    if relation.episode_ids.contains(&observation.episode_id) {
+        return;
+    }
+    if relation.episode_ids.len() < MAX_EPISODES {
+        relation.episode_ids.push(observation.episode_id);
+    }
     if !relation.scenes.contains(&observation.scene) && relation.scenes.len() < MAX_SCENES {
         relation.scenes.push(observation.scene);
     }
@@ -251,6 +290,49 @@ fn rejected_word(event: &UsageEvent) -> Option<String> {
         .collect::<Vec<_>>();
     let index = *changed.first()?;
     (changed.len() == 1 && index + 1 == to_words.len()).then(|| from_words[index].clone())
+}
+
+fn proposed_word(event: &UsageEvent) -> Option<String> {
+    let proposal = event.proposal.as_deref()?;
+    let proposal_words = normalized_words(proposal);
+    let expected_words = normalized_words(event.to.as_deref()?);
+    if proposal_words.len() == 1 && expected_words.len() == 1 {
+        return proposal_words.into_iter().next();
+    }
+    if proposal_words.len() != expected_words.len() {
+        return None;
+    }
+    let changed = proposal_words
+        .iter()
+        .zip(&expected_words)
+        .enumerate()
+        .filter_map(|(index, (left, right))| (left != right).then_some(index))
+        .collect::<Vec<_>>();
+    let index = *changed.first()?;
+    (changed.len() == 1 && index + 1 == expected_words.len()).then(|| proposal_words[index].clone())
+}
+
+fn causal_episode_id(event: &UsageEvent) -> String {
+    if let Some(id) = event.episode_id.as_deref().filter(|id| !id.is_empty()) {
+        return id.to_string();
+    }
+    let mut hash = 0xcbf2_9ce4_8422_2325_u64;
+    for part in [
+        event.ts.to_string(),
+        event.kind.clone(),
+        event.source.clone(),
+        event.outcome.clone(),
+        event.from.clone().unwrap_or_default(),
+        event.to.clone().unwrap_or_default(),
+        event.proposal.clone().unwrap_or_default(),
+        event.context.join("\u{1f}"),
+    ] {
+        for byte in part.as_bytes() {
+            hash = (hash ^ u64::from(*byte)).wrapping_mul(0x0000_0100_0000_01b3);
+        }
+        hash = (hash ^ 0xff).wrapping_mul(0x0000_0100_0000_01b3);
+    }
+    format!("legacy-{hash:016x}")
 }
 
 fn normalized_words(text: &str) -> Vec<String> {
@@ -297,6 +379,53 @@ mod tests {
         assert_eq!(observation.expected, "ходу");
         assert_eq!(observation.scene, "обновлять модель по ходу");
         assert_eq!(observation.source, ObservationSource::DirectCorrection);
+    }
+
+    #[test]
+    fn accepted_fix_prefers_the_causal_proposal_over_the_typed_source() {
+        let event: UsageEvent = serde_json::from_str(
+            r#"{"ts":9,"episode_id":"episode-9","kind":"accepted_fix","outcome":"confirmed_positive","source":"user_correction","word":"новости","context":["читай","свежие"],"from":"читай новсти","proposal":"читай новость","to":"читай новости"}"#,
+        )
+        .unwrap();
+        let mut state = OnlineState::default();
+
+        let observation = relation_observation(&mut state, &event).unwrap();
+
+        assert_eq!(observation.rejected, "новость");
+        assert_eq!(observation.expected, "новости");
+        assert_eq!(observation.episode_id, "episode-9");
+    }
+
+    #[test]
+    fn automatic_apply_is_not_online_learning_authority() {
+        let event: UsageEvent = serde_json::from_str(
+            r#"{"ts":9,"kind":"accepted_fix","outcome":"censored","source":"autocorrect","word":"новости","context":["читай","свежие"],"from":"читай новсти","proposal":"читай новости","to":"читай новости"}"#,
+        )
+        .unwrap();
+        let mut state = OnlineState::default();
+
+        assert!(relation_observation(&mut state, &event).is_none());
+        assert!(state.pending.is_empty());
+    }
+
+    #[test]
+    fn repeated_journal_record_does_not_duplicate_a_causal_episode() {
+        let first: UsageEvent = serde_json::from_str(
+            r#"{"ts":9,"episode_id":"episode-9","kind":"accepted_fix","outcome":"confirmed_positive","source":"user_correction","word":"новости","context":["читай","свежие"],"from":"читай новсти","proposal":"читай новость","to":"читай новости"}"#,
+        )
+        .unwrap();
+        let mut second = first.clone();
+        second.ts = 10;
+        let mut state = OnlineState::default();
+
+        for event in [&first, &second] {
+            let observation = relation_observation(&mut state, event).unwrap();
+            insert_relation_observation(&mut state, observation);
+        }
+
+        let relation = state.pending.values().next().unwrap();
+        assert_eq!(relation.independent_episodes(), 1);
+        assert_eq!(relation.distinct_scenes(), 1);
     }
 
     #[test]

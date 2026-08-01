@@ -107,15 +107,23 @@ impl TypingCpu {
     }
 
     pub fn record_user_correction(original: &str, proposed: &str, accepted: &str, kind: &str) {
-        if accepted != proposed {
-            crate::nanda_wave::record_rejected_candidate_usage(
-                original,
-                proposed,
-                "user_correction",
-                kind,
-            );
-        }
-        crate::nanda_wave::record_accepted_fix_usage(original, accepted);
+        crate::nanda_wave::record_confirmed_user_correction_usage(
+            original, proposed, accepted, kind,
+        );
+    }
+
+    pub fn record_observed_system_apply(
+        original: &str,
+        replacement: &str,
+        source: &str,
+        operation: &str,
+    ) {
+        crate::nanda_wave::record_observed_system_apply_usage(
+            original,
+            replacement,
+            source,
+            operation,
+        );
     }
 
     pub fn record_accepted_layout_projection(original: &str, replacement: &str) {

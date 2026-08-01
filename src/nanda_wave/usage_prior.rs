@@ -62,6 +62,8 @@ struct LearningCandidate {
 #[derive(Debug, Clone, Default, serde::Deserialize, serde::Serialize)]
 struct UsageEvent {
     ts: u64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    episode_id: Option<String>,
     kind: UsageEventKind,
     #[serde(skip_serializing_if = "Option::is_none")]
     word: Option<String>,
@@ -87,6 +89,8 @@ struct UsageEvent {
     outcome: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     completion_edit: Option<CompletionEditTrace>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    proposal: Option<String>,
 }
 
 #[derive(Debug, Default, serde::Deserialize)]
@@ -111,6 +115,7 @@ impl UsageEvent {
     fn from_typing_memory_event(event: &TypingMemoryEvent) -> Self {
         Self {
             ts: unix_timestamp(),
+            episode_id: event.episode_id.clone(),
             kind: match event.kind {
                 TypingMemoryEventKind::Typed => UsageEventKind::Typed,
                 TypingMemoryEventKind::AcceptedFix => UsageEventKind::AcceptedFix,
@@ -140,6 +145,7 @@ impl UsageEvent {
                 .map(|scope| scope.as_str().to_string()),
             outcome: Some(event.outcome.as_str().to_string()),
             completion_edit: event.completion_edit.clone(),
+            proposal: event.proposal.clone(),
         }
     }
 }
@@ -330,6 +336,37 @@ pub(crate) fn record_accepted_fix_if_enabled(from: &str, to: &str) {
         record_typing_memory_event_if_enabled(&event);
     }
     super::llmwave::record_phrase_experience("space", to);
+}
+
+pub(crate) fn record_confirmed_user_correction_if_enabled(
+    original: &str,
+    proposal: &str,
+    accepted: &str,
+    operation: &str,
+) {
+    if !usage_learning_enabled() || (original == accepted && proposal == accepted) {
+        return;
+    }
+    for event in
+        TypingMemoryEvent::confirmed_user_correction(original, proposal, accepted, operation)
+    {
+        record_typing_memory_event_if_enabled(&event);
+    }
+    super::llmwave::record_phrase_experience("space", accepted);
+}
+
+pub(crate) fn record_observed_system_apply_if_enabled(
+    from: &str,
+    to: &str,
+    source: &str,
+    operation: &str,
+) {
+    if !usage_learning_enabled() || from == to {
+        return;
+    }
+    for event in TypingMemoryEvent::observed_system_apply(from, to, source, operation) {
+        record_typing_memory_event_if_enabled(&event);
+    }
 }
 
 pub(crate) fn record_accepted_layout_projection_if_enabled(from: &str, to: &str) {
@@ -1007,7 +1044,7 @@ fn add_rejected_fix_sources(
     source: &str,
     operation: &str,
 ) {
-    let Some(from) = event.from.as_deref() else {
+    let Some(from) = event.proposal.as_deref().or(event.from.as_deref()) else {
         return;
     };
     let accepted = event
@@ -1154,7 +1191,8 @@ fn read_last_usage_event(path: &Path) -> Option<UsageEvent> {
 }
 
 fn usage_event_payload_eq(left: &UsageEvent, right: &UsageEvent) -> bool {
-    left.kind == right.kind
+    left.episode_id == right.episode_id
+        && left.kind == right.kind
         && left.word == right.word
         && left.context == right.context
         && left.from == right.from
@@ -1162,6 +1200,7 @@ fn usage_event_payload_eq(left: &UsageEvent, right: &UsageEvent) -> bool {
         && left.source == right.source
         && left.operation == right.operation
         && left.completion_edit == right.completion_edit
+        && left.proposal == right.proposal
 }
 
 #[cfg(not(test))]
@@ -1874,6 +1913,7 @@ mod tests {
             &mut cache,
             &UsageEvent {
                 ts: 1,
+                episode_id: None,
                 kind: UsageEventKind::Typed,
                 word: Some("дождь".to_string()),
                 context: Vec::new(),
@@ -1887,6 +1927,7 @@ mod tests {
                 layout_scope: None,
                 outcome: None,
                 completion_edit: None,
+                proposal: None,
             },
             || panic!("initialized live cache must not reload cold counts"),
         );
@@ -2310,6 +2351,7 @@ mod tests {
     fn adjacent_duplicate_usage_events_ignore_timestamp() {
         let first = UsageEvent {
             ts: 1,
+            episode_id: None,
             kind: UsageEventKind::Typed,
             word: Some("лог".to_string()),
             context: vec!["смотри".to_string()],
@@ -2323,6 +2365,7 @@ mod tests {
             layout_scope: None,
             outcome: None,
             completion_edit: None,
+            proposal: None,
         };
         let second = UsageEvent {
             ts: 2,
@@ -2330,6 +2373,35 @@ mod tests {
         };
 
         assert!(usage_event_payload_eq(&first, &second));
+    }
+
+    #[test]
+    fn distinct_causal_episodes_are_not_adjacent_duplicates() {
+        let first = UsageEvent {
+            ts: 1,
+            episode_id: Some("episode-1".to_string()),
+            kind: UsageEventKind::AcceptedFix,
+            word: Some("новости".to_string()),
+            context: vec!["читай".to_string()],
+            from: Some("новость".to_string()),
+            to: Some("новости".to_string()),
+            source: Some("user_correction".to_string()),
+            operation: Some("ime_auto_undo".to_string()),
+            surface: None,
+            operator: None,
+            layout_direction: None,
+            layout_scope: None,
+            outcome: Some("confirmed_positive".to_string()),
+            completion_edit: None,
+            proposal: Some("новость".to_string()),
+        };
+        let second = UsageEvent {
+            ts: 2,
+            episode_id: Some("episode-2".to_string()),
+            ..first.clone()
+        };
+
+        assert!(!usage_event_payload_eq(&first, &second));
     }
 
     #[test]

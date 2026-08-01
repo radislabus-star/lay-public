@@ -4,7 +4,11 @@
 //! can then route the same event into L1/L2 usage, L3 phrase context, L4 signed
 //! state, and Bayes priors without each caller inventing its own schema.
 
+use std::sync::atomic::{AtomicU64, Ordering};
+use std::time::{SystemTime, UNIX_EPOCH};
+
 const CONTEXT_WORDS: usize = 5;
+static NEXT_CAUSAL_EPISODE: AtomicU64 = AtomicU64::new(1);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum LayoutProjectionDirection {
@@ -167,6 +171,14 @@ pub(crate) struct TypingMemoryEvent {
     /// Stable relation shape, intentionally independent from concrete words.
     pub(crate) surface: Option<String>,
     pub(crate) completion_edit: Option<CompletionEditTrace>,
+    /// Shared by every record produced by one confirmed user action.
+    /// Raw typing and automatic model application remain non-authoritative and
+    /// therefore carry no causal episode identity.
+    pub(crate) episode_id: Option<String>,
+    /// The candidate presented before the observed user outcome. Keeping it
+    /// separate from `from` prevents a rollback from teaching the typo as the
+    /// rejected L3 candidate.
+    pub(crate) proposal: Option<String>,
 }
 
 impl TypingMemoryEvent {
@@ -185,26 +197,78 @@ impl TypingMemoryEvent {
             identity: TypingTransitionIdentity::typed(),
             surface: None,
             completion_edit: None,
+            episode_id: None,
+            proposal: None,
         })
     }
 
     pub(crate) fn accepted_fix(from: &str, to: &str) -> Vec<Self> {
+        let episode_id = next_causal_episode_id();
         accepted_events(
             TypingMemoryEventKind::AcceptedFix,
             from,
             to,
             "user_correction",
             "replacement",
+            TypingMemoryFeedback::Accepted,
+            TypingMemoryOutcome::ConfirmedPositive,
+            Some(&episode_id),
+            None,
         )
     }
 
     pub(crate) fn accepted_layout_projection(from: &str, to: &str) -> Vec<Self> {
+        let episode_id = next_causal_episode_id();
         accepted_events(
             TypingMemoryEventKind::AcceptedFix,
             from,
             to,
             "layout",
             "replacement",
+            TypingMemoryFeedback::Accepted,
+            TypingMemoryOutcome::ConfirmedPositive,
+            Some(&episode_id),
+            None,
+        )
+    }
+
+    pub(crate) fn confirmed_user_correction(
+        original: &str,
+        proposal: &str,
+        accepted: &str,
+        operation: &str,
+    ) -> Vec<Self> {
+        let episode_id = next_causal_episode_id();
+        let proposal = proposal.trim();
+        accepted_events(
+            TypingMemoryEventKind::AcceptedFix,
+            original,
+            accepted,
+            "user_correction",
+            operation,
+            TypingMemoryFeedback::Accepted,
+            TypingMemoryOutcome::ConfirmedPositive,
+            Some(&episode_id),
+            (!proposal.is_empty()).then_some(proposal),
+        )
+    }
+
+    pub(crate) fn observed_system_apply(
+        from: &str,
+        to: &str,
+        source: &str,
+        operation: &str,
+    ) -> Vec<Self> {
+        accepted_events(
+            TypingMemoryEventKind::AcceptedFix,
+            from,
+            to,
+            source,
+            operation,
+            TypingMemoryFeedback::Observed,
+            TypingMemoryOutcome::Censored,
+            None,
+            Some(to.trim()),
         )
     }
 
@@ -265,6 +329,8 @@ impl TypingMemoryEvent {
                 deleted_chars: suggested_chars.saturating_sub(common_chars) as u32,
                 inserted_chars: final_chars.saturating_sub(common_chars) as u32,
             }),
+            episode_id: Some(next_causal_episode_id()),
+            proposal: Some(suggested),
         })
     }
 
@@ -302,6 +368,7 @@ impl TypingMemoryEvent {
     ) -> Vec<Self> {
         let from_words = normalized_words(context_tail);
         let rejected_words = normalized_words(rejected_text);
+        let episode_id = next_causal_episode_id();
         changed_target_indexes(&from_words, &rejected_words)
             .into_iter()
             .filter_map(|index| {
@@ -329,6 +396,8 @@ impl TypingMemoryEvent {
                         operation,
                     )),
                     completion_edit: None,
+                    episode_id: Some(episode_id.clone()),
+                    proposal: None,
                 })
             })
             .collect()
@@ -341,6 +410,10 @@ fn accepted_events(
     to: &str,
     source: &str,
     operation: &str,
+    feedback: TypingMemoryFeedback,
+    outcome: TypingMemoryOutcome,
+    episode_id: Option<&str>,
+    proposal: Option<&str>,
 ) -> Vec<TypingMemoryEvent> {
     let to_words = normalized_words(to);
     if to_words.is_empty() {
@@ -355,8 +428,8 @@ fn accepted_events(
             let context = words_before_last(&to_words[..index]);
             TypingMemoryEvent {
                 kind,
-                feedback: TypingMemoryFeedback::Accepted,
-                outcome: TypingMemoryOutcome::ConfirmedPositive,
+                feedback,
+                outcome,
                 word,
                 context,
                 from: Some(from.trim().to_string()),
@@ -366,6 +439,8 @@ fn accepted_events(
                 identity: TypingTransitionIdentity::observed(from, to, operation),
                 surface: Some(transition_surface_key(from, to, source, operation)),
                 completion_edit: None,
+                episode_id: episode_id.map(str::to_owned),
+                proposal: proposal.map(str::to_owned),
             }
         })
         .collect()
@@ -417,6 +492,7 @@ fn ime_events(
     operation: &str,
 ) -> Vec<TypingMemoryEvent> {
     let context = recent_context_words(context_tail);
+    let episode_id = next_causal_episode_id();
     normalized_words(text)
         .into_iter()
         .map(|word| TypingMemoryEvent {
@@ -436,8 +512,19 @@ fn ime_events(
             identity: TypingTransitionIdentity::observed(context_tail, text, operation),
             surface: None,
             completion_edit: None,
+            episode_id: Some(episode_id.clone()),
+            proposal: None,
         })
         .collect()
+}
+
+fn next_causal_episode_id() -> String {
+    let time = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_micros();
+    let ordinal = NEXT_CAUSAL_EPISODE.fetch_add(1, Ordering::Relaxed);
+    format!("{}-{time}-{ordinal}", std::process::id())
 }
 
 fn single_normalized_word(text: &str) -> Option<String> {
@@ -648,6 +735,42 @@ mod tests {
         assert!(events.iter().all(|event| event.source == "user_correction"));
         assert!(events.iter().all(|event| event.operation == "replacement"));
         assert!(events.iter().all(|event| event.surface.is_some()));
+        assert!(events[0].episode_id.is_some());
+        assert!(events
+            .iter()
+            .all(|event| event.episode_id == events[0].episode_id));
+    }
+
+    #[test]
+    fn confirmed_user_correction_keeps_proposal_and_one_episode() {
+        let events = TypingMemoryEvent::confirmed_user_correction(
+            "читай новсти",
+            "читай новость",
+            "читай новости",
+            "ime_auto_undo",
+        );
+
+        assert_eq!(events.len(), 1);
+        assert_eq!(events[0].proposal.as_deref(), Some("читай новость"));
+        assert_eq!(events[0].operation, "ime_auto_undo");
+        assert!(events[0].episode_id.is_some());
+        assert_eq!(events[0].outcome, TypingMemoryOutcome::ConfirmedPositive);
+    }
+
+    #[test]
+    fn automatic_apply_is_censored_and_has_no_causal_episode() {
+        let events = TypingMemoryEvent::observed_system_apply(
+            "читай новсти",
+            "читай новости",
+            "autocorrect",
+            "typing-assist",
+        );
+
+        assert_eq!(events.len(), 1);
+        assert_eq!(events[0].feedback, TypingMemoryFeedback::Observed);
+        assert_eq!(events[0].outcome, TypingMemoryOutcome::Censored);
+        assert_eq!(events[0].source, "autocorrect");
+        assert_eq!(events[0].episode_id, None);
     }
 
     #[test]
@@ -671,6 +794,8 @@ mod tests {
             .expect("one edited completion event");
 
         assert_eq!(event.kind, TypingMemoryEventKind::EditedIme);
+        assert_eq!(event.proposal.as_deref(), Some("прекрасный"));
+        assert!(event.episode_id.is_some());
         assert_eq!(event.word, "прекрасно");
         assert_eq!(event.context, ["это", "было"]);
         assert_eq!(event.from.as_deref(), Some("прекрасный"));

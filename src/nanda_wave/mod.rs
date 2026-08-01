@@ -1330,6 +1330,21 @@ pub fn record_accepted_fix_usage(from: &str, to: &str) {
     usage_prior::record_accepted_fix_if_enabled(from, to);
 }
 
+pub fn record_confirmed_user_correction_usage(
+    original: &str,
+    proposal: &str,
+    accepted: &str,
+    operation: &str,
+) {
+    usage_prior::record_confirmed_user_correction_if_enabled(
+        original, proposal, accepted, operation,
+    );
+}
+
+pub fn record_observed_system_apply_usage(from: &str, to: &str, source: &str, operation: &str) {
+    usage_prior::record_observed_system_apply_if_enabled(from, to, source, operation);
+}
+
 pub fn record_accepted_layout_projection_usage(from: &str, to: &str) {
     usage_prior::record_accepted_layout_projection_if_enabled(from, to);
 }

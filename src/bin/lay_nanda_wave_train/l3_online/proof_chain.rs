@@ -79,7 +79,11 @@ pub(super) fn attempt_relation(
         "generation": generation,
         "rejected": relation.rejected,
         "expected": relation.expected,
-        "independent_scenes": relation.scenes.len(),
+        "independent_episodes": relation.independent_episodes(),
+        "distinct_scenes": relation.distinct_scenes(),
+        "independent_scenes": relation.distinct_scenes(),
+        "selected_relations": 1,
+        "selector": "minimal_single_relation_then_targeted_and_full_impact_proof",
         "corpus_passes": compile.get("corpus_passes"),
         "delta": delta,
         "targeted_proof_receipt": targeted_receipt,
@@ -247,7 +251,8 @@ mod tests {
                 "обновлять модель по ходу".to_string(),
                 "менять параметры по ходу".to_string(),
             ],
-            last_attempted_scenes: 0,
+            episode_ids: vec!["episode-1".to_string(), "episode-2".to_string()],
+            last_attempted_episodes: 0,
             last_observed_ordinal: 2,
         };
         let cases = targeted_cases(&relation);

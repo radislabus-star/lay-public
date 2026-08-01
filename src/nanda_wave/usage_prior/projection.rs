@@ -138,14 +138,14 @@ fn event_transition_context(event: &UsageEvent) -> Vec<String> {
     if matches!(event.kind, UsageEventKind::EditedIme) {
         return event.context.clone();
     }
-    match (event.from.as_deref(), event.to.as_deref()) {
+    match (event_transition_source(event), event.to.as_deref()) {
         (Some(from), Some(to)) => crate::typing_memory::transition_context_words(from, to),
         _ => event.context.clone(),
     }
 }
 
 fn event_transition_weight(event: &UsageEvent, weight: u32) -> u32 {
-    let event_count = match (event.from.as_deref(), event.to.as_deref()) {
+    let event_count = match (event_transition_source(event), event.to.as_deref()) {
         (Some(from), Some(to)) => {
             let from_words = normalized_words(from);
             let to_words = normalized_words(to);
@@ -159,11 +159,17 @@ fn event_transition_weight(event: &UsageEvent, weight: u32) -> u32 {
 }
 
 fn event_state_word(event: &UsageEvent) -> String {
-    event
-        .from
-        .as_deref()
+    event_transition_source(event)
         .map(crate::transition_relation::signed_memory_state_id)
         .unwrap_or_else(|| TRANSITION_ANY.to_string())
+}
+
+fn event_transition_source(event: &UsageEvent) -> Option<&str> {
+    if matches!(event.kind, UsageEventKind::AcceptedFix) {
+        event.proposal.as_deref().or(event.from.as_deref())
+    } else {
+        event.from.as_deref()
+    }
 }
 
 fn event_source(event: &UsageEvent) -> &str {

@@ -1,5 +1,7 @@
 use std::fs;
-use std::io;
+use std::io::{self, Write};
+use std::os::fd::AsRawFd;
+use std::os::unix::fs::OpenOptionsExt;
 use std::path::{Path, PathBuf};
 use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -365,6 +367,7 @@ pub(crate) fn admit_delta_with_full_proof(
     full_proof_receipt: Option<&Path>,
     scope: Option<&str>,
 ) -> io::Result<serde_json::Value> {
+    let _lock = acquire_manifest_write_lock(manifest_path)?;
     let mut manifest = read_manifest(manifest_path)?;
     let root = manifest_path.parent().unwrap_or_else(|| Path::new("."));
     let base = read_package(&resolve(root, &manifest.base))?;
@@ -396,7 +399,7 @@ pub(crate) fn admit_delta_with_full_proof(
         full_proof_receipt: full_proof_receipt.map(|path| path_for_manifest(root, path)),
         scope: scope.map(str::to_owned),
     });
-    write_manifest(manifest_path, &manifest)?;
+    write_manifest_unlocked(manifest_path, &manifest)?;
     let total_delta_bytes = manifest.deltas.iter().map(|entry| entry.bytes).sum::<u64>();
     Ok(serde_json::json!({
         "kind": "l3_delta_admission",
@@ -418,6 +421,7 @@ pub(crate) fn compact_manifest(
     manifest_path: &Path,
     output_base: &Path,
 ) -> io::Result<serde_json::Value> {
+    let _lock = acquire_manifest_write_lock(manifest_path)?;
     let memory = L3CompositeMemory::load_manifest(manifest_path)?;
     let output_base = absolute_path(output_base)?;
     if output_base == memory.base_path {
@@ -427,7 +431,13 @@ pub(crate) fn compact_manifest(
         ));
     }
     super::write_package(&output_base, memory.package())?;
-    initialize_manifest(manifest_path, &output_base)?;
+    let root = manifest_path.parent().unwrap_or_else(|| Path::new("."));
+    let manifest = L3CompositeManifest {
+        format: COMPOSITE_FORMAT.to_string(),
+        base: path_for_manifest(root, &output_base),
+        deltas: Vec::new(),
+    };
+    write_manifest_unlocked(manifest_path, &manifest)?;
     Ok(serde_json::json!({
         "kind": "l3_composite_compaction",
         "manifest": manifest_path,
@@ -457,6 +467,14 @@ pub(crate) fn snapshot_manifest(
 }
 
 fn write_manifest(path: &Path, manifest: &L3CompositeManifest) -> io::Result<()> {
+    let _lock = acquire_manifest_write_lock(path)?;
+    write_manifest_unlocked(path, manifest)
+}
+
+fn write_manifest_unlocked(path: &Path, manifest: &L3CompositeManifest) -> io::Result<()> {
+    if let Some(parent) = path.parent() {
+        fs::create_dir_all(parent)?;
+    }
     let mut bytes = serde_json::to_vec_pretty(manifest).map_err(io::Error::other)?;
     bytes.push(b'\n');
     let temporary = path.with_extension(format!(
@@ -466,12 +484,67 @@ fn write_manifest(path: &Path, manifest: &L3CompositeManifest) -> io::Result<()>
             .unwrap_or("json"),
         std::process::id()
     ));
-    crate::private_file::write_private_bytes(&temporary, &bytes)?;
+    let mut temporary_file = fs::OpenOptions::new()
+        .write(true)
+        .create(true)
+        .truncate(true)
+        .mode(0o600)
+        .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW)
+        .open(&temporary)?;
+    temporary_file.write_all(&bytes)?;
+    temporary_file.sync_all()?;
+    drop(temporary_file);
     if let Err(error) = fs::rename(&temporary, path) {
         let _ = fs::remove_file(&temporary);
         return Err(error);
     }
+    if let Some(parent) = path
+        .parent()
+        .filter(|parent| !parent.as_os_str().is_empty())
+    {
+        fs::File::open(parent)?.sync_all()?;
+    }
     Ok(())
+}
+
+struct ManifestWriteLock {
+    file: fs::File,
+}
+
+impl Drop for ManifestWriteLock {
+    fn drop(&mut self) {
+        unsafe {
+            libc::flock(self.file.as_raw_fd(), libc::LOCK_UN);
+        }
+    }
+}
+
+fn acquire_manifest_write_lock(path: &Path) -> io::Result<ManifestWriteLock> {
+    if let Some(parent) = path.parent() {
+        fs::create_dir_all(parent)?;
+    }
+    let mut lock_name = path
+        .file_name()
+        .map(ToOwned::to_owned)
+        .unwrap_or_else(|| "l3.runtime.json".into());
+    lock_name.push(".lock");
+    let lock_path = path.with_file_name(lock_name);
+    let file = fs::OpenOptions::new()
+        .read(true)
+        .write(true)
+        .create(true)
+        .mode(0o600)
+        .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW)
+        .open(lock_path)?;
+    loop {
+        if unsafe { libc::flock(file.as_raw_fd(), libc::LOCK_EX) } == 0 {
+            return Ok(ManifestWriteLock { file });
+        }
+        let error = io::Error::last_os_error();
+        if error.kind() != io::ErrorKind::Interrupted {
+            return Err(error);
+        }
+    }
 }
 
 fn resolve(root: &Path, path: &Path) -> PathBuf {
@@ -558,6 +631,46 @@ mod tests {
         snapshot_manifest(&manifest_path, &snapshot_path).unwrap();
         assert_eq!(fs::read(&manifest_path).unwrap(), manifest_before);
         assert_eq!(read_package(&snapshot_path).unwrap().transitions, 10);
+        let _ = fs::remove_dir_all(root);
+    }
+
+    #[test]
+    fn concurrent_manifest_admissions_do_not_lose_a_delta() {
+        let root = std::env::temp_dir().join(format!(
+            "lay-l3-composite-concurrent-{}-{}",
+            std::process::id(),
+            unix_time_ms()
+        ));
+        fs::create_dir_all(&root).unwrap();
+        let base_path = root.join("base.nwpc");
+        let first_delta = root.join("delta-a.nwpc");
+        let second_delta = root.join("delta-b.nwpc");
+        let manifest_path = root.join("manifest.json");
+        let package = ContextPhasePackage {
+            signature_schema: super::super::SIGNATURE_SCHEMA_RELATION_ROLES,
+            ..ContextPhasePackage::default()
+        };
+        write_package(&base_path, &package).unwrap();
+        write_package(&first_delta, &package).unwrap();
+        write_package(&second_delta, &package).unwrap();
+        initialize_manifest(&manifest_path, &base_path).unwrap();
+
+        let barrier = std::sync::Arc::new(std::sync::Barrier::new(3));
+        let handles = [first_delta, second_delta].map(|delta| {
+            let manifest = manifest_path.clone();
+            let barrier = std::sync::Arc::clone(&barrier);
+            std::thread::spawn(move || {
+                barrier.wait();
+                admit_delta(&manifest, &delta, None, Some("concurrent-test")).unwrap();
+            })
+        });
+        barrier.wait();
+        for handle in handles {
+            handle.join().unwrap();
+        }
+
+        let manifest = read_manifest(&manifest_path).unwrap();
+        assert_eq!(manifest.deltas.len(), 2);
         let _ = fs::remove_dir_all(root);
     }
 
