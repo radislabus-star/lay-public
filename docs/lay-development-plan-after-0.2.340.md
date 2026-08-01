@@ -115,7 +115,7 @@ Installed receipt:
 
 ## 4. Типизированное ядро L4
 
-**Статус: выполнено 2026-08-01, release target `0.2.345`.** Live-domain
+**Статус: выполнено 2026-08-01, release `0.2.345` установлен.** Live-domain
 `TypingMemoryEvent` больше не принимает строковые `source/operation`: provenance,
 interaction operation, transition operator, layout direction/scope и outcome
 представлены типами со стабильными `u8`-кодами. Persistent `UsageEvent` V2 хранит
@@ -127,6 +127,8 @@ candidate дали одинаковый JSON SHA-256
 `e20dd25f31cd64923f4061228696b836a88740ca2aba9916451c967395de5dba`;
 `negative_false_apply = 0` до и после. Receipt:
 `/home/ubu/projects/lay/docs/structural_gates/receipts/L4_TYPED_EVENT_V2_REPLAY_PARITY_2026-08-01.json`.
+Пять затронутых release-бинарников установлены с byte parity; global IBus,
+managed engine и daemon не перезапускались.
 
 1. Заменить строковые `source/operation` на типы: `operator`, `direction`, `scope`, `outcome`, `evidence source`.
 2. Разделить `RU->EN` и `EN->RU`, whole-token и single-grapheme.

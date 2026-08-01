@@ -53,6 +53,21 @@
     "runtime_decision_authority_changed": false,
     "cross_scene_authority": "NOT_GRANTED"
   },
+  "installation": {
+    "status": "INSTALLED_WITHOUT_PROCESS_RESTART",
+    "installed_lay_version": "0.2.345",
+    "installed_lay_sha256": "c5726afd6aa7f83c43238d80c0213e319f1b05349e58db0aa52e739a47aeabf0",
+    "installed_daemon_sha256": "294f7ca1069a47067c4bac7bb92d6986c6409e028d2b03b1edea11a1ba6d8c84",
+    "installed_ibus_engine_sha256": "2bcb4b06a5002230fcf4b942c5c09127641b755ba4ff2086fe3693b3389d1be3",
+    "installed_trainer_sha256": "02aabde333de51925aa2d8250935e68eb5dd67df8e7669d5ff81136b14d3eaf8",
+    "installed_evaluator_sha256": "62648575f30844d4ff812d82f88dd58ca3efc93a6c2e2534430254aeb5ebc831",
+    "global_ibus_pid_before": 3793,
+    "global_ibus_pid_after": 3793,
+    "managed_engine_pid_before": 2489038,
+    "managed_engine_pid_after": 2489038,
+    "daemon_pid_before": 2688733,
+    "daemon_pid_after": 2688733
+  },
   "evidence": {
     "remote_artifact_dir": "/home/e/build/lay-l1-shadow/artifacts/l4-typed-v2-2026-08-01",
     "baseline_report": "/home/e/build/lay-l1-shadow/artifacts/l4-typed-v2-2026-08-01/baseline-with-memory.json",
