@@ -71,12 +71,27 @@
     "focused_test_cpu_percent": 156,
     "focused_test_max_rss_kib": 1412604
   },
+  "installed_runtime": {
+    "version": "0.2.342",
+    "installed_at": "2026-08-01T20:35:07+03:00",
+    "lay_sha256": "377261168c74d379c7ecba338cf7f7db2baacbce90fca5e3facc7f9356b024bc",
+    "lay_daemon_sha256": "647ab53cf938700a7006e75e067994c41f984a7977e4dd896ea38f13cebd3ad8",
+    "lay_ibus_engine_sha256": "58a5be36a61c66891e61498cdf3633be18742baa864e0c6b3fc29cbbe11cfbe7",
+    "lay_daemon_active": true,
+    "lay_l3_online_active": true,
+    "canonical_smoke_input": "врмея",
+    "canonical_smoke_output": "время",
+    "ibus_pid": 1630206,
+    "ibus_started_at": "2026-08-01T11:11:48+03:00",
+    "ibus_restarted_for_install": false
+  },
   "tested": [
     "before/after warmed semantic route snapshot",
     "canonical route and source ownership",
     "standalone L2 format and runtime tests",
     "package SHA retention",
-    "CLI canonical route name with legacy hidden alias"
+    "CLI canonical route name with legacy hidden alias",
+    "installed 0.2.342 runtime and canonical restore smoke without IBus restart"
   ],
   "not_tested": [
     "new L2 training or crystallization",
