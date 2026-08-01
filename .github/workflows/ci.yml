@@ -45,7 +45,9 @@ jobs:
         run: bash scripts/check-lay-audit-50.sh
 
       - name: Public issue regressions
-        run: bash scripts/test-public-issues.sh
+        run: |
+          bash scripts/test-public-issues.sh
+          bash scripts/test-install-release-binaries.sh
 
       - name: Current architecture regressions
         run: |
