@@ -103,8 +103,30 @@
     "swaps": 0,
     "exit_status": 0
   },
+  "installed_runtime": {
+    "commit": "b9bc977",
+    "release": "0.2.343",
+    "lay_sha256": "61396cdceaa99251804df2e17d37426148b52c8a2f85d7e4777c665ff3534e96",
+    "lay_daemon_sha256": "781b54a12541bff1bd89e29e7bbdaccf61c3fd97cd13dc426a38278d2a284666",
+    "lay_ibus_engine_sha256": "50dab39dec0dd28f2efa27aaebe834806220a490d6ce91bad059bd404a841203",
+    "managed_ibus_pid_before": 1630206,
+    "managed_ibus_pid_after": 2489038,
+    "global_ibus_pid_before": 3793,
+    "global_ibus_pid_after": 3793,
+    "global_ibus_restarted": false,
+    "selected_engine": "lay-ime-ru",
+    "loaded_tray_version": "0.2.343",
+    "daemon_active": true,
+    "l3_online_active": true,
+    "state_format": "lay-l3-online-v3-causal-episodes",
+    "pending_relations": 9,
+    "relations_with_one_episode": 9,
+    "relations_with_one_scene": 9,
+    "admitted_deltas": 0,
+    "manifest_sha256": "b635ff5b68eac55c508549503b727c5066c281144f5473b67627ab5dc520d546",
+    "base_sha256": "a71d58a0a01f9c5f8fae4328e1e5011043f3e95ac1d5ee760a0dc56b81cd9ad7"
+  },
   "not_tested": [
-    "installed v3 producer and state migration",
     "real relation with two independent scenes",
     "targeted and frozen 80k proof for a newly admitted real delta",
     "cross-process runtime reload after a real delta admission"

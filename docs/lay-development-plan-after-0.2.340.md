@@ -60,6 +60,9 @@ Receipt:
 получает общий `episode_id`, selector проверяет ровно одну минимальную связь,
 а manifest защищён `flock + fsync + atomic rename`. На текущем реальном
 журнале `9` отношений имеют по одной сцене, поэтому delta намеренно не создан.
+Release `0.2.343` собран на удалённой машине, установлен; реальный state
+мигрирован V2 -> V3 без изменения manifest SHA. Глобальный IBus не
+перезапускался.
 Receipt:
 `/home/ubu/projects/lay/docs/structural_gates/receipts/L3_ONLINE_CAUSAL_EPISODES_V3_2026-08-01.json`.
 
