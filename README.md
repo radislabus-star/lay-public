@@ -14,6 +14,11 @@
 curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scripts/install-remote.sh | bash
 ```
 
+The installer downloads the canonical L2 V13 model from the matching GitHub
+Release when it is not already present locally. The 128.86 MiB asset is cached
+under `~/.cache/lay/models/` and accepted only when both its byte count and
+pinned SHA-256 match the released model contract.
+
 [![Rust](https://img.shields.io/badge/Rust-1.75+-orange?logo=rust)](https://www.rust-lang.org/)
 [![GNOME](https://img.shields.io/badge/GNOME-45--47%2C%2050-4A86CF?logo=gnome)](https://gnome.org/)
 [![Wayland](https://img.shields.io/badge/Wayland-native-blue)](https://wayland.freedesktop.org/)

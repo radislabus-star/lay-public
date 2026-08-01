@@ -505,6 +505,61 @@ event was injected during release verification.
 Runtime authority changed in release `0.2.333`: `true`, only through the
 existing L2 local readout, L3 context and transition verifier chain.
 
+### 13.2 Public V13 package distribution, 2026-08-01
+
+GitHub issue `radislabus-star/lay-public#40` exposed a release-distribution
+defect rather than an L2 field defect. The source installer required a local
+canonical package under `data/l2/`, but that 128.86 MiB artifact is not stored
+in the public Git checkout. A clean installation therefore built every Rust
+binary and then failed before installing the user service.
+
+Release `0.2.341` makes the proven V13 artifact an immutable GitHub Release
+asset and pins its complete contract in the installer:
+
+```text
+artifact               LAY-L2-RU-FULL-v13.bin
+bytes                                      135121803
+SHA-256  bbe67a772b684e0f187483796fca248ac0b10576195b1aa524f0b2bde0f6601e
+release URL   .../releases/download/v0.2.341/LAY-L2-RU-FULL-v13.bin
+cache                    ~/.cache/lay/models/
+install       ~/.local/share/lay/nanda_wave/l2/
+```
+
+The resolver accepts, in order, a verified explicit/source artifact, the
+already installed artifact, or the verified cache. Only when none exists may
+it download over HTTPS. Byte count and SHA-256 are checked before any release
+binary is installed and checked again on the atomic package copy. Offline
+updates reuse an already verified installation. Missing or corrupt input stops
+before a partial binary installation.
+
+Measured code checks before publishing the external asset:
+
+```text
+clean-checkout fixture download and install          PASS
+offline reuse of installed package                   PASS
+corrupt package rejection                            PASS
+no binary installed on package failure               PASS
+public install/update/uninstall regressions          PASS
+real local V13 bytes and SHA-256                      MATCH
+public HTTPS release-asset download                  PENDING
+```
+
+What was not tested at this checkpoint:
+
+- the public HTTPS asset, because the release is created only after the
+  installer commit exists;
+- a complete fresh-machine Cargo build, service activation and desktop login;
+- any new L2 quality behavior, because package bytes and runtime authority are
+  intentionally unchanged.
+
+Verdict scope: `PASS_code_asset_pending`. Runtime authority changed: `false`.
+
+Exact receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/PUBLIC_INSTALL_CANONICAL_L2_V13_2026-08-01.json
+```
+
 ## 13. Pairwise Context Witness Boundary
 
 The canonical live local route is:

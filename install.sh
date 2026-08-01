@@ -126,9 +126,9 @@ cleanup_legacy_ollama() {
 base_packages_for_pm() {
     pm="$1"
     case "$pm" in
-        apt) echo "libxcb1 libxcb-shape0 libxcb-xfixes0 wl-clipboard xclip ibus gir1.2-ibus-1.0 python3-gi" ;;
-        pacman) echo "libxcb wl-clipboard xclip ibus python-gobject" ;;
-        rpm-ostree|dnf|yum) echo "libxcb wl-clipboard xclip ibus python3-gobject" ;;
+        apt) echo "curl ca-certificates libxcb1 libxcb-shape0 libxcb-xfixes0 wl-clipboard xclip ibus gir1.2-ibus-1.0 python3-gi" ;;
+        pacman) echo "curl ca-certificates libxcb wl-clipboard xclip ibus python-gobject" ;;
+        rpm-ostree|dnf|yum) echo "curl ca-certificates libxcb wl-clipboard xclip ibus python3-gobject" ;;
         *) echo "" ;;
     esac
 }
@@ -247,6 +247,11 @@ if [ ${#need_install[@]} -gt 0 ]; then
 else
     echo "✓ все пакеты уже стоят"
 fi
+
+echo ""
+echo "=== canonical L2 model ==="
+LAY_L2_PACKAGE_SOURCE="$(scripts/resolve-l2-package.sh)"
+export LAY_L2_PACKAGE_SOURCE
 
 echo ""
 echo "=== сборка release ==="
