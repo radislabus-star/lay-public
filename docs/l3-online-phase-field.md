@@ -1845,6 +1845,7 @@ composition-edit focused tests                       6/6 PASS
 central live-field selector tests                     4/4 PASS
 full lay-ibus-engine tests                        155/155 PASS
 WeChat-shaped state: прек + расный -> пре          PASS
+physical post-install WeChat confirmation              PASS
 preedit/candidate/replacement state after Backspace empty
 unarmed lay-test-input exit code                         1
 virtual keyboard created by rejected invocation         no
@@ -1858,10 +1859,8 @@ global ibus-daemon restarted                          false
 active engine after activation                   lay-ime-ru
 ```
 
-What was not tested at this checkpoint:
+What remains unproven at this checkpoint:
 
-- physical post-install Backspace behavior inside the user's current WeChat
-  draft field;
 - the exact process that produced the already-finished historical dot stream;
 - every Electron, Chromium, GTK, Qt, terminal and native WeChat lifecycle.
 
@@ -1870,7 +1869,7 @@ Verdict scope:
 - committed-prefix Backspace ownership: `PASS_CODE`;
 - accidental direct test-input containment: `PASS_CODE`;
 - single-character live candidate display gate: `PASS_CODE`;
-- live WeChat confirmation: `WATCH`;
+- live WeChat confirmation: `PASS`;
 - trained L1.1, L2 or L3 package authority changed: `false`.
 
 Exact receipt:

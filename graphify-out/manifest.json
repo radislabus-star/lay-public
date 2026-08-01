@@ -885,8 +885,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/composition_edit.rs": {
-    "mtime": 1785570683.346146,
-    "ast_hash": "a8b8c035f9a34a213ada0e454487ef4e",
+    "mtime": 1785595720.010895,
+    "ast_hash": "c0bb980877de2fa4508d2ab77723230a",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/engine.rs": {
@@ -3650,8 +3650,8 @@
     "semantic_hash": ""
   },
   "docs/l3-online-phase-field.md": {
-    "mtime": 1785571936.552608,
-    "ast_hash": "9fd58b343762a11c078ec4be2030b73b",
+    "mtime": 1785595720.0118952,
+    "ast_hash": "1aaad0dbe036684d184afae7f27b72ea",
     "semantic_hash": ""
   },
   "src/nanda_wave/context_phase/surface_field.rs": {
@@ -5065,8 +5065,8 @@
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/IME_WECHAT_PREEDIT_EDIT_CONTAINMENT_2026-08-01.json": {
-    "mtime": 1785571936.552608,
-    "ast_hash": "678c9edbb3e65d81ff7b5139e77e161c",
+    "mtime": 1785595720.012895,
+    "ast_hash": "b66954004a5e4950613d32184bcf184d",
     "semantic_hash": ""
   }
 }

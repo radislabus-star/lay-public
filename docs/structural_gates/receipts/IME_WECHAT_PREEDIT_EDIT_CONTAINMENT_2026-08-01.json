@@ -42,6 +42,7 @@
     "wechat_shaped_suffix": "расный",
     "tail_after_backspace": "пре",
     "completion_state_empty_after_backspace": true,
+    "physical_post_install_wechat_confirmation": "PASS",
     "lay_test_input_check": "PASS",
     "remote_host": "e@192.168.3.94",
     "remote_jobs": 20,
@@ -61,7 +62,6 @@
     "rollback_directory": "/home/ubu/.local/lib/lay/rollback/0.2.340-prefinal-20260801-111148"
   },
   "not_tested": [
-    "physical post-install Backspace behavior in the user's current WeChat draft field",
     "exact historical producer of the completed dot stream",
     "all supported client lifecycle variants"
   ],
@@ -72,5 +72,5 @@
     "trained_l1_l2_l3_package_authority_changed": false,
     "runtime_installed_at_receipt_creation": true
   },
-  "verdict": "PASS_CODE_WATCH_LIVE_WECHAT"
+  "verdict": "PASS_LIVE_WECHAT"
 }

@@ -26,11 +26,12 @@ impl LayIbusEngine {
             self.update_composition_preedit(emitter).await?;
             return Ok(true);
         }
-        // The visible completion is virtual preedit, while the typed prefix is
-        // already committed. Some clients (notably WeChat) otherwise consume
-        // Backspace as preedit cancellation and leave the real prefix intact.
-        // Hide the suffix first and do not republish it during the same key
-        // event, so this Backspace reaches the committed character.
+        // LIVE CONTRACT - verified in WeChat on 2026-08-01.
+        // The suffix is virtual preedit, but the typed prefix is already
+        // committed. Keep this exact ownership order: hide preedit, update the
+        // committed-tail mirror, then return handled=false. Do not republish a
+        // suffix in this event. Otherwise WeChat consumes Backspace as preedit
+        // cancellation and leaves the real prefix character intact.
         self.clear_preedit(emitter).await?;
         self.backspace_committed_tail_only();
         Ok(false)
@@ -201,7 +202,7 @@ mod tests {
     }
 
     #[test]
-    fn committed_tail_backspace_dismisses_virtual_completion_before_editing_prefix() {
+    fn wechat_live_contract_backspace_dismisses_completion_and_deletes_one_prefix_char() {
         let mut engine = engine();
         for ch in "прек".chars() {
             engine.push_tail_char(ch);

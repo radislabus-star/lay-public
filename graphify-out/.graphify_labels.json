@@ -474,10 +474,21 @@
   "472": "cases.py",
   "473": "ManifestWriteLock",
   "474": "DecisionOutput",
+  "475": "lexicon.rs",
   "476": "hot_memory.rs",
   "477": "l2_transition_phase_shadow_readout",
+  "478": "autocorrect_edit_safety",
   "479": ".new",
+  "480": "preposition.rs",
   "481": "runtime_flags.rs",
   "482": "13. Standalone Full-Neighbor V13, 2026-07-30",
-  "483": "reload-lay-model-services.sh"
+  "483": "reload-lay-model-services.sh",
+  "484": "choose_token_consensus_with_chooser",
+  "485": "convert",
+  "486": "glued_phrase_part_candidates",
+  "487": "LaySelfTeacherL3Config",
+  "488": "clean_words_limited",
+  "489": "config_path",
+  "490": "LayConfig",
+  "491": "ContextPhaseDisposition"
 }
