@@ -14,7 +14,8 @@ pub use crate::ru_typo::{
     are_ru_keyboard_neighbors, correct_extra_letters, correct_missing_letter,
 };
 pub use crate::russian_lexicon::{
-    is_known_russian_word_or_form, russian_generated_form_dictionary,
+    is_known_russian_word_or_form, reference_russian_generated_form_dictionary,
+    russian_generated_form_dictionary,
 };
 pub use crate::scoped_tail::{
     decide_completed_scope_word, decide_correction, decide_scoped_tail_correction,

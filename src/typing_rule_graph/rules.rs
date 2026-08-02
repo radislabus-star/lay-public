@@ -15,12 +15,14 @@ use super::types::TypingRuleContext;
 mod helpers;
 use helpers::TextRule;
 use helpers::{
-    apply_core_then_word_rule, apply_short_left_word_rule, apply_token_word_rule,
-    cleanup_extra_letters_after_ru_layout, layout_auto_allowed,
+    apply_core_then_word_rule, apply_last_two_word_rule, apply_last_word_rule,
+    apply_short_left_word_rule, apply_token_word_rule, cleanup_extra_letters_after_ru_layout,
+    layout_auto_allowed,
 };
 
 pub(super) fn apply_moved_prefix_pair(ctx: &TypingRuleContext<'_>) -> Option<String> {
     correct_moved_prefix_letter_pair(ctx.core)
+        .or_else(|| apply_last_two_word_rule(ctx, correct_moved_prefix_letter_pair))
 }
 
 pub(super) fn apply_split_word_pair(ctx: &TypingRuleContext<'_>) -> Option<String> {
@@ -121,5 +123,5 @@ pub(super) fn apply_layout_en_to_ru_experimental(ctx: &TypingRuleContext<'_>) ->
 include!("rules/typo.rs");
 
 fn apply_word_rule(ctx: &TypingRuleContext<'_>, rule: TextRule) -> Option<String> {
-    apply_token_word_rule(ctx, rule)
+    apply_token_word_rule(ctx, rule).or_else(|| apply_last_word_rule(ctx, rule))
 }

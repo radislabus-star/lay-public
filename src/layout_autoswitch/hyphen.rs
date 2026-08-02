@@ -45,12 +45,15 @@ fn is_plausible_cyrillic_hyphenated_word(word: &str) -> bool {
     for (idx, part) in parts.iter().enumerate() {
         let lower = part.to_lowercase();
         let len = lower.chars().count();
+        if idx == 0 && is_common_short_russian_preposition(&lower) {
+            strong_parts += 1;
+            continue;
+        }
         if len < 2 || !lower.chars().any(is_russian_vowel) {
             return false;
         }
         if len >= 3
             || is_known_cyrillic_hyphen_part(&lower, russian_short_dictionary())
-            || (idx == 0 && is_common_short_russian_preposition(&lower))
             || (idx > 0 && is_russian_hyphen_particle(&lower))
         {
             strong_parts += 1;

@@ -13,13 +13,69 @@ pub(crate) fn is_reference_backed_russian_form(word: &str) -> bool {
     })
 }
 
-fn is_backed_russian_form(word: &str, contains: impl Fn(&str) -> bool + Copy) -> bool {
-    is_backed_russian_suffix_form(word, contains)
-        || is_backed_zero_ending_noun_form(word, contains)
+pub(crate) fn is_full_reference_backed_russian_form(word: &str) -> bool {
+    is_backed_clean_reference_form(word, |surface| {
+        super::super::full_russian_dictionary().contains(surface)
+            || super::super::full_russian_short_dictionary().contains(surface)
+    })
+}
+
+fn is_backed_clean_reference_form(word: &str, contains: impl Fn(&str) -> bool + Copy) -> bool {
+    is_backed_short_noun_form(word, contains)
+        || is_backed_russian_suffix_form(word, contains)
+        || is_backed_short_accusative_a_form(word, contains)
+        || is_backed_ka_declension_form(word, contains)
+        || is_backed_short_adjective_form(word, contains)
         || is_backed_russian_verb_form(word, contains)
         || is_backed_russian_ch_verb_present_form(word, contains)
         || is_backed_russian_imperative_i_form(word, contains)
         || is_backed_russian_imperative_y_form(word, contains)
+}
+
+fn is_backed_short_noun_form(word: &str, contains: impl Fn(&str) -> bool + Copy) -> bool {
+    if word.chars().count() != 4 {
+        return false;
+    }
+    ["а", "я", "у", "ю", "е", "ы", "и"]
+        .into_iter()
+        .any(|suffix| word.strip_suffix(suffix).is_some_and(contains))
+}
+
+fn is_backed_russian_form(word: &str, contains: impl Fn(&str) -> bool + Copy) -> bool {
+    is_backed_russian_suffix_form(word, contains)
+        || is_backed_zero_ending_noun_form(word, contains)
+        || is_backed_short_accusative_a_form(word, contains)
+        || is_backed_ka_declension_form(word, contains)
+        || is_backed_short_adjective_form(word, contains)
+        || is_backed_russian_verb_form(word, contains)
+        || is_backed_russian_ch_verb_present_form(word, contains)
+        || is_backed_russian_imperative_i_form(word, contains)
+        || is_backed_russian_imperative_y_form(word, contains)
+}
+
+fn is_backed_short_adjective_form(word: &str, contains: impl Fn(&str) -> bool + Copy) -> bool {
+    ["а", "о", "ы"].into_iter().any(|ending| {
+        let Some(stem) = word.strip_suffix(ending) else {
+            return false;
+        };
+        stem.chars().count() >= 3
+            && adjective_lemma_endings()
+                .any(|lemma_ending| contains(&format!("{stem}{lemma_ending}")))
+    })
+}
+
+fn is_backed_short_accusative_a_form(word: &str, contains: impl Fn(&str) -> bool + Copy) -> bool {
+    let Some(stem) = word.strip_suffix('у') else {
+        return false;
+    };
+    stem.chars().count() >= 4 && contains(&format!("{stem}а"))
+}
+
+fn is_backed_ka_declension_form(word: &str, contains: impl Fn(&str) -> bool + Copy) -> bool {
+    let Some(stem) = word.strip_suffix("ок") else {
+        return false;
+    };
+    stem.chars().count() >= 3 && contains(&format!("{stem}ка"))
 }
 
 fn is_backed_zero_ending_noun_form(word: &str, contains: impl Fn(&str) -> bool + Copy) -> bool {
@@ -48,11 +104,24 @@ fn is_backed_russian_suffix_form(word: &str, contains: impl Fn(&str) -> bool + C
         if stem.chars().count() < 3 {
             return false;
         }
+        if matches!(suffix, "ы" | "и")
+            && adjective_lemma_endings().any(|ending| stem.ends_with(ending))
+        {
+            return false;
+        }
         let adjective_suffix = adjective_form_suffixes().any(|candidate| candidate == suffix);
         (!adjective_suffix && contains(stem))
+            || (suffix == "а" && contains(&format!("{stem}о")))
+            || (suffix == "я" && contains(&format!("{stem}е")))
+            || (matches!(suffix, "ы" | "и")
+                && (contains(&format!("{stem}а")) || contains(&format!("{stem}я"))))
+            || (matches!(suffix, "ами" | "ями") && contains(&format!("{stem}о")))
             || (matches!(suffix, "я" | "ю" | "ем" | "ями" | "ях")
                 && stem.ends_with('и')
                 && contains(&format!("{stem}е")))
+            || (matches!(suffix, "и" | "ю" | "ей" | "ям" | "ями" | "ях")
+                && stem.ends_with('и')
+                && contains(&format!("{stem}я")))
             || (adjective_suffix
                 && adjective_lemma_endings().any(|ending| contains(&format!("{stem}{ending}"))))
     })
@@ -62,7 +131,7 @@ pub(super) fn is_backed_russian_verb_form(
     word: &str,
     contains: impl Fn(&str) -> bool + Copy,
 ) -> bool {
-    if word.chars().count() < 5 {
+    if word.chars().count() < 4 {
         return false;
     }
 
@@ -70,7 +139,8 @@ pub(super) fn is_backed_russian_verb_form(
         let Some(stem) = word.strip_suffix(ending) else {
             return false;
         };
-        stem.chars().count() >= 3
+        let min_stem_len = if ending == "шу" { 2 } else { 3 };
+        stem.chars().count() >= min_stem_len
             && lemmas
                 .into_iter()
                 .any(|lemma_suffix| contains(&format!("{stem}{lemma_suffix}")))

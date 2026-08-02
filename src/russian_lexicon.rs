@@ -161,6 +161,14 @@ fn full_russian_generated_form_dictionary() -> &'static WordSet {
     })
 }
 
+/// Process-policy-independent generated forms for offline proof and tests.
+///
+/// This accessor must not be used to grant live runtime authority.
+#[doc(hidden)]
+pub fn reference_russian_generated_form_dictionary() -> &'static WordSet {
+    full_russian_generated_form_dictionary()
+}
+
 pub fn russian_generated_form_dictionary_is_warm() -> bool {
     RUSSIAN_GENERATED_FORMS.get().is_some()
 }
@@ -195,8 +203,41 @@ pub(crate) fn is_reference_known_russian_word_or_form(word: &str) -> bool {
     full_russian_dictionary().contains(word)
         || (full_generated_forms_enabled()
             && full_russian_generated_form_dictionary().contains(word))
-        || forms::is_known_russian_form(word)
+        || forms::is_full_reference_backed_russian_form(word)
+        || forms::is_known_russian_adverb_o_form(word)
         || crate::lexicon::is_ru_technical_loanword(word)
+}
+
+/// Exact read-only reference membership for candidate birth.
+///
+/// This does not grant runtime authority to the original input and does not
+/// include morphology-derived forms.
+pub(crate) fn is_exact_reference_russian_word(word: &str) -> bool {
+    full_russian_dictionary().contains(word) || full_russian_short_dictionary().contains(word)
+}
+
+/// Clean-surface veto for typo arbitration.
+///
+/// This certificate can preserve an attested input, but it never generates or
+/// promotes a replacement candidate.
+pub(crate) fn has_clean_russian_surface_certificate(word: &str) -> bool {
+    let exact = full_russian_dictionary().contains(word);
+    let morphology = forms::is_full_reference_backed_russian_form(word);
+    let adverb = forms::is_known_russian_adverb_o_form(word);
+    let common = crate::lexicon::is_common_ru_word(word);
+    let function = crate::lexicon::is_ru_short_function_word(word)
+        || crate::lexicon::is_ru_one_letter_function_word(word)
+        || crate::lexicon::is_ru_short_preposition(word)
+        || crate::lexicon::is_ru_short_pronoun(word);
+    let live = crate::lexicon::is_ru_live_protected_word(word);
+    let user = crate::lexicon::is_user_protected_word(word);
+    let technical = crate::lexicon::is_ru_technical_loanword(word);
+    if std::env::var_os("LAY_TRACE_CLEAN_SURFACE_CERTIFICATE").is_some() {
+        eprintln!(
+            "clean_surface_certificate word={word} exact={exact} morphology={morphology} adverb={adverb} common={common} function={function} live={live} user={user} technical={technical}"
+        );
+    }
+    exact || morphology || adverb || common || function || live || user || technical
 }
 
 fn empty_word_set() -> &'static WordSet {

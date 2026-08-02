@@ -12,10 +12,12 @@ include!("forms/data.rs");
 
 #[path = "forms/backed.rs"]
 mod backed;
+pub(super) use backed::is_full_reference_backed_russian_form;
 pub(crate) use backed::{is_center_backed_russian_form, is_reference_backed_russian_form};
 
 pub(crate) fn is_known_russian_form(word: &str) -> bool {
-    is_known_russian_suffix_form(word)
+    is_known_russian_adverb_o_form(word)
+        || is_known_russian_suffix_form(word)
         || is_known_russian_short_accusative_a_form(word)
         || is_known_russian_zero_ending_noun_form(word)
         || is_known_russian_ka_declension_form(word)

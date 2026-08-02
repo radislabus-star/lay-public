@@ -180,6 +180,25 @@ managed engine и daemon не перезапускались. Receipt:
 
 ## 6. Производительность без потери кандидатов
 
+**Статус: выполнено 2026-08-02, release target `0.2.347`.** Канонический
+lossless shard-1 V8 пакет занимает `198,233,790 B` (`189.05 MiB`) и сохраняет
+все `108,156,559` forward relations. Для fixed-520 (`13 x 40`) candidate SHA
+остался точным:
+`f3501c6cf518ba9747b5ef4323565199dcfa49fde4068c97c2e728c451c536c2`.
+Три независимых процесса на P-core CPU set `4-11` дали raw first-touch p99
+`4.333 / 4.351 / 4.950 ms`, hot p99 `4.397 / 4.917 / 4.865 ms` и complete
+restoration p99 `4.490 / 4.148 / 4.786 ms`. Peak RSS составил
+`345,180-346,956 KiB`, warmup `1.218-1.234 s`. Runtime authority не менялась.
+
+Принятые defaults: `4` runtime workers, `64 MiB` posting cache, `0 MiB` shard
+cache, `16 MiB` reverse cache и `4096` слов warm-profile. Parallel scan
+reconstruction reserve отклонён: два из трёх restoration p99 превысили `5 ms`.
+На гибридном CPU без affinity два из трёх контрольных процессов также
+превысили gate на `0.193` и `0.028 ms`; поэтому P-core affinity является частью
+измеренного deployment contract, а не свойством бинарного формата.
+Receipt:
+`/home/ubu/projects/lay/docs/structural_gates/receipts/L1_L11_FIRST_TOUCH_PHASE6_2026-08-02.json`.
+
 1. Уменьшить L1.1 diverse first-touch p99 с `24.365 ms`.
 2. Использовать mmap-prefetch, background warmup, cache и bounded active sets.
 3. Не удалять candidate sources и не уменьшать поле.
@@ -189,6 +208,46 @@ managed engine и daemon не перезапускались. Receipt:
 
 ## 7. Финальный Product Gate
 
+**Статус: `PASS_CODE`, release target `0.2.348`, live application matrix
+остаётся отдельным gate.** Последовательный `lay-daemon` gate прошёл
+`200/200`; representative adjacent-transposition sweep восстановил `487/497`
+форм (`97%`). Полный прогон занял `245.60 s`, peak RSS составил `353,900 KiB`.
+Порядковая утечка `HotFieldPolicy` устранена: чтение test-конфига больше не
+переключает process-wide authority библиотеки.
+
+В одном gate подтверждены сохранение пробела при удлинении слова, exact short
+layout projection `дфн -> lay`, защита общего короткого RU -> ASCII шума,
+начальная пропущенная гласная для сильного словарного центра и сохранение
+естественных русских слов/дефисных конструкций. Регрессия `бычный -> бычиный`
+устранена общим morph-class gate: сильный начальный vowel-center допускается
+для прилагательного или после наблюдаемой удвоенной согласной; ложное
+`лучшить -> улучшить` остаётся запрещено.
+
+Boundary-shift readout больше не выдаёт direct authority только из-за двух
+морфологически похожих половин. На clean corpus ложные применения уменьшены
+`3/220 -> 0/220`; на `188` неомонимичных synthetic shifts поле предложило
+правильную границу в `185` случаях (`98.4%`) и автоматически применило `156`.
+Повреждения, совпавшие с самостоятельным clean surface, исключены из top-1
+denominator и остаются неоднозначными.
+
+Runtime authority изменилась: verifier-proven deterministic repair и точная
+layout projection к известному центру могут пройти ранее общий hidden/Bayesian
+отказ. Наблюдаемая clean surface по-прежнему имеет veto. Это не новый L1.1
+quality proof: fixed heldout `13 x 20,000` и проценты по классам здесь не
+перезапускались. Физическая матрица приложений ниже также не заменяется
+unit/integration gate.
+
+Receipt:
+`/home/ubu/projects/lay/docs/structural_gates/receipts/FINAL_PRODUCT_GATE_PHASE7_2026-08-02.json`.
+
+Технический release-контур завершён 2026-08-02. Изолированная сборка на
+`e@192.168.3.94` использовала `20` Cargo jobs и закончилась за `143.52 s` при
+средней загрузке `475%`, peak RSS `1,659,024 KiB`, без swap и с exit `0`.
+Десять бинарников перенесены с SHA-256 parity и установлены атомарно. CLI,
+daemon и GNOME extension показывают `0.2.348`; daemon перезапущен отдельно,
+IBus сохранил PID `4119`. Reload extension временно изменил активный engine,
+после чего прежний `lay-ime-ru` был восстановлен без перезапуска IBus.
+
 Проверить одну матрицу:
 
 ```text
@@ -197,7 +256,8 @@ typing | preedit | Backspace | Tab | Space
 double Shift | focus change | layout conversion
 ```
 
-После этого: remote release build, architecture receipts, `graphify update .`, version bump, commit, push, атомарная установка и контролируемый runtime smoke.
+Осталось: физическая application matrix, затем commit и push. Она не заменяет
+уже пройденные code gates и не заменяется ими.
 
 ## Критический путь
 

@@ -17,6 +17,10 @@ use script::{run_script, run_script_text};
 use typing::{double_shift_manual, double_shift_manual_after, type_physical};
 
 const BUILTIN_SCRIPTS: &str = include_str!("../../../data/test_input/builtin_scripts.tsv");
+include!(concat!(
+    env!("OUT_DIR"),
+    "/lay_test_input_builtin_scripts.rs"
+));
 
 pub(crate) fn run_scenario(dev: &mut VirtualDevice, scenario: &str) -> std::io::Result<()> {
     if let Some(path) = scenario.strip_prefix("script:") {
@@ -232,26 +236,42 @@ pub(crate) fn run_scenario(dev: &mut VirtualDevice, scenario: &str) -> std::io::
 }
 
 fn builtin_script(scenario: &str) -> std::io::Result<Option<String>> {
-    let Some(file_name) = BUILTIN_SCRIPTS.lines().find_map(|line| {
+    let indexed = BUILTIN_SCRIPTS.lines().any(|line| {
         let line = line.trim();
         if line.is_empty() || line.starts_with('#') {
-            return None;
+            return false;
         }
-        let (id, file_name) = line.split_once('\t')?;
-        (id == scenario).then_some(file_name)
-    }) else {
+        line.split_once('\t').is_some_and(|(id, _)| id == scenario)
+    });
+    if !indexed {
         return Ok(None);
-    };
-
-    if file_name.contains('/') || file_name.contains('\\') || file_name.contains("..") {
-        return Err(std::io::Error::new(
-            std::io::ErrorKind::InvalidData,
-            format!("bad builtin script path: {file_name}"),
-        ));
     }
+    builtin_script_text(scenario)
+        .map(str::to_owned)
+        .map(Some)
+        .ok_or_else(|| {
+            std::io::Error::new(
+                std::io::ErrorKind::InvalidData,
+                format!("builtin script {scenario:?} was indexed but not embedded"),
+            )
+        })
+}
 
-    let path = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("data/test_input")
-        .join(file_name);
-    std::fs::read_to_string(path).map(Some)
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn every_indexed_builtin_script_is_embedded() {
+        for line in BUILTIN_SCRIPTS.lines().map(str::trim) {
+            if line.is_empty() || line.starts_with('#') {
+                continue;
+            }
+            let (id, _) = line.split_once('\t').expect("builtin script index row");
+            assert!(
+                builtin_script_text(id).is_some(),
+                "missing embedded script {id}"
+            );
+        }
+    }
 }

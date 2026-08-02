@@ -13,6 +13,8 @@
       "id": "decision-authority",
       "status": "WATCH",
       "violations": [
+        "forbidden_import:src/nanda_wave/context_phase/compiler.rs:L2:src_text_edit_cursor",
+        "forbidden_import:src/nanda_wave/context_phase/proof.rs:L2:src_text_edit_cursor",
         "foreign_type_owner:TransitionDecisionCore:src/typing_transition/decision/live_field.rs"
       ]
     },
@@ -106,8 +108,8 @@
     {
       "evidence": [
         "src/nanda_wave/l4_signed_memory.rs:L4:L4SignedMemorySignal",
-        "src/nanda_wave/usage_prior.rs:L185:UsagePriorSnapshot",
-        "src/typing_memory.rs:L156:TypingMemoryEvent"
+        "src/nanda_wave/usage_prior.rs:L311:UsagePriorSnapshot",
+        "src/typing_memory.rs:L355:TypingMemoryEvent"
       ],
       "id": "l3-l4-learning",
       "status": "PASS",
@@ -115,8 +117,8 @@
     },
     {
       "evidence": [
-        "graph_links:28434",
-        "graph_nodes:11170"
+        "graph_links:29495",
+        "graph_nodes:11501"
       ],
       "id": "fast-verifiable",
       "status": "WATCH",
@@ -131,10 +133,10 @@
       "src/nanda_wave/lexical_phase/format.rs:L109:normalize_surface()"
     ]
   },
-  "graph_fingerprint": "3f5eb6fd2fe26d801f582529b1550ae89d2a3fcc13f1f624ce2ee52ef28f60aa",
-  "graph_links": 28434,
-  "graph_nodes": 11170,
+  "graph_fingerprint": "ffffbe6e2e01b588fee1a0c319f553cad0f4d6b5dd712906c9377178b3a120a2",
+  "graph_links": 29495,
+  "graph_nodes": 11501,
   "schema": "lay.architecture-graph-receipt.v1",
-  "source_fingerprint": "81e3de6e0cb607f18be8a633ecbfb3eafdeb11d9d737e0120f66c29445bdeddc",
+  "source_fingerprint": "40e283636cebad6060d0f8f280d3efe80c92507e7fe055da43be5b5b405bf88b",
   "verdict": "WATCH"
 }

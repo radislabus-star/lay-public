@@ -3128,3 +3128,95 @@ Runtime authority did not change. Exact receipts:
 /home/ubu/projects/lay/docs/structural_gates/receipts/L1_L11_GLOBAL_COMPACTION_852582_2026-07-30.json
 /home/ubu/projects/lay/docs/structural_gates/receipts/L1_L11_V8_GROUPED_CACHE_RUNTIME_2026-07-30.json
 ```
+
+### Phase 6 canonical first-touch runtime, 2026-08-02
+
+This experiment changed runtime representation and lookup only. It did not
+remove candidate sources, reduce birth/frontier limits, alter scores, change
+relations or rebuild the learned field.
+
+Canonical immutable inputs:
+
+```text
+package                                  /home/e/build/lay-l1-shadow/artifacts/l11-v8-shard1-final-2026-07-29/package.v8.bin
+package bytes                            198,233,790 = 189.05 MiB
+package SHA-256                          03e320857cafc7d661a1893f728f8777c5e0b755ee01214502548779fbee6494
+forward relations                       108,156,559, all retained
+fixed latency set                       520 = 13 classes x 40
+fixed set SHA-256                        f28a7e0f46fada51c59001af5df45e071d7966163de5c94d03f60e0bb0d77dd8
+candidate SHA-256                        f3501c6cf518ba9747b5ef4323565199dcfa49fde4068c97c2e728c451c536c2
+```
+
+Accepted runtime defaults for shard-1:
+
+```text
+runtime workers                          4
+posting cache                            64 MiB
+decoded shard cache                      0 MiB
+reverse cache                            16 MiB
+warm-profile words                       4,096
+protected posting budget                 60 MiB
+protected postings                       1,199
+protected relations                      7,864,320
+background warmup                        before service ready/reload swap
+```
+
+The operator lane now uses a precomputed `character -> CharacterAnchor AtomId`
+map, stack-based insertion/transposition enumeration and an exact-surface hash
+index with collision verification. Forward posting misses are decoded in one
+batch. Reverse frontier activation takes one cache snapshot, reconstructs only
+misses in parallel and admits them deterministically. Protected warm-profile
+postings cannot be evicted by transient scans.
+
+Three separate processes on the hybrid mini-PC, constrained to P-core logical
+CPUs `4-11`:
+
+| Run | Raw first-touch p99 | Hot p99 | Restoration p99 | Peak RSS | Warmup |
+|---|---:|---:|---:|---:|---:|
+| 1 | 4.333 ms | 4.397 ms | 4.490 ms | 345,424 KiB | 1.219 s |
+| 2 | 4.351 ms | 4.917 ms | 4.148 ms | 345,180 KiB | 1.218 s |
+| 3 | 4.950 ms | 4.865 ms | 4.786 ms | 346,956 KiB | 1.234 s |
+
+All three candidate fingerprints were exact. The `<=5 ms` raw first-touch,
+hot and complete-restoration gates therefore pass under the measured P-core
+deployment contract.
+
+Two limits are recorded separately:
+
+```text
+parallel reconstruction reserve          REJECTED
+parallel restoration p99                 5.922 / 5.562 / 4.085 ms
+unconstrained hybrid-CPU restoration p99 4.484 / 5.193 / 5.028 ms
+unconstrained hybrid-CPU verdict         WATCH, scheduler migration visible
+```
+
+The stage trace on the accepted sequential branch measured p99 `2.101 ms`
+forward activation, `1.871 ms` reverse activation, `0.845 ms` operator reserve,
+`0.951 ms` reconstruction reserve and `0.801 ms` finish. These are diagnostic
+distributions and are not arithmetically summed.
+
+Tested:
+
+```text
+fixed-520 class-balanced latency set      yes
+three fresh processes per variant         yes
+candidate parity                          exact
+protected-cache pollution regression      PASS
+readout parity before/after warmup         PASS
+package or relation mutation              none
+```
+
+Not tested by this checkpoint:
+
+```text
+multi-day service residency
+delta-overlay first-touch latency
+L1.1 direct edit authority
+non-hybrid deployment CPUs
+```
+
+Runtime authority did not change. Exact receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L1_L11_FIRST_TOUCH_PHASE6_2026-08-02.json
+```

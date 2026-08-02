@@ -21,10 +21,14 @@ pub(crate) fn correct_contextual_past_tense_vowel_confusion(word: &str) -> Optio
 }
 
 fn correct_vowel_confusion_impl(word: &str, allow_safe_past_tense: bool) -> Option<String> {
+    if word.contains('-') {
+        return None;
+    }
     (word.chars().count() >= 5 && is_cyrillic_word(word)).then_some(())?;
 
     let lower = word.to_lowercase();
     (!is_known_russian_word_or_form(&lower)).then_some(())?;
+    (!crate::russian_lexicon::has_clean_russian_surface_certificate(&lower)).then_some(())?;
     (!super::missing::missing_letter_candidate_exists(word, &lower)).then_some(())?;
     let candidates = generate_vowel_confusion_candidates(&lower)
         .into_iter()

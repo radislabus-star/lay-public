@@ -86,7 +86,11 @@ pub(crate) fn looks_like_short_function_word_glued_to_known_word(word: &str) -> 
         if right_len < 4 {
             continue;
         }
-        if is_short_russian_function_word(left) && is_known_russian_phrase_part(right) {
+        let strict_function_left = is_ru_short_function_word(left)
+            || is_ru_one_letter_function_word(left)
+            || is_ru_short_preposition(left)
+            || is_ru_short_pronoun(left);
+        if strict_function_left && is_known_russian_phrase_part(right) {
             return true;
         }
     }

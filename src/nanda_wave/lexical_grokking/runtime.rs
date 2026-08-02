@@ -8,12 +8,14 @@ use std::time::Instant;
 
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
+use sha2::{Digest, Sha256};
 
 use crate::stable_hash::mix64_golden;
 
 use super::atoms::{
     encode_wave_surface, normalize_lexical_surface, physical_key_sequence, AtomChannel, NGramKey,
 };
+use super::corruption::split_scale_damages;
 use super::crystal::{AmbiguityPhaseCenter64, WAVE_DIMENSION};
 use super::format;
 use super::model::{
@@ -40,6 +42,9 @@ const SETTLING_ITERATIONS: u8 = 3;
 const MAX_ANCHOR_SEQUENCE: usize = 32;
 const MAX_EXACT_COLLISION_OPERATOR_CHARS: usize = 16;
 const DEFAULT_REVERSE_CACHE_MIB: usize = 16;
+const DEFAULT_FIRST_TOUCH_PROFILE_WORDS: usize = 4_096;
+const MAX_FIRST_TOUCH_PROFILE_WORDS: usize = 16_384;
+const FIRST_TOUCH_TRANSIENT_RESERVE_MIB: usize = 4;
 pub(super) const RECONSTRUCTION_MODE_DELETION: u8 = 1;
 pub(super) const RECONSTRUCTION_MODE_DELETION_TRANSPOSITION: u8 = 2;
 pub(super) const RECONSTRUCTION_MODE_SUFFIX_TRUNCATION: u8 = 4;
@@ -177,9 +182,22 @@ pub fn benchmark_diverse_restoration(
             "diverse restoration benchmark requires at least one surface",
         ));
     }
+    let birth_profile = memory.birth_profile(&surfaces);
     for surface in surfaces.iter().take(32) {
         std::hint::black_box(memory.readout(surface, limit, ReadoutMode::Full));
     }
+    let mut raw_readout_elapsed_us = surfaces
+        .iter()
+        .map(|surface| {
+            let started = Instant::now();
+            std::hint::black_box(memory.readout(surface, limit, ReadoutMode::Full));
+            started.elapsed().as_micros() as u64
+        })
+        .collect::<Vec<_>>();
+    raw_readout_elapsed_us.sort_unstable();
+    let warmup_started = Instant::now();
+    let warmup = memory.warm_first_touch()?;
+    let background_warmup_ms = warmup_started.elapsed().as_millis() as u64;
     let mut readout_elapsed_us = surfaces
         .iter()
         .map(|surface| {
@@ -189,14 +207,6 @@ pub fn benchmark_diverse_restoration(
         })
         .collect::<Vec<_>>();
     readout_elapsed_us.sort_unstable();
-    for surface in surfaces.iter().take(32) {
-        let mut candidates = memory.readout(surface, limit, ReadoutMode::Full);
-        std::hint::black_box(memory.classify_restoration(
-            surface,
-            &mut candidates,
-            memory.package.restoration_calibration,
-        ));
-    }
     let mut elapsed_us = surfaces
         .iter()
         .map(|surface| {
@@ -211,11 +221,19 @@ pub fn benchmark_diverse_restoration(
         })
         .collect::<Vec<_>>();
     elapsed_us.sort_unstable();
+    let candidate_sha256 = candidate_fingerprint(&memory, &surfaces, limit)?;
     Ok(serde_json::json!({
         "package": package_path,
         "surfaces": surfaces_path,
         "sample_count": surfaces.len(),
         "limit": limit,
+        "raw_readout_p50_us": percentile(&raw_readout_elapsed_us, 50),
+        "raw_readout_p90_us": percentile(&raw_readout_elapsed_us, 90),
+        "raw_readout_p99_us": percentile(&raw_readout_elapsed_us, 99),
+        "raw_readout_max_us": raw_readout_elapsed_us.last().copied().unwrap_or_default(),
+        "background_warmup_ms": background_warmup_ms,
+        "warmup": warmup,
+        "birth_profile": birth_profile,
         "readout_p50_us": percentile(&readout_elapsed_us, 50),
         "readout_p90_us": percentile(&readout_elapsed_us, 90),
         "readout_p99_us": percentile(&readout_elapsed_us, 99),
@@ -224,7 +242,31 @@ pub fn benchmark_diverse_restoration(
         "p90_us": percentile(&elapsed_us, 90),
         "p99_us": percentile(&elapsed_us, 99),
         "max_us": elapsed_us.last().copied().unwrap_or_default(),
+        "candidate_sha256": candidate_sha256,
     }))
+}
+
+fn candidate_fingerprint(
+    memory: &LexicalGrokkingMemory,
+    surfaces: &[String],
+    limit: usize,
+) -> io::Result<String> {
+    let mut digest = Sha256::new();
+    for surface in surfaces {
+        digest.update((surface.len() as u64).to_le_bytes());
+        digest.update(surface.as_bytes());
+        let candidates = memory.readout(surface, limit, ReadoutMode::Full);
+        let bytes = serde_json::to_vec(
+            &candidates
+                .into_iter()
+                .map(|candidate| candidate_json(memory, candidate))
+                .collect::<Vec<_>>(),
+        )
+        .map_err(io::Error::other)?;
+        digest.update((bytes.len() as u64).to_le_bytes());
+        digest.update(bytes);
+    }
+    Ok(format!("{:x}", digest.finalize()))
 }
 
 fn benchmark_host_once(host: &L1RestorationHost, surface: &str, limit: usize) -> u64 {
@@ -302,6 +344,14 @@ fn percentile(sorted: &[u64], percentile: usize) -> u64 {
     sorted[index]
 }
 
+fn percent_usize(numerator: usize, denominator: usize) -> f64 {
+    if denominator == 0 {
+        0.0
+    } else {
+        numerator as f64 * 100.0 / denominator as f64
+    }
+}
+
 fn readout_trace_enabled() -> bool {
     static ENABLED: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
     *ENABLED.get_or_init(|| std::env::var_os("LAY_L11_READOUT_TRACE").is_some())
@@ -347,6 +397,17 @@ fn reverse_cache_bytes() -> usize {
             .unwrap_or(DEFAULT_REVERSE_CACHE_MIB)
             .min(128)
             .saturating_mul(1024 * 1024)
+    })
+}
+
+fn first_touch_profile_word_count() -> usize {
+    static WORDS: std::sync::OnceLock<usize> = std::sync::OnceLock::new();
+    *WORDS.get_or_init(|| {
+        std::env::var("LAY_L11_V8_WARM_PROFILE_WORDS")
+            .ok()
+            .and_then(|value| value.parse::<usize>().ok())
+            .unwrap_or(DEFAULT_FIRST_TOUCH_PROFILE_WORDS)
+            .clamp(1, MAX_FIRST_TOUCH_PROFILE_WORDS)
     })
 }
 
@@ -455,6 +516,21 @@ struct ObservedAtom {
 
 type BirthAtom = (usize, u32, ObservedAtom);
 
+#[derive(Clone, Copy)]
+enum CachePlanOrder {
+    Support,
+    Degree,
+    ObservedUses,
+}
+
+struct FirstTouchWarmProfile {
+    atom_ids: Vec<u32>,
+    sampled_words: usize,
+    damage_surfaces: usize,
+    observed_atoms: usize,
+    protected_budget_bytes: usize,
+}
+
 fn select_birth_atoms(
     birth_by_channel: &mut [Vec<BirthAtom>],
     atoms_per_channel: usize,
@@ -503,7 +579,9 @@ impl AnchorSequence {
 
 pub(super) struct LexicalGrokkingMemory {
     pub(super) package: LexicalGrokkingPackage,
-    exact_surface_index: Vec<(u64, u32)>,
+    exact_surface_index: HashMap<u64, u32>,
+    exact_surface_collisions: HashMap<u64, Vec<u32>>,
+    character_anchor_by_char: HashMap<char, u32>,
     character_anchor_offsets: Vec<u32>,
     character_anchor_atoms: Vec<u32>,
     relations: RelationStore,
@@ -569,11 +647,18 @@ struct L1OverlayMemory {
 
 impl LexicalGrokkingMemory {
     pub(super) fn from_package(package: LexicalGrokkingPackage) -> Self {
-        let (exact_surface_index, character_anchor_offsets, character_anchor_atoms) =
-            compile_surface_indices(&package);
+        let (
+            exact_surface_index,
+            exact_surface_collisions,
+            character_anchor_by_char,
+            character_anchor_offsets,
+            character_anchor_atoms,
+        ) = compile_surface_indices(&package);
         Self {
             package,
             exact_surface_index,
+            exact_surface_collisions,
+            character_anchor_by_char,
             character_anchor_offsets,
             character_anchor_atoms,
             relations: RelationStore::Eager,
@@ -612,11 +697,18 @@ impl LexicalGrokkingMemory {
         }
         let artifact = V8Artifact::load(path)?;
         let package = artifact.decode_base()?;
-        let (exact_surface_index, character_anchor_offsets, character_anchor_atoms) =
-            compile_surface_indices(&package);
+        let (
+            exact_surface_index,
+            exact_surface_collisions,
+            character_anchor_by_char,
+            character_anchor_offsets,
+            character_anchor_atoms,
+        ) = compile_surface_indices(&package);
         Ok(Self {
             package,
             exact_surface_index,
+            exact_surface_collisions,
+            character_anchor_by_char,
             character_anchor_offsets,
             character_anchor_atoms,
             relations: RelationStore::LazyV8(artifact),
@@ -642,6 +734,291 @@ impl LexicalGrokkingMemory {
             return Vec::new();
         };
         self.finish_readout(surface, limit, mode, &prepared)
+    }
+
+    pub(super) fn warm_first_touch(&self) -> io::Result<serde_json::Value> {
+        let RelationStore::LazyV8(artifact) = &self.relations else {
+            return Ok(serde_json::json!({
+                "format": "eager",
+                "eligible_atoms": 0,
+                "eligible_relations": 0,
+            }));
+        };
+        let profile = self.first_touch_warm_profile(artifact.posting_cache_budget_bytes());
+        let stats = artifact
+            .warm_first_touch(&profile.atom_ids)
+            .map_err(io::Error::other)?;
+        Ok(serde_json::json!({
+            "format": "v8",
+            "sampled_words": profile.sampled_words,
+            "damage_surfaces": profile.damage_surfaces,
+            "observed_atoms": profile.observed_atoms,
+            "protected_budget_bytes": profile.protected_budget_bytes,
+            "eligible_atoms": stats.eligible_atoms,
+            "eligible_relations": stats.eligible_relations,
+            "posting_cache_bytes": stats.posting_cache_bytes,
+            "posting_cache_entries": stats.posting_cache_entries,
+            "protected_cache_bytes": stats.protected_cache_bytes,
+            "protected_cache_entries": stats.protected_cache_entries,
+            "shard_cache_bytes": stats.shard_cache_bytes,
+            "shard_cache_entries": stats.shard_cache_entries,
+        }))
+    }
+
+    fn first_touch_warm_profile(&self, cache_budget_bytes: usize) -> FirstTouchWarmProfile {
+        let terminal_count = self.package.terminal_count() as usize;
+        let sampled_words = first_touch_profile_word_count().min(terminal_count);
+        let mut atom_uses = BTreeMap::<u32, usize>::new();
+        let mut damage_surfaces = 0_usize;
+        for sample in 0..sampled_words {
+            let terminal_id = sample
+                .saturating_mul(terminal_count)
+                .saturating_add(sampled_words / 2)
+                / sampled_words.max(1);
+            let Some(word) = self.decode_terminal(terminal_id as u32) else {
+                continue;
+            };
+            let (training, heldout) = split_scale_damages(&word, false);
+            let mut by_class = BTreeMap::<&'static str, String>::new();
+            for example in training.into_iter().chain(heldout) {
+                by_class
+                    .entry(example.class)
+                    .and_modify(|surface| {
+                        if example.surface < *surface {
+                            *surface = example.surface.clone();
+                        }
+                    })
+                    .or_insert(example.surface);
+            }
+            for surface in by_class.into_values() {
+                damage_surfaces += 1;
+                let observed = self.resolve_surface(&surface);
+                let mut by_channel: [Vec<BirthAtom>; 12] = std::array::from_fn(|_| Vec::new());
+                for (atom_id, atom) in observed
+                    .iter()
+                    .filter(|(_, atom)| !is_anchor_channel(atom.channel))
+                {
+                    by_channel[atom.channel as usize].push((
+                        self.forward_degree(*atom_id),
+                        *atom_id,
+                        *atom,
+                    ));
+                }
+                for (_, atom_id, _) in select_birth_atoms(
+                    &mut by_channel,
+                    birth_atoms_per_channel(),
+                    birth_posting_budget(),
+                ) {
+                    *atom_uses.entry(atom_id).or_default() += 1;
+                }
+            }
+        }
+        let observed_atoms = atom_uses.len();
+        let mut ranked = atom_uses
+            .into_iter()
+            .map(|(atom_id, uses)| (uses, self.forward_degree(atom_id), atom_id))
+            .filter(|(_, degree, _)| *degree != 0)
+            .collect::<Vec<_>>();
+        ranked.sort_unstable_by(|left, right| {
+            right
+                .0
+                .cmp(&left.0)
+                .then_with(|| right.1.cmp(&left.1))
+                .then_with(|| left.2.cmp(&right.2))
+        });
+        let reserve = FIRST_TOUCH_TRANSIENT_RESERVE_MIB.saturating_mul(1024 * 1024);
+        let protected_budget_bytes =
+            cache_budget_bytes.saturating_sub(reserve.min(cache_budget_bytes));
+        let mut protected_bytes = 0_usize;
+        let mut atom_ids = Vec::new();
+        for (_, degree, atom_id) in ranked {
+            let posting_bytes = degree.saturating_mul(std::mem::size_of::<WaveCoupling>());
+            if posting_bytes > protected_budget_bytes.saturating_sub(protected_bytes) {
+                continue;
+            }
+            protected_bytes = protected_bytes.saturating_add(posting_bytes);
+            atom_ids.push(atom_id);
+        }
+        FirstTouchWarmProfile {
+            atom_ids,
+            sampled_words,
+            damage_surfaces,
+            observed_atoms,
+            protected_budget_bytes,
+        }
+    }
+
+    fn birth_profile(&self, surfaces: &[String]) -> serde_json::Value {
+        let mut uses = BTreeMap::<u32, (usize, AtomChannel)>::new();
+        let mut selected_references = 0_usize;
+        let mut selected_relations = 0_usize;
+        for surface in surfaces {
+            let observed = self.resolve_surface(surface);
+            let mut by_channel: [Vec<BirthAtom>; 12] = std::array::from_fn(|_| Vec::new());
+            for (atom_id, atom) in observed
+                .iter()
+                .filter(|(_, atom)| !is_anchor_channel(atom.channel))
+            {
+                by_channel[atom.channel as usize].push((
+                    self.forward_degree(*atom_id),
+                    *atom_id,
+                    *atom,
+                ));
+            }
+            for (degree, atom_id, atom) in select_birth_atoms(
+                &mut by_channel,
+                birth_atoms_per_channel(),
+                birth_posting_budget(),
+            ) {
+                selected_references += 1;
+                selected_relations = selected_relations.saturating_add(degree);
+                uses.entry(atom_id)
+                    .and_modify(|entry| entry.0 += 1)
+                    .or_insert((1, atom.channel));
+            }
+        }
+        let unique_relations = uses
+            .keys()
+            .map(|atom_id| self.forward_degree(*atom_id))
+            .sum::<usize>();
+        let mut hottest = uses
+            .iter()
+            .map(|(atom_id, (uses, channel))| {
+                let atom_id = *atom_id;
+                let uses = *uses;
+                let channel = *channel;
+                let degree = self.forward_degree(atom_id);
+                (uses.saturating_mul(degree), atom_id, uses, degree, channel)
+            })
+            .collect::<Vec<_>>();
+        hottest.sort_unstable_by(|left, right| {
+            right
+                .0
+                .cmp(&left.0)
+                .then_with(|| right.3.cmp(&left.3))
+                .then_with(|| left.1.cmp(&right.1))
+        });
+        let cache_plans = [96_usize, 128]
+            .into_iter()
+            .map(|budget_mib| {
+                let budget_bytes = budget_mib.saturating_mul(1024 * 1024);
+                serde_json::json!({
+                    "budget_mib": budget_mib,
+                    "support": self.simulate_posting_cache_plan(
+                        &uses,
+                        selected_references,
+                        selected_relations,
+                        budget_bytes,
+                        CachePlanOrder::Support,
+                    ),
+                    "degree": self.simulate_posting_cache_plan(
+                        &uses,
+                        selected_references,
+                        selected_relations,
+                        budget_bytes,
+                        CachePlanOrder::Degree,
+                    ),
+                    "oracle": self.simulate_posting_cache_plan(
+                        &uses,
+                        selected_references,
+                        selected_relations,
+                        budget_bytes,
+                        CachePlanOrder::ObservedUses,
+                    ),
+                })
+            })
+            .collect::<Vec<_>>();
+        serde_json::json!({
+            "selected_references": selected_references,
+            "selected_relations": selected_relations,
+            "unique_atoms": hottest.len(),
+            "unique_relations": unique_relations,
+            "unique_decoded_bytes": unique_relations.saturating_mul(std::mem::size_of::<WaveCoupling>()),
+            "cache_plans": cache_plans,
+            "top_expected_decode_work": hottest
+                .into_iter()
+                .take(64)
+                .map(|(work, atom_id, uses, degree, channel)| serde_json::json!({
+                    "atom_id": atom_id,
+                    "channel": format!("{channel:?}"),
+                    "uses": uses,
+                    "degree": degree,
+                    "expected_decode_work": work,
+                    "decoded_bytes": degree.saturating_mul(std::mem::size_of::<WaveCoupling>()),
+                }))
+                .collect::<Vec<_>>(),
+        })
+    }
+
+    fn simulate_posting_cache_plan(
+        &self,
+        observed_uses: &BTreeMap<u32, (usize, AtomChannel)>,
+        selected_references: usize,
+        selected_relations: usize,
+        budget_bytes: usize,
+        order: CachePlanOrder,
+    ) -> serde_json::Value {
+        let mut atoms = self
+            .package
+            .atoms
+            .iter()
+            .enumerate()
+            .map(|(atom_id, record)| {
+                let atom_id = atom_id as u32;
+                let degree = self.forward_degree(atom_id);
+                let uses = observed_uses
+                    .get(&atom_id)
+                    .map(|entry| entry.0)
+                    .unwrap_or_default();
+                (atom_id, usize::from(record.support), degree, uses)
+            })
+            .collect::<Vec<_>>();
+        atoms.sort_unstable_by(|left, right| {
+            let left_key = match order {
+                CachePlanOrder::Support => left.1,
+                CachePlanOrder::Degree => left.2,
+                CachePlanOrder::ObservedUses => left.3,
+            };
+            let right_key = match order {
+                CachePlanOrder::Support => right.1,
+                CachePlanOrder::Degree => right.2,
+                CachePlanOrder::ObservedUses => right.3,
+            };
+            right_key
+                .cmp(&left_key)
+                .then_with(|| right.2.cmp(&left.2))
+                .then_with(|| left.0.cmp(&right.0))
+        });
+        let mut bytes = 0_usize;
+        let mut atom_count = 0_usize;
+        let mut relation_count = 0_usize;
+        let mut observed_reference_hits = 0_usize;
+        let mut observed_relation_hits = 0_usize;
+        for (_, _, degree, uses) in atoms {
+            let posting_bytes = degree.saturating_mul(std::mem::size_of::<WaveCoupling>());
+            if posting_bytes > budget_bytes.saturating_sub(bytes) {
+                continue;
+            }
+            bytes = bytes.saturating_add(posting_bytes);
+            atom_count += 1;
+            relation_count = relation_count.saturating_add(degree);
+            observed_reference_hits = observed_reference_hits.saturating_add(uses);
+            observed_relation_hits =
+                observed_relation_hits.saturating_add(uses.saturating_mul(degree));
+        }
+        serde_json::json!({
+            "atom_count": atom_count,
+            "relation_count": relation_count,
+            "bytes": bytes,
+            "observed_reference_coverage_percent": percent_usize(
+                observed_reference_hits,
+                selected_references,
+            ),
+            "observed_decode_work_coverage_percent": percent_usize(
+                observed_relation_hits,
+                selected_relations,
+            ),
+        })
     }
 
     pub(super) fn readout_modes(
@@ -1045,15 +1422,29 @@ impl LexicalGrokkingMemory {
         mode: ReadoutMode,
         prepared: &PreparedReadout,
     ) -> Vec<GrokkingCandidate> {
+        let trace_started = Instant::now();
         let mut candidates = self.settle_prepared_candidates(prepared, mode);
-        self.finalize_candidates(
-            surface,
+        let settle_us = trace_started.elapsed().as_micros();
+        self.apply_restoration_geometry(surface, &mut candidates);
+        let geometry_us = trace_started.elapsed().as_micros();
+        self.finalize_candidates_after_geometry(
             limit,
             mode,
             &prepared.surface_re,
             &prepared.surface_im,
             &mut candidates,
         );
+        if readout_trace_enabled() {
+            let finish_us = trace_started.elapsed().as_micros();
+            eprintln!(
+                "l11_finish_trace settle_us={} geometry_us={} finalize_us={} finish_us={} candidates={}",
+                settle_us,
+                geometry_us.saturating_sub(settle_us),
+                finish_us.saturating_sub(geometry_us),
+                finish_us,
+                candidates.len(),
+            );
+        }
         candidates
     }
 
@@ -1192,15 +1583,16 @@ impl LexicalGrokkingMemory {
 
     fn exact_terminals(&self, observed: &[u32]) -> BTreeSet<u32> {
         let hash = anchor_sequence_hash(observed);
-        let start = self
-            .exact_surface_index
-            .partition_point(|(candidate_hash, _)| *candidate_hash < hash);
-        let end = self
-            .exact_surface_index
-            .partition_point(|(candidate_hash, _)| *candidate_hash <= hash);
-        self.exact_surface_index[start..end]
-            .iter()
-            .filter_map(|(_, terminal)| {
+        self.exact_surface_index
+            .get(&hash)
+            .into_iter()
+            .chain(
+                self.exact_surface_collisions
+                    .get(&hash)
+                    .into_iter()
+                    .flatten(),
+            )
+            .filter_map(|terminal| {
                 (self.character_anchors(*terminal) == observed).then_some(*terminal)
             })
             .collect()
@@ -1212,34 +1604,44 @@ impl LexicalGrokkingMemory {
         rank: u8,
         candidates: &mut BTreeMap<u32, u8>,
     ) {
-        if chars.len() > MAX_ANCHOR_SEQUENCE {
+        let Some(anchors) = self.anchor_sequence_for_chars(chars) else {
             return;
+        };
+        self.record_exact_terminals_for_anchors(anchors.as_slice(), rank, candidates);
+    }
+
+    fn anchor_sequence_for_chars(&self, chars: &[char]) -> Option<AnchorSequence> {
+        if chars.len() > MAX_ANCHOR_SEQUENCE {
+            return None;
         }
-        let mut anchors = [0_u32; MAX_ANCHOR_SEQUENCE];
+        let mut anchors = AnchorSequence::default();
         for (index, ch) in chars.iter().enumerate() {
-            let Some(atom_id) = self.package.graph.atom_id(NGramKey {
-                channel: AtomChannel::CharacterAnchor,
-                len: 1,
-                units: [*ch as u32, 0, 0, 0],
-            }) else {
-                return;
-            };
-            anchors[index] = atom_id;
+            anchors.atoms[index] = self.character_anchor_by_char.get(ch).copied()?;
         }
-        let anchors = &anchors[..chars.len()];
+        anchors.len = chars.len() as u8;
+        Some(anchors)
+    }
+
+    fn record_exact_terminals_for_anchors(
+        &self,
+        anchors: &[u32],
+        rank: u8,
+        candidates: &mut BTreeMap<u32, u8>,
+    ) {
         let hash = anchor_sequence_hash(anchors);
-        let start = self
+        for terminal_id in self
             .exact_surface_index
-            .partition_point(|(candidate_hash, _)| *candidate_hash < hash);
-        let end = self
-            .exact_surface_index
-            .partition_point(|(candidate_hash, _)| *candidate_hash <= hash);
-        for terminal_id in
-            self.exact_surface_index[start..end]
-                .iter()
-                .filter_map(|(_, terminal_id)| {
-                    (self.character_anchors(*terminal_id) == anchors).then_some(*terminal_id)
-                })
+            .get(&hash)
+            .into_iter()
+            .chain(
+                self.exact_surface_collisions
+                    .get(&hash)
+                    .into_iter()
+                    .flatten(),
+            )
+            .filter_map(|terminal_id| {
+                (self.character_anchors(*terminal_id) == anchors).then_some(*terminal_id)
+            })
         {
             candidates
                 .entry(terminal_id)
@@ -1397,20 +1799,32 @@ impl LexicalGrokkingMemory {
         else {
             return;
         };
-        for insert_at in 0..=chars.len() {
-            for inserted in alphabet.chars() {
-                let mut repaired = Vec::with_capacity(chars.len() + 1);
-                repaired.extend_from_slice(&chars[..insert_at]);
-                repaired.push(inserted);
-                repaired.extend_from_slice(&chars[insert_at..]);
-                self.record_exact_operator_candidates(&repaired, 3, candidates);
-                for swap_at in 0..repaired.len().saturating_sub(1) {
-                    if repaired[swap_at] == repaired[swap_at + 1] {
+        let Some(base) = self.anchor_sequence_for_chars(chars) else {
+            return;
+        };
+        if base.as_slice().len() >= MAX_ANCHOR_SEQUENCE {
+            return;
+        }
+        let inserted_atoms = alphabet
+            .chars()
+            .filter_map(|ch| self.character_anchor_by_char.get(&ch).copied())
+            .collect::<Vec<_>>();
+        for insert_at in 0..=base.as_slice().len() {
+            for inserted in &inserted_atoms {
+                let mut repaired = AnchorSequence::default();
+                repaired.len = base.len.saturating_add(1);
+                repaired.atoms[..insert_at].copy_from_slice(&base.as_slice()[..insert_at]);
+                repaired.atoms[insert_at] = *inserted;
+                repaired.atoms[insert_at + 1..usize::from(repaired.len)]
+                    .copy_from_slice(&base.as_slice()[insert_at..]);
+                self.record_exact_terminals_for_anchors(repaired.as_slice(), 3, candidates);
+                for swap_at in 0..repaired.as_slice().len().saturating_sub(1) {
+                    if repaired.atoms[swap_at] == repaired.atoms[swap_at + 1] {
                         continue;
                     }
-                    repaired.swap(swap_at, swap_at + 1);
-                    self.record_exact_operator_candidates(&repaired, 4, candidates);
-                    repaired.swap(swap_at, swap_at + 1);
+                    repaired.atoms.swap(swap_at, swap_at + 1);
+                    self.record_exact_terminals_for_anchors(repaired.as_slice(), 4, candidates);
+                    repaired.atoms.swap(swap_at, swap_at + 1);
                 }
             }
         }
@@ -2080,46 +2494,108 @@ impl LexicalGrokkingMemory {
             }
             return None;
         }
-        if let Some(reverse) = self.cached_frontier_reverse(frontier) {
+        let (reverse, all_cached) = self.frontier_reverse_batch(frontier);
+        if all_cached {
             for ((terminal_id, activation), relations) in frontier.iter_mut().zip(&reverse) {
                 *activation =
                     self.activation_for_terminal_with_reverse(*terminal_id, observed, relations);
             }
             return Some(reverse);
         }
-        let refreshed = v8::runtime_pool_install(|| {
-            frontier
-                .par_iter()
-                .map(|(terminal_id, _)| {
-                    let reverse = self.reverse_couplings_shared(*terminal_id);
-                    let activation =
-                        self.activation_for_terminal_with_reverse(*terminal_id, observed, &reverse);
-                    (activation, reverse)
-                })
-                .collect::<Vec<_>>()
+        v8::runtime_pool_install(|| {
+            frontier.par_iter_mut().zip(reverse.par_iter()).for_each(
+                |((terminal_id, activation), relations)| {
+                    *activation = self.activation_for_terminal_with_reverse(
+                        *terminal_id,
+                        observed,
+                        relations,
+                    );
+                },
+            );
         });
-        let mut reverse = Vec::with_capacity(refreshed.len());
-        for ((_, activation), (refreshed_activation, relations)) in
-            frontier.iter_mut().zip(refreshed)
-        {
-            *activation = refreshed_activation;
-            reverse.push(relations);
-        }
         Some(reverse)
     }
 
-    fn cached_frontier_reverse(
+    fn frontier_reverse_batch(
         &self,
         frontier: &[(u32, ForwardActivation)],
-    ) -> Option<Vec<Arc<[WaveCoupling]>>> {
-        if reverse_cache_bytes() == 0 {
-            return None;
+    ) -> (Vec<Arc<[WaveCoupling]>>, bool) {
+        let cache_budget = reverse_cache_bytes();
+        let mut resolved = vec![None; frontier.len()];
+        if cache_budget != 0 {
+            if let Ok(cache) = self.reverse_cache.lock() {
+                for (index, (terminal_id, _)) in frontier.iter().enumerate() {
+                    resolved[index] = cache.entries.get(terminal_id).cloned();
+                }
+            }
         }
-        let cache = self.reverse_cache.lock().ok()?;
-        frontier
+        let missing = frontier
             .iter()
-            .map(|(terminal_id, _)| cache.entries.get(terminal_id).cloned())
-            .collect()
+            .enumerate()
+            .filter_map(|(index, (terminal_id, _))| {
+                resolved[index].is_none().then_some((index, *terminal_id))
+            })
+            .collect::<Vec<_>>();
+        if missing.is_empty() {
+            return (resolved.into_iter().flatten().collect(), cache_budget != 0);
+        }
+        let decoded = v8::runtime_pool_install(|| {
+            missing
+                .par_iter()
+                .map(|(index, terminal_id)| {
+                    let relations: Arc<[WaveCoupling]> =
+                        format::reconstruct_compact_center_reverse(&self.package, *terminal_id)
+                            .unwrap_or_default()
+                            .into();
+                    (*index, *terminal_id, relations)
+                })
+                .collect::<Vec<_>>()
+        });
+        if cache_budget == 0 {
+            for (index, _, relations) in decoded {
+                resolved[index] = Some(relations);
+            }
+        } else if let Ok(mut cache) = self.reverse_cache.lock() {
+            for (index, terminal_id, relations) in decoded {
+                if let Some(existing) = cache.entries.get(&terminal_id) {
+                    resolved[index] = Some(Arc::clone(existing));
+                    continue;
+                }
+                let relation_bytes = relations
+                    .len()
+                    .saturating_mul(std::mem::size_of::<WaveCoupling>());
+                while cache.bytes.saturating_add(relation_bytes) > cache_budget {
+                    let Some(evicted_id) = cache.order.pop_front() else {
+                        break;
+                    };
+                    let Some(evicted) = cache.entries.remove(&evicted_id) else {
+                        continue;
+                    };
+                    cache.bytes = cache.bytes.saturating_sub(
+                        evicted
+                            .len()
+                            .saturating_mul(std::mem::size_of::<WaveCoupling>()),
+                    );
+                }
+                if cache.bytes.saturating_add(relation_bytes) <= cache_budget {
+                    cache.bytes = cache.bytes.saturating_add(relation_bytes);
+                    cache.order.push_back(terminal_id);
+                    cache.entries.insert(terminal_id, Arc::clone(&relations));
+                }
+                resolved[index] = Some(relations);
+            }
+        } else {
+            for (index, _, relations) in decoded {
+                resolved[index] = Some(relations);
+            }
+        }
+        (
+            resolved
+                .into_iter()
+                .map(|relations| relations.unwrap_or_else(|| Arc::from([])))
+                .collect(),
+            false,
+        )
     }
 
     fn forward_couplings(&self, atom_id: u32) -> CouplingView<'_> {
@@ -2319,6 +2795,18 @@ impl L1RestorationHost {
     pub fn reload(&mut self, package_path: &Path) -> io::Result<()> {
         *self = Self::load(package_path)?;
         Ok(())
+    }
+
+    pub fn warm_first_touch(&self) -> io::Result<serde_json::Value> {
+        let mut packages = Vec::with_capacity(self.overlays.len().saturating_add(1));
+        packages.push(self.memory.warm_first_touch()?);
+        for overlay in &self.overlays {
+            packages.push(overlay.memory.warm_first_touch()?);
+        }
+        Ok(serde_json::json!({
+            "package_count": packages.len(),
+            "packages": packages,
+        }))
     }
 
     pub fn package_path(&self) -> &Path {
@@ -2615,9 +3103,23 @@ impl L1RestorationHost {
                     .sum::<usize>(),
             exact_surface_count: self.memory.exact_surface_index.len()
                 + self
+                    .memory
+                    .exact_surface_collisions
+                    .values()
+                    .map(Vec::len)
+                    .sum::<usize>()
+                + self
                     .overlays
                     .iter()
-                    .map(|overlay| overlay.memory.exact_surface_index.len())
+                    .map(|overlay| {
+                        overlay.memory.exact_surface_index.len()
+                            + overlay
+                                .memory
+                                .exact_surface_collisions
+                                .values()
+                                .map(Vec::len)
+                                .sum::<usize>()
+                    })
                     .sum::<usize>(),
             character_anchor_count: self.terminal_count() as usize,
             manifest_generation: self.manifest_generation,
@@ -3192,8 +3694,16 @@ fn should_expand_operator_lattice(exact_terminal_count: usize, limit: usize) -> 
 
 fn compile_surface_indices(
     package: &LexicalGrokkingPackage,
-) -> (Vec<(u64, u32)>, Vec<u32>, Vec<u32>) {
-    let mut index = Vec::with_capacity(package.centers.len());
+) -> (
+    HashMap<u64, u32>,
+    HashMap<u64, Vec<u32>>,
+    HashMap<char, u32>,
+    Vec<u32>,
+    Vec<u32>,
+) {
+    let mut index = HashMap::with_capacity(package.centers.len());
+    let mut collisions = HashMap::<u64, Vec<u32>>::new();
+    let mut anchor_by_char = HashMap::new();
     let mut offsets = Vec::with_capacity(package.centers.len().saturating_add(1));
     let mut atoms = Vec::new();
     offsets.push(0);
@@ -3211,18 +3721,26 @@ fn compile_surface_indices(
                     complete = false;
                     break;
                 };
+                anchor_by_char.entry(ch).or_insert(atom_id);
                 anchors.atoms[position] = atom_id;
                 anchors.len = anchors.len.saturating_add(1);
             }
         }
         if complete && !anchors.as_slice().is_empty() {
-            index.push((anchor_sequence_hash(anchors.as_slice()), terminal as u32));
+            let hash = anchor_sequence_hash(anchors.as_slice());
+            match index.entry(hash) {
+                std::collections::hash_map::Entry::Vacant(entry) => {
+                    entry.insert(terminal as u32);
+                }
+                std::collections::hash_map::Entry::Occupied(_) => {
+                    collisions.entry(hash).or_default().push(terminal as u32);
+                }
+            }
             atoms.extend_from_slice(anchors.as_slice());
         }
         offsets.push(atoms.len() as u32);
     }
-    index.sort_unstable();
-    (index, offsets, atoms)
+    (index, collisions, anchor_by_char, offsets, atoms)
 }
 
 fn anchor_sequence_hash(sequence: &[u32]) -> u64 {
@@ -3600,7 +4118,9 @@ mod tests {
                 },
                 ..Default::default()
             },
-            exact_surface_index: Vec::new(),
+            exact_surface_index: HashMap::new(),
+            exact_surface_collisions: HashMap::new(),
+            character_anchor_by_char: HashMap::new(),
             character_anchor_offsets: vec![0, 3, 6, 9],
             character_anchor_atoms: anchor_sequences.into_iter().flatten().collect(),
             relations: RelationStore::Eager,

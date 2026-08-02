@@ -5,7 +5,6 @@ mod candidates;
 #[path = "extra/scoring.rs"]
 mod scoring;
 
-pub(super) use candidates::extra_letter_candidate_exists;
 use candidates::{reflexive_confusion_sources, safe_extra_letter_candidates};
 use scoring::{best_common_extra_letter_candidate, best_extra_letter_candidate};
 

@@ -1,0 +1,60 @@
+{
+  "receipt": "L1_L11_FIRST_TOUCH_PHASE6_2026-08-02",
+  "date": "2026-08-02",
+  "scope": "L1.1 shard-1 first-touch and hot runtime optimization without candidate reduction",
+  "immutable_input": {
+    "package": "/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard1-final-2026-07-29/package.v8.bin",
+    "package_bytes": 198233790,
+    "package_sha256": "03e320857cafc7d661a1893f728f8777c5e0b755ee01214502548779fbee6494",
+    "forward_relations": 108156559,
+    "fixed_surfaces": "/home/e/build/lay-l1-shadow/artifacts/l11-first-touch-v2-diverse-2026-08-02/fixed-520.txt",
+    "fixed_surface_count": 520,
+    "damage_classes": 13,
+    "samples_per_class": 40,
+    "fixed_surfaces_sha256": "f28a7e0f46fada51c59001af5df45e071d7966163de5c94d03f60e0bb0d77dd8"
+  },
+  "accepted_runtime": {
+    "runtime_workers": 4,
+    "posting_cache_mib": 64,
+    "shard_cache_mib": 0,
+    "reverse_cache_mib": 16,
+    "warm_profile_words": 4096,
+    "protected_posting_budget_mib": 60,
+    "cpu_affinity": "P-core logical CPUs 4-11 on e@192.168.3.94",
+    "candidate_sha256": "f3501c6cf518ba9747b5ef4323565199dcfa49fde4068c97c2e728c451c536c2",
+    "runs": [
+      {"raw_first_touch_p99_us": 4333, "hot_p99_us": 4397, "restoration_p99_us": 4490, "peak_rss_kib": 345424, "warmup_ms": 1219},
+      {"raw_first_touch_p99_us": 4351, "hot_p99_us": 4917, "restoration_p99_us": 4148, "peak_rss_kib": 345180, "warmup_ms": 1218},
+      {"raw_first_touch_p99_us": 4950, "hot_p99_us": 4865, "restoration_p99_us": 4786, "peak_rss_kib": 346956, "warmup_ms": 1234}
+    ],
+    "verdict": "PASS_DEPLOYMENT_CONTRACT"
+  },
+  "rejected_parallel_reconstruction": {
+    "restoration_p99_us": [5922, 5562, 4085],
+    "candidate_sha256": "f3501c6cf518ba9747b5ef4323565199dcfa49fde4068c97c2e728c451c536c2",
+    "verdict": "REJECT_LATENCY_REGRESSION"
+  },
+  "unconstrained_hybrid_cpu": {
+    "restoration_p99_us": [4484, 5193, 5028],
+    "verdict": "WATCH_SCHEDULER_MIGRATION"
+  },
+  "tested": [
+    "fixed 13 x 40 class-balanced latency surfaces",
+    "three fresh processes for accepted and rejected variants",
+    "candidate fingerprint parity",
+    "protected posting survival under transient cache pollution",
+    "readout parity before and after warmup"
+  ],
+  "not_tested": [
+    "multi-day cache residency",
+    "latency with admitted delta overlays",
+    "L1.1 direct edit authority",
+    "non-hybrid deployment CPUs"
+  ],
+  "runtime_authority_changed": false,
+  "evidence": [
+    "/home/e/build/lay-l1-shadow/artifacts/l11-phase6-parallel-reconstruction-2026-08-02/",
+    "/home/e/build/lay-l1-shadow/artifacts/l11-phase6-sequential-final-2026-08-02/",
+    "/home/e/build/lay-l1-shadow/artifacts/l11-phase6-pcore-affinity-2026-08-02/"
+  ]
+}

@@ -21,6 +21,9 @@ pub fn decide_completed_scope_word(word: &[KeyEvent]) -> String {
     if is_short_repeated_completed_scope_word(&original) {
         return original;
     }
+    if stable_completed_scope_original(&original) {
+        return original;
+    }
     if let Some(repaired) = deterministic_completed_scope_repair(&original) {
         return repaired;
     }
@@ -50,16 +53,26 @@ pub(super) fn short_completed_tail_layout_flip(word: &[KeyEvent]) -> Option<Stri
     let original = map_original_events(word);
     let (_, original_word, _) = split_word_punctuation(&original);
     let original_len = original_word.chars().count();
-    if !is_cyrillic_word(original_word)
-        || is_known_russian_layout_autoswitch_word(&original_word.to_lowercase())
-    {
-        return None;
-    }
-
     let flipped = flip_word_events(word);
     let (_, flipped_word, _) = split_word_punctuation(&flipped);
     let flipped_len = flipped_word.chars().count();
-    if !flipped_word.is_ascii() {
+
+    if original_word.is_ascii()
+        && original_word.chars().all(|ch| ch.is_ascii_alphabetic())
+        && (2..=4).contains(&original_len)
+        && is_cyrillic_word(flipped_word)
+        && (2..=4).contains(&flipped_len)
+        && is_known_russian_layout_autoswitch_word(&flipped_word.to_lowercase())
+    {
+        return Some(flipped);
+    }
+
+    if !is_cyrillic_word(original_word)
+        || crate::russian_lexicon::has_clean_russian_surface_certificate(
+            &original_word.to_lowercase(),
+        )
+        || !flipped_word.is_ascii()
+    {
         return None;
     }
 
@@ -104,6 +117,7 @@ pub(super) fn stable_completed_scope_original(original: &str) -> bool {
 fn strong_russian_completed_scope_original(lower: &str) -> bool {
     crate::lexicon::is_common_ru_word(lower)
         || crate::lexicon::is_user_protected_word(lower)
+        || crate::russian_lexicon::has_clean_russian_surface_certificate(lower)
         || crate::russian_lexicon::russian_tiny_dictionary().contains(lower)
         || crate::russian_lexicon::russian_short_dictionary().contains(lower)
 }

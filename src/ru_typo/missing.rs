@@ -14,13 +14,15 @@ use super::guards::{
 use super::thresholds::NGRAM_DICT_MISSING_LETTER_MARGIN;
 
 pub fn correct_missing_letter(word: &str) -> Option<String> {
-    if word.chars().count() < 4 || !crate::word_reader::is_cyrillic_word(word) {
+    if word.contains('-') || word.chars().count() < 4 || !crate::word_reader::is_cyrillic_word(word)
+    {
         return None;
     }
     let lower = word.to_lowercase();
     let field_knows_original = crate::nanda_wave::l2::l2_surface_foundation_has_authority(&lower)
         || crate::russian_lexicon::is_center_backed_russian_form(&lower);
-    if field_knows_original && !has_common_missing_letter_candidate(&lower) {
+    if field_knows_original || crate::russian_lexicon::has_clean_russian_surface_certificate(&lower)
+    {
         return None;
     }
     if looks_like_plausible_russian_past_tense(&lower)
@@ -34,6 +36,21 @@ pub fn correct_missing_letter(word: &str) -> Option<String> {
         return None;
     }
 
+    if std::env::var_os("LAY_TRACE_RU_TYPO").is_some() {
+        let ranked = safe_missing_letter_candidates(&lower)
+            .filter(|candidate| {
+                is_known_russian_word_or_form(candidate)
+                    || crate::russian_lexicon::is_reference_backed_russian_form(candidate)
+            })
+            .map(|candidate| {
+                let score = crate::ngram::ru_candidate_margin(&candidate, &lower)
+                    + missing_letter_candidate_bonus(&lower, &candidate);
+                (candidate, score)
+            })
+            .collect::<Vec<_>>();
+        eprintln!("missing_letter word={word:?} field_knows_original={field_knows_original} ranked={ranked:?}");
+    }
+
     best_ranked_dictionary_candidate(
         word,
         safe_missing_letter_candidates(&lower),
@@ -42,6 +59,7 @@ pub fn correct_missing_letter(word: &str) -> Option<String> {
     )
 }
 
+#[cfg(test)]
 fn has_common_missing_letter_candidate(lower: &str) -> bool {
     safe_missing_letter_candidates(lower).any(|candidate| {
         candidate != lower

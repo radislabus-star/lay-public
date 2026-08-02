@@ -69,3 +69,23 @@ fn missing_letter_uses_center_backed_inflected_surfaces() {
         );
     }
 }
+
+#[test]
+fn missing_letter_restores_initial_vowel_for_strong_dictionary_center() {
+    for (damaged, expected) in [("ффективная", "эффективная"), ("бычный", "обычный")]
+    {
+        let candidates = safe_missing_letter_candidates(damaged).collect::<Vec<_>>();
+
+        assert!(
+            candidates.iter().any(|candidate| candidate == expected),
+            "safe missing-letter candidates for {damaged}: {candidates:?}"
+        );
+        assert_eq!(correct_missing_letter(damaged).as_deref(), Some(expected));
+    }
+}
+
+#[test]
+fn missing_letter_does_not_invent_initial_vowel_for_non_adjective_surface() {
+    assert!(!safe_missing_letter_candidates("лучшить").any(|candidate| candidate == "улучшить"));
+    assert_eq!(correct_missing_letter("лучшить"), None);
+}

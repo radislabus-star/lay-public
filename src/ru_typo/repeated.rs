@@ -1,7 +1,7 @@
 use crate::phrase_lexicon::is_short_russian_function_word;
-use crate::russian_lexicon::is_known_russian_word_or_form;
+use crate::russian_chars::is_russian_vowel;
 use crate::russian_typo_candidates::repeated_run_deletion_candidates;
-use crate::russian_typo_scoring::ngram_allows_ru_candidate;
+use crate::russian_typo_scoring::best_ranked_dictionary_candidate;
 use crate::text_case::apply_word_case;
 use crate::word_reader::is_cyrillic_word;
 
@@ -13,7 +13,10 @@ pub(crate) fn correct_repeated_letter(word: &str) -> Option<String> {
     }
 
     let lower = word.to_lowercase();
-    if is_known_russian_word_or_form(&lower) {
+    if crate::russian_lexicon::is_exact_reference_russian_word(&lower)
+        || crate::lexicon::is_ru_live_protected_word(&lower)
+        || crate::lexicon::is_user_protected_word(&lower)
+    {
         return None;
     }
     if let Some(candidate) = correct_short_repeated_function_word(word, &lower) {
@@ -22,40 +25,20 @@ pub(crate) fn correct_repeated_letter(word: &str) -> Option<String> {
     if word.chars().count() < 5 {
         return None;
     }
-
-    let chars: Vec<char> = lower.chars().collect();
-    let mut found: Option<String> = None;
-    let mut idx = 0;
-    while idx < chars.len() {
-        let mut end = idx + 1;
-        while end < chars.len() && chars[end] == chars[idx] {
-            end += 1;
-        }
-
-        if end - idx > 1 {
-            for keep in 1..end - idx {
-                let mut candidate = Vec::with_capacity(chars.len() - (end - idx - keep));
-                candidate.extend_from_slice(&chars[..idx]);
-                candidate.extend(std::iter::repeat(chars[idx]).take(keep));
-                candidate.extend_from_slice(&chars[end..]);
-                let candidate: String = candidate.into_iter().collect();
-                if !is_known_russian_word_or_form(&candidate) {
-                    continue;
-                }
-                if !ngram_allows_ru_candidate(&candidate, &lower, NGRAM_TYPO_REJECT_MARGIN) {
-                    continue;
-                }
-                if found.is_some() {
-                    return None;
-                }
-                found = Some(candidate);
-            }
-        }
-
-        idx = end;
+    let chars = lower.chars().collect::<Vec<_>>();
+    if chars.len() >= 2
+        && chars[chars.len() - 1] == chars[chars.len() - 2]
+        && is_russian_vowel(chars[chars.len() - 1])
+    {
+        return None;
     }
 
-    found.map(|candidate| apply_word_case(word, &candidate))
+    best_ranked_dictionary_candidate(
+        word,
+        repeated_run_deletion_candidates(&lower),
+        NGRAM_TYPO_REJECT_MARGIN,
+        0.40,
+    )
 }
 
 fn correct_short_repeated_function_word(original: &str, lower: &str) -> Option<String> {

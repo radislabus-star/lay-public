@@ -9,9 +9,7 @@ use crate::phrase_score::{
     contains_preferable_merged_russian_part, is_confident_multiword_glued_phrase,
     multiword_glued_phrase_score, MAX_RU_GLUED_PHRASE_PARTS, NGRAM_GLUED_SPLIT_MARGIN,
 };
-use crate::russian_lexicon::{
-    is_known_russian_word_or_form, russian_dictionary, russian_generated_form_dictionary,
-};
+use crate::russian_lexicon::russian_dictionary;
 use crate::russian_prefixes::is_derivational_prefix_fragment;
 use crate::text_case::apply_phrase_case;
 use crate::word_reader::{cyrillic_word_segmentations, cyrillic_word_splits};
@@ -32,14 +30,24 @@ pub fn correct_glued_russian_phrase(word: &str) -> Option<String> {
     }
 
     let lower = word.to_lowercase();
+    if lower.starts_with("не") && (lower.ends_with("ти") || lower.ends_with("ть")) {
+        return None;
+    }
     if looks_like_single_prefixed_verb(&lower) {
         return None;
     }
     if russian_dictionary().contains(&lower)
-        || russian_generated_form_dictionary().contains(&lower)
-        || (is_known_russian_word_or_form(&lower)
+        || crate::nanda_wave::l2::l2_surface_foundation_has_authority(&lower)
+        || (crate::russian_lexicon::is_exact_reference_russian_word(&lower)
             && !looks_like_word_glued_to_trailing_ya(&lower)
             && !looks_like_short_function_word_glued_to_known_word(&lower))
+    {
+        return None;
+    }
+    let protected_form = crate::russian_lexicon::has_clean_russian_surface_certificate(&lower);
+    if protected_form
+        && !looks_like_word_glued_to_trailing_ya(&lower)
+        && !looks_like_short_function_word_glued_to_known_word(&lower)
     {
         return None;
     }
@@ -105,7 +113,6 @@ pub fn correct_glued_russian_phrase(word: &str) -> Option<String> {
                 if repair_cost > 1.0 {
                     continue;
                 }
-
                 let candidate = format!("{left_candidate} {right_candidate}");
                 if starts_with_multi_letter_preposition_text(&candidate) {
                     continue;

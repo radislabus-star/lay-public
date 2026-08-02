@@ -32,7 +32,7 @@ pub(super) fn candidate_has_apply_authority(
                 )))
             || (hidden_rejection_deferred_to_verified_l2_repair(reason)
                 && verified_l2_center_repair)
-            || (hidden_rejection_deferred_to_verified_deterministic_repair(reason, signals)
+            || (hidden_rejection_deferred_to_verified_deterministic_repair(reason)
                 && verified_current_token_deterministic_typo_repair(event, candidate, evaluation))
         {
             // L4 ambiguity protects lexical choice operators from guessing. A
@@ -214,7 +214,9 @@ pub(super) fn candidate_has_apply_authority(
         || verified_l2_center_repair;
     // A phase package may order candidates but may never manufacture apply
     // authority. Only independently verified state evidence reaches here.
-    let strong_transition_support = context_state_support || verified_l2_center_repair;
+    let verified_layout_projection = verified_layout_transition(&evaluation.transition);
+    let strong_transition_support =
+        context_state_support || verified_l2_center_repair || verified_layout_projection;
     let admission = admit_evaluated_hidden_transition(
         candidates.len(),
         source_role,
@@ -247,7 +249,10 @@ pub(super) fn candidate_has_apply_authority(
         debug_decision_reject(candidate, "high_risk", bayes.posterior, bayes.risk);
         return false;
     }
-    if bayes.posterior < CURRENT.transition_posterior_floor && !strong_learned_support {
+    if bayes.posterior < CURRENT.transition_posterior_floor
+        && !strong_learned_support
+        && !strong_transition_support
+    {
         debug_decision_reject(candidate, "low_posterior", bayes.posterior, bayes.risk);
         return false;
     }
@@ -479,12 +484,11 @@ fn known_lexical_state_or_form(word: &str) -> bool {
 
 fn known_observed_lexical_state(word: &str) -> bool {
     let field = crate::hot_field::HotFieldSnapshot::current();
-    field.input_surface_readout(word).has_phase_authority()
-        || field.form_readout(word).has_structural_center()
+    field.surface_phase_readout(word).exact_center
         || crate::lexicon::is_common_ru_word(word)
         || crate::lexicon::is_ru_live_protected_word(word)
         || crate::lexicon::is_user_protected_word(word)
-        || known_russian_form(word)
+        || crate::russian_lexicon::has_clean_russian_surface_certificate(word)
         || crate::typing_transition::state::word_has_common_usage_authority(word)
 }
 
@@ -695,14 +699,8 @@ fn hidden_rejection_deferred_to_verified_l2_repair(reason: &str) -> bool {
     reason == "unobserved"
 }
 
-fn hidden_rejection_deferred_to_verified_deterministic_repair(
-    reason: &str,
-    signals: &CandidateDecisionSignals,
-) -> bool {
+fn hidden_rejection_deferred_to_verified_deterministic_repair(reason: &str) -> bool {
     reason == "unobserved"
-        && signals.l4_hidden_probe
-            == crate::nanda_wave::l4_active_disambiguation::L4WitnessProbe::OperatorConsensus
-                .as_str()
 }
 
 fn verified_current_token_l2_center_repair(
@@ -791,14 +789,7 @@ fn verified_current_token_deterministic_typo_repair(
 }
 
 fn stable_observed_lexical_word_blocks_repair(word: &str) -> bool {
-    crate::hot_field::HotFieldSnapshot::current()
-        .form_readout(word)
-        .has_structural_center()
-        || crate::lexicon::is_common_ru_word(word)
-        || crate::lexicon::is_ru_live_protected_word(word)
-        || crate::lexicon::is_user_protected_word(word)
-        || crate::russian_lexicon::is_center_backed_russian_form(word)
-        || known_russian_form(word)
+    known_observed_lexical_state(word)
 }
 
 fn hidden_state_confirms_candidate(signals: &CandidateDecisionSignals) -> bool {

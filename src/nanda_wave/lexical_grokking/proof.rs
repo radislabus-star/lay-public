@@ -954,20 +954,18 @@ pub fn export_l1_fixed_latency_surfaces(
         maximum_rss_mib: DEFAULT_TRAINING_RSS_MIB,
     };
     let (reservoir, _) = prepare_scale_heldout(&words, policy, 0)?;
-    let mut heldout = Vec::new();
+    let mut heldout_by_class = BTreeMap::<&'static str, Vec<(u32, String)>>::new();
     for (class, heap) in reservoir {
-        heldout.extend(
-            heap.into_iter()
-                .map(|(_, terminal_id, surface)| (terminal_id, class, surface)),
-        );
+        let mut examples = heap
+            .into_iter()
+            .map(|(_, terminal_id, surface)| (terminal_id, surface))
+            .collect::<Vec<_>>();
+        examples.sort_unstable_by(|left, right| {
+            left.0.cmp(&right.0).then_with(|| left.1.cmp(&right.1))
+        });
+        heldout_by_class.insert(class, examples);
     }
-    heldout.sort_unstable_by(|left, right| {
-        left.1
-            .cmp(right.1)
-            .then_with(|| left.0.cmp(&right.0))
-            .then_with(|| left.2.cmp(&right.2))
-    });
-    heldout.truncate(sample_count);
+    let heldout = round_robin_latency_heldout(&heldout_by_class, sample_count);
     if heldout.len() != sample_count {
         return Err(io::Error::new(
             io::ErrorKind::InvalidData,
@@ -995,10 +993,32 @@ pub fn export_l1_fixed_latency_surfaces(
         "source_words": words.len(),
         "heldout_per_class": heldout_per_class,
         "sample_count": heldout.len(),
+        "sampling": "class_round_robin",
+        "class_count": classes.len(),
         "classes": classes,
         "output": output_path,
         "output_bytes": encoded.len(),
     }))
+}
+
+fn round_robin_latency_heldout(
+    by_class: &BTreeMap<&'static str, Vec<(u32, String)>>,
+    sample_count: usize,
+) -> Vec<(u32, &'static str, String)> {
+    let mut selected = Vec::with_capacity(sample_count);
+    let maximum_depth = by_class.values().map(Vec::len).max().unwrap_or_default();
+    for depth in 0..maximum_depth {
+        for (class, examples) in by_class {
+            let Some((terminal_id, surface)) = examples.get(depth) else {
+                continue;
+            };
+            selected.push((*terminal_id, *class, surface.clone()));
+            if selected.len() == sample_count {
+                return selected;
+            }
+        }
+    }
+    selected
 }
 
 fn prove_l1_lexical_grokking_with_policy(
@@ -3241,6 +3261,31 @@ mod scale_proof_tests {
         assert!(terminals
             .iter()
             .all(|terminal| (462_314..462_322).contains(terminal)));
+    }
+
+    #[test]
+    fn latency_sample_round_robins_across_damage_classes() {
+        let classes = BTreeMap::from([
+            ("a", vec![(1, "a1".to_string()), (2, "a2".to_string())]),
+            ("b", vec![(3, "b1".to_string()), (4, "b2".to_string())]),
+            ("c", vec![(5, "c1".to_string()), (6, "c2".to_string())]),
+        ]);
+
+        let selected = round_robin_latency_heldout(&classes, 5);
+
+        assert_eq!(
+            selected
+                .iter()
+                .map(|(_, class, surface)| (*class, surface.as_str()))
+                .collect::<Vec<_>>(),
+            vec![
+                ("a", "a1"),
+                ("b", "b1"),
+                ("c", "c1"),
+                ("a", "a2"),
+                ("b", "b2"),
+            ]
+        );
     }
 
     fn canonical_heldout(reservoir: HeldoutReservoir) -> Vec<(&'static str, u64, u32, String)> {

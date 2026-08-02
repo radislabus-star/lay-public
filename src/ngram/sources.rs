@@ -1,6 +1,7 @@
 use super::tokenize::normalize_ngram_word;
 use super::{CharNgramModel, Lang};
 use crate::data_lines::data_lines;
+use sha2::{Digest, Sha256};
 
 const RU_HUNSPELL: &str = "/usr/share/hunspell/ru_RU.dic";
 const EN_HUNSPELL: &str = "/usr/share/hunspell/en_US.dic";
@@ -15,6 +16,33 @@ pub fn build_ru_model_from_sources() -> CharNgramModel {
         words.extend(load_plain_words(&path, Lang::Ru));
     }
     CharNgramModel::train(Lang::Ru, words)
+}
+
+pub(super) fn ru_source_fingerprint() -> String {
+    let mut hasher = Sha256::new();
+    fingerprint_path(&mut hasher, std::path::Path::new(RU_HUNSPELL));
+    if let Some(home) = std::env::var_os("HOME") {
+        fingerprint_path(
+            &mut hasher,
+            &std::path::PathBuf::from(home).join(PROTECTED_WORDS_PATH),
+        );
+    } else {
+        hasher.update(b"HOME\0missing\0");
+    }
+    format!("{:x}", hasher.finalize())
+}
+
+fn fingerprint_path(hasher: &mut Sha256, path: &std::path::Path) {
+    hasher.update(path.as_os_str().as_encoded_bytes());
+    hasher.update([0]);
+    match std::fs::read(path) {
+        Ok(bytes) => {
+            hasher.update(b"present\0");
+            hasher.update((bytes.len() as u64).to_le_bytes());
+            hasher.update(bytes);
+        }
+        Err(_) => hasher.update(b"missing\0"),
+    }
 }
 
 pub(super) fn build_en_model_from_sources() -> CharNgramModel {

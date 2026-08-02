@@ -32,9 +32,10 @@ static CONFIG_CACHE: OnceLock<Mutex<CachedLayConfig>> = OnceLock::new();
 fn current_config() -> LayConfig {
     #[cfg(test)]
     {
-        let config = LayConfig::load();
-        sync_hot_runtime(&config);
-        config
+        // Binary tests link the library without its `cfg(test)` isolation.
+        // Mutating the process policy here would leak compact IME authority
+        // into every later test in the same process.
+        LayConfig::load()
     }
     #[cfg(not(test))]
     {
@@ -201,6 +202,15 @@ pub(super) fn active_typing_assist_pipeline_for_auto_replace(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_config_reads_do_not_mutate_process_hot_field_authority() {
+        let original = lay::hot_field::process_policy();
+
+        let _ = current_config();
+
+        assert_eq!(lay::hot_field::process_policy(), original);
+    }
 
     #[test]
     fn ime_backend_does_not_enable_daemon_precognition_trace() {

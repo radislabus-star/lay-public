@@ -13,7 +13,7 @@ fn typing_assist_fixes_extra_repeated_letter() {
 
 #[test]
 fn extra_letter_rule_defers_to_missing_letter_candidates() {
-    let mut words: Vec<String> = russian_generated_form_dictionary()
+    let mut words: Vec<String> = reference_russian_generated_form_dictionary()
         .iter()
         .filter(|word| (7..=12).contains(&word.chars().count()))
         .cloned()

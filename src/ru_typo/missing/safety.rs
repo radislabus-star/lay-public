@@ -19,11 +19,26 @@ fn is_safe_missing_letter_candidate(lower: &str, candidate: &str) -> bool {
                 && lower
                     .chars()
                     .last()
-                    .is_some_and(|last| !is_russian_vowel(last));
+                    .is_some_and(|last| !is_russian_vowel(last))
+                && (crate::lexicon::is_common_ru_word(candidate)
+                    || crate::nanda_wave::l2::l2_surface_foundation_has_authority(candidate)
+                    || crate::russian_lexicon::is_exact_reference_russian_word(candidate));
         }
     }
     if let Some(inserted) = candidate.strip_suffix(lower) {
-        if inserted == "о" && is_known_russian_word_or_form(candidate) {
+        let mut initial = lower.chars();
+        let starts_with_doubled_consonant = initial
+            .next()
+            .zip(initial.next())
+            .is_some_and(|(first, second)| first == second && !is_russian_vowel(first));
+        if inserted.chars().count() == 1
+            && inserted.chars().next().is_some_and(is_russian_vowel)
+            && (starts_with_doubled_consonant
+                || crate::russian_lexicon::looks_like_russian_adjective_lemma(candidate))
+            && (crate::lexicon::is_common_ru_word(candidate)
+                || crate::nanda_wave::l2::l2_surface_foundation_has_authority(candidate)
+                || crate::russian_lexicon::is_exact_reference_russian_word(candidate))
+        {
             return true;
         }
         return inserted.chars().count() != 1 || lower.chars().next().is_some_and(is_russian_vowel);

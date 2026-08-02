@@ -503,3 +503,65 @@ P4: make candidate quality/latency regressions visible before release
 `src/keyboard/event_words/decision.rs` is route-critical because it decides
 manual replay layout, but it must remain outside candidate generation and text
 replacement ownership.
+
+### 2026-08-02 Phase 7 deterministic input admission: PASS_CODE
+
+The product-gate work did not add word-specific replacement rules. It repaired
+the evidence boundaries shared by layout projection, missing-letter recovery,
+clean-surface preservation and hidden-state admission:
+
+```text
+observed tail
+-> preserve the left whitespace anchor in a longer replacement
+-> generate deterministic and L1.1/L2 candidates
+-> preserve an independently certified clean input surface
+-> admit an exact known layout projection
+-> admit a verifier-proven deterministic typo repair
+-> otherwise retain Tied/ABSTAIN/Keep
+```
+
+Initial-vowel recovery is class-gated. A strong exact/reference center is
+eligible when the damaged signal begins with a doubled consonant or the target
+is an adjective lemma. This restores `ффективная -> эффективная` and
+`бычный -> обычный` while preserving the observed verb-like `лучшить`.
+
+Measured facts:
+
+```text
+serial lay-daemon tests                  200/200 PASS
+representative transposition sweep       487/497 = 97%
+full gate wall                           245.60 s
+full gate peak RSS                       353,900 KiB
+test-order HotFieldPolicy leak           fixed
+double-Shift pending undo contract       PASS in daemon gate
+boundary clean false applies             0/220, was 3/220
+boundary unambiguous proposal recall     185/188 = 98.4%
+boundary conservative direct recovery    156/188
+```
+
+Tested:
+
+- left-space retention for longer deterministic replacements;
+- exact three-letter Cyrillic-to-known-English layout projection;
+- generic short Cyrillic-to-ASCII protection;
+- clean Russian and natural hyphen preservation;
+- missing-initial-vowel positive and negative morphology classes;
+- all daemon tests in one process and one deterministic order.
+
+Not tested by this checkpoint:
+
+- the fixed L1.1 `13 x 20,000` per-damage-class heldout proof;
+- physical interaction in every WeChat, Telegram, Chromium, GTK, Qt and Kitty
+  cell of the product matrix;
+- a multi-day daemon residency test.
+
+Verdict scope: `PASS_CODE`. Runtime authority changed: `yes`, only for an exact
+known layout projection or an independently verifier-proven deterministic typo
+repair. Clean observed state still vetoes destructive replacement.
+
+Exact receipts:
+
+```text
+/tmp/lay-phase7-full-gate-6-serial.log
+/home/ubu/projects/lay/docs/structural_gates/receipts/FINAL_PRODUCT_GATE_PHASE7_2026-08-02.json
+```

@@ -36,6 +36,29 @@ fn boundary_shift_proposal(text: &str) -> Option<BoundaryShiftProposal> {
 
     let original_right = pair.right.to_lowercase();
     let original_left = pair.left.to_lowercase();
+    if original_left.chars().count() == 1
+        && crate::phrase_lexicon::is_one_letter_russian_function_word(&original_left)
+    {
+        return None;
+    }
+    if original_left.starts_with(['ь', 'ъ']) {
+        return None;
+    }
+    if crate::lexicon::is_ru_technical_loanword(&original_left)
+        && !crate::russian_chars::is_russian_vowel(moved)
+    {
+        return None;
+    }
+    let original_left_is_clean =
+        crate::russian_lexicon::has_clean_russian_surface_certificate(&original_left);
+    if original_left_is_clean
+        && crate::phrase_lexicon::is_short_russian_function_word(&original_left)
+    {
+        return None;
+    }
+    if crate::russian_lexicon::has_clean_russian_surface_certificate(&original_right) {
+        return None;
+    }
     let left_candidate_lower = left_candidate.to_lowercase();
     let right_candidate_lower = right_rest.to_lowercase();
     let field = crate::hot_field::HotFieldSnapshot::current();
@@ -55,9 +78,12 @@ fn boundary_shift_proposal(text: &str) -> Option<BoundaryShiftProposal> {
         return None;
     }
     let candidate = format!("{left_candidate}{}{right_rest}", pair.separator);
+    let clean_left_allows_direct_apply = !original_left_is_clean
+        || matches!(moved, 'ы' | 'ь' | 'ъ')
+        || readout.candidate_left.exact_center;
     Some(BoundaryShiftProposal {
         replacement: format!("{}{}", candidate, pair.right_trailing),
-        direct_apply_mass: readout.has_direct_apply_mass(),
+        direct_apply_mass: readout.has_direct_apply_mass() && clean_left_allows_direct_apply,
     })
 }
 
@@ -114,5 +140,7 @@ mod tests {
             propose_moved_prefix_letter_pair("сейча сна"),
             Some("сейчас на".to_string())
         );
+        assert_eq!(propose_moved_prefix_letter_pair("ьно коммит"), None);
+        assert_eq!(propose_moved_prefix_letter_pair("Проверь Сделай"), None);
     }
 }

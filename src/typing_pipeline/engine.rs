@@ -49,7 +49,11 @@ pub fn select_typing_assist_with_pipeline(
     allow_layout_auto: bool,
     pipeline: &[TypingAssistRuleConfig],
 ) -> Option<String> {
-    explain_typing_assist_with_pipeline(text, allow_layout_auto, pipeline).output
+    let explanation = explain_typing_assist_with_pipeline(text, allow_layout_auto, pipeline);
+    if std::env::var_os("LAY_TRACE_TYPING_ASSIST").is_some() {
+        eprintln!("typing_assist_explanation={explanation:#?}");
+    }
+    explanation.output
 }
 
 pub fn explain_typing_assist_with_pipeline(
@@ -63,7 +67,6 @@ pub fn explain_typing_assist_with_pipeline(
     if core.is_empty() {
         return explanation;
     }
-
     let collected = evaluate_rule_candidates(explanation, core, allow_layout_auto, pipeline, false);
     let explanation = collected.explanation;
     let candidates = collected.candidates;

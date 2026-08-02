@@ -1,5 +1,7 @@
-use super::cache::{default_ru_cache_path, load_ru_cache, save_ru_cache};
-use super::sources::{build_en_model_from_sources, build_ru_model_from_sources};
+use super::cache::{default_ru_cache_path, load_ru_cache_for_source, save_ru_cache_for_source};
+use super::sources::{
+    build_en_model_from_sources, build_ru_model_from_sources, ru_source_fingerprint,
+};
 use super::CharNgramModel;
 use std::sync::OnceLock;
 
@@ -31,14 +33,15 @@ pub fn warm_up_ru() {
 fn ru_model() -> &'static CharNgramModel {
     static MODEL: OnceLock<CharNgramModel> = OnceLock::new();
     MODEL.get_or_init(|| {
+        let source_fingerprint = ru_source_fingerprint();
         if let Some(path) = default_ru_cache_path() {
-            if let Ok(model) = load_ru_cache(&path) {
+            if let Ok(model) = load_ru_cache_for_source(&path, &source_fingerprint) {
                 return model;
             }
         }
         let model = build_ru_model_from_sources();
         if let Some(path) = default_ru_cache_path() {
-            let _ = save_ru_cache(&path, &model);
+            let _ = save_ru_cache_for_source(&path, &model, &source_fingerprint);
         }
         model
     })

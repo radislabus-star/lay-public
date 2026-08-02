@@ -1,0 +1,93 @@
+{
+  "schema": "lay.structural_gate_receipt.v1",
+  "gate": "FINAL_PRODUCT_GATE_PHASE7",
+  "date": "2026-08-02",
+  "verdict": "PASS_CODE",
+  "release_target": "0.2.348",
+  "runtime_authority_changed": true,
+  "authority_scope": [
+    "exact layout projection to an independently known center",
+    "verifier-proven deterministic typo repair from an unobserved hidden state"
+  ],
+  "measured": {
+    "lay_daemon_tests_passed": 200,
+    "lay_daemon_tests_total": 200,
+    "transposition_checked": 497,
+    "transposition_repaired": 487,
+    "transposition_coverage_percent_integer": 97,
+    "boundary_clean_pairs": 220,
+    "boundary_false_applies": 0,
+    "boundary_unambiguous_synthetic": 188,
+    "boundary_proposed": 185,
+    "boundary_direct_recovered": 156,
+    "wall_seconds": 245.60,
+    "peak_rss_kib": 353900,
+    "exit_code": 0,
+    "changed_check_wall_seconds": 93.50,
+    "changed_check_peak_rss_kib": 1481440,
+    "remote_release_build_wall_seconds": 143.52,
+    "remote_release_build_average_cpu_percent": 475,
+    "remote_release_build_peak_rss_kib": 1659024,
+    "remote_release_build_swaps": 0,
+    "remote_release_build_exit_code": 0,
+    "remote_release_target_bytes": 559349760,
+    "installed_daemon_memory_bytes_after_restart": 442658816,
+    "installed_ibus_pid_before": 4119,
+    "installed_ibus_pid_after": 4119,
+    "installed_l11_package_bytes": 190139182,
+    "installed_l11_terminal_count": 852582,
+    "installed_l11_atom_count": 218763,
+    "installed_l11_forward_relations": 110928005,
+    "installed_l11_reverse_relations": 87972901
+  },
+  "fixed_contracts": [
+    "left whitespace anchor survives a longer word replacement",
+    "exact short Cyrillic layout projection can reach a known English center",
+    "generic short Cyrillic to ASCII noise remains protected",
+    "clean generated or observed Russian surfaces do not gain replacement authority",
+    "initial missing vowel is class-gated by doubled consonant or adjective target",
+    "boundary direct apply requires phase mass gain or a one-letter exact reanchor",
+    "test configuration reads do not mutate process HotFieldPolicy"
+  ],
+  "regressions": {
+    "positive": [
+      "я прохоил -> я проходил",
+      "ффективная -> эффективная",
+      "бычный -> обычный",
+      "дфн -> lay"
+    ],
+    "preserved": [
+      "лучшить",
+      "40 000 р",
+      "к-лист"
+    ]
+  },
+  "tested": [
+    "all lay-daemon tests in one deterministic serial process",
+    "representative generated-form adjacent-transposition sweep",
+    "focused missing-vowel positive and negative tests",
+    "phrase boundary clean and synthetic corpus gate",
+    "changed-source contract gate including transition replay and unsafe-edit scoreboard",
+    "remote 20-job release build with Cargo disk guard and resource telemetry",
+    "SHA-256 parity between remote release output and local staging",
+    "atomic binary installation and model-service-only restart",
+    "installed CLI daemon and GNOME extension version 0.2.348",
+    "IBus process continuity across install and restart",
+    "installed L1.1 service health and stats",
+    "post-install changed-source transition and unsafe-edit gates"
+  ],
+  "not_tested": [
+    "fixed L1.1 13 x 20,000 per-damage-class heldout proof",
+    "complete physical WeChat Telegram Chromium GTK Qt Kitty matrix",
+    "multi-day daemon residency",
+    "standalone L1.1 top-1 restoration improvement"
+  ],
+  "evidence": [
+    "/tmp/lay-phase7-full-gate-6-serial.log",
+    "/tmp/lay-phase7-daemon-gate-no-sweep.log",
+    "/tmp/lay-phase7-phrase-reader-gate-3.log",
+    "/tmp/lay-phase7-check-changed-4.log",
+    "/tmp/lay-phase7-installed-headless-smoke.log",
+    "e@192.168.3.94:/home/e/build/lay-phase7-0.2.348-build.log"
+  ]
+}

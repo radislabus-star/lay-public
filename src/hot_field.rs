@@ -178,15 +178,6 @@ impl HotWordReadout {
                 | HotWordAuthority::L2FormCenter
         )
     }
-
-    const fn transition_authority_mass(self) -> u32 {
-        match self.authority {
-            HotWordAuthority::CommonSurface => 400,
-            HotWordAuthority::L2SurfaceCenter => 300,
-            HotWordAuthority::L2FormCenter => 200,
-            HotWordAuthority::Unknown => 0,
-        }
-    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -233,7 +224,6 @@ pub(crate) struct HotBoundaryShiftReadout {
 
 impl HotBoundaryShiftReadout {
     const MIN_DIRECT_MASS_GAIN: u32 = 150;
-    const MIN_DIRECT_AUTHORITY_GAIN: u32 = 100;
 
     pub(crate) const fn candidate_settles(self) -> bool {
         (self.candidate_left_form.has_structural_center() || self.candidate_left.settles_as_form())
@@ -252,17 +242,24 @@ impl HotBoundaryShiftReadout {
             )
     }
 
-    const fn authority_gain(self) -> u32 {
-        self.candidate_left_form
-            .transition_authority_mass()
-            .saturating_sub(self.original_left_form.transition_authority_mass())
-    }
-
     const fn original_pair_settles(self) -> bool {
-        (self.original_left_chars >= 3 && self.original_left.exact_center)
+        (self.original_left_chars >= 3
+            && self.original_left.exact_center
+            && (self.original_right_form.has_structural_center()
+                || self.original_right.exact_center))
             || (self.original_left_chars >= 2
                 && self.original_left_form.has_structural_center()
                 && self.original_right_form.has_structural_center())
+    }
+
+    const fn reanchors_one_letter_left_fragment(self) -> bool {
+        self.original_left_chars == 1
+            && self.original_left.exact_center
+            && !self.original_right.exact_center
+            && !self.original_right_form.has_structural_center()
+            && self.candidate_left.exact_center
+            && self.candidate_left_form.has_phase_authority()
+            && self.candidate_right_form.has_structural_center()
     }
 
     pub(crate) const fn has_direct_apply_mass(self) -> bool {
@@ -270,7 +267,7 @@ impl HotBoundaryShiftReadout {
             && !self.original_pair_settles()
             && !self.original_right.exact_center
             && (self.mass_gain() >= Self::MIN_DIRECT_MASS_GAIN
-                || self.authority_gain() >= Self::MIN_DIRECT_AUTHORITY_GAIN)
+                || self.reanchors_one_letter_left_fragment())
     }
 }
 

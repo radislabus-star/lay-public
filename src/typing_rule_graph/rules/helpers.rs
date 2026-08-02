@@ -62,12 +62,64 @@ pub(super) fn apply_short_left_word_rule(
     Some(output)
 }
 
+pub(super) fn apply_last_two_word_rule(
+    ctx: &TypingRuleContext<'_>,
+    rule: TextRule,
+) -> Option<String> {
+    let segments = split_ws_segments(ctx.core);
+    let word_indices = segments
+        .iter()
+        .enumerate()
+        .filter_map(|(idx, (_, is_ws))| (!*is_ws).then_some(idx))
+        .collect::<Vec<_>>();
+    if word_indices.len() < 3 {
+        return None;
+    }
+    let start = word_indices[word_indices.len() - 2];
+    let suffix = segments[start..]
+        .iter()
+        .map(|(segment, _)| *segment)
+        .collect::<String>();
+    let replacement = rule(&suffix)?;
+    let mut output = String::with_capacity(ctx.core.len().max(replacement.len()));
+    for (segment, _) in &segments[..start] {
+        output.push_str(segment);
+    }
+    output.push_str(&replacement);
+    Some(output)
+}
+
 pub(super) fn apply_token_word_rule(ctx: &TypingRuleContext<'_>, rule: TextRule) -> Option<String> {
     if ctx.word.is_empty() {
         return None;
     }
     rule(ctx.word)
         .map(|replacement| format!("{}{}{}", ctx.token_leading, replacement, ctx.token_trailing))
+}
+
+pub(super) fn apply_last_word_rule(ctx: &TypingRuleContext<'_>, rule: TextRule) -> Option<String> {
+    let segments = split_ws_segments(ctx.core);
+    let idx = segments.iter().rposition(|(_, is_ws)| !*is_ws)?;
+    let (leading, word, trailing) = split_word_punctuation(segments[idx].0);
+    if word.is_empty() {
+        return None;
+    }
+    let replacement = rule(word)?;
+    if replacement == word {
+        return None;
+    }
+
+    let mut output = String::with_capacity(ctx.core.len() + replacement.len());
+    for (segment_idx, (segment, _)) in segments.iter().enumerate() {
+        if segment_idx == idx {
+            output.push_str(leading);
+            output.push_str(&replacement);
+            output.push_str(trailing);
+        } else {
+            output.push_str(segment);
+        }
+    }
+    Some(output)
 }
 
 pub(super) fn cleanup_extra_letters_after_ru_layout(text: &str) -> String {

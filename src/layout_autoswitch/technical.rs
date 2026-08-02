@@ -84,7 +84,10 @@ fn correct_ascii_prefix_with_ru_layout_tail(token: &str) -> Option<String> {
     }
 
     let converted_tail = crate::dict::convert(tail, crate::dict::Direction::Us2Ru);
-    if converted_tail == tail || !is_known_ru_token(&converted_tail) {
+    if converted_tail == tail
+        || !(is_known_ru_token(&converted_tail)
+            || crate::russian_lexicon::has_clean_russian_surface_certificate(&converted_tail))
+    {
         return None;
     }
 
@@ -98,13 +101,8 @@ fn is_ascii_layout_anchor(prefix: &str) -> bool {
 }
 
 pub fn should_keep_plain_cyrillic_before_ascii_technical(original: &str, converted: &str) -> bool {
-    let original_lower = original.to_lowercase();
-    let original_known_ru = crate::token_language::is_known_ru_token(&original_lower)
-        || crate::russian_lexicon::is_known_russian_word_or_form(&original_lower);
-
     original.chars().count() >= 4
         && original.chars().all(is_cyrillic_letter)
-        && original_known_ru
         && converted != original
         && is_ascii_technical_token(converted)
 }

@@ -8,7 +8,8 @@ use std::collections::HashSet;
 use crate::candidate_ranker::choose_best_with_gap;
 use crate::russian_chars::is_russian_vowel;
 use crate::russian_lexicon::{
-    is_known_russian_word_or_form, russian_dictionary, russian_short_dictionary,
+    is_known_russian_word_or_form, is_reference_backed_russian_form, russian_dictionary,
+    russian_short_dictionary,
 };
 use crate::russian_typo_candidates::inserted_char_position_for_missing_letter;
 use crate::text_case::apply_word_case;
@@ -29,7 +30,16 @@ where
 {
     let lower = original.to_lowercase();
     let (candidate, _) = choose_best_with_gap(candidates, min_gap, |candidate| {
-        if candidate == &lower || !is_known_russian_word_or_form(candidate) {
+        if std::env::var_os("LAY_TRACE_RU_TYPO").is_some() && candidate.contains("свойств") {
+            eprintln!(
+                "rank_candidate original={lower:?} candidate={candidate:?} runtime={} foundation={} exact_reference={} morphology={}",
+                is_known_russian_word_or_form(candidate),
+                crate::nanda_wave::l2::l2_surface_foundation_contains(candidate),
+                crate::russian_lexicon::is_exact_reference_russian_word(candidate),
+                is_reference_backed_russian_form(candidate)
+            );
+        }
+        if candidate == &lower || !is_rankable_russian_candidate(candidate) {
             return None;
         }
         let margin = crate::ngram::ru_candidate_margin(candidate, &lower);
@@ -39,6 +49,9 @@ where
             0.0
         };
         let score = margin + missing_letter_candidate_bonus(&lower, candidate) + common_bonus;
+        if is_reference_only_candidate(candidate) && score < 0.0 {
+            return None;
+        }
         if score < min_margin {
             return None;
         }
@@ -63,11 +76,14 @@ where
         if candidate == lower || !seen.insert(candidate.clone()) {
             continue;
         }
-        if !is_cyrillic_word(&candidate) || !is_known_russian_word_or_form(&candidate) {
+        if !is_cyrillic_word(&candidate) || !is_rankable_russian_candidate(&candidate) {
             continue;
         }
 
         let margin = crate::ngram::ru_candidate_margin(&candidate, &lower);
+        if is_reference_only_candidate(&candidate) && margin < 0.0 {
+            continue;
+        }
         if margin < min_margin {
             continue;
         }
@@ -87,6 +103,7 @@ pub(crate) fn missing_letter_candidate_bonus(lower: &str, candidate: &str) -> f6
     };
     let center_support = if crate::nanda_wave::l2::l2_surface_foundation_has_authority(candidate)
         || crate::russian_lexicon::is_center_backed_russian_form(candidate)
+        || is_reference_backed_russian_form(candidate)
     {
         12.0
     } else {
@@ -102,6 +119,20 @@ pub(crate) fn missing_letter_candidate_bonus(lower: &str, candidate: &str) -> f6
         } else {
             0.0
         }
+}
+
+fn is_rankable_russian_candidate(candidate: &str) -> bool {
+    is_known_russian_word_or_form(candidate)
+        || crate::nanda_wave::l2::l2_surface_foundation_contains(candidate)
+        || crate::russian_lexicon::is_exact_reference_russian_word(candidate)
+        || is_reference_backed_russian_form(candidate)
+}
+
+fn is_reference_only_candidate(candidate: &str) -> bool {
+    !is_known_russian_word_or_form(candidate)
+        && !crate::nanda_wave::l2::l2_surface_foundation_contains(candidate)
+        && !crate::russian_lexicon::is_exact_reference_russian_word(candidate)
+        && is_reference_backed_russian_form(candidate)
 }
 
 fn looks_like_known_y_noun_form(candidate: &str) -> bool {

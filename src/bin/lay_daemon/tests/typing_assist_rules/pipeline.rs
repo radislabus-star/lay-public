@@ -23,9 +23,9 @@ fn typing_assist_pipeline_can_disable_rules() {
 
 #[test]
 fn typing_assist_pipeline_priority_changes_first_match() {
-    let personal_first = typing_pipeline_with_first("personal_phrase");
-    let normalized = normalize_typing_assist_pipeline(&personal_first);
-    assert_eq!(normalized[0].id, "personal_phrase");
+    let moved_prefix_first = typing_pipeline_with_first("moved_prefix_pair");
+    let normalized = normalize_typing_assist_pipeline(&moved_prefix_first);
+    assert_eq!(normalized[0].id, "moved_prefix_pair");
     assert_eq!(normalized[0].priority, 1);
 }
 
@@ -83,9 +83,11 @@ fn typing_assist_each_default_rule_has_isolated_positive_case() {
         covered.insert(case.id);
     }
 
-    let expected: HashSet<String> = default_typing_assist_rules()
+    let mut expected: HashSet<String> = default_typing_assist_rules()
         .into_iter()
         .map(|(id, _)| id.to_string())
         .collect();
+    // Personal replacements are learned donors evaluated before the configurable rule pipeline.
+    expected.extend(["personal_phrase".to_string(), "personal_token".to_string()]);
     assert_eq!(covered, expected);
 }

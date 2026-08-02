@@ -376,7 +376,7 @@ fn structural_context_gate(
             reason: "short_layout_without_phrase_context",
         });
     }
-    if short_cyrillic_word_switches_to_ascii_layout(original, replacement, error_class) {
+    if short_cyrillic_word_switches_to_ascii_layout(original, replacement, error_class, origin) {
         return Some(CandidateGateDecision {
             action: CandidateGateAction::KeepOriginal,
             reason: "short_cyrillic_to_ascii_layout",
@@ -1669,6 +1669,7 @@ fn short_cyrillic_word_switches_to_ascii_layout(
     original: &str,
     replacement: &str,
     error_class: TypingErrorClass,
+    origin: CandidateOrigin,
 ) -> bool {
     if error_class != TypingErrorClass::WrongLayout {
         return false;
@@ -1679,6 +1680,12 @@ fn short_cyrillic_word_switches_to_ascii_layout(
     let Some(replacement_word) = last_text_word(replacement) else {
         return false;
     };
+    let exact_known_layout_center = origin == CandidateOrigin::Layout
+        && crate::dict::convert(&original_word, crate::dict::Direction::Ru2Us)
+            .eq_ignore_ascii_case(&replacement_word)
+        && crate::layout_autoswitch::is_known_english_layout_autoswitch_word(
+            &replacement_word.to_ascii_lowercase(),
+        );
     original_word.chars().count() <= 3
         && original_word
             .chars()
@@ -1686,6 +1693,7 @@ fn short_cyrillic_word_switches_to_ascii_layout(
         && replacement_word
             .chars()
             .all(|ch| ch.is_ascii_alphabetic() || matches!(ch, '`'))
+        && !exact_known_layout_center
 }
 
 fn short_nanda_composite_candidate_shrinks_word(
@@ -1910,6 +1918,18 @@ mod tests {
             assert_eq!(gate.action, CandidateGateAction::KeepOriginal);
             assert_eq!(gate.reason, "short_cyrillic_to_ascii_layout");
         }
+    }
+
+    #[test]
+    fn exact_short_layout_projection_to_known_english_center_is_eligible() {
+        let gate = gate_candidate_with_origin(
+            "дфн ",
+            "lay ",
+            TypingErrorClass::WrongLayout,
+            CandidateOrigin::Layout,
+        );
+
+        assert_eq!(gate.action, CandidateGateAction::Eligible, "{gate:?}");
     }
 
     #[test]

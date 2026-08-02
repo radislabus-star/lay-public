@@ -23,10 +23,12 @@ const SHARD_ENTRY_BYTES: usize = 16;
 const DEFAULT_ATOMS_PER_SHARD: usize = 1;
 const MAX_ATOMS_PER_SHARD: usize = 4_096;
 const CHECKSUM_OFFSET: usize = 88;
-const DEFAULT_POSTING_CACHE_MIB: usize = 32;
+const DEFAULT_POSTING_CACHE_MIB: usize = 64;
 const DEFAULT_SHARD_CACHE_MIB: usize = 0;
+const DEFAULT_RUNTIME_WORKERS: usize = 4;
 const MAX_RUNTIME_CACHE_MIB: usize = 128;
 const MAX_PREFETCH_WORKERS: usize = 32;
+const PREFETCH_ATOM_BATCH: usize = 256;
 
 pub(super) fn runtime_pool_install<OP, R>(operation: OP) -> R
 where
@@ -42,9 +44,7 @@ where
                 std::thread::available_parallelism()
                     .map(usize::from)
                     .unwrap_or(1)
-                    .saturating_sub(1)
-                    .max(1)
-                    .min(14)
+                    .min(DEFAULT_RUNTIME_WORKERS)
             })
             .clamp(1, MAX_PREFETCH_WORKERS);
         rayon::ThreadPoolBuilder::new()
@@ -118,11 +118,25 @@ pub(super) struct V8Artifact {
     shard_locks: Vec<Mutex<()>>,
 }
 
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub(super) struct V8WarmupStats {
+    pub(super) eligible_atoms: usize,
+    pub(super) eligible_relations: usize,
+    pub(super) posting_cache_bytes: usize,
+    pub(super) posting_cache_entries: usize,
+    pub(super) protected_cache_bytes: usize,
+    pub(super) protected_cache_entries: usize,
+    pub(super) shard_cache_bytes: usize,
+    pub(super) shard_cache_entries: usize,
+}
+
 #[derive(Default)]
 struct PostingCache {
     bytes: usize,
     order: VecDeque<u32>,
     entries: HashMap<u32, Arc<[WaveCoupling]>>,
+    protected_bytes: usize,
+    protected: std::collections::HashSet<u32>,
 }
 
 #[derive(Default)]
@@ -167,6 +181,10 @@ impl V8Artifact {
             .unwrap_or_default()
     }
 
+    pub(super) fn posting_cache_budget_bytes(&self) -> usize {
+        posting_cache_bytes()
+    }
+
     pub(super) fn posting(&self, atom_id: u32) -> Result<Arc<[WaveCoupling]>, String> {
         let cache_budget = posting_cache_bytes();
         if cache_budget != 0 {
@@ -203,22 +221,12 @@ impl V8Artifact {
             if let Some(existing) = cache.entries.get(&atom_id) {
                 return Ok(Arc::clone(existing));
             }
-            while cache.bytes.saturating_add(posting_bytes) > cache_budget {
-                let Some(evicted_id) = cache.order.pop_front() else {
-                    break;
-                };
-                let Some(evicted) = cache.entries.remove(&evicted_id) else {
-                    continue;
-                };
-                cache.bytes = cache.bytes.saturating_sub(
-                    evicted
-                        .len()
-                        .saturating_mul(std::mem::size_of::<WaveCoupling>()),
-                );
+            evict_transient_to_fit(&mut cache, posting_bytes, cache_budget);
+            if cache.bytes.saturating_add(posting_bytes) <= cache_budget {
+                cache.bytes = cache.bytes.saturating_add(posting_bytes);
+                cache.order.push_back(atom_id);
+                cache.entries.insert(atom_id, Arc::clone(&posting));
             }
-            cache.bytes = cache.bytes.saturating_add(posting_bytes);
-            cache.order.push_back(atom_id);
-            cache.entries.insert(atom_id, Arc::clone(&posting));
         }
         Ok(posting)
     }
@@ -304,22 +312,12 @@ impl V8Artifact {
                     .len()
                     .saturating_mul(std::mem::size_of::<WaveCoupling>());
                 if posting_bytes <= cache_budget {
-                    while cache.bytes.saturating_add(posting_bytes) > cache_budget {
-                        let Some(evicted_id) = cache.order.pop_front() else {
-                            break;
-                        };
-                        let Some(evicted) = cache.entries.remove(&evicted_id) else {
-                            continue;
-                        };
-                        cache.bytes = cache.bytes.saturating_sub(
-                            evicted
-                                .len()
-                                .saturating_mul(std::mem::size_of::<WaveCoupling>()),
-                        );
+                    evict_transient_to_fit(&mut cache, posting_bytes, cache_budget);
+                    if cache.bytes.saturating_add(posting_bytes) <= cache_budget {
+                        cache.bytes = cache.bytes.saturating_add(posting_bytes);
+                        cache.order.push_back(atom_id);
+                        cache.entries.insert(atom_id, Arc::clone(&posting));
                     }
-                    cache.bytes = cache.bytes.saturating_add(posting_bytes);
-                    cache.order.push_back(atom_id);
-                    cache.entries.insert(atom_id, Arc::clone(&posting));
                 }
                 resolved[index] = Some(posting);
             }
@@ -328,6 +326,87 @@ impl V8Artifact {
             .into_iter()
             .map(|posting| posting.ok_or_else(|| "V8 posting batch is incomplete".to_string()))
             .collect()
+    }
+
+    pub(super) fn warm_first_touch(&self, atom_ids: &[u32]) -> Result<V8WarmupStats, String> {
+        if atom_ids.is_empty() || posting_cache_bytes() == 0 {
+            return Ok(self.warmup_stats(0, 0));
+        }
+        let mut eligible_atoms = 0_usize;
+        let mut eligible_relations = 0_usize;
+        for batch in atom_ids.chunks(PREFETCH_ATOM_BATCH) {
+            let postings = self.postings(batch)?;
+            for (atom_id, posting) in batch.iter().copied().zip(&postings) {
+                eligible_atoms += 1;
+                eligible_relations = eligible_relations.saturating_add(posting.len());
+                self.protect_posting(atom_id, Arc::clone(posting))?;
+            }
+        }
+        Ok(self.warmup_stats(eligible_atoms, eligible_relations))
+    }
+
+    fn protect_posting(&self, atom_id: u32, posting: Arc<[WaveCoupling]>) -> Result<(), String> {
+        let cache_budget = posting_cache_bytes();
+        let posting_bytes = posting
+            .len()
+            .saturating_mul(std::mem::size_of::<WaveCoupling>());
+        if posting_bytes > cache_budget {
+            return Ok(());
+        }
+        let mut cache = self
+            .posting_cache
+            .lock()
+            .map_err(|_| "V8 posting cache is poisoned".to_string())?;
+        if cache.protected.contains(&atom_id) {
+            return Ok(());
+        }
+        let already_cached = cache.entries.contains_key(&atom_id);
+        if !already_cached {
+            evict_transient_to_fit(&mut cache, posting_bytes, cache_budget);
+            if cache.bytes.saturating_add(posting_bytes) > cache_budget {
+                return Ok(());
+            }
+            cache.bytes = cache.bytes.saturating_add(posting_bytes);
+            cache.entries.insert(atom_id, posting);
+        }
+        cache.protected_bytes = cache.protected_bytes.saturating_add(posting_bytes);
+        cache.protected.insert(atom_id);
+        Ok(())
+    }
+
+    fn warmup_stats(&self, eligible_atoms: usize, eligible_relations: usize) -> V8WarmupStats {
+        let (
+            posting_cache_bytes,
+            posting_cache_entries,
+            protected_cache_bytes,
+            protected_cache_entries,
+        ) = self
+            .posting_cache
+            .lock()
+            .map(|cache| {
+                (
+                    cache.bytes,
+                    cache.entries.len(),
+                    cache.protected_bytes,
+                    cache.protected.len(),
+                )
+            })
+            .unwrap_or_default();
+        let (shard_cache_bytes, shard_cache_entries) = self
+            .shard_cache
+            .lock()
+            .map(|cache| (cache.bytes, cache.entries.len()))
+            .unwrap_or_default();
+        V8WarmupStats {
+            eligible_atoms,
+            eligible_relations,
+            posting_cache_bytes,
+            posting_cache_entries,
+            protected_cache_bytes,
+            protected_cache_entries,
+            shard_cache_bytes,
+            shard_cache_entries,
+        }
     }
 
     fn shard(&self, shard_id: u32) -> Result<Arc<[u8]>, String> {
@@ -379,6 +458,25 @@ impl V8Artifact {
             cache.entries.insert(shard_id, Arc::clone(&shard));
         }
         Ok(shard)
+    }
+}
+
+fn evict_transient_to_fit(cache: &mut PostingCache, incoming: usize, budget: usize) {
+    while cache.bytes.saturating_add(incoming) > budget {
+        let Some(evicted_id) = cache.order.pop_front() else {
+            break;
+        };
+        if cache.protected.contains(&evicted_id) {
+            continue;
+        }
+        let Some(evicted) = cache.entries.remove(&evicted_id) else {
+            continue;
+        };
+        cache.bytes = cache.bytes.saturating_sub(
+            evicted
+                .len()
+                .saturating_mul(std::mem::size_of::<WaveCoupling>()),
+        );
     }
 }
 
@@ -914,6 +1012,32 @@ mod tests {
     use crate::nanda_wave::lexical_grokking::runtime::{LexicalGrokkingMemory, ReadoutMode};
 
     #[test]
+    fn protected_postings_survive_transient_scan_pollution() {
+        let relation = || WaveCoupling::default();
+        let protected: Arc<[WaveCoupling]> = vec![relation(); 4].into();
+        let transient_a: Arc<[WaveCoupling]> = vec![relation(); 4].into();
+        let transient_b: Arc<[WaveCoupling]> = vec![relation(); 4].into();
+        let posting_bytes = protected.len() * std::mem::size_of::<WaveCoupling>();
+        let mut cache = PostingCache::default();
+        cache.entries.insert(1, Arc::clone(&protected));
+        cache.protected.insert(1);
+        cache.protected_bytes = posting_bytes;
+        cache.entries.insert(2, transient_a);
+        cache.entries.insert(3, transient_b);
+        cache.order.extend([2, 3]);
+        cache.bytes = posting_bytes * 3;
+
+        evict_transient_to_fit(&mut cache, posting_bytes * 2, posting_bytes * 3);
+
+        assert!(cache.entries.contains_key(&1));
+        assert!(cache.protected.contains(&1));
+        assert_eq!(cache.protected_bytes, posting_bytes);
+        assert!(!cache.entries.contains_key(&2));
+        assert!(!cache.entries.contains_key(&3));
+        assert_eq!(cache.bytes, posting_bytes);
+    }
+
+    #[test]
     fn v8_keeps_every_forward_relation_addressable() {
         let words = ["время", "работает", "download"]
             .into_iter()
@@ -972,17 +1096,20 @@ mod tests {
                 "DecoderGraph anchor reconstruction differs for terminal {terminal_id}"
             );
         }
-        for surface in ["время", "вреям", "работат", "downlod"] {
+        let surfaces = ["время", "вреям", "работат", "downlod"];
+        let before_warmup = surfaces
+            .iter()
+            .map(|surface| lazy.readout(surface, 8, ReadoutMode::Full))
+            .collect::<Vec<_>>();
+        lazy.warm_first_touch()
+            .expect("warm V8 first-touch postings");
+        for (surface, before) in surfaces.into_iter().zip(before_warmup) {
             let expected = eager.readout(surface, 8, ReadoutMode::Full);
+            assert_eq!(before, expected, "cold V8 readout differs for {surface}");
             assert_eq!(
                 lazy.readout(surface, 8, ReadoutMode::Full),
                 expected,
-                "V8 readout differs for {surface}"
-            );
-            assert_eq!(
-                lazy.readout(surface, 8, ReadoutMode::Full),
-                expected,
-                "cached V8 readout differs for {surface}"
+                "warmed V8 readout differs for {surface}"
             );
         }
         let _ = fs::remove_dir_all(directory);

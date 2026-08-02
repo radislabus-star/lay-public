@@ -167,7 +167,16 @@ fn spawn_service_worker(
 fn spawn_background_load(host: Arc<RwLock<HostedMemory>>, package_path: PathBuf) {
     thread::spawn(move || {
         let next = match lay::nanda_wave::L1RestorationHost::load(&package_path) {
-            Ok(loaded) => HostedMemory::Ready(loaded),
+            Ok(loaded) => match loaded.warm_first_touch() {
+                Ok(report) => {
+                    eprintln!("lay-l1.1-serve warmup: {report}");
+                    HostedMemory::Ready(loaded)
+                }
+                Err(error) => HostedMemory::Failed {
+                    package_path,
+                    message: format!("first-touch warmup failed: {error}"),
+                },
+            },
             Err(error) => HostedMemory::Failed {
                 package_path,
                 message: error.to_string(),
@@ -343,9 +352,10 @@ fn handle_request(
                 &state.host,
                 || {
                     lay::nanda_wave::L1RestorationHost::load(&memory)
-                        .map(|next| {
+                        .and_then(|next| {
+                            next.warm_first_touch()?;
                             let report = next.stats();
-                            (HostedMemory::Ready(next), report)
+                            Ok((HostedMemory::Ready(next), report))
                         })
                         .map_err(|error| error.to_string())
                 },

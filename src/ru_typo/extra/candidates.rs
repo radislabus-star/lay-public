@@ -4,24 +4,12 @@ use crate::russian_typo_candidates::generate_extra_letter_candidates;
 use crate::russian_typo_scoring::ngram_allows_ru_candidate;
 
 use super::super::guards::rewrites_protected_pattern_term_stem;
-use super::super::thresholds::NGRAM_EXTRA_LETTER_MARGIN;
-
 const REFLEXIVE_CONFUSION_DATA: &str =
     include_str!("../../../data/lexicon/russian_reflexive_confusion.tsv");
 
 pub(super) fn reflexive_confusion_sources() -> impl Iterator<Item = &'static str> {
     data_lines(REFLEXIVE_CONFUSION_DATA)
         .filter_map(|line| line.split_once('\t').map(|(from, _)| from))
-}
-
-pub(crate) fn extra_letter_candidate_exists(lower: &str) -> bool {
-    safe_extra_letter_candidates(lower)
-        .into_iter()
-        .any(|candidate| {
-            candidate != lower
-                && is_known_russian_word_or_form(&candidate)
-                && crate::ngram::ru_candidate_margin(&candidate, lower) >= NGRAM_EXTRA_LETTER_MARGIN
-        })
 }
 
 pub(super) fn safe_extra_letter_candidates(lower: &str) -> Vec<String> {

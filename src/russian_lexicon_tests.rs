@@ -26,6 +26,15 @@ fn recognizes_common_noun_forms_for_typo_candidates() {
 }
 
 #[test]
+fn clean_surface_certificate_recognizes_short_noun_forms() {
+    assert!(has_clean_russian_surface_certificate("коды"));
+    assert!(has_clean_russian_surface_certificate("теорию"));
+    assert!(has_clean_russian_surface_certificate("задачки"));
+    assert!(has_clean_russian_surface_certificate("проверь"));
+    assert!(is_reference_backed_russian_form("фактическим"));
+}
+
+#[test]
 fn recognizes_russian_technical_loanword_forms() {
     for word in [
         "грокать",

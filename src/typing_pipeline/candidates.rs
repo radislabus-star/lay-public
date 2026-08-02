@@ -1,9 +1,9 @@
 use crate::config::TypingAssistRuleConfig;
 use crate::typing_candidate::{TypingCandidate, TypingCandidateDecision};
 use crate::typing_context::syntax_allows_candidate;
-use crate::typing_replacements::promoted_replacement_for_token;
+use crate::typing_replacements::replacement_for_token;
 use crate::typing_rule_graph::{find_typing_rule, ids, priorities, rules, TypingRuleContext};
-use crate::word_reader::split_word_punctuation;
+use crate::word_reader::{split_word_punctuation, split_ws_segments};
 
 use super::rule_order::typing_rules_for_evaluation;
 use super::types::{TypingAssistExplanation, TypingRuleEvaluation};
@@ -137,19 +137,41 @@ pub(super) fn evaluate_rule_candidates(
 }
 
 fn promoted_replacement_candidate(ctx: &TypingRuleContext<'_>) -> Option<(&'static str, String)> {
-    if let Some(replacement) = promoted_replacement_for_token(ctx.core) {
+    if let Some(replacement) = replacement_for_token(ctx.core) {
         return Some((personal_rule_id(ctx.core, &replacement), replacement));
     }
 
-    if ctx.word.is_empty() || ctx.word == ctx.core {
-        return None;
+    if !ctx.word.is_empty() && ctx.word != ctx.core {
+        if let Some(replacement) = replacement_for_token(ctx.word) {
+            let mut out = String::with_capacity(ctx.core.len().max(replacement.len()));
+            out.push_str(ctx.token_leading);
+            out.push_str(&replacement);
+            out.push_str(ctx.token_trailing);
+            return Some((personal_rule_id(ctx.core, &out), out));
+        }
     }
 
-    let replacement = promoted_replacement_for_token(ctx.word)?;
+    let segments = split_ws_segments(ctx.core);
+    let (idx, leading, trailing, replacement) = segments
+        .iter()
+        .enumerate()
+        .rev()
+        .filter(|(_, (_, is_ws))| !*is_ws)
+        .find_map(|(idx, (segment, _))| {
+            let (leading, word, trailing) = split_word_punctuation(segment);
+            let replacement = replacement_for_token(word)?;
+            Some((idx, leading, trailing, replacement))
+        })?;
     let mut out = String::with_capacity(ctx.core.len().max(replacement.len()));
-    out.push_str(ctx.token_leading);
-    out.push_str(&replacement);
-    out.push_str(ctx.token_trailing);
+    for (segment_idx, (segment, _)) in segments.iter().enumerate() {
+        if segment_idx == idx {
+            out.push_str(leading);
+            out.push_str(&replacement);
+            out.push_str(trailing);
+        } else {
+            out.push_str(segment);
+        }
+    }
     Some((personal_rule_id(ctx.core, &out), out))
 }
 

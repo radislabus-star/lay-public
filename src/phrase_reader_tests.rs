@@ -127,7 +127,15 @@ fn boundary_shift_field_replays_clean_and_synthetic_corpus_pairs() {
         }
         let moved = left_chars.pop().expect("left has at least two characters");
         let dirty_left = left_chars.into_iter().collect::<String>();
-        let dirty = format!("{dirty_left} {moved}{right}");
+        let dirty_right = format!("{moved}{right}");
+        // The corruption operator can land on another independently attested
+        // surface (for example `режим не -> режи мне`). Such a signal is
+        // ambiguous, so it belongs to Tied/ABSTAIN rather than restoration
+        // recall.
+        if crate::russian_lexicon::has_clean_russian_surface_certificate(&dirty_right) {
+            continue;
+        }
+        let dirty = format!("{dirty_left} {dirty_right}");
         let expected = format!("{left} {right}");
         eligible += 1;
         if propose_moved_prefix_letter_pair(&dirty).as_deref() == Some(expected.as_str()) {

@@ -71,9 +71,17 @@ mod tests {
     use super::*;
 
     #[test]
-    fn contextual_fuzzy_pair_abstains_without_a_represented_left_form() {
+    fn contextual_fuzzy_pair_uses_represented_l2_left_form() {
         assert_eq!(
             correct_contextual_fuzzy_pair("досвкйо лгистика").as_deref(),
+            Some("доставкой логистика")
+        );
+    }
+
+    #[test]
+    fn contextual_fuzzy_pair_abstains_without_a_context_relation() {
+        assert_eq!(
+            correct_contextual_fuzzy_pair("досвкйо проект").as_deref(),
             None
         );
     }

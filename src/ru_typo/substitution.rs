@@ -24,7 +24,13 @@ pub(crate) fn correct_single_letter_substitution(word: &str) -> Option<String> {
             let center_prior = crate::nanda_wave::l2::l2_surface_foundation_rank(candidate)
                 .map(|rank| 12.0 / (1.0 + rank as f64 / 2_000.0))
                 .unwrap_or(0.0);
-            Some(crate::ngram::ru_candidate_margin(candidate, &lower) + center_prior)
+            let margin = crate::ngram::ru_candidate_margin(candidate, &lower);
+            if std::env::var_os("LAY_TRACE_RU_TYPO").is_some() {
+                eprintln!(
+                    "neighbor_substitution original={lower:?} candidate={candidate:?} margin={margin:.3} center_prior={center_prior:.3}"
+                );
+            }
+            (center_prior > 0.0).then_some(margin + center_prior)
         },
     )?;
     Some(apply_word_case(word, &candidate))

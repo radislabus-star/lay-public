@@ -17,7 +17,7 @@ use lay::typing_assist::{
     correct_wrong_layout_ascii_technical_token, decide_completed_scope_word, decide_correction,
     decide_scoped_tail_correction, effective_replace_words, is_ascii_technical_token,
     is_known_russian_word_or_form, promoted_replacement_for_token,
-    russian_generated_form_dictionary, select_typing_assist_with_pipeline,
+    reference_russian_generated_form_dictionary, select_typing_assist_with_pipeline,
     should_force_replay_for_short_fragment, should_keep_plain_cyrillic_before_ascii_technical,
 };
 use lay::word_buffer::{UserLearningCorrection, WordBuffer};
