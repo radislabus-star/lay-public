@@ -171,6 +171,15 @@ impl CommittedTailReplaceRequest {
 }
 
 impl LayIbusEngine {
+    pub(crate) fn can_replace_committed_tail(&self, backspaces: u32) -> bool {
+        CommittedTailOutputProfile::select(
+            self.cursor_cell_width,
+            self.surrounding_text_supported,
+            backspaces,
+        )
+        .can_execute()
+    }
+
     pub(crate) fn new(
         path: String,
         shared: Shared,
@@ -709,6 +718,25 @@ mod tests {
 
         assert_eq!(profile, CommittedTailOutputProfile::Unavailable);
         assert!(!profile.can_execute());
+    }
+
+    #[test]
+    fn chromium_style_engine_without_delete_capability_rejects_bridge_preflight() {
+        let mut engine = engine();
+        engine.cursor_cell_width = 0;
+        engine.surrounding_text_supported = false;
+
+        assert!(!engine.can_replace_committed_tail(7));
+        assert!(engine.can_replace_committed_tail(0));
+    }
+
+    #[test]
+    fn surrounding_text_capability_admits_bridge_preflight() {
+        let mut engine = engine();
+        engine.cursor_cell_width = 0;
+        engine.surrounding_text_supported = true;
+
+        assert!(engine.can_replace_committed_tail(7));
     }
 
     #[test]

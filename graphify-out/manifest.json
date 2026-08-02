@@ -25,13 +25,13 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1785671920.9532685,
-    "ast_hash": "7dc27c13c9c1abc08b3d6e72ca64e8b7",
+    "mtime": 1785705967.156093,
+    "ast_hash": "6a2b8fc42f658b5ee62de8f16ba4aec0",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
-    "mtime": 1785671920.9645464,
-    "ast_hash": "a72d5da974e9facd8aed54a3bde5aefc",
+    "mtime": 1785705967.1570928,
+    "ast_hash": "d15fd8f22269be1b1ba048c92cc31c8b",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/recent_actions_menu.js": {
@@ -40,13 +40,13 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/settings.js": {
-    "mtime": 1785671920.963851,
-    "ast_hash": "168e8b0e7ff31852c49c78459f6188ba",
+    "mtime": 1785705967.1580927,
+    "ast_hash": "6013c9575b127b944f2f026d83aad251",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1785671920.9637468,
-    "ast_hash": "07c489122cfee7b1311cbe0a5b160b2e",
+    "mtime": 1785705967.1580927,
+    "ast_hash": "020ec6af5ddeed89fadb00ccd081ecbd",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -65,8 +65,8 @@
     "semantic_hash": ""
   },
   "scripts/bump-version-from-git.sh": {
-    "mtime": 1784240515.8388958,
-    "ast_hash": "96e7f5a1f4e93d0f2ca5672ac0240859",
+    "mtime": 1785705967.159093,
+    "ast_hash": "d21190ff374132b46802c43c2458b45d",
     "semantic_hash": ""
   },
   "scripts/check-architecture.sh": {
@@ -85,8 +85,8 @@
     "semantic_hash": ""
   },
   "scripts/check-lay-changed.sh": {
-    "mtime": 1785596823.1711137,
-    "ast_hash": "f40b6ad02e44e23e09df2aec4ef85bf3",
+    "mtime": 1785705967.159093,
+    "ast_hash": "6226bbf3c7eac4c8a4baf72bb39cb0cd",
     "semantic_hash": ""
   },
   "scripts/check-lay-full.sh": {
@@ -335,8 +335,8 @@
     "semantic_hash": "0e703c269f8df4655d15c0150cebd6fd"
   },
   "src/bin/lay_daemon/layout_controller.rs": {
-    "mtime": 1784133998.5869112,
-    "ast_hash": "4cf550024e70982503307a14ffd4d662",
+    "mtime": 1785705181.1141944,
+    "ast_hash": "8828da7b99f376d47e0c3a35fadfb310",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/layout_controller/backend_hint.rs": {
@@ -360,8 +360,8 @@
     "semantic_hash": "89c4a70463b964b6ad7334d6902fe245"
   },
   "src/bin/lay_daemon/layout_controller/ime_bridge.rs": {
-    "mtime": 1784133301.5984128,
-    "ast_hash": "2b852960da62235032fb817909255fec",
+    "mtime": 1785705181.0991943,
+    "ast_hash": "a70b45f1c2fef1f2f9e7e402f46f8cdc",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/layout_controller/ime_manual_toggle.rs": {
@@ -860,13 +860,13 @@
     "semantic_hash": "4946e18ad23c678bd2d2f0a86fcd6cfb"
   },
   "src/bin/lay_ibus_engine/bridge.rs": {
-    "mtime": 1784132549.285603,
-    "ast_hash": "451fd146b58823e2aaf8bc5ede9dff01",
+    "mtime": 1785705181.0991943,
+    "ast_hash": "6b0fc2e30037361af2279b2145a9407d",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/bridge_actions.rs": {
-    "mtime": 1784133249.9819355,
-    "ast_hash": "cdec74d408bd76eb5d3ad3cd30ce7737",
+    "mtime": 1785705181.0991943,
+    "ast_hash": "89e24a6056244a09e2c6ca1ec8a144ac",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/bridge_policy.rs": {
@@ -965,8 +965,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/state.rs": {
-    "mtime": 1785498984.7248025,
-    "ast_hash": "a00c9ff95a105fe8240f99307d5e67ca",
+    "mtime": 1785705181.0981944,
+    "ast_hash": "764ba28d34905cd84f945df393e1a871",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/tail_memory.rs": {
@@ -2390,8 +2390,8 @@
     "semantic_hash": ""
   },
   "tests/text_mutation_monopoly_contract.rs": {
-    "mtime": 1784336973.878091,
-    "ast_hash": "f1ffcbcfc1136797b40697aeb229b9e2",
+    "mtime": 1785705181.1151946,
+    "ast_hash": "7d5231ffe6bc9f736f70d0891d125c9f",
     "semantic_hash": ""
   },
   "tests/tray_ui_contract.rs": {
@@ -2515,8 +2515,8 @@
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1785671920.9738507,
-    "ast_hash": "37c277285760d2caf8a3be7d2dae8e47",
+    "mtime": 1785705967.1580927,
+    "ast_hash": "78b858069122249d11501c28a7f75a30",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -2770,8 +2770,8 @@
     "semantic_hash": ""
   },
   "docs/text-correction-gate-architecture.md": {
-    "mtime": 1785672537.3579407,
-    "ast_hash": "bc80b7723b2c8d6f992d6e5510264a82",
+    "mtime": 1785705941.6617785,
+    "ast_hash": "f37fe0cd4861c5708585de37f10bebeb",
     "semantic_hash": ""
   },
   "docs/text-mutation-monopoly-plan.md": {
@@ -5070,8 +5070,8 @@
     "semantic_hash": ""
   },
   "docs/lay-development-plan-after-0.2.340.md": {
-    "mtime": 1785673169.3115215,
-    "ast_hash": "c40939cef010c0d53737e45ab1e33e29",
+    "mtime": 1785705941.6627784,
+    "ast_hash": "8a285f67985992ee4cda4951ea9e2b8f",
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/PUBLIC_INSTALL_CANONICAL_L2_V13_2026-08-01.json": {
@@ -5202,6 +5202,21 @@
   "docs/structural_gates/receipts/FINAL_PRODUCT_GATE_PHASE7_2026-08-02.json": {
     "mtime": 1785673282.1188874,
     "ast_hash": "ebb412e6073383a90d3a76fa8e9c3d2f",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_FIXED_13X20000_2026-08-02.json": {
+    "mtime": 1785705941.6617785,
+    "ast_hash": "b93486e269ba801a86183fddafc33e68",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L3_ONLINE_NO_ELIGIBLE_DELTA_2026-08-02.json": {
+    "mtime": 1785705941.6617785,
+    "ast_hash": "7127313a8577c976245a10bae51eafc8",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_1_0_PHYSICAL_APPLICATION_MATRIX_2026-08-02.json": {
+    "mtime": 1785705941.6617785,
+    "ast_hash": "61243f1afc1d25403f9d8f10c98a0c97",
     "semantic_hash": ""
   }
 }

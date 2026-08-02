@@ -488,6 +488,24 @@ fn dispatched_text_edit_cannot_fall_through_to_a_second_backend() {
         layout_controller.contains("VisibleTailSource::from_bridge_state(&state).is_some()"),
         "active composition and committed-tail states must share typed IME ownership"
     );
+    assert_before(
+        &layout_controller,
+        "ime_bridge::can_replace_committed_tail(request.backspaces)",
+        "ime_bridge::try_replace_tail(action.from_text(), action.to_text(), kind)",
+        "IME delete capability must be proven before replacement dispatch",
+    );
+    assert!(
+        layout_controller.contains("ime_replace_capability_unavailable")
+            && layout_controller.contains("ime_capability_preflight_unavailable")
+            && layout_controller.contains("BackendDispatchReceipt::not_dispatched"),
+        "an unavailable pre-dispatch capability must permit authorized backend reselection"
+    );
+
+    let ime_bridge = read("src/bin/lay_ibus_engine/bridge.rs");
+    assert!(
+        ime_bridge.contains("CanReplaceCommittedTail"),
+        "the IME bridge must expose committed-tail output capability without dispatching an edit"
+    );
 
     let ibus_interface = read("src/bin/lay_ibus_engine/ibus_interface.rs");
     assert!(

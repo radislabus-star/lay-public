@@ -17,10 +17,15 @@ fi
 IFS=. read -r major minor patch <<<"${current_version}"
 next_patch="$((patch + 1))"
 version="${major}.${minor}.${next_patch}"
+if [[ "$major" -eq 0 ]]; then
+  extension_version="$next_patch"
+else
+  extension_version="$((major * 1000000 + minor * 1000 + next_patch))"
+fi
 release_date="$(date +%F)"
 
 perl -0pi -e 's/^version = "[^"]+"/version = "'"${version}"'"/m' Cargo.toml
-perl -0pi -e 's/"version": [0-9]+/"version": '"${next_patch}"'/' \
+perl -0pi -e 's/"version": [0-9]+/"version": '"${extension_version}"'/' \
   extension/lay@radislabus-star.github.io/metadata.json
 perl -0pi -e 's/"version-name": "[^"]+"/"version-name": "'"${version}"'"/' \
   extension/lay@radislabus-star.github.io/metadata.json

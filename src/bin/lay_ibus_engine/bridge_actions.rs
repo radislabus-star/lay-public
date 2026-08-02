@@ -85,6 +85,23 @@ impl LayImeBridge {
         Ok(engine.manual_toggle_authority() == ManualToggleAuthority::ImeActiveComposition)
     }
 
+    pub(super) async fn can_replace_committed_tail_inner(
+        &self,
+        backspaces: u32,
+    ) -> fdo::Result<bool> {
+        let Some(path) = self.active_path() else {
+            return Ok(false);
+        };
+        let iface_ref = self
+            .ibus_connection
+            .object_server()
+            .interface::<_, LayIbusEngine>(path.as_str())
+            .await
+            .map_err(|error| fdo::Error::Failed(error.to_string()))?;
+        let engine = iface_ref.get().await;
+        Ok(engine.can_replace_committed_tail(backspaces))
+    }
+
     pub(super) async fn suppress_next_autocorrect_inner(&self) -> fdo::Result<bool> {
         let Some(path) = self.active_path() else {
             return Ok(false);

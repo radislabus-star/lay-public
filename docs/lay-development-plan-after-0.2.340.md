@@ -259,6 +259,34 @@ double Shift | focus change | layout conversion
 Осталось: физическая application matrix, затем commit и push. Она не заменяет
 уже пройденные code gates и не заменяется ими.
 
+### Lay 1.0 closure checkpoint: 2026-08-02
+
+Fixed L1.1 proof завершён на `13 x 20,000`: каждый класс прошёл строгий
+`unique top-1 >95%`, clean preservation `100%`, false authority `0`, false
+singleton `0`. Полный список классов и процентов записан в
+`/home/ubu/projects/lay/docs/structural_gates/receipts/L1_L11_FIXED_13X20000_2026-08-02.json`.
+Многопоточный proof latency остаётся отдельным `WATCH`: `13.014 ms` hot p99 и
+`10.893 ms` L1.1 p99 не выдаются за deployment PASS.
+
+Текущий L3 online state содержит `14` pending relations, только `4` имеют два
+эпизода и ни одна не имеет две независимые сцены. Promotion eligible `0`, новые
+online deltas не продвигались, пороги не снижались. L4 заморожен как
+`SuggestOnly | Keep` и не получает edit authority.
+
+Физически прошли GTK, Qt, Chromium, Kitty и ранее WeChat. Реальный Chromium
+gap закрыт capability-preflight до D-Bus mutation dispatch. Telegram остался
+`NOT_TESTED`, потому что безопасно наблюдаемого unsent-поля не было; сообщение
+в реальный чат не отправлялось. Следующая и последняя release-операция:
+`1.0.0` version sync, полный changed gate, remote release build, атомарная
+установка, health/version/PID verification, commit и push.
+
+**Release-операция выполнена.** `1.0.0` собран на удалённой машине за
+`125.49 s` на `20` jobs, установлен с SHA parity, CLI/daemon/IBus engine/GNOME
+extension показывают `1.0.0`. `lay-daemon` и `lay-l3-online` active, L1.1
+sidecar ready, global IBus сохранил PID `3702`. Installed Chromium proof снова
+дал `проверк`. Финальный receipt:
+`/home/ubu/projects/lay/docs/structural_gates/receipts/LAY_1_0_FINAL_2026-08-02.json`.
+
 ## Критический путь
 
 ```text

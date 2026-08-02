@@ -49,6 +49,11 @@ impl LayImeBridge {
         self.visible_tail_v2_inner().await
     }
 
+    #[zbus(name = "CanReplaceCommittedTail")]
+    async fn can_replace_committed_tail(&self, backspaces: u32) -> fdo::Result<bool> {
+        self.can_replace_committed_tail_inner(backspaces).await
+    }
+
     #[zbus(name = "SuppressNextAutocorrect")]
     async fn suppress_next_autocorrect(&self) -> fdo::Result<bool> {
         self.suppress_next_autocorrect_inner().await

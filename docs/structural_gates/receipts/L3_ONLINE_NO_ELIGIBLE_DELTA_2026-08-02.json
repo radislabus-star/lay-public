@@ -1,0 +1,41 @@
+{
+  "schema": "lay.structural_gate_receipt.v1",
+  "gate": "L3_ONLINE_NO_ELIGIBLE_DELTA",
+  "date": "2026-08-02",
+  "verdict": "PASS_NO_PROMOTION",
+  "runtime_authority_changed": false,
+  "state": {
+    "path": "/home/ubu/.local/share/lay/nanda_wave/l3-online/state.json",
+    "sha256": "273e4bffbccfdb16cc9d7285b5c3f7a805c92cc684477915d0ffa7117dec68e2",
+    "pending_relations": 14,
+    "relations_with_at_least_two_episodes": 4,
+    "relations_with_at_least_two_distinct_scenes": 0,
+    "promotion_eligible_relations": 0,
+    "admitted_online_deltas": 0,
+    "source_offset": 511963,
+    "episode_histogram": {"1": 10, "2": 4},
+    "scene_histogram": {"1": 14}
+  },
+  "promotion_contract": {
+    "minimum_independent_episodes": 2,
+    "minimum_distinct_scenes": 2,
+    "thresholds_changed": false,
+    "manufactured_evidence": false
+  },
+  "installed_static_manifest": {
+    "path": "/home/ubu/.local/share/lay/nanda_wave/l3_context_phase.manifest.json",
+    "sha256": "8d28e83b2426b1c18cb5f8edc55a14d0e24f8f799abfc917a5c4675d211a0e9f"
+  },
+  "tested": [
+    "current durable online state inspected without printing relation text",
+    "promotion eligibility recomputed from episode and distinct-scene denominators"
+  ],
+  "not_tested": [
+    "targeted proof for a new delta because no organic relation is eligible",
+    "runtime hot reload of a newly admitted organic delta"
+  ],
+  "evidence": [
+    "/home/ubu/.local/share/lay/nanda_wave/l3-online/state.json",
+    "/home/ubu/.local/share/lay/nanda_wave/l3-online/delta-00000001-1785520625.targeted-proof.json"
+  ]
+}

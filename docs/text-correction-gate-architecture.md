@@ -500,6 +500,47 @@ P3: keep IME display isolated from correction ownership
 P4: make candidate quality/latency regressions visible before release
 ```
 
+### 2026-08-02 committed-tail capability preflight: PASS physical Chromium
+
+Chromium advertises no IBus surrounding-text capability. Before this change,
+the daemon still dispatched `ReplaceTailV4`; the IME then discovered that it
+could not delete committed text and returned `false`. The mutation-monopoly
+contract correctly treated that post-dispatch rejection as terminal, so the
+authorized uinput backend could not run and `ghjdthrf` became `ghjdthr` after
+Backspace.
+
+The live route is now:
+
+```text
+focused IME state
+-> CanReplaceCommittedTail(backspaces), no mutation
+   -> true: dispatch ReplaceTailV4; every result is terminal
+   -> false/error: NotDispatched; authorized backend reselection remains legal
+-> exactly one physical mutation owner
+```
+
+This is a capability correction, not a second fallback after mutation. Once
+`ReplaceTailV4` is dispatched, `Rejected` and `Indeterminate` still forbid a
+second backend.
+
+Tested and measured:
+
+- engine capability profiles: `2/2 PASS`;
+- mutation-monopoly contract: `1/1 PASS`;
+- committed-tail focused tests: `18/18 PASS`;
+- remote candidate build: `20` jobs, `134.32 s`, `316%` average CPU,
+  `1,655,472 KiB` peak RSS, `0` swaps;
+- physical Chromium: `ghjdthrf -> проверка -> Backspace -> проверк`;
+- physical Kitty: `ghjdthrf -> проверка -> Backspace -> проверк`;
+- global `ibus-daemon` PID remained `3702` through both physical tests.
+
+Not tested: Telegram unsent-field mutation and every focus permutation. No
+Telegram or WeChat message was sent. Runtime authority changed only at backend
+selection before dispatch; text-decision authority did not change.
+
+Receipt:
+`/home/ubu/projects/lay/docs/structural_gates/receipts/LAY_1_0_PHYSICAL_APPLICATION_MATRIX_2026-08-02.json`.
+
 `src/keyboard/event_words/decision.rs` is route-critical because it decides
 manual replay layout, but it must remain outside candidate generation and text
 replacement ownership.

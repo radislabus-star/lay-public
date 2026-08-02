@@ -1,0 +1,68 @@
+{
+  "schema": "lay.structural_gate_receipt.v1",
+  "gate": "LAY_1_0_PHYSICAL_APPLICATION_MATRIX",
+  "date": "2026-08-02",
+  "verdict": "PASS_TESTED_CELLS_TELEGRAM_NOT_TESTED",
+  "runtime_authority_changed": false,
+  "candidate_build": {
+    "remote_host": "e@192.168.3.94",
+    "remote_checkout": "/home/e/build/lay-1.0-chromium-preflight-20260802",
+    "cargo_jobs": 20,
+    "wall_seconds": 134.32,
+    "average_cpu_percent": 316,
+    "peak_rss_kib": 1655472,
+    "swaps": 0,
+    "exit_code": 0,
+    "lay_daemon_sha256": "41d92282d6e2b4c20f11c2d8cb7d0ff2a958ef3f47e7c6c105848cb7d22d2052",
+    "lay_ibus_engine_sha256": "9f9259ced103f5f162200c03b3d9da7cff5926c62c8ef9d243d0c391d77b5361"
+  },
+  "matrix": {
+    "gtk": {
+      "verdict": "PASS",
+      "cases": ["double-Shift autocorrect undo", "known inflection preservation", "completion acceptance", "cursor and Backspace in composition", "Shift commit then Backspace"]
+    },
+    "qt": {"verdict": "PASS", "case": "ghjdthrf -> проверка -> Backspace -> проверк"},
+    "chromium": {"verdict": "PASS", "case": "ghjdthrf -> проверка -> Backspace -> проверк", "client_surrounding_text_capability": false},
+    "kitty": {"verdict": "PASS", "case": "ghjdthrf -> проверка -> Backspace -> проверк"},
+    "wechat": {"verdict": "PASS_PRIOR_LIVE_RECEIPT", "receipt": "/home/ubu/projects/lay/docs/structural_gates/receipts/IME_WECHAT_PREEDIT_EDIT_CONTAINMENT_2026-08-01.json"},
+    "telegram": {"verdict": "NOT_TESTED", "reason": "no safely observable unsent field was available; no real chat was focused and Enter was never sent"}
+  },
+  "chromium_fix": {
+    "before": "IME replacement was dispatched without a proven delete backend, returned rejected, and mutation monopoly correctly blocked fallback",
+    "after": "CanReplaceCommittedTail capability is queried before dispatch; unavailable capability returns NotDispatched and permits the already authorized daemon replay",
+    "post_dispatch_fallback_allowed": false
+  },
+  "lifecycle": {
+    "global_ibus_pid_before": 3702,
+    "global_ibus_pid_after_chromium": 3702,
+    "global_ibus_pid_after_kitty": 3702,
+    "global_ibus_restarted": false,
+    "system_daemon_restored": true,
+    "active_engine_restored": "lay-ime-ru"
+  },
+  "installed_release_recheck": {
+    "version": "1.0.0",
+    "chromium_result": "проверк",
+    "expected": "проверк",
+    "global_ibus_pid_before": 3702,
+    "global_ibus_pid_after": 3702,
+    "lay_daemon_sha256": "c460d7f9b021169552039a9922ee5ccdacfc4fa9b72ef7b7aef8f93de20ef57b",
+    "lay_ibus_engine_sha256": "f0c3f966121d373f55447278f8f33273aa3ca03645755440abb33d6ae66e5a04"
+  },
+  "not_tested": [
+    "Telegram unsent-field mutation",
+    "every focus-change permutation in every client",
+    "multi-day desktop residency"
+  ],
+  "evidence": [
+    "/tmp/lay-1.0-gtk-physical-single-owner.log",
+    "/tmp/lay-1.0-gtk-shift-backspace-isolated.log",
+    "/tmp/lay-1.0-qt-physical.txt",
+    "/tmp/lay-1.0-chromium-preflight-daemon.err",
+    "/tmp/lay-1.0-chromium-preflight-tabs-after.json",
+    "/tmp/lay-1.0-kitty-daemon.err",
+    "/tmp/lay-1.0-installed-chromium-daemon.err",
+    "/tmp/lay-1.0-installed-chromium-after.json",
+    "/home/ubu/projects/lay/docs/structural_gates/receipts/IME_WECHAT_PREEDIT_EDIT_CONTAINMENT_2026-08-01.json"
+  ]
+}

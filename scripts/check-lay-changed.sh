@@ -112,12 +112,13 @@ if metadata_version != version:
     sys.exit(1)
 
 try:
-    patch = int(version.rsplit(".", 1)[1])
-except (IndexError, ValueError):
-    print(f"version has no numeric patch: {version}", file=sys.stderr)
+    major, minor, patch = map(int, version.split("."))
+except ValueError:
+    print(f"version is not numeric semver: {version}", file=sys.stderr)
     sys.exit(1)
-if metadata.get("version") != patch:
-    print(f"metadata numeric version drift: {metadata.get('version')} != {patch}", file=sys.stderr)
+extension_version = patch if major == 0 else major * 1_000_000 + minor * 1_000 + patch
+if metadata.get("version") != extension_version:
+    print(f"metadata numeric version drift: {metadata.get('version')} != {extension_version}", file=sys.stderr)
     sys.exit(1)
 
 version_decl = re.compile(r"^(?:export\s+)?const\s+APP_VERSION\s*=\s*['\"]([^'\"]+)['\"]\s*;", re.M)

@@ -1,0 +1,104 @@
+{
+  "schema": "lay.structural_gate_receipt.v1",
+  "gate": "LAY_1_0_FINAL",
+  "date": "2026-08-02",
+  "version": "1.0.0",
+  "verdict": "PASS_RELEASE_WITH_EXPLICIT_WATCHES",
+  "runtime_authority_changed": true,
+  "authority_change": "backend capability selection now occurs before IME mutation dispatch; text-decision authority is unchanged",
+  "l1_l11": {
+    "quality_gate": "PASS",
+    "classes_above_strict_95_percent": "13/13",
+    "clean_preservation_percent": 100.0,
+    "false_authority": 0,
+    "false_singleton": 0,
+    "package_bytes": 190139182,
+    "package_sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+    "word_centers": 852582,
+    "atoms": 218763,
+    "forward_relations": 110928005,
+    "reverse_relations": 87972901,
+    "service_health": "ready",
+    "proof_latency_watch_ms": 13.014,
+    "package_specific_prior_hot_p99_ms": 3.514
+  },
+  "l3_online": {
+    "pending_relations": 14,
+    "relations_with_two_episodes": 4,
+    "relations_with_two_distinct_scenes": 0,
+    "promotion_eligible": 0,
+    "admitted_online_deltas": 0,
+    "thresholds_lowered": false
+  },
+  "l4": {
+    "runtime_mode": "SuggestOnly | Keep",
+    "automatic_edit_authority": false,
+    "frozen_for_release": true
+  },
+  "physical_matrix": {
+    "gtk": "PASS",
+    "qt": "PASS",
+    "chromium": "PASS candidate and installed 1.0.0",
+    "kitty": "PASS",
+    "wechat": "PASS prior live receipt",
+    "telegram": "NOT_TESTED"
+  },
+  "remote_release_build": {
+    "host": "e@192.168.3.94",
+    "checkout": "/home/e/build/lay-1.0-chromium-preflight-20260802",
+    "cargo_jobs": 20,
+    "wall_seconds": 125.49,
+    "average_cpu_percent": 350,
+    "peak_rss_kib": 1652852,
+    "swaps": 0,
+    "exit_code": 0
+  },
+  "installed": {
+    "cli_version": "1.0.0",
+    "daemon_version": "1.0.0",
+    "ibus_engine_version": "1.0.0",
+    "gnome_extension_version": "1.0.0",
+    "lay_sha256": "8007b80a30a52c8e2ce178f9ab1a0021b988a47b4e99d54f0cdf470b09c6e00d",
+    "lay_daemon_sha256": "c460d7f9b021169552039a9922ee5ccdacfc4fa9b72ef7b7aef8f93de20ef57b",
+    "lay_ibus_engine_sha256": "f0c3f966121d373f55447278f8f33273aa3ca03645755440abb33d6ae66e5a04",
+    "daemon_service": "active",
+    "l3_online_service": "active",
+    "active_ibus_engine": "lay-ime-ru",
+    "global_ibus_pid_before": 3702,
+    "global_ibus_pid_after": 3702,
+    "global_ibus_restarted": false,
+    "daemon_rss_kib": 168864,
+    "daemon_pss_kib": 135699,
+    "ibus_engine_rss_kib": 157328,
+    "ibus_engine_pss_kib": 124227,
+    "l11_sidecar_rss_kib": 269148,
+    "l11_sidecar_pss_kib": 267128,
+    "three_process_total_pss_kib": 527054
+  },
+  "tested": [
+    "changed-source gate through Cargo disk guard",
+    "remote 20-job release build",
+    "remote-to-local and staging-to-installed SHA parity",
+    "atomic installation of ten release binaries",
+    "GNOME extension version sync",
+    "managed child-engine replacement without global IBus restart",
+    "installed Chromium physical committed-tail correction",
+    "L1.1 service health and exact package statistics"
+  ],
+  "watches": [
+    "the concurrent fixed proof measured 13.014 ms hot p99 and is not presented as a deployment latency PASS",
+    "Telegram unsent-field physical mutation was not tested",
+    "combined daemon, IME and L1.1 sidecar PSS is 527054 KiB and remains a memory optimization target",
+    "multi-day desktop residency was not tested"
+  ],
+  "evidence": [
+    "/home/ubu/projects/lay/docs/structural_gates/receipts/L1_L11_FIXED_13X20000_2026-08-02.json",
+    "/home/ubu/projects/lay/docs/structural_gates/receipts/L3_ONLINE_NO_ELIGIBLE_DELTA_2026-08-02.json",
+    "/home/ubu/projects/lay/docs/structural_gates/receipts/LAY_1_0_PHYSICAL_APPLICATION_MATRIX_2026-08-02.json",
+    "/home/ubu/projects/lay/docs/structural_gates/receipts/L4_CROSS_SCENE_V1_SHADOW_2026-08-01.json",
+    "/tmp/lay-1.0-check-changed.log",
+    "/tmp/lay-1.0-final-release.sha256",
+    "e@192.168.3.94:/home/e/build/lay-1.0-chromium-preflight-20260802/artifacts/release-1.0.0.log",
+    "e@192.168.3.94:/home/e/build/lay-1.0-chromium-preflight-20260802/artifacts/release-1.0.0.time"
+  ]
+}

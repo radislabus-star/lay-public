@@ -1,4 +1,5 @@
 use lay::desktop::{is_ru_layout_id, LayoutBackend};
+use lay::text_backend::ImeReplaceRequest;
 use lay::text_edit::{AuthorizedEdit, BackendDispatchReceipt, TextEditBackend, VisibleTailSource};
 use std::time::Duration;
 
@@ -222,6 +223,26 @@ pub(super) fn try_ime_replace_tail(
         }
     }
     let action = authorized.action();
+    let request = ImeReplaceRequest::committed_tail(action.from_text(), action.to_text());
+    match ime_bridge::can_replace_committed_tail(request.backspaces) {
+        Ok(true) => {}
+        Ok(false) => {
+            log("  IME committed-tail capability unavailable; edit was not dispatched");
+            return BackendDispatchReceipt::not_dispatched(
+                backend,
+                "ime_replace_capability_unavailable",
+            );
+        }
+        Err(error) => {
+            log(&format!(
+                "⚠ IME capability preflight unavailable before dispatch: {error}; daemon backend may be selected"
+            ));
+            return BackendDispatchReceipt::not_dispatched(
+                backend,
+                "ime_capability_preflight_unavailable",
+            );
+        }
+    }
     match ime_bridge::try_replace_tail(action.from_text(), action.to_text(), kind) {
         Ok(true) => BackendDispatchReceipt::dispatched(backend),
         Ok(false) => BackendDispatchReceipt::rejected(backend, "ime_visible_state_rejected"),

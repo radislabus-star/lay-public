@@ -1,0 +1,72 @@
+{
+  "schema": "lay.structural_gate_receipt.v1",
+  "gate": "L1_L11_FIXED_13X20000",
+  "date": "2026-08-02",
+  "verdict": "PASS_QUALITY_WATCH_DEPLOYMENT_LATENCY",
+  "runtime_authority_changed": false,
+  "package": {
+    "path": "/home/e/build/lay-l1-shadow/artifacts/l11-l2-global-compaction-2026-07-30/package.v8.bin",
+    "sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+    "bytes": 190139182,
+    "word_centers": 852582,
+    "atoms": 218763
+  },
+  "proof": {
+    "workers": 20,
+    "heldout_per_class": 20000,
+    "heldout_total": 260000,
+    "clean_preservation_percent": 100.0,
+    "overall_raw_top1_percent": 86.79038461538461,
+    "top8_percent": 96.56038461538462,
+    "top64_percent": 99.91846153846154,
+    "evidence_retained_percent": 99.70307692307692,
+    "false_authority": 0,
+    "false_singleton": 0,
+    "hot_p99_ms": 13.014,
+    "l11_p99_ms": 10.893,
+    "wall_seconds": 815.43,
+    "average_cpu_percent": 1270,
+    "peak_rss_kib": 1436968,
+    "swaps": 0,
+    "exit_code": 0
+  },
+  "classes": {
+    "adjacent_transposition": {"unique_top1_percent": 99.9582985821518, "lattice_coverage_percent": 99.995},
+    "double_substitution": {"unique_top1_percent": 97.88927879327503, "lattice_coverage_percent": 100.0},
+    "extra_letter": {"unique_top1_percent": 98.88285492629946, "lattice_coverage_percent": 100.0},
+    "layout_projection": {"unique_top1_percent": 98.3225672015003, "lattice_coverage_percent": 99.905},
+    "letter_substitution": {"unique_top1_percent": 99.9562937062937, "lattice_coverage_percent": 99.995},
+    "missing_letter": {"unique_top1_percent": 99.25713084308641, "lattice_coverage_percent": 99.85},
+    "non_adjacent_transposition": {"unique_top1_percent": 97.24845327254965, "lattice_coverage_percent": 100.0},
+    "omission_transposition": {"unique_top1_percent": 97.02786787581915, "lattice_coverage_percent": 99.535},
+    "prefix_truncation": {"unique_top1_percent": 98.26553137811416, "lattice_coverage_percent": 99.99},
+    "punctuation_suffix": {"unique_top1_percent": 100.0, "lattice_coverage_percent": 100.0},
+    "repeated_fragment": {"unique_top1_percent": 98.80795373845997, "lattice_coverage_percent": 100.0},
+    "sparse_multi_omission": {"unique_top1_percent": 96.69433212740299, "lattice_coverage_percent": 99.67},
+    "suffix_truncation": {"unique_top1_percent": 99.14249684741488, "lattice_coverage_percent": 100.0}
+  },
+  "tested": [
+    "fixed 13 damage classes with 20000 heldout surfaces per class",
+    "strict unique top-1 greater than 95 percent for every class",
+    "clean preservation, lattice coverage and false-certainty dimensions"
+  ],
+  "not_tested": [
+    "single-client deployment latency under this 20-worker proof load",
+    "multi-day package residency"
+  ],
+  "verdict_scope": {
+    "quality_gate": "PASS",
+    "proof_report_verdict": "PASS_shadow",
+    "l11_report_verdict": "WATCH_shadow",
+    "crystallization_report_verdict": "WATCH_shadow",
+    "deployment_latency": "WATCH because this proof measured 13.014 ms hot p99 under concurrent proof load; prior package-specific runtime receipt measured 3.514 ms but is not substituted for this measurement"
+  },
+  "evidence": [
+    "e@192.168.3.94:/home/e/build/lay-1.0-final/l11-proof-2026-08-02/report.json",
+    "e@192.168.3.94:/home/e/build/lay-1.0-final/l11-proof-2026-08-02/run.log",
+    "e@192.168.3.94:/home/e/build/lay-1.0-final/l11-proof-2026-08-02/time.txt",
+    "/tmp/lay-1.0-l11-proof-report.json",
+    "/tmp/lay-1.0-l11-proof-time.txt",
+    "/home/ubu/projects/lay/docs/structural_gates/receipts/L1_L11_V8_GROUPED_CACHE_RUNTIME_2026-07-30.json"
+  ]
+}
