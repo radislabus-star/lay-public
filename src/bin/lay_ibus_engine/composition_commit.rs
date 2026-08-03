@@ -270,6 +270,7 @@ impl LayIbusEngine {
                 text,
                 committed_tail: &self.tail_buffer,
                 config: &self.config,
+                active_layout_is_ru: Some(self.layout_is_ru),
             },
         )
     }

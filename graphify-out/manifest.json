@@ -20,18 +20,18 @@
     "semantic_hash": "236e46a80b6d2865de3d1816fb645158"
   },
   "extension/lay@radislabus-star.github.io/lay-impl.js": {
-    "mtime": 1785746472.8115332,
+    "mtime": 1785759896.8902025,
     "ast_hash": "4b795e86b2cf94e522b648b448bb5e87",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1785746472.7721424,
-    "ast_hash": "4fe47f62a0ba57c3596b600486e22409",
+    "mtime": 1785759896.8883405,
+    "ast_hash": "5685ef9677ca6ed059dba65fea625050",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
-    "mtime": 1785746472.8321483,
-    "ast_hash": "b59b62606460814b087506574f7f7e3b",
+    "mtime": 1785759896.8995473,
+    "ast_hash": "18681cb24c17513f4d033597b3a7a034",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/recent_actions_menu.js": {
@@ -40,13 +40,13 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/settings.js": {
-    "mtime": 1785746472.831976,
-    "ast_hash": "94b5b957da3d817da62f404096db283a",
+    "mtime": 1785759896.8994153,
+    "ast_hash": "37e3fb3ab23a76f12ea8b5e966d3008b",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1785746472.831828,
-    "ast_hash": "134bf9c01cad7fb7b31ae604161d2d2a",
+    "mtime": 1785759896.8993149,
+    "ast_hash": "96afe8895287fcdd6c0059bb55f08076",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -770,8 +770,8 @@
     "semantic_hash": "3f6daecd6efa9118b052d9806854b782"
   },
   "src/bin/lay_daemon/typing_assist_runtime/decoder/gate.rs": {
-    "mtime": 1785670848.3403947,
-    "ast_hash": "fe630fbbe96ed1e6118b301dd2e890d2",
+    "mtime": 1785759611.266044,
+    "ast_hash": "cfd54f421acf60ee74371408fffa3413",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/typing_assist_runtime/decoder/runtime.rs": {
@@ -780,8 +780,8 @@
     "semantic_hash": "70eb33883d4874dd47f6320ad03f5c79"
   },
   "src/bin/lay_daemon/typing_assist_runtime/decoder/tests.rs": {
-    "mtime": 1784035736.7291958,
-    "ast_hash": "62914064a6e4a1a5a6ff84f5b1b2ecc6",
+    "mtime": 1785759663.2119443,
+    "ast_hash": "a9990328159b280bffcbcba0b869cd61",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/typing_assist_runtime/output.rs": {
@@ -875,13 +875,13 @@
     "semantic_hash": "562af74b70d3d9a2ef9b8fe78fb73ccf"
   },
   "src/bin/lay_ibus_engine/committed_tail.rs": {
-    "mtime": 1785747443.0191138,
-    "ast_hash": "23e2f5c8471a67b37aaf9857689f807d",
+    "mtime": 1785759638.9575264,
+    "ast_hash": "eec1e9daf206b2f4ee53525179cd23b9",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/composition_commit.rs": {
-    "mtime": 1785487497.0645833,
-    "ast_hash": "6c95e1f96e83ede23d0d35da79407ed5",
+    "mtime": 1785759611.265044,
+    "ast_hash": "338ef62774275516076582a4e4dc9344",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/composition_edit.rs": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "e6fdbc6001da80e49fd905fe306afbac"
   },
   "src/ime_correction.rs": {
-    "mtime": 1785753744.9496205,
-    "ast_hash": "f0ed186417d6b313b60c8d2665c68cb9",
+    "mtime": 1785759680.7352436,
+    "ast_hash": "b48128b17f60f9e865077c2e1746934a",
     "semantic_hash": ""
   },
   "src/input_gate.rs": {
@@ -2515,8 +2515,8 @@
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1785746472.8338041,
-    "ast_hash": "90dfe7d3624895b7ab15e6af2c1418f9",
+    "mtime": 1785759896.9015403,
+    "ast_hash": "5e5d71344299cc7b265bd780477cea42",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -2770,8 +2770,8 @@
     "semantic_hash": ""
   },
   "docs/text-correction-gate-architecture.md": {
-    "mtime": 1785754688.9607694,
-    "ast_hash": "bbb7e4c2248afa6dcc46bfb0745fde21",
+    "mtime": 1785759888.482651,
+    "ast_hash": "8719ca17f7873c2e04c2ecd0bfaf301e",
     "semantic_hash": ""
   },
   "docs/text-mutation-monopoly-plan.md": {
@@ -5237,6 +5237,11 @@
   "docs/structural_gates/receipts/IME_MANAGED_KEY_RELEASE_PAIRING_2026-08-03.json": {
     "mtime": 1785754688.9620216,
     "ast_hash": "3c286390ebd44ae3aea900f2acb80168",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/IME_ACTIVE_LAYOUT_PRESERVATION_2026-08-03.json": {
+    "mtime": 1785759888.482651,
+    "ast_hash": "213021742f88bf28678e16d1fd915f15",
     "semantic_hash": ""
   }
 }

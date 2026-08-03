@@ -1,0 +1,47 @@
+{
+  "schema": "lay.structural-gate.receipt.v1",
+  "date": "2026-08-03",
+  "subject": "IME active-layout preservation for automatic layout edits",
+  "verdict": "PASS_CODE_WATCH_PHYSICAL",
+  "runtime_authority_changed": true,
+  "installed": {
+    "version": "1.0.2",
+    "lay_daemon_pid": 3500657,
+    "lay_ibus_engine_pid_before": 3350505,
+    "lay_ibus_engine_pid_after": 3504744,
+    "lay_ibus_engine_sha256": "35831e689b1fbbc79e33c51986ccb65274a31a9657be7af68d462f5d1f83cfa4",
+    "global_ibus_daemon_pid_before": 3702,
+    "global_ibus_daemon_pid_after": 3702,
+    "active_engine": "lay-ime-ru"
+  },
+  "tested": {
+    "ibus_active_en_pdf_preserved": "PASS",
+    "ibus_active_ru_zva_to_pdf": "PASS",
+    "ibus_non_layout_typo_control": "PASS",
+    "daemon_active_en_pdf_preserved": "PASS",
+    "daemon_active_ru_zva_to_pdf": "PASS"
+  },
+  "measured_facts": {
+    "targeted_tests_passed": 5,
+    "targeted_tests_failed": 0,
+    "broad_ime_module_passed": 21,
+    "broad_ime_module_failed": 8,
+    "new_tests_failed_in_broad_run": 0
+  },
+  "not_tested": [
+    "physical behavior in every application window",
+    "fixed L1.1 per-damage-class heldout proof"
+  ],
+  "scope": [
+    "shared ime_correction Space route",
+    "lay-ibus-engine active and committed composition",
+    "lay-daemon typing_assist_ime fallback"
+  ],
+  "invariants": [
+    "known token matching active layout is preserved against automatic layout-proof edits",
+    "unknown active-layout token may still project to a known opposite-layout token",
+    "non-layout typo correction remains unchanged",
+    "manual double Shift remains outside this Space-only guard",
+    "no token-specific pdf or zva rule"
+  ]
+}

@@ -665,3 +665,75 @@ Installed state:
 - engine PID: `3333338 -> 3350505`;
 - active engine: `lay-ime-ru`;
 - global `ibus-daemon` PID before/after: `3702/3702`.
+
+### 2026-08-03 active-layout preservation at Space: PASS_CODE
+
+Live logs showed that both opposing edits were independently authorized:
+
+```text
+pdf -> зва    source=layout_then_known_word  proof=layout
+зва -> pdf    source=layout_ru_to_en          proof=layout
+```
+
+The direction varied by window because the Space decision did not receive the
+layout that produced the token. The canonical boundary contract is now:
+
+```text
+token matches active layout
++ token is independently known in that layout
++ proposed automatic transition has layout proof
+-> preserve the token
+
+unknown token in active layout
++ known opposite-layout projection
+-> normal DecisionCore authority remains available
+
+manual double Shift
+-> unchanged; this preservation rule is Space-only
+```
+
+The rule is generic and contains no `pdf` or `зва` special case. It is owned by
+`src/ime_correction.rs` and is used by both live mutation routes:
+
+```text
+lay-ibus-engine active/committed composition
+lay-daemon typing_assist_ime fallback
+```
+
+Measured facts:
+
+```text
+active EN: pdf -> preserve                    PASS
+active RU: зва -> pdf                         PASS
+active RU: прохоил -> проходил                PASS
+daemon active EN: pdf -> preserve             PASS
+daemon active RU: зва -> pdf                  PASS
+```
+
+What was tested: five isolated route tests covering both directions, both
+executors, and a non-layout typo control. What was not tested: physical entry
+in every application window and the fixed L1.1 damage-class proof, because this
+change does not alter L1.1 candidates or package data.
+
+The broad parallel `ime_correction::tests` invocation produced `21/29 PASS`
+with eight existing online-state/order-sensitive failures. Every new test
+passed in that run and again in an isolated process; therefore this checkpoint
+does not claim a clean broad-suite result.
+
+Verdict scope: `PASS_CODE`, `WATCH_PHYSICAL`. Runtime authority changed: `yes`,
+only to veto an automatic layout-proven edit when independent lexical evidence
+and active-layout evidence both support preserving the original token.
+
+Receipt:
+`/home/ubu/projects/lay/docs/structural_gates/receipts/IME_ACTIVE_LAYOUT_PRESERVATION_2026-08-03.json`.
+
+Installed state:
+
+```text
+version                         1.0.2
+lay-daemon PID                  3500657
+lay-ibus-engine PID             3350505 -> 3504744
+lay-ibus-engine SHA-256         35831e689b1fbbc79e33c51986ccb65274a31a9657be7af68d462f5d1f83cfa4
+global ibus-daemon PID          3702 -> 3702
+active engine                   lay-ime-ru
+```

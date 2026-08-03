@@ -19,6 +19,7 @@ use crate::action_log::RecentActionGateTrace;
 use crate::config::{CorrectionSafety, LayConfig};
 use crate::correction_core::CorrectionMode;
 use crate::input_gate::{decide_input_gate, InputGateAction, InputGateRequest, InputGateTrigger};
+use crate::text_edit::TransitionProof;
 use crate::text_edit::{
     plan_committed_tail_last_token_replacement, plan_input_gate_edit, plan_text_replacement,
     EditAction, TextReplacement,
@@ -28,6 +29,9 @@ pub struct ActiveCompositionAutocorrectRequest<'a> {
     pub text: &'a str,
     pub committed_tail: &'a str,
     pub config: &'a LayConfig,
+    /// Layout that produced the live token. `None` is reserved for callers
+    /// that do not own physical/IME layout evidence.
+    pub active_layout_is_ru: Option<bool>,
 }
 
 pub struct ActiveCompositionAutocorrectDecision {
@@ -88,6 +92,13 @@ pub fn decide_active_composition_autocorrect(
         plan,
         &decision,
     );
+    if active_layout_preserves_known_token(
+        action.from_text(),
+        action.transition().proof(),
+        request.active_layout_is_ru,
+    ) {
+        return None;
+    }
     let input_gate = decision
         .trace
         .as_ref()
@@ -97,6 +108,28 @@ pub fn decide_active_composition_autocorrect(
         action,
         input_gate: Some(input_gate),
     })
+}
+
+/// Prevents automatic layout evidence from overturning an independently known
+/// token that was typed in the currently active layout. Manual layout toggles
+/// do not call this Space-route guard.
+pub fn active_layout_preserves_known_token(
+    token: &str,
+    transition_proof: Option<TransitionProof>,
+    active_layout_is_ru: Option<bool>,
+) -> bool {
+    if transition_proof != Some(TransitionProof::Layout) {
+        return false;
+    }
+    let Some(active_layout_is_ru) = active_layout_is_ru else {
+        return false;
+    };
+    let identity = crate::word_recognizer::recognize_token(token.trim());
+    if active_layout_is_ru {
+        identity.is_known_russian_plain_word()
+    } else {
+        identity.is_known_ascii_or_protected_token()
+    }
 }
 
 fn physical_committed_tail_projection_plan<'a>(
@@ -214,6 +247,7 @@ mod tests {
                 text: "прохоил ",
                 committed_tail: "я прохоил",
                 config: &cfg,
+                active_layout_is_ru: None,
             })
             .expect("decision");
 
@@ -291,6 +325,7 @@ mod tests {
                     text: typed,
                     committed_tail: &committed_tail,
                     config: &cfg,
+                    active_layout_is_ru: None,
                 })
                 .unwrap_or_else(|| panic!("missing layout transition for {typed:?}"));
             assert_eq!(decision.replacement, expected);
@@ -312,6 +347,7 @@ mod tests {
                     text: &text,
                     committed_tail: tail,
                     config: &cfg,
+                    active_layout_is_ru: None,
                 })
                 .unwrap_or_else(|| panic!("dual-layout decision for tail={tail:?}"));
 
@@ -326,9 +362,54 @@ mod tests {
             text: "привет ",
             committed_tail: "смотрим привет",
             config: &cfg,
+            active_layout_is_ru: None,
         });
 
         assert!(decision.is_none());
+    }
+
+    #[test]
+    fn active_english_layout_preserves_known_ascii_token_from_layout_projection() {
+        let cfg = config();
+        let decision = decide_active_composition_autocorrect(ActiveCompositionAutocorrectRequest {
+            text: "pdf ",
+            committed_tail: "pdf",
+            config: &cfg,
+            active_layout_is_ru: Some(false),
+        });
+
+        assert!(
+            decision.is_none(),
+            "known active-layout token must be preserved"
+        );
+    }
+
+    #[test]
+    fn active_russian_layout_allows_unknown_cyrillic_projection_to_known_ascii() {
+        let cfg = config();
+        let decision = decide_active_composition_autocorrect(ActiveCompositionAutocorrectRequest {
+            text: "зва ",
+            committed_tail: "зва",
+            config: &cfg,
+            active_layout_is_ru: Some(true),
+        })
+        .expect("unknown active-layout surface may project to a known opposite-layout token");
+
+        assert_eq!(decision.replacement, "pdf ");
+    }
+
+    #[test]
+    fn active_layout_guard_does_not_block_non_layout_typo_repair() {
+        let cfg = config();
+        let decision = decide_active_composition_autocorrect(ActiveCompositionAutocorrectRequest {
+            text: "прохоил ",
+            committed_tail: "прохоил",
+            config: &cfg,
+            active_layout_is_ru: Some(true),
+        })
+        .expect("ordinary typo correction");
+
+        assert_eq!(decision.replacement, "проходил ");
     }
 
     #[test]
@@ -338,6 +419,7 @@ mod tests {
             text: "тоесть ",
             committed_tail: "тоесть",
             config: &cfg,
+            active_layout_is_ru: None,
         })
         .expect("boundary decision");
 
@@ -362,6 +444,7 @@ mod tests {
             text: "тоесть ",
             committed_tail: "тоесть",
             config: &cfg,
+            active_layout_is_ru: None,
         })
         .expect("boundary decision");
 
@@ -381,6 +464,7 @@ mod tests {
             text: "тоесть ",
             committed_tail: "тоесть тоесть",
             config: &cfg,
+            active_layout_is_ru: None,
         })
         .expect("boundary decision");
 
@@ -402,6 +486,7 @@ mod tests {
             text: "автозаменет ",
             committed_tail: "блять зайди в лог посмотреть как он автозаменет",
             config: &cfg,
+            active_layout_is_ru: None,
         })
         .expect("autozamena decision");
 
@@ -434,6 +519,7 @@ mod tests {
                     text: &text,
                     committed_tail,
                     config: &cfg,
+                    active_layout_is_ru: None,
                 })
                 .unwrap_or_else(|| panic!("missing shared decision for {committed_tail:?}"));
 
@@ -458,6 +544,7 @@ mod tests {
             text: "врмея ",
             committed_tail: "врмея",
             config: &cfg,
+            active_layout_is_ru: None,
         })
         .expect("canonical live-owner decision");
 
@@ -480,6 +567,7 @@ mod tests {
             text: "пку ",
             committed_tail: "пку",
             config: &cfg,
+            active_layout_is_ru: None,
         });
 
         assert!(
@@ -508,6 +596,7 @@ mod tests {
                     text: "посмотри ",
                     committed_tail: "давай там посмотри",
                     config: &cfg,
+                    active_layout_is_ru: None,
                 });
 
             assert!(
@@ -531,6 +620,7 @@ mod tests {
             text,
             committed_tail,
             config: &cfg,
+            active_layout_is_ru: None,
         })
         .expect("decision");
 

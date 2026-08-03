@@ -33,6 +33,7 @@ impl LayIbusEngine {
                 text: &boundary_text,
                 committed_tail: &self.tail_buffer,
                 config: &self.config,
+                active_layout_is_ru: Some(self.layout_is_ru),
             },
         ) else {
             trace::record(r#"{"kind":"ibus_space_autocorrect","status":"no_decision"}"#);
@@ -427,6 +428,7 @@ mod tests {
             text: "прохоил ",
             committed_tail: "прохоил",
             config: &cfg,
+            active_layout_is_ru: None,
         })
         .expect("shared decision");
 

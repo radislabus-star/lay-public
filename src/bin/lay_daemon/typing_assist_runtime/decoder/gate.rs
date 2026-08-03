@@ -5,6 +5,7 @@ fn decode_input_gate_tail(
     pipeline: &[TypingAssistRuleConfig],
 ) -> Option<DecodedCompletedTail> {
     let original = lay::keyboard::map_original_events(events);
+    let active_layout_is_ru = events.last().map(|event| event.layout_is_ru);
     let text_tail = if context.ends_with(&original) {
         context
     } else {
@@ -49,6 +50,7 @@ fn decode_input_gate_tail(
                     decision,
                     &anchored_original,
                     &anchored_replacement,
+                    active_layout_is_ru,
                 );
             }
             (original.as_str(), replacement_tail)
@@ -56,7 +58,12 @@ fn decode_input_gate_tail(
     } else {
         (original.as_str(), replacement.as_str())
     };
-    build_input_gate_decoded_tail(decision, original_tail, replacement_tail)
+    build_input_gate_decoded_tail(
+        decision,
+        original_tail,
+        replacement_tail,
+        active_layout_is_ru,
+    )
 }
 
 fn word_boundary_correction_mode(nanda_autocorrect: bool) -> lay::correction_core::CorrectionMode {
@@ -71,6 +78,7 @@ fn build_input_gate_decoded_tail(
     decision: lay::input_gate::InputGateDecision,
     original: &str,
     replacement_tail: &str,
+    active_layout_is_ru: Option<bool>,
 ) -> Option<DecodedCompletedTail> {
     let input_gate = decision
         .trace
@@ -92,6 +100,13 @@ fn build_input_gate_decoded_tail(
         edit.replacement.as_str(),
         edit.plan.clone(),
     );
+    if lay::ime_correction::active_layout_preserves_known_token(
+        original,
+        edit_action.transition().proof(),
+        active_layout_is_ru,
+    ) {
+        return None;
+    }
     if !edit_action.allow_apply() {
         crate::log(&format!(
             "· typing-assist blocked by edit-plan safety: reason={} original={:?} replacement={:?}",

@@ -69,6 +69,29 @@ fn input_gate_projects_unknown_cyrillic_surface_to_known_english_center() {
 }
 
 #[test]
+fn input_gate_preserves_known_ascii_token_typed_on_active_english_layout() {
+    let mut buffer = WordBuffer::new();
+    push_text_as_layout(&mut buffer, "pdf ", false);
+    let events = buffer
+        .last_completed_words_events(1)
+        .expect("last completed word");
+
+    assert!(decode_completed_tail(&buffer, 1, &events, true).is_none());
+}
+
+#[test]
+fn input_gate_allows_unknown_cyrillic_token_to_project_from_active_russian_layout() {
+    let mut buffer = WordBuffer::new();
+    push_text_as_layout(&mut buffer, "зва ", true);
+    let events = buffer
+        .last_completed_words_events(1)
+        .expect("last completed word");
+
+    let decoded = decode_completed_tail(&buffer, 1, &events, true).expect("decoded");
+    assert_eq!(decoded.edit.replacement, "pdf ");
+}
+
+#[test]
 fn startup_warmup_removes_first_boundary_decision_stall() {
     lay::typing_assist::warm_up();
     let mut buffer = WordBuffer::new();
