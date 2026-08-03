@@ -20,18 +20,18 @@
     "semantic_hash": "236e46a80b6d2865de3d1816fb645158"
   },
   "extension/lay@radislabus-star.github.io/lay-impl.js": {
-    "mtime": 1785767345.6483638,
+    "mtime": 1785775151.2091722,
     "ast_hash": "4b795e86b2cf94e522b648b448bb5e87",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1785767345.6434073,
-    "ast_hash": "d7ed5e2bdf6fc1960e39729a58e77604",
+    "mtime": 1785775151.1298766,
+    "ast_hash": "4f015e787608cec327211619f378546b",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
-    "mtime": 1785767345.6542969,
-    "ast_hash": "8e8e931caeaa3863d99bc3f704f9e938",
+    "mtime": 1785775151.2392104,
+    "ast_hash": "c25a1a35643a3ad8ea3502f58c282706",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/recent_actions_menu.js": {
@@ -40,13 +40,13 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/settings.js": {
-    "mtime": 1785767345.654191,
-    "ast_hash": "08e63d4609e5d5e73fbe178e2ce1c132",
+    "mtime": 1785775151.2389696,
+    "ast_hash": "7ac4b0e2fbcd67ac31fc0aa5607b032e",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1785767345.6534004,
-    "ast_hash": "2fc3bb2859ac7fde27103880a680bb85",
+    "mtime": 1785775151.2386713,
+    "ast_hash": "c3113c946d2dec1fed11e8c6d1edbfba",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -1870,8 +1870,8 @@
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms.rs": {
-    "mtime": 1785767228.982295,
-    "ast_hash": "d4f51a479c38e0ebf7fa0bf64e456119",
+    "mtime": 1785776021.217731,
+    "ast_hash": "92f905b68a46c6d397568817e87833a4",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/data.rs": {
@@ -1890,8 +1890,8 @@
     "semantic_hash": ""
   },
   "src/russian_lexicon_tests.rs": {
-    "mtime": 1785631244.5964386,
-    "ast_hash": "0a0c354802e5f9fe8ca160f0d99845e2",
+    "mtime": 1785776021.225731,
+    "ast_hash": "84c1da21d0320174a3b0b2cc4ef6e8b6",
     "semantic_hash": ""
   },
   "src/russian_prefixes.rs": {
@@ -2235,8 +2235,8 @@
     "semantic_hash": ""
   },
   "src/typing_transition/candidate.rs": {
-    "mtime": 1785335805.2402885,
-    "ast_hash": "b3a01ec879ec08dd1b5895dabb9004ea",
+    "mtime": 1785774865.1538343,
+    "ast_hash": "0e8c8bd12fabe3375009c60327c33270",
     "semantic_hash": ""
   },
   "src/typing_transition/decision.rs": {
@@ -2515,8 +2515,8 @@
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1785767345.6559093,
-    "ast_hash": "6e0745a3745c847270e0cdb5d87190cb",
+    "mtime": 1785775151.25,
+    "ast_hash": "c79cac76b0e3171744f0b57339a03368",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -2770,8 +2770,8 @@
     "semantic_hash": ""
   },
   "docs/text-correction-gate-architecture.md": {
-    "mtime": 1785767324.2843754,
-    "ast_hash": "9a464329a3c7144dbacc1de41b17d10c",
+    "mtime": 1785776294.7132885,
+    "ast_hash": "79f5a8852544ab87fce7fe4dfed70ad7",
     "semantic_hash": ""
   },
   "docs/text-mutation-monopoly-plan.md": {
@@ -3110,13 +3110,13 @@
     "semantic_hash": ""
   },
   "src/correction_core/tests.rs": {
-    "mtime": 1785605167.33126,
-    "ast_hash": "55b74825405f6abd7fb2562df9197861",
+    "mtime": 1785776112.4085107,
+    "ast_hash": "5f3d44b0c7f0b81e4cb106d2d1f01555",
     "semantic_hash": ""
   },
   "src/typing_transition/candidate_resolution.rs": {
-    "mtime": 1785335805.3442898,
-    "ast_hash": "21bf1940f79d3a65f17f480c1afa5adc",
+    "mtime": 1785774865.1608346,
+    "ast_hash": "d445419e461f75dd0c4fde9f4d6444fe",
     "semantic_hash": ""
   },
   "src/typing_transition/decision_signals.rs": {
@@ -3280,8 +3280,8 @@
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
-    "mtime": 1785668923.0072634,
-    "ast_hash": "5a565d2d89497b168f2978592249cedb",
+    "mtime": 1785776034.3018374,
+    "ast_hash": "b91b06ec5d07ab0fde6e110fb93c566e",
     "semantic_hash": ""
   },
   "src/typing_transition/live_candidate.rs": {
@@ -4700,8 +4700,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/l2_field/bridge.rs": {
-    "mtime": 1785753727.2644207,
-    "ast_hash": "46b4fe65b77161124e727891de6c4fc0",
+    "mtime": 1785775184.462065,
+    "ast_hash": "829915c50d26eda7c5703e4ec59724e2",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2_field/format.rs": {
@@ -5245,8 +5245,13 @@
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/IME_IMPERATIVE_FINAL_CONSONANT_REPAIR_2026-08-03.json": {
-    "mtime": 1785767324.2843754,
-    "ast_hash": "0aa9c306095a92f1577e5310fabba20e",
+    "mtime": 1785767688.9825962,
+    "ast_hash": "fbae998cb2af2635713c77861259a55d",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/IME_L2_UNAVAILABLE_FAIL_CLOSED_2026-08-03.json": {
+    "mtime": 1785776294.7142885,
+    "ast_hash": "8afab0756823628a83b1b5357b00e389",
     "semantic_hash": ""
   }
 }

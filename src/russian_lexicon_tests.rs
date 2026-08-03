@@ -92,6 +92,16 @@ fn recognizes_imperative_i_forms_from_backed_et_lemmas() {
 }
 
 #[test]
+fn clean_surface_certificate_recognizes_attested_consonant_alternations() {
+    for word in ["могли", "скажу", "пиши", "китайцев"] {
+        assert!(
+            has_clean_russian_surface_certificate(word),
+            "missing clean morphology certificate: {word:?}"
+        );
+    }
+}
+
+#[test]
 fn generated_form_reference_does_not_promote_known_dirty_inputs() {
     let forms = full_russian_generated_form_dictionary();
     for dirty in ["пукнт", "звгрузи", "эсперемнт", "труссс"] {

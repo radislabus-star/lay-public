@@ -1,0 +1,75 @@
+{
+  "schema": "lay.structural-gate.receipt.v1",
+  "date": "2026-08-03",
+  "subject": "Canonical L2 timeout must not create deterministic autocorrect authority",
+  "verdict": "PASS_INSTALLED",
+  "runtime_authority_changed": true,
+  "installed": {
+    "version": "1.0.4",
+    "remote_build_cpus": 20,
+    "remote_final_build_seconds": 116.14,
+    "remote_final_peak_rss_kib": 1659444,
+    "lay_daemon_pid": 4002297,
+    "lay_ibus_engine_pid": 4002253,
+    "global_ibus_daemon_pid_before": 3702,
+    "global_ibus_daemon_pid_after": 3702,
+    "active_engine": "lay-ime-ru"
+  },
+  "observed": {
+    "live_false_applies": [
+      "Пиши -> Приши",
+      "Нахуя -> Нахоя"
+    ],
+    "concurrency_probe_runs": 40,
+    "empty_l11_readouts": 3,
+    "false_apply_decisions": 1,
+    "l11_timeout_ms": 12
+  },
+  "contract": {
+    "l2_not_requested": "deterministic-only authority unchanged",
+    "l2_requested_available": "Winner, Tied, or Abstain owns lexical authority",
+    "l2_requested_unavailable": "deterministic lexical edits become SuggestOnly",
+    "independent_nonlexical_evidence": "remains eligible"
+  },
+  "tested": {
+    "requested_unavailable_lexical_demotion": "PASS",
+    "requested_unavailable_layout_preservation": "PASS",
+    "deterministic_only_preservation": "PASS",
+    "fresh_live_false_apply_regressions": "PASS",
+    "typing_transition_authority_contract": "20/20 PASS",
+    "text_mutation_monopoly_contract": "15/15 PASS",
+    "changed_check_before_morphology_extension": "PASS",
+    "clean_morphology_certificates": "4/4 PASS",
+    "fresh_log_clean_form_preservation": "4/4 PASS",
+    "existing_imperative_form_regression": "PASS",
+    "existing_noun_form_regression": "PASS"
+  },
+  "installed_replay": {
+    "Пиши": "preserved",
+    "Нахуя": "preserved when canonical L2 is unavailable",
+    "могли": "preserved",
+    "скажу": "preserved",
+    "китайцев": "preserved",
+    "послдений": "последний",
+    "изночально": "изначально",
+    "читайл": "читай"
+  },
+  "known_unrelated_test_instability": {
+    "test": "strong_local_typo_repairs_still_apply_after_shape_guard",
+    "observed": "online-state run selected долетай instead of делай",
+    "scope": "pre-existing order-sensitive field behavior; not an unavailable-field path"
+  },
+  "not_tested": [
+    "fixed L1.1 13 x 20000 heldout proof",
+    "corpus-wide clean-form preservation",
+    "physical typing of every replay case in every application"
+  ],
+  "invariants": [
+    "field outage cannot manufacture lexical apply authority",
+    "deterministic-only mode does not depend on canonical L2",
+    "clean morphology only preserves an attested surface and never births a replacement",
+    "all added alternations require an independently attested lemma",
+    "no token-specific correction rule",
+    "global ibus-daemon must not be restarted"
+  ]
+}

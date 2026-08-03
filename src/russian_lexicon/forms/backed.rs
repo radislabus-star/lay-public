@@ -28,8 +28,10 @@ fn is_backed_clean_reference_form(word: &str, contains: impl Fn(&str) -> bool + 
         || is_backed_short_adjective_form(word, contains)
         || is_backed_russian_verb_form(word, contains)
         || is_backed_russian_ch_verb_present_form(word, contains)
+        || is_backed_russian_consonant_alternating_form(word, contains)
         || is_backed_russian_imperative_i_form(word, contains)
         || is_backed_russian_imperative_y_form(word, contains)
+        || is_backed_yts_genitive_plural_form(word, contains)
 }
 
 fn is_backed_short_noun_form(word: &str, contains: impl Fn(&str) -> bool + Copy) -> bool {
@@ -41,7 +43,7 @@ fn is_backed_short_noun_form(word: &str, contains: impl Fn(&str) -> bool + Copy)
         .any(|suffix| word.strip_suffix(suffix).is_some_and(contains))
 }
 
-fn is_backed_russian_form(word: &str, contains: impl Fn(&str) -> bool + Copy) -> bool {
+pub(super) fn is_backed_russian_form(word: &str, contains: impl Fn(&str) -> bool + Copy) -> bool {
     is_backed_russian_suffix_form(word, contains)
         || is_backed_zero_ending_noun_form(word, contains)
         || is_backed_short_accusative_a_form(word, contains)
@@ -49,8 +51,44 @@ fn is_backed_russian_form(word: &str, contains: impl Fn(&str) -> bool + Copy) ->
         || is_backed_short_adjective_form(word, contains)
         || is_backed_russian_verb_form(word, contains)
         || is_backed_russian_ch_verb_present_form(word, contains)
+        || is_backed_russian_consonant_alternating_form(word, contains)
         || is_backed_russian_imperative_i_form(word, contains)
         || is_backed_russian_imperative_y_form(word, contains)
+        || is_backed_yts_genitive_plural_form(word, contains)
+}
+
+fn is_backed_russian_consonant_alternating_form(
+    word: &str,
+    contains: impl Fn(&str) -> bool + Copy,
+) -> bool {
+    if let Some(stem) = word.strip_suffix("ли") {
+        if let Some(base) = stem.strip_suffix(['г', 'к']) {
+            if base.chars().count() >= 2 && contains(&format!("{base}чь")) {
+                return true;
+            }
+        }
+    }
+
+    if let Some(stem) = word.strip_suffix('у') {
+        if let Some(base) = stem.strip_suffix('ж') {
+            if base.chars().count() >= 2
+                && ["зать", "дить", "деть"]
+                    .into_iter()
+                    .any(|ending| contains(&format!("{base}{ending}")))
+            {
+                return true;
+            }
+        }
+    }
+
+    false
+}
+
+fn is_backed_yts_genitive_plural_form(word: &str, contains: impl Fn(&str) -> bool + Copy) -> bool {
+    let Some(stem) = word.strip_suffix("йцев") else {
+        return false;
+    };
+    stem.chars().count() >= 3 && contains(&format!("{stem}ец"))
 }
 
 fn is_backed_short_adjective_form(word: &str, contains: impl Fn(&str) -> bool + Copy) -> bool {
@@ -173,10 +211,22 @@ pub(super) fn is_backed_russian_imperative_i_form(
     let Some(stem) = word.strip_suffix('и') else {
         return false;
     };
-    stem.chars().count() >= 4
-        && ["ить", "еть"]
+    if stem.chars().count() < 3 {
+        return false;
+    }
+    if ["ить", "еть", "ать"]
+        .into_iter()
+        .any(|lemma_suffix| contains(&format!("{stem}{lemma_suffix}")))
+    {
+        return true;
+    }
+    let Some(base) = stem.strip_suffix('ш') else {
+        return false;
+    };
+    base.chars().count() >= 2
+        && ['с', 'х']
             .into_iter()
-            .any(|lemma_suffix| contains(&format!("{stem}{lemma_suffix}")))
+            .any(|alternation| contains(&format!("{base}{alternation}ать")))
 }
 
 pub(super) fn is_backed_russian_imperative_y_form(

@@ -10,7 +10,10 @@ pub(crate) struct L2CandidateLattice {
     event: TypingErrorEvent,
     candidates: Vec<UnifiedCorrectionCandidate>,
     policy: TransitionDecisionPolicy,
-    l2_field_authority: crate::nanda_wave::l2_field::L2FieldAuthority,
+    // None means that this request intentionally did not consult canonical L2.
+    // Some(Unavailable) means that canonical L2 was requested but failed to
+    // produce a field; that distinction is part of the apply-authority contract.
+    l2_field_authority: Option<crate::nanda_wave::l2_field::L2FieldAuthority>,
 }
 
 impl L2CandidateLattice {
@@ -20,7 +23,7 @@ impl L2CandidateLattice {
             event,
             candidates: Vec::new(),
             policy: TransitionDecisionPolicy::default(),
-            l2_field_authority: crate::nanda_wave::l2_field::L2FieldAuthority::Unavailable,
+            l2_field_authority: None,
         }
     }
 
@@ -31,7 +34,7 @@ impl L2CandidateLattice {
             policy: TransitionDecisionPolicy {
                 l2_phase_apply: options.l2_phase_apply(),
             },
-            l2_field_authority: crate::nanda_wave::l2_field::L2FieldAuthority::Unavailable,
+            l2_field_authority: None,
         }
     }
 
@@ -54,7 +57,7 @@ impl L2CandidateLattice {
         &mut self,
         authority: crate::nanda_wave::l2_field::L2FieldAuthority,
     ) {
-        self.l2_field_authority = authority;
+        self.l2_field_authority = Some(authority);
     }
 
     fn push(&mut self, candidate: UnifiedCorrectionCandidate) {

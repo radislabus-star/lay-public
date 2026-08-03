@@ -1442,6 +1442,32 @@ mod tests {
     }
 
     #[test]
+    fn fresh_log_clean_russian_forms_are_preserved() {
+        let pipeline = default_typing_assist_pipeline();
+        for (input, forbidden) in [
+            ("могли ", "могил "),
+            ("скажу ", "скажиу "),
+            ("китайцев ", "китайев "),
+            ("Пиши ", "Приши "),
+        ] {
+            let resolution = resolve_text_correction(request(
+                input,
+                &pipeline,
+                CorrectionMode::DeterministicThenNanda,
+            ));
+
+            assert_ne!(
+                resolution
+                    .decision
+                    .as_ref()
+                    .map(|decision| decision.replacement.as_str()),
+                Some(forbidden),
+                "clean form must not drift for {input:?}: {resolution:?}"
+            );
+        }
+    }
+
+    #[test]
     fn strong_local_typo_repairs_still_apply_after_shape_guard() {
         let pipeline = default_typing_assist_pipeline();
         for (input, expected) in [

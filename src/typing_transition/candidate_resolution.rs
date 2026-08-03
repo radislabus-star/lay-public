@@ -6,10 +6,12 @@ fn resolve_l2_lattice(
     mut lattice: L2CandidateLattice,
     peak_context: Option<&crate::nanda_wave::l2_wave_peak::L2CorrectionPeakContext>,
 ) -> CorrectionResolution {
-    crate::nanda_wave::l2_field::bridge::apply_authority_to_candidate_lattice(
-        &mut lattice.candidates,
-        &lattice.l2_field_authority,
-    );
+    if let Some(authority) = &lattice.l2_field_authority {
+        crate::nanda_wave::l2_field::bridge::apply_authority_to_candidate_lattice(
+            &mut lattice.candidates,
+            authority,
+        );
+    }
     let decision_batch = TransitionDecisionCore::evaluate_candidates(
         &lattice.event,
         &lattice.candidates,
@@ -70,6 +72,31 @@ mod resolution_tests {
         )));
 
         let resolution = lattice.into_resolution();
+        assert!(resolution.selected.is_some());
+    }
+
+    #[test]
+    fn deterministic_only_does_not_require_an_unrequested_l2_field() {
+        let mut lattice = L2CandidateLattice::new(TypingErrorEvent {
+            original: "провека ".to_string(),
+            core: "провека".to_string(),
+            current_word: "провека".to_string(),
+            input_class: TypingErrorClass::MissingLetter,
+        });
+        lattice.push_source(Some(UnifiedCorrectionCandidate::new(
+            "проверка ",
+            CorrectionDecisionSource::Deterministic,
+            CandidateOrigin::DeterministicTypo,
+            "missing_letter",
+            TypingErrorClass::MissingLetter,
+            CandidateGateDecision {
+                action: CandidateGateAction::Eligible,
+                reason: "test",
+            },
+        )));
+
+        let resolution = lattice.into_resolution();
+
         assert!(resolution.selected.is_some());
     }
 }

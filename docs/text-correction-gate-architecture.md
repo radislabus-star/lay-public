@@ -790,3 +790,83 @@ lay-ibus-engine PID             3742363
 global ibus-daemon PID          3702 -> 3702
 active engine                   lay-ime-ru
 ```
+
+### 2026-08-03 canonical L2 outage authority: PASS_CODE
+
+Live-log failure:
+
+```text
+Пиши -> Приши     missing_letter
+Нахуя -> Нахоя    vowel_confusion
+```
+
+The installed IBus process requested canonical L2, but its 12 ms L1.1 seed
+request occasionally timed out. The empty readout was represented by the same
+state as an intentionally unrequested field. A lone deterministic candidate
+therefore retained `class_allows_apply`. A 40-process reproduction produced
+three empty L1.1 readouts and one false automatic `Пиши -> Приши` decision.
+
+The authority states are now distinct:
+
+```text
+canonical L2 not requested
+-> deterministic-only authority is unchanged
+
+canonical L2 requested and available
+-> Winner | Tied | Abstain owns lexical authority
+
+canonical L2 requested but unavailable
+-> deterministic lexical typo is SuggestOnly
+-> independent layout/boundary evidence remains eligible
+```
+
+This is a fail-closed field contract, not a word-specific rule. What was
+tested: requested-unavailable demotion and deterministic-only preservation.
+What was not tested yet: installed live IBus replay, fixed L1.1 damage-class
+proof, and corpus-wide clean-form preservation. Runtime authority changed:
+`yes`, only when canonical L2 was requested but unavailable.
+
+Receipt:
+`/home/ubu/projects/lay/docs/structural_gates/receipts/IME_L2_UNAVAILABLE_FAIL_CLOSED_2026-08-03.json`.
+
+The same live-log audit also found clean Russian forms that were absent from
+the installed L1.1 corpus and from the bounded morphology recognizer:
+
+```text
+могли -> могил
+скажу -> скажиу
+китайцев -> китайев
+Пиши -> Приши
+```
+
+Clean preservation now accepts only dictionary-attested lemma transforms:
+
+```text
+-гли/-кли -> -чь             могли -> мочь
+-жу -> -зать/-дить/-деть     скажу -> сказать
+imperative ш/с alternation    пиши -> писать
+-йцев -> -ец                 китайцев -> китаец
+```
+
+These transforms mint no replacement candidate. They only certify the
+observed surface so typo arbitration cannot silently rewrite it. Tests cover
+all four observed forms and retain the previous regular imperative and noun
+form checks. This is a bounded morphology extension; it is not a claim of
+complete Russian morphology coverage.
+
+Installed verification:
+
+```text
+version                         1.0.4
+remote build CPUs              20
+remote final build             116.14 s, peak RSS 1,659,444 KiB
+Пиши / могли / скажу / китайцев preserve
+Нахуя with unavailable L2      preserve
+послдений -> последний         PASS
+изночально -> изначально       PASS
+читайл -> читай                PASS
+lay-daemon PID                 4002297
+lay-ibus-engine PID            4002253
+global ibus-daemon PID         3702 -> 3702
+active engine                  lay-ime-ru
+```

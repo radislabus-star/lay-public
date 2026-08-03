@@ -25,6 +25,7 @@ pub(crate) fn is_known_russian_form(word: &str) -> bool {
         || is_known_russian_prefixed_form(word)
         || is_known_russian_verb_form(word)
         || is_known_russian_ch_verb_present_form(word)
+        || is_known_russian_consonant_alternating_form(word)
         || is_known_russian_imperative_i_form(word)
         || is_known_russian_imperative_y_form(word)
 }
@@ -170,6 +171,10 @@ fn is_known_russian_verb_form(word: &str) -> bool {
 
 fn is_known_russian_ch_verb_present_form(word: &str) -> bool {
     backed::is_backed_russian_ch_verb_present_form(word, known_runtime_lemma)
+}
+
+fn is_known_russian_consonant_alternating_form(word: &str) -> bool {
+    backed::is_backed_russian_form(word, known_runtime_lemma)
 }
 
 fn known_runtime_lemma(lemma: &str) -> bool {

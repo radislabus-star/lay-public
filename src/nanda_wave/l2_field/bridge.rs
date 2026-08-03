@@ -670,7 +670,7 @@ pub(crate) fn apply_authority_to_candidate_lattice(
     authority: &L2FieldAuthority,
 ) {
     let (winner_surface, tied_surfaces, reason) = match authority {
-        L2FieldAuthority::Unavailable => return,
+        L2FieldAuthority::Unavailable => (None, None, "l2_field_unavailable_requires_suggestion"),
         L2FieldAuthority::Winner { surface } => (
             Some(surface.as_str()),
             None,
@@ -868,6 +868,27 @@ mod tests {
         apply_authority_to_candidate_lattice(&mut candidates, &L2FieldAuthority::Abstain);
 
         assert_eq!(candidates[0].gate.action, CandidateGateAction::SuggestOnly);
+        assert_eq!(candidates[1].gate.action, CandidateGateAction::Eligible);
+    }
+
+    #[test]
+    fn unavailable_requested_field_fails_closed_for_lexical_edits() {
+        let mut candidates = vec![
+            unified_candidate(
+                "Приши ",
+                CandidateOrigin::DeterministicTypo,
+                "missing_letter",
+            ),
+            unified_candidate("pdf ", CandidateOrigin::Layout, "layout_ru_to_en"),
+        ];
+
+        apply_authority_to_candidate_lattice(&mut candidates, &L2FieldAuthority::Unavailable);
+
+        assert_eq!(candidates[0].gate.action, CandidateGateAction::SuggestOnly);
+        assert_eq!(
+            candidates[0].gate.reason,
+            "l2_field_unavailable_requires_suggestion"
+        );
         assert_eq!(candidates[1].gate.action, CandidateGateAction::Eligible);
     }
 
