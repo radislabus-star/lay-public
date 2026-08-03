@@ -72,7 +72,16 @@ fn looks_like_unsafe_leading_pair_deletion(lower: &str, candidate: &str) -> bool
 
 fn looks_like_unsafe_final_letter_deletion(lower: &str, candidate: &str) -> bool {
     let chars = lower.chars().collect::<Vec<_>>();
-    chars.len() >= 5 && candidate == chars[..chars.len() - 1].iter().collect::<String>()
+    if chars.len() < 5 || candidate != chars[..chars.len() - 1].iter().collect::<String>() {
+        return false;
+    }
+    let appended = chars[chars.len() - 1];
+    let proven_imperative_with_extra_consonant =
+        crate::russian_lexicon::is_known_russian_imperative_form(candidate)
+            && crate::keyboard::is_cyrillic_letter(appended)
+            && !crate::russian_chars::is_russian_vowel(appended)
+            && !matches!(appended, 'ь' | 'ъ' | 'й');
+    !proven_imperative_with_extra_consonant
 }
 
 fn looks_like_unsafe_internal_y_deletion(lower: &str, candidate: &str) -> bool {

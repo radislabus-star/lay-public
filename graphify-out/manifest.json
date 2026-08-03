@@ -20,18 +20,18 @@
     "semantic_hash": "236e46a80b6d2865de3d1816fb645158"
   },
   "extension/lay@radislabus-star.github.io/lay-impl.js": {
-    "mtime": 1785759896.8902025,
+    "mtime": 1785767345.6483638,
     "ast_hash": "4b795e86b2cf94e522b648b448bb5e87",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1785759896.8883405,
-    "ast_hash": "5685ef9677ca6ed059dba65fea625050",
+    "mtime": 1785767345.6434073,
+    "ast_hash": "d7ed5e2bdf6fc1960e39729a58e77604",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
-    "mtime": 1785759896.8995473,
-    "ast_hash": "18681cb24c17513f4d033597b3a7a034",
+    "mtime": 1785767345.6542969,
+    "ast_hash": "8e8e931caeaa3863d99bc3f704f9e938",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/recent_actions_menu.js": {
@@ -40,13 +40,13 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/settings.js": {
-    "mtime": 1785759896.8994153,
-    "ast_hash": "37e3fb3ab23a76f12ea8b5e966d3008b",
+    "mtime": 1785767345.654191,
+    "ast_hash": "08e63d4609e5d5e73fbe178e2ce1c132",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1785759896.8993149,
-    "ast_hash": "96afe8895287fcdd6c0059bb55f08076",
+    "mtime": 1785767345.6534004,
+    "ast_hash": "2fc3bb2859ac7fde27103880a680bb85",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "e6fdbc6001da80e49fd905fe306afbac"
   },
   "src/ime_correction.rs": {
-    "mtime": 1785759680.7352436,
-    "ast_hash": "b48128b17f60f9e865077c2e1746934a",
+    "mtime": 1785767229.0022953,
+    "ast_hash": "1ff8d4044ff4a31466ec3f6873914df4",
     "semantic_hash": ""
   },
   "src/input_gate.rs": {
@@ -1775,13 +1775,13 @@
     "semantic_hash": "0321b2b2ff82d4d41afa5f31fa9758c6"
   },
   "src/ru_typo/extra.rs": {
-    "mtime": 1785666110.607368,
-    "ast_hash": "4ed5f6c8569ee678d1a7ac00b4fb62fa",
+    "mtime": 1785767229.0012953,
+    "ast_hash": "72c5b70e29422b761267f078ecb1087f",
     "semantic_hash": ""
   },
   "src/ru_typo/extra/candidates.rs": {
-    "mtime": 1785666127.4966803,
-    "ast_hash": "dc69996f0a0c499bed81da679e1f052b",
+    "mtime": 1785767237.1913881,
+    "ast_hash": "3ff69632d9a44c669ac54bdbd6ad5833",
     "semantic_hash": ""
   },
   "src/ru_typo/extra/scoring.rs": {
@@ -1865,13 +1865,13 @@
     "semantic_hash": "334f4e8a4c5e194816d65b586565cf96"
   },
   "src/russian_lexicon.rs": {
-    "mtime": 1785666057.0393558,
-    "ast_hash": "3be4cdf04a99ec2a794ff59841ac8bc4",
+    "mtime": 1785767228.9982953,
+    "ast_hash": "982d2db359cc2d78a1615a6e2149df07",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms.rs": {
-    "mtime": 1785629881.6075294,
-    "ast_hash": "414920b69eba1286d74fcef90b58c378",
+    "mtime": 1785767228.982295,
+    "ast_hash": "d4f51a479c38e0ebf7fa0bf64e456119",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/data.rs": {
@@ -2515,8 +2515,8 @@
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1785759896.9015403,
-    "ast_hash": "5e5d71344299cc7b265bd780477cea42",
+    "mtime": 1785767345.6559093,
+    "ast_hash": "6e0745a3745c847270e0cdb5d87190cb",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -2770,8 +2770,8 @@
     "semantic_hash": ""
   },
   "docs/text-correction-gate-architecture.md": {
-    "mtime": 1785759888.482651,
-    "ast_hash": "8719ca17f7873c2e04c2ecd0bfaf301e",
+    "mtime": 1785767324.2843754,
+    "ast_hash": "9a464329a3c7144dbacc1de41b17d10c",
     "semantic_hash": ""
   },
   "docs/text-mutation-monopoly-plan.md": {
@@ -5240,8 +5240,13 @@
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/IME_ACTIVE_LAYOUT_PRESERVATION_2026-08-03.json": {
-    "mtime": 1785759888.482651,
-    "ast_hash": "213021742f88bf28678e16d1fd915f15",
+    "mtime": 1785760226.6938047,
+    "ast_hash": "1fe5f03abbdd58de08c0870fadbd2788",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/IME_IMPERATIVE_FINAL_CONSONANT_REPAIR_2026-08-03.json": {
+    "mtime": 1785767324.2843754,
+    "ast_hash": "0aa9c306095a92f1577e5310fabba20e",
     "semantic_hash": ""
   }
 }

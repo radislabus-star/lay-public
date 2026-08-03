@@ -52,7 +52,18 @@ fn looks_like_present_tail_extra_letter_repair(lower: &str, candidate: &str) -> 
 
 #[cfg(test)]
 mod tests {
-    use super::repair_extra_letters_after_layout;
+    use super::{correct_extra_letters, repair_extra_letters_after_layout};
+
+    #[test]
+    fn removes_accidental_final_consonant_after_proven_imperative() {
+        assert_eq!(correct_extra_letters("читайл"), Some("читай".to_string()));
+        assert_eq!(correct_extra_letters("сделайл"), Some("сделай".to_string()));
+    }
+
+    #[test]
+    fn does_not_shorten_clean_past_tense_word() {
+        assert_eq!(correct_extra_letters("читал"), None);
+    }
 
     #[test]
     fn layout_cleanup_can_repair_common_ru_word_outside_morphology_dictionary() {

@@ -190,6 +190,10 @@ fn is_known_russian_imperative_y_form(word: &str) -> bool {
     backed::is_backed_russian_imperative_y_form(word, known_runtime_lemma)
 }
 
+pub(crate) fn is_known_russian_imperative_form(word: &str) -> bool {
+    is_known_russian_imperative_i_form(word) || is_known_russian_imperative_y_form(word)
+}
+
 fn is_known_short_accusative_a_form(word: &str, dict: &WordSet) -> bool {
     let Some(stem) = word.strip_suffix('у') else {
         return false;

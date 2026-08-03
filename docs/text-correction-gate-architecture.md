@@ -737,3 +737,56 @@ lay-ibus-engine SHA-256         35831e689b1fbbc79e33c51986ccb65274a31a9657be7af6
 global ibus-daemon PID          3702 -> 3702
 active engine                   lay-ime-ru
 ```
+
+### 2026-08-03 imperative final-consonant repair: PASS_CODE
+
+Observed failure:
+
+```text
+читайл -> no_decision
+L1.1 lattice contained читай as extra-letter
+deterministic final-letter safety removed that candidate before readout
+```
+
+The previous safety rule rejected every final-letter deletion. The accepted
+class is now narrower than general final deletion:
+
+```text
+dirty input is not independently known
++ deleting exactly the final character yields a morphology-backed imperative
++ deleted character is a Cyrillic consonant
++ deterministic scorer has exactly one surviving known candidate
+-> ExtraLetter candidate may enter DecisionCore
+```
+
+This is class-conditioned morphology evidence, not a `читайл` word rule.
+Examples covered by the same route: `читайл -> читай`,
+`сделайл -> сделай`. Known clean `читал` remains preserved.
+
+Measured facts:
+
+```text
+final-consonant imperative candidates       2/2 PASS
+known past-tense preservation               1/1 PASS
+shared IME Space authorization              1/1 PASS
+```
+
+Not tested: a corpus-wide final-letter deletion sweep or the fixed L1.1
+`13 x 20,000` proof. Runtime authority changed: `yes`, only for the constrained
+extra-letter class above. Verdict scope: `PASS_CODE`, `WATCH_CLASS_SWEEP`.
+
+Receipt:
+`/home/ubu/projects/lay/docs/structural_gates/receipts/IME_IMPERATIVE_FINAL_CONSONANT_REPAIR_2026-08-03.json`.
+
+Installed verification:
+
+```text
+version                         1.0.3
+remote build CPUs              20
+remote release build           1 min 55 s + 47.18 s remaining bins
+lay --explain-correct читайл    extra_letters -> читай, Eligible
+lay-daemon PID                  3742331
+lay-ibus-engine PID             3742363
+global ibus-daemon PID          3702 -> 3702
+active engine                   lay-ime-ru
+```

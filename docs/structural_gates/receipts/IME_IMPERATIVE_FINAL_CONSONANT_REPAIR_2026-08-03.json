@@ -1,0 +1,50 @@
+{
+  "schema": "lay.structural-gate.receipt.v1",
+  "date": "2026-08-03",
+  "subject": "Accidental final consonant after morphology-backed imperative",
+  "verdict": "PASS_CODE_WATCH_CLASS_SWEEP",
+  "runtime_authority_changed": true,
+  "installed": {
+    "version": "1.0.3",
+    "remote_build_cpus": 20,
+    "remote_primary_build_seconds": 115,
+    "remote_remaining_bins_seconds": 47.18,
+    "lay_daemon_pid": 3742331,
+    "lay_ibus_engine_pid": 3742363,
+    "global_ibus_daemon_pid_before": 3702,
+    "global_ibus_daemon_pid_after": 3702,
+    "active_engine": "lay-ime-ru"
+  },
+  "observed": {
+    "input": "читайл",
+    "before": "no_decision",
+    "l11_candidate": "читай",
+    "blocking_rule": "blanket final-letter deletion veto"
+  },
+  "tested": {
+    "читайл_to_читай": "PASS",
+    "сделайл_to_сделай": "PASS",
+    "читал_preserved": "PASS",
+    "ime_space_authorized_extra_letter": "PASS"
+  },
+  "installed_explain": {
+    "command": "lay --explain-correct читайл",
+    "selected_source": "extra_letters",
+    "selected_error_class": "extra-letter",
+    "selected_gate": "Eligible",
+    "output": "читай"
+  },
+  "not_tested": [
+    "corpus-wide final-letter deletion sweep",
+    "fixed L1.1 13 x 20000 heldout proof",
+    "physical application matrix"
+  ],
+  "invariants": [
+    "input must be independently unknown",
+    "candidate must be a morphology-backed imperative",
+    "only one final Cyrillic consonant may be removed",
+    "deterministic scorer must retain one known candidate",
+    "known clean past-tense forms remain preserved",
+    "no token-specific correction rule"
+  ]
+}

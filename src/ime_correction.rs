@@ -413,6 +413,22 @@ mod tests {
     }
 
     #[test]
+    fn committed_tail_repairs_accidental_final_consonant_after_imperative() {
+        let cfg = config();
+        let decision = decide_active_composition_autocorrect(ActiveCompositionAutocorrectRequest {
+            text: "читайл ",
+            committed_tail: "читайл",
+            config: &cfg,
+            active_layout_is_ru: Some(true),
+        })
+        .expect("final-consonant extra-letter correction");
+
+        assert_eq!(decision.replacement, "читай ");
+        assert_eq!(decision.action.selected_error_class(), Some("extra-letter"));
+        assert!(decision.action.allow_apply());
+    }
+
+    #[test]
     fn committed_tail_boundary_split_is_authorized_for_space_autocorrect() {
         let cfg = config();
         let decision = decide_active_composition_autocorrect(ActiveCompositionAutocorrectRequest {
