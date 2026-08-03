@@ -890,8 +890,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/engine.rs": {
-    "mtime": 1785141507.8662174,
-    "ast_hash": "f89d56e8a328e10a32dd5ef111bfc5fd",
+    "mtime": 1785754450.0568917,
+    "ast_hash": "3be9ff1e8f050df56f0fd87025eff1f4",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/engine/profile_tests.rs": {
@@ -905,8 +905,8 @@
     "semantic_hash": "c5ff75d88517eed471e5a4ae72718525"
   },
   "src/bin/lay_ibus_engine/ibus_interface.rs": {
-    "mtime": 1784416607.6787264,
-    "ast_hash": "3c46803db413f644f04dcc05dce3139c",
+    "mtime": 1785754450.0598917,
+    "ast_hash": "8d6f1954e32888335396251bbe775afe",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/key_decode.rs": {
@@ -965,8 +965,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/state.rs": {
-    "mtime": 1785705181.0981944,
-    "ast_hash": "764ba28d34905cd84f945df393e1a871",
+    "mtime": 1785754450.0578918,
+    "ast_hash": "3bc44c0b0432a65a539a517f42d01d5b",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/tail_memory.rs": {
@@ -2770,8 +2770,8 @@
     "semantic_hash": ""
   },
   "docs/text-correction-gate-architecture.md": {
-    "mtime": 1785705941.6617785,
-    "ast_hash": "f37fe0cd4861c5708585de37f10bebeb",
+    "mtime": 1785754688.9607694,
+    "ast_hash": "bbb7e4c2248afa6dcc46bfb0745fde21",
     "semantic_hash": ""
   },
   "docs/text-mutation-monopoly-plan.md": {
@@ -5232,6 +5232,11 @@
   "docs/structural_gates/receipts/L2_INVERSE_LENGTH_TIED_AUTHORITY_2026-08-03.json": {
     "mtime": 1785754309.326208,
     "ast_hash": "b5043e75606e41309a8592eadd09cac1",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/IME_MANAGED_KEY_RELEASE_PAIRING_2026-08-03.json": {
+    "mtime": 1785754688.9620216,
+    "ast_hash": "3c286390ebd44ae3aea900f2acb80168",
     "semantic_hash": ""
   }
 }

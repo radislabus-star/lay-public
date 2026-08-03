@@ -218,6 +218,7 @@ impl LayIbusEngine {
             shift_used_as_modifier: false,
             alt_completion_active: false,
             alt_used_as_modifier: false,
+            handled_press_keycodes: Default::default(),
             last_shift_release_at: None,
             last_commit_at: None,
             last_tail_input_at: None,
@@ -256,6 +257,7 @@ impl LayIbusEngine {
         self.shift_used_as_modifier = false;
         self.alt_completion_active = false;
         self.alt_used_as_modifier = false;
+        self.handled_press_keycodes.clear();
         if !preserve_tail {
             self.tail_buffer.clear();
             self.preedit_fast.reset();
@@ -297,6 +299,7 @@ impl LayIbusEngine {
         self.shift_used_as_modifier = false;
         self.alt_completion_active = false;
         self.alt_used_as_modifier = false;
+        self.handled_press_keycodes.clear();
         self.surrounding_text_snapshot = None;
         self.rebuild_preedit_fast_from_tail();
         self.publish_tail_handoff();

@@ -20,6 +20,18 @@ impl LayIbusEngine {
         if !self.managed_input {
             return Ok(false);
         }
+        if !is_key_press(state) && self.consume_handled_release(keycode) {
+            trace::record_key(
+                "managed_release",
+                keyval,
+                keycode,
+                true,
+                None,
+                self.tail_buffer.chars().count(),
+                self.preedit_suffix.chars().count(),
+            );
+            return Ok(true);
+        }
         if !self.live_composition_enabled() {
             if self.has_live_composition_state() {
                 self.reset_for_ibus_focus_change();
@@ -72,8 +84,11 @@ impl LayIbusEngine {
         if self.alt_completion_active {
             self.alt_used_as_modifier = true;
         }
-        self.process_pressed_key(&emitter, keyval, keycode, state)
-            .await
+        let handled = self
+            .process_pressed_key(&emitter, keyval, keycode, state)
+            .await?;
+        self.remember_handled_press(keycode, handled);
+        Ok(handled)
     }
 
     #[zbus(name = "FocusIn")]

@@ -606,3 +606,62 @@ Exact receipts:
 /tmp/lay-phase7-full-gate-6-serial.log
 /home/ubu/projects/lay/docs/structural_gates/receipts/FINAL_PRODUCT_GATE_PHASE7_2026-08-02.json
 ```
+
+### 2026-08-03 managed key release pairing: PASS_CODE, WATCH_WECHAT
+
+Live trace inspection of the reported WeChat repeating-space failure found:
+
+- one `space_managed_commit` per observed physical Space press;
+- no consecutive Space press run in the last 5,000 IME records;
+- repeated `focus_out -> focus_in` and capability changes `41 -> 9`;
+- managed presses returned `handled=true`, while their matching releases were
+  returned to the client as `handled=false`.
+
+The event contract is now:
+
+```text
+managed key press
+-> Lay handles press and commits/preedits text
+-> remember physical keycode
+-> matching release is consumed by Lay exactly once
+
+terminal or command passthrough press
+-> handled=false
+-> matching release remains passthrough
+
+focus/reset
+-> clear unmatched managed-release ledger
+```
+
+This prevents WeChat and other clients from receiving an orphan key release
+for a press already consumed by the IME. It does not synthesize releases,
+change text authority, or intercept terminal/command passthrough.
+
+Tested:
+
+- managed press/release ownership unit test: `1/1 PASS`;
+- protected WeChat Backspace/preedit contract: `1/1 PASS`;
+- source-level trace evidence: no repeated Space press sequence.
+
+Not tested:
+
+- physical WeChat hold/release after installing the new engine;
+- proof that orphan releases were the only source of the reported repeated
+  spaces;
+- every GTK/Qt/Chromium press/release permutation.
+
+Verdict scope: `PASS_CODE`, `WATCH_WECHAT`. Runtime text-decision authority
+changed: `false`. IBus event ownership changed only for the release paired with
+an already handled managed press.
+
+Receipt:
+`/home/ubu/projects/lay/docs/structural_gates/receipts/IME_MANAGED_KEY_RELEASE_PAIRING_2026-08-03.json`.
+
+Installed state:
+
+- release build: remote `20` jobs, `39.73 s`;
+- installed `lay-ibus-engine 1.0.1` SHA-256:
+  `b6d33b09cb866cf5f9007b06c5dce20fc1edf9781928bd5f1271fbef06789762`;
+- engine PID: `3333338 -> 3350505`;
+- active engine: `lay-ime-ru`;
+- global `ibus-daemon` PID before/after: `3702/3702`.

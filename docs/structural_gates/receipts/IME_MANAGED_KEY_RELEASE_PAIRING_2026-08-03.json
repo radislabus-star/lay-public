@@ -1,0 +1,50 @@
+{
+  "schema": "lay.structural_gate_receipt.v1",
+  "gate": "IME_MANAGED_KEY_RELEASE_PAIRING",
+  "date": "2026-08-03",
+  "version": "1.0.1",
+  "verdict": "PASS_CODE_WATCH_WECHAT",
+  "runtime_text_authority_changed": false,
+  "event_ownership_changed": true,
+  "observed": {
+    "trace_window_records": 5000,
+    "key_events": 1301,
+    "consecutive_space_press_runs": 0,
+    "focus_storm": "focus_out to focus_in with capabilities 41 and 9",
+    "old_pairing": "managed press handled true, matching release handled false"
+  },
+  "fix": {
+    "handled_press_ledger": "bounded set of physical keycodes",
+    "managed_release": "consumed once when matching press was handled",
+    "passthrough_release": "unchanged when press was not handled",
+    "focus_reset": "clears ledger"
+  },
+  "tested": [
+    "handled press owns matching release 1/1 PASS",
+    "WeChat Backspace and preedit contract 1/1 PASS"
+  ],
+  "not_tested": [
+    "physical WeChat Space after install",
+    "causal proof that orphan release was the only repeated-space source",
+    "complete GTK Qt Chromium release matrix"
+  ],
+  "installed": {
+    "version": "1.0.1",
+    "remote_build_jobs": 20,
+    "remote_build_seconds": 39.73,
+    "ibus_engine_sha256": "b6d33b09cb866cf5f9007b06c5dce20fc1edf9781928bd5f1271fbef06789762",
+    "global_ibus_pid_before": 3702,
+    "global_ibus_pid_after": 3702,
+    "global_ibus_restarted": false,
+    "engine_pid_before": 3333338,
+    "engine_pid_after": 3350505,
+    "active_engine": "lay-ime-ru"
+  },
+  "evidence": [
+    "/home/ubu/.local/share/lay/ibus_engine_debug.jsonl",
+    "/home/ubu/projects/lay/src/bin/lay_ibus_engine/ibus_interface.rs",
+    "/home/ubu/projects/lay/src/bin/lay_ibus_engine/engine.rs",
+    "/home/ubu/projects/lay/src/bin/lay_ibus_engine/state.rs",
+    "/home/ubu/projects/lay/docs/text-correction-gate-architecture.md"
+  ]
+}

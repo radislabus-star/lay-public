@@ -1,4 +1,5 @@
 use lay::config::LayConfig;
+use std::collections::BTreeSet;
 use std::time::Instant;
 
 use super::preedit::PreeditFastState;
@@ -36,6 +37,7 @@ pub(crate) struct LayIbusEngine {
     pub(super) shift_used_as_modifier: bool,
     pub(super) alt_completion_active: bool,
     pub(super) alt_used_as_modifier: bool,
+    pub(super) handled_press_keycodes: BTreeSet<u32>,
     pub(super) last_shift_release_at: Option<Instant>,
     pub(super) last_commit_at: Option<Instant>,
     pub(super) last_tail_input_at: Option<Instant>,
@@ -178,6 +180,16 @@ impl LayIbusEngine {
         if !self.surrounding_text_supported {
             self.surrounding_text_snapshot = None;
         }
+    }
+
+    pub(super) fn remember_handled_press(&mut self, keycode: u32, handled: bool) {
+        if handled {
+            self.handled_press_keycodes.insert(keycode);
+        }
+    }
+
+    pub(super) fn consume_handled_release(&mut self, keycode: u32) -> bool {
+        self.handled_press_keycodes.remove(&keycode)
     }
 }
 
@@ -324,5 +336,17 @@ mod tests {
 
         assert!(engine.surrounding_text_snapshot.is_none());
         assert_eq!(engine.tail_buffer, "x");
+    }
+
+    #[test]
+    fn handled_press_owns_its_matching_release() {
+        let mut engine = engine(LayConfig::default());
+
+        engine.remember_handled_press(57, true);
+        assert!(engine.consume_handled_release(57));
+        assert!(!engine.consume_handled_release(57));
+
+        engine.remember_handled_press(30, false);
+        assert!(!engine.consume_handled_release(30));
     }
 }
