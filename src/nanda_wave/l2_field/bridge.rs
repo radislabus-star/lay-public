@@ -316,7 +316,7 @@ fn apply_standalone_l2_field(
 ) -> Option<CanonicalCohortReadout> {
     let field = super::installed_l2_field().ok()?;
     let lexical_surface_candidates = surface_candidates.clone();
-    let lexical_seeds = seeds
+    let mut lexical_seeds = seeds
         .iter()
         .filter_map(|seed| {
             Some(L2LexicalSeed {
@@ -326,6 +326,49 @@ fn apply_standalone_l2_field(
             })
         })
         .collect::<Vec<_>>();
+    // A one-length-edit inverse lookup is an alternative explanation of the
+    // same damaged surface, not weaker evidence than the L1 seed that happened
+    // to be born first. Start exact one-edit forms at the same lexical energy;
+    // learned context and competition must resolve the basin.
+    let inverse_evidence_milli = lexical_seeds
+        .iter()
+        .map(|seed| seed.evidence_milli)
+        .max()
+        .unwrap_or(1_000);
+    for form_ref in field.single_length_edit_form_refs(token, 16) {
+        let Some(surface) = field.decode_form_ref(form_ref).map(str::to_string) else {
+            continue;
+        };
+        if lexical_seeds.iter().any(|seed| {
+            seed.surface
+                .as_deref()
+                .is_some_and(|seed_surface| seed_surface.eq_ignore_ascii_case(&surface))
+        }) {
+            continue;
+        }
+        lexical_seeds.push(L2LexicalSeed {
+            terminal_id: field.l1_terminal_for_form_ref(form_ref),
+            surface: Some(surface.clone()),
+            evidence_milli: inverse_evidence_milli,
+        });
+        if !surface_candidates
+            .iter()
+            .any(|candidate| candidate.surface.eq_ignore_ascii_case(&surface))
+        {
+            surface_candidates.push(crate::nanda_wave::l2::L2ImeWordCandidate {
+                surface: surface.clone(),
+                kind: seeded_candidate_kind(token, &surface),
+                source: crate::nanda_wave::l2::L2ImeWordCandidateSource::LexicalPhase,
+                score: inverse_evidence_milli.max(0) as u32,
+                l1_overlap: seed_surface_overlap(token, &surface),
+                l2_overlap: 1,
+                motif_overlap: seed_surface_motif_overlap(token, &surface),
+                usage_prior: 0.0,
+                context_prior: 0.0,
+                accepted_count: 0,
+            });
+        }
+    }
     if lexical_seeds.is_empty() {
         return None;
     }
@@ -541,7 +584,9 @@ impl CanonicalCohortReadout {
             Self::Winner { winner_surface, .. } => L2FieldAuthority::Winner {
                 surface: winner_surface.clone(),
             },
-            Self::Tied { .. } => L2FieldAuthority::Tied,
+            Self::Tied { cohort_surfaces } => L2FieldAuthority::Tied {
+                surfaces: cohort_surfaces.clone(),
+            },
             Self::Abstain { .. } => L2FieldAuthority::Abstain,
         }
     }
@@ -624,14 +669,19 @@ pub(crate) fn apply_authority_to_candidate_lattice(
     candidates: &mut [UnifiedCorrectionCandidate],
     authority: &L2FieldAuthority,
 ) {
-    let (winner_surface, reason) = match authority {
+    let (winner_surface, tied_surfaces, reason) = match authority {
         L2FieldAuthority::Unavailable => return,
         L2FieldAuthority::Winner { surface } => (
             Some(surface.as_str()),
+            None,
             "l2_field_winner_owns_lexical_authority",
         ),
-        L2FieldAuthority::Tied => (None, "l2_field_tie_requires_context"),
-        L2FieldAuthority::Abstain => (None, "l2_field_abstain_requires_context"),
+        L2FieldAuthority::Tied { surfaces } => (
+            None,
+            Some(surfaces.as_slice()),
+            "l2_field_tie_requires_context",
+        ),
+        L2FieldAuthority::Abstain => (None, None, "l2_field_abstain_requires_context"),
     };
 
     for candidate in candidates {
@@ -646,6 +696,17 @@ pub(crate) fn apply_authority_to_candidate_lattice(
         if winner_surface
             .is_some_and(|winner| candidate_last_word_lower(candidate).as_deref() == Some(winner))
         {
+            continue;
+        }
+        if tied_surfaces.is_some_and(|surfaces| {
+            candidate_last_word_lower(candidate).is_some_and(|word| {
+                surfaces
+                    .iter()
+                    .any(|surface| surface.eq_ignore_ascii_case(&word))
+            })
+        }) {
+            // A tie cannot create authority, but it also cannot veto an
+            // independently admitted and verified member of its own cohort.
             continue;
         }
         if candidate.gate.action == CandidateGateAction::Eligible {
@@ -829,6 +890,32 @@ mod tests {
             &mut candidates,
             &L2FieldAuthority::Winner {
                 surface: "посмотри".to_string(),
+            },
+        );
+
+        assert_eq!(candidates[0].gate.action, CandidateGateAction::Eligible);
+        assert_eq!(candidates[1].gate.action, CandidateGateAction::SuggestOnly);
+    }
+
+    #[test]
+    fn tie_preserves_verified_member_but_demotes_foreign_candidate() {
+        let mut candidates = vec![
+            unified_candidate(
+                "перехвачу ",
+                CandidateOrigin::DeterministicTypo,
+                "missing_letter",
+            ),
+            unified_candidate(
+                "передачу ",
+                CandidateOrigin::DeterministicTypo,
+                "composite_ru_typo",
+            ),
+        ];
+
+        apply_authority_to_candidate_lattice(
+            &mut candidates,
+            &L2FieldAuthority::Tied {
+                surfaces: vec!["первачу".to_string(), "перехвачу".to_string()],
             },
         );
 

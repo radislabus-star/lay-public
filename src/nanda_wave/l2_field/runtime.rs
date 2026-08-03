@@ -41,7 +41,9 @@ pub(crate) enum L2FieldAuthority {
     Winner {
         surface: String,
     },
-    Tied,
+    Tied {
+        surfaces: Vec<String>,
+    },
     Abstain,
 }
 
@@ -210,6 +212,69 @@ impl StandaloneL2Field {
 
     pub(crate) fn decode_form_ref(&self, form_ref: u32) -> Option<&str> {
         self.decode_form(*self.package.form_refs.get(form_ref as usize)?)
+    }
+
+    pub(crate) fn single_length_edit_form_refs(&self, surface: &str, limit: usize) -> Vec<u32> {
+        if limit == 0 || self.form_ref_for_surface(surface).is_some() {
+            return Vec::new();
+        }
+        let chars = surface.chars().collect::<Vec<_>>();
+        if chars.len() < 2 {
+            return Vec::new();
+        }
+
+        let mut shorter = BTreeSet::new();
+        for remove_at in 0..chars.len() {
+            let candidate = chars
+                .iter()
+                .enumerate()
+                .filter_map(|(index, ch)| (index != remove_at).then_some(*ch))
+                .collect::<String>();
+            shorter.insert(candidate);
+        }
+
+        let alphabet = if chars
+            .iter()
+            .all(|ch| crate::keyboard::is_cyrillic_letter(*ch))
+        {
+            "абвгдеёжзийклмнопрстуфхцчшщъыьэюя"
+        } else if chars.iter().all(|ch| ch.is_ascii_alphabetic()) {
+            "abcdefghijklmnopqrstuvwxyz"
+        } else {
+            ""
+        };
+        let mut longer = BTreeSet::new();
+        for insert_at in 0..=chars.len() {
+            for inserted in alphabet.chars() {
+                let mut candidate = String::with_capacity(surface.len() + inserted.len_utf8());
+                for (index, ch) in chars.iter().enumerate() {
+                    if index == insert_at {
+                        candidate.push(inserted);
+                    }
+                    candidate.push(*ch);
+                }
+                if insert_at == chars.len() {
+                    candidate.push(inserted);
+                }
+                longer.insert(candidate);
+            }
+        }
+
+        shorter
+            .into_iter()
+            .chain(longer)
+            .filter_map(|candidate| self.form_ref_for_surface(&candidate))
+            .take(limit)
+            .collect()
+    }
+
+    pub(crate) fn l1_terminal_for_form_ref(&self, form_ref: u32) -> Option<u32> {
+        let terminal_id = self
+            .package
+            .form_refs
+            .get(form_ref as usize)?
+            .l1_terminal_id;
+        (terminal_id != NO_L1_TERMINAL).then_some(terminal_id)
     }
 
     pub(crate) fn readout(
@@ -832,6 +897,35 @@ mod standalone_tests {
                 .iter()
                 .any(|binding| binding.form_center_ref == shared_form));
         }
+    }
+
+    #[test]
+    fn inverse_length_lane_finds_package_forms_without_scanning_the_field() {
+        let corpus = L2TeacherCorpus::parse_tsv(
+            "F\tокно\tокно\tnoun:nom:sg\n\
+             F\tокно\tокне\tnoun:prep:sg\n\
+             F\tперехватить\tперехвачу\tverb:fut:ind:p1:sg:perf\n\
+             T\tокно\tокно\tnoun:nom:sg\t_ открыто\n\
+             T\tокно\tокне\tnoun:prep:sg\tв _\n\
+             H\tокно\tокне\tnoun:prep:sg\tна _\n",
+        )
+        .expect("teacher");
+        let terminals = BTreeMap::from([("окно", 7), ("окне", 11), ("перехвачу", 13)]);
+        let (package, _) =
+            compile_l2_package(&corpus, 99, |surface| terminals.get(surface).copied())
+                .expect("compile");
+        let field = StandaloneL2Field::from_package(package).expect("load");
+
+        let surfaces = |damaged| {
+            field
+                .single_length_edit_form_refs(damaged, 16)
+                .into_iter()
+                .filter_map(|form_ref| field.decode_form_ref(form_ref))
+                .collect::<Vec<_>>()
+        };
+        assert_eq!(surfaces("окное"), vec!["окне", "окно"]);
+        assert_eq!(surfaces("перхвачу"), vec!["перехвачу"]);
+        assert!(surfaces("окне").is_empty(), "clean forms must not fan out");
     }
 
     #[test]

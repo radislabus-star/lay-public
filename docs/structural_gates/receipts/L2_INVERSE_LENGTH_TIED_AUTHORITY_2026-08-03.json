@@ -1,0 +1,53 @@
+{
+  "schema": "lay.structural_gate_receipt.v1",
+  "gate": "L2_INVERSE_LENGTH_TIED_AUTHORITY",
+  "date": "2026-08-03",
+  "version": "1.0.1",
+  "verdict": "PASS_TARGETED_PERHVAHU_WATCH_OKNOE",
+  "runtime_authority_changed": true,
+  "package_changed": false,
+  "mechanism": {
+    "inverse_lane": "one insertion or deletion, DecoderGraph binary search, limit 16",
+    "seed_energy": "equal to strongest L1 lexical seed",
+    "authority": "tie preserves independently verified members of its own cohort only"
+  },
+  "measured": {
+    "l2_tests": "29/29 PASS",
+    "ime_target_test": "1/1 PASS",
+    "perhvachu_readout": "Tied(pervachu=2038,perehvachu=2038)",
+    "perhvachu_selected": "perehvachu via verified deterministic missing_letter",
+    "oknoe_readout": "Abstain with okne and okno present in lattice",
+    "debug_warm_probe_ms": 36
+  },
+  "rejected_experiment": {
+    "name": "exact context suffix backoff",
+    "result": "NO_EFFECT_NOT_RETAINED",
+    "reason": "installed V13 produced zero slot, neighbor, and competition evidence for oknoe"
+  },
+  "not_tested": [
+    "fixed heldout per-error-class proof",
+    "release hot p50 and p99",
+    "physical WeChat typing after install",
+    "trained contextual authority for u menya v oknoe to u menya v okne",
+    "full IME baseline parity"
+  ],
+  "installed": {
+    "version": "1.0.1",
+    "remote_build_jobs": 20,
+    "lay_sha256": "ea015187aef62f365dc47f85192838808a58d8adb907629c17facb37bf263463",
+    "daemon_sha256": "d43fa9bdac91aa1930f73d9294e765a4e176e26b00f66ec2f3214f503bbf1b44",
+    "ibus_engine_sha256": "2155b1269d51aaf5a298bc5ccab0be6bc8d70c82d4b1afa5eff0639cc21f127d",
+    "global_ibus_pid_before": 3702,
+    "global_ibus_pid_after": 3702,
+    "global_ibus_restarted": false,
+    "active_engine": "lay-ime-ru",
+    "daemon_pid": 3332955,
+    "ibus_engine_pid": 3333338
+  },
+  "evidence": [
+    "/home/ubu/projects/lay/src/nanda_wave/l2_field/runtime.rs",
+    "/home/ubu/projects/lay/src/nanda_wave/l2_field/bridge.rs",
+    "/home/ubu/projects/lay/src/ime_correction.rs",
+    "/home/ubu/projects/lay/docs/l2-l11-canonical-architecture.md"
+  ]
+}

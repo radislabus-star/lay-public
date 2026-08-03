@@ -321,6 +321,90 @@ Runtime authority changed:
 
 - `false`
 
+## 13. 2026-08-03 Inverse Length Birth and Tied-Cohort Authority
+
+### Tested change
+
+The standalone L2 runtime now performs a bounded inverse lookup for forms that
+are exactly one insertion or one deletion from a damaged token:
+
+```text
+damaged token
+-> bounded one-length-edit variants
+-> binary search in the existing sorted DecoderGraph
+-> at most 16 additional lexical seeds
+-> existing L2 context/competition readout
+-> Winner | Tied | Abstain
+-> existing transition verifier
+```
+
+This is candidate birth only. It does not scan the field, add word-specific
+rules, recompile V13, or grant apply authority by itself. Exact one-edit forms
+enter with the same lexical energy as the strongest L1 seed because they are
+alternative explanations of the same damaged signal. Learned context and
+competition remain responsible for separating them.
+
+`L2FieldAuthority::Tied` now carries the tied surfaces. A tie cannot promote an
+L2 surface, but it also cannot veto an independently verified candidate that is
+already a member of that tied cohort. Foreign candidates are still demoted to
+`SuggestOnly`.
+
+### Measured facts
+
+- synthetic package inverse lookup:
+  `окное -> [окне, окно]`,
+  `перхвачу -> [перехвачу]`,
+  clean `окне -> []`;
+- focused standalone L2 tests: `29/29 PASS`;
+- focused IME regression:
+  `клавиатурой не перхвачу -> клавиатурой не перехвачу`, `1/1 PASS`;
+- installed V13 readout for `перхвачу`:
+  `Tied(первачу=2038, перехвачу=2038)`;
+- final correction-core selection for that case:
+  verified deterministic `missing_letter -> перехвачу`;
+- installed V13 readout for `у меня в окное`:
+  `Abstain`; the lattice contains `окне` and `окно`, but neither receives
+  authority;
+- debug-process timing after initialization was about `36 ms` for the
+  `перхвачу` probe. This is not a release latency measurement.
+
+### Rejected experiment
+
+An exact-key suffix backoff
+`у меня в _ -> меня в _ -> в _` was tested against installed V13. It produced
+no non-zero slot, neighbor, or competition evidence for `окное`, so it was
+removed from the code. Verdict: `NO_EFFECT_NOT_RETAINED`.
+
+### Not tested
+
+- fixed heldout per-error-class percentages;
+- release hot p50/p99 after installation;
+- physical WeChat typing after binary replacement;
+- a trained L2/L3 contextual winner for `у меня в окное -> у меня в окне`;
+- full IME module parity, whose current environment-dependent baseline still
+  has unrelated pre-existing failures.
+
+### Verdict and authority
+
+- verdict: `PASS_TARGETED_PERHVAHU_WATCH_OKNOE`;
+- package changed: `false`;
+- L1.1 restoration authority changed: `false`;
+- L2 tied-cohort authority handling changed: `true`, narrowly for independently
+  verified members of the reported tied cohort;
+- exact receipt:
+  `/home/ubu/projects/lay/docs/structural_gates/receipts/L2_INVERSE_LENGTH_TIED_AUTHORITY_2026-08-03.json`.
+
+### Installed state
+
+- release build: remote `20`-CPU host, `CARGO_BUILD_JOBS=20`;
+- installed version: `1.0.1`;
+- installed binaries: `lay`, `lay-daemon`, `lay-ibus-engine`;
+- active engine after replacement: `lay-ime-ru`;
+- global `ibus-daemon` PID before/after: `3702/3702`;
+- installed explain route confirms
+  `клавиатурой не перхвачу -> клавиатурой не перехвачу`;
+- installed explain route confirms `у меня в окное` remains `Abstain`.
+
 ## 16. 2026-07-31 Live Input Log Feedback Gate
 
 What was inspected:

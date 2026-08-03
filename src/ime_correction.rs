@@ -447,6 +447,11 @@ mod tests {
     }
 
     #[test]
+    fn committed_tail_space_route_keeps_verified_inverse_length_member_of_l2_tie() {
+        assert_replacement("перхвачу ", "клавиатурой не перхвачу", "перехвачу ");
+    }
+
+    #[test]
     fn committed_tail_space_route_defaults_to_canonical_l2_owner_for_l11_seeded_restore() {
         let cfg = config();
         let decision = decide_active_composition_autocorrect(ActiveCompositionAutocorrectRequest {
