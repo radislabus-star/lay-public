@@ -58,22 +58,31 @@ pub(super) fn attempt_relation(
         None
     };
     let full_passed = full_proof.as_ref().is_some_and(full_proof_passed);
-    let admission = if targeted_passed && full_passed {
-        Some(lay::nanda_wave::admit_l3_context_delta_with_full_proof(
+    let (admission, compaction) = if targeted_passed && full_passed {
+        let admission = lay::nanda_wave::admit_l3_context_delta_with_full_proof(
             &paths.manifest,
             &delta,
             &targeted_receipt,
             &full_receipt,
             Some("local-online"),
-        )?)
+        )?;
+        // A manifest containing deltas is a cold learner representation: its
+        // shard merge materializes every compact phase center. Never leave that
+        // representation for live daemon/IME reload. Fold the admitted evidence
+        // once in this background worker and publish a delta-free compact base.
+        let compact_base = inactive_compact_base(paths)?;
+        let compaction =
+            lay::nanda_wave::compact_l3_context_composite(&paths.manifest, &compact_base)?;
+        (Some(admission), Some(compaction))
     } else {
-        None
+        (None, None)
     };
     let verdict = if targeted_passed && full_passed {
         "PASS"
     } else {
         "WATCH"
     };
+    let base_rewritten = compaction.is_some();
     Ok(serde_json::json!({
         "kind": "l3_online_delta_attempt",
         "generation": generation,
@@ -98,8 +107,24 @@ pub(super) fn attempt_relation(
         "new_false_top1": full_proof.as_ref().and_then(|value| value.get("new_false_top1")),
         "verdict": verdict,
         "admission": admission,
-        "base_rewritten": false,
+        "compaction": compaction,
+        "base_rewritten": base_rewritten,
     }))
+}
+
+fn inactive_compact_base(paths: &Paths) -> io::Result<std::path::PathBuf> {
+    let manifest: serde_json::Value =
+        serde_json::from_slice(&fs::read(&paths.manifest)?).map_err(io::Error::other)?;
+    let current = manifest
+        .get("base")
+        .and_then(serde_json::Value::as_str)
+        .unwrap_or_default();
+    let name = if current.ends_with("compact-base-a.nwpc") {
+        "compact-base-b.nwpc"
+    } else {
+        "compact-base-a.nwpc"
+    };
+    Ok(paths.root.join(name))
 }
 
 fn prove_full_differential(
@@ -283,5 +308,48 @@ mod tests {
             "new_false_supports": 0,
             "new_false_top1": 0
         })));
+    }
+
+    #[test]
+    fn compaction_alternates_between_two_inactive_base_slots() {
+        let root = std::env::temp_dir().join(format!(
+            "lay-l3-compact-slot-{}",
+            SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+        ));
+        let online = root.join("l3-online");
+        fs::create_dir_all(&online).unwrap();
+        let manifest = root.join("runtime.json");
+        fs::write(
+            &manifest,
+            br#"{"format":"lay-l3-composite-v1","base":"l3-online/compact-base-a.nwpc","deltas":[]}"#,
+        )
+        .unwrap();
+        let paths = Paths {
+            root: online.clone(),
+            usage_events: root.join("events.jsonl"),
+            corrections: root.join("corrections.jsonl"),
+            base: root.join("base.nwpc"),
+            manifest: manifest.clone(),
+            state: root.join("state.json"),
+            full_proof_corpus: root.join("proof.txt"),
+            full_proof_surface: root.join("surface.jsonl"),
+        };
+        assert_eq!(
+            inactive_compact_base(&paths).unwrap(),
+            online.join("compact-base-b.nwpc")
+        );
+        fs::write(
+            &manifest,
+            br#"{"format":"lay-l3-composite-v1","base":"l3-online/compact-base-b.nwpc","deltas":[]}"#,
+        )
+        .unwrap();
+        assert_eq!(
+            inactive_compact_base(&paths).unwrap(),
+            online.join("compact-base-a.nwpc")
+        );
+        let _ = fs::remove_dir_all(root);
     }
 }

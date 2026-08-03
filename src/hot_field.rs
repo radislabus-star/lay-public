@@ -19,6 +19,19 @@ const AUTHORITY_FULL_REFERENCE_ALLOWED: u8 = 1;
 static PROCESS_ROUTE: AtomicU8 = AtomicU8::new(ROUTE_DAEMON);
 static PROCESS_AUTHORITY: AtomicU8 = AtomicU8::new(AUTHORITY_FULL_REFERENCE_ALLOWED);
 
+/// Bounds glibc's per-thread allocator arenas before hot runtime workers start.
+///
+/// systemd supplies the same policy to lay-daemon through MALLOC_ARENA_MAX, but
+/// IBus launches its engine outside that unit. Applying mallopt in both entry
+/// points keeps allocator retention independent of the parent process.
+pub fn constrain_runtime_allocator() {
+    #[cfg(all(target_os = "linux", target_env = "gnu"))]
+    unsafe {
+        // glibc malloc.h: M_ARENA_MAX = -8.
+        let _ = libc::mallopt(-8, 2);
+    }
+}
+
 #[cfg(test)]
 thread_local! {
     // Tests exercise IME and daemon authority in parallel. Their temporary

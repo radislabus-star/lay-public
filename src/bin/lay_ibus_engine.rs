@@ -49,6 +49,11 @@ mod xml;
 
 use args::Args;
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    lay::hot_field::constrain_runtime_allocator();
+    // The factory starts lexical warmup before the first engine object exists.
+    // Publish compact-field authority here so that warmup cannot materialize
+    // full reference dictionaries under the process default.
+    lay::hot_field::set_process_policy(lay::hot_field::HotFieldPolicy::ime());
     let args = Args::parse();
     if args.xml {
         println!("{}", xml::component_xml(&xml::component_exec_path()));

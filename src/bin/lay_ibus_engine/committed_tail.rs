@@ -416,14 +416,16 @@ mod tests {
             typing_assist: true,
             auto_switch_layout: true,
             correction_safety: "experimental".to_string(),
-            nanda_autocorrect: true,
+            nanda_autocorrect: false,
             nanda_precognition: true,
-            nanda_l2_phase_apply: true,
+            // This test owns the IBus/DecisionCore authority boundary, not the
+            // availability or contents of the separately tested live L2 field.
+            nanda_l2_phase_apply: false,
             ..LayConfig::default()
         };
         let decision = decide_active_composition_autocorrect(ActiveCompositionAutocorrectRequest {
-            text: "видешь ",
-            committed_tail: "видешь",
+            text: "прохоил ",
+            committed_tail: "прохоил",
             config: &cfg,
         })
         .expect("shared decision");

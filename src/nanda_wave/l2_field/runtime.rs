@@ -84,9 +84,9 @@ pub(crate) struct StandaloneL2Readout {
 #[derive(Clone, Debug)]
 pub(crate) struct StandaloneL2Field {
     package: L2FieldPackage,
-    form_by_terminal: BTreeMap<u32, u32>,
-    bindings_by_form: Vec<Vec<MorphBinding>>,
-    forms_by_lemma: Vec<Vec<u32>>,
+    form_by_terminal: Vec<(u32, u32)>,
+    binding_offsets_by_form: Vec<u32>,
+    binding_indices_by_form: Vec<u32>,
     context_by_key: BTreeMap<u32, u32>,
     slot_centers_by_mode_feature: BTreeMap<(u32, u32), Vec<u32>>,
     neighbor_couplings_by_mode_lemma_feature: BTreeMap<(u32, u32, u32), Vec<u32>>,
@@ -104,30 +104,39 @@ impl StandaloneL2Field {
     }
 
     pub(crate) fn from_package(package: L2FieldPackage) -> Result<Self, String> {
-        let mut form_by_terminal = BTreeMap::new();
+        let mut form_by_terminal = Vec::new();
         for (form_ref, form) in package.form_refs.iter().enumerate() {
             if form.l1_terminal_id == NO_L1_TERMINAL {
                 continue;
             }
-            if form_by_terminal
-                .insert(form.l1_terminal_id, form_ref as u32)
-                .is_some()
-            {
-                return Err(format!(
-                    "duplicate L1.1 terminal ID {} in L2 package",
-                    form.l1_terminal_id
-                ));
-            }
+            form_by_terminal.push((form.l1_terminal_id, form_ref as u32));
         }
-        let mut bindings_by_form = vec![Vec::new(); package.form_refs.len()];
-        let mut forms_by_lemma = vec![Vec::new(); package.lemma_centers.len()];
+        form_by_terminal.sort_unstable();
+        if let Some(duplicate) = form_by_terminal
+            .windows(2)
+            .find(|pair| pair[0].0 == pair[1].0)
+        {
+            return Err(format!(
+                "duplicate L1.1 terminal ID {} in L2 package",
+                duplicate[0].0
+            ));
+        }
+
+        let mut binding_offsets_by_form = vec![0_u32; package.form_refs.len() + 1];
         for binding in &package.morph_bindings {
-            bindings_by_form[binding.form_center_ref as usize].push(*binding);
-            forms_by_lemma[binding.lemma_center_id as usize].push(binding.form_center_ref);
+            binding_offsets_by_form[binding.form_center_ref as usize + 1] += 1;
         }
-        for forms in &mut forms_by_lemma {
-            forms.sort_unstable();
-            forms.dedup();
+        for index in 1..binding_offsets_by_form.len() {
+            binding_offsets_by_form[index] =
+                binding_offsets_by_form[index].saturating_add(binding_offsets_by_form[index - 1]);
+        }
+        let mut binding_indices_by_form = vec![0_u32; package.morph_bindings.len()];
+        let mut next = binding_offsets_by_form[..package.form_refs.len()].to_vec();
+        for (binding_index, binding) in package.morph_bindings.iter().enumerate() {
+            let form_ref = binding.form_center_ref as usize;
+            let output = next[form_ref] as usize;
+            binding_indices_by_form[output] = binding_index as u32;
+            next[form_ref] += 1;
         }
         let context_by_key = package
             .context_modes
@@ -157,8 +166,8 @@ impl StandaloneL2Field {
         Ok(Self {
             package,
             form_by_terminal,
-            bindings_by_form,
-            forms_by_lemma,
+            binding_offsets_by_form,
+            binding_indices_by_form,
             context_by_key,
             slot_centers_by_mode_feature,
             neighbor_couplings_by_mode_lemma_feature,
@@ -216,7 +225,12 @@ impl StandaloneL2Field {
         for seed in seeds {
             let form_ref = seed
                 .terminal_id
-                .and_then(|terminal_id| self.form_by_terminal.get(&terminal_id).copied())
+                .and_then(|terminal_id| {
+                    self.form_by_terminal
+                        .binary_search_by_key(&terminal_id, |(terminal_id, _)| *terminal_id)
+                        .ok()
+                        .map(|index| self.form_by_terminal[index].1)
+                })
                 .or_else(|| {
                     seed.surface
                         .as_deref()
@@ -232,8 +246,8 @@ impl StandaloneL2Field {
         }
         let mut direct_seed_common_lemmas = None::<BTreeSet<u32>>;
         for form_ref in seed_evidence.keys() {
-            let form_lemmas = self.bindings_by_form[*form_ref as usize]
-                .iter()
+            let form_lemmas = self
+                .bindings_for_form(*form_ref)
                 .map(|binding| binding.lemma_center_id)
                 .collect::<BTreeSet<_>>();
             direct_seed_common_lemmas = Some(match direct_seed_common_lemmas {
@@ -247,7 +261,7 @@ impl StandaloneL2Field {
         for form_ref in &active_forms {
             let evidence = seed_evidence.get(form_ref).copied().unwrap_or_default();
             let mut form_lemmas = BTreeMap::<u32, u16>::new();
-            for binding in &self.bindings_by_form[*form_ref as usize] {
+            for binding in self.bindings_for_form(*form_ref) {
                 form_lemmas
                     .entry(binding.lemma_center_id)
                     .and_modify(|support| *support = (*support).max(binding.support))
@@ -305,11 +319,8 @@ impl StandaloneL2Field {
             .collect::<BTreeSet<_>>();
         for lemma_id in &seed_lemmas {
             active_forms.extend(
-                self.forms_by_lemma
-                    .get(*lemma_id as usize)
-                    .into_iter()
-                    .flatten()
-                    .copied(),
+                self.bindings_for_lemma(*lemma_id)
+                    .map(|binding| binding.form_center_ref),
             );
             if let (Some(context_mode_id), Some(lemma)) = (
                 context_mode_id,
@@ -379,7 +390,7 @@ impl StandaloneL2Field {
     ) -> Option<L2LocalCandidate> {
         let form = self.package.form_refs.get(form_ref as usize)?;
         let surface = self.decode_form(*form)?.to_string();
-        let bindings = self.bindings_by_form.get(form_ref as usize)?;
+        let bindings = self.bindings_for_form(form_ref).collect::<Vec<_>>();
         let lemma_ids = bindings
             .iter()
             .map(|binding| binding.lemma_center_id)
@@ -525,12 +536,7 @@ impl StandaloneL2Field {
         let Some(context_mode_id) = context_mode_id else {
             return 0;
         };
-        self.forms_by_lemma
-            .get(lemma_id as usize)
-            .into_iter()
-            .flatten()
-            .flat_map(|form_ref| &self.bindings_by_form[*form_ref as usize])
-            .filter(|binding| binding.lemma_center_id == lemma_id)
+        self.bindings_for_lemma(lemma_id)
             .flat_map(|binding| {
                 let slot_features = crate::nanda_wave::morphology_phase::contextual_slot_features(
                     binding.feature_mask,
@@ -544,6 +550,41 @@ impl StandaloneL2Field {
             .map(|center| slot_center_score(center, wave))
             .max()
             .unwrap_or_default()
+    }
+
+    fn bindings_for_form(&self, form_ref: u32) -> impl Iterator<Item = &MorphBinding> {
+        let start = self
+            .binding_offsets_by_form
+            .get(form_ref as usize)
+            .copied()
+            .unwrap_or_default() as usize;
+        let end = self
+            .binding_offsets_by_form
+            .get(form_ref as usize + 1)
+            .copied()
+            .unwrap_or(start as u32) as usize;
+        self.binding_indices_by_form
+            .get(start..end)
+            .unwrap_or_default()
+            .iter()
+            .filter_map(|index| self.package.morph_bindings.get(*index as usize))
+    }
+
+    fn bindings_for_lemma(&self, lemma_id: u32) -> impl Iterator<Item = &MorphBinding> {
+        let range = self
+            .package
+            .lemma_centers
+            .get(lemma_id as usize)
+            .map(|lemma| {
+                let start = lemma.form_start as usize;
+                start..start.saturating_add(lemma.form_count as usize)
+            })
+            .unwrap_or(0..0);
+        self.package
+            .morph_bindings
+            .get(range)
+            .unwrap_or_default()
+            .iter()
     }
 
     fn decode_form(&self, form: super::model::FormCenterRef) -> Option<&str> {
@@ -740,6 +781,58 @@ mod standalone_tests {
     use super::super::format::encode_package;
     use super::super::teacher::L2TeacherCorpus;
     use super::*;
+
+    #[test]
+    fn compact_runtime_indexes_preserve_terminal_form_and_lemma_bindings() {
+        let corpus = L2TeacherCorpus::parse_tsv(
+            "F\tдом\tдом\tnoun:nom:sg\n\
+             F\tдом\tдома\tnoun:gen:sg\n\
+             F\tдома\tдома\tnoun:nom:pl\n\
+             F\tдома\tдомой\tnoun:dat:pl\n\
+             T\tдом\tдом\tnoun:nom:sg\t_ стоит\n\
+             T\tдом\tдома\tnoun:gen:sg\tнет _\n\
+             T\tдома\tдома\tnoun:nom:pl\tработаю _\n\
+             H\tдом\tдома\tnoun:gen:sg\tоколо _\n",
+        )
+        .expect("teacher");
+        let terminals = BTreeMap::from([("дом", 31), ("дома", 7), ("домой", 19)]);
+        let (package, _) =
+            compile_l2_package(&corpus, 99, |surface| terminals.get(surface).copied())
+                .expect("compile");
+        let field = StandaloneL2Field::from_package(package).expect("load");
+
+        let terminal_form = |terminal_id| {
+            field
+                .form_by_terminal
+                .binary_search_by_key(&terminal_id, |(terminal_id, _)| *terminal_id)
+                .ok()
+                .map(|index| field.form_by_terminal[index].1)
+        };
+        assert_eq!(
+            terminal_form(7).and_then(|form_ref| field.decode_form_ref(form_ref)),
+            Some("дома")
+        );
+        assert_eq!(terminal_form(999), None);
+
+        let shared_form = field.form_ref_for_surface("дома").expect("shared form");
+        let shared_lemmas = field
+            .bindings_for_form(shared_form)
+            .map(|binding| binding.lemma_center_id)
+            .collect::<Vec<_>>();
+        assert_eq!(shared_lemmas.len(), 2);
+        assert_ne!(shared_lemmas[0], shared_lemmas[1]);
+
+        for lemma_id in shared_lemmas {
+            let bindings = field.bindings_for_lemma(lemma_id).collect::<Vec<_>>();
+            assert!(!bindings.is_empty());
+            assert!(bindings
+                .iter()
+                .all(|binding| binding.lemma_center_id == lemma_id));
+            assert!(bindings
+                .iter()
+                .any(|binding| binding.form_center_ref == shared_form));
+        }
+    }
 
     #[test]
     fn standalone_field_walks_from_l1_seed_to_contextual_same_lemma_form() {

@@ -1,0 +1,120 @@
+{
+  "schema": "lay.structural_gate_receipt.v1",
+  "gate": "LAY_RUNTIME_MEMORY_COMPACT_L3_1_0_1",
+  "date": "2026-08-03",
+  "version": "1.0.1",
+  "verdict": "PASS_INSTALLED_L3_AND_L2_MEMORY_WATCH_LONG_RESIDENCY",
+  "runtime_authority_changed": false,
+  "causes": [
+    "L3 composite manifest deltas forced full f32 materialization of all compact base phase centers in each live client",
+    "standalone L2 decoded 517257 terminal mappings and 3255785 morphology bindings into BTreeMap and nested Vec indexes separately in daemon and IBus"
+  ],
+  "fix": {
+    "online_publish": "admit after targeted and full proof, compact in cold learner, atomically publish delta-free manifest",
+    "base_slots": ["compact-base-a.nwpc", "compact-base-b.nwpc"],
+    "ibus_policy_before_warmup": true,
+    "glibc_arena_max": 2
+  },
+  "l2_index_fix": {
+    "forms": 1875032,
+    "l1_bound_forms": 517257,
+    "morph_bindings": 3255785,
+    "terminal_index": "sorted Vec<(u32,u32)>",
+    "form_binding_index": "CSR u32 offsets and u32 binding indices",
+    "lemma_binding_index": "existing LemmaCenter form_start/form_count range",
+    "nominal_compact_index_bytes": 24661328,
+    "relations_removed": 0
+  },
+  "baseline_kib": {
+    "rss": 1414656,
+    "pss": 1304269,
+    "private_dirty": 1091686,
+    "runtime_delta_count": 2,
+    "runtime_delta_bytes": 81852
+  },
+  "immediate_post_fix_kib": {
+    "daemon_pss": 130970,
+    "ibus_pss": 102810,
+    "l11_sidecar_pss": 276890,
+    "l3_online_pss": 1126,
+    "total_pss": 511796,
+    "total_rss": 582246,
+    "private_dirty": 386867,
+    "pss_reduction_kib": 792473,
+    "pss_reduction_percent": 60.8
+  },
+  "repeat_snapshot_kib": {
+    "daemon_pss": 134656,
+    "ibus_pss": 106375,
+    "l11_sidecar_pss": 334997,
+    "l3_online_pss": 1265,
+    "total_pss": 577293,
+    "total_rss": 647756,
+    "private_dirty": 439960,
+    "complete_runtime_budget_pss": 768000
+  },
+  "activated_l2_regression_baseline_kib": {
+    "daemon_pss": 505415,
+    "ibus_pss": 509068,
+    "l11_sidecar_pss": 368664,
+    "l3_online_pss": 1341,
+    "total_pss": 1384488,
+    "private_dirty": 1230336
+  },
+  "compact_l2_installed_kib": {
+    "daemon_pss": 133996,
+    "ibus_pss": 106139,
+    "l11_sidecar_pss": 275008,
+    "l3_online_pss": 1341,
+    "total_pss": 516484,
+    "private_dirty": 385596,
+    "complete_runtime_budget_pss": 768000,
+    "pss_reduction_kib": 868004,
+    "pss_reduction_percent": 62.7
+  },
+  "compact_live_state": {
+    "manifest": "/home/ubu/.local/share/lay/nanda_wave/l3_context_phase.runtime.json",
+    "manifest_sha256": "0bab16e14628d3ea48693ee93d67bda1bfdcc3e1218142b993f6006b75cc2967",
+    "base": "/home/ubu/.local/share/lay/nanda_wave/l3-online/compact-base-a.nwpc",
+    "base_bytes": 30780200,
+    "base_sha256": "db886da08a87e78b65b247f0d0d8781f4e5d33e1aa26a64a963e8959a2c066f0",
+    "runtime_delta_count": 0,
+    "semantic_states": 19023,
+    "candidate_profiles": 12592,
+    "pair_profiles": 41647,
+    "signature_schema": 4
+  },
+  "installed": {
+    "daemon_version": "1.0.1",
+    "ibus_engine_version": "1.0.1",
+    "global_ibus_pid": 3702,
+    "global_ibus_restarted": false,
+    "active_engine": "lay-ime-ru",
+    "daemon_pid": 3159625,
+    "ibus_engine_pid": 3159669,
+    "l11_sidecar_pid": 3159694
+  },
+  "tested": [
+    "L3 online focused tests 22/22",
+    "hot field tests 9/9",
+    "live IME focused tests 2/2",
+    "compact base slot test 1/1",
+    "physical double-Shift autocorrect undo smoke",
+    "standalone L2 field tests 27/27 including compact index parity",
+    "lay-memory-report tests 1/1",
+    "remote 20-job release build of three affected binaries with swap 0",
+    "scripts/check-lay-changed.sh including transition replay and unsafe edit gates"
+  ],
+  "not_tested": [
+    "multi-day process memory residency and allocator plateau",
+    "new organic delta full admission and compaction cycle after source change",
+    "physical typing sequence after the compact L2 binary replacement",
+    "mmap zero-copy decoding of the fixed-width L2 package",
+    "L1.1 fixed 13-class quality proof because restoration behavior was not changed"
+  ],
+  "evidence": [
+    "/home/ubu/projects/lay/docs/l3-online-phase-field.md",
+    "/home/ubu/.local/share/lay/nanda_wave/l3_context_phase.runtime.json",
+    "/home/ubu/.local/share/lay/nanda_wave/l3-online/compact-base-a.nwpc"
+  ]
+}

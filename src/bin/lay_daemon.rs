@@ -156,6 +156,7 @@ use startup_runtime::*;
 mod startup_sanitize;
 
 fn main() -> std::io::Result<()> {
+    lay::hot_field::constrain_runtime_allocator();
     let args = Args::parse();
     set_log_enabled(args.debug_log || args.verbose || args.detect_only);
     run_daemon(args.detect_only, args.device, args.verbose)

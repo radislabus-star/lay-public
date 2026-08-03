@@ -46,14 +46,38 @@ fn find_lay_processes() -> Vec<ProcessMemory> {
         .filter_map(|entry| {
             let pid = entry.file_name().to_string_lossy().parse::<u32>().ok()?;
             let proc_dir = entry.path();
-            let name = fs::read_to_string(proc_dir.join("comm")).ok()?;
-            let name = name.trim().to_string();
-            if !matches!(name.as_str(), "lay-daemon" | "lay-ibus-engine") {
-                return None;
-            }
+            let executable = fs::read_link(proc_dir.join("exe"))
+                .ok()?
+                .file_name()?
+                .to_string_lossy()
+                .to_string();
+            let command = fs::read(proc_dir.join("cmdline")).unwrap_or_default();
+            let name = runtime_role(&executable, &command)?;
             Some(read_process_memory(pid, name, &proc_dir))
         })
         .collect()
+}
+
+fn runtime_role(executable: &str, command: &[u8]) -> Option<String> {
+    // Linux appends this marker to /proc/<pid>/exe after an atomic binary
+    // upgrade. The old process is still alive and must remain observable.
+    let executable = executable.strip_suffix(" (deleted)").unwrap_or(executable);
+    let role = match executable {
+        "lay-daemon" => "lay-daemon",
+        "lay-ibus-engine" => "lay-ibus-engine",
+        "lay-l11-serve" | "lay-l1.1-serve" => "lay-l1.1-serve",
+        "lay-nanda-wave-train"
+            if command.split(|byte| *byte == 0).any(|argument| {
+                argument == b"--watch-l3-context-online"
+                    || argument == b"--l3-online"
+                    || argument == b"--l3-online-service"
+            }) =>
+        {
+            "lay-l3-online"
+        }
+        _ => return None,
+    };
+    Some(role.to_string())
 }
 
 fn read_process_memory(pid: u32, name: String, proc_dir: &Path) -> ProcessMemory {
@@ -117,17 +141,26 @@ fn print_human(processes: &[ProcessMemory]) {
                 count(process.threads)
             );
         }
+        println!(
+            "TOTAL processes={} RSS={} PSS={} PrivateDirty={}",
+            processes.len(),
+            kb(sum(processes, |process| process.rss_kb)),
+            kb(sum(processes, |process| process.pss_kb)),
+            kb(sum(processes, |process| process.private_dirty_kb)),
+        );
     }
     println!();
     println!("startup policy:");
     println!("  daemon hot startup: lexicon guards, replacements, ngram");
-    println!("  daemon lazy cold: russian generated forms, full NANDA context wave, LLMWave");
-    println!("  IME hot startup: bounded RU/EN completion banks");
+    println!("  daemon/IME hot field: mmap lexical phase + compact L3 base");
+    println!("  full dictionaries and delta merge: cold learner only");
+    println!("  L1.1 restoration: one sidecar shared by live clients");
     println!();
     println!("budgets:");
-    println!("  lay-daemon cold start target: <= 80 MB RSS");
-    println!("  lay-daemon after typing target: <= 150 MB RSS");
-    println!("  lay-ibus-engine target: <= 30 MB RSS");
+    println!("  lay-daemon settled target: <= 200 MB PSS");
+    println!("  lay-ibus-engine settled target: <= 200 MB PSS");
+    println!("  lay-l1.1-serve settled target: <= 350 MB PSS");
+    println!("  complete runtime settled target: <= 750 MB PSS");
 }
 
 fn print_json(processes: &[ProcessMemory]) {
@@ -150,19 +183,42 @@ fn print_json(processes: &[ProcessMemory]) {
         println!("    }}{comma}");
     }
     println!("  ],");
+    println!("  \"totals\": {{");
+    println!("    \"processes\": {},", processes.len());
+    println!(
+        "    \"rss_kb\": {},",
+        json_opt(sum(processes, |process| process.rss_kb))
+    );
+    println!(
+        "    \"pss_kb\": {},",
+        json_opt(sum(processes, |process| process.pss_kb))
+    );
+    println!(
+        "    \"private_dirty_kb\": {}",
+        json_opt(sum(processes, |process| process.private_dirty_kb))
+    );
+    println!("  }},");
     println!("  \"startup_policy\": {{");
     println!(
         "    \"daemon_hot_startup\": [\"lexical_phase_mmap\", \"lexicon_guards\", \"typing_replacements\", \"ngram\"],"
     );
-    println!("    \"daemon_lazy_cold\": [\"llmwave\"],");
-    println!("    \"ime_hot_startup\": [\"lexical_phase_mmap\", \"shared_candidate_gate\"]");
+    println!("    \"live_context\": [\"compact_l3_base\", \"delta_free_manifest\"],");
+    println!("    \"cold_learner_only\": [\"full_dictionaries\", \"delta_merge\"],");
+    println!("    \"shared_sidecar\": [\"l1.1_restoration\"]");
     println!("  }},");
     println!("  \"budgets_kb\": {{");
-    println!("    \"daemon_cold_start_rss\": 81920,");
-    println!("    \"daemon_after_typing_rss\": 153600,");
-    println!("    \"ibus_engine_rss\": 30720");
+    println!("    \"daemon_settled_pss\": 204800,");
+    println!("    \"ibus_engine_settled_pss\": 204800,");
+    println!("    \"l11_sidecar_settled_pss\": 358400,");
+    println!("    \"complete_runtime_settled_pss\": 768000");
     println!("  }}");
     println!("}}");
+}
+
+fn sum(processes: &[ProcessMemory], value: impl Fn(&ProcessMemory) -> Option<u64>) -> Option<u64> {
+    processes.iter().try_fold(0_u64, |total, process| {
+        Some(total.saturating_add(value(process)?))
+    })
 }
 
 fn kb(value: Option<u64>) -> String {
@@ -181,4 +237,24 @@ fn json_opt(value: Option<u64>) -> String {
     value
         .map(|value| value.to_string())
         .unwrap_or_else(|| "null".to_string())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::runtime_role;
+
+    #[test]
+    fn atomic_upgrade_suffix_does_not_hide_live_runtime_processes() {
+        assert_eq!(
+            runtime_role("lay-daemon (deleted)", b"lay-daemon\0"),
+            Some("lay-daemon".to_string())
+        );
+        assert_eq!(
+            runtime_role(
+                "lay-nanda-wave-train (deleted)",
+                b"lay-nanda-wave-train\0--watch-l3-context-online\0"
+            ),
+            Some("lay-l3-online".to_string())
+        );
+    }
 }

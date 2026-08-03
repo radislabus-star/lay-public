@@ -2147,3 +2147,218 @@ Exact installed-runtime receipt:
 ```text
 /home/ubu/projects/lay/docs/structural_gates/receipts/L3_SENTENCE_MULTIVIEW_V1_INSTALLED_2026-08-01.json
 ```
+
+## Delta-free live L3 memory, 2026-08-03
+
+The installed runtime had a compact `30 MiB` L3 base and only two small deltas,
+but `L3CompositeMemory::load_manifest()` merged those shards by expanding every
+compact phase center into full `f32` vectors. The live daemon and IBus process
+therefore each retained roughly `200 MiB` of avoidable private heap. This was a
+representation expansion, not a gradual leak.
+
+The runtime contract is now:
+
+```text
+online evidence
+-> targeted proof PASS
+-> frozen full differential PASS
+-> admit one delta in the cold learner
+-> merge once in the cold learner
+-> write the inactive compact-base-a/b slot
+-> atomically publish a delta-free manifest
+-> daemon and IBus mmap only the compact base
+```
+
+Alternating `compact-base-a.nwpc` and `compact-base-b.nwpc` means the currently
+published base is never overwritten in place. A successful proof still gates
+admission; compaction changes representation only and grants no new decision
+authority. The IBus process publishes `HotFieldPolicy::ime()` before background
+warmup, and both daemon and IBus bound glibc allocator arenas to two before
+starting workers.
+
+Measured pre-fix baseline:
+
+```text
+runtime deltas                                      2
+delta bytes                                    81 852
+TOTAL RSS                                  1 381.5 MiB
+TOTAL PSS                                  1 273.7 MiB
+TOTAL private dirty                        1 066.1 MiB
+```
+
+Measured immediate post-fix runtime, including the shared L1.1 sidecar:
+
+```text
+lay-daemon PSS                                127.9 MiB
+lay-ibus-engine PSS                           100.4 MiB
+lay-l1.1-serve PSS                            270.4 MiB
+lay-l3-online PSS                               1.1 MiB
+TOTAL PSS                                     499.8 MiB
+TOTAL RSS                                     568.6 MiB
+TOTAL private dirty                           377.8 MiB
+PSS reduction                                 773.9 MiB = 60.8%
+```
+
+Measured repeat snapshot on 2026-08-03:
+
+```text
+lay-daemon PSS                                131.5 MiB
+lay-ibus-engine PSS                           103.9 MiB
+lay-l1.1-serve PSS                            327.2 MiB
+lay-l3-online PSS                               1.2 MiB
+TOTAL PSS                                     563.8 MiB
+TOTAL RSS                                     632.6 MiB
+TOTAL private dirty                           429.6 MiB
+complete-runtime budget                       750.0 MiB PSS
+```
+
+The compacted live state is:
+
+```text
+manifest  /home/ubu/.local/share/lay/nanda_wave/l3_context_phase.runtime.json
+base      /home/ubu/.local/share/lay/nanda_wave/l3-online/compact-base-a.nwpc
+base bytes                                         30 780 200
+runtime deltas                                              0
+semantic states                                        19 023
+candidate profiles                                     12 592
+pair profiles                                          41 647
+signature schema                                            4
+```
+
+Tested:
+
+- successful targeted and full proof is followed by compact-base publication;
+- compact-base slots alternate and the active file is not overwritten;
+- L3 online focused tests `22/22` and hot-field tests `9/9`;
+- focused live IME tests `2/2` and physical double-Shift undo smoke;
+- complete `scripts/check-lay-changed.sh`, including transition replay and
+  unsafe-edit release gates;
+- installed daemon and IBus version `1.0.1` with global `ibus-daemon` PID `3702`
+  retained and active engine `lay-ime-ru`.
+
+Not tested:
+
+- multi-day memory residency and allocator plateau;
+- a new organically eligible delta completing the full compact cycle after this
+  source change;
+- full L1.1 quality proof, because this experiment changes L3 representation and
+  process startup only.
+
+Verdict scope:
+
+- L3 live representation and immediate memory reduction: `PASS_installed`;
+- the two early complete-runtime snapshots were later invalidated as a settled
+  plateau by real L2 activation; see the L2 index correction below;
+- long-residency leak verdict: `WATCH_not_measured`;
+- runtime decision authority changed: `false`.
+
+Exact receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/LAY_RUNTIME_MEMORY_COMPACT_L3_1_0_1_2026-08-03.json
+```
+
+## Compact standalone L2 runtime indexes, 2026-08-03
+
+### What was tested
+
+After the delta-free L3 change, real activation of the canonical standalone L2
+V13 package made both live clients grow again. The package itself remained
+`135 121 803` bytes, but `StandaloneL2Field::from_package()` constructed three
+large heap indexes in every client:
+
+```text
+forms                                             1 875 032
+L1.1-bound forms                                    517 257
+morph bindings                                    3 255 785
+
+BTreeMap terminal -> form                           517 257 nodes
+Vec<Vec<MorphBinding>> outer vectors              1 875 032
+duplicated MorphBinding records                   3 255 785 x 16 bytes
+Vec<Vec<form_ref>> grouped by lemma                one vector per lemma
+```
+
+The replacement keeps the package and readout contract unchanged:
+
+```text
+terminal -> form       sorted Vec<(u32,u32)> + binary search
+form -> bindings       CSR offsets Vec<u32> + binding-index Vec<u32>
+lemma -> bindings      existing LemmaCenter form_start/form_count range
+```
+
+Nominal compact index payload for the measured package is:
+
+```text
+terminal pairs          517 257 x 8 bytes       4.14 MB
+form offsets          1 875 033 x 4 bytes       7.50 MB
+binding indices       3 255 785 x 4 bytes      13.02 MB
+                                                   -------
+compact index payload                              24.66 MB
+```
+
+This removes per-form inner `Vec` allocations, duplicated `MorphBinding`
+records, the per-lemma vector forest, and B-tree node overhead. It does not
+remove, approximate, sample, or truncate any L2 relation.
+
+### Measured facts
+
+Settled activated baseline before the L2 index fix:
+
+```text
+lay-daemon PSS                              505 415 KiB
+lay-ibus-engine PSS                         509 068 KiB
+lay-l1.1-serve PSS                          368 664 KiB
+lay-l3-online PSS                             1 341 KiB
+TOTAL PSS                                 1 384 488 KiB
+TOTAL private dirty                       1 230 336 KiB
+```
+
+Installed `1.0.1` after compact L2 indexes and a managed engine replacement:
+
+```text
+lay-daemon PSS                              133 996 KiB
+lay-ibus-engine PSS                         106 139 KiB
+lay-l1.1-serve PSS                          275 008 KiB
+lay-l3-online PSS                             1 341 KiB
+TOTAL PSS                                   516 484 KiB
+TOTAL private dirty                         385 596 KiB
+complete-runtime budget                     768 000 KiB PSS
+PSS reduction                               868 004 KiB = 62.7%
+```
+
+The daemon and IBus stayed below their individual `204 800 KiB PSS` budgets;
+the L1.1 sidecar stayed below `358 400 KiB`; the complete runtime stayed below
+`768 000 KiB`. Global `ibus-daemon` retained PID `3702`; only its managed child
+engine was replaced, and the active engine returned to `lay-ime-ru`.
+
+Verification:
+
+- compact-index parity test covers terminal lookup, a form shared by two
+  lemmas, form bindings, and both lemma ranges;
+- all standalone L2 field tests `27/27`;
+- memory-report process-discovery test `1/1`;
+- complete `scripts/check-lay-changed.sh` including transition replay and unsafe
+  edit release gates;
+- remote 20-job release build of daemon, IBus, and memory report with swap `0`;
+- installed binaries all report version `1.0.1`.
+
+### What was not tested
+
+- multi-day residency and allocator plateau;
+- a physical typing sequence after this exact binary replacement;
+- the fixed L1.1 13-class quality proof, because package contents and
+  restoration/readout authority were not changed;
+- mmap/zero-copy decoding of the fixed-width L2 package itself.
+
+### Verdict scope
+
+- compact L2 index parity: `PASS`;
+- installed complete-runtime PSS budget after warmup: `PASS_installed`;
+- multi-day leak verdict: `WATCH_not_measured`;
+- runtime authority changed: `false`.
+
+Exact receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/LAY_RUNTIME_MEMORY_COMPACT_L3_1_0_1_2026-08-03.json
+```
