@@ -55,6 +55,13 @@ fn installed_l2_field() -> Result<&'static runtime::StandaloneL2Field, &'static 
         .map_err(String::as_str)
 }
 
+pub(crate) fn warm_up_installed_l2_field() {
+    // Loading and indexing the standalone package can take hundreds of
+    // milliseconds. Keep that first touch on the existing background IME
+    // warmup thread instead of charging it to the user's first Space.
+    let _ = installed_l2_field();
+}
+
 pub fn canonical_l2_status() -> serde_json::Value {
     let package = discover_installed_l2_package()
         .ok()

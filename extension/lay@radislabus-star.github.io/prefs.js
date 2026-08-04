@@ -6,8 +6,8 @@ import Gtk from 'gi://Gtk';
 import {ExtensionPreferences} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
 const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
-const APP_VERSION = '1.0.4';
-const APP_RELEASE_DATE = '2026-08-03';
+const APP_VERSION = '1.0.7';
+const APP_RELEASE_DATE = '2026-08-04';
 const APP_URL = 'https://github.com/radislabus-star/lay-public';
 const APP_ICON_NAME = 'input-keyboard-symbolic';
 const HEADER_ICON_SIZE = 16;

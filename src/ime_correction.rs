@@ -124,6 +124,19 @@ pub fn active_layout_preserves_known_token(
     let Some(active_layout_is_ru) = active_layout_is_ru else {
         return false;
     };
+    // An internal ASCII punctuation key can encode a Russian letter (`;` ->
+    // `ж`, `[` -> `х`, and so on).  When the complete physical-key projection
+    // is a known Russian surface, do not let generic ASCII protection suppress
+    // the exact layout transition.  Technical tokens remain protected because
+    // the layout autoswitch classifier rejects them before this point.
+    if !active_layout_is_ru
+        && token
+            .chars()
+            .any(crate::layout_autoswitch::is_ascii_layout_letter_symbol)
+        && crate::layout_autoswitch::correct_wrong_layout_ascii_word(token).is_some()
+    {
+        return false;
+    }
     let identity = crate::word_recognizer::recognize_token(token.trim());
     if active_layout_is_ru {
         identity.is_known_russian_plain_word()
@@ -382,6 +395,22 @@ mod tests {
             decision.is_none(),
             "known active-layout token must be preserved"
         );
+    }
+
+    #[test]
+    fn active_english_layout_does_not_protect_internal_layout_letter_symbol() {
+        let cfg = live_l2_phase_config();
+        let decision = decide_active_composition_autocorrect(ActiveCompositionAutocorrectRequest {
+            text: "ye;ty ",
+            committed_tail: "ye;ty",
+            config: &cfg,
+            active_layout_is_ru: Some(false),
+        })
+        .expect("internal layout-letter symbol must remain eligible for projection");
+
+        assert_eq!(decision.replacement, "нужен ");
+        assert_eq!(decision.action.selected_error_class(), Some("wrong_layout"));
+        assert!(decision.action.allow_apply());
     }
 
     #[test]

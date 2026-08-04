@@ -1,0 +1,71 @@
+{
+  "schema": "lay.l2-two-content-glued-boundary.v1",
+  "date": "2026-08-04",
+  "claim": "The canonical live L2 field can birth and select a verified internal boundary between two independently attested content-word centers.",
+  "configuration": {
+    "minimum_left_chars": 4,
+    "minimum_right_chars": 4,
+    "maximum_boundary_reserve": 2,
+    "candidate_source": "CanonicalL2FieldBoundary",
+    "candidate_origin": "Boundary",
+    "error_class": "GluedWords",
+    "known_whole_policy": "suppress generic split unless the contextual boundary operator independently confirms the same replacement"
+  },
+  "measured": {
+    "input": "Еленапросит ",
+    "selected": "Елена просит ",
+    "candidate_count": 13,
+    "applicable_candidates": 1,
+    "suggest_only_candidates": 12,
+    "selected_gate": "Eligible/class_allows_apply",
+    "rejected_configuration": {
+      "minimum_left_chars": 3,
+      "minimum_right_chars": 3,
+      "counterexample": "поспорта -> пос порта"
+    }
+  },
+  "passed_contracts": [
+    "two independent content centers birth a BoundaryCell32 candidate",
+    "canonical L2 field reserves the candidate",
+    "live correction core selects the verified boundary",
+    "known Russian word forms do not become generic boundary splits",
+    "multi-letter preposition guesses stay out of the boundary field",
+    "contextual known glue remains recoverable"
+  ],
+  "known_separate_failure": {
+    "input": "сейчас думаю тако й пример работает ",
+    "expected": "сейчас думаю такой пример работает ",
+    "scope": "reverse two-token merge in boundary_scan_candidates",
+    "status": "FAIL_preexisting_not_promoted"
+  },
+  "not_tested": [
+    "broad heldout glued-word recall",
+    "broad false-split rate",
+    "live typing latency distribution",
+    "physical installed IBus application",
+    "L1.1 thirteen-damage-class proof"
+  ],
+  "verdict": {
+    "targeted_glued_boundary": "PASS_targeted",
+    "broad_boundary_quality": "NOT_CLAIMED",
+    "runtime_authority_changed_in_source": true,
+    "installed_runtime_authority_changed": true,
+    "installed_version": "1.0.7",
+    "global_ibus_pid_before": 3702,
+    "global_ibus_pid_after": 3702,
+    "managed_engine_pid_before": 1256390,
+    "managed_engine_pid_after": 1785010,
+    "daemon_pid_before": 1256364,
+    "daemon_pid_after": 1784984,
+    "active_engine": "lay-ime-ru"
+  },
+  "commands": [
+    "scripts/cargo-guard.sh test --lib nanda_wave::l2::tests::boundary_cell_births_two_independent_content_centers -- --exact --test-threads=1",
+    "scripts/cargo-guard.sh test --lib nanda_wave::l2::tests::boundary_cell_does_not_split_known_russian_word_forms -- --exact --test-threads=1",
+    "scripts/cargo-guard.sh test --lib nanda_wave::l2::tests::boundary_cell_uses_context_to_split_known_glued_form -- --exact --test-threads=1",
+    "scripts/cargo-guard.sh test --lib nanda_wave::l2::tests::boundary_cell_does_not_split_multi_letter_preposition_guesses -- --exact --test-threads=1",
+    "scripts/cargo-guard.sh test --lib nanda_wave::l2_field::bridge::tests::canonical_readout_reserves_a_verified_two_content_boundary_candidate -- --exact --test-threads=1",
+    "scripts/cargo-guard.sh test --lib correction_core::tests::live_canonical_l2_field_applies_verified_two_content_boundary -- --exact --test-threads=1",
+    "scripts/cargo-guard.sh run --quiet --bin lay -- --explain-correct 'Еленапросит '"
+  ]
+}

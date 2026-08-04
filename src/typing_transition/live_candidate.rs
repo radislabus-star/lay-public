@@ -29,6 +29,7 @@ pub(crate) struct LiveCompletionProposal {
     pub(crate) l2_center_grounded: bool,
     pub(crate) l3_memory_supported: bool,
     pub(crate) completed_state_known: bool,
+    pub(crate) corrected_prefix_completion: bool,
     pub(crate) l3_relation_class: u64,
     pub(crate) l4_transition_state_specific: bool,
     pub(crate) l4_transition_attract_count: u32,
@@ -93,6 +94,10 @@ impl TransitionDecisionCore {
                 .then_with(|| left.suffix_len.cmp(&right.suffix_len))
                 .then_with(|| left.surface.cmp(&right.surface))
         });
+        let corrected_prefix_reserve = selected
+            .iter()
+            .find(|candidate| candidate.corrected_prefix_completion)
+            .cloned();
         selected.dedup_by(|left, right| {
             left.surface == right.surface
                 || (!left.suffix.is_empty()
@@ -100,6 +105,17 @@ impl TransitionDecisionCore {
                     && left.suffix == right.suffix)
         });
         selected.truncate(limit);
+        if let Some(candidate) = corrected_prefix_reserve {
+            if !selected
+                .iter()
+                .any(|current| current.surface == candidate.surface)
+            {
+                if selected.len() == limit {
+                    selected.pop();
+                }
+                selected.push(candidate);
+            }
+        }
         selected
             .into_iter()
             .map(|candidate| SelectedLiveCompletion {
@@ -209,6 +225,7 @@ mod tests {
             l2_center_grounded: true,
             l3_memory_supported: false,
             completed_state_known: true,
+            corrected_prefix_completion: false,
             l3_relation_class: 0,
             l4_transition_state_specific: false,
             l4_transition_attract_count: 0,

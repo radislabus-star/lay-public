@@ -220,6 +220,24 @@ pub(crate) fn is_exact_reference_russian_word(word: &str) -> bool {
     full_russian_dictionary().contains(word) || full_russian_short_dictionary().contains(word)
 }
 
+/// Read-only evidence that a surface is a short passive participle whose
+/// corresponding long form is explicitly present in the reference lexicon.
+/// This may expose an ambiguity candidate, but does not grant live authority.
+pub(crate) fn is_reference_backed_short_passive_participle(word: &str) -> bool {
+    let lower = word.to_lowercase();
+    let masculine = lower.as_str();
+    let stem = lower.strip_suffix(['а', 'о', 'ы']).unwrap_or(masculine);
+
+    let long = if stem.ends_with(['н', 'ё']) {
+        format!("{stem}ный")
+    } else if stem.ends_with('т') {
+        format!("{stem}ый")
+    } else {
+        return false;
+    };
+    full_russian_dictionary().contains(&long)
+}
+
 /// Clean-surface veto for typo arbitration.
 ///
 /// This certificate can preserve an attested input, but it never generates or

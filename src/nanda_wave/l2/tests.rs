@@ -430,6 +430,25 @@ fn boundary_cell_uses_context_to_split_known_glued_form() {
 }
 
 #[test]
+fn boundary_cell_births_two_independent_content_centers() {
+    let original = "Еленапросит ";
+    let l1 = run_l1(original);
+    let candidates = run_l2(original, &l1);
+
+    assert!(
+        candidates.iter().any(|candidate| {
+            candidate.source == "BoundaryCell32"
+                && candidate.text == "Елена просит"
+                && candidate
+                    .support
+                    .iter()
+                    .any(|support| support == "two-content-center-boundary")
+        }),
+        "candidates={candidates:?}"
+    );
+}
+
+#[test]
 fn phrase_cell_does_not_rewrite_single_all_caps_russian_terms() {
     for original in ["БЕЙСОВ ", "БЕЙСОВК ", "БЕЙСОВКИ ", "БЕЙСОВСКИ "]
     {

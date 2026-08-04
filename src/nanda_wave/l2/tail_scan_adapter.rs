@@ -24,6 +24,7 @@ pub(super) fn boundary_split_candidates(
         return Vec::new();
     }
     let normalized = token.to_lowercase();
+    let whole_surface_known = is_known_russian_word_or_form(&normalized);
     if is_common_ru_word(&normalized)
         || is_ru_live_protected_word(&normalized)
         || surface_motif_strict_known_surface(&normalized)
@@ -34,19 +35,26 @@ pub(super) fn boundary_split_candidates(
     // lexical state. Let the compact two-center boundary readout compete
     // before that broad surface suppresses every split proposal.
     if let Some(replacement) = light_boundary_replacement(&normalized) {
-        return vec![WordCandidate {
-            text: format!("{prefix}{}", apply_word_case(token, &replacement)),
-            origin: CandidateOrigin::Boundary,
-            source: "BoundaryCell32",
-            energy: l1_energy(l1, "BoundaryCell32").max(0.99),
-            risk: 0.04,
-            support: {
-                let mut support = candidate_support(l1, context);
-                support.push("light-boundary-split".to_string());
-                support.push(format!("word={normalized:?} replacement={replacement:?}"));
-                support
-            },
-        }];
+        if boundary_replacement_beats_known_whole(
+            &normalized,
+            &replacement,
+            whole_surface_known,
+            context,
+        ) {
+            return vec![WordCandidate {
+                text: format!("{prefix}{}", apply_word_case(token, &replacement)),
+                origin: CandidateOrigin::Boundary,
+                source: "BoundaryCell32",
+                energy: l1_energy(l1, "BoundaryCell32").max(0.99),
+                risk: 0.04,
+                support: {
+                    let mut support = candidate_support(l1, context);
+                    support.push("light-boundary-split".to_string());
+                    support.push(format!("word={normalized:?} replacement={replacement:?}"));
+                    support
+                },
+            }];
+        }
     }
     if normalized.chars().count() < 6 {
         return Vec::new();
@@ -55,7 +63,14 @@ pub(super) fn boundary_split_candidates(
         return Vec::new();
     }
     if let Some(replacement) = crate::phrase_reader::correct_glued_russian_phrase(&normalized) {
-        if replacement != normalized {
+        if replacement != normalized
+            && boundary_replacement_beats_known_whole(
+                &normalized,
+                &replacement,
+                whole_surface_known,
+                context,
+            )
+        {
             return vec![WordCandidate {
                 text: format!("{prefix}{}", apply_word_case(token, &replacement)),
                 origin: CandidateOrigin::Boundary,
@@ -101,7 +116,9 @@ pub(super) fn boundary_split_candidates(
         // phrase-specific rewrite table.
         let known_left = short_function_boundary || surface_motif_known_surface(&left);
         let known_right = trailing_short_pronoun || surface_motif_known_surface(&right);
-        if !known_left || !known_right {
+        let two_content_centers =
+            !whole_surface_known && independent_content_boundary_centers(&left, &right);
+        if (!known_left || !known_right) && !two_content_centers {
             continue;
         }
         // Two ordinary words are not enough evidence for an automatic split:
@@ -109,6 +126,26 @@ pub(super) fn boundary_split_candidates(
         // boundary needs an explicit short functional anchor; richer
         // multiword repairs stay in the typed phrase/boundary operator route.
         if !short_function_boundary && !trailing_short_pronoun {
+            if !two_content_centers {
+                continue;
+            }
+            candidates.push(WordCandidate {
+                text: format!(
+                    "{prefix}{}",
+                    apply_word_case(token, &format!("{left} {right}"))
+                ),
+                origin: CandidateOrigin::Boundary,
+                source: "BoundaryCell32",
+                energy: l1_energy(l1, "BoundaryCell32").max(0.96),
+                risk: 0.08,
+                support: vec![
+                    "two-content-center-boundary".to_string(),
+                    format!("left={left:?} right={right:?}"),
+                ],
+            });
+            if candidates.len() >= 3 {
+                break;
+            }
             continue;
         }
         let (energy, risk, reason) = (
@@ -129,6 +166,35 @@ pub(super) fn boundary_split_candidates(
         }
     }
     candidates
+}
+
+fn boundary_replacement_beats_known_whole(
+    word: &str,
+    replacement: &str,
+    whole_surface_known: bool,
+    context: &TailContext,
+) -> bool {
+    if !whole_surface_known {
+        return true;
+    }
+
+    contextual_boundary_replacement_for_word(
+        word,
+        context.previous().map(|token| token.text.as_str()),
+    )
+    .is_some_and(|contextual| contextual == replacement)
+}
+
+fn independent_content_boundary_centers(left: &str, right: &str) -> bool {
+    if left.chars().count() < 4 || right.chars().count() < 4 {
+        return false;
+    }
+    let left_surface_center = surface_motif_known_surface(left);
+    let right_surface_center = surface_motif_known_surface(right);
+    let left_known = left_surface_center || is_known_russian_word_or_form(left);
+    let right_known = right_surface_center || is_known_russian_word_or_form(right);
+
+    left_known && right_known && (left_surface_center || right_surface_center)
 }
 
 fn light_boundary_replacement(word: &str) -> Option<String> {

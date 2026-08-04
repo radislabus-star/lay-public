@@ -2258,6 +2258,51 @@ Exact receipt:
 /home/ubu/projects/lay/docs/structural_gates/receipts/LAY_RUNTIME_MEMORY_COMPACT_L3_1_0_1_2026-08-03.json
 ```
 
+## 2026-08-04 Confirmed Prediction Operator Sanitation
+
+What was tested:
+
+- `confirmed_ime_prediction` event construction for a prediction which exactly
+  matches the word committed by the user;
+- the distinction between positive prediction evidence and an actual text
+  mutation.
+
+Measured fact:
+
+```text
+operation = prediction_match
+transition operator = other
+explicit completion = false
+```
+
+Previously, the complete `context_tail` was compared with the confirmed word.
+That could falsely label a clean prediction as boundary split/merge,
+missing-letter, extra-letter, or composite-typo evidence. Prediction matches
+now remain positive evidence but carry the non-mutation operator `Other`.
+
+What was not tested:
+
+- historical journal cleanup or rebuilding already admitted online state;
+- a full L3 heldout/context-quality proof;
+- physical IME interaction after installing this source change.
+
+Verdict scope:
+
+- new confirmed-prediction event identity: `PASS_targeted`;
+- historical state sanitation: `NOT_PERFORMED`;
+- runtime authority changed in source: `true`;
+- installed runtime authority changed at this checkpoint: `true` (`lay 1.0.5`).
+
+The global `ibus-daemon` retained PID `3702`; only the managed child engine
+was replaced (`4002343 -> 432941`). The installed four-surface smoke probe
+matched the source probe exactly.
+
+Exact receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_SINGLE_EDIT_INVERSE_AND_FEEDBACK_SANITATION_2026-08-04.json
+```
+
 ## Compact standalone L2 runtime indexes, 2026-08-03
 
 ### What was tested

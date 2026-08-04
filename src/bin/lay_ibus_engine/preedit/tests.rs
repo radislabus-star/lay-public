@@ -1062,6 +1062,39 @@ fn live_ime_does_not_project_typo_replacement_as_suffix() {
 }
 
 #[test]
+fn active_ime_offers_a_longer_completion_after_a_single_prefix_typo() {
+    lay::nanda_wave::warm_up_l2_for_ime();
+    let mut engine = LayIbusEngine::new(
+        "/test".to_string(),
+        Arc::new(Mutex::new(Default::default())),
+        true,
+        true,
+        LayConfig {
+            text_backend: "ime".to_string(),
+            nanda_precognition: true,
+            correction_safety: "experimental".to_string(),
+            ..LayConfig::default()
+        },
+    );
+    for ch in "переспектив".chars() {
+        engine.insert_composition_char(ch);
+    }
+    engine.composition_cursor = engine.buffer.chars().count();
+    engine.refresh_precognition_candidates();
+
+    assert!(
+        engine
+            .preedit_replacement_targets
+            .iter()
+            .flatten()
+            .any(|target| target.starts_with("перспектив")),
+        "IME must expose the corrected lexical family as Tab-only replacements: candidates={:?}, replacements={:?}",
+        engine.preedit_candidates,
+        engine.preedit_replacement_targets
+    );
+}
+
+#[test]
 fn repeated_current_token_does_not_leak_a_full_replacement_into_completion_preedit() {
     lay::nanda_wave::warm_up_l2_for_ime();
     let mut engine = LayIbusEngine::new(

@@ -1,0 +1,54 @@
+{
+  "schema": "lay.l2-ime-typo-tolerant-completion.v1",
+  "date": "2026-08-04",
+  "claim": "The IME can expose a bounded corrected lexical family after one error in an unfinished Russian prefix without promoting full-token typo repair into preedit.",
+  "configuration": {
+    "minimum_prefix_chars": 7,
+    "damerau_edit_limit": 1,
+    "corrected_prefix_basin_limit": 2,
+    "l2_corrected_candidate_reserve": 8,
+    "final_display_reserve": 1,
+    "acceptance": "explicit Tab only"
+  },
+  "measured": {
+    "damaged_prefix": "переспектив",
+    "returned_candidates": 12,
+    "family_prefix": "перспектив",
+    "cold_total_us": 7867,
+    "cold_l2_material_us": 6859,
+    "hot_cache_total_us": 6,
+    "existing_latency_suite_us": {
+      "p50": 26,
+      "p90": 36,
+      "p99": 46,
+      "max": 62
+    }
+  },
+  "not_tested": [
+    "fixed heldout typo-prefix hit rate",
+    "physical Tab acceptance after installation",
+    "typo-tolerant ASCII completion",
+    "L1.1 13-class proof"
+  ],
+  "verdict": {
+    "targeted_family_coverage": "PASS_targeted",
+    "existing_hot_latency_suite": "PASS",
+    "broad_ime_quality": "NOT_CLAIMED",
+    "runtime_authority_changed_in_source": true,
+    "installed_runtime_authority_changed": true,
+    "installed_version": "1.0.6",
+    "global_ibus_pid_before": 3702,
+    "global_ibus_pid_after": 3702,
+    "managed_engine_pid_before": 432941,
+    "managed_engine_pid_after": 464498,
+    "daemon_pid_before": 432906,
+    "daemon_pid_after": 464453,
+    "active_engine": "lay-ime-ru"
+  },
+  "commands": [
+    "scripts/cargo-guard.sh test --lib live_gate_can_offer_a_longer_target_after_a_single_prefix_typo -- --nocapture",
+    "scripts/cargo-guard.sh test --bin lay-ibus-engine active_ime_offers_a_longer_completion_after_a_single_prefix_typo -- --nocapture",
+    "scripts/cargo-guard.sh test --bin lay-ibus-engine live_ime_does_not_project_typo_replacement_as_suffix -- --nocapture",
+    "LAY_ENFORCE_IME_LATENCY_BUDGET=1 scripts/cargo-guard.sh test --bin lay-ibus-engine precognition_candidate_generation_stays_under_budget -- --nocapture --test-threads=1"
+  ]
+}

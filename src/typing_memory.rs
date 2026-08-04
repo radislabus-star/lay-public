@@ -251,6 +251,14 @@ impl TypingTransitionIdentity {
         }
     }
 
+    fn no_mutation() -> Self {
+        Self {
+            operator: crate::transition_relation::TransitionOperatorKind::Other,
+            layout_direction: None,
+            layout_scope: None,
+        }
+    }
+
     pub(crate) fn learning_key(self) -> String {
         let mut key = self.operator.as_str().to_string();
         if let (Some(direction), Some(scope)) = (self.layout_direction, self.layout_scope) {
@@ -697,6 +705,11 @@ fn ime_events(
 ) -> Vec<TypingMemoryEvent> {
     let context = recent_context_words(context_tail);
     let episode_id = next_causal_episode_id();
+    let identity = if operation == TypingMemoryOperation::PredictionMatch {
+        TypingTransitionIdentity::no_mutation()
+    } else {
+        TypingTransitionIdentity::observed(context_tail, text, operation.as_str())
+    };
     normalized_words(text)
         .into_iter()
         .map(|word| TypingMemoryEvent {
@@ -713,7 +726,7 @@ fn ime_events(
             to: Some(text.trim().to_string()),
             evidence_source: TypingMemoryEvidenceSource::Ime,
             operation: operation.clone(),
-            identity: TypingTransitionIdentity::observed(context_tail, text, operation.as_str()),
+            identity,
             surface: None,
             completion_edit: None,
             episode_id: Some(episode_id.clone()),
@@ -997,6 +1010,10 @@ mod tests {
         assert_eq!(events[0].evidence_source, TypingMemoryEvidenceSource::Ime);
         assert_eq!(events[0].operation, TypingMemoryOperation::PredictionMatch);
         assert_eq!(events[0].word, "да");
+        assert_eq!(
+            events[0].identity.operator,
+            crate::transition_relation::TransitionOperatorKind::Other
+        );
     }
 
     #[test]

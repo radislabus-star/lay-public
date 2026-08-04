@@ -19,7 +19,10 @@ pub(crate) fn canonical_text_candidates(original: &str) -> Vec<UnifiedCorrection
 
 pub(crate) fn canonical_text_readout(original: &str) -> CanonicalL2FieldReadout {
     let mut readout = canonical_owned_text_candidates(original);
-    for candidate in short_layout_candidates(original) {
+    for candidate in boundary_text_candidates(original)
+        .into_iter()
+        .chain(short_layout_candidates(original))
+    {
         if let Some(existing) = readout
             .candidates
             .iter_mut()
@@ -31,6 +34,46 @@ pub(crate) fn canonical_text_readout(original: &str) -> CanonicalL2FieldReadout 
         }
     }
     readout
+}
+
+fn boundary_text_candidates(original: &str) -> Vec<UnifiedCorrectionCandidate> {
+    const MAX_BOUNDARY_CANDIDATES: usize = 2;
+    const CANONICAL_L2_BOUNDARY_SOURCE_ID: &str = "CanonicalL2FieldBoundary";
+
+    let Some((context_prefix, token)) = split_last_alphabetic_token(original) else {
+        return Vec::new();
+    };
+    crate::nanda_wave::l2::ime_l2_boundary_candidates(
+        context_prefix,
+        token,
+        MAX_BOUNDARY_CANDIDATES,
+    )
+    .into_iter()
+    .filter_map(|candidate| {
+        let replacement = replace_last_text_word(original, &candidate.surface)?;
+        let origin = CandidateOrigin::Boundary;
+        let error_class = action_operator::classify_token_transition(
+            original,
+            &replacement,
+            origin,
+            TypingErrorClass::GluedWords,
+        );
+        let gate = TransitionDecisionCore::admit_candidate_proposal(
+            original,
+            &replacement,
+            error_class,
+            origin,
+        );
+        Some(UnifiedCorrectionCandidate::new(
+            replacement,
+            CorrectionDecisionSource::Nanda,
+            origin,
+            CANONICAL_L2_BOUNDARY_SOURCE_ID,
+            error_class,
+            gate,
+        ))
+    })
+    .collect()
 }
 
 pub(crate) fn cold_probe_surfaces(context_prefix: &str, damaged_surface: &str) -> Vec<String> {
@@ -150,6 +193,7 @@ fn standalone_surface_field_readout(
     settle_winner: bool,
 ) -> Option<StandaloneSurfaceFieldReadout> {
     const HOT_L2_CANDIDATE_LIMIT: usize = 8;
+    const SPARSE_OMISSION_RESERVE: usize = 2;
     const SHADOW_SURFACE_MATERIAL_LIMIT: usize = 16;
 
     let started = std::time::Instant::now();
@@ -172,6 +216,32 @@ fn standalone_surface_field_readout(
         .take(HOT_L2_CANDIDATE_LIMIT)
         .cloned()
         .collect::<Vec<_>>();
+    for candidate in surface_candidates
+        .iter()
+        .filter(|candidate| {
+            crate::text_metrics::sparse_internal_omission_count(
+                &normalized_token,
+                &candidate.surface,
+            )
+            .is_some()
+        })
+        .take(SPARSE_OMISSION_RESERVE)
+    {
+        if !bounded_surface_candidates
+            .iter()
+            .any(|existing| existing.surface.eq_ignore_ascii_case(&candidate.surface))
+        {
+            bounded_surface_candidates.push(candidate.clone());
+        }
+    }
+    for candidate in reference_backed_missing_letter_candidates(&normalized_token, 2) {
+        if !bounded_surface_candidates
+            .iter()
+            .any(|existing| existing.surface.eq_ignore_ascii_case(&candidate.surface))
+        {
+            bounded_surface_candidates.push(candidate);
+        }
+    }
     let local_readout = apply_standalone_l2_field(
         context_prefix,
         token,
@@ -179,6 +249,11 @@ fn standalone_surface_field_readout(
         &l11_seeds,
         settle_winner,
     )?;
+    let local_readout = retain_reference_backed_geometry_ambiguity(
+        &normalized_token,
+        local_readout,
+        &bounded_surface_candidates,
+    );
     let field_ready = std::time::Instant::now();
     Some(StandaloneSurfaceFieldReadout {
         token: token.to_string(),
@@ -189,6 +264,61 @@ fn standalone_surface_field_readout(
         seed_duration: seeds_ready.duration_since(started),
         field_duration: field_ready.duration_since(seeds_ready),
     })
+}
+
+fn reference_backed_missing_letter_candidates(
+    token: &str,
+    limit: usize,
+) -> Vec<crate::nanda_wave::l2::L2ImeWordCandidate> {
+    crate::ru_typo::safe_missing_letter_candidates(token)
+        .filter(|candidate| {
+            crate::russian_lexicon::is_reference_backed_short_passive_participle(candidate)
+        })
+        .take(limit)
+        .map(|surface| {
+            let seed = crate::nanda_wave::L11SeedSurface {
+                terminal_id: None,
+                surface,
+                authority: false,
+                score_milli: 0,
+            };
+            l11_seed_only_candidate(token, &seed)
+        })
+        .collect()
+}
+
+fn retain_reference_backed_geometry_ambiguity(
+    token: &str,
+    readout: CanonicalCohortReadout,
+    candidates: &[crate::nanda_wave::l2::L2ImeWordCandidate],
+) -> CanonicalCohortReadout {
+    let CanonicalCohortReadout::Winner {
+        winner_surface,
+        mut cohort_surfaces,
+    } = readout
+    else {
+        return readout;
+    };
+    let mut unresolved = candidates
+        .iter()
+        .map(|candidate| candidate.surface.to_lowercase())
+        .filter(|surface| !surface.eq_ignore_ascii_case(&winner_surface))
+        .filter(|surface| crate::text_metrics::damerau_levenshtein(token, surface) == 1)
+        .filter(|surface| {
+            crate::russian_lexicon::is_reference_backed_short_passive_participle(surface)
+        })
+        .collect::<Vec<_>>();
+    if unresolved.is_empty() {
+        return CanonicalCohortReadout::Winner {
+            winner_surface,
+            cohort_surfaces,
+        };
+    }
+    cohort_surfaces.push(winner_surface);
+    cohort_surfaces.append(&mut unresolved);
+    cohort_surfaces.sort();
+    cohort_surfaces.dedup();
+    CanonicalCohortReadout::Tied { cohort_surfaces }
 }
 
 fn l11_surface_seed_candidates(
@@ -314,8 +444,12 @@ fn apply_standalone_l2_field(
     seeds: &[crate::nanda_wave::L11SeedSurface],
     settle_winner: bool,
 ) -> Option<CanonicalCohortReadout> {
+    // L2 settles a bounded L1.1 lattice; it must not manufacture lexical
+    // authority from inverse lookups when L1.1 is unavailable or timed out.
+    if seeds.is_empty() {
+        return None;
+    }
     let field = super::installed_l2_field().ok()?;
-    let lexical_surface_candidates = surface_candidates.clone();
     let mut lexical_seeds = seeds
         .iter()
         .filter_map(|seed| {
@@ -335,7 +469,7 @@ fn apply_standalone_l2_field(
         .map(|seed| seed.evidence_milli)
         .max()
         .unwrap_or(1_000);
-    for form_ref in field.single_length_edit_form_refs(token, 16) {
+    for form_ref in field.single_edit_form_refs(token, 16) {
         let Some(surface) = field.decode_form_ref(form_ref).map(str::to_string) else {
             continue;
         };
@@ -369,6 +503,7 @@ fn apply_standalone_l2_field(
             });
         }
     }
+    let lexical_surface_candidates = surface_candidates.clone();
     if lexical_seeds.is_empty() {
         return None;
     }
@@ -440,6 +575,14 @@ fn apply_standalone_l2_field(
             })
         }
         L2LocalVerdict::Tied { form_refs } => {
+            if let Some(readout) = settle_unique_l1_geometry(
+                token,
+                &lexical_surface_candidates,
+                surface_candidates,
+                settle_winner,
+            ) {
+                return Some(readout);
+            }
             let cohort_surfaces = form_refs
                 .into_iter()
                 .filter_map(|form_ref| surfaces_by_form.get(&form_ref).cloned())
@@ -705,9 +848,17 @@ pub(crate) fn apply_authority_to_candidate_lattice(
                     .any(|surface| surface.eq_ignore_ascii_case(&word))
             })
         }) {
-            // A tie cannot create authority, but it also cannot veto an
-            // independently admitted and verified member of its own cohort.
-            continue;
+            // A tied length-changing repair remains ambiguous even when a
+            // deterministic producer independently found one cohort member.
+            // Substitution/transposition evidence can retain its own
+            // authority; insertion/deletion needs context to choose which
+            // neighboring surface was intended.
+            if !matches!(
+                candidate.error_class,
+                TypingErrorClass::MissingLetter | TypingErrorClass::ExtraLetter
+            ) {
+                continue;
+            }
         }
         if candidate.gate.action == CandidateGateAction::Eligible {
             candidate.gate = CandidateGateDecision {
@@ -769,6 +920,73 @@ mod tests {
             context_prior: 0.0,
             accepted_count: 0,
         }
+    }
+
+    #[test]
+    fn canonical_readout_reserves_a_verified_two_content_boundary_candidate() {
+        let readout = canonical_text_readout("Еленапросит ");
+        let candidate = readout
+            .candidates
+            .iter()
+            .find(|candidate| candidate.replacement == "Елена просит ")
+            .expect("bounded boundary reserve");
+
+        assert_eq!(candidate.origin, CandidateOrigin::Boundary);
+        assert_eq!(candidate.source_id, "CanonicalL2FieldBoundary");
+        assert_eq!(candidate.error_class, TypingErrorClass::GluedWords);
+    }
+
+    #[test]
+    fn canonical_readout_retains_sparse_omission_candidate_below_general_frontier() {
+        let readout = canonical_text_readout("на компанию Хунлу можем подврдить ");
+        let candidate = readout
+            .candidates
+            .iter()
+            .find(|candidate| candidate.replacement.ends_with("подтвердить "))
+            .expect("sparse multi-omission reserve must survive the general top-8 frontier");
+
+        assert_eq!(
+            candidate.error_class,
+            TypingErrorClass::SparseInternalMultiOmission
+        );
+        assert_eq!(candidate.gate.action, CandidateGateAction::SuggestOnly);
+    }
+
+    #[test]
+    fn canonical_l2_field_fails_closed_without_l11_seeds() {
+        let mut candidates = Vec::new();
+        let readout = apply_standalone_l2_field(
+            "на компанию Хунлу можем",
+            "подврдить",
+            &mut candidates,
+            &[],
+            false,
+        );
+
+        assert!(readout.is_none());
+        assert!(candidates.is_empty());
+    }
+
+    #[test]
+    fn reference_backed_short_participle_blocks_false_singleton() {
+        let readout = canonical_text_readout("подлючен ");
+        let correct = readout
+            .candidates
+            .iter()
+            .find(|candidate| candidate.replacement == "подключен ")
+            .expect("reference-backed missing-letter candidate");
+        let wrong = readout
+            .candidates
+            .iter()
+            .find(|candidate| candidate.replacement == "подлечен ")
+            .expect("competing one-edit candidate");
+
+        assert_eq!(correct.gate.action, CandidateGateAction::SuggestOnly);
+        assert_eq!(wrong.gate.action, CandidateGateAction::SuggestOnly);
+        assert!(!matches!(
+            readout.authority,
+            L2FieldAuthority::Winner { .. }
+        ));
     }
 
     fn unified_candidate(
@@ -919,7 +1137,7 @@ mod tests {
     }
 
     #[test]
-    fn tie_preserves_verified_member_but_demotes_foreign_candidate() {
+    fn tie_demotes_ambiguous_length_change_but_preserves_other_verified_member() {
         let mut candidates = vec![
             unified_candidate(
                 "перехвачу ",
@@ -932,6 +1150,19 @@ mod tests {
                 "composite_ru_typo",
             ),
         ];
+        candidates[0].error_class = TypingErrorClass::MissingLetter;
+        candidates[1].error_class = TypingErrorClass::LetterSubstitution;
+        candidates.push(unified_candidate(
+            "перехвачу ",
+            CandidateOrigin::DeterministicTypo,
+            "vowel_confusion",
+        ));
+        candidates[2].error_class = TypingErrorClass::LetterSubstitution;
+        candidates.push(unified_candidate(
+            "перехват ",
+            CandidateOrigin::DeterministicTypo,
+            "missing_letter",
+        ));
 
         apply_authority_to_candidate_lattice(
             &mut candidates,
@@ -940,7 +1171,9 @@ mod tests {
             },
         );
 
-        assert_eq!(candidates[0].gate.action, CandidateGateAction::Eligible);
+        assert_eq!(candidates[0].gate.action, CandidateGateAction::SuggestOnly);
         assert_eq!(candidates[1].gate.action, CandidateGateAction::SuggestOnly);
+        assert_eq!(candidates[2].gate.action, CandidateGateAction::Eligible);
+        assert_eq!(candidates[3].gate.action, CandidateGateAction::SuggestOnly);
     }
 }

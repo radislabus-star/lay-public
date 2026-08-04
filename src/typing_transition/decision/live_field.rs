@@ -163,6 +163,7 @@ mod tests {
             l2_center_grounded: true,
             l3_memory_supported: false,
             completed_state_known: true,
+            corrected_prefix_completion: false,
             l3_relation_class: 0,
             l4_transition_state_specific: false,
             l4_transition_attract_count: 0,

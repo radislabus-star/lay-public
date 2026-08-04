@@ -12,6 +12,9 @@ const LEXICAL_READOUT_CACHE_CAPACITY: usize = 128;
 // competition. Four candidates per requested display slot leave enough
 // competitors for interference while avoiding a 192-node DAFSA walk per key.
 const IME_L2_MATERIAL_FACTOR: usize = 4;
+const TYPO_TOLERANT_PREFIX_MIN_CHARS: usize = 7;
+const TYPO_TOLERANT_PREFIX_LIMIT: usize = 2;
+const RUSSIAN_PREFIX_ALPHABET: &str = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя";
 type CachedLexicalCandidates = Arc<Vec<super::super::lexical_phase::LexicalPhaseCandidate>>;
 type LexicalReadoutCache = VecDeque<(String, usize, LexicalReadoutMode, CachedLexicalCandidates)>;
 
@@ -92,6 +95,9 @@ fn l2_word_candidates_impl(
     let mut candidates = lexical
         .map(|candidate| {
             let candidate_len = candidate.word.chars().count();
+            let corrected_prefix = mode == LexicalReadoutMode::CompletionOnly
+                && candidate_len > token_len
+                && !candidate.word.starts_with(&normalized);
             let kind =
                 if crate::text_metrics::is_adjacent_transposition(&normalized, &candidate.word) {
                     L2ImeWordCandidateKind::AdjacentTransposition
@@ -104,7 +110,11 @@ fn l2_word_candidates_impl(
             L2ImeWordCandidate {
                 surface: candidate.word,
                 kind,
-                source: L2ImeWordCandidateSource::LexicalPhase,
+                source: if corrected_prefix {
+                    L2ImeWordCandidateSource::CorrectedPrefixPhase
+                } else {
+                    L2ImeWordCandidateSource::LexicalPhase
+                },
                 score: candidate.score,
                 l1_overlap: candidate.l1_overlap,
                 l2_overlap: candidate.l2_overlap,
@@ -155,6 +165,15 @@ fn cached_lexical_candidates(
             material_limit,
             material_limit.saturating_mul(6),
         ));
+        if normalized.chars().count() >= TYPO_TOLERANT_PREFIX_MIN_CHARS
+            && normalized.chars().all(is_cyrillic_letter)
+        {
+            candidates.extend(typo_tolerant_completion_candidates(
+                memory,
+                normalized,
+                material_limit,
+            ));
+        }
     }
     candidates.sort_by(|left, right| {
         right
@@ -173,6 +192,82 @@ fn cached_lexical_candidates(
         mode,
         Arc::clone(&candidates),
     );
+    candidates
+}
+
+fn typo_tolerant_completion_candidates(
+    memory: &super::super::lexical_phase::LexicalPhaseMemory,
+    damaged_prefix: &str,
+    material_limit: usize,
+) -> Vec<super::super::lexical_phase::LexicalPhaseCandidate> {
+    let mut corrected_prefixes = Vec::new();
+    for candidate in single_edit_prefixes(damaged_prefix) {
+        let completions = memory.completion_candidates(&candidate, material_limit, material_limit);
+        if completions.is_empty() {
+            continue;
+        }
+        corrected_prefixes.push((candidate, completions));
+        if corrected_prefixes.len() >= TYPO_TOLERANT_PREFIX_LIMIT {
+            break;
+        }
+    }
+
+    corrected_prefixes
+        .into_iter()
+        .flat_map(|(_, candidates)| candidates)
+        // This lane is only for an unfinished token. Same-size and shorter
+        // typo repairs stay on the Space/autocorrect route.
+        .filter(|candidate| candidate.word.chars().count() > damaged_prefix.chars().count())
+        .collect()
+}
+
+fn single_edit_prefixes(prefix: &str) -> Vec<String> {
+    let chars = prefix.chars().collect::<Vec<_>>();
+    let mut seen = std::collections::BTreeSet::new();
+    let mut candidates = Vec::new();
+    let mut push = |candidate: String| {
+        if seen.insert(candidate.clone()) {
+            candidates.push(candidate);
+        }
+    };
+
+    for index in 0..chars.len() {
+        push(
+            chars
+                .iter()
+                .enumerate()
+                .filter_map(|(position, ch)| (position != index).then_some(*ch))
+                .collect(),
+        );
+    }
+    for index in 0..chars.len().saturating_sub(1) {
+        if chars[index] == chars[index + 1] {
+            continue;
+        }
+        let mut candidate = chars.clone();
+        candidate.swap(index, index + 1);
+        push(candidate.into_iter().collect());
+    }
+    for index in 0..chars.len() {
+        for replacement in RUSSIAN_PREFIX_ALPHABET
+            .chars()
+            .filter(|replacement| *replacement != chars[index])
+        {
+            let mut candidate = chars.clone();
+            candidate[index] = replacement;
+            push(candidate.into_iter().collect());
+        }
+    }
+    for index in 0..=chars.len() {
+        for inserted in RUSSIAN_PREFIX_ALPHABET.chars() {
+            let mut candidate = Vec::with_capacity(chars.len() + 1);
+            candidate.extend_from_slice(&chars[..index]);
+            candidate.push(inserted);
+            candidate.extend_from_slice(&chars[index..]);
+            push(candidate.into_iter().collect());
+        }
+    }
+
     candidates
 }
 
@@ -346,6 +441,12 @@ fn sort_and_truncate_ime_l2_candidates(
     candidates: &mut Vec<L2ImeWordCandidate>,
     limit: usize,
 ) {
+    let corrected_prefix_reserve = candidates
+        .iter()
+        .filter(|candidate| candidate.source == L2ImeWordCandidateSource::CorrectedPrefixPhase)
+        .take(8)
+        .cloned()
+        .collect::<Vec<_>>();
     candidates.sort_by(|left, right| {
         l2_ime_word_candidate_operator_priority(input, right)
             .cmp(&l2_ime_word_candidate_operator_priority(input, left))
@@ -365,6 +466,18 @@ fn sort_and_truncate_ime_l2_candidates(
     });
     candidates.dedup_by(|left, right| left.surface == right.surface);
     candidates.truncate(limit);
+    for candidate in corrected_prefix_reserve {
+        if candidates
+            .iter()
+            .any(|current| current.surface == candidate.surface)
+        {
+            continue;
+        }
+        if candidates.len() == limit {
+            candidates.pop();
+        }
+        candidates.push(candidate);
+    }
 }
 
 fn l2_ime_word_candidate_operator_priority(input: &str, candidate: &L2ImeWordCandidate) -> u8 {
@@ -418,6 +531,33 @@ mod tests {
             phase_coherence_milli: 1_000,
             reconstructed: false,
         }
+    }
+
+    #[test]
+    fn single_edit_prefixes_cover_all_damerau_operators() {
+        let prefixes = single_edit_prefixes("тест");
+        for expected in ["тес", "етст", "тост", "текст"] {
+            assert!(
+                prefixes.iter().any(|prefix| prefix == expected),
+                "missing {expected}: {prefixes:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn corrected_prefix_frontier_contains_attested_comparative() {
+        super::super::super::warm_up_l2_for_ime();
+        let candidates = surface_motif_memory().completion_candidates("персп", 96, 576);
+        assert!(
+            candidates
+                .iter()
+                .any(|candidate| candidate.word == "перспективнее"),
+            "персп frontier: {:?}",
+            candidates
+                .iter()
+                .map(|candidate| candidate.word.as_str())
+                .collect::<Vec<_>>()
+        );
     }
 
     #[test]

@@ -223,6 +223,10 @@ pub fn live_completion_candidates(
             let foundation_rank = l2::l2_surface_foundation_rank(&candidate.surface);
             let boundary_center_grounded =
                 matches!(candidate.source, L2ImeWordCandidateSource::BoundaryPhase);
+            let corrected_prefix_completion = matches!(
+                candidate.source,
+                L2ImeWordCandidateSource::CorrectedPrefixPhase
+            );
             let l2_center_grounded = foundation_rank.is_some() || boundary_center_grounded;
             let hot = foundation_rank.is_some_and(|rank| rank < 20_000);
             let structural = structural_support(
@@ -296,6 +300,8 @@ pub fn live_completion_candidates(
                 score: field_score.score,
                 source: if boundary_center_grounded {
                     "BoundaryCell32"
+                } else if corrected_prefix_completion {
+                    "L2CorrectedPrefixCell32"
                 } else {
                     "L2LiveCandidateGate32"
                 },
@@ -313,6 +319,7 @@ pub fn live_completion_candidates(
                 l2_center_grounded,
                 l3_memory_supported,
                 completed_state_known: l2_center_grounded,
+                corrected_prefix_completion,
                 l3_relation_class: l3_report
                     .as_ref()
                     .map(|report| report.relation_class)
@@ -788,6 +795,7 @@ mod tests {
             l2_center_grounded: false,
             l3_memory_supported: false,
             completed_state_known: false,
+            corrected_prefix_completion: false,
             l3_relation_class: 0,
             l4_transition_state_specific: false,
             l4_transition_attract_count: 0,
@@ -899,6 +907,34 @@ mod tests {
                 .iter()
                 .all(|candidate| candidate.surface != "загрузи" && !candidate.suffix.is_empty()),
             "full-token typo repairs belong to Space/autocorrect, not IME preedit: raw={raw:?}, selected={candidates:?}"
+        );
+    }
+
+    #[test]
+    fn live_gate_can_offer_a_longer_target_after_a_single_prefix_typo() {
+        super::super::warm_up_l2_for_ime();
+        let family = live_completion_candidates(request("", "переспектив"));
+        let family_timing = last_live_completion_timing();
+        assert!(
+            family
+                .iter()
+                .any(|candidate| candidate.surface.starts_with("перспектив")),
+            "corrected lexical family must remain visible: {family:?}"
+        );
+        eprintln!("corrected-prefix family timing: {family_timing:?}");
+        let _ = live_completion_candidates(request("", "переспектив"));
+        eprintln!(
+            "corrected-prefix family hot timing: {:?}",
+            last_live_completion_timing()
+        );
+
+        let candidates = live_completion_candidates(request("", "переспективн"));
+
+        assert!(
+            candidates.iter().any(|candidate| {
+                candidate.surface == "перспективнее" && candidate.suffix.is_empty()
+            }),
+            "corrected-prefix completion must remain a display-only replacement: {candidates:?}"
         );
     }
 
@@ -1093,6 +1129,7 @@ mod tests {
             score: 0.55,
             structural: 0.30,
             completed_state_known: true,
+            corrected_prefix_completion: false,
             ..authority_proposal()
         }));
     }

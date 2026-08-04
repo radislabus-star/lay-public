@@ -1,6 +1,14 @@
 use super::*;
 
 #[test]
+fn short_passive_participle_is_backed_by_attested_long_form() {
+    assert!(is_reference_backed_short_passive_participle("подключен"));
+    assert!(is_reference_backed_short_passive_participle("подключена"));
+    assert!(is_reference_backed_short_passive_participle("подлечен"));
+    assert!(!is_reference_backed_short_passive_participle("подлюген"));
+}
+
+#[test]
 fn field_only_authority_does_not_expose_reference_dictionaries() {
     let authority = crate::hot_field::HotAuthority::FieldSnapshotOnly;
 

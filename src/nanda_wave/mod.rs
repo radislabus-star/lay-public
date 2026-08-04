@@ -1669,6 +1669,7 @@ pub fn warm_up_l2_for_ime() {
     // state while the first context-phase readout could still fault in the
     // phase package on the user's keystroke.
     context_phase::warm_default_memory();
+    l2_field::warm_up_installed_l2_field();
     l2::warm_up_ime_word_candidate_memory();
     candidate_gate::warm_up_live_candidate_readout();
 }

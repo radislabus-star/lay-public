@@ -176,6 +176,16 @@ mod tests {
     }
 
     #[test]
+    fn committed_tail_plan_keeps_internal_layout_symbol_in_the_token() {
+        let plan = plan_manual_toggle(request("ye;ty")).expect("toggle");
+
+        assert_eq!(plan.edit.original_token, "ye;ty");
+        assert_eq!(plan.backspaces, 5);
+        assert_eq!(plan.replacement, "нужен");
+        assert!(plan.target_layout_is_ru);
+    }
+
+    #[test]
     fn committed_tail_plan_does_not_invent_missing_initial_letter() {
         let plan = plan_manual_toggle(request("flyj ")).expect("toggle");
 

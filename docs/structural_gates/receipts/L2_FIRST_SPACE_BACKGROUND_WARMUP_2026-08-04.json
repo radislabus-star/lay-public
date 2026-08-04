@@ -1,0 +1,55 @@
+{
+  "schema": "lay.l2-first-space-background-warmup.v1",
+  "date": "2026-08-04",
+  "claim": "Standalone L2 package first touch is performed by background IME warmup instead of the first Space boundary readout.",
+  "probe": {
+    "input": "ЕланаПросит ",
+    "installed_package": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-RU-FULL-v13.bin",
+    "installed_package_bytes": 135121803
+  },
+  "measured": {
+    "cold_seed_us": 10986,
+    "cold_field_us": 379144,
+    "cold_complete_readout_us": 390244,
+    "hot_seed_us": 6769,
+    "hot_field_us": 1297,
+    "hot_complete_readout_us": 8116,
+    "standalone_cli_process_total_seconds": 1.84,
+    "cold_probe_selected": null,
+    "verified_boundary_probe": "Еленапросит ",
+    "verified_boundary_selected": "Елена просит "
+  },
+  "change": {
+    "warmup_owner": "nanda_wave::warm_up_l2_for_ime",
+    "loaded_component": "installed standalone L2 field",
+    "thread": "existing background IME warmup thread",
+    "candidate_or_authority_changes": false,
+    "package_format_changes": false
+  },
+  "verification": {
+    "focused_boundary_test": "PASS",
+    "focused_correction_core_test": "PASS",
+    "check_lay_changed": "PASS",
+    "installed_version": "1.0.7",
+    "installed_lay_sha256": "5a53ef90a1e47007176a13e41b2c241db85eb7bb60db6ecd1b621d7cd791178f",
+    "installed_daemon_sha256": "0ad6636afb16bc6d04a7cde3dd996e520665f665bcff27566c89436e710c7613",
+    "installed_engine_sha256": "47f8545ca0b661f614945e3dc9d1864eab406c377907931f8befb05ea61fe3c1",
+    "global_ibus_pid_before": 3702,
+    "global_ibus_pid_after": 3702,
+    "daemon_pid_before": 1853387,
+    "daemon_pid_after": 1938013,
+    "engine_pid_before": 1853423,
+    "engine_pid_after": 1938039
+  },
+  "not_tested": [
+    "physical GUI latency distribution",
+    "cold operating-system page cache",
+    "broad glued-word quality",
+    "L1.1 thirteen-damage-class heldout proof"
+  ],
+  "verdict": {
+    "targeted_first_space_latency": "PASS_targeted",
+    "broad_quality": "NOT_CLAIMED",
+    "runtime_authority_changed": false
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "schema": 1,
+  "kind": "ime_internal_layout_key_projection",
+  "date": "2026-08-04",
+  "observed": {
+    "surface": "ye;ty",
+    "expected": "нужен",
+    "live_result_before_fix": "unchanged",
+    "tail_characters_retained": 5
+  },
+  "change": {
+    "scope": "generic internal ASCII layout-letter symbols",
+    "root_cause": "exact known projection was re-settled by context-free L2 morphology to a same-lemma neighbour, creating a verifier conflict",
+    "rule": "a known exact Russian keyboard projection is lexical authority; morphology may settle only unknown or noisy projections",
+    "word_hardcode": false,
+    "l1_1_package_changed": false
+  },
+  "tests": [
+    {
+      "name": "manual_toggle::tests::committed_tail_plan_keeps_internal_layout_symbol_in_the_token",
+      "status": "PASS"
+    },
+    {
+      "name": "ime_correction::tests::active_english_layout_does_not_protect_internal_layout_letter_symbol",
+      "status": "PASS"
+    },
+    {
+      "name": "ime_correction::tests::active_english_layout_preserves_known_ascii_token_from_layout_projection",
+      "status": "PASS"
+    },
+    {
+      "name": "layout_autoswitch::ascii::candidate::tests::exact_known_projection_is_not_moved_to_a_morphological_neighbour",
+      "status": "PASS"
+    }
+  ],
+  "source_explain_after_fix": {
+    "accepted_candidate_count": 1,
+    "chosen": "fast_layout_en_to_ru",
+    "output": "нужен",
+    "morphology_competitor": null
+  },
+  "installed_runtime": {
+    "version": "1.0.7",
+    "explain_output": "нужен",
+    "confidence": "SingleCandidate",
+    "second_candidate": null,
+    "lay_daemon_active": true,
+    "active_engine": "lay-ime-ru",
+    "global_ibus_daemon_pid_before": 3702,
+    "global_ibus_daemon_pid_after": 3702,
+    "changed_file_gate": "PASS"
+  },
+  "not_tested_yet": [
+    "aggregate L1.1 heldout proof"
+  ],
+  "verdict_scope": "focused installed IME layout-projection contract",
+  "runtime_authority_changed": true
+}

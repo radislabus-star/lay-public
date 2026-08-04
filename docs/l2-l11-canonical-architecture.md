@@ -321,6 +321,515 @@ Runtime authority changed:
 
 - `false`
 
+## 13. 2026-08-04 Standalone L2 First-Space Warmup
+
+### What was tested
+
+- installed `LAY-L2-RU-FULL-v13.bin` first touch through
+  `lay --explain-correct "ЕланаПросит "` with `LAY_L2_FIELD_TRACE=1`;
+- a second canonical L2 readout in the same process;
+- the existing verified boundary case `Еленапросит -> Елена просит`;
+- focused boundary and correction-core tests plus `scripts/check-lay-changed.sh`;
+- installation and restart of only the managed Lay runtime processes.
+
+### Measured facts
+
+- installed standalone L2 package: `135,121,803` bytes (`128.86 MiB`);
+- cold standalone field load/readout: `379.144 ms`;
+- second standalone field readout in the same process: `1.297 ms`;
+- second complete canonical L2 materialization: `8.116 ms`;
+- the old cold load happened synchronously on the first boundary readout and
+  was therefore visible as a pause after Space;
+- `warm_up_l2_for_ime()` now loads and indexes the standalone L2 field on its
+  existing background warmup thread before candidate memory is published as
+  ready;
+- candidate birth, scoring, boundary authority, package format, and package
+  contents did not change;
+- installed Lay runtime PIDs changed from daemon `1853387` / engine `1853423`
+  to daemon `1938013` / engine `1938039`;
+- global `ibus-daemon` remained PID `3702`.
+
+### What was not tested
+
+- a broad latency distribution across physical GUI applications;
+- cold startup on hardware without a warm Linux page cache;
+- broad glued-word recall or false-split rate;
+- the fixed L1.1 thirteen-damage-class heldout proof.
+
+### Verdict scope
+
+`PASS_targeted`: the measured `~379 ms` package first touch was moved out of
+the first-Space hot path into background IME warmup. The measured post-load
+canonical L2 path remains single-digit milliseconds for this probe. This is a
+latency lifecycle result, not a broad quality claim.
+
+Exact receipt:
+
+`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_FIRST_SPACE_BACKGROUND_WARMUP_2026-08-04.json`
+
+Runtime authority changed:
+
+- `false`
+
+## 13. 2026-08-04 Two-Content Glued-Word Boundary Birth
+
+Canonical route added by this experiment:
+
+```text
+one glued Cyrillic token
+-> enumerate internal boundaries
+-> require independent left and right lexical/form centers
+-> require at least one strong L2 surface center
+-> reserve at most 2 Boundary candidates in the canonical L2 field
+-> common L2/L3 lattice
+-> TransitionDecisionCore and verifier
+-> Winner | Tied | Abstain
+```
+
+The generic two-content route requires at least `4 + 4` characters. The
+earlier `3 + 3` experiment was rejected because it admitted the false split
+`поспорта -> пос порта`.
+
+Clean whole-surface authority is conjunctive safety evidence. If the original
+token already has a known Russian word/form center, generic two-content birth
+is suppressed. A known whole surface may be split only when the existing
+contextual boundary operator independently confirms the same replacement.
+This preserves contextual `у насесть -> у нас есть` without allowing
+`улетели -> улет если`.
+
+Measured facts:
+
+- `Еленапросит -> Елена просит` is selected by the live correction core;
+- source is `CanonicalL2FieldBoundary`;
+- class is `GluedWords`;
+- gate is `Eligible/class_allows_apply`;
+- the explain readout contained `13` candidates: `1` applicable Boundary
+  candidate and `12` one-word candidates retained as `SuggestOnly`;
+- boundary reserve is `2` candidates;
+- L2 unit birth, canonical bridge reserve, live correction-core selection,
+  known-whole preservation, multi-letter-preposition safety, and contextual
+  known-glue preservation passed in focused sequential tests.
+
+What was not tested:
+
+- broad heldout glued-word recall and false-split rate;
+- latency distribution under a live typing workload;
+- physical application through the installed IBus engine;
+- the fixed L1.1 thirteen-damage-class proof, which is not a boundary proof.
+
+Known separate boundary debt:
+
+- the pre-existing reverse operation `тако й -> такой` currently fails to
+  birth in `boundary_scan_candidates`; this two-content glued-token experiment
+  does not claim to fix two-token merge recovery.
+
+Verdict scope:
+
+- `PASS_targeted` for generic two-content glued-token birth and live canonical
+  L2 selection;
+- broad boundary quality is `NOT_CLAIMED`;
+- runtime authority changed in source: `true`;
+- installed runtime authority changed: `true` in release `1.0.7`;
+- global `ibus-daemon` PID stayed `3702` during the managed runtime restart.
+
+Exact receipt:
+
+`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_TWO_CONTENT_GLUED_BOUNDARY_2026-08-04.json`.
+
+## 14. 2026-08-04 Class-Conditioned Sparse-Omission Reserve
+
+The canonical live bridge keeps a bounded class-conditioned reserve instead of
+using one undifferentiated top-N cut:
+
+```text
+L1.1 lattice seeds: 16
+-> general L2 material frontier: 8
+-> sparse-internal-multi-omission reserve: at most 2 additional surfaces
+-> one canonical L2 local field
+-> L3 and common admission
+```
+
+This reserve changes candidate retention only. It does not mint Winner
+authority. Reserved candidates still obey the L2 local verdict and remain
+`SuggestOnly` under `Tied` or `Abstain`.
+
+Measured facts for the live-log case:
+
+- input: `на компанию Хунлу можем подврдить `;
+- L1.1 had `подтвердить` as seed `16/16`, score `1813`;
+- the former general frontier retained `8` candidates and discarded that seed;
+- after the reserve, correction-core candidate count changed from `10` to
+  `11`;
+- `подтвердить` now reaches the common lattice as
+  `SparseInternalMultiOmission`;
+- both `подтвердить` and the competing `подводить` remain `SuggestOnly` under
+  `canonical_l2_field_local_tie`;
+- final action remains `keep`, so the change fixes candidate visibility without
+  reintroducing the observed false autocorrection to `подводить`.
+
+What was tested:
+
+- focused canonical bridge retention test for a sparse omission below the
+  general frontier;
+- source explain for the exact live-log phrase;
+- two existing sparse-omission correction-core contracts passed.
+
+What was not tested:
+
+- fixed heldout sparse multi-omission percentages;
+- broad false-candidate cost of the two-slot reserve;
+- sentence continuation replay after the following word becomes available;
+- physical installed IME behavior at receipt creation.
+
+Known separate failure:
+
+- the existing `переподлчаю -> переподключаю` authority test currently births
+  the expected candidate but selects no transition. This is an L2 authority
+  baseline failure, not evidence that the new reserve regressed candidate
+  retention.
+
+Verdict scope:
+
+- `PASS_targeted` for class-conditioned candidate retention;
+- automatic semantic restoration is `NOT_CLAIMED`;
+- broad sparse-omission quality is `NOT_CLAIMED`;
+- runtime authority changed in source: `true`;
+- installed runtime authority changed: `true` in release `1.0.7`;
+- installed hot readout retains `подтвердить` and returns `Tied/ABSTAIN` with
+  no selected transition;
+- global `ibus-daemon` PID stayed `3702` during the managed runtime restart.
+
+Cold fail-closed follow-up:
+
+The first request immediately after a managed restart exposed a separate
+authority leak. When the `12 ms` L1.1 socket request timed out, L2 inverse
+lookup could still birth `подводить` and promote it as a lexical winner despite
+having no L1.1 seeds. The canonical ownership contract is now explicit:
+
+```text
+no confirmed L1.1 seeds
+-> no standalone L2 lexical field
+-> no inverse-only Winner authority
+-> keep / ABSTAIN
+```
+
+This is a general fail-closed rule. It does not special-case `подврдить` or
+`подтвердить`; it prevents every cold, unavailable, or timed-out L1.1 request
+from being replaced by autonomous L2 lexical authority.
+
+Installed verification in release `1.0.7`:
+
+```text
+release SHA-256              3387bfc4f4716853ee632868d4866d35d833fdbb745a8e1abd4fa3b3d57c29e4
+cold first Nanda candidates  0
+cold first Nanda selection   none
+hot Nanda candidates         11
+hot target                   подтвердить / SuggestOnly
+hot wrong competitor         подводить / SuggestOnly
+hot selection                none
+glued-word regression        Еленапросит -> Елена просит
+lay-daemon PID               1830167
+lay-ibus-engine PID          1830194
+lay-l1.1-serve PID           1830227
+global ibus-daemon PID       3702 -> 3702
+```
+
+Exact receipt:
+
+`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_SPARSE_OMISSION_RESERVE_2026-08-04.json`.
+
+## 15. 2026-08-04 Reference-Backed Short-Participle Ambiguity
+
+Observed live failure:
+
+```text
+input                       подлючен
+wrong live winner           подлечен
+expected visible candidate  подключен
+```
+
+The installed L1.1 package has no `подключен` or `подключён` surface. Its
+top-16 field contains noun forms such as `подключение`, while L2 one-edit
+inverse lookup independently births the valid but contextually wrong
+`подлечен`. System Hunspell confirms that both `подключен` and `подлечен` are
+real short passive participles, so deleting or globally suppressing either
+surface would be incorrect.
+
+Canonical route added by this experiment:
+
+```text
+one-letter omission geometry
+-> derive bounded candidate surfaces
+-> require an explicitly attested long participle in the reference lexicon
+   (for example подключенный -> подключен)
+-> reserve at most 2 reference-backed short forms without authority
+-> combine with the ordinary L1.1/L2 cohort
+-> unresolved equal-distance forms force Tied/ABSTAIN
+-> sentence context may resolve them later
+```
+
+Measured source facts:
+
+```text
+candidate count before      15
+candidate count after       16
+подключен                   missing-letter / SuggestOnly
+подлечен                    letter-substitution / SuggestOnly
+local verdict               Tied
+selected transition         none
+```
+
+Safety reasoning:
+
+- no surface string is hardcoded;
+- candidate birth requires exact long-form reference evidence;
+- the reference donor cannot grant Winner authority;
+- the rule only preserves one-edit ambiguity and therefore cannot rewrite an
+  unrelated token;
+- a real sentence-level context remains responsible for choosing between two
+  valid meanings.
+
+What was tested:
+
+- long-form backing for masculine and inflected short participles;
+- rejection of a fabricated unbacked short form;
+- exact source explain for `подлючен`;
+- both valid candidates survive as `SuggestOnly` and no transition is selected.
+
+What was not tested:
+
+- broad short-participle recall and false-ambiguity rate;
+- sentence contexts that should resolve `подключен` versus `подлечен`;
+- fixed L1.1 thirteen-class restoration proof, because the package is unchanged.
+
+Verdict scope:
+
+- `PASS_targeted_source` for preventing the false singleton;
+- automatic semantic restoration is `NOT_CLAIMED`;
+- runtime authority changed in source: `true`;
+- installed runtime authority changed: `true` in release `1.0.7`.
+
+Installed verification:
+
+```text
+release SHA-256             5a53ef90a1e47007176a13e41b2c241db85eb7bb60db6ecd1b621d7cd791178f
+hot candidate count        16
+подключен                  missing-letter / SuggestOnly
+подлечен                    letter-substitution / SuggestOnly
+selected transition        none
+glued-word regression      Еленапросит -> Елена просит
+sparse reserve regression  подтвердить retained; selected none
+lay-daemon PID             1853387
+lay-ibus-engine PID        1853423
+lay-l1.1-serve PID         1853447
+global ibus-daemon PID     3702 -> 3702
+```
+
+Exact receipt:
+
+`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_REFERENCE_BACKED_SHORT_PARTICIPLE_AMBIGUITY_2026-08-04.json`.
+
+## 13. 2026-08-04 Internal Layout-Key Projection Contract
+
+Observed live failure:
+
+```text
+typed surface                 ye;ty
+exact physical projection    нужен
+live Space result             unchanged
+```
+
+The IME trace proved that all five characters, including `;`, remained in the
+committed-tail field. The failure was therefore not character loss or a split
+replacement range. The final source-level root cause was a second settlement:
+the layout lane first proved the exact known projection `ye;ty -> нужен`, then
+context-free L2 morphology moved that result to the same-lemma neighbour
+`нужна`. The verifier correctly abstained when `нужен` and `нужна` conflicted.
+
+Canonical rule:
+
+```text
+ASCII token with internal layout-letter key
+-> exact full-token keyboard projection
+-> known opposite-layout word/form
+-> keep exact layout candidate eligible
+-> exact projection is lexical authority
+-> L2 morphology may settle only unknown/noisy projections
+```
+
+This is class-based, not a word exception. The internal-key set is the existing
+layout alphabet (`;`, `[`, `]`, `,`, `.`, `'`, and their shifted variants).
+Known English words and technical surfaces such as `pdf`, URLs, CLI options and
+brand tokens retain their protection.
+
+What was tested:
+
+- `ye;ty -> нужен` through the committed-tail manual-toggle planner:
+  `5` deleted characters, exact replacement `нужен`;
+- `ye;ty -> нужен ` through the live Space decision with active English layout;
+- `pdf` remains unchanged with active English layout;
+- the candidate constructor retains exact `нужен` instead of settling it to
+  `нужна`;
+- debug explain emits one accepted layout candidate, `нужен`, and no `нужна`
+  competitor;
+- all focused tests passed when run independently through
+  `scripts/cargo-guard.sh`.
+
+Measured facts:
+
+```text
+exact projection tests       4/4 PASS
+manual delete span           5 characters
+false protected pdf apply    0
+accepted layout candidates   1
+morphology competitors       0
+debug output                 нужен
+```
+
+What was not tested at this point:
+
+- aggregate L1.1 heldout quality, because this change does not alter the L1.1
+  package or its readout.
+
+Installed runtime facts:
+
+```text
+release                         lay 1.0.7
+installed explain              ye;ty -> нужен
+confidence                     SingleCandidate
+second candidate               none
+lay-daemon.service             active
+active engine                  lay-ime-ru
+global ibus-daemon PID         3702 -> 3702
+changed-file gate              PASS
+```
+
+Exact receipt:
+
+`/home/ubu/projects/lay/docs/structural_gates/receipts/IME_INTERNAL_LAYOUT_KEY_PROJECTION_2026-08-04.json`
+
+Runtime authority changed at this documentation point:
+
+- `true`; release `1.0.7` was installed and the managed Lay runtime was
+  restarted without restarting the global IBus daemon.
+
+## 14. 2026-08-04 Typo-Tolerant IME Completion Lane
+
+What was tested:
+
+- Russian IME completion after one insertion, deletion, substitution, or
+  adjacent-transposition error in an unfinished prefix;
+- the observed `переспектив...` family;
+- separation from same-size full-token repair, which remains owned by the
+  Space/autocorrect route;
+- IME rendering as a full-token replacement accepted only by explicit `Tab`;
+- hot-path latency and the existing IME latency budget suite.
+
+Measured facts:
+
+```text
+damaged prefix                 переспектив
+returned family candidates    12
+examples                      перспективный, перспективна,
+                              перспективно, перспективней
+cold targeted readout         7,867 us
+hot cache readout                  6 us
+existing IME latency suite    p50 26 us / p90 36 us / p99 46 us / max 62 us
+```
+
+The corrected-prefix lane starts at `7` Cyrillic characters, admits at most
+`2` corrected prefix basins, and reserves at most `8` L2 candidates plus one
+final display slot. Exact-prefix candidates are retained. Early ambiguous
+states such as `пересп` are not forced to `перспективнее`, because real
+`переспать...` and `преспокойных...` basins still compete there.
+
+What was not tested:
+
+- aggregate IME hit-rate over a fixed heldout typo-prefix corpus;
+- physical `Tab` acceptance after installing the new binary;
+- typo-tolerant ASCII completion;
+- full L1.1 13-class restoration proof, because package data and boundary
+  restoration were not changed.
+
+Verdict scope:
+
+- targeted corrected-prefix family coverage: `PASS_targeted`;
+- existing hot latency suite: `PASS`;
+- broad IME quality promotion: `NOT_CLAIMED`;
+- runtime authority changed in source: `true`;
+- installed runtime authority changed at this checkpoint: `true` (`lay 1.0.6`).
+
+Installed runtime facts:
+
+```text
+global ibus-daemon PID       3702 -> 3702
+managed engine PID        432941 -> 464498
+lay-daemon PID            432906 -> 464453
+active engine                       lay-ime-ru
+```
+
+Exact receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_IME_TYPO_TOLERANT_COMPLETION_2026-08-04.json
+```
+
+## 13. 2026-08-04 Single-Edit Inverse Lane And Tied Readout
+
+What was tested:
+
+- canonical standalone L2 restoration for `переспективнее`, `отвликайся`,
+  `переделаем`, and the ambiguous observed surface `наденный`;
+- package-indexed inverse lookup for every one-step Damerau operation:
+  insertion, deletion, substitution, and adjacent transposition;
+- tied-cohort authority for length-changing versus shape-preserving repairs;
+- preservation of valid Russian verb forms through reusable ending relations,
+  without word-specific runtime rules.
+
+Measured facts:
+
+```text
+переспективнее -> перспективнее
+отвликайся     -> отвлекайся
+переделаем     -> переделаем
+наденный       -> наденный
+```
+
+The inverse lane remains bounded to `16` package form references and performs
+direct package index lookups. It does not scan the complete L2 field. When the
+L2 readout remains tied, insertion/deletion candidates are `SuggestOnly`;
+substitution/transposition may retain independently verified authority.
+
+What was not tested:
+
+- fixed heldout percentages for all L1.1 damage classes;
+- full-corpus L2 recompilation or package-format changes;
+- weak IME preedit coverage beyond the four direct smoke probes;
+- physical typing after installation.
+
+Verdict scope:
+
+- bounded single-edit inverse lane: `PASS_targeted`;
+- observed false-authority containment for `наденный`: `PASS_targeted`;
+- broad language-quality promotion: `NOT_CLAIMED`;
+- runtime authority changed in source: `true`;
+- installed runtime authority changed at this checkpoint: `true` (`lay 1.0.5`).
+
+Installed smoke facts:
+
+```text
+global ibus-daemon PID       3702 -> 3702
+managed engine PID        4002343 -> 432941
+lay-daemon PID            4002297 -> 432906
+active engine                       lay-ime-us
+```
+
+Exact receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_SINGLE_EDIT_INVERSE_AND_FEEDBACK_SANITATION_2026-08-04.json
+```
+
 ## 13. 2026-08-03 Inverse Length Birth and Tied-Cohort Authority
 
 ### Tested change

@@ -81,7 +81,14 @@ pub(super) fn ascii_to_russian_layout_candidate(
         converted
     };
 
-    let replacement = polish_converted_russian_layout_token(&replacement).unwrap_or(replacement);
+    // A proven raw keyboard projection is already the lexical authority.  L2
+    // morphology may settle an unknown/noisy projection, but it must not move
+    // an exact known form to a same-lemma neighbour without phrase evidence.
+    let replacement = if raw_projection_stable {
+        replacement
+    } else {
+        polish_converted_russian_layout_token(&replacement).unwrap_or(replacement)
+    };
     let (_, replacement_word, _) = split_word_punctuation(&replacement);
     let word = replacement_word.to_string();
     let replacement_known =
@@ -99,4 +106,19 @@ pub(super) fn ascii_to_russian_layout_candidate(
 fn l2_phase_covers_raw_projection(word: &str) -> bool {
     let readout = crate::nanda_wave::l2::l2_surface_phase_readout(word);
     readout.l1_refs >= 12 && readout.residual_l1_refs == 0 && readout.coherence_milli() >= 920
+}
+
+#[cfg(test)]
+mod tests {
+    use super::ascii_to_russian_layout_candidate;
+
+    #[test]
+    fn exact_known_projection_is_not_moved_to_a_morphological_neighbour() {
+        let candidate = ascii_to_russian_layout_candidate("ye;ty", false)
+            .expect("known exact keyboard projection");
+
+        assert_eq!(candidate.replacement, "нужен");
+        assert_eq!(candidate.word, "нужен");
+        assert!(candidate.known);
+    }
 }

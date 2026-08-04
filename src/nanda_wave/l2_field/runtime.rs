@@ -214,7 +214,7 @@ impl StandaloneL2Field {
         self.decode_form(*self.package.form_refs.get(form_ref as usize)?)
     }
 
-    pub(crate) fn single_length_edit_form_refs(&self, surface: &str, limit: usize) -> Vec<u32> {
+    pub(crate) fn single_edit_form_refs(&self, surface: &str, limit: usize) -> Vec<u32> {
         if limit == 0 || self.form_ref_for_surface(surface).is_some() {
             return Vec::new();
         }
@@ -223,14 +223,16 @@ impl StandaloneL2Field {
             return Vec::new();
         }
 
-        let mut shorter = BTreeSet::new();
+        let mut found = BTreeSet::new();
         for remove_at in 0..chars.len() {
             let candidate = chars
                 .iter()
                 .enumerate()
                 .filter_map(|(index, ch)| (index != remove_at).then_some(*ch))
                 .collect::<String>();
-            shorter.insert(candidate);
+            if let Some(form_ref) = self.form_ref_for_surface(&candidate) {
+                found.insert(form_ref);
+            }
         }
 
         let alphabet = if chars
@@ -243,7 +245,6 @@ impl StandaloneL2Field {
         } else {
             ""
         };
-        let mut longer = BTreeSet::new();
         for insert_at in 0..=chars.len() {
             for inserted in alphabet.chars() {
                 let mut candidate = String::with_capacity(surface.len() + inserted.len_utf8());
@@ -256,16 +257,48 @@ impl StandaloneL2Field {
                 if insert_at == chars.len() {
                     candidate.push(inserted);
                 }
-                longer.insert(candidate);
+                if let Some(form_ref) = self.form_ref_for_surface(&candidate) {
+                    found.insert(form_ref);
+                }
             }
         }
 
-        shorter
-            .into_iter()
-            .chain(longer)
-            .filter_map(|candidate| self.form_ref_for_surface(&candidate))
-            .take(limit)
-            .collect()
+        for replace_at in 0..chars.len() {
+            for replacement in alphabet
+                .chars()
+                .filter(|replacement| *replacement != chars[replace_at])
+            {
+                let candidate = chars
+                    .iter()
+                    .enumerate()
+                    .map(|(index, ch)| {
+                        if index == replace_at {
+                            replacement
+                        } else {
+                            *ch
+                        }
+                    })
+                    .collect::<String>();
+                if let Some(form_ref) = self.form_ref_for_surface(&candidate) {
+                    found.insert(form_ref);
+                }
+            }
+        }
+
+        for swap_at in 0..chars.len().saturating_sub(1) {
+            if chars[swap_at] == chars[swap_at + 1] {
+                continue;
+            }
+            let mut candidate = chars.clone();
+            candidate.swap(swap_at, swap_at + 1);
+            if let Some(form_ref) =
+                self.form_ref_for_surface(&candidate.into_iter().collect::<String>())
+            {
+                found.insert(form_ref);
+            }
+        }
+
+        found.into_iter().take(limit).collect()
     }
 
     pub(crate) fn l1_terminal_for_form_ref(&self, form_ref: u32) -> Option<u32> {
@@ -900,17 +933,25 @@ mod standalone_tests {
     }
 
     #[test]
-    fn inverse_length_lane_finds_package_forms_without_scanning_the_field() {
+    fn inverse_single_edit_lane_finds_package_forms_without_scanning_the_field() {
         let corpus = L2TeacherCorpus::parse_tsv(
             "F\tокно\tокно\tnoun:nom:sg\n\
              F\tокно\tокне\tnoun:prep:sg\n\
+             F\tперспективный\tперспективнее\tadj:comp\n\
+             F\tотвлекаться\tотвлекайся\tverb:imp:p2:sg:imperf\n\
              F\tперехватить\tперехвачу\tverb:fut:ind:p1:sg:perf\n\
              T\tокно\tокно\tnoun:nom:sg\t_ открыто\n\
              T\tокно\tокне\tnoun:prep:sg\tв _\n\
              H\tокно\tокне\tnoun:prep:sg\tна _\n",
         )
         .expect("teacher");
-        let terminals = BTreeMap::from([("окно", 7), ("окне", 11), ("перехвачу", 13)]);
+        let terminals = BTreeMap::from([
+            ("окно", 7),
+            ("окне", 11),
+            ("перехвачу", 13),
+            ("перспективнее", 17),
+            ("отвлекайся", 19),
+        ]);
         let (package, _) =
             compile_l2_package(&corpus, 99, |surface| terminals.get(surface).copied())
                 .expect("compile");
@@ -918,13 +959,15 @@ mod standalone_tests {
 
         let surfaces = |damaged| {
             field
-                .single_length_edit_form_refs(damaged, 16)
+                .single_edit_form_refs(damaged, 16)
                 .into_iter()
                 .filter_map(|form_ref| field.decode_form_ref(form_ref))
                 .collect::<Vec<_>>()
         };
         assert_eq!(surfaces("окное"), vec!["окне", "окно"]);
         assert_eq!(surfaces("перхвачу"), vec!["перехвачу"]);
+        assert_eq!(surfaces("переспективнее"), vec!["перспективнее"]);
+        assert_eq!(surfaces("отвликайся"), vec!["отвлекайся"]);
         assert!(surfaces("окне").is_empty(), "clean forms must not fan out");
     }
 

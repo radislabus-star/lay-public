@@ -1,0 +1,62 @@
+{
+  "schema": "lay.l2-sparse-omission-reserve.v1",
+  "date": "2026-08-04",
+  "claim": "The canonical L2 bridge retains a bounded sparse-internal-multi-omission candidate below the general top-8 material frontier without granting it automatic authority.",
+  "configuration": {
+    "l11_seed_limit": 16,
+    "general_material_limit": 8,
+    "sparse_omission_reserve": 2,
+    "reserve_authority": false,
+    "l2_without_l11_seeds": "fail_closed"
+  },
+  "measured": {
+    "input": "на компанию Хунлу можем подврдить ",
+    "target": "на компанию Хунлу можем подтвердить ",
+    "target_l11_seed_rank": 16,
+    "target_l11_score_milli": 1813,
+    "candidate_count_before": 10,
+    "candidate_count_after": 11,
+    "target_error_class": "sparse-internal-multi-omission",
+    "target_gate": "SuggestOnly/canonical_l2_field_local_tie",
+    "competing_wrong_surface": "подводить",
+    "competing_wrong_gate": "SuggestOnly/canonical_l2_field_local_tie",
+    "final_action": "keep",
+    "cold_first_nanda_candidates": 0,
+    "cold_first_nanda_selection": "none",
+    "hot_nanda_candidates": 11,
+    "hot_nanda_selection": "none"
+  },
+  "passed_contracts": [
+    "canonical bridge retains sparse omission candidate below general frontier",
+    "canonical L2 field fails closed without L1.1 seeds",
+    "nanda word-form center can apply edge and internal omission",
+    "default route applies edge and internal omission center"
+  ],
+  "known_separate_failure": {
+    "input": "на сколько переподлчаю ",
+    "expected": "на сколько переподключаю ",
+    "observed": "candidate born but no transition selected",
+    "status": "FAIL_baseline_authority_not_promoted"
+  },
+  "not_tested": [
+    "fixed heldout sparse multi-omission proof",
+    "broad false-candidate rate",
+    "sentence continuation replay",
+    "physical installed IME behavior"
+  ],
+  "verdict": {
+    "targeted_candidate_retention": "PASS_targeted",
+    "automatic_semantic_restoration": "NOT_CLAIMED",
+    "broad_sparse_omission_quality": "NOT_CLAIMED",
+    "runtime_authority_changed_in_source": true,
+    "installed_runtime_authority_changed": true,
+    "installed_release": "1.0.7",
+    "installed_release_sha256": "3387bfc4f4716853ee632868d4866d35d833fdbb745a8e1abd4fa3b3d57c29e4",
+    "installed_hot_result": "target retained; Tied/ABSTAIN; no selected transition",
+    "installed_cold_result": "zero Nanda candidates; no selected transition",
+    "lay_daemon_pid": 1830167,
+    "lay_ibus_engine_pid": 1830194,
+    "lay_l11_serve_pid": 1830227,
+    "global_ibus_daemon_pid": 3702
+  }
+}

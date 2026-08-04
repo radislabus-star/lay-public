@@ -1,0 +1,46 @@
+{
+  "schema": "lay.l2-reference-backed-short-participle-ambiguity.v1",
+  "date": "2026-08-04",
+  "claim": "A reference-backed short participle may enter the bounded L2 lattice as ambiguity evidence, but cannot independently grant Winner authority.",
+  "observed": {
+    "input": "подлючен ",
+    "wrong_live_winner_before": "подлечен ",
+    "expected_visible_candidate": "подключен "
+  },
+  "configuration": {
+    "reference_reserve": 2,
+    "edit_distance": 1,
+    "reference_evidence": "exact attested long participle",
+    "reserve_authority": false
+  },
+  "measured_source": {
+    "candidate_count_before": 15,
+    "candidate_count_after": 16,
+    "correct_candidate": "подключен / missing-letter / SuggestOnly",
+    "competing_candidate": "подлечен / letter-substitution / SuggestOnly",
+    "local_verdict": "Tied",
+    "selected_transition": "none"
+  },
+  "passed_contracts": [
+    "reference-backed short participle recognizes attested long-form families",
+    "reference-backed short participle blocks false singleton authority"
+  ],
+  "not_tested": [
+    "broad short-participle heldout proof",
+    "sentence-context disambiguation",
+    "fixed L1.1 thirteen-class restoration proof"
+  ],
+  "verdict": {
+    "targeted_false_singleton_prevention": "PASS_targeted_source",
+    "automatic_semantic_restoration": "NOT_CLAIMED",
+    "runtime_authority_changed_in_source": true,
+    "installed_runtime_authority_changed": true,
+    "installed_release": "1.0.7",
+    "installed_release_sha256": "5a53ef90a1e47007176a13e41b2c241db85eb7bb60db6ecd1b621d7cd791178f",
+    "installed_hot_result": "16 candidates; both valid forms SuggestOnly; no selected transition",
+    "lay_daemon_pid": 1853387,
+    "lay_ibus_engine_pid": 1853423,
+    "lay_l11_serve_pid": 1853447,
+    "global_ibus_daemon_pid": 3702
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "schema": "lay.l2-single-edit-and-feedback-sanitation.v1",
+  "date": "2026-08-04",
+  "claim": "Canonical L2 performs bounded package-indexed one-step Damerau recovery while clean IME prediction confirmation is recorded as non-mutation evidence.",
+  "tested": [
+    "single-edit package lookup for insertion, deletion, substitution, and adjacent transposition",
+    "class-conditioned authority under a tied L2 cohort",
+    "generic Russian verb-ending preservation",
+    "confirmed IME prediction transition identity",
+    "canonical route smoke probes for four observed surfaces"
+  ],
+  "measured": {
+    "переспективнее": "перспективнее",
+    "отвликайся": "отвлекайся",
+    "переделаем": "переделаем",
+    "наденный": "наденный",
+    "inverse_form_ref_limit": 16,
+    "confirmed_prediction_operator": "other",
+    "confirmed_prediction_explicit_completion": false
+  },
+  "not_tested": [
+    "fixed heldout percentages for all L1.1 damage classes",
+    "full L2 corpus recompilation",
+    "historical online-state cleanup",
+    "physical IME interaction after installation",
+    "weak IME preedit coverage"
+  ],
+  "verdict": {
+    "targeted_l2": "PASS_targeted",
+    "feedback_identity": "PASS_targeted",
+    "broad_quality": "NOT_CLAIMED",
+    "runtime_authority_changed_in_source": true,
+    "installed_runtime_authority_changed": true,
+    "installed_version": "1.0.5",
+    "global_ibus_pid_before": 3702,
+    "global_ibus_pid_after": 3702,
+    "managed_engine_pid_before": 4002343,
+    "managed_engine_pid_after": 432941,
+    "daemon_pid_before": 4002297,
+    "daemon_pid_after": 432906,
+    "active_engine": "lay-ime-us"
+  },
+  "commands": [
+    "scripts/cargo-guard.sh test --lib tie_demotes_ambiguous_length_change_but_preserves_other_verified_member -- --nocapture",
+    "scripts/cargo-guard.sh test --lib inverse_single_edit_lane_finds_package_forms_without_scanning_the_field -- --nocapture",
+    "scripts/cargo-guard.sh test --lib confirmed_ime_prediction_is_positive_but_not_an_explicit_completion -- --nocapture",
+    "scripts/check-lay-changed.sh",
+    "target/debug/lay --restore-word --candidate-route canonical-l2-field <surface>"
+  ]
+}
