@@ -321,6 +321,75 @@ Runtime authority changed:
 
 - `false`
 
+## 13. 2026-08-05 Atomic Space And Nonblocking L3 Refresh
+
+### Candidate Birth And Blocking Points
+
+```text
+physical Space
+-> committed-token autocorrect decision
+-> AuthorizedEdit replacement
+-> exactly one committed word boundary
+
+next printable key
+-> bounded L2 candidate birth
+-> read current immutable L3 composite
+-> live candidate readout
+```
+
+Two coupled runtime defects were observed in the same typing sequence:
+
+- an autocorrect replacement and its triggering physical Space did not have an
+  explicit executor-level contract requiring exactly one trailing boundary;
+- `with_default_memory()` synchronously loaded a changed L3 composite manifest
+  on the hot preedit thread before scoring the next token.
+
+The canonical runtime contract is now:
+
+- a successful Space autocorrect must carry exactly one trailing ASCII Space in
+  the authorized replacement; an invalid boundary fails closed and the managed
+  route commits the physical Space normally;
+- manifest polling may detect a new L3 generation on the readout path, but one
+  bounded background worker owns package loading;
+- live readout continues against the previous immutable `Arc<L3CompositeMemory>`
+  while the worker loads the new generation;
+- the worker swaps the ready composite under the write lock; candidate scoring,
+  L3 weights and text-edit authority do not change.
+
+### Measured Facts
+
+- live pre-fix trace for token `ош`: total `777948 us`, L2 material `2358 us`,
+  L3 context `775051 us`;
+- additional live pre-fix examples included `ту`: L3 `83588 us`, and `пу`: L3
+  `96816 us`;
+- post-change debug cache-miss probe over six distinct prefixes: maximum total
+  `34338 us`, maximum L3 stage `11998 us`;
+- committed-tail focused tests: `8/8 PASS`;
+- one-Space autocorrect sequence tests: `3/3 PASS`.
+
+### Scope And Gate
+
+What was not tested at this point:
+
+- post-install physical GUI p50/p99 under a newly admitted online L3 delta;
+- application-specific surrounding-text behavior in every GTK, Chromium and
+  WeChat surface;
+- full L1.1 thirteen-class restoration proof.
+
+The wider `ime_correction::tests` gate is not green in the current checkout:
+sequential execution produced `17 PASS / 14 FAIL`. The failures include stale
+source-owner expectations (`personal_phrase` versus `glued_phrase`) and missing
+live decisions. They are recorded as a separate existing gate and are not
+reported as proof of this focused executor/latency change.
+
+Exact receipt:
+
+`/home/ubu/projects/lay/docs/structural_gates/receipts/IME_ATOMIC_SPACE_NONBLOCKING_L3_2026-08-05.json`
+
+Runtime authority changed:
+
+- `false`
+
 ## 14. 2026-08-05 Bounded Typo Plus Boundary Repair
 
 ### What was tested

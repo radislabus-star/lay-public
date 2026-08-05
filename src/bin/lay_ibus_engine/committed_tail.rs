@@ -51,6 +51,10 @@ impl LayIbusEngine {
             ));
             return Ok(false);
         }
+        if !autocorrect_replacement_has_one_trailing_space(&decision.replacement) {
+            trace::record(r#"{"kind":"ibus_space_autocorrect","status":"invalid_space_boundary"}"#);
+            return Ok(false);
+        }
         trace::record(r#"{"kind":"ibus_space_autocorrect","status":"authorized"}"#);
 
         lay::action_log::record_candidate_edit_action_before_apply(
@@ -295,9 +299,19 @@ fn committed_tail_autocorrect_decision_is_authorized(
     decision.action.allow_apply()
 }
 
+fn autocorrect_replacement_has_one_trailing_space(replacement: &str) -> bool {
+    let Some(stem) = replacement.strip_suffix(' ') else {
+        return false;
+    };
+    !stem.is_empty() && !stem.ends_with(char::is_whitespace)
+}
+
 #[cfg(test)]
 mod tests {
-    use super::{committed_tail_autocorrect_decision_is_authorized, LayIbusEngine};
+    use super::{
+        autocorrect_replacement_has_one_trailing_space,
+        committed_tail_autocorrect_decision_is_authorized, LayIbusEngine,
+    };
     use lay::config::LayConfig;
     use lay::ime_correction::{
         decide_active_composition_autocorrect, ActiveCompositionAutocorrectRequest,
@@ -321,6 +335,18 @@ mod tests {
                 ..LayConfig::default()
             },
         )
+    }
+
+    #[test]
+    fn space_autocorrect_requires_exactly_one_committed_boundary() {
+        assert!(autocorrect_replacement_has_one_trailing_space("документы "));
+        assert!(!autocorrect_replacement_has_one_trailing_space("документы"));
+        assert!(!autocorrect_replacement_has_one_trailing_space(
+            "документы  "
+        ));
+        assert!(!autocorrect_replacement_has_one_trailing_space(
+            "документы\t "
+        ));
     }
 
     #[test]

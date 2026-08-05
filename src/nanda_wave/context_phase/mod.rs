@@ -2159,6 +2159,7 @@ pub(crate) fn default_manifest_path() -> PathBuf {
 static DEFAULT_MEMORY: OnceLock<RwLock<Arc<L3CompositeMemory>>> = OnceLock::new();
 static DEFAULT_MEMORY_WARM: AtomicBool = AtomicBool::new(false);
 static DEFAULT_MEMORY_REFRESH_CHECK_MS: AtomicU64 = AtomicU64::new(0);
+static DEFAULT_MEMORY_REFRESH_IN_FLIGHT: AtomicBool = AtomicBool::new(false);
 
 pub(crate) fn warm_default_memory() {
     let _ = default_memory_lock();
@@ -2221,14 +2222,35 @@ fn maybe_reload_default_memory() {
             return;
         }
     }
-    let Ok(memory) = L3CompositeMemory::load_manifest(&manifest_path) else {
+    if DEFAULT_MEMORY_REFRESH_IN_FLIGHT
+        .compare_exchange(false, true, Ordering::AcqRel, Ordering::Relaxed)
+        .is_err()
+    {
         return;
-    };
-    let mut current = default_memory_lock()
-        .write()
-        .unwrap_or_else(|error| error.into_inner());
-    if current.manifest_stamp != memory.manifest_stamp {
-        *current = Arc::new(memory);
+    }
+    if std::thread::Builder::new()
+        .name("lay-l3-memory-refresh".to_string())
+        .spawn(move || {
+            struct RefreshGuard;
+            impl Drop for RefreshGuard {
+                fn drop(&mut self) {
+                    DEFAULT_MEMORY_REFRESH_IN_FLIGHT.store(false, Ordering::Release);
+                }
+            }
+            let _guard = RefreshGuard;
+            let Ok(memory) = L3CompositeMemory::load_manifest(&manifest_path) else {
+                return;
+            };
+            let mut current = default_memory_lock()
+                .write()
+                .unwrap_or_else(|error| error.into_inner());
+            if current.manifest_stamp != memory.manifest_stamp {
+                *current = Arc::new(memory);
+            }
+        })
+        .is_err()
+    {
+        DEFAULT_MEMORY_REFRESH_IN_FLIGHT.store(false, Ordering::Release);
     }
 }
 

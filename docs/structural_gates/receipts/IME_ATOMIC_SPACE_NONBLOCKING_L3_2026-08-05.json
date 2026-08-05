@@ -1,0 +1,45 @@
+{
+  "schema": "lay.ime-atomic-space-nonblocking-l3.v1",
+  "date": "2026-08-05",
+  "claim": "Space autocorrect preserves exactly one boundary and changed L3 composites no longer load synchronously on the preedit thread.",
+  "observed_before": {
+    "token": "ош",
+    "total_us": 777948,
+    "l2_material_us": 2358,
+    "l3_context_us": 775051,
+    "additional_l3_us": {
+      "ту": 83588,
+      "пу": 96816
+    }
+  },
+  "change": {
+    "space_contract": "authorized replacement ends in exactly one ASCII Space; otherwise normal managed Space fallback",
+    "l3_reload": "single in-flight background loader with immutable previous-package readout and ready Arc swap",
+    "candidate_scoring_changed": false,
+    "runtime_authority_changed": false,
+    "package_format_changed": false
+  },
+  "measured_after_debug": {
+    "distinct_prefixes": 6,
+    "max_total_us": 34338,
+    "max_l3_context_us": 11998
+  },
+  "verification": {
+    "committed_tail_tests": "8/8 PASS",
+    "one_space_sequence_tests": "3/3 PASS",
+    "unique_prefix_budget_test": "PASS_debug",
+    "wide_ime_correction_tests_sequential": "17 PASS / 14 FAIL"
+  },
+  "not_tested": [
+    "post-install physical GUI p50/p99 after an online L3 delta admission",
+    "all application-specific surrounding-text implementations",
+    "L1.1 thirteen-damage-class heldout proof"
+  ],
+  "verdict": {
+    "focused_space_contract": "PASS",
+    "focused_nonblocking_reload": "PASS_code_and_debug_probe",
+    "wide_ime_gate": "FAIL_existing_live-expectation_drift",
+    "broad_quality": "NOT_CLAIMED",
+    "runtime_authority_changed": false
+  }
+}
