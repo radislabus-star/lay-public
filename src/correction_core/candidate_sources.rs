@@ -1065,7 +1065,7 @@ fn nanda_word_candidate(
             error_class,
             TypingErrorClass::GluedWords | TypingErrorClass::SplitWord
         )
-        && !crate::text_metrics::current_token_boundary_split(original, &replacement)
+        && !crate::text_metrics::current_token_boundary_split_or_repair(original, &replacement)
     {
         return None;
     }

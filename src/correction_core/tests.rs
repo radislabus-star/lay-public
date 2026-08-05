@@ -423,6 +423,29 @@ mod tests {
     }
 
     #[test]
+    fn live_canonical_l2_field_applies_bounded_typo_plus_boundary_repair() {
+        let pipeline = default_typing_assist_pipeline();
+        let mut req = request(
+            "Готовь докуентыдля ",
+            &pipeline,
+            CorrectionMode::DeterministicThenNanda,
+        );
+        req.nanda_candidate_route = CandidateReadoutRoute::live_default();
+
+        let resolution = resolve_text_correction(req);
+        let selected = resolution
+            .selected
+            .as_ref()
+            .expect("verified current-token repair plus split must remain in the live lattice");
+
+        assert_eq!(selected.replacement, "Готовь документы для ");
+        assert_eq!(selected.origin, CandidateOrigin::Boundary);
+        assert_eq!(selected.error_class, TypingErrorClass::GluedWords);
+        assert_eq!(selected.source_id, "CanonicalL2FieldBoundary");
+        assert_eq!(selected.gate.action, CandidateGateAction::Eligible);
+    }
+
+    #[test]
     fn live_l2_field_owner_blocks_reference_only_semantic_word_drift() {
         let pipeline = default_typing_assist_pipeline();
         for input in ["модель генерит ", "окончанием слов "] {
@@ -1562,6 +1585,17 @@ mod tests {
 
         assert_eq!(gate.action, CandidateGateAction::SuggestOnly);
         assert_eq!(gate.reason, "weak_boundary_split_tail");
+    }
+
+    #[test]
+    fn boundary_gate_admits_bounded_current_token_repair_and_split() {
+        let gate = gate_candidate(
+            "Готовь докуентыдля ",
+            "Готовь документы для ",
+            TypingErrorClass::GluedWords,
+        );
+
+        assert_eq!(gate.action, CandidateGateAction::Eligible);
     }
 
     #[test]

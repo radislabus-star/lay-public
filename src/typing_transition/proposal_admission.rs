@@ -846,6 +846,9 @@ fn boundary_operator_changes_non_whitespace_surface(
     {
         return false;
     }
+    if crate::text_metrics::current_token_repaired_boundary_split(original, replacement) {
+        return false;
+    }
     original
         .chars()
         .filter(|ch| !ch.is_whitespace())

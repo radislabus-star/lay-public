@@ -321,6 +321,69 @@ Runtime authority changed:
 
 - `false`
 
+## 14. 2026-08-05 Bounded Typo Plus Boundary Repair
+
+### What was tested
+
+- live canonical route for
+  `Готовь докуентыдля -> Готовь документы для`;
+- `BoundaryCell32` candidate birth for a damaged glued current token;
+- proposal admission through the existing
+  `current_token_boundary_split_or_repair` contract;
+- preservation of the known-word split guards for `уровне` and
+  `на уровне`.
+
+### Measured facts
+
+- before the change, both `full-wave` and `canonical-l2-field` produced no
+  applicable candidate for `Готовь докуентыдля`;
+- the deterministic route could describe `Готовь документы для`, but it was
+  `SuggestOnly/boundary_operator_changes_surface`;
+- the live canonical route now has `17` candidates: `1` applicable and `16`
+  suggest-only;
+- the selected candidate is `Готовь документы для` from
+  `Nanda:CanonicalL2FieldBoundary`;
+- the selected gate is `Eligible/class_allows_apply`;
+- the edit is verified as a bounded current-token `GluedWords` operation;
+- no phrase-specific replacement table was added.
+
+### General contract
+
+```text
+damaged current token
+-> BoundaryCell32 proposes known lexical parts
+-> current_token_boundary_split_or_repair
+   requires unchanged left context
+   requires one damaged current token
+   requires one or two added word boundaries
+   requires known replacement parts
+   rejects an already-known original token
+   requires Damerau-Levenshtein distance <= 2
+-> BoundaryMergeSplit verifier
+-> common L2 readout
+```
+
+### What was not tested
+
+- broad glued-token recall and false-split percentages;
+- physical GUI behavior outside the installed IME probe;
+- the fixed L1.1 thirteen-damage-class heldout proof.
+
+### Verdict scope
+
+`PASS_targeted`: the canonical live L2 owner can apply a verified typo repair
+and boundary split on the current token. This is not a broad boundary-quality
+claim.
+
+Exact receipt:
+
+`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_BOUNDED_TYPO_BOUNDARY_REPAIR_2026-08-05.json`
+
+Runtime authority changed:
+
+- `true`, limited to candidates already proved by
+  `current_token_boundary_split_or_repair`
+
 ## 13. 2026-08-04 Standalone L2 First-Space Warmup
 
 ### What was tested

@@ -1,0 +1,64 @@
+{
+  "schema": "lay.l2-bounded-typo-boundary-repair.v1",
+  "date": "2026-08-05",
+  "claim": "The canonical live L2 field can apply a bounded typo repair and boundary split on the current token.",
+  "probe": {
+    "input": "Готовь докуентыдля ",
+    "expected": "Готовь документы для "
+  },
+  "before": {
+    "target_selected": null,
+    "apply_candidates": 0,
+    "blocking_reason": "boundary_operator_changes_surface"
+  },
+  "measured": {
+    "target_selected": "Готовь документы для ",
+    "selected_source": "Nanda:CanonicalL2FieldBoundary",
+    "selected_error_class": "glued-words",
+    "selected_gate": "Eligible/class_allows_apply",
+    "total_candidates": 17,
+    "apply_candidates": 1,
+    "suggest_only_candidates": 16,
+    "keep_original_candidates": 0,
+    "veto_candidates": 0
+  },
+  "safety_contract": {
+    "metric": "current_token_boundary_split_or_repair",
+    "left_context_must_match": true,
+    "maximum_added_boundaries": 2,
+    "replacement_parts_must_be_known": true,
+    "known_original_is_rejected": true,
+    "maximum_damerau_levenshtein": 2,
+    "phrase_specific_rule_added": false
+  },
+  "tests": [
+    "nanda_wave::l2::tests::boundary_cell_repairs_and_splits_the_current_glued_token",
+    "correction_core::tests::boundary_gate_admits_bounded_current_token_repair_and_split",
+    "correction_core::tests::live_canonical_l2_field_applies_bounded_typo_plus_boundary_repair",
+    "correction_core::tests::boundary_gate_does_not_split_known_single_word",
+    "correction_core::tests::boundary_gate_does_not_split_known_word_inside_phrase"
+  ],
+  "installed_runtime": {
+    "version": "1.0.8",
+    "probe_selected": "Готовь документы для ",
+    "probe_source": "Nanda:CanonicalL2FieldBoundary",
+    "probe_gate": "Eligible/class_allows_apply",
+    "global_ibus_pid_before": 3702,
+    "global_ibus_pid_after": 3702,
+    "daemon_pid_before": 1938013,
+    "daemon_pid_after": 2803569,
+    "engine_pid_before": 1938039,
+    "engine_pid_after": 2803598,
+    "active_engine": "lay-ime-ru"
+  },
+  "not_tested": [
+    "broad glued-token recall and false-split percentages",
+    "physical GUI behavior outside the installed IME probe",
+    "L1.1 thirteen-damage-class heldout proof"
+  ],
+  "verdict": {
+    "targeted_composite_boundary": "PASS_targeted",
+    "broad_boundary_quality": "NOT_CLAIMED",
+    "runtime_authority_changed": true
+  }
+}
