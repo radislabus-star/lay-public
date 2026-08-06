@@ -1,5 +1,6 @@
 #[cfg(not(test))]
 use std::process::Command;
+use std::sync::{Arc, Condvar, Mutex, OnceLock};
 
 use lay::keyboard::preferred_layout_for_text;
 
@@ -10,14 +11,32 @@ const RU_ENGINE: &str = "lay-ime-ru";
 const US_ENGINE: &str = "lay-ime-us";
 impl LayIbusEngine {
     pub(super) fn sync_layout_after_committed_text(&mut self, text: &str) {
-        self.sync_layout_for_text(text);
+        if !self.config.auto_switch_layout {
+            return;
+        }
+        let target_is_ru = preferred_layout_for_text(text, self.layout_is_ru);
+        let target_engine = ime_engine_for_layout(target_is_ru);
+        if target_is_ru == self.layout_is_ru {
+            self.publish_tail_handoff();
+            trace::record_layout_sync(target_is_ru, target_engine, true);
+            return;
+        }
+
+        // CommitText already contains the corrected surface. Keep the physical
+        // key path responsive by changing this engine's decoder immediately;
+        // the process-level IBus engine switch is a postcondition owned by one
+        // latest-only background worker.
+        self.layout_is_ru = target_is_ru;
+        self.publish_tail_handoff();
+        request_active_ime_engine_switch(target_is_ru, target_engine);
+        trace::record_layout_sync_requested(target_is_ru, target_engine);
     }
 
     pub(super) fn sync_layout_after_manual_toggle(&mut self, text: &str) {
-        self.sync_layout_for_text(text);
+        self.sync_layout_for_text_blocking(text);
     }
 
-    fn sync_layout_for_text(&mut self, text: &str) {
+    fn sync_layout_for_text_blocking(&mut self, text: &str) {
         if !self.config.auto_switch_layout {
             return;
         }
@@ -49,6 +68,72 @@ impl LayIbusEngine {
         trace::record_layout_sync(target_is_ru, target_engine, ok);
         ok
     }
+}
+
+#[derive(Clone, Copy)]
+struct LayoutSwitchRequest {
+    target_is_ru: bool,
+    engine: &'static str,
+}
+
+#[derive(Default)]
+struct LayoutSwitchState {
+    desired: Option<LayoutSwitchRequest>,
+}
+
+struct LayoutSwitchWorker {
+    state: Arc<(Mutex<LayoutSwitchState>, Condvar)>,
+}
+
+impl LayoutSwitchWorker {
+    fn start() -> Self {
+        let state = Arc::new((Mutex::new(LayoutSwitchState::default()), Condvar::new()));
+        let worker_state = Arc::clone(&state);
+        std::thread::Builder::new()
+            .name("lay-layout-switch".to_string())
+            .spawn(move || run_layout_switch_worker(worker_state))
+            .expect("failed to start layout switch worker");
+        Self { state }
+    }
+
+    fn schedule(&self, request: LayoutSwitchRequest) {
+        let (lock, wake) = &*self.state;
+        let Ok(mut state) = lock.lock() else {
+            return;
+        };
+        state.desired = Some(request);
+        wake.notify_one();
+    }
+}
+
+fn run_layout_switch_worker(shared: Arc<(Mutex<LayoutSwitchState>, Condvar)>) {
+    loop {
+        let request = {
+            let (lock, wake) = &*shared;
+            let Ok(mut state) = lock.lock() else {
+                return;
+            };
+            while state.desired.is_none() {
+                let Ok(next) = wake.wait(state) else {
+                    return;
+                };
+                state = next;
+            }
+            state.desired.take().expect("desired switch checked above")
+        };
+        let ok = switch_active_ime_engine(request.engine).is_ok();
+        trace::record_layout_sync(request.target_is_ru, request.engine, ok);
+    }
+}
+
+fn request_active_ime_engine_switch(target_is_ru: bool, engine: &'static str) {
+    static WORKER: OnceLock<LayoutSwitchWorker> = OnceLock::new();
+    WORKER
+        .get_or_init(LayoutSwitchWorker::start)
+        .schedule(LayoutSwitchRequest {
+            target_is_ru,
+            engine,
+        });
 }
 
 fn ime_engine_for_layout(target_is_ru: bool) -> &'static str {

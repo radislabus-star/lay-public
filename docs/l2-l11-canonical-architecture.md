@@ -321,6 +321,87 @@ Runtime authority changed:
 
 - `false`
 
+## 17. 2026-08-06 Nonblocking Layout Handoff After Autocorrection
+
+The live log exposed a second synchronous owner on the physical Space route
+after the `DecisionCore` prefetch work had already been moved off that route.
+The observed sequence was:
+
+```text
+Tcnm
+-> autocorrection commits "Есть "
+-> process-level switch to lay-ime-ru blocks
+-> switch command times out after 204 ms, ok=false
+-> the switch completes later
+-> the first key of the next word is decoded under the old layout
+-> nакой
+-> the next Space repairs it to "такой "
+```
+
+Measured pre-fix facts from
+`/home/ubu/.local/share/lay/ibus_engine_debug.jsonl`:
+
+```text
+prefetch for Tcnm                         486 us
+CommitText for "Есть "                    49 us
+replacement state                    204,383 us
+replacement total                    204,435 us
+physical Space total                 204,588 us
+ibus_layout_sync target=ru            ok=false
+```
+
+The `1.0.13` runtime contract is now:
+
+```text
+authorized layout autocorrection
+-> commit corrected surface and one Space
+-> immediately set this LayIbusEngine decoder to the target layout
+-> publish committed-tail handoff
+-> schedule one latest-only background process-level IBus switch
+-> return from physical Space
+```
+
+The background state is bounded to one worker and one replaceable desired
+request. A newer desired layout replaces a request that has not started yet.
+The worker emits the final `ibus_layout_sync` result, while the hot path emits
+`ibus_layout_sync_requested`. The external IBus command and its timeout no
+longer belong to autocorrection's physical Space latency.
+
+Manual double-Shift remains on the blocking layout synchronization route. That
+operation explicitly asks for a completed user-visible layout transition and
+is not part of this Space-only ownership change.
+
+What was tested:
+
+- release compilation of `lay`, `lay-daemon`, and `lay-ibus-engine`;
+- installation of Lay `1.0.13` and GNOME extension runtime `1.0.13`;
+- restart of only `lay-daemon` and `lay-ibus-engine`;
+- global `ibus-daemon` retained PID `3702`.
+
+What was not tested:
+
+- post-install physical GUI Space latency percentiles;
+- a repeated live `Tcnm -> Есть такой` interaction after installation;
+- quality impact on the fixed L1.1 or L2 heldout proofs.
+
+Verdict scope:
+
+- the measured `204.588 ms` is a pre-fix fact and is not presented as a
+  post-fix result;
+- code ownership and the installed runtime changed so that autocorrection no
+  longer waits for the process-level IBus switch;
+- live behavioral confirmation remains pending user typing.
+
+Receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/IBUS_AUTOCORRECT_LAYOUT_HANDOFF_NONBLOCKING_2026-08-06.json
+```
+
+Runtime authority changed:
+
+- `true`
+
 ## 14. 2026-08-06 Short-Function Boundary Shift And Space Timing
 
 ### Observed Input Shape

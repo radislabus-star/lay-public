@@ -1,0 +1,58 @@
+{
+  "schema": "lay.structural_gate_receipt.v1",
+  "gate": "IBUS_AUTOCORRECT_LAYOUT_HANDOFF_NONBLOCKING",
+  "date": "2026-08-06",
+  "version": "1.0.13",
+  "verdict": "INSTALLED_LIVE_CONFIRMATION_PENDING",
+  "runtime_authority_changed": true,
+  "observed_pre_fix_sequence": [
+    "Tcnm",
+    "autocorrection committed Есть plus one Space",
+    "process-level switch to lay-ime-ru timed out with ok=false",
+    "first key of the next word arrived under the old layout as nакой",
+    "the next Space repaired nакой to такой"
+  ],
+  "pre_fix_measurement_us": {
+    "prefetch": 486,
+    "commit_text": 49,
+    "replacement_state": 204383,
+    "replacement_total": 204435,
+    "space_total": 204588
+  },
+  "pre_fix_layout_sync": {
+    "target_is_ru": true,
+    "engine": "lay-ime-ru",
+    "ok": false
+  },
+  "installed_route": [
+    "commit corrected surface and one Space",
+    "immediately set current LayIbusEngine decoder layout",
+    "publish committed-tail handoff",
+    "schedule process-level IBus switch on one latest-only background worker",
+    "return from physical Space without waiting for the external command"
+  ],
+  "bounded_state": {
+    "workers": 1,
+    "desired_requests": 1,
+    "latest_request_replaces_not_started_request": true,
+    "manual_double_shift_stays_blocking": true
+  },
+  "verified": [
+    "release compilation of lay, lay-daemon and lay-ibus-engine",
+    "installed lay version 1.0.13",
+    "GNOME extension runtime version 1.0.13",
+    "lay-daemon restarted as PID 718312",
+    "lay-ibus-engine restarted as PID 718339",
+    "global ibus-daemon PID remained 3702"
+  ],
+  "not_tested": [
+    "post-install physical GUI Space latency percentiles",
+    "repeated live Tcnm to Есть такой interaction",
+    "fixed heldout L1.1 or L2 proof"
+  ],
+  "evidence": [
+    "/home/ubu/projects/lay/src/bin/lay_ibus_engine/layout_sync.rs",
+    "/home/ubu/projects/lay/src/bin/lay_ibus_engine/trace.rs",
+    "/home/ubu/.local/share/lay/ibus_engine_debug.jsonl"
+  ]
+}

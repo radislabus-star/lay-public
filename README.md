@@ -10,7 +10,7 @@
 **Статус: alpha.** Основной сценарий уже рабочий. Главная зона активной
 доводки — автопомощь после пробела и редкие desktop edge cases.
 
-Текущая версия: **1.0.12**.
+Текущая версия: **1.0.13**.
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scripts/install-remote.sh | bash
@@ -51,7 +51,14 @@ pinned SHA-256 match the released model contract.
 По умолчанию double Shift исправляет **1 последнее слово**. Области `2 слова`
 и `3 слова` можно включить отдельно в трее.
 
-## Что нового в 1.0.12
+## Что нового в 1.0.13
+
+- после layout-автокоррекции переключение process-level IBus engine больше не
+  блокирует Space на `120-204 ms`: текущий decoder сразу принимает целевую
+  раскладку, а внешний switch выполняет один latest-only background worker;
+- это закрывает живой маршрут `Tcnm -> Есть`, где старый timeout задерживал
+  Space на `204.588 ms`, возвращал `ok=false` и пропускал первую букву
+  следующего слова как латинскую (`nакой` вместо `такой`).
 
 - физический Space больше не ждёт тяжёлый `DecisionCore`: решение для
   автокоррекции готовится одним latest-only worker, а неготовый или устаревший
@@ -79,7 +86,9 @@ pinned SHA-256 match the released model contract.
 сам commit Space                 0.690 ms
 ```
 
-В `1.0.12` синхронного вызова DecisionCore в обработчике Space больше нет.
+Начиная с `1.0.12`, синхронного вызова DecisionCore в обработчике Space нет.
+В `1.0.13` из той же горячей стадии убран синхронный process-level layout
+switch.
 Фактические GUI p50/p95/p99 и доля готовых prefetch-решений продолжают
 собираться по живой телеметрии; это не объявляется закрытым quality gate без
 измерений.
@@ -828,7 +837,7 @@ scripts/check-lay-full.sh
 
 ## English
 
-`lay` 1.0.12 is a local Double Shift RU/EN layout rescue and bounded typing
+`lay` 1.0.13 is a local Double Shift RU/EN layout rescue and bounded typing
 correction tool for Linux desktops.
 
 Main workflow:

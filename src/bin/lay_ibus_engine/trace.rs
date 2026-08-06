@@ -124,6 +124,15 @@ pub(crate) fn record_layout_sync(target_is_ru: bool, engine: &str, ok: bool) {
     ));
 }
 
+pub(crate) fn record_layout_sync_requested(target_is_ru: bool, engine: &str) {
+    if !enabled() {
+        return;
+    }
+    write_record(format!(
+        r#"{{"kind":"ibus_layout_sync_requested","target_is_ru":{target_is_ru},"engine":"{engine}"}}"#
+    ));
+}
+
 pub(crate) fn record_manual_toggle_plan(plan: &ManualTogglePlan) {
     if !enabled() {
         return;
