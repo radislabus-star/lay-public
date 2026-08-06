@@ -1,0 +1,69 @@
+{
+  "schema": "lay.structural_gate_receipt.v1",
+  "gate": "IBUS_SPACE_BOUNDARY_SHIFT_TIMING",
+  "date": "2026-08-06",
+  "version": "1.0.11",
+  "verdict": "INSTALLED_LIVE_CONFIRMATION_PENDING",
+  "runtime_authority_changed": true,
+  "observed_case": {
+    "displayed_text": "какие документыим прислать",
+    "physical_tail": "документ ыим",
+    "candidate_source": "moved_prefix_pair",
+    "error_class": "boundary-shift",
+    "expected_replacement": "документы им",
+    "previous_veto": "boundary_shift_unstable_token_mass"
+  },
+  "admission_contract": {
+    "letters_may_change": false,
+    "changed_region": "last two token boundaries only",
+    "normal_token_min_chars": 4,
+    "short_token_min_chars": 2,
+    "short_token_requires": [
+      "known Russian phrase part",
+      "known short Russian function word",
+      "exact surface phase center"
+    ],
+    "word_specific_exception": false
+  },
+  "live_space_measurements_us": [
+    {
+      "token": "склееватся",
+      "route": "managed_fallback_commit",
+      "decision": 217769,
+      "commit": 67,
+      "total": 217876,
+      "status": "no_decision"
+    },
+    {
+      "decision": 224505,
+      "commit": 102,
+      "total": 224644,
+      "status": "no_decision"
+    },
+    {
+      "decision": 407816,
+      "replacement": 53,
+      "commit": 63,
+      "total": 408007,
+      "status": "not_applied"
+    }
+  ],
+  "measured_facts": [
+    "Space commit is not the dominant latency owner",
+    "synchronous autocorrect DecisionCore owns the measured Space outliers",
+    "1.0.11 is installed",
+    "global ibus-daemon PID remained 3702"
+  ],
+  "not_tested": [
+    "post-install physical GUI confirmation of the observed boundary shift",
+    "post-optimization Space latency percentiles",
+    "fixed heldout L1.1 or L2 proof",
+    "wider boundary-shift corpus"
+  ],
+  "evidence": [
+    "/home/ubu/.local/share/lay/ibus_engine_debug.jsonl",
+    "/home/ubu/projects/lay/src/typing_transition/decision/hard_structural_veto.rs",
+    "/home/ubu/projects/lay/src/bin/lay_ibus_engine/committed_tail.rs",
+    "/home/ubu/projects/lay/src/bin/lay_ibus_engine/managed.rs"
+  ]
+}

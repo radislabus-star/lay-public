@@ -75,12 +75,23 @@ fn boundary_shift_has_stable_token_mass(replacement: &str) -> bool {
     let Some(pair) = words.get(words.len().saturating_sub(2)..) else {
         return false;
     };
-    pair.len() == 2
-        && pair.iter().all(|word| {
-            let lower = word.to_lowercase();
-            lower.chars().count() >= 4
-                && crate::phrase_lexicon::is_known_russian_phrase_part(&lower)
-        })
+    if pair.len() != 2 {
+        return false;
+    }
+    pair.iter().all(|word| {
+        let lower = word.to_lowercase();
+        let chars = lower.chars().count();
+        let known = crate::phrase_lexicon::is_known_russian_phrase_part(&lower);
+        if chars >= 4 {
+            return known;
+        }
+        chars >= 2
+            && known
+            && crate::phrase_lexicon::is_short_russian_function_word(&lower)
+            && crate::hot_field::HotFieldSnapshot::current()
+                .surface_phase_readout(&lower)
+                .exact_center
+    })
 }
 
 fn boundary_shift_changes_only_tail_pair(original: &str, replacement: &str) -> bool {

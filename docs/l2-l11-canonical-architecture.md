@@ -321,6 +321,109 @@ Runtime authority changed:
 
 - `false`
 
+## 14. 2026-08-06 Short-Function Boundary Shift And Space Timing
+
+### Observed Input Shape
+
+The live input
+
+```text
+какие документ ыим
+```
+
+is not a missing committed Space. The physical key sequence placed Space before
+the final `ы`, so the committed tail contained two surfaces:
+
+```text
+документ | ыим
+```
+
+The existing `moved_prefix_pair` producer correctly emitted the structural
+boundary-shift candidate:
+
+```text
+какие документ ыим
+-> какие документы им
+```
+
+The candidate was rejected later by
+`boundary_shift_unstable_token_mass`, because the structural veto required both
+result tokens to contain at least four characters.
+
+### Canonical Structural Gate
+
+A boundary shift still cannot change letters. It may only redistribute the
+existing tail characters across the last two token boundaries. Each resulting
+token must have independent lexical support.
+
+For a token shorter than four characters the additional contract is:
+
+```text
+length >= 2
+AND known Russian phrase part
+AND known short Russian function word
+AND exact surface phase center
+```
+
+This is a class-level rule, not a word-specific exception. It admits supported
+short pronouns and function words while keeping arbitrary short fragments
+blocked.
+
+### Space Hot-Path Measurement
+
+The new `ibus_space_key_timing` and `ibus_space_autocorrect_timing` events split
+the physical Space route into setup, DecisionCore, replacement and commit time.
+The live trace for `склееватся` measured:
+
+```text
+Space total                 217876 us
+autocorrect DecisionCore    217769 us
+Space commit                    67 us
+status                  no_decision
+```
+
+Additional live outliers reached `224644 us` and `408007 us`. Therefore the
+remaining freeze owner is the synchronous committed-token DecisionCore call on
+the IBus Space hot path. Boundary commit and replacement are not the dominant
+cost. Version `1.0.11` adds exact telemetry and the short-function
+boundary-shift admission, but does not claim that the Space latency gate has
+passed.
+
+### Evidence Scope
+
+What was tested or measured:
+
+- the live physical sequence and committed-tail surfaces were read from
+  `/home/ubu/.local/share/lay/ibus_engine_debug.jsonl`;
+- `moved_prefix_pair` produced the expected boundary-shift candidate in the
+  diagnostic route;
+- release binaries `1.0.11` were built, installed and the Lay runtime was
+  restarted without restarting the global `ibus-daemon`;
+- global `ibus-daemon` PID remained `3702` during installation.
+
+What was not tested:
+
+- post-install physical GUI confirmation of `документ ыим -> документы им`;
+- latency p50/p95/p99 after removing synchronous DecisionCore work from Space;
+- fixed heldout L1.1 or L2 quality proof;
+- wider boundary-shift corpus coverage.
+
+Verdict scope:
+
+- `1.0.11` is installed with the generalized short-function boundary-shift
+  gate;
+- physical behavior remains user-verification pending;
+- Space latency remains a measured open defect, not a PASS.
+
+Exact receipt:
+
+`/home/ubu/projects/lay/docs/structural_gates/receipts/IBUS_SPACE_BOUNDARY_SHIFT_TIMING_2026-08-06.json`
+
+Runtime authority changed:
+
+- `true`, limited to boundary-shift candidates whose short side satisfies all
+  independent lexical and exact-phase checks above.
+
 ## 13. 2026-08-05 Atomic Space And Nonblocking L3 Refresh
 
 ### Candidate Birth And Blocking Points

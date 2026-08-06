@@ -86,6 +86,35 @@ pub(crate) fn record_ime_commit(decision_us: u64, clear_us: u64, output_us: u64,
     ));
 }
 
+pub(crate) fn record_space_autocorrect_timing(
+    status: &str,
+    decision_us: u128,
+    replacement_us: u128,
+    total_us: u128,
+) {
+    if !enabled() {
+        return;
+    }
+    write_record(format!(
+        r#"{{"kind":"ibus_space_autocorrect_timing","status":"{status}","decision_us":{decision_us},"replacement_us":{replacement_us},"total_us":{total_us}}}"#
+    ));
+}
+
+pub(crate) fn record_space_key_timing(
+    route: &str,
+    setup_us: u128,
+    autocorrect_us: u128,
+    commit_us: u128,
+    total_us: u128,
+) {
+    if !enabled() {
+        return;
+    }
+    write_record(format!(
+        r#"{{"kind":"ibus_space_key_timing","route":"{route}","setup_us":{setup_us},"autocorrect_us":{autocorrect_us},"commit_us":{commit_us},"total_us":{total_us}}}"#
+    ));
+}
+
 pub(crate) fn record_layout_sync(target_is_ru: bool, engine: &str, ok: bool) {
     if !enabled() {
         return;

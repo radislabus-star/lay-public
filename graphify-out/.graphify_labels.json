@@ -499,7 +499,10 @@
   "497": "sentence.rs",
   "498": "ManifestWriteLock",
   "499": "apply_l2_phase_shadow",
+  "500": "14. 2026-08-06 Short-Function Boundary Shift And Space Timing",
+  "501": "record_nanda_trace_if_enabled",
+  "502": "BoundedFrequencySketch",
+  "503": "ManifestWriteLock",
   "504": "CorrectionMode",
-  "505": "live_l3_context_score",
-  "507": "ActiveCompositionAutocorrectDecision"
+  "505": "live_l3_context_score"
 }

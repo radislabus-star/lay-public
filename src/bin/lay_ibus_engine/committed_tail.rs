@@ -1,3 +1,4 @@
+use std::time::Instant;
 use zbus::fdo;
 use zbus::object_server::SignalEmitter;
 
@@ -20,6 +21,7 @@ impl LayIbusEngine {
         &mut self,
         emitter: &SignalEmitter<'_>,
     ) -> fdo::Result<bool> {
+        let total_started = Instant::now();
         if !self.config.auto_replace {
             return Ok(false);
         }
@@ -28,6 +30,7 @@ impl LayIbusEngine {
             return Ok(false);
         }
         let boundary_text = format!("{token} ");
+        let decision_started = Instant::now();
         let Some(decision) = lay::ime_correction::decide_active_composition_autocorrect(
             lay::ime_correction::ActiveCompositionAutocorrectRequest {
                 text: &boundary_text,
@@ -36,9 +39,17 @@ impl LayIbusEngine {
                 active_layout_is_ru: Some(self.layout_is_ru),
             },
         ) else {
+            let decision_us = decision_started.elapsed().as_micros();
             trace::record(r#"{"kind":"ibus_space_autocorrect","status":"no_decision"}"#);
+            trace::record_space_autocorrect_timing(
+                "no_decision",
+                decision_us,
+                0,
+                total_started.elapsed().as_micros(),
+            );
             return Ok(false);
         };
+        let decision_us = decision_started.elapsed().as_micros();
         let layout_transition = decision
             .input_gate
             .as_ref()
@@ -49,10 +60,22 @@ impl LayIbusEngine {
                 r#"{{"kind":"ibus_space_autocorrect","status":"not_authorized","allow_apply":{}}}"#,
                 decision.action.allow_apply(),
             ));
+            trace::record_space_autocorrect_timing(
+                "not_authorized",
+                decision_us,
+                0,
+                total_started.elapsed().as_micros(),
+            );
             return Ok(false);
         }
         if !autocorrect_replacement_has_one_trailing_space(&decision.replacement) {
             trace::record(r#"{"kind":"ibus_space_autocorrect","status":"invalid_space_boundary"}"#);
+            trace::record_space_autocorrect_timing(
+                "invalid_space_boundary",
+                decision_us,
+                0,
+                total_started.elapsed().as_micros(),
+            );
             return Ok(false);
         }
         trace::record(r#"{"kind":"ibus_space_autocorrect","status":"authorized"}"#);
@@ -69,6 +92,7 @@ impl LayIbusEngine {
             Some(self.path.clone()),
             self.tail_epoch,
         );
+        let replacement_started = Instant::now();
         let handled = self
             .replace_committed_tail(
                 emitter,
@@ -90,6 +114,13 @@ impl LayIbusEngine {
                 }),
             )
             .await?;
+        let replacement_us = replacement_started.elapsed().as_micros();
+        trace::record_space_autocorrect_timing(
+            if handled { "applied" } else { "not_applied" },
+            decision_us,
+            replacement_us,
+            total_started.elapsed().as_micros(),
+        );
         if handled {
             self.remember_pending_ime_auto_undo(boundary_text, replacement);
         }

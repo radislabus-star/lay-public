@@ -1,3 +1,4 @@
+use std::time::Instant;
 use zbus::fdo;
 use zbus::object_server::SignalEmitter;
 
@@ -57,13 +58,24 @@ impl LayIbusEngine {
             return Ok(false);
         }
         if keyval == KEY_SPACE {
+            let space_started = Instant::now();
             if self.buffer.is_empty() {
                 self.clear_preedit(emitter).await?;
                 self.close_precognition_word_boundary();
                 let initial_mode = self.initial_word_input_mode();
                 let mode = *self.word_input_mode.get_or_insert(initial_mode);
+                let setup_us = space_started.elapsed().as_micros();
                 if mode == WordInputMode::ManagedCommit {
+                    let autocorrect_started = Instant::now();
                     if self.autocorrect_committed_token_on_space(emitter).await? {
+                        let autocorrect_us = autocorrect_started.elapsed().as_micros();
+                        super::trace::record_space_key_timing(
+                            "managed_autocorrect",
+                            setup_us,
+                            autocorrect_us,
+                            0,
+                            space_started.elapsed().as_micros(),
+                        );
                         self.trace_key(
                             "space_managed_autocorrect",
                             keyval,
@@ -73,11 +85,28 @@ impl LayIbusEngine {
                         );
                         return Ok(true);
                     }
+                    let autocorrect_us = autocorrect_started.elapsed().as_micros();
+                    let commit_started = Instant::now();
                     self.commit_managed_passthrough_char(emitter, ' ').await?;
+                    let commit_us = commit_started.elapsed().as_micros();
+                    super::trace::record_space_key_timing(
+                        "managed_fallback_commit",
+                        setup_us,
+                        autocorrect_us,
+                        commit_us,
+                        space_started.elapsed().as_micros(),
+                    );
                     self.trace_key("space_managed_commit", keyval, keycode, true, Some(' '));
                     return Ok(true);
                 }
                 self.push_tail_char(' ');
+                super::trace::record_space_key_timing(
+                    "terminal_passthrough",
+                    setup_us,
+                    0,
+                    0,
+                    space_started.elapsed().as_micros(),
+                );
                 self.trace_key(
                     "space_terminal_passthrough",
                     keyval,
@@ -87,7 +116,15 @@ impl LayIbusEngine {
                 );
                 return Ok(false);
             }
+            let commit_started = Instant::now();
             let handled = self.commit_space(emitter).await?;
+            super::trace::record_space_key_timing(
+                "active_composition",
+                0,
+                0,
+                commit_started.elapsed().as_micros(),
+                space_started.elapsed().as_micros(),
+            );
             self.trace_key("space", keyval, keycode, handled, Some(' '));
             return Ok(handled);
         }
