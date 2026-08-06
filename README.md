@@ -10,6 +10,8 @@
 **Статус: alpha.** Основной сценарий уже рабочий. Главная зона активной
 доводки — автопомощь после пробела и редкие desktop edge cases.
 
+Текущая версия: **1.0.12**.
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scripts/install-remote.sh | bash
 ```
@@ -49,7 +51,81 @@ pinned SHA-256 match the released model contract.
 По умолчанию double Shift исправляет **1 последнее слово**. Области `2 слова`
 и `3 слова` можно включить отдельно в трее.
 
-## Что нового в 0.2.0
+## Что нового в 1.0.12
+
+- физический Space больше не ждёт тяжёлый `DecisionCore`: решение для
+  автокоррекции готовится одним latest-only worker, а неготовый или устаревший
+  результат пропускает автозамену и немедленно возвращает пробел;
+- применение фонового решения защищено точным ключом
+  `engine path + tail epoch + committed tail + layout`, поэтому результат от
+  старого текста нельзя применить к новому;
+- автозамена вместе с вызвавшим её Space обязана вернуть ровно один конечный
+  пробел;
+- boundary-shift умеет восстанавливать подтверждённые короткие служебные слова:
+  например, физический хвост `документ ыим` может восстановиться как
+  `документы им` без словарного исключения для конкретной фразы;
+- немедленный double Shift после автозамены отменяет именно последнюю
+  автозамену и возвращает исходный ввод;
+- live lexical route закрыт в один контур:
+  `L1.1 bounded lattice -> Canonical L2 V13 -> L3 -> DecisionCore -> verifier`;
+- установленный Canonical L2 V13 занимает `135121803` байта (`128.86 MiB`) и
+  загружается как неизменяемый локальный пакет.
+
+Измерение, из-за которого Space был переделан:
+
+```text
+старый Space total             250.388 ms
+из них DecisionCore            249.579 ms
+сам commit Space                 0.690 ms
+```
+
+В `1.0.12` синхронного вызова DecisionCore в обработчике Space больше нет.
+Фактические GUI p50/p95/p99 и доля готовых prefetch-решений продолжают
+собираться по живой телеметрии; это не объявляется закрытым quality gate без
+измерений.
+
+## Текущая архитектура
+
+```text
+повреждённая или незавершённая поверхность
+-> L1.1: bounded lexical lattice
+-> Canonical L2 V13: локальная конкуренция форм и соседей
+-> Winner | Tied | Abstain
+-> L3: давление контекста фразы
+-> TransitionDecisionCore
+-> structural verifier
+-> AuthorizedEdit
+-> uinput или IBus backend
+```
+
+Владельцы разделены:
+
+- **L1.1** восстанавливает сигнал слова и отдаёт ограниченную решётку, а не
+  единственную догадку;
+- **L2** конкурирует между словоформами, морфологическими слотами и локальными
+  соседями; live owner — standalone `CanonicalL2Field` V13;
+- **L3** учитывает более широкий контекст фразы, но не печатает текст напрямую;
+- **DecisionCore** выбирает `apply / suggest / keep / veto`;
+- **verifier + AuthorizedEdit** являются единственным разрешённым путём
+  изменения текста;
+- **IME/uinput** исполняют уже принятое действие и не содержат отдельного
+  лингвистического мозга.
+
+Главное запрещённое сокращение:
+
+```text
+слово -> частное правило -> прямая печать
+```
+
+Все кандидаты, включая layout, typo, boundary и morphology, обязаны войти в
+общую решётку и пройти DecisionCore и verifier.
+
+## Архив изменений до 1.0
+
+Ниже сохранены заметки ранних alpha-релизов. Они описывают историю разработки,
+но не являются спецификацией текущего runtime.
+
+### Что нового в 0.2.0
 
 - заложен первый системный слой `Typing Correction Core`: входной текст теперь
   получает единый паспорт ошибки, класс ошибки, доску кандидатов и gate-решение;
@@ -61,7 +137,7 @@ pinned SHA-256 match the released model contract.
 - IME остаётся backend отображения/вставки: новый core не переносит принятие
   решений в IME и не меняет маршрут видимого preedit.
 
-## Что нового в 0.1.245
+### Что нового в 0.1.245
 
 - общий рубильник `Журнал отладки действий` теперь реально гасит runtime
   debug JSONL-журналы, включая NANDA/IME trace;
@@ -72,7 +148,7 @@ pinned SHA-256 match the released model contract.
 - IME profile-тесты закрепляют различие Kitty terminal passthrough и managed
   commit для клиентов с surrounding text.
 
-## Что нового в 0.1.244
+### Что нового в 0.1.244
 
 - добавлен и документирован экспериментальный IME backend: inline/preedit
   подсказки, Tab-принятие кандидата и committed-tail замены без clipboard;
@@ -82,12 +158,12 @@ pinned SHA-256 match the released model contract.
   превращать нормальные фразы в смысловой дрейф вроде `модель генерит -> модель
   генерал`.
 
-## Что нового в 0.1.232
+### Что нового в 0.1.232
 
 - в окне настроек поменяны местами блоки `Управление` и `Арбитры и каналы`,
   чтобы управление триггерами было в ожидаемой позиции.
 
-## Что нового в 0.1.231
+### Что нового в 0.1.231
 
 - IME double Shift восстанавливает потерянную первую layout-букву в
   терминальном passthrough-хвосте: `hbdtn -> привет`,
@@ -99,7 +175,7 @@ pinned SHA-256 match the released model contract.
 - ручные `user-correction` не попадают в обучение по умолчанию и требуют
   отдельного opt-in флага.
 
-## Что нового в 0.1.230
+### Что нового в 0.1.230
 
 - IME-подсказки больше не переводят уже напечатанный токен в активную
   композицию в терминальных клиентах без surrounding-text;
@@ -107,7 +183,7 @@ pinned SHA-256 match the released model contract.
   склейки соседних слов после подсказки;
 - генерация подсказок остаётся быстрой и работает как безопасный suffix-preedit.
 
-## Что нового в 0.1.229
+### Что нового в 0.1.229
 
 - установщик больше не проверяет и не предлагает Ollama/smollm;
 - при установке или обновлении выполняется миграция старых lay-установок:
@@ -121,20 +197,20 @@ pinned SHA-256 match the released model contract.
 - live smoke harness научился использовать `LAY_CONFIG_PATH`, чтобы тестировать
   временный config без подмены `$HOME` и без поломки session bus.
 
-## Что нового в 0.1.222
+### Что нового в 0.1.222
 
 - CI smoke-проверка на GitHub переведена на стабильный главный сценарий:
   `ghbdtn -> привет`, без зависимости от словарной autocorrect-эвристики
   runner-а.
 
-## Что нового в 0.1.221
+### Что нового в 0.1.221
 
 - починен публичный CI/status на GitHub: architecture guard синхронизирован с
   текущей структурой проекта и больше не проверяет удалённые модули;
 - статус последнего коммита на странице репозитория больше не должен оставаться
   красным из-за устаревшего guard-скрипта.
 
-## Что нового в 0.1.220
+### Что нового в 0.1.220
 
 - исправлен idle busy-loop в non-GNOME backend: `lay-daemon` больше не
   зацикливает `poll()` на 1 мс из-за stale focus-poll timestamp;
@@ -143,21 +219,21 @@ pinned SHA-256 match the released model contract.
 - русские горячие словари упакованы компактнее: текущая память свежего демона
   снизилась примерно со 168 МБ до 139 МБ после прогрева.
 
-## Что нового в 0.1.219
+### Что нового в 0.1.219
 
 - исправлен Niri/backend-кейс без `focused_window_identity`: при смене
   текстового поля буфер теперь разделяется по `field_context_epoch`, поэтому
   хвост из одного поля не склеивается с вводом в другом поле;
 - добавлен регрессионный тест на сценарий без информации об окне.
 
-## Что нового в 0.1.218
+### Что нового в 0.1.218
 
 - GNOME extension больше не пишет штатные success-сообщения в журнал при каждом
   reload: `DBus enabled`, `DBus disabled`, `LayImpl enabled`;
 - диагностические сообщения в GNOME journal оставлены только для ошибок и
   реально полезных предупреждений.
 
-## Что нового в 0.1.217
+### Что нового в 0.1.217
 
 - режим `Смелее` стал действительно смелее для одиночных раскладочных букв:
   `z` может исправляться в `я`, `b` — в `и`, при этом нормальный режим эти
@@ -176,7 +252,7 @@ pinned SHA-256 match the released model contract.
 - часть пунктов меню настроек переведена на русский и дополнительно сжата по
   горизонтали.
 
-## Что нового в 0.1.216
+### Что нового в 0.1.216
 
 - исправлен mixed-word рассинхрон в KDE/Kate и других backend: если слово почти
   целиком набрано в одной раскладке, а последняя буква пришла из другой, lay
@@ -184,7 +260,7 @@ pinned SHA-256 match the released model contract.
 - живой проверочный кейс: `привеn` по double Shift становится `привет`, без
   дробления на `приве` + `n`.
 
-## Что нового в 0.1.215
+### Что нового в 0.1.215
 
 - добавлен Niri layout backend через прямой `niri-ipc`;
 - `auto` стал умнее: в KDE/Plasma VM с nested Niri он выбирает KDE, а не
@@ -196,7 +272,7 @@ pinned SHA-256 match the released model contract.
 - Niri помечен как экспериментальный режим для реальной Niri-сессии, а не как
   обязательный выбор для KDE + nested Niri.
 
-## Что нового в 0.1.214
+### Что нового в 0.1.214
 
 - откатили небезопасную GNOME/uinput speed-оптимизацию, которая в терминале
   работала, но в браузерных полях могла ломать double Shift replay;
@@ -205,7 +281,7 @@ pinned SHA-256 match the released model contract.
 - фиксы `b`, коротких кириллических фрагментов и `on`/`off` из `0.1.213`
   сохранены.
 
-## Что нового в 0.1.213
+### Что нового в 0.1.213
 
 - standalone `b` больше не автозаменяется в `в`/`и` без фразового контекста;
 - короткие кириллические фрагменты больше не улетают в случайный EN-токен,
@@ -215,7 +291,7 @@ pinned SHA-256 match the released model contract.
 - GNOME/uinput speed-path был добавлен в этом релизе, но в `0.1.214` откатан
   как ненадёжный для браузерных полей.
 
-## Что нового в 0.1.212
+### Что нового в 0.1.212
 
 - GNOME tray разрезан на отдельные модули: DBus bridge, меню последних
   исправлений и общие helpers больше не лежат одним большим файлом;
@@ -228,7 +304,7 @@ pinned SHA-256 match the released model contract.
   больше не перебиваются L2/L3/LLM-скорингом, например `cd` не должен
   превращаться в `св` после пробела.
 
-## Что нового в 0.1.210
+### Что нового в 0.1.210
 
 - KDE backend кэширует `qdbus` и список раскладок вместо повторного запроса на
   каждый double Shift;
@@ -242,7 +318,7 @@ pinned SHA-256 match the released model contract.
 - KDE: backspace/replay для коротких хвостов `~0-1 ms`;
 - основной остаток в KDE теперь тоже переключение layout.
 
-## Что нового в 0.1.209
+### Что нового в 0.1.209
 
 - double Shift стал быстрее: если daemon успешно изолировал физическую
   клавиатуру через evdev grab, короткие замены выводятся без лишнего pacing;
@@ -314,12 +390,16 @@ bash install.sh --check-platform
 ## Возможности
 
 - **Double Shift** исправляет последнее слово в другой раскладке.
+- **Откат автозамены**: немедленный double Shift возвращает исходный ввод.
 - **Replay** физически перепечатывает хвост теми же keycode.
 - **Smart** старается не трогать уже нормальные соседние слова.
 - **Помощь при наборе** после пробела исправляет только уверенные ошибки.
 - **Автоподмена** включает автоматические исправления после пробела.
-- **NANDA** — экспериментальный клеточный слой внутри автоподмены; включается
-  отдельно в окне `NANDA ячейки`.
+- **Неблокирующий Space** не ждёт тяжёлое контекстное решение.
+- **IME-подсказки** показывают bounded-кандидаты; Tab принимает видимое
+  продолжение явно.
+- **NANDA Wave** — локальный маршрут L1.1/L2/L3, который рождает и ранжирует
+  кандидаты, но не обходит DecisionCore и verifier.
 - **ptah_alexs** жёстко ставит раскладку для выбранных окон.
 - **Прямые RU/EN хоткеи** могут включать конкретную раскладку без toggle.
 - **KDE/Niri/X11 backend** есть, но покрытие меньше, чем у GNOME Wayland.
@@ -407,7 +487,44 @@ KDE, Niri и X11 моложе GNOME-пути. Если что-то ломает�
   backend уже умеет preedit-кандидаты, но это отдельный режим, а не
   гарантированный путь для каждого текстового поля.
 
-## NANDA Wave / клеточный мозг
+## NANDA Wave: текущий runtime
+
+Текущий NANDA-маршрут — не набор независимых Cell32, которые напрямую решают,
+что печатать. Реальный live owner выглядит так:
+
+```text
+L1.1 bounded lexical lattice
+-> standalone CanonicalL2Field V13
+-> one Winner | Tied | Abstain readout
+-> L3 phrase context
+-> TransitionDecisionCore
+-> verifier
+```
+
+Canonical L2 V13 связывает существующие L1.1 terminal identities с формами,
+леммами, морфологическими слотами, локальными context modes и directional
+competition edges. Пакет read-only и не перекристаллизуется при каждой
+пользовательской правке.
+
+Текущие измеренные характеристики V13:
+
+```text
+source unique surfaces              1,875,032
+L1.1-bound forms                      517,257
+L2-materialized forms               1,357,775
+lemma centers                          93,672
+morphology bindings                3,255,785
+directional competition edges         215,121
+package bytes                     135,121,803
+package size                          128.86 MiB
+```
+
+Это архитектурные и пакетные факты, а не доказательство качества L1.1.
+Качество восстановления принимается только по фиксированному heldout proof с
+процентами каждого класса ошибок; aggregate top-1 не может скрывать слабый
+класс.
+
+### Историческая исследовательская модель Cell32
 
 `lay` экспериментирует с маленькой локальной NANDA Wave-архитектурой. Это не
 облачная LLM и сейчас не замена основного автокорректора. Основной runtime
@@ -657,12 +774,14 @@ Shift rescue невозможен. По умолчанию он не отпра�
 
 ## Статус alpha
 
-Стабильное ядро: ручной double Shift и локальная RU/EN конвертация.
+Рабочее ядро: ручной double Shift, его откат последней автозамены, локальная
+RU/EN-конвертация, Canonical L2 V13 и защищённый IBus/uinput output route.
 
 Активно оттачиваются:
 
 - автопомощь после пробела;
-- пробелы и границы слов после автозамены;
+- hit rate фонового Space-prefetch без возврата блокировки;
+- пробелы и boundary-shift после автозамены в разных приложениях;
 - mixed RU/EN сценарии;
 - KDE/X11 edge cases;
 - работа в старых/особых текстовых полях;
@@ -681,6 +800,9 @@ Shift rescue невозможен. По умолчанию он не отпра�
 ## Документация
 
 - [Как это работает](HOW_IT_WORKS.md)
+- [Каноническая архитектура L2 над L1.1](docs/l2-l11-canonical-architecture.md)
+- [Маршрут интеллекта L1-L4](docs/l1-l4-intelligence-route.md)
+- [Память кристаллического ядра L1.1](docs/l1-crystal-kernel-memory-layout.md)
 - [Проверочный список архитектуры](docs/architecture-checklist-2026-05-19.md)
 - [Multi-tap Shift scope](docs/multi-tap-shift-scope.md)
 - [Research: Linux input correction best practices](docs/research/linux-input-correction-best-practices-2026-05-17.md)
@@ -706,7 +828,8 @@ scripts/check-lay-full.sh
 
 ## English
 
-`lay` is a local Double Shift RU/EN layout rescue tool for Linux desktops.
+`lay` 1.0.12 is a local Double Shift RU/EN layout rescue and bounded typing
+correction tool for Linux desktops.
 
 Main workflow:
 
@@ -733,7 +856,9 @@ are not supported yet.
 Known limitations: `lay` works on a short typed tail, not arbitrary selected
 text or the whole document. Enter autocorrect is not the stable default path.
 IME/preedit-style inline assistance exists as an experimental input backend, but
-the fast uinput path remains the default.
+the fast uinput path remains the default. Space autocorrect decisions are
+prefetched in the background; Space itself never waits for a slow DecisionCore
+calculation, and a stale result is never applied to newer text.
 
 By default `lay` does not use cloud APIs, does not require an LLM, and does not
 send typed text anywhere.
