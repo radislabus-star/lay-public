@@ -36,6 +36,8 @@ mod protocol;
 mod server;
 #[path = "lay_ibus_engine/shift.rs"]
 mod shift;
+#[path = "lay_ibus_engine/space_autocorrect_prefetch.rs"]
+mod space_autocorrect_prefetch;
 #[path = "lay_ibus_engine/state.rs"]
 mod state;
 #[path = "lay_ibus_engine/tail_memory.rs"]

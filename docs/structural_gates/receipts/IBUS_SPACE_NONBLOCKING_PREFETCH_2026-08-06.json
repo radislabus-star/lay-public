@@ -1,0 +1,55 @@
+{
+  "schema": "lay.structural_gate_receipt.v1",
+  "gate": "IBUS_SPACE_NONBLOCKING_PREFETCH",
+  "date": "2026-08-06",
+  "version": "1.0.12",
+  "verdict": "INSTALLED_LIVE_CONFIRMATION_PENDING",
+  "runtime_authority_changed": true,
+  "rejected_route": [
+    "physical Space",
+    "synchronous DecisionCore",
+    "commit Space"
+  ],
+  "installed_route": [
+    "printable character schedules latest-only background DecisionCore",
+    "physical Space reads only an exact completed prefetch",
+    "not-ready or stale prefetch commits Space immediately"
+  ],
+  "prefetch_identity": [
+    "engine path",
+    "tail epoch",
+    "complete committed tail",
+    "active layout"
+  ],
+  "bounded_state": {
+    "workers": 1,
+    "desired_requests": 1,
+    "completed_results": 1,
+    "stale_generation_publish_allowed": false,
+    "synchronous_decision_on_space": false
+  },
+  "trigger_measurement_us": {
+    "space_total": 250388,
+    "decision_core": 249579,
+    "space_commit": 690
+  },
+  "verified": [
+    "release compilation of lay, lay-daemon and lay-ibus-engine",
+    "installed lay version 1.0.12",
+    "GNOME extension runtime version 1.0.12",
+    "global ibus-daemon PID remained 3702",
+    "Space route has no synchronous DecisionCore call"
+  ],
+  "not_tested": [
+    "post-install physical GUI Space latency percentiles",
+    "real typing prefetch hit rate",
+    "quality impact of not-ready prefetch",
+    "fixed heldout L1.1 or L2 proof"
+  ],
+  "evidence": [
+    "/home/ubu/projects/lay/src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
+    "/home/ubu/projects/lay/src/bin/lay_ibus_engine/committed_tail.rs",
+    "/home/ubu/projects/lay/src/bin/lay_ibus_engine/composition_commit.rs",
+    "/home/ubu/.local/share/lay/ibus_engine_debug.jsonl"
+  ]
+}

@@ -153,6 +153,7 @@ impl LayIbusEngine {
             .map_err(|e| fdo::Error::Failed(e.to_string()))?;
         self.last_commit_at = Some(Instant::now());
         self.push_tail_char(ch);
+        self.schedule_space_autocorrect_prefetch();
         self.refresh_precognition_after_visible_input(emitter).await
     }
 

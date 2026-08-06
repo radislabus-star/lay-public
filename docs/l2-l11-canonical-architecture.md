@@ -424,6 +424,92 @@ Runtime authority changed:
 - `true`, limited to boundary-shift candidates whose short side satisfies all
   independent lexical and exact-phase checks above.
 
+## 15. 2026-08-06 Nonblocking Space Autocorrect Prefetch
+
+### Rejected Runtime Shape
+
+The `1.0.11` live trace proved that the physical Space handler synchronously
+owned the complete correction calculation:
+
+```text
+Space key
+-> DecisionCore, up to 249579 us in the observed post-install trace
+-> commit Space, 690 us
+```
+
+This ordering is forbidden. A correction calculation may be expensive, but it
+must never delay or suppress the user's physical word boundary.
+
+### Canonical Runtime Shape
+
+Version `1.0.12` uses one process-wide latest-only prefetch worker:
+
+```text
+printable committed character
+-> publish exact (engine path, tail epoch, tail, layout) key
+-> background DecisionCore calculation
+
+physical Space
+-> exact completed key available: consume its decision
+-> missing, pending or stale key: commit Space immediately
+```
+
+The worker stores at most one desired request and one completed result. New
+input replaces pending desired work. A result is published only if its
+generation is still current. The Space route accepts a result only when engine
+path, tail epoch, complete committed tail and active layout all match.
+
+Therefore:
+
+- Space contains no synchronous DecisionCore call;
+- stale correction output cannot be applied to newer text;
+- a calculation that is not ready may skip that one autocorrection, but cannot
+  delay or consume the physical Space;
+- the existing `AuthorizedEdit`, structural verifier and exact one-trailing-
+  Space contract still own any prefetched correction that is applied.
+
+### Evidence Scope
+
+Measured input fact that caused the change:
+
+```text
+post-1.0.11 Space total       250388 us
+autocorrect DecisionCore      249579 us
+Space commit                     690 us
+```
+
+What was verified in this step:
+
+- release compilation of `lay`, `lay-daemon` and `lay-ibus-engine` succeeded;
+- installed CLI and GNOME extension report `1.0.12`;
+- `lay-daemon` and `lay-ibus-engine` restarted;
+- global `ibus-daemon` PID remained `3702`;
+- the executable Space path no longer calls
+  `decide_active_composition_autocorrect` synchronously.
+
+What was not tested:
+
+- physical GUI latency distribution after installation;
+- prefetched correction hit rate during real typing;
+- correction quality impact when Space arrives before prefetch completion;
+- fixed heldout L1.1/L2 proof.
+
+Verdict scope:
+
+- architectural blocking owner removed from the Space hot path;
+- installed runtime awaits physical user verification;
+- quality and latency gates are not promoted until live telemetry supplies
+  denominators.
+
+Exact receipt:
+
+`/home/ubu/projects/lay/docs/structural_gates/receipts/IBUS_SPACE_NONBLOCKING_PREFETCH_2026-08-06.json`
+
+Runtime authority changed:
+
+- `true`; a not-ready prefetch now fails open for the physical Space and closed
+  for the autocorrection.
+
 ## 13. 2026-08-05 Atomic Space And Nonblocking L3 Refresh
 
 ### Candidate Birth And Blocking Points

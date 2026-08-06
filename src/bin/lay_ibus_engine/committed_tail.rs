@@ -3,6 +3,9 @@ use zbus::fdo;
 use zbus::object_server::SignalEmitter;
 
 use super::engine::{LayIbusEngine, PendingSystemOutcomeFeedback, SystemOutcomeKind};
+use super::space_autocorrect_prefetch::{
+    self, SpaceAutocorrectKey, SpaceAutocorrectLookup, SpaceAutocorrectWork,
+};
 use super::state::CommittedTailReplaceRequest;
 use super::text::make_ibus_text;
 use super::trace;
@@ -10,6 +13,31 @@ use lay::manual_toggle::{plan_manual_toggle, ManualToggleRequest, VisibleTail};
 use lay::text_edit::{VisibleTailSnapshot, VisibleTailSource};
 
 impl LayIbusEngine {
+    pub(super) fn schedule_space_autocorrect_prefetch(&self) {
+        if !self.config.auto_replace {
+            return;
+        }
+        let token = self.last_tail_token_text();
+        if token.is_empty() {
+            return;
+        }
+        space_autocorrect_prefetch::schedule(SpaceAutocorrectWork {
+            key: self.space_autocorrect_key(),
+            boundary_text: format!("{token} "),
+            committed_tail: self.tail_buffer.clone(),
+            config: self.config.clone(),
+        });
+    }
+
+    fn space_autocorrect_key(&self) -> SpaceAutocorrectKey {
+        SpaceAutocorrectKey::new(
+            self.path.clone(),
+            self.tail_epoch,
+            self.tail_buffer.clone(),
+            self.layout_is_ru,
+        )
+    }
+
     /// Applies only a verified current-token correction after Space.
     ///
     /// This is the autocorrect route, not the IME/preedit route:
@@ -30,26 +58,30 @@ impl LayIbusEngine {
             return Ok(false);
         }
         let boundary_text = format!("{token} ");
-        let decision_started = Instant::now();
-        let Some(decision) = lay::ime_correction::decide_active_composition_autocorrect(
-            lay::ime_correction::ActiveCompositionAutocorrectRequest {
-                text: &boundary_text,
-                committed_tail: &self.tail_buffer,
-                config: &self.config,
-                active_layout_is_ru: Some(self.layout_is_ru),
-            },
-        ) else {
-            let decision_us = decision_started.elapsed().as_micros();
-            trace::record(r#"{"kind":"ibus_space_autocorrect","status":"no_decision"}"#);
+        let SpaceAutocorrectLookup::Ready {
+            decision,
+            decision_us,
+        } = space_autocorrect_prefetch::take(&self.space_autocorrect_key())
+        else {
+            trace::record(r#"{"kind":"ibus_space_autocorrect","status":"prefetch_not_ready"}"#);
             trace::record_space_autocorrect_timing(
-                "no_decision",
+                "prefetch_not_ready",
+                0,
+                0,
+                total_started.elapsed().as_micros(),
+            );
+            return Ok(false);
+        };
+        let Some(decision) = decision else {
+            trace::record(r#"{"kind":"ibus_space_autocorrect","status":"prefetched_no_decision"}"#);
+            trace::record_space_autocorrect_timing(
+                "prefetched_no_decision",
                 decision_us,
                 0,
                 total_started.elapsed().as_micros(),
             );
             return Ok(false);
         };
-        let decision_us = decision_started.elapsed().as_micros();
         let layout_transition = decision
             .input_gate
             .as_ref()
