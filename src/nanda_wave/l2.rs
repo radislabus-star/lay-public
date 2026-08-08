@@ -75,6 +75,9 @@ pub enum L2ImeWordCandidateSource {
     /// A longer lexical center reached through one Damerau edit of the active
     /// prefix. It is display-only and requires explicit IME acceptance.
     CorrectedPrefixPhase,
+    /// A bounded next-word center born by online L3 context memory and
+    /// independently verified against the L2 decoder.
+    ContextPhase,
     /// A two-center boundary candidate born by the same L1/L2 field as the
     /// full correction route.  It stays a display-only replacement in IME.
     BoundaryPhase,

@@ -20,8 +20,8 @@ mod hot;
 mod projection;
 
 pub(crate) use hot::{
-    UsageCandidatePrior, UsageHotContext, UsageHotReadout, UsageSurfaceCoverage,
-    UsageTransitionSignal,
+    UsageCandidatePrior, UsageContextCandidate, UsageHotContext, UsageHotReadout,
+    UsageSurfaceCoverage, UsageTransitionSignal,
 };
 use hot::{UsageHotState, CONTEXT_WORDS, MIN_CONTEXT_NGRAM};
 use projection::{UsageEventProjection, TRANSITION_ANY};
@@ -399,6 +399,15 @@ impl UsagePriorSnapshot {
             return UsageCandidatePrior::default();
         }
         self.hot.candidate_prior_prepared(context, normalized_word)
+    }
+
+    pub(crate) fn context_prefix_candidates(
+        &self,
+        context: &UsageHotContext,
+        partial: &str,
+        limit: usize,
+    ) -> Vec<UsageContextCandidate> {
+        self.hot.context_prefix_candidates(context, partial, limit)
     }
 
     pub(crate) fn hot_readout_prepared(

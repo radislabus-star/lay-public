@@ -4,7 +4,7 @@ use super::{
 };
 use crate::keyboard::is_cyrillic_letter;
 use crate::text_metrics::damerau_levenshtein;
-use std::collections::VecDeque;
+use std::collections::{HashSet, VecDeque};
 use std::sync::{Arc, Mutex, OnceLock};
 
 const LEXICAL_READOUT_CACHE_CAPACITY: usize = 128;
@@ -13,8 +13,6 @@ const LEXICAL_READOUT_CACHE_CAPACITY: usize = 128;
 // competitors for interference while avoiding a 192-node DAFSA walk per key.
 const IME_L2_MATERIAL_FACTOR: usize = 4;
 const TYPO_TOLERANT_PREFIX_MIN_CHARS: usize = 7;
-const TYPO_TOLERANT_PREFIX_LIMIT: usize = 2;
-const RUSSIAN_PREFIX_ALPHABET: &str = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя";
 type CachedLexicalCandidates = Arc<Vec<super::super::lexical_phase::LexicalPhaseCandidate>>;
 type LexicalReadoutCache = VecDeque<(String, usize, LexicalReadoutMode, CachedLexicalCandidates)>;
 
@@ -200,75 +198,13 @@ fn typo_tolerant_completion_candidates(
     damaged_prefix: &str,
     material_limit: usize,
 ) -> Vec<super::super::lexical_phase::LexicalPhaseCandidate> {
-    let mut corrected_prefixes = Vec::new();
-    for candidate in single_edit_prefixes(damaged_prefix) {
-        let completions = memory.completion_candidates(&candidate, material_limit, material_limit);
-        if completions.is_empty() {
-            continue;
-        }
-        corrected_prefixes.push((candidate, completions));
-        if corrected_prefixes.len() >= TYPO_TOLERANT_PREFIX_LIMIT {
-            break;
-        }
-    }
-
-    corrected_prefixes
+    memory
+        .one_edit_prefix_completion_candidates(damaged_prefix, material_limit, material_limit)
         .into_iter()
-        .flat_map(|(_, candidates)| candidates)
         // This lane is only for an unfinished token. Same-size and shorter
         // typo repairs stay on the Space/autocorrect route.
         .filter(|candidate| candidate.word.chars().count() > damaged_prefix.chars().count())
         .collect()
-}
-
-fn single_edit_prefixes(prefix: &str) -> Vec<String> {
-    let chars = prefix.chars().collect::<Vec<_>>();
-    let mut seen = std::collections::BTreeSet::new();
-    let mut candidates = Vec::new();
-    let mut push = |candidate: String| {
-        if seen.insert(candidate.clone()) {
-            candidates.push(candidate);
-        }
-    };
-
-    for index in 0..chars.len() {
-        push(
-            chars
-                .iter()
-                .enumerate()
-                .filter_map(|(position, ch)| (position != index).then_some(*ch))
-                .collect(),
-        );
-    }
-    for index in 0..chars.len().saturating_sub(1) {
-        if chars[index] == chars[index + 1] {
-            continue;
-        }
-        let mut candidate = chars.clone();
-        candidate.swap(index, index + 1);
-        push(candidate.into_iter().collect());
-    }
-    for index in 0..chars.len() {
-        for replacement in RUSSIAN_PREFIX_ALPHABET
-            .chars()
-            .filter(|replacement| *replacement != chars[index])
-        {
-            let mut candidate = chars.clone();
-            candidate[index] = replacement;
-            push(candidate.into_iter().collect());
-        }
-    }
-    for index in 0..=chars.len() {
-        for inserted in RUSSIAN_PREFIX_ALPHABET.chars() {
-            let mut candidate = Vec::with_capacity(chars.len() + 1);
-            candidate.extend_from_slice(&chars[..index]);
-            candidate.push(inserted);
-            candidate.extend_from_slice(&chars[index..]);
-            push(candidate.into_iter().collect());
-        }
-    }
-
-    candidates
 }
 
 pub(super) fn warm_up_lexical_readout_cache(prefixes: &[String], material_limit: usize) {
@@ -464,7 +400,8 @@ fn sort_and_truncate_ime_l2_candidates(
             })
             .then_with(|| left.surface.cmp(&right.surface))
     });
-    candidates.dedup_by(|left, right| left.surface == right.surface);
+    let mut seen = HashSet::new();
+    candidates.retain(|candidate| seen.insert(candidate.surface.clone()));
     candidates.truncate(limit);
     for candidate in corrected_prefix_reserve {
         if candidates
@@ -534,14 +471,32 @@ mod tests {
     }
 
     #[test]
-    fn single_edit_prefixes_cover_all_damerau_operators() {
-        let prefixes = single_edit_prefixes("тест");
-        for expected in ["тес", "етст", "тост", "текст"] {
-            assert!(
-                prefixes.iter().any(|prefix| prefix == expected),
-                "missing {expected}: {prefixes:?}"
-            );
-        }
+    fn one_edit_prefix_field_keeps_ranked_missing_letter_basin() {
+        super::super::super::warm_up_l2_for_ime();
+        let candidates =
+            surface_motif_memory().one_edit_prefix_completion_candidates("предскз", 24, 96);
+
+        assert!(
+            candidates
+                .iter()
+                .any(|candidate| candidate.word.starts_with("предсказ")),
+            "candidates={candidates:?}"
+        );
+    }
+
+    #[test]
+    fn one_edit_prefix_field_keeps_infrequent_form_inside_bounded_material() {
+        super::super::super::warm_up_l2_for_ime();
+        let candidates =
+            surface_motif_memory().one_edit_prefix_completion_candidates("переспективн", 512, 512);
+        let rank = candidates
+            .iter()
+            .position(|candidate| candidate.word == "перспективнее");
+        eprintln!(
+            "перспективнее fuzzy material rank={rank:?} count={}",
+            candidates.len()
+        );
+        assert!(rank.is_some(), "candidates={candidates:?}");
     }
 
     #[test]

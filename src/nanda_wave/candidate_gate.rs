@@ -12,12 +12,14 @@ use crate::keyboard::is_cyrillic_letter;
 use crate::typing_transition::decision::{LiveFieldScoreInput, TransitionDecisionCore};
 use crate::typing_transition::live_candidate::LiveCompletionProposal;
 use std::cell::Cell;
+use std::collections::HashSet;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::OnceLock;
 use std::time::Instant;
 
 const LIVE_L2_MATERIAL_FACTOR: usize = 2;
 const LIVE_L2_MATERIAL_CAP: usize = 64;
+const LIVE_L3_CONTEXT_BIRTH_LIMIT: usize = 4;
 
 mod cache;
 
@@ -170,17 +172,31 @@ pub fn live_completion_candidates(
         return cached;
     }
 
+    let context_tokens = super::llmwave::tokenize(request.context_prefix);
+    let partial_state_known = l2::l2_decoder_contains_surface(&partial);
+    let usage_snapshot = super::usage_prior::cached_usage_prior_snapshot();
     let l2_started = Instant::now();
-    let raw = live_l2_word_candidates(request.context_prefix, &partial, request.limit);
+    let mut raw = live_l2_word_candidates(request.context_prefix, &partial, request.limit);
+    for candidate in live_l3_context_birth_candidates(
+        &context_tokens,
+        &partial,
+        &usage_snapshot,
+        LIVE_L3_CONTEXT_BIRTH_LIMIT,
+    ) {
+        if raw
+            .iter()
+            .all(|current| current.surface != candidate.surface)
+        {
+            raw.push(candidate);
+        }
+    }
     let l2_material_us = l2_started.elapsed().as_micros().min(u128::from(u64::MAX)) as u64;
 
     let raw_count = raw.len();
-    let context_tokens = super::llmwave::tokenize(request.context_prefix);
     let l3_started = Instant::now();
     let context_batch = live_context_batch_readout(&context_tokens, &raw);
     let l3_context_us = l3_started.elapsed().as_micros().min(u128::from(u64::MAX)) as u64;
     let l3_memory_warm = super::context_phase::default_memory_is_warm();
-    let usage_snapshot = super::usage_prior::cached_usage_prior_snapshot();
     let usage_context = usage_snapshot.prepare_hot_context(&context_tokens);
     let state_id = crate::transition_relation::signed_memory_state_id(&partial);
     let hidden_state_before = crate::stable_hash::mix64_golden(
@@ -227,7 +243,11 @@ pub fn live_completion_candidates(
                 candidate.source,
                 L2ImeWordCandidateSource::CorrectedPrefixPhase
             );
-            let l2_center_grounded = foundation_rank.is_some() || boundary_center_grounded;
+            let context_birth = matches!(candidate.source, L2ImeWordCandidateSource::ContextPhase);
+            let l2_center_grounded = foundation_rank.is_some()
+                || boundary_center_grounded
+                || corrected_prefix_completion
+                || context_birth;
             let hot = foundation_rank.is_some_and(|rank| rank < 20_000);
             let structural = structural_support(
                 candidate.score,
@@ -244,8 +264,9 @@ pub fn live_completion_candidates(
                 context_usage,
                 l3_memory_warm,
             );
-            let l3_memory_supported = !context_tokens.is_empty()
-                && l3_readout.is_some_and(|readout| readout.memory_supported);
+            let l3_memory_supported = context_birth
+                || (!context_tokens.is_empty()
+                    && l3_readout.is_some_and(|readout| readout.memory_supported));
             if let Some(readout) = l3_readout {
                 l3_evaluated = l3_evaluated.saturating_add(1);
                 if readout.suppressed {
@@ -302,6 +323,8 @@ pub fn live_completion_candidates(
                     "BoundaryCell32"
                 } else if corrected_prefix_completion {
                     "L2CorrectedPrefixCell32"
+                } else if context_birth {
+                    "L3ContextBirthCell32"
                 } else {
                     "L2LiveCandidateGate32"
                 },
@@ -309,6 +332,7 @@ pub fn live_completion_candidates(
                 field_strength: candidate.score,
                 partial_len,
                 suffix_len: if is_completion { suffix_len } else { 0 },
+                partial_state_known,
                 allow_short_lexical: request.allow_short_lexical,
                 structural,
                 usage,
@@ -318,6 +342,7 @@ pub fn live_completion_candidates(
                 hot,
                 l2_center_grounded,
                 l3_memory_supported,
+                context_birth,
                 completed_state_known: l2_center_grounded,
                 corrected_prefix_completion,
                 l3_relation_class: l3_report
@@ -397,8 +422,46 @@ fn live_l2_word_candidates(
             .cmp(&left.score)
             .then_with(|| left.surface.cmp(&right.surface))
     });
-    candidates.dedup_by(|left, right| left.surface == right.surface);
+    let mut seen = HashSet::new();
+    candidates.retain(|candidate| seen.insert(candidate.surface.clone()));
     candidates
+}
+
+fn live_l3_context_birth_candidates(
+    context_tokens: &[String],
+    partial: &str,
+    usage: &super::usage_prior::UsagePriorSnapshot,
+    limit: usize,
+) -> Vec<l2::L2ImeWordCandidate> {
+    if context_tokens.is_empty() || partial.is_empty() || limit == 0 {
+        return Vec::new();
+    }
+    let prepared = usage.prepare_hot_context(context_tokens);
+    usage
+        .context_prefix_candidates(&prepared, partial, limit.saturating_mul(2))
+        .into_iter()
+        .filter(|candidate| l2::l2_decoder_contains_surface(&candidate.word))
+        .take(limit)
+        .map(|candidate| {
+            let prior = usage.candidate_prior_prepared(&prepared, &candidate.word);
+            let phase = l2::l2_surface_phase_readout(&candidate.word);
+            l2::L2ImeWordCandidate {
+                surface: candidate.word,
+                kind: L2ImeWordCandidateKind::Completion,
+                source: L2ImeWordCandidateSource::ContextPhase,
+                score: 900u32
+                    .saturating_add(candidate.support.min(32) * 24)
+                    .saturating_add(candidate.ngram_len.min(5) as u32 * 80)
+                    .saturating_add(phase.coherence_milli()),
+                l1_overlap: partial.chars().count(),
+                l2_overlap: phase.covered_l1_refs,
+                motif_overlap: phase.motif_refs,
+                usage_prior: prior.word_prior,
+                context_prior: prior.context_prior,
+                accepted_count: prior.accepted_count,
+            }
+        })
+        .collect()
 }
 
 fn live_l2_material_limit(limit: usize) -> usize {
@@ -785,6 +848,7 @@ mod tests {
             source: "test",
             partial_len: 3,
             suffix_len: 3,
+            partial_state_known: false,
             allow_short_lexical: true,
             structural: 0.6,
             usage: 0.0,
@@ -794,6 +858,7 @@ mod tests {
             hot: false,
             l2_center_grounded: false,
             l3_memory_supported: false,
+            context_birth: false,
             completed_state_known: false,
             corrected_prefix_completion: false,
             l3_relation_class: 0,
@@ -935,6 +1000,52 @@ mod tests {
                 candidate.surface == "перспективнее" && candidate.suffix.is_empty()
             }),
             "corrected-prefix completion must remain a display-only replacement: {candidates:?}"
+        );
+    }
+
+    #[test]
+    fn fuzzy_l2_axis_keeps_missing_letter_prediction_basin_for_l3() {
+        super::super::warm_up_l2_for_ime();
+        let candidates = live_completion_candidates(request("нужно улучшить ось ", "предскз"));
+        let timing = last_live_completion_timing();
+        eprintln!("fuzzy L2+L3 prediction candidates={candidates:?} timing={timing:?}");
+
+        assert!(
+            candidates.iter().any(|candidate| {
+                candidate.surface.starts_with("предсказ")
+                    && candidate.source == "L2CorrectedPrefixCell32"
+                    && candidate.suffix.is_empty()
+            }),
+            "the one-edit L2 field must pass the predicted family to L3: {candidates:?}"
+        );
+    }
+
+    #[test]
+    fn short_prefix_prediction_lattice_contains_context_target() {
+        super::super::warm_up_l2_for_ime();
+        let usage = super::super::usage_prior::snapshot_from_usage_events_for_tests(
+            r#"{"ts":1,"kind":"confirmed_ime_prediction","word":"проверка","context":["нужна","быстрая"],"source":"ime","operation":"prediction_match","outcome":"confirmed_positive"}"#,
+        );
+        let context = super::super::llmwave::tokenize("нужна быстрая ");
+        let prepared = usage.prepare_hot_context(&context);
+        let frontier = usage.context_prefix_candidates(&prepared, "п", 8);
+        assert!(
+            super::super::l2::l2_decoder_contains_surface("проверка"),
+            "the test target must exist in the active L2 decoder"
+        );
+        assert!(
+            frontier
+                .iter()
+                .any(|candidate| candidate.word == "проверка"),
+            "the accepted usage event must enter the context frontier: {frontier:?}"
+        );
+        let candidates = live_l3_context_birth_candidates(&context, "п", &usage, 4);
+
+        assert!(
+            candidates
+                .iter()
+                .any(|candidate| candidate.surface == "проверка"),
+            "L2 must keep the observed context target available to L3: {candidates:?}"
         );
     }
 

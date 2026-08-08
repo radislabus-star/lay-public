@@ -1,5 +1,5 @@
 use std::cmp::Ordering;
-use std::collections::{BTreeSet, BinaryHeap, HashMap};
+use std::collections::{BTreeSet, BinaryHeap, HashMap, HashSet};
 use std::fs::File;
 use std::path::{Path, PathBuf};
 use std::sync::OnceLock;
@@ -16,6 +16,9 @@ use super::format::{
 const MAX_PHASE_FRONTIER: usize = 768;
 const MAX_POSTINGS_PER_QUERY_CENTER: usize = 512;
 const MAX_COMPLETION_FRONTIER: usize = 4_096;
+const MAX_FUZZY_PREFIX_FRONTIER: usize = 8_192;
+const MAX_FUZZY_PREFIX_BASINS: usize = 16;
+const FUZZY_DECODED_RESERVE_PER_BASIN: usize = 8;
 const MAX_DECODE_EDITS: u8 = 3;
 const MAX_DAFSA_VISITS: usize = 300_000;
 const MAX_DECODED_COMPLETION_VISITS: usize = 24_000;
@@ -654,6 +657,223 @@ impl LexicalPhaseMemory {
         candidates
     }
 
+    /// Finds continuations whose typed prefix is one Damerau edit away from a
+    /// lexical prefix. The graph is traversed once and all surviving basins
+    /// enter the same rank-ordered completion frontier.
+    pub(crate) fn one_edit_prefix_completion_candidates(
+        &self,
+        damaged_prefix: &str,
+        result_limit: usize,
+        material_limit: usize,
+    ) -> Vec<LexicalPhaseCandidate> {
+        if result_limit == 0 || material_limit == 0 {
+            return Vec::new();
+        }
+        let Some(damaged_prefix) = normalize_surface(damaged_prefix) else {
+            return Vec::new();
+        };
+        let input = damaged_prefix.chars().collect::<Vec<_>>();
+        if input.is_empty() {
+            return Vec::new();
+        }
+
+        let row_width = input.len() + 1;
+        let max_depth = input.len() + 1;
+        let mut rows = vec![0u8; (max_depth + 1) * row_width];
+        for (column, cell) in rows[..row_width].iter_mut().enumerate() {
+            *cell = column.min(u8::MAX as usize) as u8;
+        }
+        let mut output = Vec::with_capacity(max_depth);
+        let mut matched_nodes = Vec::new();
+        let mut visited = 0usize;
+        self.collect_one_edit_prefix_nodes(
+            0,
+            &input,
+            max_depth,
+            row_width,
+            0,
+            &mut rows,
+            &mut output,
+            &mut visited,
+            &mut matched_nodes,
+        );
+
+        let prefix_len = input.len();
+        let query_field = SurfaceFieldEncoder::encode(&damaged_prefix);
+        let (query_phase, _) = surface_phase(&query_field);
+        matched_nodes.sort_by(|(left_node, left_prefix), (right_node, right_prefix)| {
+            self.node_best_terminal_rank(*left_node)
+                .cmp(&self.node_best_terminal_rank(*right_node))
+                .then_with(|| left_prefix.len().cmp(&right_prefix.len()))
+                .then_with(|| left_prefix.cmp(right_prefix))
+        });
+        matched_nodes.dedup_by(|left, right| left.0 == right.0);
+        matched_nodes.truncate(MAX_FUZZY_PREFIX_BASINS);
+
+        let mut heap = BinaryHeap::new();
+        for (node, _) in &matched_nodes {
+            self.push_frontier(&mut heap, *node);
+        }
+        let mut frontier_visits = 0usize;
+        let mut emitted = BTreeSet::new();
+        let mut candidates = Vec::new();
+        while let Some(entry) = heap.pop() {
+            if frontier_visits >= MAX_COMPLETION_FRONTIER
+                || candidates.len() >= material_limit.max(result_limit)
+            {
+                break;
+            }
+            frontier_visits += 1;
+            if !emitted.insert(entry.best_terminal) {
+                continue;
+            }
+            if !entry.terminal_only {
+                self.partition_frontier(&mut heap, entry.node, entry.best_terminal);
+            }
+            let Some(terminal) = read_terminal(self.bytes(), self.header, entry.best_terminal)
+            else {
+                continue;
+            };
+            if terminal.char_len as usize <= prefix_len {
+                continue;
+            }
+            let Some(word) = self.reconstruct_terminal(entry.best_terminal) else {
+                continue;
+            };
+            if word.starts_with(&damaged_prefix) {
+                continue;
+            }
+            let coherence = phase_coherence_milli(&query_phase, &terminal.phase);
+            candidates.push(LexicalPhaseCandidate {
+                score: completion_score(
+                    terminal.rank,
+                    terminal.support,
+                    coherence,
+                    terminal.char_len as usize - prefix_len,
+                )
+                .saturating_sub(160),
+                word,
+                l1_overlap: prefix_len.saturating_sub(1),
+                l2_overlap: usize::from(coherence) / 40,
+                motif_overlap: usize::from(terminal.atom_count),
+                prefix_match: false,
+                rank: terminal.rank as usize,
+                phase_coherence_milli: coherence,
+                reconstructed: true,
+            });
+        }
+        for (_, corrected_prefix) in matched_nodes {
+            for mut candidate in self.decoded_completion_candidates(
+                &corrected_prefix,
+                FUZZY_DECODED_RESERVE_PER_BASIN,
+                FUZZY_DECODED_RESERVE_PER_BASIN,
+            ) {
+                if candidate.word.starts_with(&damaged_prefix)
+                    || candidate.word.chars().count() <= prefix_len
+                {
+                    continue;
+                }
+                candidate.score = candidate.score.saturating_sub(160);
+                candidate.l1_overlap = prefix_len.saturating_sub(1);
+                candidate.prefix_match = false;
+                candidate.reconstructed = true;
+                candidates.push(candidate);
+            }
+        }
+        sort_candidates(&mut candidates);
+        candidates.truncate(result_limit);
+        candidates
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn collect_one_edit_prefix_nodes(
+        &self,
+        node_id: u32,
+        input: &[char],
+        max_depth: usize,
+        row_width: usize,
+        depth: usize,
+        rows: &mut [u8],
+        output: &mut Vec<char>,
+        visited: &mut usize,
+        matched: &mut Vec<(u32, String)>,
+    ) {
+        if *visited >= MAX_FUZZY_PREFIX_FRONTIER {
+            return;
+        }
+        *visited += 1;
+        let Some(node) = read_node(self.bytes(), self.header, node_id) else {
+            return;
+        };
+        let row_start = depth * row_width;
+        let row = &rows[row_start..row_start + row_width];
+        if depth + 1 >= input.len()
+            && depth <= max_depth
+            && row[row_width - 1] == 1
+            && node.best_terminal != NO_INDEX
+        {
+            matched.push((node_id, output.iter().collect()));
+        }
+        if depth >= max_depth || row.iter().copied().min().is_none_or(|minimum| minimum > 1) {
+            return;
+        }
+
+        for offset in 0..node.arc_len {
+            if *visited >= MAX_FUZZY_PREFIX_FRONTIER {
+                return;
+            }
+            let Some(arc) = read_arc(
+                self.bytes(),
+                self.header,
+                node.first_arc.saturating_add(u32::from(offset)),
+            ) else {
+                continue;
+            };
+            let Some(ch) = char::from_u32(arc.ch) else {
+                continue;
+            };
+            let target_start = (depth + 1) * row_width;
+            let row_is_live = {
+                let (prior_rows, target_rows) = rows.split_at_mut(target_start);
+                let target = &mut target_rows[..row_width];
+                let previous = &prior_rows[row_start..row_start + row_width];
+                let previous_previous = (depth > 0).then(|| {
+                    let start = (depth - 1) * row_width;
+                    &prior_rows[start..start + row_width]
+                });
+                next_damerau_row_into(
+                    input,
+                    ch,
+                    previous,
+                    previous_previous,
+                    output.last().copied(),
+                    target,
+                );
+                target
+                    .iter()
+                    .copied()
+                    .min()
+                    .is_some_and(|minimum| minimum <= 1)
+            };
+            if !row_is_live {
+                continue;
+            }
+            output.push(ch);
+            self.collect_one_edit_prefix_nodes(
+                arc.child,
+                input,
+                max_depth,
+                row_width,
+                depth + 1,
+                rows,
+                output,
+                visited,
+                matched,
+            );
+            output.pop();
+        }
+    }
+
     fn decoded_completion_candidates(
         &self,
         prefix: &str,
@@ -1135,6 +1355,12 @@ impl LexicalPhaseMemory {
             .unwrap_or(u32::MAX)
     }
 
+    fn node_best_terminal_rank(&self, node_id: u32) -> u32 {
+        read_node(self.bytes(), self.header, node_id)
+            .map(|node| self.terminal_rank(node.best_terminal))
+            .unwrap_or(u32::MAX)
+    }
+
     fn push_frontier(&self, heap: &mut BinaryHeap<CompletionFrontier>, node: u32) {
         let Some(node_record) = read_node(self.bytes(), self.header, node) else {
             return;
@@ -1398,7 +1624,8 @@ fn sort_candidates(candidates: &mut Vec<LexicalPhaseCandidate>) {
             .then_with(|| left.rank.cmp(&right.rank))
             .then_with(|| left.word.cmp(&right.word))
     });
-    candidates.dedup_by(|left, right| left.word == right.word);
+    let mut seen = HashSet::new();
+    candidates.retain(|candidate| seen.insert(candidate.word.clone()));
 }
 
 enum ArtifactBytes {

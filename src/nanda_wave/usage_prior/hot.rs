@@ -9,6 +9,7 @@ use super::{UsageCounts, UsageEvent, UsageEventKind};
 
 pub(super) const CONTEXT_WORDS: usize = 5;
 pub(super) const MIN_CONTEXT_NGRAM: usize = 1;
+const CONTEXT_FRONTIER_PER_CENTER: usize = 32;
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
 pub(super) struct UsageTextId(u64);
@@ -59,6 +60,115 @@ impl UsageContextIds {
 struct UsageContextWordKey {
     context: UsageTextId,
     word: UsageTextId,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) struct UsageContextCandidate {
+    pub(crate) word: String,
+    pub(crate) support: u32,
+    pub(crate) ngram_len: usize,
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+struct UsageContextFrontier {
+    by_context: HashMap<UsageTextId, Vec<(String, u32)>>,
+}
+
+impl UsageContextFrontier {
+    fn from_text_map(source: &HashMap<String, u32>) -> Self {
+        let mut frontier = Self::default();
+        for (key, count) in source {
+            let Some((context, word)) = key.split_once('\u{1f}') else {
+                continue;
+            };
+            let word = normalize_memory_word(word);
+            if word.is_empty() {
+                continue;
+            }
+            frontier.increment_center(usage_text_id(context), &word, *count);
+        }
+        frontier
+    }
+
+    fn increment(&mut self, context: &[String], word: &str, count: u32) {
+        let word = normalize_memory_word(word);
+        if word.is_empty() || count == 0 {
+            return;
+        }
+        for context_id in context_ngram_ids(context).as_slice() {
+            self.increment_center(*context_id, &word, count);
+        }
+    }
+
+    fn increment_center(&mut self, context: UsageTextId, word: &str, count: u32) {
+        let entries = self.by_context.entry(context).or_default();
+        if let Some((_, support)) = entries.iter_mut().find(|(current, _)| current == word) {
+            *support = support.saturating_add(count);
+        } else {
+            entries.push((word.to_string(), count));
+        }
+        entries.sort_by(|left, right| right.1.cmp(&left.1).then_with(|| left.0.cmp(&right.0)));
+        entries.truncate(CONTEXT_FRONTIER_PER_CENTER);
+    }
+
+    fn prefix_candidates(
+        &self,
+        context: &UsageHotContext,
+        partial: &str,
+        limit: usize,
+    ) -> Vec<UsageContextCandidate> {
+        if partial.is_empty() || limit == 0 {
+            return Vec::new();
+        }
+        let mut candidates = HashMap::<String, (u32, usize)>::new();
+        for (index, context_id) in context.context_ids.as_slice().iter().enumerate() {
+            let Some(entries) = self.by_context.get(context_id) else {
+                continue;
+            };
+            let ngram_len = index + 1;
+            for (word, support) in entries {
+                if word != partial && word.starts_with(partial) {
+                    candidates
+                        .entry(word.clone())
+                        .and_modify(|current| {
+                            current.0 = current.0.saturating_add(*support);
+                            current.1 = current.1.max(ngram_len);
+                        })
+                        .or_insert((*support, ngram_len));
+                }
+            }
+        }
+        let mut candidates = candidates
+            .into_iter()
+            .map(|(word, (support, ngram_len))| UsageContextCandidate {
+                word,
+                support,
+                ngram_len,
+            })
+            .collect::<Vec<_>>();
+        candidates.sort_by(|left, right| {
+            right
+                .ngram_len
+                .cmp(&left.ngram_len)
+                .then_with(|| right.support.cmp(&left.support))
+                .then_with(|| left.word.cmp(&right.word))
+        });
+        candidates.truncate(limit);
+        candidates
+    }
+
+    fn logical_payload_bytes(&self) -> usize {
+        self.by_context
+            .values()
+            .flatten()
+            .map(|(word, _)| word.len().saturating_add(mem::size_of::<u32>()))
+            .sum::<usize>()
+            .saturating_add(
+                self.by_context
+                    .len()
+                    .saturating_mul(mem::size_of::<UsageTextId>()),
+            )
+    }
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
@@ -123,6 +233,7 @@ pub(super) struct UsageHotState {
     words: UsageHotCountMap<UsageTextId>,
     accepted_words: UsageHotCountMap<UsageTextId>,
     context_words: UsageHotCountMap<UsageContextWordKey>,
+    context_frontier: UsageContextFrontier,
     rejected_words: UsageHotCountMap<UsageTextId>,
     rejected_context_words: UsageHotCountMap<UsageContextWordKey>,
     transition_attract: UsageHotCountMap<UsageTransitionKey>,
@@ -144,6 +255,7 @@ impl UsageHotState {
                 &counts.context_words,
                 parse_context_word_key,
             ),
+            context_frontier: UsageContextFrontier::from_text_map(&counts.context_words),
             rejected_words: UsageHotCountMap::from_text_map(&counts.rejected_words, |text| {
                 Some(usage_text_id(text))
             }),
@@ -180,6 +292,7 @@ impl UsageHotState {
             .logical_payload_bytes()
             .saturating_add(self.accepted_words.logical_payload_bytes())
             .saturating_add(self.context_words.logical_payload_bytes())
+            .saturating_add(self.context_frontier.logical_payload_bytes())
             .saturating_add(self.rejected_words.logical_payload_bytes())
             .saturating_add(self.rejected_context_words.logical_payload_bytes())
             .saturating_add(self.transition_attract.logical_payload_bytes())
@@ -252,6 +365,8 @@ impl UsageHotState {
             &projected.word,
             projected.weight,
         );
+        self.context_frontier
+            .increment(projected.context, &projected.word, projected.weight);
         if projected.is_accepted() {
             add_hot_transition_counts(
                 &mut self.transition_attract,
@@ -358,6 +473,16 @@ impl UsageHotState {
             ),
             accepted_count: self.accepted_words.get_text(normalized_word),
         }
+    }
+
+    pub(super) fn context_prefix_candidates(
+        &self,
+        context: &UsageHotContext,
+        partial: &str,
+        limit: usize,
+    ) -> Vec<UsageContextCandidate> {
+        self.context_frontier
+            .prefix_candidates(context, partial, limit)
     }
 
     pub(super) fn hot_readout_prepared(

@@ -1,0 +1,55 @@
+{
+  "schema": "lay.structural_gate_receipt.v1",
+  "gate": "L2_L3_LIVE_PREDICTION_AXIS",
+  "date": "2026-08-09",
+  "version": "1.0.16",
+  "verdict": "TARGETED_PASS_BROAD_IME_QUALITY_GATE_OPEN",
+  "runtime_authority_changed": true,
+  "bounded_configuration": {
+    "fuzzy_dafsa_node_frontier": 8192,
+    "fuzzy_prefix_basins": 16,
+    "decoded_reserve_per_fuzzy_basin": 8,
+    "online_words_per_context_center": 32,
+    "l3_context_birth_per_call": 4,
+    "live_l2_material_cap": 64
+  },
+  "observed_pre_fix": {
+    "single_letter_prefix_top": "о -> оставить",
+    "complete_word_false_extension": "ось -> осьмых",
+    "damaged_prefix": "предскз -> no useful candidate"
+  },
+  "measured_live_memory": {
+    "context": ["теперь", "нужно", "улучшить"],
+    "target": "ось",
+    "support": 9,
+    "context_ngram_len": 3,
+    "source": "L3ContextBirthCell32",
+    "short_prefix_result": "ось is the only admitted candidate",
+    "complete_token_result": "no weak осьм* continuation"
+  },
+  "verified": {
+    "one_pass_fuzzy_missing_letter_basin": "PASS",
+    "fuzzy_decoder_morphology_retention": "PASS",
+    "short_prefix_context_birth": "PASS",
+    "complete_token_extension_gate": "PASS",
+    "decision_core_enforces_admission": "PASS",
+    "stable_deduplication": "PASS",
+    "typing_transition_authority_contracts": "20/20 PASS",
+    "text_mutation_monopoly_contracts": "15/15 PASS"
+  },
+  "not_tested": [
+    "broad fixed IME hit-rate corpus",
+    "physical GUI acceptance after release installation",
+    "fixed 13-class L1.1 restoration proof"
+  ],
+  "evidence": [
+    "/home/ubu/.local/share/lay/ibus_engine_debug.jsonl",
+    "/home/ubu/.local/share/lay/nanda_wave/word_usage_events.jsonl",
+    "/home/ubu/projects/lay/src/nanda_wave/lexical_phase/runtime.rs",
+    "/home/ubu/projects/lay/src/nanda_wave/l2/ime_readout.rs",
+    "/home/ubu/projects/lay/src/nanda_wave/usage_prior/hot.rs",
+    "/home/ubu/projects/lay/src/nanda_wave/candidate_gate.rs",
+    "/home/ubu/projects/lay/src/typing_transition/decision/live_field.rs",
+    "/home/ubu/projects/lay/src/typing_transition/live_candidate.rs"
+  ]
+}

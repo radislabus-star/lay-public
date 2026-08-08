@@ -321,6 +321,107 @@ Runtime authority changed:
 
 - `false`
 
+## 13. 2026-08-09 L2+L3 Live Prediction Axis
+
+The canonical live prediction route is now:
+
+```text
+typed token prefix
+-> exact L2 completion field
+   + one-pass one-edit DAFSA field
+   + bounded online L3 context-birth reserve
+-> shared L3 context scoring
+-> TransitionDecisionCore admission and ranking
+-> IME suffix or display-only replacement
+```
+
+The IME remains a renderer. It does not create, rank, or authorize candidates.
+
+### 13.1 Bounded configuration
+
+```text
+one-edit DAFSA node frontier       8,192
+one-edit corrected-prefix basins      16
+decoded reserve per fuzzy basin        8
+online words per context center        32
+L3 context-birth reserve per call       4
+live L2 material cap                    64
+```
+
+One Damerau dynamic-programming traversal replaces generated typo-prefix
+enumeration. All surviving corrected-prefix basins enter one ranked field.
+Compact decoder continuations are retained per basin so inflected surfaces are
+not lost behind a hotter terminal-only basin.
+
+Online accepted usage updates the bounded context frontier incrementally:
+
+```text
+accepted/confirmed usage event
+-> context n-gram IDs
+-> context center -> at most 32 target words
+-> prefix-filtered context birth
+-> decoder/attestation verification
+```
+
+This path does not require recompiling the lexical package.
+
+### 13.2 Admission contract
+
+- corrected-prefix candidates are L2-grounded but remain display-only
+  replacements;
+- a token that is already an exact lexical state cannot be extended by lexical
+  geometry or broad L3 similarity alone;
+- extension of a complete token requires an exact context-born target or an
+  independently accumulated context-to-target usage relation;
+- `TransitionDecisionCore::select_live_completions` now directly removes every
+  proposal rejected by `admit_live_completion`; L4 cannot accidentally revive
+  a rejected proposal;
+- duplicate surfaces and duplicate non-empty suffixes are removed after ranking
+  with stable seen sets, independent of score adjacency.
+
+### 13.3 Measured facts
+
+Pre-change live log for the observed phrase:
+
+```text
+o / о       -> оставить was top, 2.694 ms total
+ось         -> осьмых was visible, 4.877 ms total
+предскз    -> no useful candidate, 5.392 ms total
+```
+
+The persisted confirmed event for `теперь нужно улучшить -> ось`
+produced a three-token context center with support `9`. In a live-memory route
+probe, prefix `о` produced `ось` as the only admitted candidate with source
+`L3ContextBirthCell32`; complete token `ось` produced no weak `осьм*`
+continuation.
+
+Focused checks passed for:
+
+- one-edit missing-letter basin `предскз -> предсказ*`;
+- decoder morphology retention `переспективн -> перспективнее`;
+- short-prefix context birth;
+- complete-token extension rejection;
+- shared DecisionCore admission enforcement;
+- stable candidate deduplication;
+- 20/20 typing-transition authority contracts;
+- 15/15 text-mutation monopoly contracts.
+
+What was not tested in this architecture experiment:
+
+- a broad fixed IME hit-rate corpus;
+- physical GUI acceptance after release installation;
+- the fixed 13-class L1.1 restoration proof, which is a separate contract.
+
+Verdict scope: targeted L2+L3 prediction-axis pass. This is not a claim of a
+broad IME-quality pass.
+
+Exact receipt:
+`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_L3_LIVE_PREDICTION_AXIS_2026-08-09.json`.
+
+Runtime authority changed:
+
+- `true`
+
 ## 17. 2026-08-06 Nonblocking Layout Handoff After Autocorrection
 
 The live log exposed a second synchronous owner on the physical Space route

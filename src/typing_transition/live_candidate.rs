@@ -5,6 +5,7 @@
 
 use super::decision::TransitionDecisionCore;
 use crate::typing_cpu::{ImeCandidateProposal, ImeCandidateSource};
+use std::collections::HashSet;
 
 #[derive(Debug, Clone)]
 pub(crate) struct LiveCompletionProposal {
@@ -19,6 +20,9 @@ pub(crate) struct LiveCompletionProposal {
     pub(crate) source: &'static str,
     pub(crate) partial_len: usize,
     pub(crate) suffix_len: usize,
+    /// The typed prefix is already an exact lexical state. Extending it needs
+    /// independent context evidence instead of lexical geometry alone.
+    pub(crate) partial_state_known: bool,
     pub(crate) allow_short_lexical: bool,
     pub(crate) structural: f32,
     pub(crate) usage: f32,
@@ -28,6 +32,7 @@ pub(crate) struct LiveCompletionProposal {
     pub(crate) hot: bool,
     pub(crate) l2_center_grounded: bool,
     pub(crate) l3_memory_supported: bool,
+    pub(crate) context_birth: bool,
     pub(crate) completed_state_known: bool,
     pub(crate) corrected_prefix_completion: bool,
     pub(crate) l3_relation_class: u64,
@@ -50,6 +55,10 @@ impl TransitionDecisionCore {
         proposals: Vec<LiveCompletionProposal>,
         limit: usize,
     ) -> Vec<SelectedLiveCompletion> {
+        let proposals = proposals
+            .into_iter()
+            .filter(|proposal| Self::admit_live_completion(proposal).visible())
+            .collect::<Vec<_>>();
         let inputs = proposals
             .iter()
             .map(
@@ -65,7 +74,7 @@ impl TransitionDecisionCore {
                     rank_milli: crate::text_metrics::score_to_milli(proposal.rank_score),
                     context_support: proposal.l3_memory_supported || proposal.completed_state_known,
                     pairwise_context_witness: false,
-                    eligible: Self::admit_live_completion(proposal).visible(),
+                    eligible: true,
                     witness_attract: proposal.l4_transition_attract_count,
                     witness_repel: proposal.l4_transition_repel_count,
                     witness_state_specific: proposal.l4_transition_state_specific,
@@ -98,11 +107,11 @@ impl TransitionDecisionCore {
             .iter()
             .find(|candidate| candidate.corrected_prefix_completion)
             .cloned();
-        selected.dedup_by(|left, right| {
-            left.surface == right.surface
-                || (!left.suffix.is_empty()
-                    && !right.suffix.is_empty()
-                    && left.suffix == right.suffix)
+        let mut seen_surfaces = HashSet::new();
+        let mut seen_suffixes = HashSet::new();
+        selected.retain(|candidate| {
+            seen_surfaces.insert(candidate.surface.clone())
+                && (candidate.suffix.is_empty() || seen_suffixes.insert(candidate.suffix.clone()))
         });
         selected.truncate(limit);
         if let Some(candidate) = corrected_prefix_reserve {
@@ -215,6 +224,7 @@ mod tests {
             source: "test",
             partial_len: 4,
             suffix_len: suffix.chars().count(),
+            partial_state_known: false,
             allow_short_lexical: true,
             structural: 0.5,
             usage: 0.0,
@@ -224,6 +234,7 @@ mod tests {
             hot: false,
             l2_center_grounded: true,
             l3_memory_supported: false,
+            context_birth: false,
             completed_state_known: true,
             corrected_prefix_completion: false,
             l3_relation_class: 0,
@@ -243,6 +254,21 @@ mod tests {
             8,
         );
         assert_eq!(selected[0].surface, "проверка");
+    }
+
+    #[test]
+    fn decision_core_does_not_emit_a_candidate_rejected_by_live_admission() {
+        let mut weak_extension = completion("осьмых", "мых", 0.9);
+        weak_extension.partial_len = 3;
+        weak_extension.partial_state_known = true;
+        assert!(
+            TransitionDecisionCore::select_live_completions(vec![weak_extension.clone()], 8)
+                .is_empty()
+        );
+
+        weak_extension.context_birth = true;
+        let selected = TransitionDecisionCore::select_live_completions(vec![weak_extension], 8);
+        assert_eq!(selected.len(), 1);
     }
 
     #[test]

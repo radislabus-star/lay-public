@@ -10,7 +10,7 @@
 **Статус: alpha.** Основной сценарий уже рабочий. Главная зона активной
 доводки — автопомощь после пробела и редкие desktop edge cases.
 
-Текущая версия: **1.0.15**.
+Текущая версия: **1.0.16**.
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scripts/install-remote.sh | bash
@@ -50,6 +50,18 @@ pinned SHA-256 match the released model contract.
 
 По умолчанию double Shift исправляет **1 последнее слово**. Области `2 слова`
 и `3 слова` можно включить отдельно в трее.
+
+## Что нового в 1.0.16
+
+- L2 ищет продолжения повреждённого префикса одним bounded
+  Damerau-проходом по DAFSA и сохраняет словоформы из compact
+  decoder;
+- L3 добавляет до четырёх целей из подтверждённой online context-memory,
+  поэтому короткий префикс может получить нужное слово до обычного
+  lexical top-N;
+- `TransitionDecisionCore` теперь фактически отсекает запрещённые
+  продолжения: полное слово не продлевается по одной лексической
+  геометрии без точного context-birth или накопленной context-to-target связи.
 
 ## Что нового в 1.0.15
 
@@ -860,7 +872,7 @@ scripts/check-lay-full.sh
 
 ## English
 
-`lay` 1.0.15 is a local Double Shift RU/EN layout rescue and bounded typing
+`lay` 1.0.16 is a local Double Shift RU/EN layout rescue and bounded typing
 correction tool for Linux desktops.
 
 Main workflow:
