@@ -402,6 +402,97 @@ Runtime authority changed:
 
 - `true`
 
+## 18. 2026-08-08 Shared L3 Scene On The IME Preedit Path
+
+The live IME trace exposed a latency outlier while constructing a display-only
+completion:
+
+```text
+token                         сдела
+returned candidates               8
+full precognition             83,652 us
+L2 material                     889 us
+L3 context                   82,290 us
+DecisionCore                     27 us
+visible suffix                     ть
+```
+
+This was not a Space stall and did not apply an edit. It blocked the printable
+key path while L3 constructed the preedit candidate field.
+
+The redundant computation was inside
+`ContextPhasePackage::score_candidates_with_mode_and_pair_views`. Before
+`1.0.14`, one batch built the same context scene once for the batch and then
+rebuilt it again inside `candidate_relation_vector` for every candidate:
+
+```text
+old: context scene builds = 1 + frontier size
+new: context scene builds = 1
+```
+
+The live trace records eight returned candidates, but did not record the raw L3
+frontier used before final admission. Therefore this experiment does not claim
+an exact old scene-build count for that sample. For any raw frontier size `N`,
+the count moves from `1 + N` to `1`. Each candidate still clones that scene and
+adds its own semantic relation vector before the existing positive, anti,
+signature, pairwise, and DecisionCore readout.
+
+The optimization is result-preserving:
+
+- no L2 or L3 candidate limit changed;
+- no positive, anti, hard-negative, signature, semantic, or pairwise bank was
+  disabled;
+- no score, threshold, authority, `Tied`, or `ABSTAIN` rule changed;
+- only repeated construction of an identical intermediate vector was removed.
+
+Measured facts:
+
+- pre-fix live outlier: `L3 = 82.290 ms`, total preedit `83.652 ms`;
+- post-change debug hot readout over 1,200 iterations:
+  `p99 = 1.812 ms`, `max = 1.943 ms`, debug gate `<=5 ms` passed;
+- release hot context-phase readout over 1,200 iterations:
+  pre-change `p99 = 165 us`, `max = 664 us`;
+  post-change `p99 = 164 us`, `max = 182 us`;
+- release full sentence readout with 14 pair views and 12 candidates over 1,200
+  iterations: `p50 = 444 us`, `p99 = 628 us`, `max = 688 us`;
+- immediately after installing `1.0.14`, while graphify and build work were
+  still running, the GUI trace still contained L3 outliers: `91.933 ms` for
+  token `с` and `64.348 ms` for token `служ`; these are post-fix observations,
+  so the physical GUI latency gate remains open even though the isolated full
+  sentence readout stays below `1 ms`;
+- the wider unique-prefix candidate-gate test remains above its historical
+  `1.5 ms` release budget: observed maximum `6.323 ms`, with L2 material up to
+  `4.500 ms` and L3 context up to `1.614 ms`; this experiment does not declare
+  the complete preedit latency gate closed;
+- context-phase behavioral suite: `83/83 PASS` on 19 test threads.
+
+What was not yet measured at the time of this architecture entry:
+
+- post-install physical GUI p50/p95/p99 under an idle development workload;
+- recurrence rate of scheduler or page-fault outliers during multi-day input;
+- fixed L1.1 restoration proof, which is outside this result-preserving L3
+  intermediate-vector change.
+
+Verdict scope:
+
+- the identified duplicate L3 scene construction is removed;
+- the context-phase maximum improved in the focused release measurement, while
+  the wider candidate gate still fails its existing latency budget;
+- post-install loaded-system telemetry still has outliers and prevents a live
+  PASS claim;
+- verdict is `WATCH`: clean physical typing telemetry remains the final latency
+  confirmation.
+
+Receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/IBUS_L3_SHARED_SCENE_PREEDIT_2026-08-08.json
+```
+
+Runtime authority changed:
+
+- `false`
+
 ## 14. 2026-08-06 Short-Function Boundary Shift And Space Timing
 
 ### Observed Input Shape

@@ -568,13 +568,17 @@ impl ContextPhasePackage {
         let mut readouts = candidates
             .iter()
             .map(|candidate| {
-                let vector = self.candidate_relation_vector(context_tokens, candidate, mode);
-                let signature_scene = if relation_competition && !relation_role_candidate(candidate)
-                {
+                let relation_candidate = relation_role_candidate(candidate);
+                let signature_scene = if relation_competition && !relation_candidate {
                     exact_scene.as_deref().unwrap_or(&scene)
                 } else {
                     &scene
                 };
+                // The context scene is identical for every candidate in this
+                // lane. Reusing it avoids rebuilding the full L3 scene once
+                // per frontier member on the synchronous IME preedit path.
+                let vector =
+                    self.candidate_relation_vector_from_scene(signature_scene, candidate, mode);
                 self.raw_readout(
                     &vector,
                     signature_scene,
@@ -1549,11 +1553,21 @@ impl ContextPhasePackage {
         candidate: &str,
         mode: ContextPhaseMode,
     ) -> Vec<PhaseCell> {
-        let mut vector = self.context_vector_for_relation_roles(
+        let scene = self.context_vector_for_relation_roles(
             context_tokens,
             mode,
             relation_role_candidate(candidate),
         );
+        self.candidate_relation_vector_from_scene(&scene, candidate, mode)
+    }
+
+    fn candidate_relation_vector_from_scene(
+        &self,
+        scene: &[PhaseCell],
+        candidate: &str,
+        mode: ContextPhaseMode,
+    ) -> Vec<PhaseCell> {
+        let mut vector = scene.to_vec();
         if mode != ContextPhaseMode::NoSemanticState {
             let token = crate::word_reader::last_text_word(candidate).unwrap_or_default();
             let token_hash = hash_text(&token.to_lowercase());

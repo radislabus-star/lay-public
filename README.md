@@ -10,7 +10,7 @@
 **Статус: alpha.** Основной сценарий уже рабочий. Главная зона активной
 доводки — автопомощь после пробела и редкие desktop edge cases.
 
-Текущая версия: **1.0.13**.
+Текущая версия: **1.0.14**.
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scripts/install-remote.sh | bash
@@ -50,6 +50,18 @@ pinned SHA-256 match the released model contract.
 
 По умолчанию double Shift исправляет **1 последнее слово**. Области `2 слова`
 и `3 слова` можно включить отдельно в трее.
+
+## Что нового в 1.0.14
+
+- L3 больше не строит одинаковую context scene отдельно для каждого кандидата
+  одного IME frontier: общий фазовый вектор вычисляется один раз, после чего к
+  нему добавляется только кандидатная компонента;
+- исправление направлено на наблюдавшийся preedit-всплеск `83.652 ms` на
+  префиксе `сдела`, где `82.290 ms` принадлежали L3; набор кандидатов,
+  anti-phase, pairwise readout и полномочия L3 не урезаны;
+- изолированный full-sentence readout теперь имеет `p99 0.628 ms`, но редкие
+  post-install GUI outliers ещё наблюдаются, поэтому общий live latency gate
+  остаётся в статусе `WATCH`.
 
 ## Что нового в 1.0.13
 
@@ -837,7 +849,7 @@ scripts/check-lay-full.sh
 
 ## English
 
-`lay` 1.0.13 is a local Double Shift RU/EN layout rescue and bounded typing
+`lay` 1.0.14 is a local Double Shift RU/EN layout rescue and bounded typing
 correction tool for Linux desktops.
 
 Main workflow:

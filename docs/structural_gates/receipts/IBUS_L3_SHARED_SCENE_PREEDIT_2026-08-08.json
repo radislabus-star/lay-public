@@ -1,0 +1,72 @@
+{
+  "schema": "lay.structural_gate_receipt.v1",
+  "gate": "IBUS_L3_SHARED_SCENE_PREEDIT",
+  "date": "2026-08-08",
+  "version": "1.0.14",
+  "verdict": "WATCH_POST_INSTALL_OUTLIERS_REMAIN",
+  "runtime_authority_changed": false,
+  "observed_pre_fix": {
+    "token": "сдела",
+    "returned_candidates": 8,
+    "raw_l3_frontier": "not_recorded",
+    "total_us": 83652,
+    "l2_material_us": 889,
+    "l3_context_us": 82290,
+    "decision_us": 27,
+    "visible_suffix": "ть"
+  },
+  "old_computation": {
+    "context_scene_builds": "1 + frontier_size",
+    "observed_exact_build_count": "not_claimed"
+  },
+  "new_computation": {
+    "context_scene_builds": 1,
+    "candidate_specific_semantic_vector_retained": true
+  },
+  "quality_contract": {
+    "candidate_limit_changed": false,
+    "positive_bank_changed": false,
+    "anti_bank_changed": false,
+    "hard_negative_bank_changed": false,
+    "signature_bank_changed": false,
+    "semantic_state_changed": false,
+    "pairwise_readout_changed": false,
+    "decision_authority_changed": false
+  },
+  "verified": {
+    "context_phase_tests": "83/83 PASS",
+    "test_threads": 19,
+    "debug_hot_iterations": 1200,
+    "debug_hot_p99_us": 1812,
+    "debug_hot_max_us": 1943,
+    "debug_budget_us": 5000,
+    "release_hot_iterations": 1200,
+    "release_hot_pre_change_p99_us": 165,
+    "release_hot_pre_change_max_us": 664,
+    "release_hot_post_change_p99_us": 164,
+    "release_hot_post_change_max_us": 182,
+    "release_sentence_iterations": 1200,
+    "release_sentence_pair_views": 14,
+    "release_sentence_candidates": 12,
+    "release_sentence_p50_us": 444,
+    "release_sentence_p99_us": 628,
+    "release_sentence_max_us": 688,
+    "post_install_loaded_gui_observed": true,
+    "post_install_loaded_gui_l3_outliers_us": [91933, 64348],
+    "post_install_loaded_gui_concurrent_work": ["graphify"],
+    "unique_prefix_gate_budget_us": 1500,
+    "unique_prefix_gate_verdict": "FAIL",
+    "unique_prefix_gate_max_us": 6323,
+    "unique_prefix_l2_material_max_us": 4500,
+    "unique_prefix_l3_context_max_us": 1614
+  },
+  "not_tested": [
+    "post-install physical GUI p50 p95 p99 under idle development workload",
+    "multi-day scheduler and page-fault outlier recurrence",
+    "fixed L1.1 restoration proof"
+  ],
+  "evidence": [
+    "/home/ubu/projects/lay/src/nanda_wave/context_phase/mod.rs",
+    "/home/ubu/.local/share/lay/ibus_engine_debug.jsonl"
+  ]
+}

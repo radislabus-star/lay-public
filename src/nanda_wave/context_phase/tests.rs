@@ -879,6 +879,49 @@ fn compiled_hot_context_readout_stays_inside_microsecond_budget() {
 }
 
 #[test]
+fn compiled_sentence_context_readout_stays_inside_preedit_budget() {
+    let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("data/lexicon/l3_context_phase_v1.nwpc");
+    let package = read_package(&path).expect("tracked L3 context phase package");
+    let original = "нужно проверить редкий всплеск при построении с";
+    let replacements = [
+        "нужно проверить редкий всплеск при построении сразу",
+        "нужно проверить редкий всплеск при построении слова",
+        "нужно проверить редкий всплеск при построении связи",
+        "нужно проверить редкий всплеск при построении сцены",
+        "нужно проверить редкий всплеск при построении сигнала",
+        "нужно проверить редкий всплеск при построении системы",
+        "нужно проверить редкий всплеск при построении списка",
+        "нужно проверить редкий всплеск при построении сети",
+        "нужно проверить редкий всплеск при построении слоя",
+        "нужно проверить редкий всплеск при построении состояния",
+        "нужно проверить редкий всплеск при построении структуры",
+        "нужно проверить редкий всплеск при построении строки",
+    ];
+    let _ = readout_candidates_with_package(&package, original, &replacements);
+    let mut elapsed = Vec::with_capacity(1_200);
+    for _ in 0..1_200 {
+        let started = Instant::now();
+        let _ = readout_candidates_with_package(&package, original, &replacements);
+        elapsed.push(started.elapsed().as_micros());
+    }
+    elapsed.sort_unstable();
+    let p50 = elapsed[elapsed.len() / 2];
+    let p99 = elapsed[elapsed.len() * 99 / 100];
+    let max = *elapsed.last().unwrap_or(&0);
+    eprintln!("l3 sentence hot readout: p50={p50}us p99={p99}us max={max}us");
+    let budget = if cfg!(debug_assertions) {
+        120_000
+    } else {
+        5_000
+    };
+    assert!(
+        p99 <= budget,
+        "L3 sentence hot readout p99={p99}us > {budget}us"
+    );
+}
+
+#[test]
 fn tracked_context_phase_exposes_case_competition_but_abstains_on_unknown_candidates() {
     let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("data/lexicon/l3_context_phase_v1.nwpc");
