@@ -178,11 +178,37 @@ fn boundary_replacement_beats_known_whole(
         return true;
     }
 
+    // The broad morphology corpus can contain a glued surface as a form-only
+    // center. A short pronoun followed by an independently stable lexical
+    // center is stronger boundary evidence than that broad whole-word hit.
+    // Common/protected whole words have already returned before this point.
+    if trusted_leading_pronoun_boundary(replacement) {
+        return true;
+    }
+
     contextual_boundary_replacement_for_word(
         word,
         context.previous().map(|token| token.text.as_str()),
     )
     .is_some_and(|contextual| contextual == replacement)
+}
+
+fn trusted_leading_pronoun_boundary(replacement: &str) -> bool {
+    let Some((left, right)) = replacement.split_once(' ') else {
+        return false;
+    };
+    !left.contains(char::is_whitespace)
+        && !right.contains(char::is_whitespace)
+        && left.chars().count() <= 3
+        && right.chars().count() >= 4
+        && crate::lexicon::is_ru_short_pronoun(left)
+        && stable_boundary_right_center(right)
+}
+
+fn stable_boundary_right_center(word: &str) -> bool {
+    is_common_ru_word(word)
+        || surface_motif_strict_known_surface(word)
+        || is_known_russian_word_or_form(word)
 }
 
 fn independent_content_boundary_centers(left: &str, right: &str) -> bool {
@@ -215,7 +241,10 @@ fn light_boundary_replacement(word: &str) -> Option<String> {
             || crate::lexicon::is_ru_short_pronoun(&left);
         let known_left_common = is_common_ru_word(&left);
         let known_left = known_left_function || known_left_pronoun || known_left_common;
-        let known_right = surface_motif_known_surface(&right);
+        let known_right = surface_motif_known_surface(&right)
+            || (known_left_pronoun
+                && right.chars().count() >= 4
+                && stable_boundary_right_center(&right));
         if known_left_function && !known_left_pronoun {
             let fuzzy = fuzzy_typo_candidates
                 .get_or_insert_with(|| crate::ru_typo::fuzzy_known_word_candidates(word));

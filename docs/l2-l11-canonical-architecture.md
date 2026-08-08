@@ -489,6 +489,65 @@ Receipt:
 /home/ubu/projects/lay/docs/structural_gates/receipts/IBUS_L3_SHARED_SCENE_PREEDIT_2026-08-08.json
 ```
 
+## 19. 2026-08-08 Leading-Pronoun Boundary Recovery
+
+The live input logs exposed `мнесбросили`: Space itself was committed, but the
+next autocorrection left the preceding and current words glued. Before this
+change the installed end-to-end diagnostic returned `chosen: none` for
+`мнесбросили `.
+
+The missing owner was the L2 boundary field. `light_boundary_replacement`
+could identify a short leading pronoun, but accepted the right side only from
+the narrow surface-motif bank. At the same time the broad morphology bank could
+mark the complete glued surface as known and suppress the split. Thus the
+stable lexical center `сбросили` was visible elsewhere in L2 but could not
+support boundary birth.
+
+The canonical structural rule is now:
+
+```text
+short Russian pronoun (<=3 letters)
++ stable right lexical/morphology center (>=4 letters)
+-> L2 boundary candidate may beat a broad form-only whole-surface hit
+```
+
+This is not a phrase or word exception. Common, protected, and strict clean
+whole-word surfaces still return before the override. The same right-center
+predicate is used both when the candidate is born and when it competes with a
+broad whole-surface morphology hit.
+
+Measured facts:
+
+- focused positive test:
+  `мнесбросили -> мне сбросили`, `1/1 PASS`;
+- focused clean-word guard:
+  `мнение` does not produce `мне ние`, `1/1 PASS`;
+- end-to-end debug CLI:
+  `CanonicalL2FieldBoundary`, `Eligible/class_allows_apply`, selected output
+  `мне сбросили `;
+- the broader `boundary_cell_` filter reported `15/17 PASS`; the unrelated
+  existing `boundary_cell_scans_split_pair_inside_tail` case also failed and
+  is not claimed fixed by this experiment.
+
+What was not tested:
+
+- physical GUI typing after installing the new release;
+- a broad clean-word false-split corpus;
+- the fixed 13-class L1.1 restoration proof.
+
+Verdict scope:
+
+- the exact L2 birth/readout/admission route for `мнесбросили` passes;
+- runtime authority changes because this candidate moves from no selection to
+  an eligible boundary correction;
+- broader boundary quality remains a separate gate.
+
+Receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_LEADING_PRONOUN_BOUNDARY_2026-08-08.json
+```
+
 Runtime authority changed:
 
 - `false`

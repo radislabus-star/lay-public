@@ -1,0 +1,44 @@
+{
+  "schema": "lay.structural_gate_receipt.v1",
+  "gate": "L2_LEADING_PRONOUN_BOUNDARY",
+  "date": "2026-08-08",
+  "version": "1.0.15",
+  "verdict": "TARGETED_PASS_BROADER_BOUNDARY_GATE_OPEN",
+  "runtime_authority_changed": true,
+  "observed_pre_fix": {
+    "input": "мнесбросили ",
+    "chosen": null,
+    "output": null
+  },
+  "structural_rule": {
+    "left": "known Russian short pronoun, at most 3 letters",
+    "right": "stable lexical or morphology center, at least 4 letters",
+    "protected_whole_surface_precedence_retained": true,
+    "word_specific_exception": false
+  },
+  "verified": {
+    "positive_case": "мнесбросили -> мне сбросили",
+    "positive_focused_test": "1/1 PASS",
+    "clean_guard_case": "мнение does not produce мне ние",
+    "clean_guard_focused_test": "1/1 PASS",
+    "end_to_end_source": "Nanda:CanonicalL2FieldBoundary",
+    "end_to_end_gate": "Eligible/class_allows_apply",
+    "end_to_end_selected": "мне сбросили ",
+    "broad_boundary_filter": "15/17 PASS"
+  },
+  "known_open_failure": {
+    "test": "boundary_cell_scans_split_pair_inside_tail",
+    "relation_to_change": "unrelated existing boundary scan case"
+  },
+  "not_tested": [
+    "physical GUI typing after release installation",
+    "broad clean-word false-split corpus",
+    "fixed 13-class L1.1 restoration proof"
+  ],
+  "evidence": [
+    "/home/ubu/.local/share/lay/ibus_engine_debug.jsonl",
+    "/home/ubu/.local/share/lay/recent_actions.jsonl",
+    "/home/ubu/projects/lay/src/nanda_wave/l2/tail_scan_adapter.rs",
+    "/home/ubu/projects/lay/src/nanda_wave/l2/tests.rs"
+  ]
+}
