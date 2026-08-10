@@ -7,6 +7,8 @@ use std::sync::Arc;
 
 const SENTENCE_ANCHOR: &str = "__lay_l3_sentence_v1";
 const MARKER_PREFIX: &str = "__lay_l3_";
+pub(crate) const PAIR_VIEW_LEFT_EXACT: usize = 14;
+pub(crate) const PAIR_VIEW_RIGHT_EXACT: usize = 15;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(crate) struct SentenceContextScene {
@@ -141,6 +143,145 @@ struct SentenceProofEvaluation {
     failures: Vec<serde_json::Value>,
     outcomes: Vec<SentenceCaseOutcome>,
     false_authority: usize,
+}
+
+pub(crate) fn compile_supervised_relation_delta(
+    projection_base: &super::ContextPhasePackage,
+    scenes: &[String],
+    target: &str,
+    competitors: &[String],
+    min_profile_support: u32,
+    signature_schema: u32,
+) -> io::Result<(super::ContextPhasePackage, serde_json::Value)> {
+    if scenes.is_empty() || target.trim().is_empty() || competitors.is_empty() {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "supervised relation delta requires scenes, target, and competitors",
+        ));
+    }
+    let config = super::online::OnlineContextPhaseConfig::production_with_signature_schema(
+        min_profile_support,
+        signature_schema,
+    );
+    let mut learner = super::online::OnlineContextPhaseLearner::new_with_projection_base(
+        config,
+        Arc::new(super::SurfaceMutationField::default()),
+        projection_base,
+    );
+    let mut distinct_scenes = BTreeSet::new();
+    let mut projected = Vec::new();
+    for (index, surface) in scenes.iter().enumerate() {
+        if !distinct_scenes.insert(surface.clone()) {
+            continue;
+        }
+        let Some((scene, projected_target, projected_competitors)) =
+            project_supervised_tail_relation(surface, target, competitors)
+        else {
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                format!(
+                    "supervised relation scene {} does not end in the labelled target",
+                    index + 1
+                ),
+            ));
+        };
+        projected.push((scene, projected_target, projected_competitors));
+    }
+    if distinct_scenes.len() < config.min_profile_support as usize {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            format!(
+                "supervised relation delta has {} distinct scenes; {} required",
+                distinct_scenes.len(),
+                config.min_profile_support
+            ),
+        ));
+    }
+
+    // Build one stationary semantic basis for the bounded relation batch, then
+    // reduce every independently labelled episode into that same coordinate
+    // system. Reading the caller-provided scenes remains a single bounded pass.
+    for (scene, _, _) in &projected {
+        learner.prepare_supervised_sentence_basis(&scene.encoded_tokens());
+    }
+    for (scene, projected_target, projected_competitors) in &projected {
+        learner.ingest_supervised_sentence_on_prepared_basis(
+            &scene.encoded_tokens(),
+            &scene.pair_views(),
+            projected_target,
+            projected_competitors,
+        );
+    }
+
+    let package = learner.snapshot();
+    let (exact_pair_profiles, generalized_pair_profiles) = package.pair_profile_counts();
+    let report = serde_json::json!({
+        "kind": "l3_supervised_relation_delta_compile",
+        "architecture": "sentence_slot_directional_relation_v1",
+        "signature_schema": package.signature_schema,
+        "corpus_passes": 1,
+        "source_scenes": scenes.len(),
+        "distinct_scenes": distinct_scenes.len(),
+        "supervised_relations": 1,
+        "competitors": competitors.len(),
+        "raw_words_stored": false,
+        "emitted_semantic_states": package.semantic_states.len(),
+        "emitted_candidate_profiles": package.profiles.len(),
+        "emitted_signature_profiles": package.signature_profiles.len(),
+        "emitted_pair_profiles": package.pair_profiles.len(),
+        "emitted_exact_pair_profiles": exact_pair_profiles,
+        "emitted_generalized_pair_profiles": generalized_pair_profiles,
+        "runtime_authority": false,
+    });
+    Ok((package, report))
+}
+
+fn project_supervised_tail_relation(
+    surface: &str,
+    target: &str,
+    competitors: &[String],
+) -> Option<(SentenceContextScene, String, Vec<String>)> {
+    let surface = tokenize_surface(surface);
+    let slot = surface.tokens.len().checked_sub(1)?;
+    let target = target.trim().to_lowercase();
+    if surface.tokens[slot].text.to_lowercase() != target {
+        return None;
+    }
+    let mut seen = BTreeSet::new();
+    let competitors = competitors
+        .iter()
+        .map(|competitor| competitor.trim().to_lowercase())
+        .filter(|competitor| !competitor.is_empty() && competitor != &target)
+        .filter(|competitor| seen.insert(competitor.clone()))
+        .collect::<Vec<_>>();
+    if competitors.is_empty() {
+        return None;
+    }
+    let left = surface.tokens[..slot]
+        .iter()
+        .map(|token| token.text.clone())
+        .collect::<Vec<_>>();
+    let right = surface.tokens[slot + 1..]
+        .iter()
+        .map(|token| token.text.clone())
+        .collect::<Vec<_>>();
+    let position = match (left.is_empty(), right.is_empty()) {
+        (true, true) => SlotPosition::Only,
+        (true, false) => SlotPosition::Start,
+        (false, true) => SlotPosition::End,
+        (false, false) => SlotPosition::Middle,
+    };
+    Some((
+        SentenceContextScene {
+            left,
+            right,
+            punctuation_before: PunctuationClass::from_separator(&surface.separators[slot]),
+            punctuation_after: PunctuationClass::from_separator(&surface.separators[slot + 1]),
+            position,
+        },
+        target,
+        competitors,
+    ))
 }
 
 pub(crate) fn build_and_prove_sentence_context_path(
@@ -507,6 +648,18 @@ impl SentenceContextScene {
                 left.to_lowercase()
             ));
         }
+        if let Some(right) = right_0 {
+            tokens.push(format!(
+                "{MARKER_PREFIX}right_exact_0_{}",
+                right.to_lowercase()
+            ));
+        }
+        if let Some(right) = self.right.get(1) {
+            tokens.push(format!(
+                "{MARKER_PREFIX}right_exact_1_{}",
+                right.to_lowercase()
+            ));
+        }
         tokens
     }
 
@@ -600,6 +753,25 @@ impl SentenceContextScene {
         append_neighbor_tail(&mut following_tail, "right_1", right_1);
         following_tail.push(format!("{MARKER_PREFIX}pair_view_right_1_tail"));
 
+        let left_exact = vec![
+            format!(
+                "{MARKER_PREFIX}left_exact_crystal_{}",
+                left_0
+                    .map(str::to_lowercase)
+                    .unwrap_or_else(|| "none".to_string())
+            ),
+            format!("{MARKER_PREFIX}pair_view_left_exact_crystal"),
+        ];
+        let right_exact = vec![
+            format!(
+                "{MARKER_PREFIX}right_exact_crystal_{}",
+                right_0
+                    .map(str::to_lowercase)
+                    .unwrap_or_else(|| "none".to_string())
+            ),
+            format!("{MARKER_PREFIX}pair_view_right_exact_crystal"),
+        ];
+
         let mut full = self.encoded_tokens();
         full.push(format!("{MARKER_PREFIX}pair_view_full"));
 
@@ -618,24 +790,64 @@ impl SentenceContextScene {
             left_tail,
             right_tail,
             following_tail,
+            left_exact,
+            right_exact,
         ]
     }
 
     pub(crate) fn direct_pair_view_indices(&self) -> Vec<usize> {
-        if self.punctuation_before == PunctuationClass::None
-            && self.punctuation_after == PunctuationClass::None
+        let mut indices = Vec::new();
+        if self.punctuation_before != PunctuationClass::None
+            || self.punctuation_after != PunctuationClass::None
         {
-            return Vec::new();
+            indices.extend(
+                self.pair_views()
+                    .into_iter()
+                    .enumerate()
+                    .filter_map(|(index, view)| {
+                        view.iter()
+                            .any(|token| token.contains("pair_view_punctuation"))
+                            .then_some(index)
+                    })
+                    .collect::<Vec<_>>(),
+            );
+        } else {
+            // Punctuation crystals and coarse morphology views transfer useful
+            // ranking pressure, but they are correlated and cannot independently
+            // ground sentence authority. Require agreement from views carrying an
+            // actual neighbouring surface, tail, or cross-slot bridge.
+            indices.push(0); // full scene
+            if !self.left.is_empty() {
+                indices.extend([4, 11]); // immediate left and its bounded tail
+            }
+            if self.left.len() >= 2 {
+                indices.push(5); // governing left
+            }
+            if !self.right.is_empty() {
+                indices.extend([6, 12]); // immediate right and its bounded tail
+            }
+            if self.right.len() >= 2 {
+                indices.extend([7, 13]); // following right and its bounded tail
+            }
+            if !self.left.is_empty() && !self.right.is_empty() {
+                indices.push(8); // cross-slot bridge
+            }
         }
-        self.pair_views()
-            .into_iter()
-            .enumerate()
-            .filter_map(|(index, view)| {
-                view.iter()
-                    .any(|token| token.contains("pair_view_punctuation"))
-                    .then_some(index)
-            })
-            .collect()
+        indices.extend(self.required_anchor_pair_view_indices());
+        indices.sort_unstable();
+        indices.dedup();
+        indices
+    }
+
+    pub(crate) fn required_anchor_pair_view_indices(&self) -> Vec<usize> {
+        let mut indices = Vec::with_capacity(2);
+        if !self.left.is_empty() {
+            indices.push(PAIR_VIEW_LEFT_EXACT);
+        }
+        if !self.right.is_empty() {
+            indices.push(PAIR_VIEW_RIGHT_EXACT);
+        }
+        indices
     }
 
     pub(crate) fn legacy_left_tokens(&self) -> &[String] {
@@ -659,7 +871,9 @@ pub(crate) fn is_sentence_marker(token: &str) -> bool {
 }
 
 pub(crate) fn is_sentence_structural_marker(token: &str) -> bool {
-    is_sentence_marker(token) && !token.starts_with("__lay_l3_left_exact_")
+    is_sentence_marker(token)
+        && !token.starts_with("__lay_l3_left_exact_")
+        && !token.starts_with("__lay_l3_right_exact_")
 }
 
 pub(crate) fn project_candidate_lattice(
@@ -1093,6 +1307,54 @@ mod tests {
             .encoded_tokens();
 
         assert_ne!(first, second);
+    }
+
+    #[test]
+    fn supervised_relation_delta_emits_directional_pair_evidence() {
+        let base = super::super::ContextPhasePackage {
+            signature_schema: super::super::SIGNATURE_SCHEMA_RELATION_ROLES,
+            ..super::super::ContextPhasePackage::default()
+        };
+        let scenes = vec![
+            "нам нужно посмотреть".to_string(),
+            "здесь пора посмотреть".to_string(),
+        ];
+        let (package, report) = compile_supervised_relation_delta(
+            &base,
+            &scenes,
+            "посмотреть",
+            &["посмотри".to_string()],
+            2,
+            super::super::SIGNATURE_SCHEMA_RELATION_ROLES,
+        )
+        .unwrap();
+
+        assert_eq!(report["corpus_passes"], 1);
+        assert_eq!(report["distinct_scenes"], 2);
+        assert!(report["emitted_exact_pair_profiles"].as_u64().unwrap() > 0);
+        let projection = project_candidate_lattice(
+            "нам нужно посмот",
+            &["нам нужно посмотреть", "нам нужно посмотри"],
+        )
+        .unwrap();
+        let candidates = projection
+            .candidates
+            .iter()
+            .filter_map(Option::as_deref)
+            .collect::<Vec<_>>();
+        let readouts = package.score_sentence_candidates(&projection.scene, &candidates);
+        assert!(readouts[0].pairwise_known_edges > 0, "{readouts:#?}");
+        assert!(readouts[0].pairwise_certified, "{readouts:#?}");
+        assert_eq!(
+            readouts[0].disposition,
+            ContextPhaseDisposition::Support,
+            "{readouts:#?}"
+        );
+        assert_ne!(
+            readouts[1].disposition,
+            ContextPhaseDisposition::Support,
+            "{readouts:#?}"
+        );
     }
 
     #[test]

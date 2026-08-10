@@ -390,6 +390,11 @@ fn boundary_cell_scans_glued_word_inside_tail() {
 #[test]
 fn boundary_cell_scans_split_pair_inside_tail() {
     let original = "сейчас думаю тако й пример работает ";
+    assert_eq!(
+        crate::phrase_reader::correct_split_word_pair("тако й"),
+        Some("такой".to_string()),
+        "the pair reader must restore the lexical center before L2 tail projection"
+    );
     let l1 = run_l1(original);
     let candidates = run_l2(original, &l1);
     assert!(
@@ -488,6 +493,39 @@ fn boundary_cell_repairs_and_splits_the_current_glued_token() {
         }),
         "candidates={candidates:?}"
     );
+}
+
+#[test]
+fn boundary_cell_splits_trailing_short_function_center() {
+    for (original, expected) in [
+        ("Готовь документыдля ", "Готовь документы для"),
+        ("Какие документыим прислать ", "Какие документы им прислать"),
+    ] {
+        let l1 = run_l1(original);
+        let candidates = run_l2(original, &l1);
+
+        assert!(
+            candidates.iter().any(|candidate| {
+                candidate.source == "BoundaryCell32" && candidate.text == expected
+            }),
+            "original={original:?} candidates={candidates:?}"
+        );
+    }
+}
+
+#[test]
+fn boundary_cell_does_not_split_clean_words_with_short_endings() {
+    for original in ["плохим ", "ходим ", "отдел ", "модель "] {
+        let l1 = run_l1(original);
+        let candidates = run_l2(original, &l1);
+
+        assert!(
+            candidates
+                .iter()
+                .all(|candidate| candidate.source != "BoundaryCell32"),
+            "original={original:?} candidates={candidates:?}"
+        );
+    }
 }
 
 #[test]

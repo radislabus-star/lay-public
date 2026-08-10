@@ -1,14 +1,22 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
 
+use rayon::prelude::*;
+
 use crate::correction_core::UnifiedCorrectionCandidate;
 
+use super::compositional::{
+    prepared_normalized_similarity_at_least_milli, prepared_normalized_similarity_milli,
+    prepared_surface_atom_profile, prepared_surface_atom_similarity_milli, surface_scoring_profile,
+    LemmaWaveIndex,
+};
 use super::context::{context_mode, scene_wave};
-use super::format::decode_package;
 use super::model::{
     L2FieldPackage, MorphBinding, SlotPhaseCenter, TieCalibration,
     COMPETITION_FLAG_EXPLICIT_NEIGHBOR, L2_PHASE_CELLS, NO_L1_TERMINAL,
 };
+use super::runtime_storage::RuntimeL2Package;
+use super::CANONICAL_L2_ATOM_RELATION_LIMIT;
 
 const MAX_ACTIVE_LEMMAS: usize = 4;
 const INHERITED_L1_ATTENUATION_MILLI: i32 = 240;
@@ -52,6 +60,84 @@ pub(crate) struct L2LexicalSeed {
     pub(crate) terminal_id: Option<u32>,
     pub(crate) surface: Option<String>,
     pub(crate) evidence_milli: i32,
+    pub(crate) origin: L2LexicalSeedOrigin,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) enum L2LexicalSeedOrigin {
+    GroundedL11,
+    CompositionalMorphology,
+    InverseGeometry,
+}
+
+impl L2LexicalSeedOrigin {
+    fn is_grounded_input(self) -> bool {
+        matches!(self, Self::GroundedL11 | Self::CompositionalMorphology)
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) struct CompositionalFormBirth {
+    pub(crate) form_ref: u32,
+    pub(crate) lemma_id: u32,
+    pub(crate) evidence_milli: u16,
+    pub(crate) geometry_evidence_milli: u16,
+    pub(crate) atom_evidence_milli: u16,
+    pub(crate) lemma_evidence_milli: u16,
+    pub(crate) wave_distance: u16,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) struct CompositionalLemmaBirth {
+    pub(crate) lemma_id: u32,
+    pub(crate) atom_evidence: u32,
+    pub(crate) atom_evidence_milli: u16,
+    pub(crate) wave_distance: u16,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+struct ContextualLemmaRank {
+    birth: CompositionalLemmaBirth,
+    total_evidence_milli: i32,
+    slot_evidence_milli: i32,
+    neighbor_evidence_milli: i32,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+struct ContextualFeatureRank {
+    feature_mask: u32,
+    total_evidence_milli: i32,
+    surface_evidence_milli: u16,
+    slot_evidence_milli: i32,
+    neighbor_evidence_milli: i32,
+    support: u16,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+struct CompositionalFormCandidate {
+    form_ref: u32,
+    lemma_id: u32,
+    lemma_evidence_milli: u16,
+    wave_distance: u16,
+    geometry_evidence_milli: Option<u16>,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+struct PreparedCompositionalForm {
+    form_ref: u32,
+    geometry_evidence_milli: Option<u16>,
+}
+
+impl CompositionalFormBirth {
+    pub(crate) fn rank_evidence(self) -> (u16, u16, u16, u16, std::cmp::Reverse<u16>) {
+        (
+            self.evidence_milli,
+            self.lemma_evidence_milli,
+            self.atom_evidence_milli,
+            self.geometry_evidence_milli,
+            std::cmp::Reverse(self.wave_distance),
+        )
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -85,7 +171,9 @@ pub(crate) struct StandaloneL2Readout {
 
 #[derive(Clone, Debug)]
 pub(crate) struct StandaloneL2Field {
-    package: L2FieldPackage,
+    package: RuntimeL2Package,
+    lemma_wave_index: LemmaWaveIndex,
+    lemma_wave_source: &'static str,
     form_by_terminal: Vec<(u32, u32)>,
     binding_offsets_by_form: Vec<u32>,
     binding_indices_by_form: Vec<u32>,
@@ -98,16 +186,31 @@ impl StandaloneL2Field {
     pub(crate) fn load(path: &Path) -> Result<Self, String> {
         let bytes = std::fs::read(path)
             .map_err(|error| format!("failed to read L2 package {}: {error}", path.display()))?;
-        Self::from_bytes(&bytes)
+        Self::from_owned_bytes(bytes)
     }
 
     pub(crate) fn from_bytes(bytes: &[u8]) -> Result<Self, String> {
-        Self::from_package(decode_package(bytes)?)
+        Self::from_owned_bytes(bytes.to_vec())
     }
 
     pub(crate) fn from_package(package: L2FieldPackage) -> Result<Self, String> {
+        Self::from_runtime_package(RuntimeL2Package::from_reference(package))
+    }
+
+    fn from_owned_bytes(bytes: Vec<u8>) -> Result<Self, String> {
+        Self::from_runtime_package(RuntimeL2Package::from_bytes(bytes)?)
+    }
+
+    fn from_runtime_package(mut package: RuntimeL2Package) -> Result<Self, String> {
+        let (lemma_wave_index, lemma_wave_source) = match package.take_lemma_wave_index() {
+            Some(index) => (index, "compact_v2_embedded"),
+            None => (LemmaWaveIndex::build(&package)?, "runtime_rebuilt"),
+        };
         let mut form_by_terminal = Vec::new();
-        for (form_ref, form) in package.form_refs.iter().enumerate() {
+        for form_ref in 0..package.form_count() {
+            let form = package
+                .form(form_ref)
+                .ok_or_else(|| format!("missing L2 form record {form_ref}"))?;
             if form.l1_terminal_id == NO_L1_TERMINAL {
                 continue;
             }
@@ -124,30 +227,36 @@ impl StandaloneL2Field {
             ));
         }
 
-        let mut binding_offsets_by_form = vec![0_u32; package.form_refs.len() + 1];
-        for binding in &package.morph_bindings {
+        let mut binding_offsets_by_form = vec![0_u32; package.form_count() + 1];
+        for binding_index in 0..package.binding_count() {
+            let binding = package
+                .binding(binding_index)
+                .ok_or_else(|| format!("missing L2 morphology binding {binding_index}"))?;
             binding_offsets_by_form[binding.form_center_ref as usize + 1] += 1;
         }
         for index in 1..binding_offsets_by_form.len() {
             binding_offsets_by_form[index] =
                 binding_offsets_by_form[index].saturating_add(binding_offsets_by_form[index - 1]);
         }
-        let mut binding_indices_by_form = vec![0_u32; package.morph_bindings.len()];
-        let mut next = binding_offsets_by_form[..package.form_refs.len()].to_vec();
-        for (binding_index, binding) in package.morph_bindings.iter().enumerate() {
+        let mut binding_indices_by_form = vec![0_u32; package.binding_count()];
+        let mut next = binding_offsets_by_form[..package.form_count()].to_vec();
+        for binding_index in 0..package.binding_count() {
+            let binding = package
+                .binding(binding_index)
+                .ok_or_else(|| format!("missing L2 morphology binding {binding_index}"))?;
             let form_ref = binding.form_center_ref as usize;
             let output = next[form_ref] as usize;
             binding_indices_by_form[output] = binding_index as u32;
             next[form_ref] += 1;
         }
         let context_by_key = package
-            .context_modes
+            .context_modes()
             .iter()
             .enumerate()
             .map(|(index, mode)| (mode.stable_key, index as u32))
             .collect();
         let mut slot_centers_by_mode_feature = BTreeMap::<(u32, u32), Vec<u32>>::new();
-        for (index, center) in package.slot_centers.iter().enumerate() {
+        for (index, center) in package.slot_centers().iter().enumerate() {
             slot_centers_by_mode_feature
                 .entry((center.context_mode_id, center.feature_mask))
                 .or_default()
@@ -155,7 +264,7 @@ impl StandaloneL2Field {
         }
         let mut neighbor_couplings_by_mode_lemma_feature =
             BTreeMap::<(u32, u32, u32), Vec<u32>>::new();
-        for (index, coupling) in package.neighbor_couplings.iter().enumerate() {
+        for (index, coupling) in package.neighbor_couplings().iter().enumerate() {
             neighbor_couplings_by_mode_lemma_feature
                 .entry((
                     coupling.context_mode_id,
@@ -167,6 +276,8 @@ impl StandaloneL2Field {
         }
         Ok(Self {
             package,
+            lemma_wave_index,
+            lemma_wave_source,
             form_by_terminal,
             binding_offsets_by_form,
             binding_indices_by_form,
@@ -177,41 +288,496 @@ impl StandaloneL2Field {
     }
 
     pub(crate) fn l1_package_fingerprint(&self) -> u64 {
-        self.package.l1_package_fingerprint
+        self.package.l1_package_fingerprint()
     }
 
     pub(crate) fn package_counts(&self) -> (usize, usize, usize, usize, usize, usize) {
         (
-            self.package.form_refs.len(),
+            self.package.form_count(),
             self.form_by_terminal.len(),
-            self.package.lemma_centers.len(),
-            self.package.morph_bindings.len(),
-            self.package.competition_edges.len(),
-            self.package.decoder_bytes.len(),
+            self.package.lemma_centers().len(),
+            self.package.binding_count(),
+            self.package.competition_edges().len(),
+            self.package.raw_decoder_bytes(),
         )
     }
 
-    pub(crate) fn bound_form_refs(&self) -> impl Iterator<Item = (u32, u32)> + '_ {
-        self.package
-            .form_refs
-            .iter()
-            .enumerate()
-            .filter_map(|(form_ref, form)| {
-                (form.l1_terminal_id != NO_L1_TERMINAL)
-                    .then_some((u32::try_from(form_ref).ok()?, form.l1_terminal_id))
+    pub(crate) fn form_count(&self) -> usize {
+        self.package.form_count()
+    }
+
+    pub(crate) fn package_storage(&self) -> (&'static str, usize) {
+        (self.package.storage_kind(), self.package.backing_bytes())
+    }
+
+    pub(crate) fn compositional_index_bytes(&self) -> usize {
+        self.lemma_wave_index.resident_bytes()
+    }
+
+    pub(crate) fn compositional_index_source(&self) -> &'static str {
+        self.lemma_wave_source
+    }
+
+    pub(crate) fn compositional_form_births(
+        &self,
+        observed_surface: &str,
+        lemma_limit: usize,
+        form_limit: usize,
+    ) -> Vec<CompositionalFormBirth> {
+        self.compositional_form_births_with_atom_relation_limit(
+            observed_surface,
+            lemma_limit,
+            form_limit,
+            CANONICAL_L2_ATOM_RELATION_LIMIT,
+        )
+    }
+
+    pub(crate) fn compositional_form_births_with_atom_relation_limit(
+        &self,
+        observed_surface: &str,
+        lemma_limit: usize,
+        form_limit: usize,
+        atom_relation_limit: usize,
+    ) -> Vec<CompositionalFormBirth> {
+        if lemma_limit == 0 || form_limit == 0 {
+            return Vec::new();
+        }
+        let lemma_births = self.compositional_lemma_births_with_atom_relation_limit(
+            observed_surface,
+            lemma_limit,
+            atom_relation_limit,
+        );
+        self.compositional_form_births_from_lemmas(observed_surface, &lemma_births, form_limit)
+    }
+
+    pub(crate) fn compositional_lemma_births_with_atom_relation_limit(
+        &self,
+        observed_surface: &str,
+        lemma_limit: usize,
+        atom_relation_limit: usize,
+    ) -> Vec<CompositionalLemmaBirth> {
+        self.lemma_wave_index
+            .rank_lemmas_with_atom_relation_limit(
+                observed_surface,
+                lemma_limit,
+                atom_relation_limit,
+            )
+            .into_iter()
+            .map(|lemma_match| CompositionalLemmaBirth {
+                lemma_id: lemma_match.lemma_id,
+                atom_evidence: lemma_match.atom_evidence,
+                atom_evidence_milli: lemma_match.atom_evidence_milli,
+                wave_distance: lemma_match.wave_distance,
             })
+            .collect()
+    }
+
+    pub(crate) fn compositional_lemma_births(
+        &self,
+        observed_surface: &str,
+        lemma_limit: usize,
+    ) -> Vec<CompositionalLemmaBirth> {
+        self.compositional_lemma_births_with_atom_relation_limit(
+            observed_surface,
+            lemma_limit,
+            CANONICAL_L2_ATOM_RELATION_LIMIT,
+        )
+    }
+
+    pub(crate) fn contextual_compositional_lemma_births(
+        &self,
+        context: &str,
+        lemma_births: &[CompositionalLemmaBirth],
+        active_limit: usize,
+    ) -> Vec<CompositionalLemmaBirth> {
+        if active_limit == 0 || lemma_births.is_empty() {
+            return Vec::new();
+        }
+        if active_limit >= lemma_births.len() {
+            return lemma_births.to_vec();
+        }
+        let mode = context_mode(context);
+        let Some(context_mode_id) = self.context_by_key.get(&mode.stable_key).copied() else {
+            return lemma_births.iter().copied().take(active_limit).collect();
+        };
+        let wave = scene_wave(context);
+        let mut ranked = lemma_births
+            .iter()
+            .copied()
+            .map(|birth| {
+                let slot_evidence_milli =
+                    self.best_lemma_context_evidence(birth.lemma_id, Some(context_mode_id), &wave);
+                let neighbor_evidence_milli =
+                    self.best_lemma_neighbor_evidence(birth.lemma_id, context_mode_id);
+                ContextualLemmaRank {
+                    birth,
+                    total_evidence_milli: i32::from(birth.atom_evidence_milli)
+                        .saturating_add(slot_evidence_milli)
+                        .saturating_add(neighbor_evidence_milli),
+                    slot_evidence_milli,
+                    neighbor_evidence_milli,
+                }
+            })
+            .collect::<Vec<_>>();
+        ranked.sort_unstable_by(|left, right| {
+            right
+                .total_evidence_milli
+                .cmp(&left.total_evidence_milli)
+                .then_with(|| {
+                    right
+                        .neighbor_evidence_milli
+                        .cmp(&left.neighbor_evidence_milli)
+                })
+                .then_with(|| right.slot_evidence_milli.cmp(&left.slot_evidence_milli))
+                .then_with(|| {
+                    right
+                        .birth
+                        .atom_evidence_milli
+                        .cmp(&left.birth.atom_evidence_milli)
+                })
+                .then_with(|| right.birth.atom_evidence.cmp(&left.birth.atom_evidence))
+                .then_with(|| left.birth.wave_distance.cmp(&right.birth.wave_distance))
+                .then_with(|| left.birth.lemma_id.cmp(&right.birth.lemma_id))
+        });
+        ranked.truncate(active_limit);
+        ranked.into_iter().map(|ranked| ranked.birth).collect()
+    }
+
+    pub(crate) fn compositional_form_births_from_lemmas(
+        &self,
+        observed_surface: &str,
+        lemma_births: &[CompositionalLemmaBirth],
+        form_limit: usize,
+    ) -> Vec<CompositionalFormBirth> {
+        if form_limit == 0 {
+            return Vec::new();
+        }
+        let lemma_forms = lemma_births
+            .iter()
+            .copied()
+            .map(|lemma_match| {
+                let mut form_refs = self
+                    .bindings_for_lemma(lemma_match.lemma_id)
+                    .map(|binding| PreparedCompositionalForm {
+                        form_ref: binding.form_center_ref,
+                        geometry_evidence_milli: None,
+                    })
+                    .collect::<Vec<_>>();
+                form_refs.sort_unstable_by_key(|form| form.form_ref);
+                form_refs.dedup_by_key(|form| form.form_ref);
+                (lemma_match, form_refs)
+            })
+            .collect::<Vec<_>>();
+        self.compositional_form_births_from_lemma_forms(observed_surface, lemma_forms, form_limit)
+    }
+
+    pub(crate) fn contextual_compositional_form_births_from_lemmas(
+        &self,
+        context: &str,
+        observed_surface: &str,
+        lemma_births: &[CompositionalLemmaBirth],
+        feature_limit: usize,
+        form_limit: usize,
+    ) -> Vec<CompositionalFormBirth> {
+        if feature_limit == 0 || form_limit == 0 {
+            return Vec::new();
+        }
+        let trace = std::env::var_os("LAY_L2_FIELD_TRACE").is_some();
+        let started = std::time::Instant::now();
+        let mode = context_mode(context);
+        let context_mode_id = self.context_by_key.get(&mode.stable_key).copied();
+        let wave = scene_wave(context);
+        let observed_profile = surface_scoring_profile(observed_surface);
+        let lemma_forms = lemma_births
+            .par_iter()
+            .copied()
+            .map(|lemma_match| {
+                let bindings = self
+                    .bindings_for_lemma(lemma_match.lemma_id)
+                    .collect::<Vec<_>>();
+                let mut by_feature = BTreeMap::<u32, ContextualFeatureRank>::new();
+                let mut geometry_by_form = BTreeMap::<u32, u16>::new();
+                for binding in &bindings {
+                    let slot_evidence_milli =
+                        self.binding_slot_context_evidence(*binding, context_mode_id, &wave);
+                    let neighbor_evidence_milli =
+                        self.binding_neighbor_context_evidence(*binding, context_mode_id);
+                    let surface_evidence_milli = *geometry_by_form
+                        .entry(binding.form_center_ref)
+                        .or_insert_with(|| {
+                            self.decode_form_ref(binding.form_center_ref)
+                                .map(|surface| surface_scoring_profile(&surface))
+                                .map(|expected_profile| {
+                                    prepared_normalized_similarity_milli(
+                                        &observed_profile,
+                                        &expected_profile,
+                                    )
+                                })
+                                .unwrap_or_default()
+                        });
+                    let rank = ContextualFeatureRank {
+                        feature_mask: binding.feature_mask,
+                        total_evidence_milli: slot_evidence_milli
+                            .saturating_add(neighbor_evidence_milli),
+                        surface_evidence_milli,
+                        slot_evidence_milli,
+                        neighbor_evidence_milli,
+                        support: binding.support,
+                    };
+                    by_feature
+                        .entry(binding.feature_mask)
+                        .and_modify(|existing| {
+                            if contextual_feature_rank(rank) > contextual_feature_rank(*existing) {
+                                *existing = rank;
+                            }
+                        })
+                        .or_insert(rank);
+                }
+                let mut ranked_features = by_feature.into_values().collect::<Vec<_>>();
+                ranked_features.sort_unstable_by(|left, right| {
+                    contextual_feature_rank(*right)
+                        .cmp(&contextual_feature_rank(*left))
+                        .then_with(|| left.feature_mask.cmp(&right.feature_mask))
+                });
+                ranked_features.truncate(feature_limit);
+                let selected_features = ranked_features
+                    .into_iter()
+                    .map(|rank| rank.feature_mask)
+                    .collect::<BTreeSet<_>>();
+                let mut form_refs = bindings
+                    .into_iter()
+                    .filter(|binding| selected_features.contains(&binding.feature_mask))
+                    .map(|binding| binding.form_center_ref)
+                    .collect::<Vec<_>>();
+                form_refs.sort_unstable();
+                form_refs.dedup();
+                let form_refs = form_refs
+                    .into_iter()
+                    .map(|form_ref| PreparedCompositionalForm {
+                        form_ref,
+                        geometry_evidence_milli: geometry_by_form.get(&form_ref).copied(),
+                    })
+                    .collect::<Vec<_>>();
+                (lemma_match, form_refs)
+            })
+            .collect::<Vec<_>>();
+        let selected = std::time::Instant::now();
+        if trace {
+            eprintln!(
+                "l2_form_feature_trace lemmas={} selected_forms={} select_us={}",
+                lemma_forms.len(),
+                lemma_forms
+                    .iter()
+                    .map(|(_, form_refs)| form_refs.len())
+                    .sum::<usize>(),
+                selected.duration_since(started).as_micros(),
+            );
+        }
+        self.compositional_form_births_from_lemma_forms(observed_surface, lemma_forms, form_limit)
+    }
+
+    fn compositional_form_births_from_lemma_forms(
+        &self,
+        observed_surface: &str,
+        lemma_forms: Vec<(CompositionalLemmaBirth, Vec<PreparedCompositionalForm>)>,
+        form_limit: usize,
+    ) -> Vec<CompositionalFormBirth> {
+        let trace = std::env::var_os("LAY_L2_FIELD_TRACE").is_some();
+        let started = std::time::Instant::now();
+        let mut by_form = BTreeMap::<u32, CompositionalFormCandidate>::new();
+        let observed_profile = surface_scoring_profile(observed_surface);
+        let normalized_observed = observed_profile.normalized();
+        let exact_form_ref = self
+            .form_ref_for_surface(observed_surface)
+            .or_else(|| self.form_ref_for_surface(normalized_observed));
+        if let Some(form_ref) = exact_form_ref {
+            if let Some(lemma_id) = self
+                .bindings_for_form(form_ref)
+                .map(|binding| binding.lemma_center_id)
+                .min()
+            {
+                by_form.insert(
+                    form_ref,
+                    CompositionalFormCandidate {
+                        form_ref,
+                        lemma_id,
+                        lemma_evidence_milli: 1_000,
+                        wave_distance: 0,
+                        geometry_evidence_milli: Some(1_000),
+                    },
+                );
+            }
+        }
+        for (lemma_match, form_refs) in lemma_forms {
+            for form in form_refs {
+                let candidate = CompositionalFormCandidate {
+                    form_ref: form.form_ref,
+                    lemma_id: lemma_match.lemma_id,
+                    lemma_evidence_milli: lemma_match.atom_evidence_milli,
+                    wave_distance: lemma_match.wave_distance,
+                    geometry_evidence_milli: form.geometry_evidence_milli,
+                };
+                by_form
+                    .entry(form.form_ref)
+                    .and_modify(|existing| {
+                        if compositional_candidate_rank(candidate)
+                            > compositional_candidate_rank(*existing)
+                        {
+                            *existing = candidate;
+                        }
+                    })
+                    .or_insert(candidate);
+            }
+        }
+        let merged = std::time::Instant::now();
+        let merged_form_count = by_form.len();
+        let mut prefix_frontier =
+            std::collections::BinaryHeap::<std::cmp::Reverse<(u16, u16)>>::with_capacity(
+                form_limit.saturating_add(1),
+            );
+        let mut births = Vec::with_capacity(form_limit.saturating_mul(4));
+        for candidate in by_form.into_values() {
+            let minimum_geometry = if prefix_frontier.len() < form_limit {
+                1
+            } else {
+                let (geometry, lemma) = prefix_frontier
+                    .peek()
+                    .map(|rank| rank.0)
+                    .unwrap_or_default();
+                if candidate.lemma_evidence_milli >= lemma {
+                    geometry.max(1)
+                } else {
+                    geometry.saturating_add(1).max(1)
+                }
+            };
+            let geometry_evidence_milli = match candidate.geometry_evidence_milli {
+                Some(evidence) => evidence,
+                None => {
+                    let Some(surface) = self.decode_form_ref(candidate.form_ref) else {
+                        continue;
+                    };
+                    let expected_profile = surface_scoring_profile(&surface);
+                    prepared_normalized_similarity_at_least_milli(
+                        &observed_profile,
+                        &expected_profile,
+                        minimum_geometry,
+                    )
+                }
+            };
+            if geometry_evidence_milli == 0 {
+                continue;
+            }
+            let prefix = (geometry_evidence_milli, candidate.lemma_evidence_milli);
+            if prefix_frontier.len() < form_limit {
+                prefix_frontier.push(std::cmp::Reverse(prefix));
+            } else if prefix_frontier
+                .peek()
+                .is_some_and(|minimum| prefix > minimum.0)
+            {
+                prefix_frontier.pop();
+                prefix_frontier.push(std::cmp::Reverse(prefix));
+            }
+            births.push(CompositionalFormBirth {
+                form_ref: candidate.form_ref,
+                lemma_id: candidate.lemma_id,
+                evidence_milli: geometry_evidence_milli,
+                geometry_evidence_milli,
+                atom_evidence_milli: 0,
+                lemma_evidence_milli: candidate.lemma_evidence_milli,
+                wave_distance: candidate.wave_distance,
+            });
+        }
+        let geometry_ready = std::time::Instant::now();
+        let atom_cutoff = if births.len() <= form_limit {
+            Some((0_u16, 0_u16))
+        } else {
+            let mut prefixes = births
+                .iter()
+                .copied()
+                .map(compositional_form_rank_prefix)
+                .collect::<Vec<_>>();
+            prefixes.sort_unstable_by(|left, right| right.cmp(left));
+            prefixes.get(form_limit - 1).copied()
+        };
+        if let Some(atom_cutoff) = atom_cutoff {
+            let observed_atom_profile = prepared_surface_atom_profile(&observed_profile);
+            for birth in &mut births {
+                if compositional_form_rank_prefix(*birth) < atom_cutoff {
+                    continue;
+                }
+                let Some(surface) = self.decode_form_ref(birth.form_ref) else {
+                    continue;
+                };
+                let expected_profile = surface_scoring_profile(&surface);
+                let expected_atom_profile = prepared_surface_atom_profile(&expected_profile);
+                birth.atom_evidence_milli = prepared_surface_atom_similarity_milli(
+                    &observed_atom_profile,
+                    &expected_atom_profile,
+                );
+            }
+        }
+        let atom_ready = std::time::Instant::now();
+        births.sort_by(|left, right| {
+            right
+                .rank_evidence()
+                .cmp(&left.rank_evidence())
+                .then_with(|| left.lemma_id.cmp(&right.lemma_id))
+                .then_with(|| left.form_ref.cmp(&right.form_ref))
+        });
+        births.truncate(form_limit);
+        if trace {
+            let finished = std::time::Instant::now();
+            eprintln!(
+                "l2_form_reduce_trace merged_forms={} retained_forms={} merge_us={} geometry_us={} atom_us={} sort_us={}",
+                merged_form_count,
+                births.len(),
+                merged.duration_since(started).as_micros(),
+                geometry_ready.duration_since(merged).as_micros(),
+                atom_ready.duration_since(geometry_ready).as_micros(),
+                finished.duration_since(atom_ready).as_micros(),
+            );
+        }
+        births
+    }
+
+    pub(crate) fn bound_form_refs(&self) -> impl Iterator<Item = (u32, u32)> + '_ {
+        (0..self.package.form_count()).filter_map(|form_ref| {
+            let form = self.package.form(form_ref)?;
+            (form.l1_terminal_id != NO_L1_TERMINAL)
+                .then_some((u32::try_from(form_ref).ok()?, form.l1_terminal_id))
+        })
     }
 
     pub(crate) fn form_ref_for_surface(&self, surface: &str) -> Option<u32> {
-        self.package
-            .form_refs
-            .binary_search_by(|form| self.decode_form(*form).unwrap_or_default().cmp(surface))
-            .ok()
-            .and_then(|index| u32::try_from(index).ok())
+        let mut left = 0_usize;
+        let mut right = self.package.form_count();
+        while left < right {
+            let middle = left + (right - left) / 2;
+            match self.package.surface(middle)?.as_ref().cmp(surface) {
+                std::cmp::Ordering::Less => left = middle + 1,
+                std::cmp::Ordering::Greater => right = middle,
+                std::cmp::Ordering::Equal => return u32::try_from(middle).ok(),
+            }
+        }
+        None
     }
 
-    pub(crate) fn decode_form_ref(&self, form_ref: u32) -> Option<&str> {
-        self.decode_form(*self.package.form_refs.get(form_ref as usize)?)
+    pub(crate) fn decode_form_ref(&self, form_ref: u32) -> Option<std::borrow::Cow<'_, str>> {
+        self.package.surface(form_ref as usize)
+    }
+
+    pub(crate) fn lemma_ids_for_form_feature(&self, form_ref: u32, feature_mask: u32) -> Vec<u32> {
+        self.bindings_for_form(form_ref)
+            .filter(|binding| binding.feature_mask == feature_mask)
+            .map(|binding| binding.lemma_center_id)
+            .collect::<BTreeSet<_>>()
+            .into_iter()
+            .collect()
+    }
+
+    pub(crate) fn context_mode_known(&self, context: &str) -> bool {
+        self.context_by_key
+            .contains_key(&context_mode(context).stable_key)
     }
 
     pub(crate) fn single_edit_form_refs(&self, surface: &str, limit: usize) -> Vec<u32> {
@@ -302,11 +868,7 @@ impl StandaloneL2Field {
     }
 
     pub(crate) fn l1_terminal_for_form_ref(&self, form_ref: u32) -> Option<u32> {
-        let terminal_id = self
-            .package
-            .form_refs
-            .get(form_ref as usize)?
-            .l1_terminal_id;
+        let terminal_id = self.package.form(form_ref as usize)?.l1_terminal_id;
         (terminal_id != NO_L1_TERMINAL).then_some(terminal_id)
     }
 
@@ -316,10 +878,30 @@ impl StandaloneL2Field {
         seeds: &[L2LexicalSeed],
         candidate_limit: usize,
     ) -> StandaloneL2Readout {
+        self.readout_internal(context, None, seeds, candidate_limit)
+    }
+
+    pub(crate) fn readout_observed(
+        &self,
+        context: &str,
+        observed_surface: &str,
+        seeds: &[L2LexicalSeed],
+        candidate_limit: usize,
+    ) -> StandaloneL2Readout {
+        self.readout_internal(context, Some(observed_surface), seeds, candidate_limit)
+    }
+
+    fn readout_internal(
+        &self,
+        context: &str,
+        observed_surface: Option<&str>,
+        seeds: &[L2LexicalSeed],
+        candidate_limit: usize,
+    ) -> StandaloneL2Readout {
         let mode = context_mode(context);
         let context_mode_id = self.context_by_key.get(&mode.stable_key).copied();
         let wave = scene_wave(context);
-        let mut seed_evidence = BTreeMap::<u32, i32>::new();
+        let mut resolved_seeds = Vec::new();
         for seed in seeds {
             let form_ref = seed
                 .terminal_id
@@ -337,13 +919,65 @@ impl StandaloneL2Field {
             let Some(form_ref) = form_ref else {
                 continue;
             };
+            resolved_seeds.push((form_ref, seed));
+        }
+        let has_l11_grounding = resolved_seeds
+            .iter()
+            .any(|(_, seed)| seed.origin == L2LexicalSeedOrigin::GroundedL11);
+        let grounded_l11_form_refs = resolved_seeds
+            .iter()
+            .filter(|(_, seed)| seed.origin == L2LexicalSeedOrigin::GroundedL11)
+            .map(|(form_ref, _)| *form_ref)
+            .collect::<BTreeSet<_>>();
+        let exact_grounded_form_refs = observed_surface
+            .map(str::to_lowercase)
+            .map(|observed_surface| {
+                preferred_exact_geometry_form_refs(
+                    &observed_surface,
+                    resolved_seeds
+                        .iter()
+                        .filter(|(_, seed)| seed.origin.is_grounded_input())
+                        .filter_map(|(form_ref, _)| {
+                            self.decode_form_ref(*form_ref)
+                                .map(|surface| (*form_ref, surface.into_owned()))
+                        }),
+                )
+            })
+            .unwrap_or_default();
+        let grounded_peak = resolved_seeds
+            .iter()
+            .filter(|(_, seed)| seed.origin.is_grounded_input())
+            .map(|(_, seed)| seed.evidence_milli)
+            .max();
+        let Some(grounded_peak) = grounded_peak else {
+            return StandaloneL2Readout {
+                verdict: L2LocalVerdict::Abstain,
+                candidates: Vec::new(),
+                context_mode_id,
+            };
+        };
+        let inherited_l1_floor = grounded_peak.saturating_sub(INHERITED_L1_ATTENUATION_MILLI);
+        let mut grounded_seed_evidence = BTreeMap::<u32, i32>::new();
+        let mut seed_evidence = BTreeMap::<u32, i32>::new();
+        for (form_ref, seed) in resolved_seeds {
+            let evidence_milli = match seed.origin {
+                L2LexicalSeedOrigin::GroundedL11 => seed.evidence_milli,
+                L2LexicalSeedOrigin::CompositionalMorphology => seed.evidence_milli,
+                L2LexicalSeedOrigin::InverseGeometry => seed.evidence_milli.min(inherited_l1_floor),
+            };
             seed_evidence
                 .entry(form_ref)
-                .and_modify(|evidence| *evidence = (*evidence).max(seed.evidence_milli))
-                .or_insert(seed.evidence_milli);
+                .and_modify(|evidence| *evidence = (*evidence).max(evidence_milli))
+                .or_insert(evidence_milli);
+            if seed.origin.is_grounded_input() {
+                grounded_seed_evidence
+                    .entry(form_ref)
+                    .and_modify(|evidence| *evidence = (*evidence).max(seed.evidence_milli))
+                    .or_insert(seed.evidence_milli);
+            }
         }
         let mut direct_seed_common_lemmas = None::<BTreeSet<u32>>;
-        for form_ref in seed_evidence.keys() {
+        for form_ref in grounded_seed_evidence.keys() {
             let form_lemmas = self
                 .bindings_for_form(*form_ref)
                 .map(|binding| binding.lemma_center_id)
@@ -356,8 +990,11 @@ impl StandaloneL2Field {
         let direct_seed_common_lemmas = direct_seed_common_lemmas.unwrap_or_default();
         let mut active_forms = seed_evidence.keys().copied().collect::<BTreeSet<_>>();
         let mut lemma_seed_evidence = BTreeMap::<u32, (i32, u16, u16)>::new();
-        for form_ref in &active_forms {
-            let evidence = seed_evidence.get(form_ref).copied().unwrap_or_default();
+        for form_ref in grounded_seed_evidence.keys() {
+            let evidence = grounded_seed_evidence
+                .get(form_ref)
+                .copied()
+                .unwrap_or_default();
             let mut form_lemmas = BTreeMap::<u32, u16>::new();
             for binding in self.bindings_for_form(*form_ref) {
                 form_lemmas
@@ -422,13 +1059,13 @@ impl StandaloneL2Field {
             );
             if let (Some(context_mode_id), Some(lemma)) = (
                 context_mode_id,
-                self.package.lemma_centers.get(*lemma_id as usize),
+                self.package.lemma_centers().get(*lemma_id as usize),
             ) {
                 let start = lemma.competition_start as usize;
                 let end = start.saturating_add(lemma.competition_count as usize);
                 for edge in self
                     .package
-                    .competition_edges
+                    .competition_edges()
                     .get(start..end)
                     .unwrap_or_default()
                     .iter()
@@ -439,12 +1076,6 @@ impl StandaloneL2Field {
                 }
             }
         }
-        let inherited_l1_floor = seeds
-            .iter()
-            .map(|seed| seed.evidence_milli)
-            .max()
-            .unwrap_or_default()
-            .saturating_sub(INHERITED_L1_ATTENUATION_MILLI);
         let mut candidates = active_forms
             .into_iter()
             .filter_map(|form_ref| {
@@ -452,7 +1083,7 @@ impl StandaloneL2Field {
                     form_ref,
                     context_mode_id,
                     &wave,
-                    &seed_evidence,
+                    &grounded_seed_evidence,
                     &direct_seed_common_lemmas,
                     seed_evidence
                         .get(&form_ref)
@@ -461,15 +1092,24 @@ impl StandaloneL2Field {
                 )
             })
             .collect::<Vec<_>>();
-        candidates.sort_by(|left, right| {
-            right
-                .local_score
-                .cmp(&left.local_score)
-                .then_with(|| right.slot_phase_milli.cmp(&left.slot_phase_milli))
-                .then_with(|| left.form_ref.cmp(&right.form_ref))
-        });
-        candidates.truncate(candidate_limit.max(1));
-        let verdict = classify_local(&candidates, self.package.calibration);
+        candidates.sort_by(local_candidate_order);
+        let mut direct_evidence_reserve_refs = grounded_l11_form_refs.clone();
+        direct_evidence_reserve_refs.extend(exact_grounded_form_refs.iter().copied());
+        truncate_with_grounded_l11_reserve(
+            &mut candidates,
+            &direct_evidence_reserve_refs,
+            candidate_limit.max(1),
+        );
+        let verdict = if has_l11_grounding {
+            classify_exact_grounded_geometry(
+                &candidates,
+                self.package.calibration(),
+                &exact_grounded_form_refs,
+            )
+            .unwrap_or_else(|| classify_local(&candidates, self.package.calibration()))
+        } else {
+            L2LocalVerdict::Abstain
+        };
         StandaloneL2Readout {
             verdict,
             candidates,
@@ -486,8 +1126,8 @@ impl StandaloneL2Field {
         direct_seed_common_lemmas: &BTreeSet<u32>,
         l1_evidence_milli: i32,
     ) -> Option<L2LocalCandidate> {
-        let form = self.package.form_refs.get(form_ref as usize)?;
-        let surface = self.decode_form(*form)?.to_string();
+        let form = self.package.form(form_ref as usize)?;
+        let surface = self.package.surface(form_ref as usize)?.into_owned();
         let bindings = self.bindings_for_form(form_ref).collect::<Vec<_>>();
         let lemma_ids = bindings
             .iter()
@@ -514,7 +1154,7 @@ impl StandaloneL2Field {
                             .get(&(context_mode_id, slot_features))
                             .into_iter()
                             .flatten()
-                            .filter_map(|index| self.package.slot_centers.get(*index as usize))
+                            .filter_map(|index| self.package.slot_centers().get(*index as usize))
                     })
                     .map(|center| slot_center_score(center, wave))
                     .max()
@@ -535,7 +1175,7 @@ impl StandaloneL2Field {
                             .into_iter()
                             .flatten()
                             .filter_map(|index| {
-                                self.package.neighbor_couplings.get(*index as usize)
+                                self.package.neighbor_couplings().get(*index as usize)
                             })
                     })
                     .map(|coupling| i32::from(coupling.support - coupling.repel) * 32)
@@ -548,20 +1188,20 @@ impl StandaloneL2Field {
                 let competition_unit = INHERITED_L1_ATTENUATION_MILLI
                     .saturating_add(
                         self.package
-                            .calibration
+                            .calibration()
                             .minimum_margin
-                            .max(self.package.calibration.tie_window)
+                            .max(self.package.calibration().tie_window)
                             .max(1),
                     )
                     .saturating_add(1);
                 lemma_ids
                     .iter()
-                    .filter_map(|lemma_id| self.package.lemma_centers.get(*lemma_id as usize))
+                    .filter_map(|lemma_id| self.package.lemma_centers().get(*lemma_id as usize))
                     .map(|lemma| {
                         let start = lemma.competition_start as usize;
                         let end = start.saturating_add(lemma.competition_count as usize);
                         self.package
-                            .competition_edges
+                            .competition_edges()
                             .get(start..end)
                             .unwrap_or_default()
                             .iter()
@@ -631,26 +1271,63 @@ impl StandaloneL2Field {
         context_mode_id: Option<u32>,
         wave: &[i8; L2_PHASE_CELLS],
     ) -> i32 {
+        self.bindings_for_lemma(lemma_id)
+            .map(|binding| self.binding_slot_context_evidence(binding, context_mode_id, wave))
+            .max()
+            .unwrap_or_default()
+    }
+
+    fn best_lemma_neighbor_evidence(&self, lemma_id: u32, context_mode_id: u32) -> i32 {
+        self.bindings_for_lemma(lemma_id)
+            .map(|binding| self.binding_neighbor_context_evidence(binding, Some(context_mode_id)))
+            .max()
+            .unwrap_or_default()
+    }
+
+    fn binding_slot_context_evidence(
+        &self,
+        binding: MorphBinding,
+        context_mode_id: Option<u32>,
+        wave: &[i8; L2_PHASE_CELLS],
+    ) -> i32 {
         let Some(context_mode_id) = context_mode_id else {
             return 0;
         };
-        self.bindings_for_lemma(lemma_id)
-            .flat_map(|binding| {
-                let slot_features = crate::nanda_wave::morphology_phase::contextual_slot_features(
-                    binding.feature_mask,
-                );
-                self.slot_centers_by_mode_feature
-                    .get(&(context_mode_id, slot_features))
-                    .into_iter()
-                    .flatten()
-                    .filter_map(|index| self.package.slot_centers.get(*index as usize))
-            })
+        let slot_features =
+            crate::nanda_wave::morphology_phase::contextual_slot_features(binding.feature_mask);
+        self.slot_centers_by_mode_feature
+            .get(&(context_mode_id, slot_features))
+            .into_iter()
+            .flatten()
+            .filter_map(|index| self.package.slot_centers().get(*index as usize))
             .map(|center| slot_center_score(center, wave))
             .max()
             .unwrap_or_default()
     }
 
-    fn bindings_for_form(&self, form_ref: u32) -> impl Iterator<Item = &MorphBinding> {
+    fn binding_neighbor_context_evidence(
+        &self,
+        binding: MorphBinding,
+        context_mode_id: Option<u32>,
+    ) -> i32 {
+        let Some(context_mode_id) = context_mode_id else {
+            return 0;
+        };
+        self.neighbor_couplings_by_mode_lemma_feature
+            .get(&(
+                context_mode_id,
+                binding.lemma_center_id,
+                binding.feature_mask,
+            ))
+            .into_iter()
+            .flatten()
+            .filter_map(|index| self.package.neighbor_couplings().get(*index as usize))
+            .map(|coupling| i32::from(coupling.support - coupling.repel).saturating_mul(32))
+            .max()
+            .unwrap_or_default()
+    }
+
+    fn bindings_for_form(&self, form_ref: u32) -> impl Iterator<Item = MorphBinding> + '_ {
         let start = self
             .binding_offsets_by_form
             .get(form_ref as usize)
@@ -665,34 +1342,134 @@ impl StandaloneL2Field {
             .get(start..end)
             .unwrap_or_default()
             .iter()
-            .filter_map(|index| self.package.morph_bindings.get(*index as usize))
+            .filter_map(|index| self.package.binding(*index as usize))
     }
 
-    fn bindings_for_lemma(&self, lemma_id: u32) -> impl Iterator<Item = &MorphBinding> {
+    fn bindings_for_lemma(&self, lemma_id: u32) -> impl Iterator<Item = MorphBinding> + '_ {
         let range = self
             .package
-            .lemma_centers
+            .lemma_centers()
             .get(lemma_id as usize)
             .map(|lemma| {
                 let start = lemma.form_start as usize;
                 start..start.saturating_add(lemma.form_count as usize)
             })
             .unwrap_or(0..0);
-        self.package
-            .morph_bindings
-            .get(range)
-            .unwrap_or_default()
-            .iter()
+        range.filter_map(|index| self.package.binding(index))
     }
+}
 
-    fn decode_form(&self, form: super::model::FormCenterRef) -> Option<&str> {
-        let tail = self
-            .package
-            .decoder_bytes
-            .get(form.decoder_ref as usize..)?;
-        let length = tail.iter().position(|byte| *byte == 0)?;
-        std::str::from_utf8(&tail[..length]).ok()
+fn local_candidate_order(left: &L2LocalCandidate, right: &L2LocalCandidate) -> std::cmp::Ordering {
+    right
+        .local_score
+        .cmp(&left.local_score)
+        .then_with(|| right.slot_phase_milli.cmp(&left.slot_phase_milli))
+        .then_with(|| left.form_ref.cmp(&right.form_ref))
+}
+
+fn truncate_with_grounded_l11_reserve(
+    candidates: &mut Vec<L2LocalCandidate>,
+    grounded_l11_form_refs: &BTreeSet<u32>,
+    limit: usize,
+) {
+    if candidates.len() <= limit {
+        return;
     }
+    let mut retained = candidates
+        .iter()
+        .filter(|candidate| grounded_l11_form_refs.contains(&candidate.form_ref))
+        .take(limit)
+        .cloned()
+        .collect::<Vec<_>>();
+    let remaining = limit.saturating_sub(retained.len());
+    retained.extend(
+        candidates
+            .iter()
+            .filter(|candidate| !grounded_l11_form_refs.contains(&candidate.form_ref))
+            .take(remaining)
+            .cloned(),
+    );
+    retained.sort_by(local_candidate_order);
+    *candidates = retained;
+}
+
+fn contextual_feature_rank(rank: ContextualFeatureRank) -> (i32, u16, i32, i32, u16) {
+    (
+        rank.total_evidence_milli,
+        rank.surface_evidence_milli,
+        rank.neighbor_evidence_milli,
+        rank.slot_evidence_milli,
+        rank.support,
+    )
+}
+
+fn preferred_exact_geometry_form_refs(
+    observed_surface: &str,
+    forms: impl IntoIterator<Item = (u32, String)>,
+) -> BTreeSet<u32> {
+    let exact = forms
+        .into_iter()
+        .filter(|(_, surface)| {
+            crate::text_metrics::damerau_levenshtein(observed_surface, surface) == 1
+        })
+        .map(|(form_ref, surface)| {
+            (
+                form_ref,
+                crate::text_metrics::typed_damage_geometry_priority(observed_surface, &surface),
+            )
+        })
+        .collect::<Vec<_>>();
+    let strongest_priority = exact
+        .iter()
+        .map(|(_, priority)| *priority)
+        .max()
+        .unwrap_or_default();
+    exact
+        .into_iter()
+        .filter(|(_, priority)| strongest_priority == 0 || *priority == strongest_priority)
+        .map(|(form_ref, _)| form_ref)
+        .collect()
+}
+
+fn classify_exact_grounded_geometry(
+    candidates: &[L2LocalCandidate],
+    calibration: TieCalibration,
+    exact_grounded_form_refs: &BTreeSet<u32>,
+) -> Option<L2LocalVerdict> {
+    let winner = candidates.first()?;
+    if winner
+        .slot_phase_milli
+        .max(winner.neighbor_pressure)
+        .max(winner.competition_pressure)
+        >= calibration.minimum_positive
+    {
+        return None;
+    }
+    let form_refs = candidates
+        .iter()
+        .filter(|candidate| exact_grounded_form_refs.contains(&candidate.form_ref))
+        .map(|candidate| candidate.form_ref)
+        .collect::<Vec<_>>();
+    match form_refs.as_slice() {
+        [] => None,
+        [form_ref] => Some(L2LocalVerdict::Winner {
+            form_ref: *form_ref,
+        }),
+        _ => Some(L2LocalVerdict::Tied { form_refs }),
+    }
+}
+
+fn compositional_form_rank_prefix(birth: CompositionalFormBirth) -> (u16, u16) {
+    (birth.evidence_milli, birth.lemma_evidence_milli)
+}
+
+fn compositional_candidate_rank(
+    candidate: CompositionalFormCandidate,
+) -> (u16, std::cmp::Reverse<u16>) {
+    (
+        candidate.lemma_evidence_milli,
+        std::cmp::Reverse(candidate.wave_distance),
+    )
 }
 
 fn classify_local(candidates: &[L2LocalCandidate], calibration: TieCalibration) -> L2LocalVerdict {
@@ -875,10 +1652,168 @@ fn coherence_milli(left: &[i8; L2_PHASE_CELLS], right: &[i8; L2_PHASE_CELLS]) ->
 
 #[cfg(test)]
 mod standalone_tests {
+    use super::super::compact_format::encode_package as encode_compact_package;
     use super::super::compiler::compile_l2_package;
     use super::super::format::encode_package;
     use super::super::teacher::L2TeacherCorpus;
     use super::*;
+
+    #[test]
+    fn exact_geometry_prefers_a_unique_stronger_operator() {
+        let preferred = preferred_exact_geometry_form_refs(
+            "acbd",
+            [(1, "abcd".to_string()), (2, "axbd".to_string())],
+        );
+
+        assert_eq!(preferred, BTreeSet::from([1]));
+    }
+
+    #[test]
+    fn exact_geometry_keeps_same_operator_ambiguity_tied() {
+        let preferred = preferred_exact_geometry_form_refs(
+            "abcd",
+            [(1, "bacd".to_string()), (2, "acbd".to_string())],
+        );
+
+        assert_eq!(preferred, BTreeSet::from([1, 2]));
+    }
+
+    #[test]
+    fn exact_geometry_keeps_untyped_distance_ambiguity_tied() {
+        let preferred = preferred_exact_geometry_form_refs(
+            "abcd",
+            [(1, "abed".to_string()), (2, "abfd".to_string())],
+        );
+
+        assert_eq!(preferred, BTreeSet::from([1, 2]));
+    }
+
+    #[test]
+    fn bounded_readout_reserves_grounded_l11_forms_before_compositional_fill() {
+        let mut candidates = (0_u32..40)
+            .map(|form_ref| L2LocalCandidate {
+                form_ref,
+                l1_terminal_id: Some(form_ref),
+                surface: format!("surface-{form_ref}"),
+                l1_evidence_milli: 1_000 - form_ref as i32,
+                slot_phase_milli: 0,
+                neighbor_pressure: 0,
+                competition_pressure: 0,
+                explicit_competition_pressure: 0,
+                local_score: 1_000 - form_ref as i32,
+                lemma_ids: Vec::new(),
+                feature_masks: Vec::new(),
+            })
+            .collect::<Vec<_>>();
+        let grounded = BTreeSet::from([39]);
+
+        truncate_with_grounded_l11_reserve(&mut candidates, &grounded, 32);
+
+        assert_eq!(candidates.len(), 32);
+        assert!(candidates.iter().any(|candidate| candidate.form_ref == 39));
+        assert!(!candidates.iter().any(|candidate| candidate.form_ref == 31));
+        assert!(candidates
+            .windows(2)
+            .all(|pair| local_candidate_order(&pair[0], &pair[1]).is_le()));
+    }
+
+    #[test]
+    fn reference_and_compact_runtime_readouts_are_exactly_equal() {
+        let corpus = L2TeacherCorpus::parse_tsv(
+            "F\tдом\tдом\tnoun:nom:sg\n\
+             F\tдом\tдома\tnoun:gen:sg\n\
+             F\tдома\tдома\tnoun:nom:pl\n\
+             F\tпосмотреть\tпосмотреть\tverb:inf:perf\n\
+             F\tпосмотреть\tпосмотри\tverb:imp_excl:sg:imp:perf\n\
+             F\tпросмотреть\tпросмотри\tverb:imp_excl:sg:imp:perf\n\
+             T\tдом\tдом\tnoun:nom:sg\t_ стоит\n\
+             T\tдом\tдома\tnoun:gen:sg\tнет _\n\
+             T\tдома\tдома\tnoun:nom:pl\tработаю _\n\
+             T\tпосмотреть\tпосмотреть\tverb:inf:perf\tхочу _\n\
+             H\tпосмотреть\tпосмотри\tverb:imp_excl:sg:imp:perf\t_ сюда\n\
+             NT\tпосмотреть\tпосмотри\tverb:imp_excl:sg:imp:perf\t_ сюда\tпросмотри\n\
+             NH\tпосмотреть\tпосмотри\tverb:imp_excl:sg:imp:perf\t_ сюда\tпросмотри\n",
+        )
+        .expect("teacher");
+        let terminals = BTreeMap::from([
+            ("дом", 7),
+            ("дома", 11),
+            ("посмотреть", 17),
+            ("просмотри", 23),
+        ]);
+        let (package, _) =
+            compile_l2_package(&corpus, 99, |surface| terminals.get(surface).copied())
+                .expect("compile");
+        let reference_bytes = encode_package(&package).expect("reference encode");
+        let (compact_bytes, _) = encode_compact_package(&package).expect("compact encode");
+        let reference = StandaloneL2Field::from_bytes(&reference_bytes).expect("reference load");
+        let compact = StandaloneL2Field::from_bytes(&compact_bytes).expect("compact load");
+
+        assert_eq!(reference.package_counts(), compact.package_counts());
+        assert_eq!(reference.package_storage().0, "reference_v2_owned");
+        assert_eq!(
+            compact.package_storage(),
+            ("compact_v2_compositional", compact_bytes.len())
+        );
+        assert_eq!(compact.compositional_index_source(), "compact_v2_embedded");
+        assert_eq!(
+            reference.single_edit_form_refs("дмо", 16),
+            compact.single_edit_form_refs("дмо", 16)
+        );
+
+        let probes = [
+            (
+                "нет _",
+                vec![L2LexicalSeed {
+                    terminal_id: Some(7),
+                    surface: None,
+                    evidence_milli: 900,
+                    origin: L2LexicalSeedOrigin::GroundedL11,
+                }],
+            ),
+            (
+                "_ сюда",
+                vec![
+                    L2LexicalSeed {
+                        terminal_id: Some(17),
+                        surface: None,
+                        evidence_milli: 1_000,
+                        origin: L2LexicalSeedOrigin::GroundedL11,
+                    },
+                    L2LexicalSeed {
+                        terminal_id: Some(23),
+                        surface: None,
+                        evidence_milli: 960,
+                        origin: L2LexicalSeedOrigin::GroundedL11,
+                    },
+                ],
+            ),
+            (
+                "неизвестная сцена _",
+                vec![
+                    L2LexicalSeed {
+                        terminal_id: None,
+                        surface: Some("дом".to_string()),
+                        evidence_milli: 1_000,
+                        origin: L2LexicalSeedOrigin::GroundedL11,
+                    },
+                    L2LexicalSeed {
+                        terminal_id: None,
+                        surface: Some("дома".to_string()),
+                        evidence_milli: 1_000,
+                        origin: L2LexicalSeedOrigin::GroundedL11,
+                    },
+                ],
+            ),
+        ];
+        for (context, seeds) in probes {
+            assert_eq!(
+                reference.readout(context, &seeds, 8),
+                compact.readout(context, &seeds, 8),
+                "runtime parity failed for context {context:?}"
+            );
+        }
+    }
 
     #[test]
     fn compact_runtime_indexes_preserve_terminal_form_and_lemma_bindings() {
@@ -907,7 +1842,9 @@ mod standalone_tests {
                 .map(|index| field.form_by_terminal[index].1)
         };
         assert_eq!(
-            terminal_form(7).and_then(|form_ref| field.decode_form_ref(form_ref)),
+            terminal_form(7)
+                .and_then(|form_ref| field.decode_form_ref(form_ref))
+                .as_deref(),
             Some("дома")
         );
         assert_eq!(terminal_form(999), None);
@@ -930,6 +1867,230 @@ mod standalone_tests {
                 .iter()
                 .any(|binding| binding.form_center_ref == shared_form));
         }
+    }
+
+    #[test]
+    fn compositional_birth_recovers_an_unbound_exact_paradigm_surface() {
+        let corpus = L2TeacherCorpus::parse_tsv(
+            "F\tпроверять\tпроверять\tverb:inf:imperf\n\
+             F\tпроверять\tпроверяю\tverb:sg:p1:pres:ind:imperf\n\
+             F\tпроверять\tпроверяет\tverb:sg:p3:pres:ind:imperf\n\
+             T\tпроверять\tпроверять\tverb:inf:imperf\tнужно _\n\
+             H\tпроверять\tпроверяю\tverb:sg:p1:pres:ind:imperf\tя _\n",
+        )
+        .expect("teacher");
+        let terminals = BTreeMap::from([("проверять", 17)]);
+        let (package, _) =
+            compile_l2_package(&corpus, 99, |surface| terminals.get(surface).copied())
+                .expect("compile");
+        let field = StandaloneL2Field::from_package(package).expect("load");
+
+        let births = field.compositional_form_births("провряю", 4, 8);
+        for limit in 1..=births.len() {
+            assert_eq!(
+                field.compositional_form_births("провряю", 4, limit),
+                births.iter().copied().take(limit).collect::<Vec<_>>(),
+                "deferred atom scoring must preserve eager full-lattice order"
+            );
+        }
+        let target = field
+            .form_ref_for_surface("проверяю")
+            .expect("exact target surface");
+        assert!(births.iter().any(|birth| birth.form_ref == target));
+        assert_eq!(field.l1_terminal_for_form_ref(target), None);
+
+        let seeds = births
+            .iter()
+            .map(|birth| L2LexicalSeed {
+                terminal_id: None,
+                surface: field
+                    .decode_form_ref(birth.form_ref)
+                    .map(|value| value.into_owned()),
+                evidence_milli: i32::from(birth.evidence_milli),
+                origin: L2LexicalSeedOrigin::CompositionalMorphology,
+            })
+            .collect::<Vec<_>>();
+        let readout = field.readout("я _", &seeds, 8);
+        assert_eq!(readout.verdict, L2LocalVerdict::Abstain);
+        assert!(readout
+            .candidates
+            .iter()
+            .any(|candidate| candidate.form_ref == target));
+
+        let clean = field.compositional_form_births("ПРОВЕРЯЕТ!", 1, 1);
+        let clean_target = field
+            .form_ref_for_surface("проверяет")
+            .expect("normalized clean target");
+        assert_eq!(
+            clean.first().map(|birth| birth.form_ref),
+            Some(clean_target)
+        );
+        assert_eq!(clean[0].evidence_milli, 1_000);
+        assert_eq!(clean[0].wave_distance, 0);
+    }
+
+    #[test]
+    fn contextual_lemma_reduction_uses_trained_slot_evidence_before_form_expansion() {
+        let corpus = L2TeacherCorpus::parse_tsv(
+            "F\tпроверка\tпроверка\tnoun:nom:sg\n\
+             F\tпроверка\tпроверки\tnoun:gen:sg\n\
+             F\tпроверять\tпроверять\tverb:inf:imperf\n\
+             F\tпроверять\tпроверяет\tverb:sg:p3:pres:ind:imperf\n\
+             T\tпроверка\tпроверки\tnoun:gen:sg\tнет _\n\
+             T\tпроверять\tпроверяет\tverb:sg:p3:pres:ind:imperf\tон _\n\
+             H\tпроверка\tпроверка\tnoun:nom:sg\t_ готова\n",
+        )
+        .expect("teacher");
+        let terminals = BTreeMap::from([
+            ("проверка", 11),
+            ("проверки", 13),
+            ("проверять", 17),
+            ("проверяет", 19),
+        ]);
+        let (package, _) =
+            compile_l2_package(&corpus, 99, |surface| terminals.get(surface).copied())
+                .expect("compile");
+        let field = StandaloneL2Field::from_package(package).expect("load");
+        let noun_lemma = field
+            .form_ref_for_surface("проверка")
+            .and_then(|form_ref| field.bindings_for_form(form_ref).next())
+            .map(|binding| binding.lemma_center_id)
+            .expect("noun lemma");
+        let verb_lemma = field
+            .form_ref_for_surface("проверяет")
+            .and_then(|form_ref| field.bindings_for_form(form_ref).next())
+            .map(|binding| binding.lemma_center_id)
+            .expect("verb lemma");
+        let broad = vec![
+            CompositionalLemmaBirth {
+                lemma_id: noun_lemma,
+                atom_evidence: 100,
+                atom_evidence_milli: 1_000,
+                wave_distance: 1,
+            },
+            CompositionalLemmaBirth {
+                lemma_id: verb_lemma,
+                atom_evidence: 90,
+                atom_evidence_milli: 900,
+                wave_distance: 2,
+            },
+        ];
+
+        let active = field.contextual_compositional_lemma_births("он _", &broad, 1);
+        assert_eq!(active.first().map(|birth| birth.lemma_id), Some(verb_lemma));
+        assert_eq!(
+            field.contextual_compositional_lemma_births("он _", &broad, broad.len()),
+            broad,
+            "a fully retained lemma lattice must not pay for or change a 256 -> 256 rerank"
+        );
+
+        let unmatched = field.contextual_compositional_lemma_births("совсем другой _", &broad, 1);
+        assert_eq!(
+            unmatched.first().map(|birth| birth.lemma_id),
+            Some(noun_lemma)
+        );
+    }
+
+    #[test]
+    fn contextual_form_expansion_selects_trained_slots_without_dropping_lemma_basins() {
+        let corpus = L2TeacherCorpus::parse_tsv(
+            "F\tпроверять\tпроверять\tverb:inf:imperf\n\
+             F\tпроверять\tпроверяю\tverb:sg:p1:pres:ind:imperf\n\
+             F\tпроверять\tпроверяет\tverb:sg:p3:pres:ind:imperf\n\
+             T\tпроверять\tпроверяю\tverb:sg:p1:pres:ind:imperf\tя _\n\
+             T\tпроверять\tпроверяет\tverb:sg:p3:pres:ind:imperf\tон _\n\
+             H\tпроверять\tпроверяет\tverb:sg:p3:pres:ind:imperf\tон _\n",
+        )
+        .expect("teacher");
+        let terminals = BTreeMap::from([("проверять", 17), ("проверяю", 19), ("проверяет", 23)]);
+        let (package, _) =
+            compile_l2_package(&corpus, 99, |surface| terminals.get(surface).copied())
+                .expect("compile");
+        let field = StandaloneL2Field::from_package(package).expect("load");
+        let first_person = field
+            .form_ref_for_surface("проверяю")
+            .expect("first-person form");
+        let third_person = field
+            .form_ref_for_surface("проверяет")
+            .expect("third-person form");
+        let lemma_id = field
+            .bindings_for_form(third_person)
+            .next()
+            .map(|binding| binding.lemma_center_id)
+            .expect("verb lemma");
+        let broad = [CompositionalLemmaBirth {
+            lemma_id,
+            atom_evidence: 100,
+            atom_evidence_milli: 1_000,
+            wave_distance: 1,
+        }];
+
+        let one_slot = field.contextual_compositional_form_births_from_lemmas(
+            "он _",
+            "провераю",
+            &broad,
+            1,
+            8,
+        );
+        assert!(one_slot.iter().any(|birth| birth.form_ref == third_person));
+        assert!(!one_slot.iter().any(|birth| birth.form_ref == first_person));
+
+        let two_slots = field.contextual_compositional_form_births_from_lemmas(
+            "он _",
+            "провераю",
+            &broad,
+            2,
+            8,
+        );
+        assert!(two_slots.iter().any(|birth| birth.form_ref == third_person));
+        assert!(two_slots.iter().any(|birth| birth.form_ref == first_person));
+    }
+
+    #[test]
+    fn uncontextualized_feature_selection_uses_surface_geometry_before_support() {
+        let corpus = L2TeacherCorpus::parse_tsv(
+            "F\tпроверять\tпроверяю\tverb:sg:p1:pres:ind:imperf\n\
+             F\tпроверять\tпроверяет\tverb:sg:p3:pres:ind:imperf\n\
+             T\tпроверять\tпроверяет\tverb:sg:p3:pres:ind:imperf\tон _\n\
+             T\tпроверять\tпроверяет\tverb:sg:p3:pres:ind:imperf\tпроцесс _\n\
+             H\tпроверять\tпроверяю\tverb:sg:p1:pres:ind:imperf\tя _\n",
+        )
+        .expect("teacher");
+        let terminals = BTreeMap::from([("проверяю", 19), ("проверяет", 23)]);
+        let (package, _) =
+            compile_l2_package(&corpus, 99, |surface| terminals.get(surface).copied())
+                .expect("compile");
+        let field = StandaloneL2Field::from_package(package).expect("load");
+        let first_person = field
+            .form_ref_for_surface("проверяю")
+            .expect("first-person form");
+        let lemma_id = field
+            .bindings_for_form(first_person)
+            .next()
+            .map(|binding| binding.lemma_center_id)
+            .expect("verb lemma");
+        let broad = [CompositionalLemmaBirth {
+            lemma_id,
+            atom_evidence: 100,
+            atom_evidence_milli: 1_000,
+            wave_distance: 1,
+        }];
+        let unknown_context = "неизвестная сцена _";
+        assert!(!field.context_mode_known(unknown_context));
+
+        let births = field.contextual_compositional_form_births_from_lemmas(
+            unknown_context,
+            "провераю",
+            &broad,
+            1,
+            8,
+        );
+
+        assert_eq!(
+            births.first().map(|birth| birth.form_ref),
+            Some(first_person)
+        );
+        assert!(births.iter().all(|birth| birth.form_ref == first_person));
     }
 
     #[test]
@@ -972,6 +2133,146 @@ mod standalone_tests {
     }
 
     #[test]
+    fn inverse_geometry_birth_is_attenuated_and_cannot_exist_without_grounded_l11() {
+        let corpus = L2TeacherCorpus::parse_tsv(
+            "F\tкод\tкод\tnoun:nom:sg\n\
+             F\tкот\tкот\tnoun:nom:sg\n\
+             T\tкод\tкод\tnoun:nom:sg\t_ работает\n\
+             T\tкот\tкот\tnoun:nom:sg\t_ спит\n\
+             H\tкод\tкод\tnoun:nom:sg\tпроверяю _\n",
+        )
+        .expect("teacher");
+        let terminals = BTreeMap::from([("код", 17), ("кот", 23)]);
+        let (package, _) =
+            compile_l2_package(&corpus, 99, |surface| terminals.get(surface).copied())
+                .expect("compile");
+        let field = StandaloneL2Field::from_package(package).expect("load");
+        let grounded = L2LexicalSeed {
+            terminal_id: Some(17),
+            surface: None,
+            evidence_milli: 1_000,
+            origin: L2LexicalSeedOrigin::GroundedL11,
+        };
+        let inverse = L2LexicalSeed {
+            terminal_id: Some(23),
+            surface: None,
+            evidence_milli: 1_000,
+            origin: L2LexicalSeedOrigin::InverseGeometry,
+        };
+
+        let readout = field.readout("неизвестная сцена _", &[grounded, inverse.clone()], 8);
+        let grounded_candidate = readout
+            .candidates
+            .iter()
+            .find(|candidate| candidate.surface == "код")
+            .expect("grounded candidate");
+        let inverse_candidate = readout
+            .candidates
+            .iter()
+            .find(|candidate| candidate.surface == "кот")
+            .expect("inverse candidate");
+        assert_eq!(grounded_candidate.l1_evidence_milli, 1_000);
+        assert_eq!(inverse_candidate.l1_evidence_milli, 760);
+
+        let inverse_only = field.readout("_ спит", &[inverse], 8);
+        assert_eq!(inverse_only.verdict, L2LocalVerdict::Abstain);
+        assert!(inverse_only.candidates.is_empty());
+    }
+
+    #[test]
+    fn observed_readout_promotes_only_a_unique_exact_compositional_basin() {
+        let corpus = L2TeacherCorpus::parse_tsv(
+            "F\tсигнал\tсигнал\tnoun:nom:sg\n\
+             F\tсигнал\tсигналы\tnoun:nom:pl\n\
+             T\tсигнал\tсигнал\tnoun:nom:sg\t_ принят\n\
+             H\tсигнал\tсигнал\tnoun:nom:sg\t_ получен\n",
+        )
+        .expect("teacher");
+        let terminals = BTreeMap::from([("сигналы", 17)]);
+        let (package, _) =
+            compile_l2_package(&corpus, 99, |surface| terminals.get(surface).copied())
+                .expect("compile");
+        let field = StandaloneL2Field::from_package(package).expect("load");
+        let grounded = L2LexicalSeed {
+            terminal_id: Some(17),
+            surface: None,
+            evidence_milli: 1_000,
+            origin: L2LexicalSeedOrigin::GroundedL11,
+        };
+        let compositional = L2LexicalSeed {
+            terminal_id: None,
+            surface: Some("сигнал".to_string()),
+            evidence_milli: 900,
+            origin: L2LexicalSeedOrigin::CompositionalMorphology,
+        };
+
+        let readout = field.readout_observed(
+            "неизвестная сцена _",
+            "сигна",
+            &[grounded, compositional.clone()],
+            8,
+        );
+        let target = field.form_ref_for_surface("сигнал").expect("target form");
+        assert_eq!(readout.verdict, L2LocalVerdict::Winner { form_ref: target });
+
+        let composition_only =
+            field.readout_observed("неизвестная сцена _", "сигна", &[compositional], 8);
+        assert_eq!(composition_only.verdict, L2LocalVerdict::Abstain);
+    }
+
+    #[test]
+    fn observed_readout_keeps_multiple_exact_basins_tied() {
+        let corpus = L2TeacherCorpus::parse_tsv(
+            "F\tкод\tкод\tnoun:nom:sg\n\
+             F\tкод\tкоды\tnoun:nom:pl\n\
+             F\tкот\tкот\tnoun:nom:sg\n\
+             T\tкод\tкод\tnoun:nom:sg\t_ работает\n\
+             T\tкот\tкот\tnoun:nom:sg\t_ спит\n\
+             H\tкод\tкод\tnoun:nom:sg\tпроверен _\n",
+        )
+        .expect("teacher");
+        let terminals = BTreeMap::from([("коды", 17), ("кот", 23)]);
+        let (package, _) =
+            compile_l2_package(&corpus, 99, |surface| terminals.get(surface).copied())
+                .expect("compile");
+        let field = StandaloneL2Field::from_package(package).expect("load");
+        let seeds = [
+            L2LexicalSeed {
+                terminal_id: Some(17),
+                surface: None,
+                evidence_milli: 1_000,
+                origin: L2LexicalSeedOrigin::GroundedL11,
+            },
+            L2LexicalSeed {
+                terminal_id: None,
+                surface: Some("код".to_string()),
+                evidence_milli: 900,
+                origin: L2LexicalSeedOrigin::CompositionalMorphology,
+            },
+            L2LexicalSeed {
+                terminal_id: None,
+                surface: Some("кот".to_string()),
+                evidence_milli: 900,
+                origin: L2LexicalSeedOrigin::CompositionalMorphology,
+            },
+        ];
+
+        let readout = field.readout_observed("неизвестная сцена _", "кок", &seeds, 8);
+        let code = field.form_ref_for_surface("код").expect("code form");
+        let cat = field.form_ref_for_surface("кот").expect("cat form");
+        let tied = match readout.verdict {
+            L2LocalVerdict::Tied { form_refs } => form_refs,
+            verdict => panic!(
+                "expected exact geometry tie for {code} and {cat}, got {verdict:?}; candidates={:?}",
+                readout.candidates
+            ),
+        };
+        assert_eq!(tied.len(), 2);
+        assert!(tied.contains(&code));
+        assert!(tied.contains(&cat));
+    }
+
+    #[test]
     fn standalone_field_walks_from_l1_seed_to_contextual_same_lemma_form() {
         let corpus = L2TeacherCorpus::parse_tsv(
             "F\tдом\tдом\tnoun:nom:sg\n\
@@ -993,6 +2294,7 @@ mod standalone_tests {
                 terminal_id: Some(17),
                 surface: None,
                 evidence_milli: 900,
+                origin: L2LexicalSeedOrigin::GroundedL11,
             }],
             8,
         );
@@ -1024,6 +2326,7 @@ mod standalone_tests {
                 terminal_id: Some(17),
                 surface: None,
                 evidence_milli: 900,
+                origin: L2LexicalSeedOrigin::GroundedL11,
             }],
             8,
         );
@@ -1060,6 +2363,7 @@ mod standalone_tests {
                 terminal_id: Some(900_000),
                 surface: Some("рефакторинга".to_string()),
                 evidence_milli: 1_000,
+                origin: L2LexicalSeedOrigin::GroundedL11,
             }],
             8,
         );
@@ -1094,6 +2398,7 @@ mod standalone_tests {
                 terminal_id: Some(17),
                 surface: None,
                 evidence_milli: 1_000,
+                origin: L2LexicalSeedOrigin::GroundedL11,
             }],
             8,
         );
@@ -1101,7 +2406,7 @@ mod standalone_tests {
         let L2LocalVerdict::Winner { form_ref } = readout.verdict else {
             panic!("learned competition should settle one reconstruction: {readout:#?}");
         };
-        assert_eq!(field.decode_form_ref(form_ref), Some("посмотри"));
+        assert_eq!(field.decode_form_ref(form_ref).as_deref(), Some("посмотри"));
     }
 
     #[test]
@@ -1124,6 +2429,7 @@ mod standalone_tests {
                 terminal_id: Some(17),
                 surface: None,
                 evidence_milli: 900,
+                origin: L2LexicalSeedOrigin::GroundedL11,
             }],
             8,
         );
@@ -1152,11 +2458,13 @@ mod standalone_tests {
                     terminal_id: None,
                     surface: Some("код".to_string()),
                     evidence_milli: 1_000,
+                    origin: L2LexicalSeedOrigin::GroundedL11,
                 },
                 L2LexicalSeed {
                     terminal_id: None,
                     surface: Some("кот".to_string()),
                     evidence_milli: 1_000,
+                    origin: L2LexicalSeedOrigin::GroundedL11,
                 },
             ],
             8,
@@ -1194,11 +2502,13 @@ mod standalone_tests {
                     terminal_id: Some(17),
                     surface: None,
                     evidence_milli: 1_000,
+                    origin: L2LexicalSeedOrigin::GroundedL11,
                 },
                 L2LexicalSeed {
                     terminal_id: Some(23),
                     surface: None,
                     evidence_milli: 1_000,
+                    origin: L2LexicalSeedOrigin::GroundedL11,
                 },
             ],
             8,

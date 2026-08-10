@@ -1,0 +1,86 @@
+{
+  "architecture": "sentence_slot_directional_relation_v1",
+  "base_rewritten": false,
+  "build": {
+    "average_cpu_percent": 101,
+    "elapsed_seconds": 115.95,
+    "exit_status": 0,
+    "jobs": 20,
+    "log_sha256": "3db422864089fa443d7eaedcfa251236d54aa3fba34c3ddab372594986c01799",
+    "peak_rss_kib": 1826316,
+    "swap_count": 0
+  },
+  "delta_bytes": 4372,
+  "delta_sha256": "3dca1e61369d15490ee97a4ce54f401fb32de4c64bd256f5cd801ed234272cf6",
+  "experiment_date": "2026-08-10",
+  "frozen_differential": {
+    "baseline_false_supports": 0,
+    "baseline_false_top1": 0,
+    "baseline_supports": 1769,
+    "baseline_target_profiles": 41064,
+    "baseline_top1": 1715,
+    "candidate_false_supports": 0,
+    "candidate_false_top1": 0,
+    "candidate_supports": 1769,
+    "candidate_target_profiles": 41064,
+    "candidate_top1": 1715,
+    "compared_transitions": 41064,
+    "heldout_fragments": 15704,
+    "lattice_transitions": 50592,
+    "lost_supports": 0,
+    "lost_target_profiles": 0,
+    "lost_top1": 0,
+    "new_false_supports": 0,
+    "new_false_top1": 0,
+    "receipt_sha256": "d477224b63d563cd801a134e1d1ba0804d534b1343dab6c6887221f10930d79d",
+    "source_cap_fragments": 80000,
+    "verdict": "PASS"
+  },
+  "full_corpus_recompiled": false,
+  "host": "e@192.168.3.94",
+  "kind": "l3_supervised_sentence_online_delta_full_gate",
+  "local_tests": {
+    "context_phase_failed": 0,
+    "context_phase_passed": 86,
+    "online_l3_failed": 0,
+    "online_l3_passed": 24
+  },
+  "private_relation_text_recorded": false,
+  "remote_isolated_root": "/home/e/build/l3-supervised-gate-20260810",
+  "runtime_authority_changed": false,
+  "targeted": {
+    "baseline_passed_cases": 4,
+    "candidate_passed_cases": 7,
+    "false_supports": 0,
+    "heldout_rows": 7,
+    "heldout_scene_overlap": 0,
+    "improve_cases": 2,
+    "improved": 3,
+    "receipt_sha256": "7918b45c1b0ecfc42ceb6085fff41f3cb94b025439409846411669488c8c4f9d",
+    "regressions": 0,
+    "safety_cases": 5,
+    "target_failures": 0,
+    "verdict": "PASS"
+  },
+  "tested": [
+    "two independent supervised sentence episodes compile in one bounded pass",
+    "directional evidence may occupy two local support-one subcenters only when bank support reaches two",
+    "exact sentence anchors keep unrelated safety scenes unresolved",
+    "targeted proof runs before frozen differential admission",
+    "immutable base plus one delta is admitted only after both proofs pass"
+  ],
+  "not_tested": [
+    "live daemon reload",
+    "physical application matrix",
+    "L1.1 or L2 quality proof"
+  ],
+  "verdict": "PASS_ISOLATED",
+  "worker": {
+    "average_cpu_percent": 1212,
+    "elapsed_seconds": 31.53,
+    "exit_status": 0,
+    "log_sha256": "ba0b77f521be4bdbaa68c23c2f321047aeea4f1aa0402718efa1f78ede3ca08a",
+    "peak_rss_kib": 279388,
+    "swap_count": 0
+  }
+}

@@ -1,6 +1,21 @@
 use super::*;
 
 impl OnlineContextPhaseLearner {
+    pub(in crate::nanda_wave::context_phase) fn prepare_supervised_sentence_basis(
+        &mut self,
+        scene_tokens: &[String],
+    ) {
+        let exact_hashes = scene_tokens
+            .iter()
+            .map(|token| super::super::context_exact_hash(token))
+            .collect::<Vec<_>>();
+        let frequencies = exact_hashes
+            .iter()
+            .map(|hash| self.admission_frequency.observe(*hash))
+            .collect::<Vec<_>>();
+        self.update_semantic_states(&exact_hashes, &frequencies);
+    }
+
     /// Learns one causally labelled sentence slot against the complete bounded
     /// L2 competitor set. The caller owns episode independence; this method
     /// never infers a target from a shown or automatically applied candidate.
@@ -14,21 +29,40 @@ impl OnlineContextPhaseLearner {
         if scene_tokens.is_empty() || target.trim().is_empty() {
             return;
         }
+        self.prepare_supervised_sentence_basis(scene_tokens);
+        self.ingest_supervised_sentence_on_prepared_basis(
+            scene_tokens,
+            pair_views,
+            target,
+            competitors,
+        );
+    }
+
+    /// Reduces labelled evidence against a basis prepared from the complete
+    /// bounded episode batch. This keeps phase coordinates stationary while
+    /// independent observations reinforce or split directional subcenters.
+    pub(in crate::nanda_wave::context_phase) fn ingest_supervised_sentence_on_prepared_basis(
+        &mut self,
+        scene_tokens: &[String],
+        pair_views: &[Vec<String>],
+        target: &str,
+        competitors: &[String],
+    ) {
+        if scene_tokens.is_empty() || target.trim().is_empty() {
+            return;
+        }
         self.stats.fragments = self.stats.fragments.saturating_add(1);
-        let exact_hashes = scene_tokens
-            .iter()
-            .map(|token| super::super::context_exact_hash(token))
-            .collect::<Vec<_>>();
-        let frequencies = exact_hashes
-            .iter()
-            .map(|hash| self.admission_frequency.observe(*hash))
-            .collect::<Vec<_>>();
-        self.update_semantic_states(&exact_hashes, &frequencies);
 
         let target = target.to_lowercase();
         let target_hash = hash_text(&target);
         let target_frequency = self.admission_frequency.observe(target_hash);
-        if !self.ensure_profile(target_hash, target_frequency) {
+        // A supervised episode already carries an explicit causal label. Count
+        // it from the first observation instead of spending that observation
+        // on the unsupervised frequency warm-up; profile/RSS bounds and the
+        // snapshot support threshold remain unchanged.
+        let supervised_frequency =
+            target_frequency.max(self.config.min_profile_support.min(u32::from(u16::MAX)) as u16);
+        if !self.ensure_profile(target_hash, supervised_frequency) {
             return;
         }
         let context_hashes =

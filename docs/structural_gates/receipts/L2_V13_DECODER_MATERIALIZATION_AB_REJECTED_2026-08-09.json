@@ -1,0 +1,92 @@
+{
+  "kind": "l2_v13_decoder_materialization_ab",
+  "date": "2026-08-09",
+  "scope": "physical decoded-surface runtime representation only",
+  "runtime_authority_changed": false,
+  "package_bytes": 140556462,
+  "fixed_sample": {
+    "damage_classes": 13,
+    "heldout_per_class": 100,
+    "workers": 20,
+    "broad_lemma_frontier": 256,
+    "form_lattice": 16,
+    "atom_relation_budget": 65536
+  },
+  "controlled_active_128_ab": {
+    "baseline": {
+      "remote_receipt": "/home/e/build/lay-l1-shadow/artifacts/l2-v13-compositional-typed-atoms-2026-08-09/contextual-frontier256-active128-f16-budget65536-micro100.json",
+      "form_birth_p50_us": 43444,
+      "form_birth_p99_us": 107688,
+      "proof_us": 3445740,
+      "l2_cold_load_us": 797840,
+      "rss_peak_kib": 414676,
+      "minimum_active_lemma_retained_percent": 94,
+      "minimum_form_top16_retained_percent": 94,
+      "minimum_readout_target_retained_percent": 94,
+      "false_authority": 0
+    },
+    "materialized": {
+      "remote_receipt": "/home/e/build/lay-l1-shadow/artifacts/l2-v13-compositional-typed-atoms-2026-08-09/contextual-frontier256-active128-f16-budget65536-materialized-micro100.json",
+      "form_birth_p50_us": 41482,
+      "form_birth_p99_us": 111485,
+      "proof_us": 3452131,
+      "l2_cold_load_us": 818536,
+      "rss_peak_kib": 462904,
+      "minimum_active_lemma_retained_percent": 94,
+      "minimum_form_top16_retained_percent": 94,
+      "minimum_readout_target_retained_percent": 94,
+      "false_authority": 0
+    },
+    "delta": {
+      "form_birth_p50_us": -1962,
+      "form_birth_p99_us": 3797,
+      "form_birth_p99_percent": 3.526,
+      "proof_us": 6391,
+      "l2_cold_load_us": 20696,
+      "rss_peak_kib": 48228
+    }
+  },
+  "materialized_active_256": {
+    "remote_receipt": "/home/e/build/lay-l1-shadow/artifacts/l2-v13-compositional-typed-atoms-2026-08-09/contextual-frontier256-active256-f16-budget65536-materialized-micro100.json",
+    "form_birth_p50_us": 66409,
+    "form_birth_p99_us": 179497,
+    "proof_us": 5383706,
+    "wall_seconds": 8.44,
+    "average_cpu_percent": 1184,
+    "rss_peak_kib": 467000,
+    "minimum_broad_lemma_retained_percent": 96,
+    "minimum_active_lemma_retained_percent": 96,
+    "minimum_form_top16_retained_percent": 95,
+    "minimum_readout_target_retained_percent": 95,
+    "false_authority": 0,
+    "verdict": "FAIL"
+  },
+  "per_class_active_256": {
+    "adjacent_transposition": {"broad": 100, "active": 100, "form_top16": 100, "readout_retained": 100, "readout_unique_top1": 94},
+    "double_substitution": {"broad": 98, "active": 98, "form_top16": 97, "readout_retained": 97, "readout_unique_top1": 78},
+    "extra_letter": {"broad": 100, "active": 100, "form_top16": 100, "readout_retained": 100, "readout_unique_top1": 98},
+    "layout_projection": {"broad": 100, "active": 100, "form_top16": 100, "readout_retained": 100, "readout_unique_top1": 97},
+    "letter_substitution": {"broad": 100, "active": 100, "form_top16": 100, "readout_retained": 100, "readout_unique_top1": 88},
+    "missing_letter": {"broad": 100, "active": 100, "form_top16": 100, "readout_retained": 100, "readout_unique_top1": 96},
+    "non_adjacent_transposition": {"broad": 99, "active": 99, "form_top16": 99, "readout_retained": 99, "readout_unique_top1": 83},
+    "omission_transposition": {"broad": 100, "active": 100, "form_top16": 100, "readout_retained": 100, "readout_unique_top1": 92},
+    "prefix_truncation": {"broad": 100, "active": 100, "form_top16": 100, "readout_retained": 100, "readout_unique_top1": 86},
+    "punctuation_suffix": {"broad": 100, "active": 100, "form_top16": 100, "readout_retained": 100, "readout_unique_top1": 100},
+    "repeated_fragment": {"broad": 100, "active": 100, "form_top16": 100, "readout_retained": 100, "readout_unique_top1": 86},
+    "sparse_multi_omission": {"broad": 96, "active": 96, "form_top16": 95, "readout_retained": 95, "readout_unique_top1": 80},
+    "suffix_truncation": {"broad": 100, "active": 100, "form_top16": 100, "readout_retained": 100, "readout_unique_top1": 90}
+  },
+  "tested": [
+    "controlled active=128 decoder A/B",
+    "materialized active=256 quality and resource proof",
+    "all thirteen damage classes on the fixed micro denominator"
+  ],
+  "not_tested": [
+    "final 20000 x 13 denominator",
+    "daemon or IBus latency",
+    "L3 L4 DecisionCore apply authority",
+    "clean L1.1 preservation"
+  ],
+  "verdict": "REJECT_materialized_decoder_no_p99_gain",
+  "code_reverted": true
+}

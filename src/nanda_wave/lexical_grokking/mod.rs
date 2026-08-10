@@ -29,6 +29,7 @@ pub use compaction::compact_depth0_package;
 pub use composite::initialize_manifest as initialize_l11_composite_manifest;
 pub use composite::{admit_delta as admit_l11_delta, admit_tombstone as admit_l11_tombstone};
 pub use corruption::ScaleTrainingSurfacePolicy;
+pub(crate) use corruption::{split_damages, DamageExample};
 pub use posting_codec::analyze_package as analyze_l1_forward_compression;
 pub use proof::{
     crystallize_l1_lexical_grokking, crystallize_l1_lexical_grokking_with_rss_budget,

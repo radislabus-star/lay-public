@@ -5,12 +5,15 @@ use std::path::{Path, PathBuf};
 use std::sync::OnceLock;
 
 use crate::lexical_surface_atoms::SurfaceFieldEncoder;
+use crate::lexical_surface_atoms::{
+    visit_appended_surface_byte_atoms, visit_surface_boundary_atoms,
+};
 use crate::text_metrics::damerau_levenshtein;
 
 use super::format::{
     atom_center_keys, normalize_surface, phase_coherence_milli, read_arc, read_center,
     read_decoder_arc, read_decoder_state, read_header, read_node, read_posting, read_terminal,
-    surface_phase, surface_phase_and_atom_center_keys, ArtifactHeader, CenterRecord, NO_INDEX,
+    surface_phase, ArtifactHeader, CenterRecord, SurfaceFeatureAccumulator, NO_INDEX,
 };
 
 const MAX_PHASE_FRONTIER: usize = 768;
@@ -894,8 +897,141 @@ impl LexicalPhaseMemory {
             .min(super::format::MAX_WORD_CHARS);
         let mut output = prefix.to_string();
         let mut visited = 0usize;
-        let mut surfaces = Vec::new();
+        let mut features = SurfaceFeatureAccumulator::default();
+        visit_appended_surface_byte_atoms(prefix, 0, &mut |position, bytes| {
+            features.push_atom(position, bytes);
+        });
+        let query_field = SurfaceFieldEncoder::encode(prefix);
+        let (query_phase, _) = surface_phase(&query_field);
+        let query_keys = atom_center_keys(&query_field);
+        let mut candidates = Vec::new();
         self.collect_decoded_completions(
+            state_id,
+            prefix_len,
+            prefix_len,
+            max_len,
+            material_limit.max(result_limit),
+            &mut output,
+            &mut visited,
+            &mut features,
+            &query_phase,
+            &query_keys,
+            &mut candidates,
+        );
+        sort_candidates(&mut candidates);
+        candidates.truncate(result_limit);
+        candidates
+    }
+
+    fn collect_decoded_completions(
+        &self,
+        state_id: u32,
+        prefix_len: usize,
+        current_len: usize,
+        max_len: usize,
+        limit: usize,
+        output: &mut String,
+        visited: &mut usize,
+        features: &mut SurfaceFeatureAccumulator,
+        query_phase: &[i8; super::format::PHASE_CELLS],
+        query_keys: &[u64],
+        candidates: &mut Vec<LexicalPhaseCandidate>,
+    ) {
+        if *visited >= MAX_DECODED_COMPLETION_VISITS || candidates.len() >= limit {
+            return;
+        }
+        *visited += 1;
+        let Some(state) = read_decoder_state(self.bytes(), self.header, state_id) else {
+            return;
+        };
+        if state.is_final() && current_len > prefix_len {
+            let checkpoint = features.checkpoint();
+            visit_surface_boundary_atoms(output, &mut |position, bytes| {
+                features.push_atom(position, bytes);
+            });
+            let (candidate_phase, atom_count) = features.phase_and_atom_count();
+            let overlap = features.unique_overlap(query_keys);
+            features.restore(checkpoint);
+            let coherence = phase_coherence_milli(query_phase, &candidate_phase);
+            let suffix_len = current_len.saturating_sub(prefix_len);
+            candidates.push(LexicalPhaseCandidate {
+                score: 240u32
+                    .saturating_add(u32::from(coherence))
+                    .saturating_add(overlap.min(24) as u32 * 32)
+                    .saturating_sub(suffix_len as u32 * 12),
+                word: output.clone(),
+                l1_overlap: overlap,
+                l2_overlap: usize::from(coherence) / 40,
+                motif_overlap: atom_count as usize,
+                prefix_match: true,
+                rank: usize::MAX,
+                phase_coherence_milli: coherence,
+                reconstructed: true,
+            });
+        }
+        if current_len >= max_len {
+            return;
+        }
+        for offset in 0..state.arc_len {
+            if *visited >= MAX_DECODED_COMPLETION_VISITS || candidates.len() >= limit {
+                return;
+            }
+            let Some(arc) = read_decoder_arc(
+                self.bytes(),
+                self.header,
+                state.first_arc.saturating_add(u32::from(offset)),
+            ) else {
+                continue;
+            };
+            let Some(ch) = char::from_u32(arc.ch) else {
+                continue;
+            };
+            let output_byte_len = output.len();
+            let checkpoint = features.checkpoint();
+            output.push(ch);
+            visit_appended_surface_byte_atoms(output, output_byte_len, &mut |position, bytes| {
+                features.push_atom(position, bytes)
+            });
+            self.collect_decoded_completions(
+                arc.child,
+                prefix_len,
+                current_len + 1,
+                max_len,
+                limit,
+                output,
+                visited,
+                features,
+                query_phase,
+                query_keys,
+                candidates,
+            );
+            output.truncate(output_byte_len);
+            features.restore(checkpoint);
+        }
+    }
+
+    #[cfg(test)]
+    fn decoded_completion_candidates_rescan_for_test(
+        &self,
+        prefix: &str,
+        result_limit: usize,
+        material_limit: usize,
+    ) -> Vec<LexicalPhaseCandidate> {
+        let mut state_id = 0u32;
+        for ch in prefix.chars() {
+            let Some(child) = self.decoder_child(state_id, ch) else {
+                return Vec::new();
+            };
+            state_id = child;
+        }
+        let prefix_len = prefix.chars().count();
+        let max_len = prefix_len
+            .saturating_add(MAX_DECODED_COMPLETION_SUFFIX_CHARS)
+            .min(super::format::MAX_WORD_CHARS);
+        let mut output = prefix.to_string();
+        let mut visited = 0usize;
+        let mut surfaces = Vec::new();
+        self.collect_decoded_completion_surfaces_for_test(
             state_id,
             prefix_len,
             prefix_len,
@@ -914,7 +1050,7 @@ impl LexicalPhaseMemory {
             .map(|(word, word_len)| {
                 let suffix_len = word_len.saturating_sub(prefix_len);
                 let (candidate_phase, atom_count, candidate_keys) =
-                    surface_phase_and_atom_center_keys(&word);
+                    super::format::surface_phase_and_atom_center_keys(&word);
                 let coherence = phase_coherence_milli(&query_phase, &candidate_phase);
                 let overlap = sorted_overlap(&query_keys, &candidate_keys);
                 LexicalPhaseCandidate {
@@ -938,7 +1074,9 @@ impl LexicalPhaseMemory {
         candidates
     }
 
-    fn collect_decoded_completions(
+    #[cfg(test)]
+    #[allow(clippy::too_many_arguments)]
+    fn collect_decoded_completion_surfaces_for_test(
         &self,
         state_id: u32,
         prefix_len: usize,
@@ -977,7 +1115,7 @@ impl LexicalPhaseMemory {
                 continue;
             };
             output.push(ch);
-            self.collect_decoded_completions(
+            self.collect_decoded_completion_surfaces_for_test(
                 arc.child,
                 prefix_len,
                 current_len + 1,
@@ -1781,6 +1919,29 @@ mod tests {
         assert!(memory.contains_surface("проверка"));
         assert_eq!(memory.surface_rank("загрузи"), Some(0));
         assert!(!memory.stats().raw_word_table);
+    }
+
+    #[test]
+    fn incremental_decoder_completion_preserves_full_candidate_field() {
+        let memory = default_memory().expect("production lexical phase memory loads");
+        let mut incremental_us = 0u128;
+        let mut rescan_us = 0u128;
+
+        for prefix in ["пол", "цел", "рас", "оста", "дост", "остан"] {
+            let started = std::time::Instant::now();
+            let expected = memory.decoded_completion_candidates_rescan_for_test(prefix, 96, 576);
+            rescan_us = rescan_us.saturating_add(started.elapsed().as_micros());
+
+            let started = std::time::Instant::now();
+            let actual = memory.decoded_completion_candidates(prefix, 96, 576);
+            incremental_us = incremental_us.saturating_add(started.elapsed().as_micros());
+
+            assert_eq!(actual, expected, "prefix={prefix}");
+        }
+
+        eprintln!(
+            "decoded completion parity: rescan_us={rescan_us} incremental_us={incremental_us}"
+        );
     }
 
     #[test]

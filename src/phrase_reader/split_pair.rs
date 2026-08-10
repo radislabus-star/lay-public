@@ -39,6 +39,7 @@ pub fn correct_split_word_pair(text: &str) -> Option<String> {
         && right_lower.chars().count() <= 3
         && is_known_russian_phrase_part(&left_lower)
         && !is_known_russian_phrase_part(&right_lower)
+        && !glued_is_preferable
     {
         return None;
     }

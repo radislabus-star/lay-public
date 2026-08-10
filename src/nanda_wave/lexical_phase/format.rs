@@ -146,25 +146,69 @@ pub(super) fn surface_phase(field: &EncodedSurfaceField) -> ([i8; PHASE_CELLS], 
 }
 
 pub(super) fn surface_phase_and_atom_center_keys(text: &str) -> ([i8; PHASE_CELLS], u16, Vec<u64>) {
-    let mut sums = [0i16; PHASE_CELLS];
-    let mut keys = Vec::new();
-    let mut atom_count = 0usize;
+    let mut accumulator = SurfaceFeatureAccumulator::default();
     visit_surface_atoms(text, |position, bytes| {
-        atom_count = atom_count.saturating_add(1);
-        keys.push(atom_key(0x4c31_504f_5349_5449, position, bytes));
-        keys.push(atom_key(0x4c31_5245_4c41_5845, 0, bytes));
+        accumulator.push_atom(position, bytes);
+    });
+    accumulator.snapshot()
+}
+
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub(super) struct SurfaceFeatureAccumulator {
+    sums: [i16; PHASE_CELLS],
+    keys: Vec<u64>,
+    atom_count: usize,
+}
+
+pub(super) type SurfaceFeatureCheckpoint = ([i16; PHASE_CELLS], usize, usize);
+
+impl SurfaceFeatureAccumulator {
+    pub(super) fn push_atom(&mut self, position: u64, bytes: &[u8]) {
+        self.atom_count = self.atom_count.saturating_add(1);
+        self.keys
+            .push(atom_key(0x4c31_504f_5349_5449, position, bytes));
+        self.keys.push(atom_key(0x4c31_5245_4c41_5845, 0, bytes));
         for trit in surface_atom_projection(position, bytes) {
             let cell = usize::from(trit.lane) % PHASE_CELLS;
-            sums[cell] = sums[cell].saturating_add(i16::from(trit.value));
+            self.sums[cell] = self.sums[cell].saturating_add(i16::from(trit.value));
         }
-    });
-    keys.sort_unstable();
-    keys.dedup();
-    let mut phase = [0i8; PHASE_CELLS];
-    for (target, value) in phase.iter_mut().zip(sums) {
-        *target = value.clamp(i8::MIN as i16, i8::MAX as i16) as i8;
     }
-    (phase, atom_count.min(u16::MAX as usize) as u16, keys)
+
+    pub(super) fn checkpoint(&self) -> SurfaceFeatureCheckpoint {
+        (self.sums, self.keys.len(), self.atom_count)
+    }
+
+    pub(super) fn restore(&mut self, checkpoint: SurfaceFeatureCheckpoint) {
+        self.sums = checkpoint.0;
+        self.keys.truncate(checkpoint.1);
+        self.atom_count = checkpoint.2;
+    }
+
+    pub(super) fn snapshot(&self) -> ([i8; PHASE_CELLS], u16, Vec<u64>) {
+        let (phase, atom_count) = self.phase_and_atom_count();
+        let mut keys = self.keys.clone();
+        keys.sort_unstable();
+        keys.dedup();
+        (phase, atom_count, keys)
+    }
+
+    pub(super) fn phase_and_atom_count(&self) -> ([i8; PHASE_CELLS], u16) {
+        let mut phase = [0i8; PHASE_CELLS];
+        for (target, value) in phase.iter_mut().zip(self.sums) {
+            *target = value.clamp(i8::MIN as i16, i8::MAX as i16) as i8;
+        }
+        (phase, self.atom_count.min(u16::MAX as usize) as u16)
+    }
+
+    pub(super) fn unique_overlap(&self, sorted_query_keys: &[u64]) -> usize {
+        let mut matched = Vec::with_capacity(sorted_query_keys.len().min(32));
+        for key in &self.keys {
+            if sorted_query_keys.binary_search(key).is_ok() && !matched.contains(key) {
+                matched.push(*key);
+            }
+        }
+        matched.len()
+    }
 }
 
 pub(super) fn phase_coherence_milli(left: &[i8; PHASE_CELLS], right: &[i8; PHASE_CELLS]) -> u16 {
@@ -407,7 +451,9 @@ fn read_u64(bytes: &[u8], offset: usize) -> Result<u64, String> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::lexical_surface_atoms::SurfaceFieldEncoder;
+    use crate::lexical_surface_atoms::{
+        visit_appended_surface_byte_atoms, visit_surface_boundary_atoms, SurfaceFieldEncoder,
+    };
 
     #[test]
     fn streaming_surface_summary_matches_materialized_atoms() {
@@ -420,6 +466,40 @@ mod tests {
 
             assert_eq!((phase, atom_count), expected_phase, "surface={surface}");
             assert_eq!(keys, expected_keys, "surface={surface}");
+        }
+    }
+
+    #[test]
+    fn incremental_prefix_summary_matches_complete_surface() {
+        for (prefix, suffix) in [
+            ("п", "роверка"),
+            ("рас", "ширение"),
+            ("оста", "новка"),
+            ("fi", "lename"),
+        ] {
+            let mut accumulator = SurfaceFeatureAccumulator::default();
+            visit_appended_surface_byte_atoms(prefix, 0, &mut |position, bytes| {
+                accumulator.push_atom(position, bytes);
+            });
+            let mut surface = prefix.to_string();
+            for ch in suffix.chars() {
+                let previous_byte_len = surface.len();
+                surface.push(ch);
+                visit_appended_surface_byte_atoms(
+                    &surface,
+                    previous_byte_len,
+                    &mut |position, bytes| accumulator.push_atom(position, bytes),
+                );
+            }
+            visit_surface_boundary_atoms(&surface, &mut |position, bytes| {
+                accumulator.push_atom(position, bytes);
+            });
+
+            assert_eq!(
+                accumulator.snapshot(),
+                surface_phase_and_atom_center_keys(&surface),
+                "surface={surface}"
+            );
         }
     }
 }

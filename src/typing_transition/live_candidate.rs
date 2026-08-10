@@ -23,6 +23,9 @@ pub(crate) struct LiveCompletionProposal {
     /// The typed prefix is already an exact lexical state. Extending it needs
     /// independent context evidence instead of lexical geometry alone.
     pub(crate) partial_state_known: bool,
+    /// True only while the user is still editing this token in preedit. A
+    /// committed clean token is a settled state, not an open suffix lane.
+    pub(crate) active_composition: bool,
     pub(crate) allow_short_lexical: bool,
     pub(crate) structural: f32,
     pub(crate) usage: f32,
@@ -55,45 +58,18 @@ impl TransitionDecisionCore {
         proposals: Vec<LiveCompletionProposal>,
         limit: usize,
     ) -> Vec<SelectedLiveCompletion> {
+        if limit == 0 {
+            return Vec::new();
+        }
         let proposals = proposals
             .into_iter()
             .filter(|proposal| Self::admit_live_completion(proposal).visible())
             .collect::<Vec<_>>();
-        let inputs = proposals
-            .iter()
-            .map(
-                |proposal| crate::nanda_wave::l4_hidden_state::L4HiddenCandidateInput {
-                    predicted_state: crate::nanda_wave::l4_hidden_state::predicted_state_id(
-                        proposal.state_before,
-                        "accept_completion",
-                        &proposal.surface,
-                    ),
-                    relation_class: proposal.l3_relation_class,
-                    operator_class: crate::nanda_wave::phase_field::hash_text("accept_completion"),
-                    verifier_passed: true,
-                    rank_milli: crate::text_metrics::score_to_milli(proposal.rank_score),
-                    context_support: proposal.l3_memory_supported || proposal.completed_state_known,
-                    pairwise_context_witness: false,
-                    eligible: true,
-                    witness_attract: proposal.l4_transition_attract_count,
-                    witness_repel: proposal.l4_transition_repel_count,
-                    witness_state_specific: proposal.l4_transition_state_specific,
-                    phase_witness_milli: 0,
-                    phase_witness_supported: false,
-                    operator_consensus_witness: false,
-                },
-            )
-            .collect::<Vec<_>>();
-        let hidden = crate::nanda_wave::l4_hidden_state::estimate_hidden_typing_state(&inputs);
-        let mut selected = proposals
-            .into_iter()
-            .zip(hidden)
-            .filter(|(_, state)| {
-                state.disposition
-                    != crate::nanda_wave::l4_hidden_state::L4HiddenDisposition::Rejected
-            })
-            .map(|(proposal, _)| proposal)
-            .collect::<Vec<_>>();
+        // This route only exposes display candidates. L4 attraction/repulsion
+        // has already contributed to `rank_score`; mutation-oriented hidden
+        // state must not erase a grounded L1.1/L2 candidate. The separate
+        // Space/Tab apply route retains verifier and authority ownership.
+        let mut selected = proposals;
 
         selected.sort_by(|left, right| {
             right
@@ -103,29 +79,56 @@ impl TransitionDecisionCore {
                 .then_with(|| left.suffix_len.cmp(&right.suffix_len))
                 .then_with(|| left.surface.cmp(&right.surface))
         });
-        let corrected_prefix_reserve = selected
-            .iter()
-            .find(|candidate| candidate.corrected_prefix_completion)
-            .cloned();
         let mut seen_surfaces = HashSet::new();
         let mut seen_suffixes = HashSet::new();
         selected.retain(|candidate| {
             seen_surfaces.insert(candidate.surface.clone())
                 && (candidate.suffix.is_empty() || seen_suffixes.insert(candidate.suffix.clone()))
         });
-        selected.truncate(limit);
-        if let Some(candidate) = corrected_prefix_reserve {
-            if !selected
+
+        // Keep the bounded display field diverse: corrected-prefix basins must
+        // not evict every exact L1.1/L2 continuation, while an exact-only lane
+        // must not hide the best typo-tolerant candidate. This is candidate
+        // topology, not a word- or suffix-specific rule.
+        let exact_reserve_limit = limit.saturating_div(3).max(1);
+        let exact_reserve = selected
+            .iter()
+            .filter(|candidate| {
+                !candidate.corrected_prefix_completion && !candidate.suffix.is_empty()
+            })
+            .take(exact_reserve_limit)
+            .cloned()
+            .collect::<Vec<_>>();
+        let corrected_prefix_reserve = selected
+            .iter()
+            .find(|candidate| candidate.corrected_prefix_completion)
+            .cloned();
+        let mut bounded = Vec::with_capacity(limit);
+        for candidate in exact_reserve
+            .into_iter()
+            .chain(corrected_prefix_reserve)
+            .chain(selected)
+        {
+            if bounded
                 .iter()
-                .any(|current| current.surface == candidate.surface)
+                .any(|current: &LiveCompletionProposal| current.surface == candidate.surface)
             {
-                if selected.len() == limit {
-                    selected.pop();
-                }
-                selected.push(candidate);
+                continue;
+            }
+            bounded.push(candidate);
+            if bounded.len() == limit {
+                break;
             }
         }
-        selected
+        bounded.sort_by(|left, right| {
+            right
+                .rank_score
+                .total_cmp(&left.rank_score)
+                .then_with(|| right.field_strength.cmp(&left.field_strength))
+                .then_with(|| left.suffix_len.cmp(&right.suffix_len))
+                .then_with(|| left.surface.cmp(&right.surface))
+        });
+        bounded
             .into_iter()
             .map(|candidate| SelectedLiveCompletion {
                 surface: candidate.surface,
@@ -225,6 +228,7 @@ mod tests {
             partial_len: 4,
             suffix_len: suffix.chars().count(),
             partial_state_known: false,
+            active_composition: true,
             allow_short_lexical: true,
             structural: 0.5,
             usage: 0.0,
@@ -257,18 +261,67 @@ mod tests {
     }
 
     #[test]
-    fn decision_core_does_not_emit_a_candidate_rejected_by_live_admission() {
-        let mut weak_extension = completion("осьмых", "мых", 0.9);
+    fn decision_core_requires_grounding_for_known_prefix_extension() {
+        let mut weak_extension = completion("known-extension", "extension", 0.9);
         weak_extension.partial_len = 3;
         weak_extension.partial_state_known = true;
+        weak_extension.l2_center_grounded = false;
+        weak_extension.completed_state_known = false;
         assert!(
             TransitionDecisionCore::select_live_completions(vec![weak_extension.clone()], 8)
                 .is_empty()
         );
 
+        weak_extension.l2_center_grounded = true;
+        weak_extension.completed_state_known = true;
+        let grounded =
+            TransitionDecisionCore::select_live_completions(vec![weak_extension.clone()], 8);
+        assert_eq!(grounded.len(), 1);
+
+        weak_extension.l2_center_grounded = false;
+        weak_extension.completed_state_known = false;
         weak_extension.context_birth = true;
+        weak_extension.l3_memory_supported = true;
         let selected = TransitionDecisionCore::select_live_completions(vec![weak_extension], 8);
         assert_eq!(selected.len(), 1);
+    }
+
+    #[test]
+    fn bounded_readout_preserves_exact_and_corrected_prefix_lanes() {
+        let mut proposals = Vec::new();
+        for index in 0..8 {
+            let mut candidate = completion(
+                &format!("corrected-{index}"),
+                "",
+                0.90 - index as f32 * 0.01,
+            );
+            candidate.corrected_prefix_completion = true;
+            proposals.push(candidate);
+        }
+        proposals.push(completion("exact-continuation", "continuation", 0.40));
+
+        let selected = TransitionDecisionCore::select_live_completions(proposals, 4);
+
+        assert!(selected
+            .iter()
+            .any(|candidate| candidate.surface == "exact-continuation"));
+        assert!(selected.iter().any(|candidate| candidate.suffix.is_empty()));
+    }
+
+    #[test]
+    fn l4_negative_witness_cannot_erase_a_grounded_display_candidate() {
+        let mut candidate = completion("проверка", "ерка", 0.42);
+        candidate.l2_center_grounded = true;
+        candidate.completed_state_known = true;
+        candidate.l4_transition_state_specific = true;
+        candidate.l4_transition_attract_count = 0;
+        candidate.l4_transition_repel_count = 4;
+
+        let selected = TransitionDecisionCore::select_live_completions(vec![candidate], 8);
+
+        assert_eq!(selected.len(), 1);
+        assert_eq!(selected[0].surface, "проверка");
+        assert_eq!(selected[0].suffix, "ерка");
     }
 
     #[test]

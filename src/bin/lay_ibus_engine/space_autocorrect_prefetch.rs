@@ -1,10 +1,12 @@
 use std::sync::{Arc, Condvar, Mutex, OnceLock};
-use std::time::Instant;
+use std::time::{Duration, Instant};
 
 use lay::config::LayConfig;
 use lay::ime_correction::{
     ActiveCompositionAutocorrectDecision, ActiveCompositionAutocorrectRequest,
 };
+
+const SPACE_PREFETCH_WAIT_BUDGET: Duration = Duration::from_millis(8);
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(crate) struct SpaceAutocorrectKey {
@@ -85,19 +87,31 @@ impl Worker {
     }
 
     fn take(&self, key: &SpaceAutocorrectKey) -> SpaceAutocorrectLookup {
-        let (lock, _) = &*self.state;
+        let started = Instant::now();
+        let (lock, wake) = &*self.state;
         let Ok(mut state) = lock.lock() else {
             return SpaceAutocorrectLookup::NotReady;
         };
-        let Some(completed) = state.completed.take() else {
-            return SpaceAutocorrectLookup::NotReady;
-        };
-        if completed.key != *key {
-            return SpaceAutocorrectLookup::NotReady;
-        }
-        SpaceAutocorrectLookup::Ready {
-            decision: completed.decision,
-            decision_us: completed.decision_us,
+        loop {
+            if let Some(completed) = state.completed.take() {
+                if completed.key == *key {
+                    return SpaceAutocorrectLookup::Ready {
+                        decision: completed.decision,
+                        decision_us: completed.decision_us,
+                    };
+                }
+            }
+            let remaining = SPACE_PREFETCH_WAIT_BUDGET.saturating_sub(started.elapsed());
+            if remaining.is_zero() {
+                return SpaceAutocorrectLookup::NotReady;
+            }
+            let Ok((next, timeout)) = wake.wait_timeout(state, remaining) else {
+                return SpaceAutocorrectLookup::NotReady;
+            };
+            state = next;
+            if timeout.timed_out() && state.completed.is_none() {
+                return SpaceAutocorrectLookup::NotReady;
+            }
         }
     }
 }
@@ -135,12 +149,13 @@ fn run_worker(shared: Arc<(Mutex<WorkerState>, Condvar)>) {
             decision_us: started.elapsed().as_micros(),
         };
 
-        let (lock, _) = &*shared;
+        let (lock, wake) = &*shared;
         let Ok(mut state) = lock.lock() else {
             return;
         };
         if state.generation == generation {
             state.completed = Some(completed);
+            wake.notify_all();
         }
     }
 }
@@ -156,4 +171,41 @@ pub(crate) fn schedule(work: SpaceAutocorrectWork) {
 
 pub(crate) fn take(key: &SpaceAutocorrectKey) -> SpaceAutocorrectLookup {
     worker().take(key)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn take_waits_for_matching_inflight_generation_within_budget() {
+        let state = Arc::new((Mutex::new(WorkerState::default()), Condvar::new()));
+        let worker = Worker {
+            state: Arc::clone(&state),
+        };
+        let key = SpaceAutocorrectKey::new("/test".to_string(), 7, "yt".to_string(), false);
+        let completed_key = key.clone();
+        let producer = std::thread::spawn(move || {
+            std::thread::sleep(Duration::from_millis(2));
+            let (lock, wake) = &*state;
+            let mut state = lock.lock().expect("worker state");
+            state.completed = Some(CompletedWork {
+                key: completed_key,
+                decision: None,
+                decision_us: 2_000,
+            });
+            wake.notify_all();
+        });
+
+        let lookup = worker.take(&key);
+        producer.join().expect("producer");
+
+        assert!(matches!(
+            lookup,
+            SpaceAutocorrectLookup::Ready {
+                decision: None,
+                decision_us: 2_000
+            }
+        ));
+    }
 }

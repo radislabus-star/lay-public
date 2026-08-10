@@ -1,0 +1,5416 @@
+{
+  "class_count": 13,
+  "classes": {
+    "adjacent_transposition": {
+      "abstain": 20000,
+      "active_lemma_retained": 19996,
+      "active_lemma_retained_percent": 99.98,
+      "broad_lemma_retained": 19996,
+      "broad_lemma_retained_percent": 99.98,
+      "cases": 20000,
+      "false_authority": 0,
+      "form_top16_retained": 19996,
+      "form_top16_retained_percent": 99.98,
+      "form_top8_retained": 19992,
+      "form_top8_retained_percent": 99.96,
+      "known_context_modes": 20000,
+      "known_context_modes_percent": 100.0,
+      "readout_target_retained": 19996,
+      "readout_target_retained_percent": 99.98,
+      "readout_unique_top1": 19309,
+      "readout_unique_top1_percent": 96.545,
+      "unique_form_top1": 18006,
+      "unique_form_top1_percent": 90.03
+    },
+    "double_substitution": {
+      "abstain": 20000,
+      "active_lemma_retained": 19775,
+      "active_lemma_retained_percent": 98.875,
+      "broad_lemma_retained": 19775,
+      "broad_lemma_retained_percent": 98.875,
+      "cases": 20000,
+      "false_authority": 0,
+      "form_top16_retained": 19767,
+      "form_top16_retained_percent": 98.835,
+      "form_top8_retained": 19451,
+      "form_top8_retained_percent": 97.255,
+      "known_context_modes": 20000,
+      "known_context_modes_percent": 100.0,
+      "readout_target_retained": 19767,
+      "readout_target_retained_percent": 98.835,
+      "readout_unique_top1": 15174,
+      "readout_unique_top1_percent": 75.87,
+      "unique_form_top1": 15632,
+      "unique_form_top1_percent": 78.16
+    },
+    "extra_letter": {
+      "abstain": 20000,
+      "active_lemma_retained": 20000,
+      "active_lemma_retained_percent": 100.0,
+      "broad_lemma_retained": 20000,
+      "broad_lemma_retained_percent": 100.0,
+      "cases": 20000,
+      "false_authority": 0,
+      "form_top16_retained": 20000,
+      "form_top16_retained_percent": 100.0,
+      "form_top8_retained": 19999,
+      "form_top8_retained_percent": 99.995,
+      "known_context_modes": 20000,
+      "known_context_modes_percent": 100.0,
+      "readout_target_retained": 20000,
+      "readout_target_retained_percent": 100.0,
+      "readout_unique_top1": 19535,
+      "readout_unique_top1_percent": 97.675,
+      "unique_form_top1": 19798,
+      "unique_form_top1_percent": 98.99
+    },
+    "layout_projection": {
+      "abstain": 20000,
+      "active_lemma_retained": 19999,
+      "active_lemma_retained_percent": 99.995,
+      "broad_lemma_retained": 19999,
+      "broad_lemma_retained_percent": 99.995,
+      "cases": 20000,
+      "false_authority": 0,
+      "form_top16_retained": 19999,
+      "form_top16_retained_percent": 99.995,
+      "form_top8_retained": 19994,
+      "form_top8_retained_percent": 99.97,
+      "known_context_modes": 20000,
+      "known_context_modes_percent": 100.0,
+      "readout_target_retained": 19999,
+      "readout_target_retained_percent": 99.995,
+      "readout_unique_top1": 19829,
+      "readout_unique_top1_percent": 99.145,
+      "unique_form_top1": 19740,
+      "unique_form_top1_percent": 98.7
+    },
+    "letter_substitution": {
+      "abstain": 20000,
+      "active_lemma_retained": 19994,
+      "active_lemma_retained_percent": 99.97,
+      "broad_lemma_retained": 19994,
+      "broad_lemma_retained_percent": 99.97,
+      "cases": 20000,
+      "false_authority": 0,
+      "form_top16_retained": 19994,
+      "form_top16_retained_percent": 99.97,
+      "form_top8_retained": 19975,
+      "form_top8_retained_percent": 99.875,
+      "known_context_modes": 20000,
+      "known_context_modes_percent": 100.0,
+      "readout_target_retained": 19994,
+      "readout_target_retained_percent": 99.97,
+      "readout_unique_top1": 17978,
+      "readout_unique_top1_percent": 89.89,
+      "unique_form_top1": 17682,
+      "unique_form_top1_percent": 88.41
+    },
+    "missing_letter": {
+      "abstain": 20000,
+      "active_lemma_retained": 19992,
+      "active_lemma_retained_percent": 99.96,
+      "broad_lemma_retained": 19992,
+      "broad_lemma_retained_percent": 99.96,
+      "cases": 20000,
+      "false_authority": 0,
+      "form_top16_retained": 19992,
+      "form_top16_retained_percent": 99.96,
+      "form_top8_retained": 19989,
+      "form_top8_retained_percent": 99.945,
+      "known_context_modes": 20000,
+      "known_context_modes_percent": 100.0,
+      "readout_target_retained": 19992,
+      "readout_target_retained_percent": 99.96,
+      "readout_unique_top1": 18490,
+      "readout_unique_top1_percent": 92.45,
+      "unique_form_top1": 17847,
+      "unique_form_top1_percent": 89.235
+    },
+    "non_adjacent_transposition": {
+      "abstain": 20000,
+      "active_lemma_retained": 19933,
+      "active_lemma_retained_percent": 99.665,
+      "broad_lemma_retained": 19933,
+      "broad_lemma_retained_percent": 99.665,
+      "cases": 20000,
+      "false_authority": 0,
+      "form_top16_retained": 19906,
+      "form_top16_retained_percent": 99.53,
+      "form_top8_retained": 19589,
+      "form_top8_retained_percent": 97.945,
+      "known_context_modes": 20000,
+      "known_context_modes_percent": 100.0,
+      "readout_target_retained": 19906,
+      "readout_target_retained_percent": 99.53,
+      "readout_unique_top1": 15466,
+      "readout_unique_top1_percent": 77.33,
+      "unique_form_top1": 17443,
+      "unique_form_top1_percent": 87.215
+    },
+    "omission_transposition": {
+      "abstain": 20000,
+      "active_lemma_retained": 19907,
+      "active_lemma_retained_percent": 99.535,
+      "broad_lemma_retained": 19907,
+      "broad_lemma_retained_percent": 99.535,
+      "cases": 20000,
+      "false_authority": 0,
+      "form_top16_retained": 19901,
+      "form_top16_retained_percent": 99.505,
+      "form_top8_retained": 19720,
+      "form_top8_retained_percent": 98.6,
+      "known_context_modes": 20000,
+      "known_context_modes_percent": 100.0,
+      "readout_target_retained": 19901,
+      "readout_target_retained_percent": 99.505,
+      "readout_unique_top1": 17403,
+      "readout_unique_top1_percent": 87.015,
+      "unique_form_top1": 17340,
+      "unique_form_top1_percent": 86.7
+    },
+    "prefix_truncation": {
+      "abstain": 20000,
+      "active_lemma_retained": 19990,
+      "active_lemma_retained_percent": 99.95,
+      "broad_lemma_retained": 19990,
+      "broad_lemma_retained_percent": 99.95,
+      "cases": 20000,
+      "false_authority": 0,
+      "form_top16_retained": 19990,
+      "form_top16_retained_percent": 99.95,
+      "form_top8_retained": 19985,
+      "form_top8_retained_percent": 99.925,
+      "known_context_modes": 20000,
+      "known_context_modes_percent": 100.0,
+      "readout_target_retained": 19990,
+      "readout_target_retained_percent": 99.95,
+      "readout_unique_top1": 16428,
+      "readout_unique_top1_percent": 82.14,
+      "unique_form_top1": 17879,
+      "unique_form_top1_percent": 89.395
+    },
+    "punctuation_suffix": {
+      "abstain": 20000,
+      "active_lemma_retained": 20000,
+      "active_lemma_retained_percent": 100.0,
+      "broad_lemma_retained": 20000,
+      "broad_lemma_retained_percent": 100.0,
+      "cases": 20000,
+      "false_authority": 0,
+      "form_top16_retained": 20000,
+      "form_top16_retained_percent": 100.0,
+      "form_top8_retained": 20000,
+      "form_top8_retained_percent": 100.0,
+      "known_context_modes": 20000,
+      "known_context_modes_percent": 100.0,
+      "readout_target_retained": 20000,
+      "readout_target_retained_percent": 100.0,
+      "readout_unique_top1": 19955,
+      "readout_unique_top1_percent": 99.775,
+      "unique_form_top1": 20000,
+      "unique_form_top1_percent": 100.0
+    },
+    "repeated_fragment": {
+      "abstain": 20000,
+      "active_lemma_retained": 20000,
+      "active_lemma_retained_percent": 100.0,
+      "broad_lemma_retained": 20000,
+      "broad_lemma_retained_percent": 100.0,
+      "cases": 20000,
+      "false_authority": 0,
+      "form_top16_retained": 20000,
+      "form_top16_retained_percent": 100.0,
+      "form_top8_retained": 19977,
+      "form_top8_retained_percent": 99.885,
+      "known_context_modes": 20000,
+      "known_context_modes_percent": 100.0,
+      "readout_target_retained": 20000,
+      "readout_target_retained_percent": 100.0,
+      "readout_unique_top1": 18651,
+      "readout_unique_top1_percent": 93.255,
+      "unique_form_top1": 19480,
+      "unique_form_top1_percent": 97.4
+    },
+    "sparse_multi_omission": {
+      "abstain": 20000,
+      "active_lemma_retained": 19070,
+      "active_lemma_retained_percent": 95.35,
+      "broad_lemma_retained": 19070,
+      "broad_lemma_retained_percent": 95.35,
+      "cases": 20000,
+      "false_authority": 0,
+      "form_top16_retained": 19083,
+      "form_top16_retained_percent": 95.415,
+      "form_top8_retained": 18875,
+      "form_top8_retained_percent": 94.375,
+      "known_context_modes": 20000,
+      "known_context_modes_percent": 100.0,
+      "readout_target_retained": 19083,
+      "readout_target_retained_percent": 95.415,
+      "readout_unique_top1": 15660,
+      "readout_unique_top1_percent": 78.3,
+      "unique_form_top1": 15403,
+      "unique_form_top1_percent": 77.015
+    },
+    "suffix_truncation": {
+      "abstain": 20000,
+      "active_lemma_retained": 20000,
+      "active_lemma_retained_percent": 100.0,
+      "broad_lemma_retained": 20000,
+      "broad_lemma_retained_percent": 100.0,
+      "cases": 20000,
+      "false_authority": 0,
+      "form_top16_retained": 20000,
+      "form_top16_retained_percent": 100.0,
+      "form_top8_retained": 19996,
+      "form_top8_retained_percent": 99.98,
+      "known_context_modes": 20000,
+      "known_context_modes_percent": 100.0,
+      "readout_target_retained": 20000,
+      "readout_target_retained_percent": 100.0,
+      "readout_unique_top1": 18637,
+      "readout_unique_top1_percent": 93.185,
+      "unique_form_top1": 6486,
+      "unique_form_top1_percent": 32.43
+    }
+  },
+  "cold_load": {
+    "l1_us": 698471,
+    "l2_us": 796913
+  },
+  "evaluated": 260000,
+  "failure_examples": [
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 707,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 380,
+          "lemma_id": 60656,
+          "surface": "потрепавшему",
+          "wave_distance": 42
+        },
+        {
+          "atom_evidence_milli": 710,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 354,
+          "lemma_id": 60669,
+          "surface": "потрогавшему",
+          "wave_distance": 49
+        },
+        {
+          "atom_evidence_milli": 703,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 354,
+          "lemma_id": 60677,
+          "surface": "потрясавшему",
+          "wave_distance": 42
+        },
+        {
+          "atom_evidence_milli": 627,
+          "evidence_milli": 818,
+          "geometry_evidence_milli": 818,
+          "lemma_evidence_milli": 503,
+          "lemma_id": 52439,
+          "surface": "патриаршему",
+          "wave_distance": 39
+        },
+        {
+          "atom_evidence_milli": 689,
+          "evidence_milli": 818,
+          "geometry_evidence_milli": 818,
+          "lemma_evidence_milli": 414,
+          "lemma_id": 60660,
+          "surface": "потрепвшему",
+          "wave_distance": 41
+        },
+        {
+          "atom_evidence_milli": 670,
+          "evidence_milli": 785,
+          "geometry_evidence_milli": 785,
+          "lemma_evidence_milli": 393,
+          "lemma_id": 60635,
+          "surface": "потрагивавшему",
+          "wave_distance": 45
+        },
+        {
+          "atom_evidence_milli": 670,
+          "evidence_milli": 785,
+          "geometry_evidence_milli": 785,
+          "lemma_evidence_milli": 393,
+          "lemma_id": 60683,
+          "surface": "потряхивавшему",
+          "wave_distance": 55
+        },
+        {
+          "atom_evidence_milli": 677,
+          "evidence_milli": 769,
+          "geometry_evidence_milli": 769,
+          "lemma_evidence_milli": 354,
+          "lemma_id": 60665,
+          "surface": "потрескавшему",
+          "wave_distance": 51
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "adjacent_transposition",
+      "context": "к _ окне",
+      "context_mode_known": true,
+      "damaged": "потриавшему",
+      "feature_mask": 545784852,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "потиравшему"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 692,
+          "evidence_milli": 875,
+          "geometry_evidence_milli": 875,
+          "lemma_evidence_milli": 536,
+          "lemma_id": 59592,
+          "surface": "понятому",
+          "wave_distance": 43
+        },
+        {
+          "atom_evidence_milli": 738,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 828,
+          "lemma_id": 59566,
+          "surface": "понтону",
+          "wave_distance": 34
+        },
+        {
+          "atom_evidence_milli": 616,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 828,
+          "lemma_id": 59566,
+          "surface": "понтон",
+          "wave_distance": 34
+        },
+        {
+          "atom_evidence_milli": 598,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 828,
+          "lemma_id": 59566,
+          "surface": "понтона",
+          "wave_distance": 34
+        },
+        {
+          "atom_evidence_milli": 598,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 828,
+          "lemma_id": 59566,
+          "surface": "понтоне",
+          "wave_distance": 34
+        },
+        {
+          "atom_evidence_milli": 598,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 828,
+          "lemma_id": 59566,
+          "surface": "понтоны",
+          "wave_distance": 34
+        },
+        {
+          "atom_evidence_milli": 570,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 648,
+          "lemma_id": 59570,
+          "surface": "понтёру",
+          "wave_distance": 38
+        },
+        {
+          "atom_evidence_milli": 478,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 644,
+          "lemma_id": 25383,
+          "surface": "зонтом",
+          "wave_distance": 49
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "adjacent_transposition",
+      "context": "к _ окне",
+      "context_mode_known": true,
+      "damaged": "понтому",
+      "feature_mask": 525332,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "потному"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 784,
+          "evidence_milli": 875,
+          "geometry_evidence_milli": 875,
+          "lemma_evidence_milli": 777,
+          "lemma_id": 48221,
+          "surface": "описными",
+          "wave_distance": 47
+        },
+        {
+          "atom_evidence_milli": 734,
+          "evidence_milli": 875,
+          "geometry_evidence_milli": 875,
+          "lemma_evidence_milli": 504,
+          "lemma_id": 63252,
+          "surface": "присными",
+          "wave_distance": 59
+        },
+        {
+          "atom_evidence_milli": 683,
+          "evidence_milli": 875,
+          "geometry_evidence_milli": 875,
+          "lemma_evidence_milli": 439,
+          "lemma_id": 55148,
+          "surface": "писаными",
+          "wave_distance": 42
+        },
+        {
+          "atom_evidence_milli": 720,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 377,
+          "lemma_id": 55019,
+          "surface": "пинными",
+          "wave_distance": 28
+        },
+        {
+          "atom_evidence_milli": 714,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 377,
+          "lemma_id": 54878,
+          "surface": "пивными",
+          "wave_distance": 40
+        },
+        {
+          "atom_evidence_milli": 701,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 733,
+          "lemma_id": 12748,
+          "surface": "выписными",
+          "wave_distance": 30
+        },
+        {
+          "atom_evidence_milli": 696,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 733,
+          "lemma_id": 23455,
+          "surface": "записными",
+          "wave_distance": 27
+        },
+        {
+          "atom_evidence_milli": 664,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 461,
+          "lemma_id": 58544,
+          "surface": "полисными",
+          "wave_distance": 61
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "adjacent_transposition",
+      "context": "с _ дома",
+      "context_mode_known": true,
+      "damaged": "писными",
+      "feature_mask": 4132,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "псиными"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 612,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 379,
+          "lemma_id": 60846,
+          "surface": "почвенное",
+          "wave_distance": 47
+        },
+        {
+          "atom_evidence_milli": 612,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 379,
+          "lemma_id": 60914,
+          "surface": "почтенное",
+          "wave_distance": 47
+        },
+        {
+          "atom_evidence_milli": 612,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 379,
+          "lemma_id": 60903,
+          "surface": "почленное",
+          "wave_distance": 55
+        },
+        {
+          "atom_evidence_milli": 589,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 329,
+          "lemma_id": 59981,
+          "surface": "порченное",
+          "wave_distance": 48
+        },
+        {
+          "atom_evidence_milli": 512,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 526,
+          "lemma_id": 90517,
+          "surface": "почернее",
+          "wave_distance": 57
+        },
+        {
+          "atom_evidence_milli": 538,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 445,
+          "lemma_id": 60869,
+          "surface": "почтено",
+          "wave_distance": 48
+        },
+        {
+          "atom_evidence_milli": 599,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 385,
+          "lemma_id": 60874,
+          "surface": "почечное",
+          "wave_distance": 47
+        },
+        {
+          "atom_evidence_milli": 532,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 379,
+          "lemma_id": 60912,
+          "surface": "почтение",
+          "wave_distance": 51
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "adjacent_transposition",
+      "context": "вижу _ окне",
+      "context_mode_known": true,
+      "damaged": "почреное",
+      "feature_mask": 526356,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "порченое"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 768,
+          "evidence_milli": 888,
+          "geometry_evidence_milli": 888,
+          "lemma_evidence_milli": 779,
+          "lemma_id": 64070,
+          "surface": "прогалины",
+          "wave_distance": 36
+        },
+        {
+          "atom_evidence_milli": 752,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 783,
+          "lemma_id": 64073,
+          "surface": "проганы",
+          "wave_distance": 33
+        },
+        {
+          "atom_evidence_milli": 728,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 783,
+          "lemma_id": 64073,
+          "surface": "прогала",
+          "wave_distance": 33
+        },
+        {
+          "atom_evidence_milli": 653,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 779,
+          "lemma_id": 64070,
+          "surface": "прогалин",
+          "wave_distance": 36
+        },
+        {
+          "atom_evidence_milli": 623,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 779,
+          "lemma_id": 64070,
+          "surface": "прогалина",
+          "wave_distance": 36
+        },
+        {
+          "atom_evidence_milli": 623,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 779,
+          "lemma_id": 64070,
+          "surface": "прогалине",
+          "wave_distance": 36
+        },
+        {
+          "atom_evidence_milli": 623,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 779,
+          "lemma_id": 64070,
+          "surface": "прогалину",
+          "wave_distance": 36
+        },
+        {
+          "atom_evidence_milli": 615,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 525,
+          "lemma_id": 64092,
+          "surface": "прогнаны",
+          "wave_distance": 44
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "double_substitution",
+      "context": "они _",
+      "context_mode_known": true,
+      "damaged": "прогаланы",
+      "feature_mask": 1619001380,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "проваляны"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 714,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 666,
+          "lemma_id": 81771,
+          "surface": "толовый",
+          "wave_distance": 43
+        },
+        {
+          "atom_evidence_milli": 548,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 618,
+          "lemma_id": 93154,
+          "surface": "этологий",
+          "wave_distance": 49
+        },
+        {
+          "atom_evidence_milli": 497,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 504,
+          "lemma_id": 81039,
+          "surface": "теологий",
+          "wave_distance": 47
+        },
+        {
+          "atom_evidence_milli": 521,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 472,
+          "lemma_id": 81765,
+          "surface": "толковый",
+          "wave_distance": 44
+        },
+        {
+          "atom_evidence_milli": 567,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 666,
+          "lemma_id": 81771,
+          "surface": "толовой",
+          "wave_distance": 43
+        },
+        {
+          "atom_evidence_milli": 562,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 666,
+          "lemma_id": 81771,
+          "surface": "толовей",
+          "wave_distance": 43
+        },
+        {
+          "atom_evidence_milli": 549,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 666,
+          "lemma_id": 81771,
+          "surface": "толовы",
+          "wave_distance": 43
+        },
+        {
+          "atom_evidence_milli": 535,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 666,
+          "lemma_id": 81771,
+          "surface": "толовые",
+          "wave_distance": 43
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "double_substitution",
+      "context": "_ доме",
+      "context_mode_known": true,
+      "damaged": "тологый",
+      "feature_mask": 131348,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "токовый"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 717,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 866,
+          "lemma_id": 22236,
+          "surface": "зададим",
+          "wave_distance": 33
+        },
+        {
+          "atom_evidence_milli": 714,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 698,
+          "lemma_id": 22232,
+          "surface": "задарим",
+          "wave_distance": 33
+        },
+        {
+          "atom_evidence_milli": 714,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 698,
+          "lemma_id": 22224,
+          "surface": "задавим",
+          "wave_distance": 36
+        },
+        {
+          "atom_evidence_milli": 714,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 455,
+          "lemma_id": 22597,
+          "surface": "закатим",
+          "wave_distance": 37
+        },
+        {
+          "atom_evidence_milli": 573,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 866,
+          "lemma_id": 22236,
+          "surface": "задавшим",
+          "wave_distance": 33
+        },
+        {
+          "atom_evidence_milli": 615,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 759,
+          "lemma_id": 22234,
+          "surface": "задаткам",
+          "wave_distance": 30
+        },
+        {
+          "atom_evidence_milli": 607,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 759,
+          "lemma_id": 22234,
+          "surface": "задатком",
+          "wave_distance": 30
+        },
+        {
+          "atom_evidence_milli": 573,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 600,
+          "lemma_id": 22222,
+          "surface": "задающим",
+          "wave_distance": 37
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "double_substitution",
+      "context": "давайте _",
+      "context_mode_known": true,
+      "damaged": "задатим",
+      "feature_mask": 402653266,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "загасим"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 663,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 664,
+          "lemma_id": 8190,
+          "surface": "ведало",
+          "wave_distance": 39
+        },
+        {
+          "atom_evidence_milli": 616,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 664,
+          "lemma_id": 8190,
+          "surface": "ведать",
+          "wave_distance": 39
+        },
+        {
+          "atom_evidence_milli": 570,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 664,
+          "lemma_id": 8190,
+          "surface": "ведаемо",
+          "wave_distance": 39
+        },
+        {
+          "atom_evidence_milli": 559,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 664,
+          "lemma_id": 8190,
+          "surface": "ведано",
+          "wave_distance": 39
+        },
+        {
+          "atom_evidence_milli": 511,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 664,
+          "lemma_id": 8190,
+          "surface": "ведала",
+          "wave_distance": 39
+        },
+        {
+          "atom_evidence_milli": 511,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 664,
+          "lemma_id": 8190,
+          "surface": "ведали",
+          "wave_distance": 39
+        },
+        {
+          "atom_evidence_milli": 505,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 664,
+          "lemma_id": 8190,
+          "surface": "ведал",
+          "wave_distance": 39
+        },
+        {
+          "atom_evidence_milli": 419,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 388,
+          "lemma_id": 12213,
+          "surface": "выедало",
+          "wave_distance": 53
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "double_substitution",
+      "context": "оно _",
+      "context_mode_known": true,
+      "damaged": "ведатло",
+      "feature_mask": 612892690,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "вегасло"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 597,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 512,
+          "lemma_id": 31698,
+          "surface": "кореше",
+          "wave_distance": 39
+        },
+        {
+          "atom_evidence_milli": 581,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 512,
+          "lemma_id": 31698,
+          "surface": "корешей",
+          "wave_distance": 39
+        },
+        {
+          "atom_evidence_milli": 581,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 512,
+          "lemma_id": 31697,
+          "surface": "корешем",
+          "wave_distance": 43
+        },
+        {
+          "atom_evidence_milli": 581,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 512,
+          "lemma_id": 31697,
+          "surface": "корешет",
+          "wave_distance": 43
+        },
+        {
+          "atom_evidence_milli": 550,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 422,
+          "lemma_id": 32791,
+          "surface": "кромешен",
+          "wave_distance": 49
+        },
+        {
+          "atom_evidence_milli": 407,
+          "evidence_milli": 666,
+          "geometry_evidence_milli": 666,
+          "lemma_evidence_milli": 491,
+          "lemma_id": 75244,
+          "surface": "скорейшее",
+          "wave_distance": 49
+        },
+        {
+          "atom_evidence_milli": 379,
+          "evidence_milli": 666,
+          "geometry_evidence_milli": 666,
+          "lemma_evidence_milli": 491,
+          "lemma_id": 75244,
+          "surface": "скорейшей",
+          "wave_distance": 49
+        },
+        {
+          "atom_evidence_milli": 373,
+          "evidence_milli": 666,
+          "geometry_evidence_milli": 666,
+          "lemma_evidence_milli": 491,
+          "lemma_id": 75244,
+          "surface": "скорейшем",
+          "wave_distance": 49
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "double_substitution",
+      "context": "он _",
+      "context_mode_known": true,
+      "damaged": "кореешен",
+      "feature_mask": 1073872916,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "копеечен"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 463,
+          "evidence_milli": 666,
+          "geometry_evidence_milli": 666,
+          "lemma_evidence_milli": 244,
+          "lemma_id": 58313,
+          "surface": "покупному",
+          "wave_distance": 59
+        },
+        {
+          "atom_evidence_milli": 362,
+          "evidence_milli": 625,
+          "geometry_evidence_milli": 625,
+          "lemma_evidence_milli": 292,
+          "lemma_id": 85239,
+          "surface": "упорному",
+          "wave_distance": 50
+        },
+        {
+          "atom_evidence_milli": 320,
+          "evidence_milli": 600,
+          "geometry_evidence_milli": 600,
+          "lemma_evidence_milli": 299,
+          "lemma_id": 83474,
+          "surface": "тупоумному",
+          "wave_distance": 61
+        },
+        {
+          "atom_evidence_milli": 467,
+          "evidence_milli": 600,
+          "geometry_evidence_milli": 600,
+          "lemma_evidence_milli": 268,
+          "lemma_id": 60727,
+          "surface": "поуженному",
+          "wave_distance": 48
+        },
+        {
+          "atom_evidence_milli": 467,
+          "evidence_milli": 600,
+          "geometry_evidence_milli": 600,
+          "lemma_evidence_milli": 268,
+          "lemma_id": 60746,
+          "surface": "поученному",
+          "wave_distance": 52
+        },
+        {
+          "atom_evidence_milli": 513,
+          "evidence_milli": 600,
+          "geometry_evidence_milli": 600,
+          "lemma_evidence_milli": 263,
+          "lemma_id": 60736,
+          "surface": "поурочному",
+          "wave_distance": 58
+        },
+        {
+          "atom_evidence_milli": 448,
+          "evidence_milli": 571,
+          "geometry_evidence_milli": 571,
+          "lemma_evidence_milli": 268,
+          "lemma_id": 60727,
+          "surface": "поужу",
+          "wave_distance": 48
+        },
+        {
+          "atom_evidence_milli": 448,
+          "evidence_milli": 571,
+          "geometry_evidence_milli": 571,
+          "lemma_evidence_milli": 268,
+          "lemma_id": 60746,
+          "surface": "поучу",
+          "wave_distance": 52
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "double_substitution",
+      "context": "к _ окне",
+      "context_mode_known": true,
+      "damaged": "поунпму",
+      "feature_mask": 525332,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "потному"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 520,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 347,
+          "lemma_id": 81884,
+          "surface": "тонирует",
+          "wave_distance": 50
+        },
+        {
+          "atom_evidence_milli": 599,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 288,
+          "lemma_id": 59548,
+          "surface": "поникнет",
+          "wave_distance": 42
+        },
+        {
+          "atom_evidence_milli": 592,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 288,
+          "lemma_id": 59546,
+          "surface": "поникает",
+          "wave_distance": 39
+        },
+        {
+          "atom_evidence_milli": 592,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 288,
+          "lemma_id": 59538,
+          "surface": "понижает",
+          "wave_distance": 42
+        },
+        {
+          "atom_evidence_milli": 592,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 288,
+          "lemma_id": 59550,
+          "surface": "понимает",
+          "wave_distance": 47
+        },
+        {
+          "atom_evidence_milli": 552,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 258,
+          "lemma_id": 59582,
+          "surface": "поныряет",
+          "wave_distance": 40
+        },
+        {
+          "atom_evidence_milli": 553,
+          "evidence_milli": 700,
+          "geometry_evidence_milli": 700,
+          "lemma_evidence_milli": 475,
+          "lemma_id": 48380,
+          "surface": "оппонирует",
+          "wave_distance": 45
+        },
+        {
+          "atom_evidence_milli": 492,
+          "evidence_milli": 700,
+          "geometry_evidence_milli": 700,
+          "lemma_evidence_milli": 475,
+          "lemma_id": 17931,
+          "surface": "депонирует",
+          "wave_distance": 33
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "double_substitution",
+      "context": "он _",
+      "context_mode_known": true,
+      "damaged": "понирбет",
+      "feature_mask": 624951314,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "помирает"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 775,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 612,
+          "lemma_id": 52056,
+          "surface": "паримы",
+          "wave_distance": 38
+        },
+        {
+          "atom_evidence_milli": 596,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 481,
+          "lemma_id": 52255,
+          "surface": "паршивимы",
+          "wave_distance": 41
+        },
+        {
+          "atom_evidence_milli": 578,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 424,
+          "lemma_id": 52155,
+          "surface": "паронимы",
+          "wave_distance": 47
+        },
+        {
+          "atom_evidence_milli": 649,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 703,
+          "lemma_id": 52059,
+          "surface": "парии",
+          "wave_distance": 39
+        },
+        {
+          "atom_evidence_milli": 574,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 703,
+          "lemma_id": 52059,
+          "surface": "париям",
+          "wave_distance": 39
+        },
+        {
+          "atom_evidence_milli": 547,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 703,
+          "lemma_id": 52059,
+          "surface": "париями",
+          "wave_distance": 39
+        },
+        {
+          "atom_evidence_milli": 621,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 612,
+          "lemma_id": 52056,
+          "surface": "паримым",
+          "wave_distance": 38
+        },
+        {
+          "atom_evidence_milli": 576,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 612,
+          "lemma_id": 52056,
+          "surface": "паримые",
+          "wave_distance": 38
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "double_substitution",
+      "context": "заметил эти _",
+      "context_mode_known": true,
+      "damaged": "париимы",
+      "feature_mask": 2081,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "папизмы"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 400,
+          "evidence_milli": 875,
+          "geometry_evidence_milli": 875,
+          "lemma_evidence_milli": 725,
+          "lemma_id": 69908,
+          "surface": "рвавшими",
+          "wave_distance": 52
+        },
+        {
+          "atom_evidence_milli": 405,
+          "evidence_milli": 875,
+          "geometry_evidence_milli": 875,
+          "lemma_evidence_milli": 651,
+          "lemma_id": 11301,
+          "surface": "вравшими",
+          "wave_distance": 58
+        },
+        {
+          "atom_evidence_milli": 400,
+          "evidence_milli": 875,
+          "geometry_evidence_milli": 875,
+          "lemma_evidence_milli": 651,
+          "lemma_id": 21461,
+          "surface": "жравшими",
+          "wave_distance": 50
+        },
+        {
+          "atom_evidence_milli": 400,
+          "evidence_milli": 875,
+          "geometry_evidence_milli": 875,
+          "lemma_evidence_milli": 651,
+          "lemma_id": 48602,
+          "surface": "оравшими",
+          "wave_distance": 58
+        },
+        {
+          "atom_evidence_milli": 308,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 725,
+          "lemma_id": 69908,
+          "surface": "рвавшим",
+          "wave_distance": 52
+        },
+        {
+          "atom_evidence_milli": 241,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 655,
+          "lemma_id": 69784,
+          "surface": "расшиби",
+          "wave_distance": 44
+        },
+        {
+          "atom_evidence_milli": 241,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 655,
+          "lemma_id": 69800,
+          "surface": "расшили",
+          "wave_distance": 49
+        },
+        {
+          "atom_evidence_milli": 307,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 651,
+          "lemma_id": 11301,
+          "surface": "вравшим",
+          "wave_distance": 58
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "layout_projection",
+      "context": "с _ дома",
+      "context_mode_known": true,
+      "damaged": ",hfdibvb",
+      "feature_mask": 545263652,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "бравшими"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 692,
+          "evidence_milli": 875,
+          "geometry_evidence_milli": 875,
+          "lemma_evidence_milli": 603,
+          "lemma_id": 64324,
+          "surface": "проедает",
+          "wave_distance": 52
+        },
+        {
+          "atom_evidence_milli": 732,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 714,
+          "lemma_id": 64204,
+          "surface": "продаст",
+          "wave_distance": 26
+        },
+        {
+          "atom_evidence_milli": 732,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 714,
+          "lemma_id": 64191,
+          "surface": "продают",
+          "wave_distance": 28
+        },
+        {
+          "atom_evidence_milli": 732,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 714,
+          "lemma_id": 64191,
+          "surface": "продаёт",
+          "wave_distance": 28
+        },
+        {
+          "atom_evidence_milli": 714,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 604,
+          "lemma_id": 64302,
+          "surface": "продует",
+          "wave_distance": 36
+        },
+        {
+          "atom_evidence_milli": 663,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 545,
+          "lemma_id": 64231,
+          "surface": "продет",
+          "wave_distance": 41
+        },
+        {
+          "atom_evidence_milli": 696,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 615,
+          "lemma_id": 65103,
+          "surface": "прорыдает",
+          "wave_distance": 46
+        },
+        {
+          "atom_evidence_milli": 704,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 609,
+          "lemma_id": 64892,
+          "surface": "пропадает",
+          "wave_distance": 35
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "letter_substitution",
+      "context": "он _",
+      "context_mode_known": true,
+      "damaged": "продает",
+      "feature_mask": 373293074,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "прогает"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 714,
+          "evidence_milli": 888,
+          "geometry_evidence_milli": 888,
+          "lemma_evidence_milli": 528,
+          "lemma_id": 58595,
+          "surface": "полившего",
+          "wave_distance": 35
+        },
+        {
+          "atom_evidence_milli": 517,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 642,
+          "lemma_id": 88469,
+          "surface": "холившего",
+          "wave_distance": 47
+        },
+        {
+          "atom_evidence_milli": 517,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 642,
+          "lemma_id": 76774,
+          "surface": "солившего",
+          "wave_distance": 51
+        },
+        {
+          "atom_evidence_milli": 517,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 642,
+          "lemma_id": 38707,
+          "surface": "молившего",
+          "wave_distance": 54
+        },
+        {
+          "atom_evidence_milli": 615,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 634,
+          "lemma_id": 58810,
+          "surface": "половшего",
+          "wave_distance": 43
+        },
+        {
+          "atom_evidence_milli": 517,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 600,
+          "lemma_id": 66674,
+          "surface": "пялившего",
+          "wave_distance": 47
+        },
+        {
+          "atom_evidence_milli": 517,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 600,
+          "lemma_id": 54975,
+          "surface": "пилившего",
+          "wave_distance": 52
+        },
+        {
+          "atom_evidence_milli": 517,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 524,
+          "lemma_id": 66604,
+          "surface": "пылившего",
+          "wave_distance": 47
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "letter_substitution",
+      "context": "нет _ окне",
+      "context_mode_known": true,
+      "damaged": "полишего",
+      "feature_mask": 545784340,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "ползшего"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 758,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 709,
+          "lemma_id": 70976,
+          "surface": "ровные",
+          "wave_distance": 37
+        },
+        {
+          "atom_evidence_milli": 750,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 657,
+          "lemma_id": 32723,
+          "surface": "кровные",
+          "wave_distance": 40
+        },
+        {
+          "atom_evidence_milli": 750,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 657,
+          "lemma_id": 6867,
+          "surface": "бровные",
+          "wave_distance": 42
+        },
+        {
+          "atom_evidence_milli": 704,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 657,
+          "lemma_id": 65101,
+          "surface": "прорывные",
+          "wave_distance": 45
+        },
+        {
+          "atom_evidence_milli": 688,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 629,
+          "lemma_id": 58276,
+          "surface": "покровные",
+          "wave_distance": 43
+        },
+        {
+          "atom_evidence_milli": 655,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 560,
+          "lemma_id": 64815,
+          "surface": "промывные",
+          "wave_distance": 46
+        },
+        {
+          "atom_evidence_milli": 648,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 560,
+          "lemma_id": 65881,
+          "surface": "прошивные",
+          "wave_distance": 45
+        },
+        {
+          "atom_evidence_milli": 648,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 560,
+          "lemma_id": 64288,
+          "surface": "продувные",
+          "wave_distance": 46
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "letter_substitution",
+      "context": "вижу _ дома",
+      "context_mode_known": true,
+      "damaged": "провные",
+      "feature_mask": 2084,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "пробные"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 776,
+          "evidence_milli": 875,
+          "geometry_evidence_milli": 875,
+          "lemma_evidence_milli": 629,
+          "lemma_id": 37488,
+          "surface": "метавшим",
+          "wave_distance": 41
+        },
+        {
+          "atom_evidence_milli": 776,
+          "evidence_milli": 875,
+          "geometry_evidence_milli": 875,
+          "lemma_evidence_milli": 599,
+          "lemma_id": 89202,
+          "surface": "цетавшим",
+          "wave_distance": 44
+        },
+        {
+          "atom_evidence_milli": 760,
+          "evidence_milli": 875,
+          "geometry_evidence_milli": 875,
+          "lemma_evidence_milli": 569,
+          "lemma_id": 90295,
+          "surface": "читавшим",
+          "wave_distance": 44
+        },
+        {
+          "atom_evidence_milli": 724,
+          "evidence_milli": 800,
+          "geometry_evidence_milli": 800,
+          "lemma_evidence_milli": 641,
+          "lemma_id": 77407,
+          "surface": "сочетавшим",
+          "wave_distance": 37
+        },
+        {
+          "atom_evidence_milli": 631,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 629,
+          "lemma_id": 37488,
+          "surface": "метавшими",
+          "wave_distance": 41
+        },
+        {
+          "atom_evidence_milli": 631,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 599,
+          "lemma_id": 89202,
+          "surface": "цетавшими",
+          "wave_distance": 44
+        },
+        {
+          "atom_evidence_milli": 692,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 575,
+          "lemma_id": 76007,
+          "surface": "сметавшим",
+          "wave_distance": 51
+        },
+        {
+          "atom_evidence_milli": 615,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 569,
+          "lemma_id": 90295,
+          "surface": "читавшими",
+          "wave_distance": 44
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "letter_substitution",
+      "context": "к _ дома",
+      "context_mode_known": true,
+      "damaged": "четавшим",
+      "feature_mask": 545260580,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "чесавшим"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 827,
+          "evidence_milli": 875,
+          "geometry_evidence_milli": 875,
+          "lemma_evidence_milli": 762,
+          "lemma_id": 77165,
+          "surface": "сосавшей",
+          "wave_distance": 41
+        },
+        {
+          "atom_evidence_milli": 723,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 561,
+          "lemma_id": 48920,
+          "surface": "осевшей",
+          "wave_distance": 40
+        },
+        {
+          "atom_evidence_milli": 728,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 691,
+          "lemma_id": 11539,
+          "surface": "всосавшей",
+          "wave_distance": 38
+        },
+        {
+          "atom_evidence_milli": 696,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 628,
+          "lemma_id": 6960,
+          "surface": "бросавшей",
+          "wave_distance": 42
+        },
+        {
+          "atom_evidence_milli": 648,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 573,
+          "lemma_id": 48823,
+          "surface": "осадившей",
+          "wave_distance": 44
+        },
+        {
+          "atom_evidence_milli": 648,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 541,
+          "lemma_id": 48836,
+          "surface": "осажившей",
+          "wave_distance": 49
+        },
+        {
+          "atom_evidence_milli": 664,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 498,
+          "lemma_id": 48218,
+          "surface": "описавшей",
+          "wave_distance": 46
+        },
+        {
+          "atom_evidence_milli": 664,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 498,
+          "lemma_id": 51341,
+          "surface": "очесавшей",
+          "wave_distance": 46
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "letter_substitution",
+      "context": "с _ книге",
+      "context_mode_known": true,
+      "damaged": "осавшей",
+      "feature_mask": 545525780,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "оравшей"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 801,
+          "evidence_milli": 875,
+          "geometry_evidence_milli": 875,
+          "lemma_evidence_milli": 824,
+          "lemma_id": 84043,
+          "surface": "увологий",
+          "wave_distance": 27
+        },
+        {
+          "atom_evidence_milli": 767,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 633,
+          "lemma_id": 48100,
+          "surface": "оологий",
+          "wave_distance": 37
+        },
+        {
+          "atom_evidence_milli": 750,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 633,
+          "lemma_id": 58749,
+          "surface": "пологий",
+          "wave_distance": 37
+        },
+        {
+          "atom_evidence_milli": 560,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 824,
+          "lemma_id": 84043,
+          "surface": "увологией",
+          "wave_distance": 27
+        },
+        {
+          "atom_evidence_milli": 624,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 655,
+          "lemma_id": 382,
+          "surface": "автологий",
+          "wave_distance": 40
+        },
+        {
+          "atom_evidence_milli": 570,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 824,
+          "lemma_id": 84043,
+          "surface": "увологии",
+          "wave_distance": 27
+        },
+        {
+          "atom_evidence_milli": 565,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 824,
+          "lemma_id": 84043,
+          "surface": "увологию",
+          "wave_distance": 27
+        },
+        {
+          "atom_evidence_milli": 565,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 824,
+          "lemma_id": 84043,
+          "surface": "увология",
+          "wave_distance": 27
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "letter_substitution",
+      "context": "вижу _ доме",
+      "context_mode_known": true,
+      "damaged": "вологий",
+      "feature_mask": 133140,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "воловий"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 814,
+          "evidence_milli": 900,
+          "geometry_evidence_milli": 900,
+          "lemma_evidence_milli": 647,
+          "lemma_id": 19126,
+          "surface": "довавшейся",
+          "wave_distance": 35
+        },
+        {
+          "atom_evidence_milli": 814,
+          "evidence_milli": 900,
+          "geometry_evidence_milli": 900,
+          "lemma_evidence_milli": 647,
+          "lemma_id": 30252,
+          "surface": "ковавшейся",
+          "wave_distance": 38
+        },
+        {
+          "atom_evidence_milli": 814,
+          "evidence_milli": 900,
+          "geometry_evidence_milli": 900,
+          "lemma_evidence_milli": 647,
+          "lemma_id": 76430,
+          "surface": "совавшейся",
+          "wave_distance": 39
+        },
+        {
+          "atom_evidence_milli": 731,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 806,
+          "lemma_id": 56014,
+          "surface": "повадившейся",
+          "wave_distance": 33
+        },
+        {
+          "atom_evidence_milli": 731,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 806,
+          "lemma_id": 56019,
+          "surface": "повалившейся",
+          "wave_distance": 38
+        },
+        {
+          "atom_evidence_milli": 731,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 806,
+          "lemma_id": 56022,
+          "surface": "повалявшейся",
+          "wave_distance": 41
+        },
+        {
+          "atom_evidence_milli": 756,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 657,
+          "lemma_id": 52284,
+          "surface": "пасовавшейся",
+          "wave_distance": 44
+        },
+        {
+          "atom_evidence_milli": 756,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 657,
+          "lemma_id": 51546,
+          "surface": "паковавшейся",
+          "wave_distance": 47
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "missing_letter",
+      "context": "нет _ книге",
+      "context_mode_known": true,
+      "damaged": "повавшейся",
+      "feature_mask": 277086740,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "порвавшейся"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 742,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 816,
+          "lemma_id": 68728,
+          "surface": "раскосо",
+          "wave_distance": 31
+        },
+        {
+          "atom_evidence_milli": 800,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 816,
+          "lemma_id": 68728,
+          "surface": "раскосого",
+          "wave_distance": 31
+        },
+        {
+          "atom_evidence_milli": 623,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 816,
+          "lemma_id": 68728,
+          "surface": "раскосое",
+          "wave_distance": 31
+        },
+        {
+          "atom_evidence_milli": 623,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 816,
+          "lemma_id": 68728,
+          "surface": "раскосой",
+          "wave_distance": 31
+        },
+        {
+          "atom_evidence_milli": 623,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 816,
+          "lemma_id": 68728,
+          "surface": "раскосом",
+          "wave_distance": 31
+        },
+        {
+          "atom_evidence_milli": 623,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 816,
+          "lemma_id": 68728,
+          "surface": "раскосою",
+          "wave_distance": 31
+        },
+        {
+          "atom_evidence_milli": 623,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 816,
+          "lemma_id": 68695,
+          "surface": "расколок",
+          "wave_distance": 36
+        },
+        {
+          "atom_evidence_milli": 623,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 816,
+          "lemma_id": 68714,
+          "surface": "раскопок",
+          "wave_distance": 36
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "missing_letter",
+      "context": "нет _ доме",
+      "context_mode_known": true,
+      "damaged": "раского",
+      "feature_mask": 131604,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "рабского"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 758,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 655,
+          "lemma_id": 85676,
+          "surface": "устному",
+          "wave_distance": 38
+        },
+        {
+          "atom_evidence_milli": 723,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 617,
+          "lemma_id": 78402,
+          "surface": "статному",
+          "wave_distance": 50
+        },
+        {
+          "atom_evidence_milli": 660,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 588,
+          "lemma_id": 32064,
+          "surface": "костному",
+          "wave_distance": 43
+        },
+        {
+          "atom_evidence_milli": 660,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 588,
+          "lemma_id": 34382,
+          "surface": "лестному",
+          "wave_distance": 50
+        },
+        {
+          "atom_evidence_milli": 660,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 588,
+          "lemma_id": 37367,
+          "surface": "местному",
+          "wave_distance": 54
+        },
+        {
+          "atom_evidence_milli": 709,
+          "evidence_milli": 666,
+          "geometry_evidence_milli": 666,
+          "lemma_evidence_milli": 689,
+          "lemma_id": 80122,
+          "surface": "съестному",
+          "wave_distance": 32
+        },
+        {
+          "atom_evidence_milli": 484,
+          "evidence_milli": 666,
+          "geometry_evidence_milli": 666,
+          "lemma_evidence_milli": 655,
+          "lemma_id": 85676,
+          "surface": "устном",
+          "wave_distance": 38
+        },
+        {
+          "atom_evidence_milli": 641,
+          "evidence_milli": 666,
+          "geometry_evidence_milli": 666,
+          "lemma_evidence_milli": 588,
+          "lemma_id": 25185,
+          "surface": "злостному",
+          "wave_distance": 49
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "missing_letter",
+      "context": "к _ доме",
+      "context_mode_known": true,
+      "damaged": "стному",
+      "feature_mask": 132116,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "ситному"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 1000,
+          "evidence_milli": 1000,
+          "geometry_evidence_milli": 1000,
+          "lemma_evidence_milli": 1000,
+          "lemma_id": 67789,
+          "surface": "разившему",
+          "wave_distance": 0
+        },
+        {
+          "atom_evidence_milli": 823,
+          "evidence_milli": 900,
+          "geometry_evidence_milli": 900,
+          "lemma_evidence_milli": 773,
+          "lemma_id": 77977,
+          "surface": "сразившему",
+          "wave_distance": 49
+        },
+        {
+          "atom_evidence_milli": 761,
+          "evidence_milli": 900,
+          "geometry_evidence_milli": 900,
+          "lemma_evidence_milli": 628,
+          "lemma_id": 67403,
+          "surface": "развившему",
+          "wave_distance": 47
+        },
+        {
+          "atom_evidence_milli": 806,
+          "evidence_milli": 888,
+          "geometry_evidence_milli": 888,
+          "lemma_evidence_milli": 1000,
+          "lemma_id": 67789,
+          "surface": "разившем",
+          "wave_distance": 40
+        },
+        {
+          "atom_evidence_milli": 797,
+          "evidence_milli": 888,
+          "geometry_evidence_milli": 888,
+          "lemma_evidence_milli": 616,
+          "lemma_id": 33665,
+          "surface": "лазившему",
+          "wave_distance": 48
+        },
+        {
+          "atom_evidence_milli": 768,
+          "evidence_milli": 888,
+          "geometry_evidence_milli": 888,
+          "lemma_evidence_milli": 598,
+          "lemma_id": 68354,
+          "surface": "разувшему",
+          "wave_distance": 33
+        },
+        {
+          "atom_evidence_milli": 782,
+          "evidence_milli": 818,
+          "geometry_evidence_milli": 818,
+          "lemma_evidence_milli": 743,
+          "lemma_id": 23722,
+          "surface": "заразившему",
+          "wave_distance": 41
+        },
+        {
+          "atom_evidence_milli": 748,
+          "evidence_milli": 818,
+          "geometry_evidence_milli": 818,
+          "lemma_evidence_milli": 743,
+          "lemma_id": 59854,
+          "surface": "поразившему",
+          "wave_distance": 34
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "missing_letter",
+      "context": "к _ окне",
+      "context_mode_known": true,
+      "damaged": "разившему",
+      "feature_mask": 277349396,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "разбившему"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 837,
+          "evidence_milli": 909,
+          "geometry_evidence_milli": 909,
+          "lemma_evidence_milli": 597,
+          "lemma_id": 73096,
+          "surface": "свивавшейся",
+          "wave_distance": 35
+        },
+        {
+          "atom_evidence_milli": 801,
+          "evidence_milli": 900,
+          "geometry_evidence_milli": 900,
+          "lemma_evidence_milli": 527,
+          "lemma_id": 76430,
+          "surface": "совавшейся",
+          "wave_distance": 37
+        },
+        {
+          "atom_evidence_milli": 775,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 527,
+          "lemma_id": 77465,
+          "surface": "спаивавшейся",
+          "wave_distance": 29
+        },
+        {
+          "atom_evidence_milli": 756,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 527,
+          "lemma_id": 79545,
+          "surface": "суживавшейся",
+          "wave_distance": 35
+        },
+        {
+          "atom_evidence_milli": 756,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 527,
+          "lemma_id": 72652,
+          "surface": "сбривавшейся",
+          "wave_distance": 40
+        },
+        {
+          "atom_evidence_milli": 756,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 527,
+          "lemma_id": 75948,
+          "surface": "смеивавшейся",
+          "wave_distance": 43
+        },
+        {
+          "atom_evidence_milli": 636,
+          "evidence_milli": 818,
+          "geometry_evidence_milli": 818,
+          "lemma_evidence_milli": 597,
+          "lemma_id": 73096,
+          "surface": "свивавшееся",
+          "wave_distance": 35
+        },
+        {
+          "atom_evidence_milli": 632,
+          "evidence_milli": 818,
+          "geometry_evidence_milli": 818,
+          "lemma_evidence_milli": 597,
+          "lemma_id": 73096,
+          "surface": "свивавшемся",
+          "wave_distance": 35
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "missing_letter",
+      "context": "говорю о _ книге",
+      "context_mode_known": true,
+      "damaged": "сивавшейся",
+      "feature_mask": 545529876,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "сбивавшейся"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 758,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 1000,
+          "lemma_id": 59550,
+          "surface": "понимав",
+          "wave_distance": 22
+        },
+        {
+          "atom_evidence_milli": 758,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 1000,
+          "lemma_id": 59550,
+          "surface": "понимай",
+          "wave_distance": 22
+        },
+        {
+          "atom_evidence_milli": 758,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 1000,
+          "lemma_id": 59550,
+          "surface": "понимал",
+          "wave_distance": 22
+        },
+        {
+          "atom_evidence_milli": 758,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 1000,
+          "lemma_id": 59550,
+          "surface": "понимаю",
+          "wave_distance": 22
+        },
+        {
+          "atom_evidence_milli": 758,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 1000,
+          "lemma_id": 59550,
+          "surface": "понимая",
+          "wave_distance": 22
+        },
+        {
+          "atom_evidence_milli": 717,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 686,
+          "lemma_id": 15691,
+          "surface": "гонима",
+          "wave_distance": 38
+        },
+        {
+          "atom_evidence_milli": 696,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 572,
+          "lemma_id": 52695,
+          "surface": "пенима",
+          "wave_distance": 48
+        },
+        {
+          "atom_evidence_milli": 741,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 1000,
+          "lemma_id": 59550,
+          "surface": "понимала",
+          "wave_distance": 22
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "missing_letter",
+      "context": "она _",
+      "context_mode_known": true,
+      "damaged": "понима",
+      "feature_mask": 1627652116,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "полнима"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 740,
+          "evidence_milli": 900,
+          "geometry_evidence_milli": 900,
+          "lemma_evidence_milli": 441,
+          "lemma_id": 62383,
+          "surface": "придавшего",
+          "wave_distance": 43
+        },
+        {
+          "atom_evidence_milli": 748,
+          "evidence_milli": 818,
+          "geometry_evidence_milli": 818,
+          "lemma_evidence_milli": 475,
+          "lemma_id": 62498,
+          "surface": "призвавшего",
+          "wave_distance": 43
+        },
+        {
+          "atom_evidence_milli": 711,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 514,
+          "lemma_id": 63052,
+          "surface": "приписавшего",
+          "wave_distance": 51
+        },
+        {
+          "atom_evidence_milli": 737,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 488,
+          "lemma_id": 63051,
+          "surface": "припиравшего",
+          "wave_distance": 51
+        },
+        {
+          "atom_evidence_milli": 711,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 441,
+          "lemma_id": 62821,
+          "surface": "примешавшего",
+          "wave_distance": 46
+        },
+        {
+          "atom_evidence_milli": 679,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 441,
+          "lemma_id": 63674,
+          "surface": "причесавшего",
+          "wave_distance": 47
+        },
+        {
+          "atom_evidence_milli": 679,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 441,
+          "lemma_id": 63453,
+          "surface": "притесавшего",
+          "wave_distance": 49
+        },
+        {
+          "atom_evidence_milli": 711,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 428,
+          "lemma_id": 63040,
+          "surface": "припекавшего",
+          "wave_distance": 39
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "missing_letter",
+      "context": "нет _ окне",
+      "context_mode_known": true,
+      "damaged": "приавшего",
+      "feature_mask": 277348884,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "прижавшего"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 832,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 970,
+          "lemma_id": 48300,
+          "surface": "опоковы",
+          "wave_distance": 31
+        },
+        {
+          "atom_evidence_milli": 653,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 560,
+          "lemma_id": 58269,
+          "surface": "покровы",
+          "wave_distance": 42
+        },
+        {
+          "atom_evidence_milli": 673,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 527,
+          "lemma_id": 60900,
+          "surface": "почковы",
+          "wave_distance": 40
+        },
+        {
+          "atom_evidence_milli": 717,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 778,
+          "lemma_id": 91328,
+          "surface": "шоковы",
+          "wave_distance": 35
+        },
+        {
+          "atom_evidence_milli": 745,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 712,
+          "lemma_id": 47659,
+          "surface": "оковы",
+          "wave_distance": 44
+        },
+        {
+          "atom_evidence_milli": 696,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 645,
+          "lemma_id": 51549,
+          "surface": "паковы",
+          "wave_distance": 35
+        },
+        {
+          "atom_evidence_milli": 696,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 568,
+          "lemma_id": 58248,
+          "surface": "покосы",
+          "wave_distance": 43
+        },
+        {
+          "atom_evidence_milli": 612,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 970,
+          "lemma_id": 48300,
+          "surface": "опоковые",
+          "wave_distance": 31
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "missing_letter",
+      "context": "заметил эти _",
+      "context_mode_known": true,
+      "damaged": "поковы",
+      "feature_mask": 2081,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "подковы"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 706,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 756,
+          "lemma_id": 49942,
+          "surface": "откокая",
+          "wave_distance": 39
+        },
+        {
+          "atom_evidence_milli": 562,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 556,
+          "lemma_id": 49976,
+          "surface": "откосная",
+          "wave_distance": 41
+        },
+        {
+          "atom_evidence_milli": 484,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 556,
+          "lemma_id": 49965,
+          "surface": "откормам",
+          "wave_distance": 36
+        },
+        {
+          "atom_evidence_milli": 467,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 556,
+          "lemma_id": 49965,
+          "surface": "откормах",
+          "wave_distance": 36
+        },
+        {
+          "atom_evidence_milli": 502,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 403,
+          "lemma_id": 35149,
+          "surface": "лотковая",
+          "wave_distance": 44
+        },
+        {
+          "atom_evidence_milli": 522,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 756,
+          "lemma_id": 49942,
+          "surface": "откокав",
+          "wave_distance": 39
+        },
+        {
+          "atom_evidence_milli": 522,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 756,
+          "lemma_id": 49942,
+          "surface": "откокай",
+          "wave_distance": 39
+        },
+        {
+          "atom_evidence_milli": 522,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 756,
+          "lemma_id": 49942,
+          "surface": "откокал",
+          "wave_distance": 39
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "non_adjacent_transposition",
+      "context": "_ одновременно",
+      "context_mode_known": true,
+      "damaged": "откомая",
+      "feature_mask": 2768240642,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "отмокая"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 714,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 421,
+          "lemma_id": 56077,
+          "surface": "повесим",
+          "wave_distance": 44
+        },
+        {
+          "atom_evidence_milli": 714,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 421,
+          "lemma_id": 59316,
+          "surface": "помесим",
+          "wave_distance": 46
+        },
+        {
+          "atom_evidence_milli": 607,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 608,
+          "lemma_id": 60869,
+          "surface": "почестям",
+          "wave_distance": 37
+        },
+        {
+          "atom_evidence_milli": 573,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 412,
+          "lemma_id": 60863,
+          "surface": "почерним",
+          "wave_distance": 46
+        },
+        {
+          "atom_evidence_milli": 538,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 366,
+          "lemma_id": 60887,
+          "surface": "почистим",
+          "wave_distance": 43
+        },
+        {
+          "atom_evidence_milli": 548,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 351,
+          "lemma_id": 63953,
+          "surface": "провесим",
+          "wave_distance": 48
+        },
+        {
+          "atom_evidence_milli": 548,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 351,
+          "lemma_id": 64761,
+          "surface": "промесим",
+          "wave_distance": 51
+        },
+        {
+          "atom_evidence_milli": 598,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 723,
+          "lemma_id": 60867,
+          "surface": "почесав",
+          "wave_distance": 36
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "non_adjacent_transposition",
+      "context": "мы _",
+      "context_mode_known": true,
+      "damaged": "почесим",
+      "feature_mask": 370147362,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "посечим"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 714,
+          "evidence_milli": 888,
+          "geometry_evidence_milli": 888,
+          "lemma_evidence_milli": 677,
+          "lemma_id": 55978,
+          "surface": "побрезгал",
+          "wave_distance": 35
+        },
+        {
+          "atom_evidence_milli": 683,
+          "evidence_milli": 875,
+          "geometry_evidence_milli": 875,
+          "lemma_evidence_milli": 472,
+          "lemma_id": 55899,
+          "surface": "побегал",
+          "wave_distance": 42
+        },
+        {
+          "atom_evidence_milli": 594,
+          "evidence_milli": 800,
+          "geometry_evidence_milli": 800,
+          "lemma_evidence_milli": 677,
+          "lemma_id": 55978,
+          "surface": "побрезгала",
+          "wave_distance": 35
+        },
+        {
+          "atom_evidence_milli": 557,
+          "evidence_milli": 800,
+          "geometry_evidence_milli": 800,
+          "lemma_evidence_milli": 677,
+          "lemma_id": 55978,
+          "surface": "побрезгали",
+          "wave_distance": 35
+        },
+        {
+          "atom_evidence_milli": 557,
+          "evidence_milli": 800,
+          "geometry_evidence_milli": 800,
+          "lemma_evidence_milli": 677,
+          "lemma_id": 55978,
+          "surface": "побрезгало",
+          "wave_distance": 35
+        },
+        {
+          "atom_evidence_milli": 532,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 677,
+          "lemma_id": 55978,
+          "surface": "побрезгав",
+          "wave_distance": 35
+        },
+        {
+          "atom_evidence_milli": 532,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 677,
+          "lemma_id": 55978,
+          "surface": "побрезгай",
+          "wave_distance": 35
+        },
+        {
+          "atom_evidence_milli": 532,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 677,
+          "lemma_id": 55978,
+          "surface": "побрезгаю",
+          "wave_distance": 35
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "non_adjacent_transposition",
+      "context": "он _",
+      "context_mode_known": true,
+      "damaged": "побрегал",
+      "feature_mask": 612499474,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "погребал"
+    },
+    {
+      "active_lemma_retained": true,
+      "births": [
+        {
+          "atom_evidence_milli": 700,
+          "evidence_milli": 875,
+          "geometry_evidence_milli": 875,
+          "lemma_evidence_milli": 643,
+          "lemma_id": 13084,
+          "surface": "выследил",
+          "wave_distance": 40
+        },
+        {
+          "atom_evidence_milli": 714,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 651,
+          "lemma_id": 12533,
+          "surface": "вылудил",
+          "wave_distance": 43
+        },
+        {
+          "atom_evidence_milli": 714,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 613,
+          "lemma_id": 13519,
+          "surface": "выцедил",
+          "wave_distance": 42
+        },
+        {
+          "atom_evidence_milli": 714,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 557,
+          "lemma_id": 12498,
+          "surface": "вылепил",
+          "wave_distance": 35
+        },
+        {
+          "atom_evidence_milli": 714,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 557,
+          "lemma_id": 12508,
+          "surface": "вылечил",
+          "wave_distance": 48
+        },
+        {
+          "atom_evidence_milli": 552,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 643,
+          "lemma_id": 13084,
+          "surface": "выследили",
+          "wave_distance": 40
+        },
+        {
+          "atom_evidence_milli": 512,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 643,
+          "lemma_id": 13084,
+          "surface": "выследила",
+          "wave_distance": 40
+        },
+        {
+          "atom_evidence_milli": 512,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 643,
+          "lemma_id": 13084,
+          "surface": "выследило",
+          "wave_distance": 40
+        }
+      ],
+      "broad_lemma_retained": true,
+      "class": "non_adjacent_transposition",
+      "context": "он _",
+      "context_mode_known": true,
+      "damaged": "выледил",
+      "feature_mask": 344064018,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "выделил"
+    },
+    {
+      "active_lemma_retained": true,
+      "births": [
+        {
+          "atom_evidence_milli": 714,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 598,
+          "lemma_id": 49607,
+          "surface": "отвечав",
+          "wave_distance": 38
+        },
+        {
+          "atom_evidence_milli": 714,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 598,
+          "lemma_id": 50166,
+          "surface": "отмечав",
+          "wave_distance": 45
+        },
+        {
+          "atom_evidence_milli": 714,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 483,
+          "lemma_id": 50613,
+          "surface": "отсевав",
+          "wave_distance": 42
+        },
+        {
+          "atom_evidence_milli": 714,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 483,
+          "lemma_id": 50621,
+          "surface": "отсекав",
+          "wave_distance": 43
+        },
+        {
+          "atom_evidence_milli": 714,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 483,
+          "lemma_id": 50615,
+          "surface": "отседав",
+          "wave_distance": 46
+        },
+        {
+          "atom_evidence_milli": 565,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 629,
+          "lemma_id": 50629,
+          "surface": "отсечная",
+          "wave_distance": 35
+        },
+        {
+          "atom_evidence_milli": 565,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 629,
+          "lemma_id": 50628,
+          "surface": "отсечкам",
+          "wave_distance": 40
+        },
+        {
+          "atom_evidence_milli": 565,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 629,
+          "lemma_id": 50628,
+          "surface": "отсечках",
+          "wave_distance": 40
+        }
+      ],
+      "broad_lemma_retained": true,
+      "class": "non_adjacent_transposition",
+      "context": "_ быстро",
+      "context_mode_known": true,
+      "damaged": "отсечав",
+      "feature_mask": 2491416578,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "отчесав"
+    },
+    {
+      "active_lemma_retained": true,
+      "births": [
+        {
+          "atom_evidence_milli": 672,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 639,
+          "lemma_id": 15804,
+          "surface": "горнею",
+          "wave_distance": 31
+        },
+        {
+          "atom_evidence_milli": 538,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 574,
+          "lemma_id": 15861,
+          "surface": "горочною",
+          "wave_distance": 32
+        },
+        {
+          "atom_evidence_milli": 531,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 574,
+          "lemma_id": 15861,
+          "surface": "горочную",
+          "wave_distance": 32
+        },
+        {
+          "atom_evidence_milli": 502,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 574,
+          "lemma_id": 15861,
+          "surface": "горочнее",
+          "wave_distance": 32
+        },
+        {
+          "atom_evidence_milli": 481,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 574,
+          "lemma_id": 15861,
+          "surface": "горочней",
+          "wave_distance": 32
+        },
+        {
+          "atom_evidence_milli": 573,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 570,
+          "lemma_id": 15751,
+          "surface": "гордынею",
+          "wave_distance": 34
+        },
+        {
+          "atom_evidence_milli": 526,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 639,
+          "lemma_id": 15804,
+          "surface": "горнюю",
+          "wave_distance": 31
+        },
+        {
+          "atom_evidence_milli": 488,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 639,
+          "lemma_id": 15804,
+          "surface": "горнее",
+          "wave_distance": 31
+        }
+      ],
+      "broad_lemma_retained": true,
+      "class": "non_adjacent_transposition",
+      "context": "вижу _",
+      "context_mode_known": true,
+      "damaged": "горонею",
+      "feature_mask": 2065,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "гонорею"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 732,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 639,
+          "lemma_id": 40172,
+          "surface": "надевая",
+          "wave_distance": 49
+        },
+        {
+          "atom_evidence_milli": 680,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 759,
+          "lemma_id": 42250,
+          "surface": "недешёвая",
+          "wave_distance": 36
+        },
+        {
+          "atom_evidence_milli": 680,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 650,
+          "lemma_id": 42240,
+          "surface": "неделовая",
+          "wave_distance": 35
+        },
+        {
+          "atom_evidence_milli": 469,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 610,
+          "lemma_id": 42317,
+          "surface": "недоевшая",
+          "wave_distance": 44
+        },
+        {
+          "atom_evidence_milli": 530,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 483,
+          "lemma_id": 42316,
+          "surface": "недоедая",
+          "wave_distance": 37
+        },
+        {
+          "atom_evidence_milli": 464,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 479,
+          "lemma_id": 40186,
+          "surface": "надевшая",
+          "wave_distance": 52
+        },
+        {
+          "atom_evidence_milli": 464,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 404,
+          "lemma_id": 70141,
+          "surface": "редевшая",
+          "wave_distance": 43
+        },
+        {
+          "atom_evidence_milli": 464,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 404,
+          "lemma_id": 73544,
+          "surface": "седевшая",
+          "wave_distance": 47
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "non_adjacent_transposition",
+      "context": "_ одновременно",
+      "context_mode_known": true,
+      "damaged": "недевая",
+      "feature_mask": 2768240642,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "неведая"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 615,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 772,
+          "lemma_id": 10305,
+          "surface": "возвратен",
+          "wave_distance": 31
+        },
+        {
+          "atom_evidence_milli": 653,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 658,
+          "lemma_id": 61256,
+          "surface": "превратен",
+          "wave_distance": 31
+        },
+        {
+          "atom_evidence_milli": 590,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 413,
+          "lemma_id": 56153,
+          "surface": "поворотен",
+          "wave_distance": 46
+        },
+        {
+          "atom_evidence_milli": 562,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 379,
+          "lemma_id": 56240,
+          "surface": "повёрстен",
+          "wave_distance": 40
+        },
+        {
+          "atom_evidence_milli": 656,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 623,
+          "lemma_id": 49660,
+          "surface": "отвратен",
+          "wave_distance": 33
+        },
+        {
+          "atom_evidence_milli": 599,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 434,
+          "lemma_id": 46290,
+          "surface": "обратен",
+          "wave_distance": 36
+        },
+        {
+          "atom_evidence_milli": 514,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 405,
+          "lemma_id": 46891,
+          "surface": "овражен",
+          "wave_distance": 47
+        },
+        {
+          "atom_evidence_milli": 540,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 306,
+          "lemma_id": 56026,
+          "surface": "поварен",
+          "wave_distance": 44
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "non_adjacent_transposition",
+      "context": "он _",
+      "context_mode_known": true,
+      "damaged": "повратен",
+      "feature_mask": 1073872916,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "потравен"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 1000,
+          "evidence_milli": 1000,
+          "geometry_evidence_milli": 1000,
+          "lemma_evidence_milli": 1000,
+          "lemma_id": 27757,
+          "surface": "поистее",
+          "wave_distance": 0
+        },
+        {
+          "atom_evidence_milli": 781,
+          "evidence_milli": 875,
+          "geometry_evidence_milli": 875,
+          "lemma_evidence_milli": 1000,
+          "lemma_id": 18890,
+          "surface": "дпоистее",
+          "wave_distance": 37
+        },
+        {
+          "atom_evidence_milli": 781,
+          "evidence_milli": 875,
+          "geometry_evidence_milli": 875,
+          "lemma_evidence_milli": 1000,
+          "lemma_id": 74688,
+          "surface": "споистее",
+          "wave_distance": 39
+        },
+        {
+          "atom_evidence_milli": 756,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 1000,
+          "lemma_id": 27757,
+          "surface": "поистей",
+          "wave_distance": 29
+        },
+        {
+          "atom_evidence_milli": 727,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 523,
+          "lemma_id": 55880,
+          "surface": "пнистее",
+          "wave_distance": 41
+        },
+        {
+          "atom_evidence_milli": 691,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 1000,
+          "lemma_id": 93266,
+          "surface": "юзпоистее",
+          "wave_distance": 22
+        },
+        {
+          "atom_evidence_milli": 691,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 1000,
+          "lemma_id": 272,
+          "surface": "авпоистее",
+          "wave_distance": 31
+        },
+        {
+          "atom_evidence_milli": 576,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 968,
+          "lemma_id": 65598,
+          "surface": "протистее",
+          "wave_distance": 26
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "omission_transposition",
+      "context": "_ чем раньше",
+      "context_mode_known": true,
+      "damaged": "поистее",
+      "feature_mask": 2147483652,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "поситнее"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 663,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 435,
+          "lemma_id": 56077,
+          "surface": "повесим",
+          "wave_distance": 53
+        },
+        {
+          "atom_evidence_milli": 663,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 435,
+          "lemma_id": 59316,
+          "surface": "помесим",
+          "wave_distance": 53
+        },
+        {
+          "atom_evidence_milli": 676,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 667,
+          "lemma_id": 57908,
+          "surface": "поедим",
+          "wave_distance": 43
+        },
+        {
+          "atom_evidence_milli": 607,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 435,
+          "lemma_id": 56483,
+          "surface": "подвесим",
+          "wave_distance": 50
+        },
+        {
+          "atom_evidence_milli": 607,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 435,
+          "lemma_id": 57037,
+          "surface": "подмесим",
+          "wave_distance": 56
+        },
+        {
+          "atom_evidence_milli": 526,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 388,
+          "lemma_id": 63953,
+          "surface": "провесим",
+          "wave_distance": 51
+        },
+        {
+          "atom_evidence_milli": 526,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 388,
+          "lemma_id": 64761,
+          "surface": "промесим",
+          "wave_distance": 59
+        },
+        {
+          "atom_evidence_milli": 521,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 667,
+          "lemma_id": 57908,
+          "surface": "поевшим",
+          "wave_distance": 43
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "omission_transposition",
+      "context": "мы _",
+      "context_mode_known": true,
+      "damaged": "поесим",
+      "feature_mask": 370147362,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "посечим"
+    },
+    {
+      "active_lemma_retained": true,
+      "births": [
+        {
+          "atom_evidence_milli": 777,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 739,
+          "lemma_id": 15984,
+          "surface": "готовит",
+          "wave_distance": 44
+        },
+        {
+          "atom_evidence_milli": 673,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 674,
+          "lemma_id": 50087,
+          "surface": "отловит",
+          "wave_distance": 48
+        },
+        {
+          "atom_evidence_milli": 676,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 650,
+          "lemma_id": 50271,
+          "surface": "отолит",
+          "wave_distance": 43
+        },
+        {
+          "atom_evidence_milli": 676,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 520,
+          "lemma_id": 50279,
+          "surface": "отопит",
+          "wave_distance": 35
+        },
+        {
+          "atom_evidence_milli": 562,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 739,
+          "lemma_id": 15984,
+          "surface": "готовите",
+          "wave_distance": 44
+        },
+        {
+          "atom_evidence_milli": 562,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 739,
+          "lemma_id": 15984,
+          "surface": "готовить",
+          "wave_distance": 44
+        },
+        {
+          "atom_evidence_milli": 461,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 715,
+          "lemma_id": 50265,
+          "surface": "отзовите",
+          "wave_distance": 50
+        },
+        {
+          "atom_evidence_milli": 696,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 712,
+          "lemma_id": 73386,
+          "surface": "сготовит",
+          "wave_distance": 38
+        }
+      ],
+      "broad_lemma_retained": true,
+      "class": "omission_transposition",
+      "context": "он _",
+      "context_mode_known": true,
+      "damaged": "отовит",
+      "feature_mask": 624951314,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "отводит"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 758,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 792,
+          "lemma_id": 48137,
+          "surface": "опасную",
+          "wave_distance": 53
+        },
+        {
+          "atom_evidence_milli": 663,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 513,
+          "lemma_id": 52542,
+          "surface": "паюсную",
+          "wave_distance": 46
+        },
+        {
+          "atom_evidence_milli": 724,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 955,
+          "lemma_id": 52282,
+          "surface": "пасну",
+          "wave_distance": 36
+        },
+        {
+          "atom_evidence_milli": 717,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 955,
+          "lemma_id": 52282,
+          "surface": "паснув",
+          "wave_distance": 36
+        },
+        {
+          "atom_evidence_milli": 717,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 955,
+          "lemma_id": 52282,
+          "surface": "паснул",
+          "wave_distance": 36
+        },
+        {
+          "atom_evidence_milli": 717,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 955,
+          "lemma_id": 52282,
+          "surface": "паснут",
+          "wave_distance": 36
+        },
+        {
+          "atom_evidence_milli": 676,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 542,
+          "lemma_id": 52341,
+          "surface": "пасшую",
+          "wave_distance": 48
+        },
+        {
+          "atom_evidence_milli": 616,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 477,
+          "lemma_id": 52283,
+          "surface": "пасую",
+          "wave_distance": 50
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "omission_transposition",
+      "context": "вижу _ книге",
+      "context_mode_known": true,
+      "damaged": "пасную",
+      "feature_mask": 264212,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "панскую"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 670,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 699,
+          "lemma_id": 74210,
+          "surface": "сеемой",
+          "wave_distance": 48
+        },
+        {
+          "atom_evidence_milli": 704,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 654,
+          "lemma_id": 77584,
+          "surface": "спетой",
+          "wave_distance": 44
+        },
+        {
+          "atom_evidence_milli": 683,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 556,
+          "lemma_id": 73655,
+          "surface": "сектой",
+          "wave_distance": 34
+        },
+        {
+          "atom_evidence_milli": 704,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 503,
+          "lemma_id": 79528,
+          "surface": "суетой",
+          "wave_distance": 32
+        },
+        {
+          "atom_evidence_milli": 704,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 503,
+          "lemma_id": 76003,
+          "surface": "сметой",
+          "wave_distance": 40
+        },
+        {
+          "atom_evidence_milli": 533,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 473,
+          "lemma_id": 73648,
+          "surface": "секстой",
+          "wave_distance": 51
+        },
+        {
+          "atom_evidence_milli": 555,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 394,
+          "lemma_id": 54689,
+          "surface": "песетой",
+          "wave_distance": 38
+        },
+        {
+          "atom_evidence_milli": 578,
+          "evidence_milli": 666,
+          "geometry_evidence_milli": 666,
+          "lemma_evidence_milli": 699,
+          "lemma_id": 74210,
+          "surface": "сеет",
+          "wave_distance": 48
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "omission_transposition",
+      "context": "к _ книге",
+      "context_mode_known": true,
+      "damaged": "сеетой",
+      "feature_mask": 263188,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "сетевой"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 696,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 670,
+          "lemma_id": 48243,
+          "surface": "оплаты",
+          "wave_distance": 32
+        },
+        {
+          "atom_evidence_milli": 724,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 619,
+          "lemma_id": 55348,
+          "surface": "планы",
+          "wave_distance": 28
+        },
+        {
+          "atom_evidence_milli": 696,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 482,
+          "lemma_id": 48719,
+          "surface": "орланы",
+          "wave_distance": 37
+        },
+        {
+          "atom_evidence_milli": 723,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 702,
+          "lemma_id": 48239,
+          "surface": "оплаканы",
+          "wave_distance": 30
+        },
+        {
+          "atom_evidence_milli": 607,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 581,
+          "lemma_id": 48244,
+          "surface": "оплачены",
+          "wave_distance": 32
+        },
+        {
+          "atom_evidence_milli": 607,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 520,
+          "lemma_id": 48249,
+          "surface": "оплёваны",
+          "wave_distance": 50
+        },
+        {
+          "atom_evidence_milli": 616,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 619,
+          "lemma_id": 5645,
+          "surface": "бипланы",
+          "wave_distance": 42
+        },
+        {
+          "atom_evidence_milli": 473,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 485,
+          "lemma_id": 19749,
+          "surface": "доплаты",
+          "wave_distance": 43
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "omission_transposition",
+      "context": "они _",
+      "context_mode_known": true,
+      "damaged": "опланы",
+      "feature_mask": 1073741860,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "опальны"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 630,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 461,
+          "lemma_id": 59754,
+          "surface": "поправшую",
+          "wave_distance": 40
+        },
+        {
+          "atom_evidence_milli": 666,
+          "evidence_milli": 727,
+          "geometry_evidence_milli": 727,
+          "lemma_evidence_milli": 416,
+          "lemma_id": 59765,
+          "surface": "попритихшую",
+          "wave_distance": 36
+        },
+        {
+          "atom_evidence_milli": 622,
+          "evidence_milli": 727,
+          "geometry_evidence_milli": 727,
+          "lemma_evidence_milli": 399,
+          "lemma_id": 59758,
+          "surface": "попривыкшую",
+          "wave_distance": 36
+        },
+        {
+          "atom_evidence_milli": 589,
+          "evidence_milli": 727,
+          "geometry_evidence_milli": 727,
+          "lemma_evidence_milli": 332,
+          "lemma_id": 59743,
+          "surface": "поправившую",
+          "wave_distance": 44
+        },
+        {
+          "atom_evidence_milli": 595,
+          "evidence_milli": 727,
+          "geometry_evidence_milli": 727,
+          "lemma_evidence_milli": 314,
+          "lemma_id": 59768,
+          "surface": "попросившую",
+          "wave_distance": 37
+        },
+        {
+          "atom_evidence_milli": 564,
+          "evidence_milli": 700,
+          "geometry_evidence_milli": 700,
+          "lemma_evidence_milli": 490,
+          "lemma_id": 59763,
+          "surface": "попритихую",
+          "wave_distance": 45
+        },
+        {
+          "atom_evidence_milli": 501,
+          "evidence_milli": 700,
+          "geometry_evidence_milli": 700,
+          "lemma_evidence_milli": 423,
+          "lemma_id": 59655,
+          "surface": "попахавшую",
+          "wave_distance": 42
+        },
+        {
+          "atom_evidence_milli": 600,
+          "evidence_milli": 692,
+          "geometry_evidence_milli": 692,
+          "lemma_evidence_milli": 490,
+          "lemma_id": 59763,
+          "surface": "попритишайшую",
+          "wave_distance": 45
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "omission_transposition",
+      "context": "вижу _ книге",
+      "context_mode_known": true,
+      "damaged": "поприашую",
+      "feature_mask": 545523732,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "попиравшую"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 591,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 395,
+          "lemma_id": 59630,
+          "surface": "поотбить",
+          "wave_distance": 48
+        },
+        {
+          "atom_evidence_milli": 557,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 247,
+          "lemma_id": 59626,
+          "surface": "поостыть",
+          "wave_distance": 38
+        },
+        {
+          "atom_evidence_milli": 536,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 218,
+          "lemma_id": 59622,
+          "surface": "поорать",
+          "wave_distance": 42
+        },
+        {
+          "atom_evidence_milli": 622,
+          "evidence_milli": 666,
+          "geometry_evidence_milli": 666,
+          "lemma_evidence_milli": 388,
+          "lemma_id": 59632,
+          "surface": "поотстать",
+          "wave_distance": 45
+        },
+        {
+          "atom_evidence_milli": 528,
+          "evidence_milli": 666,
+          "geometry_evidence_milli": 666,
+          "lemma_evidence_milli": 388,
+          "lemma_id": 59632,
+          "surface": "поотстань",
+          "wave_distance": 45
+        },
+        {
+          "atom_evidence_milli": 451,
+          "evidence_milli": 666,
+          "geometry_evidence_milli": 666,
+          "lemma_evidence_milli": 212,
+          "lemma_id": 65629,
+          "surface": "протомить",
+          "wave_distance": 52
+        },
+        {
+          "atom_evidence_milli": 452,
+          "evidence_milli": 625,
+          "geometry_evidence_milli": 625,
+          "lemma_evidence_milli": 395,
+          "lemma_id": 59630,
+          "surface": "поотбита",
+          "wave_distance": 48
+        },
+        {
+          "atom_evidence_milli": 452,
+          "evidence_milli": 625,
+          "geometry_evidence_milli": 625,
+          "lemma_evidence_milli": 395,
+          "lemma_id": 59630,
+          "surface": "поотбито",
+          "wave_distance": 48
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "omission_transposition",
+      "context": "можно _",
+      "context_mode_known": true,
+      "damaged": "поотмть",
+      "feature_mask": 1342177282,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "потомить"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 772,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 460,
+          "lemma_id": 89096,
+          "surface": "ценного",
+          "wave_distance": 22
+        },
+        {
+          "atom_evidence_milli": 772,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 425,
+          "lemma_id": 17888,
+          "surface": "денного",
+          "wave_distance": 24
+        },
+        {
+          "atom_evidence_milli": 772,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 425,
+          "lemma_id": 14404,
+          "surface": "генного",
+          "wave_distance": 26
+        },
+        {
+          "atom_evidence_milli": 765,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 666,
+          "lemma_id": 20909,
+          "surface": "еденного",
+          "wave_distance": 53
+        },
+        {
+          "atom_evidence_milli": 648,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 451,
+          "lemma_id": 20806,
+          "surface": "ежённого",
+          "wave_distance": 44
+        },
+        {
+          "atom_evidence_milli": 598,
+          "evidence_milli": 666,
+          "geometry_evidence_milli": 666,
+          "lemma_evidence_milli": 609,
+          "lemma_id": 20849,
+          "surface": "енольного",
+          "wave_distance": 44
+        },
+        {
+          "atom_evidence_milli": 578,
+          "evidence_milli": 666,
+          "geometry_evidence_milli": 666,
+          "lemma_evidence_milli": 609,
+          "lemma_id": 20844,
+          "surface": "енаминого",
+          "wave_distance": 45
+        },
+        {
+          "atom_evidence_milli": 698,
+          "evidence_milli": 666,
+          "geometry_evidence_milli": 666,
+          "lemma_evidence_milli": 469,
+          "lemma_id": 42510,
+          "surface": "неженного",
+          "wave_distance": 55
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "prefix_truncation",
+      "context": "нет _ окне",
+      "context_mode_known": true,
+      "damaged": "енного",
+      "feature_mask": 524820,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "сенного"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 669,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 601,
+          "lemma_id": 1993,
+          "surface": "анодного",
+          "wave_distance": 48
+        },
+        {
+          "atom_evidence_milli": 560,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 952,
+          "lemma_id": 1973,
+          "surface": "аннотой",
+          "wave_distance": 33
+        },
+        {
+          "atom_evidence_milli": 560,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 952,
+          "lemma_id": 1973,
+          "surface": "аннотою",
+          "wave_distance": 33
+        },
+        {
+          "atom_evidence_milli": 480,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 720,
+          "lemma_id": 2007,
+          "surface": "аноново",
+          "wave_distance": 44
+        },
+        {
+          "atom_evidence_milli": 553,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 601,
+          "lemma_id": 1834,
+          "surface": "англого",
+          "wave_distance": 39
+        },
+        {
+          "atom_evidence_milli": 581,
+          "evidence_milli": 666,
+          "geometry_evidence_milli": 666,
+          "lemma_evidence_milli": 952,
+          "lemma_id": 1973,
+          "surface": "аннот",
+          "wave_distance": 33
+        },
+        {
+          "atom_evidence_milli": 536,
+          "evidence_milli": 666,
+          "geometry_evidence_milli": 666,
+          "lemma_evidence_milli": 952,
+          "lemma_id": 1973,
+          "surface": "аннота",
+          "wave_distance": 33
+        },
+        {
+          "atom_evidence_milli": 536,
+          "evidence_milli": 666,
+          "geometry_evidence_milli": 666,
+          "lemma_evidence_milli": 952,
+          "lemma_id": 1973,
+          "surface": "анноте",
+          "wave_distance": 33
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "prefix_truncation",
+      "context": "вижу _ доме",
+      "context_mode_known": true,
+      "damaged": "анного",
+      "feature_mask": 133140,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "данного"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 762,
+          "evidence_milli": 900,
+          "geometry_evidence_milli": 900,
+          "lemma_evidence_milli": 761,
+          "lemma_id": 40400,
+          "surface": "наевшемуся",
+          "wave_distance": 51
+        },
+        {
+          "atom_evidence_milli": 748,
+          "evidence_milli": 818,
+          "geometry_evidence_milli": 818,
+          "lemma_evidence_milli": 707,
+          "lemma_id": 40889,
+          "surface": "нанявшемуся",
+          "wave_distance": 47
+        },
+        {
+          "atom_evidence_milli": 715,
+          "evidence_milli": 818,
+          "geometry_evidence_milli": 818,
+          "lemma_evidence_milli": 628,
+          "lemma_id": 40187,
+          "surface": "надевшемуся",
+          "wave_distance": 43
+        },
+        {
+          "atom_evidence_milli": 715,
+          "evidence_milli": 818,
+          "geometry_evidence_milli": 818,
+          "lemma_evidence_milli": 628,
+          "lemma_id": 40938,
+          "surface": "напевшемуся",
+          "wave_distance": 43
+        },
+        {
+          "atom_evidence_milli": 708,
+          "evidence_milli": 818,
+          "geometry_evidence_milli": 818,
+          "lemma_evidence_milli": 628,
+          "lemma_id": 40357,
+          "surface": "надувшемуся",
+          "wave_distance": 38
+        },
+        {
+          "atom_evidence_milli": 708,
+          "evidence_milli": 818,
+          "geometry_evidence_milli": 818,
+          "lemma_evidence_milli": 628,
+          "lemma_id": 39833,
+          "surface": "набившемуся",
+          "wave_distance": 39
+        },
+        {
+          "atom_evidence_milli": 708,
+          "evidence_milli": 818,
+          "geometry_evidence_milli": 818,
+          "lemma_evidence_milli": 628,
+          "lemma_id": 40428,
+          "surface": "нажившемуся",
+          "wave_distance": 43
+        },
+        {
+          "atom_evidence_milli": 708,
+          "evidence_milli": 818,
+          "geometry_evidence_milli": 818,
+          "lemma_evidence_milli": 628,
+          "lemma_id": 40706,
+          "surface": "налившемуся",
+          "wave_distance": 49
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "prefix_truncation",
+      "context": "к _ доме",
+      "context_mode_known": true,
+      "damaged": "навшемуся",
+      "feature_mask": 545391636,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "гнавшемуся"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 806,
+          "evidence_milli": 888,
+          "geometry_evidence_milli": 888,
+          "lemma_evidence_milli": 620,
+          "lemma_id": 21401,
+          "surface": "жированью",
+          "wave_distance": 31
+        },
+        {
+          "atom_evidence_milli": 593,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 620,
+          "lemma_id": 21401,
+          "surface": "жированье",
+          "wave_distance": 31
+        },
+        {
+          "atom_evidence_milli": 593,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 620,
+          "lemma_id": 21401,
+          "surface": "жированьи",
+          "wave_distance": 31
+        },
+        {
+          "atom_evidence_milli": 593,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 620,
+          "lemma_id": 21401,
+          "surface": "жированья",
+          "wave_distance": 31
+        },
+        {
+          "atom_evidence_milli": 577,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 620,
+          "lemma_id": 21401,
+          "surface": "жированию",
+          "wave_distance": 31
+        },
+        {
+          "atom_evidence_milli": 776,
+          "evidence_milli": 727,
+          "geometry_evidence_milli": 727,
+          "lemma_evidence_milli": 761,
+          "lemma_id": 27255,
+          "surface": "иодированью",
+          "wave_distance": 35
+        },
+        {
+          "atom_evidence_milli": 705,
+          "evidence_milli": 727,
+          "geometry_evidence_milli": 727,
+          "lemma_evidence_milli": 647,
+          "lemma_id": 33592,
+          "surface": "лавированью",
+          "wave_distance": 41
+        },
+        {
+          "atom_evidence_milli": 727,
+          "evidence_milli": 727,
+          "geometry_evidence_milli": 727,
+          "lemma_evidence_milli": 620,
+          "lemma_id": 6449,
+          "surface": "борированью",
+          "wave_distance": 35
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "prefix_truncation",
+      "context": "двигаюсь к _",
+      "context_mode_known": true,
+      "damaged": "ированью",
+      "feature_mask": 1041,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "пированью"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 748,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 664,
+          "lemma_id": 69908,
+          "surface": "рвавших",
+          "wave_distance": 36
+        },
+        {
+          "atom_evidence_milli": 769,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 573,
+          "lemma_id": 11301,
+          "surface": "вравших",
+          "wave_distance": 30
+        },
+        {
+          "atom_evidence_milli": 758,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 573,
+          "lemma_id": 48602,
+          "surface": "оравших",
+          "wave_distance": 43
+        },
+        {
+          "atom_evidence_milli": 758,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 573,
+          "lemma_id": 21461,
+          "surface": "жравших",
+          "wave_distance": 45
+        },
+        {
+          "atom_evidence_milli": 483,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 664,
+          "lemma_id": 69908,
+          "surface": "рвавшие",
+          "wave_distance": 36
+        },
+        {
+          "atom_evidence_milli": 483,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 664,
+          "lemma_id": 69908,
+          "surface": "рвавший",
+          "wave_distance": 36
+        },
+        {
+          "atom_evidence_milli": 483,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 664,
+          "lemma_id": 69908,
+          "surface": "рвавшим",
+          "wave_distance": 36
+        },
+        {
+          "atom_evidence_milli": 500,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 573,
+          "lemma_id": 11301,
+          "surface": "вравшие",
+          "wave_distance": 30
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "prefix_truncation",
+      "context": "говорю о _ дома",
+      "context_mode_known": true,
+      "damaged": "равших",
+      "feature_mask": 545267748,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "дравших"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 772,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 460,
+          "lemma_id": 89096,
+          "surface": "ценного",
+          "wave_distance": 22
+        },
+        {
+          "atom_evidence_milli": 772,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 425,
+          "lemma_id": 17888,
+          "surface": "денного",
+          "wave_distance": 24
+        },
+        {
+          "atom_evidence_milli": 772,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 425,
+          "lemma_id": 14404,
+          "surface": "генного",
+          "wave_distance": 26
+        },
+        {
+          "atom_evidence_milli": 765,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 666,
+          "lemma_id": 20909,
+          "surface": "еденного",
+          "wave_distance": 53
+        },
+        {
+          "atom_evidence_milli": 648,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 451,
+          "lemma_id": 20806,
+          "surface": "ежённого",
+          "wave_distance": 44
+        },
+        {
+          "atom_evidence_milli": 598,
+          "evidence_milli": 666,
+          "geometry_evidence_milli": 666,
+          "lemma_evidence_milli": 609,
+          "lemma_id": 20849,
+          "surface": "енольного",
+          "wave_distance": 44
+        },
+        {
+          "atom_evidence_milli": 578,
+          "evidence_milli": 666,
+          "geometry_evidence_milli": 666,
+          "lemma_evidence_milli": 609,
+          "lemma_id": 20844,
+          "surface": "енаминого",
+          "wave_distance": 45
+        },
+        {
+          "atom_evidence_milli": 698,
+          "evidence_milli": 666,
+          "geometry_evidence_milli": 666,
+          "lemma_evidence_milli": 469,
+          "lemma_id": 42510,
+          "surface": "неженного",
+          "wave_distance": 55
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "prefix_truncation",
+      "context": "нет _ окне",
+      "context_mode_known": true,
+      "damaged": "енного",
+      "feature_mask": 524820,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "пенного"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 772,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 460,
+          "lemma_id": 89096,
+          "surface": "ценного",
+          "wave_distance": 22
+        },
+        {
+          "atom_evidence_milli": 772,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 425,
+          "lemma_id": 17888,
+          "surface": "денного",
+          "wave_distance": 24
+        },
+        {
+          "atom_evidence_milli": 772,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 425,
+          "lemma_id": 14404,
+          "surface": "генного",
+          "wave_distance": 26
+        },
+        {
+          "atom_evidence_milli": 765,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 666,
+          "lemma_id": 20909,
+          "surface": "еденного",
+          "wave_distance": 53
+        },
+        {
+          "atom_evidence_milli": 648,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 451,
+          "lemma_id": 20806,
+          "surface": "ежённого",
+          "wave_distance": 44
+        },
+        {
+          "atom_evidence_milli": 598,
+          "evidence_milli": 666,
+          "geometry_evidence_milli": 666,
+          "lemma_evidence_milli": 609,
+          "lemma_id": 20849,
+          "surface": "енольного",
+          "wave_distance": 44
+        },
+        {
+          "atom_evidence_milli": 578,
+          "evidence_milli": 666,
+          "geometry_evidence_milli": 666,
+          "lemma_evidence_milli": 609,
+          "lemma_id": 20844,
+          "surface": "енаминого",
+          "wave_distance": 45
+        },
+        {
+          "atom_evidence_milli": 698,
+          "evidence_milli": 666,
+          "geometry_evidence_milli": 666,
+          "lemma_evidence_milli": 469,
+          "lemma_id": 42510,
+          "surface": "неженного",
+          "wave_distance": 55
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "prefix_truncation",
+      "context": "вижу _ доме",
+      "context_mode_known": true,
+      "damaged": "енного",
+      "feature_mask": 133140,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "сенного"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 782,
+          "evidence_milli": 875,
+          "geometry_evidence_milli": 875,
+          "lemma_evidence_milli": 664,
+          "lemma_id": 69908,
+          "surface": "рвавшими",
+          "wave_distance": 47
+        },
+        {
+          "atom_evidence_milli": 794,
+          "evidence_milli": 875,
+          "geometry_evidence_milli": 875,
+          "lemma_evidence_milli": 573,
+          "lemma_id": 11301,
+          "surface": "вравшими",
+          "wave_distance": 52
+        },
+        {
+          "atom_evidence_milli": 784,
+          "evidence_milli": 875,
+          "geometry_evidence_milli": 875,
+          "lemma_evidence_milli": 573,
+          "lemma_id": 21461,
+          "surface": "жравшими",
+          "wave_distance": 43
+        },
+        {
+          "atom_evidence_milli": 784,
+          "evidence_milli": 875,
+          "geometry_evidence_milli": 875,
+          "lemma_evidence_milli": 573,
+          "lemma_id": 48602,
+          "surface": "оравшими",
+          "wave_distance": 59
+        },
+        {
+          "atom_evidence_milli": 544,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 755,
+          "lemma_id": 66927,
+          "surface": "равными",
+          "wave_distance": 43
+        },
+        {
+          "atom_evidence_milli": 598,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 664,
+          "lemma_id": 69908,
+          "surface": "рвавшим",
+          "wave_distance": 47
+        },
+        {
+          "atom_evidence_milli": 506,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 579,
+          "lemma_id": 68486,
+          "surface": "ракшами",
+          "wave_distance": 48
+        },
+        {
+          "atom_evidence_milli": 464,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 579,
+          "lemma_id": 69784,
+          "surface": "расшиби",
+          "wave_distance": 45
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "prefix_truncation",
+      "context": "с _ дома",
+      "context_mode_known": true,
+      "damaged": "равшими",
+      "feature_mask": 545263652,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "бравшими"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 724,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 694,
+          "lemma_id": 60523,
+          "surface": "потаим",
+          "wave_distance": 48
+        },
+        {
+          "atom_evidence_milli": 674,
+          "evidence_milli": 800,
+          "geometry_evidence_milli": 800,
+          "lemma_evidence_milli": 545,
+          "lemma_id": 85762,
+          "surface": "утаим",
+          "wave_distance": 39
+        },
+        {
+          "atom_evidence_milli": 679,
+          "evidence_milli": 800,
+          "geometry_evidence_milli": 800,
+          "lemma_evidence_milli": 513,
+          "lemma_id": 80348,
+          "surface": "таим",
+          "wave_distance": 51
+        },
+        {
+          "atom_evidence_milli": 627,
+          "evidence_milli": 800,
+          "geometry_evidence_milli": 800,
+          "lemma_evidence_milli": 454,
+          "lemma_id": 50967,
+          "surface": "отчим",
+          "wave_distance": 34
+        },
+        {
+          "atom_evidence_milli": 555,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 580,
+          "lemma_id": 49780,
+          "surface": "отдраим",
+          "wave_distance": 52
+        },
+        {
+          "atom_evidence_milli": 428,
+          "evidence_milli": 666,
+          "geometry_evidence_milli": 666,
+          "lemma_evidence_milli": 694,
+          "lemma_id": 60523,
+          "surface": "потаит",
+          "wave_distance": 48
+        },
+        {
+          "atom_evidence_milli": 421,
+          "evidence_milli": 666,
+          "geometry_evidence_milli": 666,
+          "lemma_evidence_milli": 694,
+          "lemma_id": 60523,
+          "surface": "потаив",
+          "wave_distance": 48
+        },
+        {
+          "atom_evidence_milli": 421,
+          "evidence_milli": 666,
+          "geometry_evidence_milli": 666,
+          "lemma_evidence_milli": 694,
+          "lemma_id": 60523,
+          "surface": "потаил",
+          "wave_distance": 48
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "sparse_multi_omission",
+      "context": "мы _",
+      "context_mode_known": true,
+      "damaged": "отаим",
+      "feature_mask": 370147362,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "отварим"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 731,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 964,
+          "lemma_id": 43861,
+          "surface": "нертер",
+          "wave_distance": 29
+        },
+        {
+          "atom_evidence_milli": 674,
+          "evidence_milli": 800,
+          "geometry_evidence_milli": 800,
+          "lemma_evidence_milli": 584,
+          "lemma_id": 43803,
+          "surface": "нерве",
+          "wave_distance": 40
+        },
+        {
+          "atom_evidence_milli": 674,
+          "evidence_milli": 800,
+          "geometry_evidence_milli": 800,
+          "lemma_evidence_milli": 584,
+          "lemma_id": 43851,
+          "surface": "нерке",
+          "wave_distance": 40
+        },
+        {
+          "atom_evidence_milli": 674,
+          "evidence_milli": 800,
+          "geometry_evidence_milli": 800,
+          "lemma_evidence_milli": 584,
+          "lemma_id": 43858,
+          "surface": "нерпе",
+          "wave_distance": 42
+        },
+        {
+          "atom_evidence_milli": 662,
+          "evidence_milli": 800,
+          "geometry_evidence_milli": 800,
+          "lemma_evidence_milli": 560,
+          "lemma_id": 41209,
+          "surface": "нарте",
+          "wave_distance": 52
+        },
+        {
+          "atom_evidence_milli": 662,
+          "evidence_milli": 800,
+          "geometry_evidence_milli": 800,
+          "lemma_evidence_milli": 448,
+          "lemma_id": 86657,
+          "surface": "ферте",
+          "wave_distance": 33
+        },
+        {
+          "atom_evidence_milli": 662,
+          "evidence_milli": 800,
+          "geometry_evidence_milli": 800,
+          "lemma_evidence_milli": 448,
+          "lemma_id": 89863,
+          "surface": "черте",
+          "wave_distance": 44
+        },
+        {
+          "atom_evidence_milli": 755,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 964,
+          "lemma_id": 43861,
+          "surface": "нертере",
+          "wave_distance": 29
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "sparse_multi_omission",
+      "context": "сосредоточен на _",
+      "context_mode_known": true,
+      "damaged": "нерте",
+      "feature_mask": 8209,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "нейрите"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 673,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 480,
+          "lemma_id": 59685,
+          "surface": "попью",
+          "wave_distance": 43
+        },
+        {
+          "atom_evidence_milli": 677,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 447,
+          "lemma_id": 59668,
+          "surface": "попою",
+          "wave_distance": 37
+        },
+        {
+          "atom_evidence_milli": 585,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 377,
+          "lemma_id": 59707,
+          "surface": "поповою",
+          "wave_distance": 31
+        },
+        {
+          "atom_evidence_milli": 585,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 377,
+          "lemma_id": 59732,
+          "surface": "попоною",
+          "wave_distance": 34
+        },
+        {
+          "atom_evidence_milli": 500,
+          "evidence_milli": 666,
+          "geometry_evidence_milli": 666,
+          "lemma_evidence_milli": 480,
+          "lemma_id": 59685,
+          "surface": "попья",
+          "wave_distance": 43
+        },
+        {
+          "atom_evidence_milli": 456,
+          "evidence_milli": 666,
+          "geometry_evidence_milli": 666,
+          "lemma_evidence_milli": 480,
+          "lemma_id": 59685,
+          "surface": "попьют",
+          "wave_distance": 43
+        },
+        {
+          "atom_evidence_milli": 579,
+          "evidence_milli": 666,
+          "geometry_evidence_milli": 666,
+          "lemma_evidence_milli": 447,
+          "lemma_id": 59668,
+          "surface": "попой",
+          "wave_distance": 37
+        },
+        {
+          "atom_evidence_milli": 579,
+          "evidence_milli": 666,
+          "geometry_evidence_milli": 666,
+          "lemma_evidence_milli": 447,
+          "lemma_id": 59714,
+          "surface": "попои",
+          "wave_distance": 40
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "sparse_multi_omission",
+      "context": "я _",
+      "context_mode_known": true,
+      "damaged": "попоью",
+      "feature_mask": 621805586,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "помполью"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 720,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 558,
+          "lemma_id": 30415,
+          "surface": "коконе",
+          "wave_distance": 46
+        },
+        {
+          "atom_evidence_milli": 717,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 558,
+          "lemma_id": 35052,
+          "surface": "локоне",
+          "wave_distance": 21
+        },
+        {
+          "atom_evidence_milli": 676,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 456,
+          "lemma_id": 10802,
+          "surface": "вороне",
+          "wave_distance": 41
+        },
+        {
+          "atom_evidence_milli": 530,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 671,
+          "lemma_id": 10598,
+          "surface": "волокне",
+          "wave_distance": 36
+        },
+        {
+          "atom_evidence_milli": 549,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 633,
+          "lemma_id": 10535,
+          "surface": "вокодер",
+          "wave_distance": 41
+        },
+        {
+          "atom_evidence_milli": 436,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 427,
+          "lemma_id": 9360,
+          "surface": "виконте",
+          "wave_distance": 49
+        },
+        {
+          "atom_evidence_milli": 528,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 396,
+          "lemma_id": 10327,
+          "surface": "возгоне",
+          "wave_distance": 47
+        },
+        {
+          "atom_evidence_milli": 545,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 391,
+          "lemma_id": 10818,
+          "surface": "воронее",
+          "wave_distance": 46
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "sparse_multi_omission",
+      "context": "приступаю к _",
+      "context_mode_known": true,
+      "damaged": "воконе",
+      "feature_mask": 1041,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "воркотне"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 765,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 612,
+          "lemma_id": 38545,
+          "surface": "модам",
+          "wave_distance": 52
+        },
+        {
+          "atom_evidence_milli": 683,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 544,
+          "lemma_id": 39018,
+          "surface": "мордам",
+          "wave_distance": 46
+        },
+        {
+          "atom_evidence_milli": 567,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 457,
+          "lemma_id": 38863,
+          "surface": "моноидам",
+          "wave_distance": 48
+        },
+        {
+          "atom_evidence_milli": 495,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 407,
+          "lemma_id": 76109,
+          "surface": "смородам",
+          "wave_distance": 44
+        },
+        {
+          "atom_evidence_milli": 478,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 544,
+          "lemma_id": 39018,
+          "surface": "мордами",
+          "wave_distance": 46
+        },
+        {
+          "atom_evidence_milli": 454,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 542,
+          "lemma_id": 38734,
+          "surface": "молодом",
+          "wave_distance": 47
+        },
+        {
+          "atom_evidence_milli": 421,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 542,
+          "lemma_id": 38734,
+          "surface": "молодая",
+          "wave_distance": 47
+        },
+        {
+          "atom_evidence_milli": 421,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 542,
+          "lemma_id": 38734,
+          "surface": "молодым",
+          "wave_distance": 47
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "sparse_multi_omission",
+      "context": "к нескольким _",
+      "context_mode_known": true,
+      "damaged": "моодам",
+      "feature_mask": 1057,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "молодцам"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 419,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 318,
+          "lemma_id": 13257,
+          "surface": "высохшем",
+          "wave_distance": 53
+        },
+        {
+          "atom_evidence_milli": 417,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 534,
+          "lemma_id": 12172,
+          "surface": "выдохам",
+          "wave_distance": 51
+        },
+        {
+          "atom_evidence_milli": 417,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 534,
+          "lemma_id": 12172,
+          "surface": "выдохом",
+          "wave_distance": 51
+        },
+        {
+          "atom_evidence_milli": 404,
+          "evidence_milli": 666,
+          "geometry_evidence_milli": 666,
+          "lemma_evidence_milli": 534,
+          "lemma_id": 12172,
+          "surface": "выдохе",
+          "wave_distance": 51
+        },
+        {
+          "atom_evidence_milli": 421,
+          "evidence_milli": 666,
+          "geometry_evidence_milli": 666,
+          "lemma_evidence_milli": 443,
+          "lemma_id": 8140,
+          "surface": "вдохе",
+          "wave_distance": 38
+        },
+        {
+          "atom_evidence_milli": 414,
+          "evidence_milli": 666,
+          "geometry_evidence_milli": 666,
+          "lemma_evidence_milli": 443,
+          "lemma_id": 8140,
+          "surface": "вдохам",
+          "wave_distance": 38
+        },
+        {
+          "atom_evidence_milli": 414,
+          "evidence_milli": 666,
+          "geometry_evidence_milli": 666,
+          "lemma_evidence_milli": 443,
+          "lemma_id": 8140,
+          "surface": "вдохом",
+          "wave_distance": 38
+        },
+        {
+          "atom_evidence_milli": 484,
+          "evidence_milli": 666,
+          "geometry_evidence_milli": 666,
+          "lemma_evidence_milli": 433,
+          "lemma_id": 12232,
+          "surface": "выедем",
+          "wave_distance": 48
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "sparse_multi_omission",
+      "context": "мы _",
+      "context_mode_known": true,
+      "damaged": "выохем",
+      "feature_mask": 370147362,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "выдохнем"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 683,
+          "evidence_milli": 875,
+          "geometry_evidence_milli": 875,
+          "lemma_evidence_milli": 573,
+          "lemma_id": 56945,
+          "surface": "подлезем",
+          "wave_distance": 34
+        },
+        {
+          "atom_evidence_milli": 714,
+          "evidence_milli": 857,
+          "geometry_evidence_milli": 857,
+          "lemma_evidence_milli": 487,
+          "lemma_id": 58399,
+          "surface": "полезем",
+          "wave_distance": 38
+        },
+        {
+          "atom_evidence_milli": 469,
+          "evidence_milli": 777,
+          "geometry_evidence_milli": 777,
+          "lemma_evidence_milli": 573,
+          "lemma_id": 56945,
+          "surface": "подлезшем",
+          "wave_distance": 34
+        },
+        {
+          "atom_evidence_milli": 464,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 573,
+          "lemma_id": 56945,
+          "surface": "подлезет",
+          "wave_distance": 34
+        },
+        {
+          "atom_evidence_milli": 470,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 487,
+          "lemma_id": 58399,
+          "surface": "полезшем",
+          "wave_distance": 38
+        },
+        {
+          "atom_evidence_milli": 464,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 448,
+          "lemma_id": 57381,
+          "surface": "подрезам",
+          "wave_distance": 43
+        },
+        {
+          "atom_evidence_milli": 464,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 448,
+          "lemma_id": 57381,
+          "surface": "подрезом",
+          "wave_distance": 43
+        },
+        {
+          "atom_evidence_milli": 464,
+          "evidence_milli": 750,
+          "geometry_evidence_milli": 750,
+          "lemma_evidence_milli": 448,
+          "lemma_id": 56470,
+          "surface": "подвезём",
+          "wave_distance": 51
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "sparse_multi_omission",
+      "context": "мы _",
+      "context_mode_known": true,
+      "damaged": "подезем",
+      "feature_mask": 621805602,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "подлезаем"
+    },
+    {
+      "active_lemma_retained": false,
+      "births": [
+        {
+          "atom_evidence_milli": 728,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 661,
+          "lemma_id": 34084,
+          "surface": "леденя",
+          "wave_distance": 47
+        },
+        {
+          "atom_evidence_milli": 707,
+          "evidence_milli": 833,
+          "geometry_evidence_milli": 833,
+          "lemma_evidence_milli": 617,
+          "lemma_id": 42243,
+          "surface": "неделя",
+          "wave_distance": 37
+        },
+        {
+          "atom_evidence_milli": 500,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 661,
+          "lemma_id": 34084,
+          "surface": "леденят",
+          "wave_distance": 47
+        },
+        {
+          "atom_evidence_milli": 644,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 641,
+          "lemma_id": 47916,
+          "surface": "оледеня",
+          "wave_distance": 56
+        },
+        {
+          "atom_evidence_milli": 557,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 617,
+          "lemma_id": 42243,
+          "surface": "неделям",
+          "wave_distance": 37
+        },
+        {
+          "atom_evidence_milli": 557,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 617,
+          "lemma_id": 42243,
+          "surface": "неделях",
+          "wave_distance": 37
+        },
+        {
+          "atom_evidence_milli": 528,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 533,
+          "lemma_id": 42216,
+          "surface": "недавня",
+          "wave_distance": 50
+        },
+        {
+          "atom_evidence_milli": 500,
+          "evidence_milli": 714,
+          "geometry_evidence_milli": 714,
+          "lemma_evidence_milli": 533,
+          "lemma_id": 34087,
+          "surface": "леденящ",
+          "wave_distance": 39
+        }
+      ],
+      "broad_lemma_retained": false,
+      "class": "sparse_multi_omission",
+      "context": "она _",
+      "context_mode_known": true,
+      "damaged": "неденя",
+      "feature_mask": 1074003988,
+      "form_top16_retained": false,
+      "readout_retained": false,
+      "target": "нездешня"
+    }
+  ],
+  "false_authority": 0,
+  "false_authority_examples": [],
+  "forms": 1875032,
+  "gates": {
+    "each_active_lemma_retained_strictly_above_percent": 95.0,
+    "each_form_top16_retained_strictly_above_percent": 95.0,
+    "each_readout_target_retained_strictly_above_percent": 95.0,
+    "false_authority_equals": 0
+  },
+  "heldout_per_class": 20000,
+  "kind": "canonical_l2_contextual_compositional_fixed_proof",
+  "l1_package": "artifacts/l11-l2-global-compaction-2026-07-30/package.v8.bin",
+  "l2_package": "artifacts/l2-v13-canonical-v2-determinism-2026-08-09/recompact-1.bin",
+  "latency": {
+    "context_reduction_p50_us": 0,
+    "context_reduction_p99_us": 0,
+    "form_birth_p50_us": 15947,
+    "form_birth_p99_us": 399790,
+    "lemma_birth_p50_us": 3183,
+    "lemma_birth_p99_us": 9675,
+    "proof_us": 549796929,
+    "readout_p50_us": 489,
+    "readout_p99_us": 1238,
+    "workers": 20
+  },
+  "limits": {
+    "active_lemma_frontier": 256,
+    "atom_relation_budget": 196608,
+    "broad_lemma_frontier": 256,
+    "features_per_lemma": 16,
+    "form_lattice": 32,
+    "geometry": "exact_bounded_damerau"
+  },
+  "memory": {
+    "compositional_index_resident_bytes": 77182508,
+    "package_bytes": 140556462,
+    "rss_peak_kib": 597476
+  },
+  "morphology_corpus": "artifacts/l2-v13-ruslit-full-neighbors-2026-07-30/lay_ru_l2_full_pos_v7.tsv",
+  "not_tested": [
+    "clean preservation; owned by the separate fixed word restoration proof",
+    "live L1.1 seed authority transfer",
+    "L3/L4/DecisionCore final apply authority",
+    "daemon and IBus latency"
+  ],
+  "runtime_authority_changed_by_proof": false,
+  "sampling": {
+    "eligible_heldout_rows": 2381426,
+    "heldout_rows": 2501613,
+    "reservoir_rows": 320000,
+    "sampling_us": 11339123,
+    "scanned_lines": 5857714,
+    "selected_target_forms": 74252,
+    "strategy": "bounded deterministic lowest-hash reservoir over real heldout H rows; one deterministic damage per target and class"
+  },
+  "scope": "real heldout L2 teacher contexts: typed broad lemma birth, learned context reduction, exact form expansion, and bounded readout retention",
+  "verdict": "PASS_shadow_retention"
+}

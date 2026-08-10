@@ -22,7 +22,6 @@ use std::time::Duration;
 struct Paths {
     root: PathBuf,
     usage_events: PathBuf,
-    corrections: PathBuf,
     base: PathBuf,
     manifest: PathBuf,
     state: PathBuf,
@@ -40,7 +39,6 @@ impl Paths {
         let proof_root = wave.join("l3-proof");
         Ok(Self {
             usage_events: wave.join("word_usage_events.jsonl"),
-            corrections: home.join(".local/share/lay/corrections.jsonl"),
             base: wave.join("l3_context_phase.nwpc"),
             manifest: wave.join("l3_context_phase.runtime.json"),
             state: root.join("state.json"),
@@ -325,7 +323,6 @@ mod tests {
         let paths = Paths {
             root: online.clone(),
             usage_events: wave.join("events.jsonl"),
-            corrections: wave.join("corrections.jsonl"),
             base: wave.join("base.nwpc"),
             manifest: wave.join("runtime.json"),
             state: online.join("state.json"),

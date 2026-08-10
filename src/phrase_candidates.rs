@@ -13,7 +13,10 @@ use crate::word_reader::MAX_RU_FUNCTION_GLUE_LEFT_LEN;
 const GLUED_PART_FIXES_DATA: &str =
     include_str!("../data/lexicon/russian_glued_phrase_part_fixes.tsv");
 
-pub(crate) fn glued_phrase_part_candidates(part: &str) -> Vec<(String, f64)> {
+pub(crate) fn glued_phrase_part_candidates(
+    part: &str,
+    allow_typo_repair: bool,
+) -> Vec<(String, f64)> {
     let mut out = Vec::new();
     push_glued_phrase_part_candidate(&mut out, part.to_string(), 0.0);
 
@@ -24,7 +27,8 @@ pub(crate) fn glued_phrase_part_candidates(part: &str) -> Vec<(String, f64)> {
     }
 
     let part_len = part.chars().count();
-    if (3..=MAX_RU_FUNCTION_GLUE_LEFT_LEN).contains(&part_len)
+    if allow_typo_repair
+        && (3..=MAX_RU_FUNCTION_GLUE_LEFT_LEN).contains(&part_len)
         && !is_known_russian_phrase_part(part)
     {
         for candidate in safe_missing_letter_candidates(part) {
@@ -36,7 +40,7 @@ pub(crate) fn glued_phrase_part_candidates(part: &str) -> Vec<(String, f64)> {
         }
     }
 
-    if part_len >= 5 && !is_known_russian_phrase_part(part) {
+    if allow_typo_repair && part_len >= 5 && !is_known_russian_phrase_part(part) {
         for candidate in [
             correct_missing_letter(part),
             correct_adjacent_transposition(part),

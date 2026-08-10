@@ -1,0 +1,85 @@
+{
+  "kind": "canonical_l2_live_hot_metrics_3x50",
+  "date": "2026-08-10",
+  "verdict": "PASS",
+  "scope": "optimized canonical L2 live correction route for one fixed hot adjacent-transposition surface",
+  "gate": {
+    "independent_runs": 3,
+    "samples_per_run": 50,
+    "p99_us_max": 5000,
+    "max_us_max": 10000
+  },
+  "machine": {
+    "host": "e@192.168.3.94",
+    "cpu": "13th Gen Intel(R) Core(TM) i9-13900HK",
+    "kernel": "6.8.0-124-generic",
+    "measurement_cpu_affinity": "4-11",
+    "build_jobs": 19
+  },
+  "build": {
+    "cargo_profile": "metrics",
+    "optimized": true,
+    "test_binary": "target/metrics/deps/lay-122a97c6af7b22f3",
+    "test_binary_bytes": 13826528,
+    "test_binary_sha256": "e64724f3600163dd9be6f358dee300b02a2845de4e63061a5f2d6d78a7ac0d43"
+  },
+  "packages": {
+    "l1_path": "artifacts/l11-l2-global-compaction-2026-07-30/package.v8.bin",
+    "l1_bytes": 190139182,
+    "l1_sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+    "l2_path": "artifacts/l2-v13-canonical-v2-determinism-2026-08-09/recompact-1.bin",
+    "l2_bytes": 140556462,
+    "l2_sha256": "cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b"
+  },
+  "source_sha256": {
+    "src/text_metrics.rs": "e5c3df850700da6085002a4505c3e2e9da9a153bb4c828b274c96d798036adeb",
+    "src/nanda_wave/l2/ime_readout.rs": "d763703cbef809d18e49acb28bebd95cae2946706b0e67e4e1f5660ccb8abc3e",
+    "src/nanda_wave/l2_field/runtime.rs": "202b177606d723e2d973fd222bdbe043886fa9b547102a1c7feae91e29d05a76",
+    "src/nanda_wave/l2_field/bridge.rs": "8a7c831de0766f5ec6e3d35de16e4ceab67ccbd2ef397277111125cd528d1c90",
+    "src/typing_transition/decision.rs": "c91537dd664d62e4285a36d22e435538f6228392ea2d08c11e7cb0f150c1d6fb"
+  },
+  "runs": [
+    {
+      "run": 1,
+      "samples": 50,
+      "p50_us": 1802,
+      "p90_us": 1944,
+      "p99_us": 1988,
+      "max_us": 1988
+    },
+    {
+      "run": 2,
+      "samples": 50,
+      "p50_us": 1834,
+      "p90_us": 1999,
+      "p99_us": 2069,
+      "max_us": 2069
+    },
+    {
+      "run": 3,
+      "samples": 50,
+      "p50_us": 1852,
+      "p90_us": 1987,
+      "p99_us": 2141,
+      "max_us": 2141
+    }
+  ],
+  "server_rss_kib": 349008,
+  "remote_artifacts": "/home/e/build/lay-l1-shadow/artifacts/l2-v13-canonical-live-hot-3x50-2026-08-10",
+  "diagnostic_rejection": {
+    "observation": "The previously reported 12-15 ms values came from Cargo test profile marked unoptimized.",
+    "verdict": "not a deployment latency measurement"
+  },
+  "measured": [
+    "the current optimized live route returned the expected restored surface in every sample",
+    "all three independent p99 values passed 5 ms",
+    "the complete bounded candidate lattice remained enabled"
+  ],
+  "not_tested": [
+    "diverse first-touch latency",
+    "fixed 13-class restoration quality",
+    "multi-client physical input behavior"
+  ],
+  "runtime_authority_changed": false,
+  "receipt": "/home/ubu/projects/lay/docs/structural_gates/receipts/L2_V13_CANONICAL_LIVE_HOT_METRICS_3X50_2026-08-10.json"
+}

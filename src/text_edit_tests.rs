@@ -156,6 +156,30 @@ fn autocorrect_safety_blocks_middle_suffix_plan_but_allows_full_token_plan() {
 }
 
 #[test]
+fn verified_current_token_boundary_split_uses_the_exact_physical_plan() {
+    let original = "документыим ";
+    let replacement = "документы им ";
+    let plan =
+        plan_committed_tail_full_token_replacement(original, replacement).expect("full token plan");
+    let transition = TransitionAudit::proven(
+        TransitionOperator::BoundaryMergeSplit,
+        TransitionProof::Boundary,
+        true,
+        true,
+        2,
+    );
+
+    assert_eq!(apply_plan(original, &plan), replacement);
+    let safety = autocorrect_edit_safety(original, replacement, &plan, &transition);
+
+    assert!(safety.allow_apply, "safety={safety:?}");
+    assert_eq!(safety.reason, "safe_edit_plan");
+    assert!(safety.boundary_changed);
+    assert!(!safety.changes_non_last_word);
+    assert_eq!(safety.would_touch_words, 1);
+}
+
+#[test]
 fn autocorrect_safety_blocks_cursor_underflow_edit_plan() {
     let original = "провекрытое ";
     let replacement = "крытое ";

@@ -1,14 +1,27 @@
 pub(crate) mod bridge;
+mod cache;
+mod compact_format;
 mod compiler;
+mod compositional;
+mod compositional_format;
+mod compositional_proof;
 mod context;
+mod contextual_compositional_proof;
 mod format;
 mod model;
 mod proof;
 mod runtime;
+mod runtime_storage;
 mod teacher;
 
 pub(crate) use bridge::{canonical_text_candidates, canonical_text_readout, cold_probe_surfaces};
 pub(crate) use runtime::L2FieldAuthority;
+
+pub const CANONICAL_L2_LEMMA_FRONTIER: usize = 256;
+pub const CANONICAL_L2_ACTIVE_LEMMA_LIMIT: usize = 256;
+pub const CANONICAL_L2_FEATURE_LIMIT: usize = 16;
+pub const CANONICAL_L2_FORM_LIMIT: usize = 32;
+pub const CANONICAL_L2_ATOM_RELATION_LIMIT: usize = 196_608;
 
 const DEFAULT_L2_MODEL_DIR_SUFFIX: &str = ".local/share/lay/nanda_wave/l2";
 const DEFAULT_L2_PACKAGE_NAME: &str = "LAY-L2-RU-FULL-v13.bin";
@@ -71,9 +84,21 @@ pub fn canonical_l2_status() -> serde_json::Value {
         Ok(field) => {
             let (forms, l1_bound_forms, lemmas, bindings, competition_edges, decoder_bytes) =
                 field.package_counts();
+            let (package_storage, package_backing_bytes) = field.package_storage();
             serde_json::json!({
                 "status": "ready",
                 "package": package,
+                "package_storage": package_storage,
+                "package_backing_bytes": package_backing_bytes,
+                "compositional_index_source": field.compositional_index_source(),
+                "compositional_index_resident_bytes": field.compositional_index_bytes(),
+                "compositional_limits": {
+                    "lemma_frontier": CANONICAL_L2_LEMMA_FRONTIER,
+                    "active_lemma_limit": CANONICAL_L2_ACTIVE_LEMMA_LIMIT,
+                    "features_per_lemma": CANONICAL_L2_FEATURE_LIMIT,
+                    "form_lattice": CANONICAL_L2_FORM_LIMIT,
+                    "atom_relations": CANONICAL_L2_ATOM_RELATION_LIMIT,
+                },
                 "l1_package_fingerprint": field.l1_package_fingerprint(),
                 "forms": forms,
                 "l1_bound_forms": l1_bound_forms,
@@ -92,6 +117,145 @@ pub fn canonical_l2_status() -> serde_json::Value {
     }
 }
 
+pub fn compact_canonical_l2_package(
+    reference_path: &std::path::Path,
+    output_path: &std::path::Path,
+) -> std::io::Result<serde_json::Value> {
+    let reference_bytes = std::fs::read(reference_path)?;
+    let reference_sha256 = sha256_hex(&reference_bytes);
+    let package = format::decode_package(&reference_bytes).map_err(std::io::Error::other)?;
+    let (compact_bytes, stats) =
+        compact_format::encode_package(&package).map_err(std::io::Error::other)?;
+    let decoded = compact_format::decode_package(&compact_bytes).map_err(std::io::Error::other)?;
+    if decoded != package {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::InvalidData,
+            "compact L2 round-trip changed the canonical package",
+        ));
+    }
+    let compact_sha256 = sha256_hex(&compact_bytes);
+    write_atomic(output_path, &compact_bytes)?;
+    Ok(serde_json::json!({
+        "kind": "canonical_l2_compact_format",
+        "verdict": "PASS_format_roundtrip",
+        "reference": reference_path,
+        "reference_bytes": reference_bytes.len(),
+        "reference_sha256": reference_sha256,
+        "output": output_path,
+        "compact_bytes": compact_bytes.len(),
+        "compact_format_version": stats.version,
+        "compact_sha256": compact_sha256,
+        "compression_ratio": compact_bytes.len() as f64 / reference_bytes.len().max(1) as f64,
+        "saved_bytes": reference_bytes.len().saturating_sub(compact_bytes.len()),
+        "decoder_block_forms": compact_format::DECODER_BLOCK_FORMS,
+        "forms": package.form_refs.len(),
+        "lemmas": package.lemma_centers.len(),
+        "morph_bindings": package.morph_bindings.len(),
+        "feature_dictionary_entries": stats.feature_dictionary_entries,
+        "sections": {
+            "header_bytes": stats.header_bytes,
+            "form_ref_bytes": stats.form_ref_bytes,
+            "decoder_offset_bytes": stats.decoder_offset_bytes,
+            "decoder_payload_bytes": stats.decoder_payload_bytes,
+            "feature_dictionary_bytes": stats.feature_dictionary_bytes,
+            "lemma_center_bytes": stats.lemma_center_bytes,
+            "morph_binding_bytes": stats.morph_binding_bytes,
+            "context_mode_bytes": stats.context_mode_bytes,
+            "slot_center_bytes": stats.slot_center_bytes,
+            "neighbor_coupling_bytes": stats.neighbor_coupling_bytes,
+            "competition_edge_bytes": stats.competition_edge_bytes,
+            "calibration_bytes": stats.calibration_bytes,
+            "lemma_wave_range_bytes": stats.lemma_wave_range_bytes,
+            "surface_wave_code_bytes": stats.surface_wave_code_bytes,
+            "wave_band_offset_bytes": stats.wave_band_offset_bytes,
+            "wave_band_posting_bytes": stats.wave_band_posting_bytes,
+            "atom_key_bytes": stats.atom_key_bytes,
+            "atom_offset_bytes": stats.atom_offset_bytes,
+            "atom_posting_bytes": stats.atom_posting_bytes,
+        },
+        "decoder_blocks": stats.decoder_blocks,
+        "lemma_wave_ranges": stats.lemma_wave_ranges,
+        "surface_wave_codes": stats.surface_wave_codes,
+        "wave_band_offsets": stats.wave_band_offsets,
+        "wave_band_postings": stats.wave_band_postings,
+        "atom_keys": stats.atom_keys,
+        "atom_offsets": stats.atom_offsets,
+        "atom_posting_bytes": stats.atom_postings,
+        "exact_package_roundtrip": true,
+        "runtime_authority_changed": false,
+    }))
+}
+
+pub fn prove_compact_canonical_l2_parity(
+    reference_path: &std::path::Path,
+    compact_path: &std::path::Path,
+) -> std::io::Result<serde_json::Value> {
+    let reference_bytes = std::fs::read(reference_path)?;
+    let compact_bytes = std::fs::read(compact_path)?;
+    let reference = format::decode_package(&reference_bytes).map_err(std::io::Error::other)?;
+    let compact = compact_format::decode_package(&compact_bytes).map_err(std::io::Error::other)?;
+    let reencoded_reference = format::encode_package(&compact).map_err(std::io::Error::other)?;
+    let section_parity = serde_json::json!({
+        "l1_package_fingerprint": reference.l1_package_fingerprint == compact.l1_package_fingerprint,
+        "form_refs": reference.form_refs == compact.form_refs,
+        "decoder_bytes": reference.decoder_bytes == compact.decoder_bytes,
+        "lemma_centers": reference.lemma_centers == compact.lemma_centers,
+        "morph_bindings": reference.morph_bindings == compact.morph_bindings,
+        "context_modes": reference.context_modes == compact.context_modes,
+        "slot_centers": reference.slot_centers == compact.slot_centers,
+        "neighbor_couplings": reference.neighbor_couplings == compact.neighbor_couplings,
+        "competition_edges": reference.competition_edges == compact.competition_edges,
+        "calibration": reference.calibration == compact.calibration,
+    });
+    let exact_package_roundtrip = reference == compact;
+    let reference_bytes_equal_after_decode = reference_bytes == reencoded_reference;
+    if !exact_package_roundtrip || !reference_bytes_equal_after_decode {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::InvalidData,
+            format!(
+                "compact L2 parity failed: package={exact_package_roundtrip} reference_bytes={reference_bytes_equal_after_decode} sections={section_parity}"
+            ),
+        ));
+    }
+    Ok(serde_json::json!({
+        "kind": "canonical_l2_compact_parity",
+        "verdict": "PASS_exact_parity",
+        "reference": reference_path,
+        "reference_bytes": reference_bytes.len(),
+        "reference_sha256": sha256_hex(&reference_bytes),
+        "compact": compact_path,
+        "compact_bytes": compact_bytes.len(),
+        "compact_sha256": sha256_hex(&compact_bytes),
+        "compression_ratio": compact_bytes.len() as f64 / reference_bytes.len().max(1) as f64,
+        "forms": reference.form_refs.len(),
+        "lemmas": reference.lemma_centers.len(),
+        "morph_bindings": reference.morph_bindings.len(),
+        "section_parity": section_parity,
+        "exact_package_roundtrip": exact_package_roundtrip,
+        "reference_bytes_equal_after_decode": reference_bytes_equal_after_decode,
+        "runtime_authority_changed": false,
+        "quality_proof_run": false,
+    }))
+}
+
+fn write_atomic(path: &std::path::Path, bytes: &[u8]) -> std::io::Result<()> {
+    if let Some(parent) = path.parent() {
+        std::fs::create_dir_all(parent)?;
+    }
+    let temporary = path.with_extension(format!("tmp.{}", std::process::id()));
+    std::fs::write(&temporary, bytes)?;
+    std::fs::rename(temporary, path)
+}
+
+fn sha256_hex(bytes: &[u8]) -> String {
+    use sha2::Digest;
+
+    sha2::Sha256::digest(bytes)
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect()
+}
+
 pub fn prove_canonical_l2_package(
     l1_package_path: &std::path::Path,
     l2_package_path: &std::path::Path,
@@ -103,6 +267,53 @@ pub fn prove_canonical_l2_package(
         l2_package_path,
         morphology_corpus_path,
         limit,
+    )
+}
+
+pub fn prove_compositional_l2_restoration(
+    l1_package_path: &std::path::Path,
+    l2_package_path: &std::path::Path,
+    heldout_per_class: usize,
+    requested_workers: usize,
+    lemma_limit: usize,
+    form_limit: usize,
+    atom_relation_limit: usize,
+) -> std::io::Result<serde_json::Value> {
+    compositional_proof::prove_package(
+        l1_package_path,
+        l2_package_path,
+        heldout_per_class,
+        requested_workers,
+        lemma_limit,
+        form_limit,
+        atom_relation_limit,
+    )
+}
+
+#[allow(clippy::too_many_arguments)]
+pub fn prove_contextual_compositional_l2_restoration(
+    l1_package_path: &std::path::Path,
+    l2_package_path: &std::path::Path,
+    morphology_corpus_path: &std::path::Path,
+    heldout_per_class: usize,
+    requested_workers: usize,
+    broad_lemma_limit: usize,
+    active_lemma_limit: usize,
+    feature_limit: usize,
+    form_limit: usize,
+    atom_relation_limit: usize,
+) -> std::io::Result<serde_json::Value> {
+    contextual_compositional_proof::prove_package(
+        l1_package_path,
+        l2_package_path,
+        morphology_corpus_path,
+        heldout_per_class,
+        requested_workers,
+        broad_lemma_limit,
+        active_lemma_limit,
+        feature_limit,
+        form_limit,
+        atom_relation_limit,
     )
 }
 
@@ -131,6 +342,7 @@ pub fn query_canonical_l2_package(
             terminal_id: Some(*terminal_id),
             surface: None,
             evidence_milli: 1_000,
+            origin: runtime::L2LexicalSeedOrigin::GroundedL11,
         })
         .collect::<Vec<_>>();
     let readout = field.readout(context, &seeds, limit.max(1));

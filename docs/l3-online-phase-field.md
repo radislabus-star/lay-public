@@ -2258,6 +2258,100 @@ Exact receipt:
 /home/ubu/projects/lay/docs/structural_gates/receipts/LAY_RUNTIME_MEMORY_COMPACT_L3_1_0_1_2026-08-03.json
 ```
 
+## Supervised sentence online delta closure, 2026-08-10
+
+### What was tested
+
+The online selector compiled the first eligible relation from two independent
+causal episodes in two distinct sentence scenes. Compilation prepared one
+stationary semantic basis, then reduced both labelled episodes into bounded
+positive and directional pair subcenters. No literal word, phrase, source ID,
+or application rule was added.
+
+The measured defect was structural: the pair had independent bank support
+`1 + 1`, but each incompatible local phase subcenter had support `1`. The old
+reader required support `2` inside one subcenter and discarded the valid
+multimodal relation. The corrected sentence pair lane uses a local support-one
+subcenter only when the same directional bank has total independent support at
+least `2`. An unseen exact anchor still has no authority. Legacy non-sentence
+pair readout keeps its support-two contract.
+
+### Measured facts
+
+Focused local gates:
+
+```text
+context-phase tests                         86 / 86 PASS
+online L3 tests                             24 / 24 PASS
+```
+
+Targeted proof on the isolated remote state:
+
+```text
+heldout rows                                      7
+improve rows                                      2
+safety rows                                       5
+baseline passed                                   4
+candidate passed                                  7
+target failures                                   0
+false supports                                    0
+regressions                                       0
+verdict                                        PASS
+```
+
+The `improved = 3` differential consists of the two required target scenes and
+one baseline safety failure removed by the candidate. It does not change the
+fixed target denominator of `2 / 2`.
+
+Frozen differential proof:
+
+```text
+configured source cap                        80 000 fragments
+accepted heldout fragments                   15 704
+lattice transitions                          50 592
+compared transitions / target profiles       41 064
+baseline -> candidate supports           1 769 -> 1 769
+baseline -> candidate top-1              1 715 -> 1 715
+lost target profiles                              0
+lost supports                                     0
+lost top-1                                        0
+new false supports                                0
+new false top-1                                   0
+verdict                                        PASS
+```
+
+The append-only delta is `4 372` bytes with SHA-256
+`3dca1e61369d15490ee97a4ce54f401fb32de4c64bd256f5cd801ed234272cf6`.
+The immutable base was not rewritten and the full corpus was not recompiled.
+
+Remote telemetry on `e@192.168.3.94`:
+
+```text
+release build      115.95 s   101% CPU   1 826 316 KiB peak RSS   swap 0
+worker + proofs     31.53 s  1212% CPU     279 388 KiB peak RSS   swap 0
+```
+
+### What was not tested
+
+- live daemon reload or installation from this isolated state;
+- the physical application matrix;
+- L1.1 or L2 quality, package, RSS, or latency gates, because their packages
+  and authority were not changed.
+
+### Verdict scope
+
+- supervised sentence compilation and targeted proof: `PASS`;
+- frozen differential with all five regression counters zero: `PASS`;
+- isolated append-only admission: `PASS`;
+- installed/live promotion: `PENDING_RELEASE_GATE`;
+- runtime authority changed at this checkpoint: `false`.
+
+Exact receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L3_SUPERVISED_SENTENCE_ONLINE_DELTA_FULL_GATE_2026-08-10.json
+```
+
 ## 2026-08-04 Confirmed Prediction Operator Sanitation
 
 What was tested:

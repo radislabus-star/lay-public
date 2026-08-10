@@ -120,6 +120,24 @@ impl UsageContextFrontier {
         if partial.is_empty() || limit == 0 {
             return Vec::new();
         }
+        self.matching_candidates(context, limit, |word| {
+            word != partial && word.starts_with(partial)
+        })
+    }
+
+    fn candidates(&self, context: &UsageHotContext, limit: usize) -> Vec<UsageContextCandidate> {
+        self.matching_candidates(context, limit, |_| true)
+    }
+
+    fn matching_candidates(
+        &self,
+        context: &UsageHotContext,
+        limit: usize,
+        mut matches: impl FnMut(&str) -> bool,
+    ) -> Vec<UsageContextCandidate> {
+        if limit == 0 {
+            return Vec::new();
+        }
         let mut candidates = HashMap::<String, (u32, usize)>::new();
         for (index, context_id) in context.context_ids.as_slice().iter().enumerate() {
             let Some(entries) = self.by_context.get(context_id) else {
@@ -127,7 +145,7 @@ impl UsageContextFrontier {
             };
             let ngram_len = index + 1;
             for (word, support) in entries {
-                if word != partial && word.starts_with(partial) {
+                if matches(word) {
                     candidates
                         .entry(word.clone())
                         .and_modify(|current| {
@@ -483,6 +501,14 @@ impl UsageHotState {
     ) -> Vec<UsageContextCandidate> {
         self.context_frontier
             .prefix_candidates(context, partial, limit)
+    }
+
+    pub(super) fn context_candidates(
+        &self,
+        context: &UsageHotContext,
+        limit: usize,
+    ) -> Vec<UsageContextCandidate> {
+        self.context_frontier.candidates(context, limit)
     }
 
     pub(super) fn hot_readout_prepared(

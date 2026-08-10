@@ -7,6 +7,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 const FULL_PROOF_MAX_FRAGMENTS: usize = 80_000;
 const FULL_PROOF_MIN_SURFACE_SUPPORT: u32 = 2;
+const TARGETED_PROOF_SLOT: &str = "layl3slotprobe";
 
 pub(super) fn attempt_relation(
     paths: &Paths,
@@ -14,30 +15,20 @@ pub(super) fn attempt_relation(
     relation: &PendingRelation,
 ) -> io::Result<serde_json::Value> {
     let stem = format!("delta-{generation:08}-{}", unix_time());
-    let corpus = paths.root.join(format!("{stem}.txt"));
     let cases = paths.root.join(format!("{stem}.cases.tsv"));
     let delta = paths.root.join(format!("{stem}.nwpc"));
     let targeted_receipt = paths.root.join(format!("{stem}.targeted-proof.json"));
     let full_receipt = paths.root.join(format!("{stem}.full-proof.json"));
-    // Two distinct scenes establish independence; replaying each scene once
-    // more gives the learner separate profile and coherent-center observations.
-    let corpus_text = relation
-        .scenes
-        .iter()
-        .flat_map(|scene| [scene.as_str(), scene.as_str()])
-        .collect::<Vec<_>>()
-        .join("\n");
-    write_private(&corpus, &format!("{corpus_text}\n"))?;
-    write_private(&cases, &targeted_cases(relation))?;
+    write_private(&cases, &targeted_cases(relation)?)?;
 
-    let compile = lay::nanda_wave::compile_l3_context_delta_for_manifest(
+    let competitors = [relation.rejected.clone()];
+    let compile = lay::nanda_wave::compile_l3_supervised_relation_delta_for_manifest(
         &paths.manifest,
-        &corpus,
-        &paths.corrections,
+        &relation.scenes,
+        &relation.expected,
+        &competitors,
         &delta,
         2,
-        2,
-        false,
     )?;
     let proof = lay::nanda_wave::prove_l3_context_delta_targeted(
         &paths.manifest,
@@ -94,6 +85,9 @@ pub(super) fn attempt_relation(
         "selected_relations": 1,
         "selector": "minimal_single_relation_then_targeted_and_full_impact_proof",
         "corpus_passes": compile.get("corpus_passes"),
+        "supervised_relations": compile.get("supervised_relations"),
+        "emitted_exact_pair_profiles": compile.get("emitted_exact_pair_profiles"),
+        "emitted_generalized_pair_profiles": compile.get("emitted_generalized_pair_profiles"),
         "delta": delta,
         "targeted_proof_receipt": targeted_receipt,
         "full_proof_receipt": full_proof.as_ref().map(|_| &full_receipt),
@@ -203,17 +197,14 @@ fn full_proof_passed(proof: &serde_json::Value) -> bool {
         .all(|field| proof.get(field).and_then(serde_json::Value::as_u64) == Some(0))
 }
 
-fn targeted_cases(relation: &PendingRelation) -> String {
-    let mut rows = vec!["# kind\tcontext\tcandidates\texpected".to_string()];
+fn targeted_cases(relation: &PendingRelation) -> io::Result<String> {
+    let mut rows = vec!["# split\tclass\toriginal\tcandidates\texpected".to_string()];
     for scene in &relation.scenes {
-        let mut words = scene.split_whitespace().collect::<Vec<_>>();
-        let _ = words.pop();
+        let original = replace_labelled_tail(scene, &relation.expected, TARGETED_PROOF_SLOT)?;
+        let expected = replace_labelled_tail(scene, &relation.expected, &relation.expected)?;
+        let rejected = replace_labelled_tail(scene, &relation.expected, &relation.rejected)?;
         rows.push(format!(
-            "improve\t{}\t{}|{}\t{}",
-            words.join(" "),
-            relation.expected,
-            relation.rejected,
-            relation.expected
+            "heldout\timprove\t{original}\t{expected}|{rejected}\t{expected}"
         ));
     }
     for context in [
@@ -222,16 +213,46 @@ fn targeted_cases(relation: &PendingRelation) -> String {
         "пользователь открыл новое окно",
         "модель читает другой контекст",
     ] {
+        let original = append_tail(context, TARGETED_PROOF_SLOT);
+        let expected = append_tail(context, &relation.expected);
+        let rejected = append_tail(context, &relation.rejected);
         rows.push(format!(
-            "safety\t{context}\t{}|{}\t{}",
-            relation.expected, relation.rejected, relation.rejected
+            "heldout\tsafety\t{original}\t{expected}|{rejected}\t-"
         ));
     }
+    let context = "изолированная проверка";
+    let original = append_tail(context, TARGETED_PROOF_SLOT);
+    let expected = append_tail(context, &relation.expected);
+    let rejected = append_tail(context, &relation.rejected);
     rows.push(format!(
-        "safety\tизолированная проверка\t{}|{}\t-",
-        relation.expected, relation.rejected
+        "heldout\tsafety\t{original}\t{expected}|{rejected}\t-"
     ));
-    format!("{}\n", rows.join("\n"))
+    Ok(format!("{}\n", rows.join("\n")))
+}
+
+fn replace_labelled_tail(scene: &str, expected: &str, replacement: &str) -> io::Result<String> {
+    let mut words = scene
+        .split_whitespace()
+        .map(str::to_string)
+        .collect::<Vec<_>>();
+    let Some(tail) = words.last_mut() else {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            "online relation scene is empty",
+        ));
+    };
+    if tail.to_lowercase() != expected.to_lowercase() {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            "online relation scene does not end in expected target",
+        ));
+    }
+    *tail = replacement.to_string();
+    Ok(words.join(" "))
+}
+
+fn append_tail(context: &str, tail: &str) -> String {
+    format!("{} {}", context.trim(), tail.trim())
 }
 
 fn write_private(path: &Path, text: &str) -> io::Result<()> {
@@ -262,21 +283,76 @@ mod tests {
             last_attempted_episodes: 0,
             last_observed_ordinal: 2,
         };
-        let cases = targeted_cases(&relation);
+        let cases = targeted_cases(&relation).unwrap();
         assert_eq!(
             cases
                 .lines()
-                .filter(|line| line.starts_with("improve\t"))
+                .filter(|line| line.starts_with("heldout\timprove\t"))
                 .count(),
             2
         );
         assert_eq!(
             cases
                 .lines()
-                .filter(|line| line.starts_with("safety\t"))
+                .filter(|line| line.starts_with("heldout\tsafety\t"))
                 .count(),
             5
         );
+        assert!(cases
+            .lines()
+            .skip(1)
+            .all(|line| line.split('\t').count() == 5));
+    }
+
+    #[test]
+    fn supervised_relation_attempt_reaches_targeted_pass_before_full_gate() {
+        let root = std::env::temp_dir().join(format!(
+            "lay-l3-supervised-attempt-{}",
+            SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+        ));
+        let online = root.join("l3-online");
+        fs::create_dir_all(&online).unwrap();
+        let corpus = root.join("base.txt");
+        let base = root.join("base.nwpc");
+        let manifest = root.join("runtime.json");
+        fs::write(
+            &corpus,
+            "система хранит чистый сигнал\nмодель читает общий контекст\n",
+        )
+        .unwrap();
+        lay::nanda_wave::compile_l3_context_phase_memory(&corpus, &base, 0, 2).unwrap();
+        lay::nanda_wave::initialize_l3_context_composite_manifest(&manifest, &base).unwrap();
+        let paths = Paths {
+            root: online,
+            usage_events: root.join("events.jsonl"),
+            base,
+            manifest,
+            state: root.join("state.json"),
+            full_proof_corpus: root.join("missing-proof.txt"),
+            full_proof_surface: root.join("missing-surface.jsonl"),
+        };
+        let relation = PendingRelation {
+            rejected: "посмотри".to_string(),
+            expected: "посмотреть".to_string(),
+            scenes: vec![
+                "нам нужно посмотреть".to_string(),
+                "здесь пора посмотреть".to_string(),
+            ],
+            episode_ids: vec!["episode-1".to_string(), "episode-2".to_string()],
+            last_attempted_episodes: 0,
+            last_observed_ordinal: 2,
+        };
+
+        let attempt = attempt_relation(&paths, 1, &relation).unwrap();
+        assert_eq!(attempt["targeted_verdict"], "PASS", "{attempt:#}");
+        assert_eq!(attempt["full_differential_verdict"], "WATCH");
+        assert_eq!(attempt["verdict"], "WATCH");
+        assert!(attempt["admission"].is_null());
+        assert!(attempt["emitted_exact_pair_profiles"].as_u64().unwrap() > 0);
+        let _ = fs::remove_dir_all(root);
     }
 
     #[test]
@@ -330,7 +406,6 @@ mod tests {
         let paths = Paths {
             root: online.clone(),
             usage_events: root.join("events.jsonl"),
-            corrections: root.join("corrections.jsonl"),
             base: root.join("base.nwpc"),
             manifest: manifest.clone(),
             state: root.join("state.json"),

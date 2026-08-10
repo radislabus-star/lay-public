@@ -321,6 +321,936 @@ Runtime authority changed:
 
 - `false`
 
+## 19. 2026-08-10 Incremental DAFSA Completion Accumulator
+
+This experiment fixes the remaining cold decoded-completion bottleneck without
+removing candidates, narrowing the field, changing a score, or recompiling the
+L1.1/L2 packages.
+
+The diagnosed final decoder contains:
+
+```text
+decoder states                         142,470
+decoder arcs                           368,025
+decoded surfaces                     1,600,423
+states visited by measured prefixes    226-1,190
+```
+
+The DAFSA traversal itself was already bounded. The repeated work happened
+after reaching a terminal: as many as `576` decoded surfaces independently
+rebuilt the same prefix byte 4-grams, phase cells, and atom-center keys, then
+cloned, sorted, and deduplicated each complete key vector.
+
+The accepted route is:
+
+```text
+typed prefix
+-> compute prefix byte-gram accumulator once
+-> enter decoded DAFSA state
+-> for each edge
+   -> checkpoint accumulator
+   -> append character
+   -> add only newly completed byte 4-grams
+   -> recurse
+   -> restore checkpoint
+-> at terminal
+   -> add boundary atoms temporarily
+   -> read phase, atom count, and unique query overlap
+   -> restore checkpoint
+-> unchanged candidate sort and readout
+```
+
+Unchanged production bounds:
+
+```text
+result candidates                         96
+material candidates                      576
+maximum decoder visits                24,000
+maximum completion suffix                  8 characters
+candidate sources removed                   0
+```
+
+The previous full-rescan implementation remains test-only as an exact reference.
+The remote release benchmark used the final package and six distinct cache-miss
+prefixes in one sequential test process:
+
+```text
+old complete rescan                    8,427 us
+incremental accumulator                6,239 us
+saved                                  2,188 us
+improvement                               25.97%
+candidate count/order/scores/evidence     exact parity
+test result                               1 / 1 PASS
+```
+
+Related gates already completed on the same source state:
+
+```text
+incremental accumulator parity          PASS
+lexical phase runtime completion         9 / 9 PASS
+sequential product candidate gate       26 / 26 PASS
+product candidate gate wall time          224.18 s
+```
+
+Remote release build facts:
+
+```text
+release                                  1.0.17
+Cargo jobs                                    20
+build wall time                            133.16 s
+build average CPU                              321%
+build peak RSS                       1,818,692 KiB
+build swaps                                      0
+```
+
+What was tested:
+
+- incremental feature extraction against complete-surface extraction;
+- exact old/new decoded candidate parity for the final-package prefix set;
+- release-optimized execution on `e@192.168.3.94`;
+- preservation of all `96 / 576` candidate limits and score/evidence fields.
+
+What was not tested:
+
+- the fixed L1.1 `13 x 20,000` quality proof, because package bytes, candidate
+  sources, scores, and authority did not change;
+- L2/L3 package recompilation;
+- physical key-to-frame latency or multi-day cache churn.
+
+Verdict scope:
+
+- `PASS_EXACT_PARITY_RELEASE_BENCH`;
+- this is a runtime work-reduction result, not a quality-promotion claim;
+- runtime authority changed: `false`.
+
+Installed cutover:
+
+```text
+remote -> staging SHA parity              10 / 10 PASS
+staging -> installed SHA parity           10 / 10 PASS
+CLI / daemon / IME / L3 version                  1.0.17
+GNOME extension                                  1.0.17
+daemon service                                    active
+L3 online service                                 active
+L1.1 sidecar                                      ready
+L1.1 terminals                                  852,582
+active engine                                lay-ime-ru
+global IBus PID                            3702 -> 3702
+global IBus restarted                            false
+recent service warnings                              0
+```
+
+Only the managed Lay processes were replaced. The canonical L1.1 and L2 package
+bytes and SHA-256 remained unchanged.
+
+Exact receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_DAFSA_INCREMENTAL_COMPLETION_1_0_17_2026-08-10.json
+```
+
+## 13. 2026-08-10 Canonical Live Hot Deployment Gate
+
+The current canonical L2 worktree was synchronized byte-for-byte to
+`e@192.168.3.94`, compiled with the optimized Cargo `metrics` profile on `19`
+build jobs, and measured in three independent processes on CPU set `4-11`.
+The complete bounded lattice remained enabled.
+
+Measured live correction-route latency for `50` hot samples per process:
+
+```text
+run    p50       p90       p99       max
+1      1.802 ms  1.944 ms  1.988 ms  1.988 ms
+2      1.834 ms  1.999 ms  2.069 ms  2.069 ms
+3      1.852 ms  1.987 ms  2.141 ms  2.141 ms
+
+gate   p99 <= 5.000 ms, max <= 10.000 ms
+result PASS
+```
+
+The L1.1 server RSS during the run was `349,008 KiB`. The immutable packages
+were:
+
+```text
+L1.1  190,139,182 B  sha256 47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9
+L2    140,556,462 B  sha256 cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b
+```
+
+The earlier `12-15 ms` diagnostic values were produced by Cargo's explicitly
+`unoptimized` test profile. They remain useful for function-level diagnosis but
+are rejected as deployment latency evidence. No runtime rewrite or lattice
+reduction was justified by that debug-only result.
+
+This experiment did not test diverse first touch, the fixed 13-class quality
+proof, or the physical multi-client matrix. Runtime authority did not change.
+Exact receipt:
+`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_V13_CANONICAL_LIVE_HOT_METRICS_3X50_2026-08-10.json`.
+
+## 14. 2026-08-10 Canonical L2 Fixed Retention Proof
+
+The canonical V13 V2 packages were evaluated on the complete fixed heldout
+matrix: `13` damage classes times `20,000` real heldout forms. The proof used
+`20` workers and the production bounds below without reducing the L1.1 lattice:
+
+```text
+broad lemma frontier        256
+active lemma frontier       256
+features per lemma           16
+form lattice                 32
+atom relation budget    196,608
+geometry          exact bounded Damerau
+```
+
+Measured class results are deliberately reported with both retention and
+readout top-1. The gate in this experiment is target retention, not lexical
+restoration authority:
+
+```text
+damage class                  target retained   active lemma   form top-16   readout unique top-1
+adjacent transposition               99.980%        99.980%        99.980%                96.545%
+double substitution                  98.835%        98.875%        98.835%                75.870%
+extra letter                        100.000%       100.000%       100.000%                97.675%
+layout projection                    99.995%        99.995%        99.995%                99.145%
+letter substitution                  99.970%        99.970%        99.970%                89.890%
+missing letter                       99.960%        99.960%        99.960%                92.450%
+non-adjacent transposition           99.530%        99.665%        99.530%                77.330%
+omission + transposition             99.505%        99.535%        99.505%                87.015%
+prefix truncation                    99.950%        99.950%        99.950%                82.140%
+punctuation suffix                  100.000%       100.000%       100.000%                99.775%
+repeated fragment                   100.000%       100.000%       100.000%                93.255%
+sparse multi-omission                95.415%        95.350%        95.415%                78.300%
+suffix truncation                   100.000%       100.000%       100.000%                93.185%
+```
+
+Measured aggregate and resource facts:
+
+```text
+evaluated                         260,000
+false authority                        0
+verdict            PASS_shadow_retention
+proof compute                  549.797 s
+wall time                      562.760 s
+average CPU                       1,514%
+proof peak RSS                597,476 KiB
+compositional index          77,182,508 B
+L2 package                  140,556,462 B
+lemma birth p50 / p99       3.183 / 9.675 ms
+form birth p50 / p99       15.947 / 399.790 ms
+readout p50 / p99           0.489 / 1.238 ms
+```
+
+What was tested:
+
+- typed broad-lemma birth from real heldout damaged forms;
+- learned context reduction, exact bounded form expansion, and target retention;
+- all three required retention gates strictly above `95%` in every class;
+- false authority equal to zero.
+
+What was not tested:
+
+- clean preservation, owned by the separate fixed L1.1 restoration proof;
+- live L1.1 winner authority transfer;
+- L3, L4, DecisionCore, daemon, or IBus final apply authority;
+- deployment latency. The proof-only form-birth tail includes exhaustive
+  heldout expansion and is not substituted for the independent hot deployment
+  gate in section 13.
+
+Verdict scope:
+
+- canonical L2 preserves a grounded target through its bounded compositional
+  field above `95%` in every fixed damage class;
+- `PASS_shadow_retention` does not claim strict unique top-1 restoration;
+- runtime authority did not change.
+
+Exact receipt:
+
+- `/home/ubu/projects/lay/docs/structural_gates/receipts/L2_V13_CANONICAL_FIXED_RETENTION_13X20000_2026-08-10.json`
+- SHA-256 `9323ba9d65d9bc85a59eda07ab4fd0892286bcb23bcd5b2fe238919929e5c157`
+
+## 18. Compositional Exact-Form Birth V2 Micro-Proof, 2026-08-09
+
+The tested route extends the canonical field without word-specific runtime
+conditions:
+
+```text
+damaged surface
+-> character + keyboard n-gram wave code
+-> banded exact nearest-lemma search
+-> exact forms of the retained lemmas
+-> normalized character or physical-key Damerau similarity
+-> bounded 16-form lattice
+-> composition-only authority guard
+```
+
+Compact V2 embeds the hot lemma-wave index. Its exact-search contract is:
+
+```text
+128-bit code = 8 bands x 16 bits
+probe radius 2 -> complete for total Hamming distance <= 23
+probe radius 3 -> complete for total Hamming distance <= 31
+otherwise      -> exhaustive exact fallback
+```
+
+Focused tests proved that banded ranking is identical to exhaustive ranking and
+that all centers inside the `23 / 31` bounds enter the candidate set.
+
+Full V13 V2 format facts:
+
+```text
+forms                                      1,875,032
+lemmas                                        93,672
+morphology bindings                        3,255,785
+stored lemma wave centers                    428,929
+band postings                              3,385,217
+
+reference package                        135,121,803 B
+compact V1 package                        63,544,178 B
+compact V2 package                        86,794,442 B = 82.77 MiB
+V2 embedded index                         23,250,264 B
+V2 format build                                3.25 s
+V2 build average CPU                              765%
+V2 build peak RSS                         549,812 KiB
+reference/V2 exact section parity                  PASS
+```
+
+The first fixed proof used exactly `100` L2-only forms in each of the same 13
+damage classes used by L1.1, for `1,300` damaged cases. It did not reuse or copy
+the class implementations.
+
+Measured micro result:
+
+```text
+clean unique birth top-1                    90.0256%
+clean top-16 retention                      90.0256%
+false authority                                    0
+
+class                          unique top-1   top-16
+adjacent transposition                 44%       49%
+double substitution                    27%       30%
+extra letter                           68%       68%
+layout projection                      20%       21%
+letter substitution                    56%       68%
+missing letter                         45%       55%
+non-adjacent transposition             27%       29%
+omission + transposition               10%       11%
+prefix truncation                      46%       48%
+punctuation suffix                     90%       90%
+repeated fragment                      60%       67%
+sparse multi-omission                  11%       14%
+suffix truncation                      30%       90%
+
+birth p50 / p99                   5,266 / 7,154 us
+composition readout p50 / p99       223 /   536 us
+L2 cold load                               578,314 us
+RSS after L2 load                          146,044 KiB
+process peak RSS                           306,136 KiB
+```
+
+The clean failure localizes the first shared mechanism before damage-class
+ranking: logarithmic multimodal compression retained only `428,929` centers for
+`1,875,032` exact forms. A clean form whose code was omitted can lose its own
+lemma before exact form scoring. Therefore this experiment is rejected as a
+quality configuration; the low damaged scores must not be repaired class by
+class.
+
+Next experiment:
+
+- retain every distinct exact-form wave code inside its lemma;
+- preserve the same exact band search and authority guard;
+- rerun the same fixed micro-proof before any full `20,000 x 13` proof;
+- accept the larger index only if the complete package remains below `195 MiB`.
+
+What was not tested:
+
+- sentence-context ranking between valid morphology cells;
+- final L3/L4/DecisionCore apply authority;
+- daemon or IBus latency;
+- the full `20,000 x 13` denominator, because the micro-proof already failed.
+
+Verdict: `FAIL_center_compression_target_retention`.
+
+Exact receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_V13_COMPOSITIONAL_V2_MICRO_100_2026-08-09.json
+```
+
+Runtime authority changed by this experiment: `false`.
+
+### 18.1 Exact-Form Centers And Lemma-Frontier Matrix
+
+The next experiment removed logarithmic center loss by retaining every distinct
+exact-form code inside each lemma. No damage-class-specific branch was added.
+
+Measured package facts:
+
+```text
+stored exact-form wave centers              1,924,190
+band postings                              13,559,110
+package bytes                             151,414,190 = 144.40 MiB
+embedded index bytes                       87,870,012
+RSS after L2 load                          272,308 KiB
+process peak RSS                           457,408 KiB
+format build                                    3.73 s
+format build average CPU                          680%
+format build peak RSS                     815,444 KiB
+reference/V2 exact section parity                  PASS
+```
+
+This fixed the first mechanism exactly:
+
+```text
+clean unique birth top-1       90.0256% -> 100.0000%
+clean top-16 retention         90.0256% -> 100.0000%
+false authority                                  0
+```
+
+It did not close damaged-surface birth. The same fixed `100 x 13` sample was
+then evaluated with larger lemma frontiers without recompiling or changing any
+score:
+
+```text
+lemma frontier       4       8      16      32      64
+clean top-1       100.0   100.0   100.0   100.0   100.0
+worst top-1         9.0    13.0    20.0    26.0    34.0
+worst top-16        9.0    14.0    21.0    27.0    37.0
+birth p99, us    45,867  49,609  58,035  59,785  78,036
+```
+
+The worst class in every row was `omission_transposition`. Increasing only the
+frontier is rejected: even `64` lemmas is far below the strict quality gate and
+is already far above the `5 ms` hot-path budget.
+
+The shared remaining failure is the lossy retrieval representation itself.
+One 128-bit SimHash code is not a sufficient primary index for sparse omission,
+transposition, and combined damage. The next canonical experiment replaces it
+as primary birth with typed sparse n-gram postings aggregated by lemma:
+
+```text
+typed character and physical-key atoms
+-> compact atom -> lemma postings
+-> weighted overlap frontier
+-> exact form reconstruction and Damerau verification
+-> SimHash only as bounded fallback
+```
+
+What was tested:
+
+- all exact-form centers over the complete `1,875,032`-form V13 field;
+- exact reference/V2 section parity;
+- unchanged fixed `100 x 13` damage sample;
+- lemma-frontier ablation `4 / 8 / 16 / 32 / 64`;
+- package bytes, index bytes, cold RSS, peak RSS, and birth latency.
+
+What was not tested:
+
+- typed sparse n-gram posting quality or size;
+- full `20,000 x 13` proof;
+- sentence context, L3/L4 apply authority, daemon, or IBus.
+
+Verdict: `FAIL_lossy_simhash_primary_birth`.
+
+Exact receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_V13_COMPOSITIONAL_ALL_CENTERS_MATRIX_2026-08-09.json
+```
+
+Runtime authority changed by this experiment: `false`.
+
+### 18.2 Decoded-Surface Runtime Materialization A/B
+
+This experiment tested one physical runtime change only. The compact package on
+disk and every score stayed unchanged. During cold validation, all front-coded
+UTF-8 surfaces were retained as one raw byte bank plus one `u32` offset per
+form, so exact-form expansion could borrow a decoded surface instead of
+reconstructing its decoder block on each lookup.
+
+Direct A/B used the same package, fixed `100 x 13` contextual sample, `20`
+workers, `256` broad lemmas, `128` active lemmas, `16` forms, and `65,536`
+atom relations:
+
+```text
+metric                         compact on-demand    materialized       delta
+form birth p50                         43,444 us        41,482 us     -1,962 us
+form birth p99                        107,688 us       111,485 us     +3,797 us
+proof                                  3,445,740 us     3,452,131 us  +6,391 us
+L2 cold load                             797,840 us       818,536 us +20,696 us
+peak RSS                                 414,676 KiB       462,904 KiB +48,228 KiB
+minimum active-lemma retention                  94%               94%         0
+minimum form-top16 retention                    94%               94%         0
+minimum readout retention                       94%               94%         0
+false authority                                   0                 0         0
+package bytes                           140,556,462       140,556,462         0
+```
+
+The same materialized runtime was also measured with all `256` broad lemmas
+kept active:
+
+```text
+form birth p50 / p99                    66,409 / 179,497 us
+proof wall / average CPU                       8.44 s / 1,184%
+peak RSS                                          467,000 KiB
+minimum broad / active lemma retention               96% / 96%
+minimum form-top16 / readout retention                95% / 95%
+false authority                                              0
+verdict                                                   FAIL
+```
+
+Per-class `active=256` result:
+
+```text
+class                         broad  active  form16  readout  readout top-1
+adjacent transposition          100     100     100      100             94
+double substitution              98      98      97       97             78
+extra letter                    100     100     100      100             98
+layout projection               100     100     100      100             97
+letter substitution             100     100     100      100             88
+missing letter                  100     100     100      100             96
+non-adjacent transposition       99      99      99       99             83
+omission + transposition        100     100     100      100             92
+prefix truncation               100     100     100      100             86
+punctuation suffix              100     100     100      100            100
+repeated fragment               100     100     100      100             86
+sparse multi-omission            96      96      95       95             80
+suffix truncation               100     100     100      100             90
+```
+
+Measured conclusion:
+
+- materialization did not change quality or false authority;
+- direct p99 became `3.526%` slower while peak RSS grew by `48,228 KiB`;
+- the apparent gain inferred from different active widths was not real under a
+  controlled same-width A/B;
+- keeping all `256` lemmas avoids premature context narrowing, but expanding
+  all their exact forms is still far outside the runtime latency budget and
+  sparse multi-omission remains exactly at `95%`, not strictly above it.
+
+The materialization code was reverted. The compact on-demand decoder remains
+canonical. The next experiment must reduce repeated form work structurally,
+without narrowing the grounded lemma lattice and without another full raw
+surface copy.
+
+What was tested:
+
+- controlled same-width decoder A/B at `active=128`;
+- wide `active=256` quality, latency, RSS, CPU, and false authority;
+- all thirteen damage classes on the fixed micro denominator.
+
+What was not tested:
+
+- the final `20,000 x 13` denominator;
+- daemon or IBus latency;
+- L3/L4/DecisionCore apply authority;
+- clean L1.1 preservation, owned by its separate fixed proof.
+
+Verdict: `REJECT_materialized_decoder_no_p99_gain`.
+
+Exact receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_V13_DECODER_MATERIALIZATION_AB_REJECTED_2026-08-09.json
+```
+
+Runtime authority changed by this experiment: `false`.
+
+### 18.3 Exact-Bounded Frontier And Atom-Relation Matrix
+
+The first full `20,000 x 13` proof localized the remaining loss before form
+expansion. With `256 / 256 / 16 / 32` and `65,536` active atom relations, the
+target lemma was absent from both lemma frontiers for `7.01%` of sparse
+multi-omission cases. Form expansion and readout then changed the result by only
+`+0.065` percentage points:
+
+```text
+sparse multi-omission broad lemma retention       92.990%
+sparse multi-omission form top-16 retention       93.045%
+sparse multi-omission readout retention           93.055%
+false authority                                         0
+evaluated cases                                   260,000
+verdict                                                FAIL
+```
+
+This rejects form-score, readout, and per-class patches as the first repair
+site. The shared mechanism is insufficient postings evidence before the fixed
+lemma frontier.
+
+Two bounded alternatives were compared on the same deterministic
+`1,000 x 13` sample with `20` workers. Wider broad frontiers recovered the
+target but introduced a separate contextual reduction over discarded lemmas:
+
+```text
+broad -> active   atom relations   sparse readout   context p99   form p99
+256   -> 256              65,536           94.0%          0 us     30,947 us
+512   -> 256              65,536           96.4%     14,623 us     30,832 us
+1,024 -> 256              65,536           96.9%     29,468 us     31,164 us
+512   -> 256             131,072           97.8%     17,794 us     36,078 us
+1,024 -> 256             131,072           98.0%     38,569 us     41,773 us
+```
+
+The wide-frontier route is rejected. The canonical field remains one
+`256 -> 256` lemma frontier, so contextual reduction is an identity operation.
+The postings budget was then varied without changing package bytes, lemma
+width, feature width, form width, geometry, or scores:
+
+```text
+atom relations   sparse readout   lemma p99   form p99   false authority
+65,536                    94.0%       4,382 us   30,947 us                0
+98,304                    94.9%       4,936 us   31,245 us                0
+131,072                   95.9%       5,985 us   34,981 us                0
+196,608                   96.8%      10,228 us   44,697 us                0
+262,144                   97.0%      10,888 us   37,788 us                0
+```
+
+The p99 values above are concurrent proof measurements, not single-client IME
+latency. `196,608` was selected for the full denominator: `131,072` had only a
+`0.9` percentage-point micro margin, while `262,144` bought only another `0.2`
+points over `196,608`.
+
+What was tested:
+
+- one fixed `13 x 1,000` sample for every matrix row;
+- broad/active retention, form/readout retention, false authority, CPU latency,
+  RSS, and unchanged package size;
+- only global bounded capacities; no word, suffix, phrase, source ID, or damage
+  class entered runtime conditions.
+
+What was not tested by the matrix:
+
+- the full denominator, recorded separately in section 18.4;
+- single-client daemon or IBus hot latency;
+- final L3/L4/DecisionCore apply authority;
+- L1.1 clean preservation or L1.1 per-class top-1.
+
+Verdict: `SELECT_atom_relations_196608_for_full_proof`; wider lemma frontiers
+are `REJECT_context_reduction_cost`.
+
+Exact receipts:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_V13_EXACT_BOUNDED_REL65536_FULL_REJECTED_2026-08-09.json
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_V13_EXACT_BOUNDED_ATOM_RELATION_MATRIX_2026-08-09.json
+```
+
+Runtime authority changed by these experiments: `false`.
+
+### 18.4 Canonical Exact-Bounded Full Retention Proof
+
+The selected contour was evaluated over the complete fixed denominator:
+
+```text
+damaged surface
+-> typed atom postings, at most 196,608 relations
+-> 256 broad lemmas = 256 active lemmas
+-> 16 morphology features per lemma
+-> exact-bounded Damerau geometry
+-> 32-form lattice
+-> Winner | Tied | ABSTAIN readout
+```
+
+Package identity:
+
+```text
+forms          1,875,032
+package bytes  140,556,462 B = 134.05 MiB
+SHA-256        cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b
+```
+
+Fixed heldout result:
+
+```text
+class                         form top-16   readout retained   unique top-1*   false authority
+adjacent transposition             99.980%            99.980%          96.595%                 0
+double substitution                98.855%            98.855%          75.865%                 0
+extra letter                      100.000%           100.000%          97.660%                 0
+layout projection                  99.995%            99.995%          99.185%                 0
+letter substitution                99.970%            99.970%          89.905%                 0
+missing letter                     99.960%            99.960%          92.475%                 0
+non-adjacent transposition         99.625%            99.620%          77.380%                 0
+omission + transposition           99.535%            99.535%          87.075%                 0
+prefix truncation                  99.950%            99.950%          82.155%                 0
+punctuation suffix                100.000%           100.000%          99.765%                 0
+repeated fragment                 100.000%           100.000%          93.280%                 0
+sparse multi-omission              95.415%            95.420%          78.310%                 0
+suffix truncation                 100.000%           100.000%          93.190%                 0
+```
+
+`*` Unique top-1 is diagnostic here. Every case remained `ABSTAIN`; this proof
+promotes target retention for the downstream contextual field, not standalone
+apply authority. It therefore does not replace the separate strict L1.1
+per-class unique top-1 proof.
+
+Measured execution facts:
+
+```text
+evaluated                                    260,000 cases
+selected target forms                         74,252
+scanned morphology rows                    5,857,714
+workers                                            20
+wall time                                      341.73 s
+average CPU                                      1465%
+internal peak RSS                           552,136 KiB
+swap growth                                          0
+lemma birth p50 / p99                 3,740 / 12,371 us
+form birth p50 / p99                 16,101 / 54,578 us
+readout p50 / p99                       630 / 4,351 us
+false authority                                      0
+verdict                            PASS_shadow_retention
+```
+
+What was tested:
+
+- `20,000` real heldout cases for every one of the thirteen fixed damage
+  classes, `260,000` total;
+- target retention at broad lemma, active lemma, form top-16, and readout;
+- false authority, cold load, concurrent stage latency, RSS, package identity,
+  and deterministic bounded sampling;
+- strict `>95%` retention for each class, including `95.420%` for sparse
+  multi-omission.
+
+What was not tested:
+
+- single-client daemon and IBus latency;
+- final L3/L4/DecisionCore application authority;
+- clean L1.1 preservation and the separate L1.1 unique top-1 contract;
+- deterministic recompaction and release installation, which remain promotion
+  gates after this proof.
+
+Verdict: `PASS_shadow_retention`. The canonical runtime capacities are
+`256 / 256 / 16 / 32 / 196,608`; product promotion remains pending.
+
+Exact receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_V13_EXACT_BOUNDED_REL196608_FULL_20K_2026-08-09.json
+```
+
+Runtime authority changed by this proof: `false`.
+
+## 17. Compact Exact-Surface Format V1, 2026-08-09
+
+This experiment changes only the physical representation of the immutable V13
+field. It does not change candidate birth, scores, calibration, readout, or live
+runtime authority.
+
+```text
+existing V13 L2FieldPackage
+-> compact exact codec
+   -> FormCenterRef                 16 -> 8 bytes
+   -> UTF-8 surfaces               front-coded blocks of 32 forms
+   -> feature_mask                 248-entry dictionary
+   -> MorphBinding                 16 -> 9 bytes
+      lemma_center_id              implicit from LemmaCenter range
+-> exact decode to existing L2FieldPackage
+```
+
+The surface language remains exact and materialized. This step does not assume
+that `lemma + feature_mask` uniquely determines a form: multi-lemma surfaces and
+multiple surface variants in one feature slot survive the round trip.
+
+Full V13 measured result:
+
+```text
+forms                                      1,875,032 / 1,875,032
+lemmas                                        93,672 / 93,672
+morphology bindings                        3,255,785 / 3,255,785
+feature dictionary entries                       248
+decoder blocks                                58,595
+forms per decoder block                            32
+
+reference bytes                          135,121,803 = 128.86 MiB
+compact bytes                             63,544,178 =  60.60 MiB
+saved bytes                               71,577,625 =  52.97%
+compact/reference ratio                    47.027331%
+
+FormCenterRef section                     15,000,256 bytes
+decoder block offsets                        234,380 bytes
+decoder front-coded payload                9,775,225 bytes
+feature dictionary                              992 bytes
+LemmaCenter section                        2,997,504 bytes
+MorphBinding section                      29,302,065 bytes
+LocalContextMode section                     671,472 bytes
+SlotPhaseCenter section                       17,100 bytes
+NeighborCoupling section                     382,128 bytes
+CompetitionEdge section                    5,162,904 bytes
+TieCalibration                                    24 bytes
+header                                            128 bytes
+```
+
+Decoder block selection was measured over all `1,875,032` sorted surfaces:
+
+```text
+block forms      encoded decoder MiB      average sequential decode steps
+8                              13.529                                  4.5
+16                             10.873                                  8.5
+32                              9.546                                 16.5
+64                              8.883                                 32.5
+128                             8.551                                 64.5
+256                             8.385                                128.5
+```
+
+Block `32` is canonical for V1: moving to `64` saves only about `0.66 MiB` while
+doubling bounded random reconstruction work.
+
+Exact parity proof:
+
+```text
+all package sections equal after decode                 PASS
+reference bytes equal after compact decode/re-encode    PASS
+reference SHA-256
+bbe67a772b684e0f187483796fca248ac0b10576195b1aa524f0b2bde0f6601e
+compact SHA-256
+353cd9526429b35ec5c7846b81b06fc16f06b6ea262ffad1005630fcf9bff9b1
+
+compact encode + internal round trip      1.18 s, 485,540 KiB peak RSS
+independent exact parity                   1.08 s, 732,908 KiB peak RSS
+```
+
+What was tested:
+
+- full V13 format conversion on the remote 20-core build host;
+- exact record parity for every package section;
+- exact recovery of the original deterministic V13 bytes;
+- UTF-8 surfaces, a surface owned by multiple lemmas, and multiple surfaces in
+  one lemma-feature slot in focused tests;
+- checksum rejection of a corrupted compact package.
+
+What was not tested:
+
+- direct mmap/zero-copy readout from the compact representation;
+- compact-package cold startup, steady RSS, or hot p50/p99;
+- any new L1.1 damage-class or L2 heldout quality proof;
+- live daemon or IME installation.
+
+Verdict scope:
+
+- `PASS_format_roundtrip` and `PASS_exact_parity`;
+- not a quality promotion by itself;
+- the immutable reference V13 quality receipt remains authoritative;
+- runtime authority changed: `false`.
+
+Exact receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_V13_COMPACT_FORMAT_V1_2026-08-09.json
+```
+
+### 17.1 Compact direct-backed runtime V1, 2026-08-09
+
+The compact representation is now a runtime storage backend, not only an
+offline codec:
+
+```text
+StandaloneL2Field
+-> RuntimeL2Package
+   -> Reference(L2FieldPackage)
+   -> Compact(CompactPackageView)
+      -> retain one 63,544,178-byte package buffer
+      -> read FormCenterRef, MorphBinding, and exact surfaces from that buffer
+      -> materialize the smaller lemma/context/competition sections
+-> one unchanged index builder
+-> one unchanged score and Winner | Tied | Abstain readout
+```
+
+V1 owns the compact bytes in a `Vec<u8>` loaded by `std::fs::read`; it is not
+yet an mmap implementation. The heavy form, decoder, and binding sections are
+not expanded into their reference-width vectors. Exact surfaces and all
+multi-lemma and same-slot variant bindings remain available on demand.
+
+Standalone load measurement with the same release binary:
+
+```text
+metric                            reference V13       compact V1
+package storage                  reference_v2_owned  compact_v1_direct
+package backing bytes               135,121,803          63,544,178
+process peak RSS, status path        266,400 KiB         107,296 KiB
+process peak RSS                       260.16 MiB          104.78 MiB
+RSS saved                                                   59.72%
+status wall time                           0.56 s             0.56 s
+forms                                  1,875,032          1,875,032
+morphology bindings                    3,255,785          3,255,785
+```
+
+The status path reports both `package_storage` and `package_backing_bytes`, so
+a loaded reference package can no longer be mistaken for the compact backend.
+
+The complete fixed V13 heldout proof was then rerun against the compact package
+with 20 workers:
+
+```text
+same-lemma total                                  2,501,613
+same-lemma target coverage                        99.998081%
+same-lemma false authority                                 0
+
+noun target coverage                              100.000000%
+adjective target coverage                         100.000000%
+pronoun target coverage                           100.000000%
+verb target coverage                               99.986490%
+
+near-neighbor total                                  42,195
+near-neighbor target coverage                      100.000000%
+near-neighbor false authority                               0
+
+compact cold load                                  611,508 us
+compact hot p50 / p99                                38 / 183 us
+hot p99 gate                                             5,000 us
+proof wall time                                        26.02 s
+proof CPU                                                 649%
+proof peak RSS                                  3,670,024 KiB
+```
+
+After removing only package path, package byte count, and timing fields, the
+complete reference and compact proof JSON files have the same normalized
+SHA-256:
+
+```text
+61b57a2522d3173d061668759d9ac25063d3a94dc65ec20617c12de5790f4efc
+```
+
+Therefore all reported denominators, winners, ties, abstentions, failures,
+per-feature counts, per-POS counts, target coverage, and false-authority counts
+are identical. Focused runtime tests additionally compare complete readout
+objects for reference and compact backends across Winner, Tied, and Abstain
+routes.
+
+The compact runtime trades bounded decode work for memory. Compared with the
+original reference proof, cold load changed from `477,477` to `611,508 us` and
+hot p99 from `97` to `183 us`; both remain below their gates, while standalone
+RSS fell by `159,104 KiB`. This is an accepted resource trade, not a latency
+improvement claim.
+
+What was tested:
+
+- direct compact-backed runtime over the complete V13 package;
+- exact reference/compact record parity plus complete readout-object parity in
+  focused Winner, Tied, and Abstain tests;
+- the full `2,501,613 + 42,195` fixed heldout proof;
+- target coverage and false authority for every reported POS and field class;
+- standalone load RSS, package backing bytes, cold load, hot p50/p99, wall time,
+  and proof peak RSS.
+
+What was not tested:
+
+- mmap-backed file ownership or page-fault behavior;
+- the separate L1.1 thirteen-damage-class proof, because L1.1 bytes and scoring
+  did not change in this experiment;
+- daemon or IME installation and multi-day live stability.
+
+Verdict scope:
+
+- `PASS_compact_runtime_full_v13`;
+- compact runtime quality counters are exactly equal to the reference V13
+  receipt;
+- package and standalone RSS budgets pass;
+- runtime authority changed: `false`;
+- no daemon or IME cutover was performed.
+
+Exact receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_V13_COMPACT_RUNTIME_V1_2026-08-09.json
+```
+
 ## 13. 2026-08-09 L2+L3 Live Prediction Axis
 
 The canonical live prediction route is now:

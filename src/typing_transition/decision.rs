@@ -21,6 +21,7 @@ use crate::text_edit::TransitionAudit;
 use crate::text_metrics::{damerau_levenshtein, score_to_milli};
 use crate::transition_relation::{TransitionRelationAtoms, TransitionRelationInput};
 use crate::word_reader::split_word_punctuation;
+use rayon::prelude::*;
 use std::cmp::Ordering;
 
 pub(crate) struct TransitionDecisionCore;
@@ -53,6 +54,8 @@ impl TransitionDecisionCore {
         policy: TransitionDecisionPolicy,
         prepared_l2_peak_context: Option<&crate::nanda_wave::l2_wave_peak::L2CorrectionPeakContext>,
     ) -> CandidateDecisionBatch {
+        let timing_enabled = std::env::var_os("LAY_DECISION_CORE_TIMING").is_some();
+        let started = std::time::Instant::now();
         if candidates.is_empty() {
             return CandidateDecisionBatch {
                 evaluations: Vec::new(),
@@ -61,6 +64,7 @@ impl TransitionDecisionCore {
             };
         }
         let usage = crate::nanda_wave::cached_usage_prior_snapshot();
+        let usage_ready = std::time::Instant::now();
         let replacements = candidates
             .iter()
             .map(|candidate| candidate.replacement.as_str())
@@ -69,6 +73,7 @@ impl TransitionDecisionCore {
             &event.original,
             &replacements,
         );
+        let l3_ready = std::time::Instant::now();
         let owned_l2_peak_context;
         let l2_peak_context = if let Some(context) = prepared_l2_peak_context {
             context
@@ -77,9 +82,10 @@ impl TransitionDecisionCore {
                 crate::nanda_wave::l2_wave_peak::prepare_correction_peak_context(&event.original);
             &owned_l2_peak_context
         };
+        let peak_ready = std::time::Instant::now();
         let mut evaluations = candidates
-            .iter()
-            .zip(&l3_reports)
+            .par_iter()
+            .zip(l3_reports.par_iter())
             .map(|(candidate, l3_report)| {
                 CandidateDecisionEvaluation::build(
                     CandidateDecisionContext {
@@ -93,8 +99,11 @@ impl TransitionDecisionCore {
                 )
             })
             .collect::<Vec<_>>();
+        let evaluations_ready = std::time::Instant::now();
         settle_transition_interference(candidates, &mut evaluations, policy);
+        let interference_ready = std::time::Instant::now();
         settle_l4_hidden_state(event, candidates, &mut evaluations);
+        let hidden_ready = std::time::Instant::now();
         if std::env::var_os("LAY_DEBUG_DECISION_CORE").is_some() {
             for (candidate, evaluation) in candidates.iter().zip(&evaluations) {
                 eprintln!(
@@ -164,6 +173,7 @@ impl TransitionDecisionCore {
                 compare_candidate_decision_order(*left, *right, candidates, &evaluations)
             })
             .map(|(index, _)| index);
+        let selection_ready = std::time::Instant::now();
 
         let selected_transition = selected_index.map(|index| {
             DecisionTransitionReceipt::from_selected_candidate(
@@ -172,6 +182,22 @@ impl TransitionDecisionCore {
                 &evaluations[index],
             )
         });
+        if timing_enabled {
+            let finished = std::time::Instant::now();
+            eprintln!(
+                "lay_decision_core_timing usage_us={} l3_us={} peak_us={} evaluations_us={} interference_us={} hidden_us={} selection_us={} receipt_us={} total_us={} candidates={}",
+                usage_ready.duration_since(started).as_micros(),
+                l3_ready.duration_since(usage_ready).as_micros(),
+                peak_ready.duration_since(l3_ready).as_micros(),
+                evaluations_ready.duration_since(peak_ready).as_micros(),
+                interference_ready.duration_since(evaluations_ready).as_micros(),
+                hidden_ready.duration_since(interference_ready).as_micros(),
+                selection_ready.duration_since(hidden_ready).as_micros(),
+                finished.duration_since(selection_ready).as_micros(),
+                finished.duration_since(started).as_micros(),
+                candidates.len(),
+            );
+        }
 
         CandidateDecisionBatch {
             evaluations,

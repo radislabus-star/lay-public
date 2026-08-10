@@ -1,0 +1,1814 @@
+{
+  "class_count": 13,
+  "classes": {
+    "adjacent_transposition": {
+      "cases": 100,
+      "empty_lattice": 0,
+      "false_authority": 0,
+      "top16_retained": 49,
+      "top16_retained_percent": 49.0,
+      "top8_retained": 49,
+      "top8_retained_percent": 49.0,
+      "unique_birth_top1": 44,
+      "unique_birth_top1_percent": 44.0
+    },
+    "double_substitution": {
+      "cases": 100,
+      "empty_lattice": 0,
+      "false_authority": 0,
+      "top16_retained": 30,
+      "top16_retained_percent": 30.0,
+      "top8_retained": 30,
+      "top8_retained_percent": 30.0,
+      "unique_birth_top1": 27,
+      "unique_birth_top1_percent": 27.0
+    },
+    "extra_letter": {
+      "cases": 100,
+      "empty_lattice": 0,
+      "false_authority": 0,
+      "top16_retained": 68,
+      "top16_retained_percent": 68.0,
+      "top8_retained": 68,
+      "top8_retained_percent": 68.0,
+      "unique_birth_top1": 68,
+      "unique_birth_top1_percent": 68.0
+    },
+    "layout_projection": {
+      "cases": 100,
+      "empty_lattice": 0,
+      "false_authority": 0,
+      "top16_retained": 21,
+      "top16_retained_percent": 21.0,
+      "top8_retained": 21,
+      "top8_retained_percent": 21.0,
+      "unique_birth_top1": 20,
+      "unique_birth_top1_percent": 20.0
+    },
+    "letter_substitution": {
+      "cases": 100,
+      "empty_lattice": 0,
+      "false_authority": 0,
+      "top16_retained": 68,
+      "top16_retained_percent": 68.0,
+      "top8_retained": 68,
+      "top8_retained_percent": 68.0,
+      "unique_birth_top1": 56,
+      "unique_birth_top1_percent": 56.0
+    },
+    "missing_letter": {
+      "cases": 100,
+      "empty_lattice": 0,
+      "false_authority": 0,
+      "top16_retained": 55,
+      "top16_retained_percent": 55.0,
+      "top8_retained": 55,
+      "top8_retained_percent": 55.0,
+      "unique_birth_top1": 45,
+      "unique_birth_top1_percent": 45.0
+    },
+    "non_adjacent_transposition": {
+      "cases": 100,
+      "empty_lattice": 0,
+      "false_authority": 0,
+      "top16_retained": 29,
+      "top16_retained_percent": 29.0,
+      "top8_retained": 29,
+      "top8_retained_percent": 29.0,
+      "unique_birth_top1": 27,
+      "unique_birth_top1_percent": 27.0
+    },
+    "omission_transposition": {
+      "cases": 100,
+      "empty_lattice": 0,
+      "false_authority": 0,
+      "top16_retained": 11,
+      "top16_retained_percent": 11.0,
+      "top8_retained": 11,
+      "top8_retained_percent": 11.0,
+      "unique_birth_top1": 10,
+      "unique_birth_top1_percent": 10.0
+    },
+    "prefix_truncation": {
+      "cases": 100,
+      "empty_lattice": 0,
+      "false_authority": 0,
+      "top16_retained": 48,
+      "top16_retained_percent": 48.0,
+      "top8_retained": 48,
+      "top8_retained_percent": 48.0,
+      "unique_birth_top1": 46,
+      "unique_birth_top1_percent": 46.0
+    },
+    "punctuation_suffix": {
+      "cases": 100,
+      "empty_lattice": 0,
+      "false_authority": 0,
+      "top16_retained": 90,
+      "top16_retained_percent": 90.0,
+      "top8_retained": 90,
+      "top8_retained_percent": 90.0,
+      "unique_birth_top1": 90,
+      "unique_birth_top1_percent": 90.0
+    },
+    "repeated_fragment": {
+      "cases": 100,
+      "empty_lattice": 0,
+      "false_authority": 0,
+      "top16_retained": 67,
+      "top16_retained_percent": 67.0,
+      "top8_retained": 67,
+      "top8_retained_percent": 67.0,
+      "unique_birth_top1": 60,
+      "unique_birth_top1_percent": 60.0
+    },
+    "sparse_multi_omission": {
+      "cases": 100,
+      "empty_lattice": 0,
+      "false_authority": 0,
+      "top16_retained": 14,
+      "top16_retained_percent": 14.0,
+      "top8_retained": 14,
+      "top8_retained_percent": 14.0,
+      "unique_birth_top1": 11,
+      "unique_birth_top1_percent": 11.0
+    },
+    "suffix_truncation": {
+      "cases": 100,
+      "empty_lattice": 0,
+      "false_authority": 0,
+      "top16_retained": 90,
+      "top16_retained_percent": 90.0,
+      "top8_retained": 90,
+      "top8_retained_percent": 90.0,
+      "unique_birth_top1": 30,
+      "unique_birth_top1_percent": 30.0
+    }
+  },
+  "clean": {
+    "cases": 391,
+    "top16_retained": 352,
+    "top16_retained_percent": 90.02557544757033,
+    "unique_birth_top1": 352,
+    "unique_birth_top1_percent": 90.02557544757033
+  },
+  "cold_load": {
+    "l1_us": 828867,
+    "l2_us": 578314
+  },
+  "evaluated": 1300,
+  "failure_examples": [
+    {
+      "births": [
+        {
+          "evidence_milli": 750,
+          "surface": "разгребаемым",
+          "wave_distance": 36
+        },
+        {
+          "evidence_milli": 727,
+          "surface": "развеваемым",
+          "wave_distance": 36
+        },
+        {
+          "evidence_milli": 692,
+          "surface": "разгребаемыми",
+          "wave_distance": 36
+        },
+        {
+          "evidence_milli": 666,
+          "surface": "развеваемыми",
+          "wave_distance": 36
+        },
+        {
+          "evidence_milli": 666,
+          "surface": "разгребаемом",
+          "wave_distance": 36
+        },
+        {
+          "evidence_milli": 666,
+          "surface": "разгребаемые",
+          "wave_distance": 36
+        },
+        {
+          "evidence_milli": 666,
+          "surface": "разгребаемый",
+          "wave_distance": 36
+        },
+        {
+          "evidence_milli": 666,
+          "surface": "разгребаемых",
+          "wave_distance": 36
+        }
+      ],
+      "class": "adjacent_transposition",
+      "damaged": "разрвыаемым",
+      "target": "разрываемым",
+      "top16": false,
+      "top8": false,
+      "unique_top1": false
+    },
+    {
+      "births": [
+        {
+          "evidence_milli": 875,
+          "surface": "вселяете",
+          "wave_distance": 32
+        },
+        {
+          "evidence_milli": 875,
+          "surface": "вселяйте",
+          "wave_distance": 32
+        },
+        {
+          "evidence_milli": 857,
+          "surface": "вселяет",
+          "wave_distance": 32
+        },
+        {
+          "evidence_milli": 857,
+          "surface": "вселять",
+          "wave_distance": 32
+        },
+        {
+          "evidence_milli": 777,
+          "surface": "выселяете",
+          "wave_distance": 35
+        },
+        {
+          "evidence_milli": 777,
+          "surface": "выселяйте",
+          "wave_distance": 35
+        },
+        {
+          "evidence_milli": 750,
+          "surface": "вселятся",
+          "wave_distance": 32
+        },
+        {
+          "evidence_milli": 750,
+          "surface": "выселяет",
+          "wave_distance": 35
+        }
+      ],
+      "class": "adjacent_transposition",
+      "damaged": "вселяте",
+      "target": "вселяет",
+      "top16": true,
+      "top8": true,
+      "unique_top1": false
+    },
+    {
+      "births": [
+        {
+          "evidence_milli": 666,
+          "surface": "приревновало",
+          "wave_distance": 32
+        },
+        {
+          "evidence_milli": 666,
+          "surface": "целовало",
+          "wave_distance": 34
+        },
+        {
+          "evidence_milli": 583,
+          "surface": "приревновала",
+          "wave_distance": 32
+        },
+        {
+          "evidence_milli": 583,
+          "surface": "приревновали",
+          "wave_distance": 32
+        },
+        {
+          "evidence_milli": 583,
+          "surface": "приревновано",
+          "wave_distance": 32
+        },
+        {
+          "evidence_milli": 555,
+          "surface": "целовал",
+          "wave_distance": 34
+        },
+        {
+          "evidence_milli": 555,
+          "surface": "целовала",
+          "wave_distance": 34
+        },
+        {
+          "evidence_milli": 555,
+          "surface": "целовали",
+          "wave_distance": 34
+        }
+      ],
+      "class": "adjacent_transposition",
+      "damaged": "ренвовало",
+      "target": "ревновало",
+      "top16": false,
+      "top8": false,
+      "unique_top1": false
+    },
+    {
+      "births": [
+        {
+          "evidence_milli": 727,
+          "surface": "выклинивший",
+          "wave_distance": 35
+        },
+        {
+          "evidence_milli": 636,
+          "surface": "выклинившей",
+          "wave_distance": 35
+        },
+        {
+          "evidence_milli": 636,
+          "surface": "выклинившие",
+          "wave_distance": 35
+        },
+        {
+          "evidence_milli": 636,
+          "surface": "выклинившим",
+          "wave_distance": 35
+        },
+        {
+          "evidence_milli": 636,
+          "surface": "выклинивших",
+          "wave_distance": 35
+        },
+        {
+          "evidence_milli": 600,
+          "surface": "выклинивши",
+          "wave_distance": 35
+        },
+        {
+          "evidence_milli": 583,
+          "surface": "выклинившими",
+          "wave_distance": 35
+        },
+        {
+          "evidence_milli": 571,
+          "surface": "вышеобъявивший",
+          "wave_distance": 34
+        }
+      ],
+      "class": "adjacent_transposition",
+      "damaged": "выорнивший",
+      "target": "выронивший",
+      "top16": false,
+      "top8": false,
+      "unique_top1": false
+    },
+    {
+      "births": [
+        {
+          "evidence_milli": 750,
+          "surface": "сверловщиком",
+          "wave_distance": 34
+        },
+        {
+          "evidence_milli": 666,
+          "surface": "сверловкам",
+          "wave_distance": 33
+        },
+        {
+          "evidence_milli": 666,
+          "surface": "сверловкой",
+          "wave_distance": 33
+        },
+        {
+          "evidence_milli": 666,
+          "surface": "сверловкою",
+          "wave_distance": 33
+        },
+        {
+          "evidence_milli": 666,
+          "surface": "сверловок",
+          "wave_distance": 33
+        },
+        {
+          "evidence_milli": 666,
+          "surface": "сверловщикам",
+          "wave_distance": 34
+        },
+        {
+          "evidence_milli": 666,
+          "surface": "сверловщиков",
+          "wave_distance": 34
+        },
+        {
+          "evidence_milli": 666,
+          "surface": "сверловщицам",
+          "wave_distance": 34
+        }
+      ],
+      "class": "adjacent_transposition",
+      "damaged": "сверловчоном",
+      "target": "сверловочном",
+      "top16": false,
+      "top8": false,
+      "unique_top1": false
+    },
+    {
+      "births": [
+        {
+          "evidence_milli": 555,
+          "surface": "отмёрзших",
+          "wave_distance": 39
+        },
+        {
+          "evidence_milli": 444,
+          "surface": "отмёрзши",
+          "wave_distance": 39
+        },
+        {
+          "evidence_milli": 444,
+          "surface": "отмёрзшие",
+          "wave_distance": 39
+        },
+        {
+          "evidence_milli": 444,
+          "surface": "отмёрзший",
+          "wave_distance": 39
+        },
+        {
+          "evidence_milli": 444,
+          "surface": "отмёрзшим",
+          "wave_distance": 39
+        },
+        {
+          "evidence_milli": 400,
+          "surface": "отмёрзшими",
+          "wave_distance": 39
+        },
+        {
+          "evidence_milli": 333,
+          "surface": "отмёрзли",
+          "wave_distance": 39
+        },
+        {
+          "evidence_milli": 333,
+          "surface": "отмёрзни",
+          "wave_distance": 39
+        }
+      ],
+      "class": "adjacent_transposition",
+      "damaged": "огтрызших",
+      "target": "отгрызших",
+      "top16": false,
+      "top8": false,
+      "unique_top1": false
+    },
+    {
+      "births": [
+        {
+          "evidence_milli": 500,
+          "surface": "нянечкиным",
+          "wave_distance": 36
+        },
+        {
+          "evidence_milli": 454,
+          "surface": "нянечкиными",
+          "wave_distance": 36
+        },
+        {
+          "evidence_milli": 444,
+          "surface": "кунжутным",
+          "wave_distance": 37
+        },
+        {
+          "evidence_milli": 400,
+          "surface": "нянечкином",
+          "wave_distance": 36
+        },
+        {
+          "evidence_milli": 400,
+          "surface": "нянечкиных",
+          "wave_distance": 36
+        },
+        {
+          "evidence_milli": 400,
+          "surface": "кунжутными",
+          "wave_distance": 37
+        },
+        {
+          "evidence_milli": 363,
+          "surface": "нянечкиному",
+          "wave_distance": 36
+        },
+        {
+          "evidence_milli": 333,
+          "surface": "нянечкины",
+          "wave_distance": 36
+        }
+      ],
+      "class": "adjacent_transposition",
+      "damaged": "деефктным",
+      "target": "дефектным",
+      "top16": false,
+      "top8": false,
+      "unique_top1": false
+    },
+    {
+      "births": [
+        {
+          "evidence_milli": 650,
+          "surface": "пересевавшегося",
+          "wave_distance": 24
+        },
+        {
+          "evidence_milli": 600,
+          "surface": "расталкивавшегося",
+          "wave_distance": 25
+        },
+        {
+          "evidence_milli": 550,
+          "surface": "отклеивавшегося",
+          "wave_distance": 24
+        },
+        {
+          "evidence_milli": 550,
+          "surface": "пересевавшееся",
+          "wave_distance": 24
+        },
+        {
+          "evidence_milli": 550,
+          "surface": "пересевавшейся",
+          "wave_distance": 24
+        },
+        {
+          "evidence_milli": 550,
+          "surface": "пересевавшемся",
+          "wave_distance": 24
+        },
+        {
+          "evidence_milli": 550,
+          "surface": "пересевавшемуся",
+          "wave_distance": 24
+        },
+        {
+          "evidence_milli": 550,
+          "surface": "пересевавшеюся",
+          "wave_distance": 24
+        }
+      ],
+      "class": "adjacent_transposition",
+      "damaged": "перекуывркивавшегося",
+      "target": "перекувыркивавшегося",
+      "top16": false,
+      "top8": false,
+      "unique_top1": false
+    },
+    {
+      "births": [
+        {
+          "evidence_milli": 583,
+          "surface": "плагиирующий",
+          "wave_distance": 39
+        },
+        {
+          "evidence_milli": 500,
+          "surface": "плагиирующей",
+          "wave_distance": 39
+        },
+        {
+          "evidence_milli": 500,
+          "surface": "плагиирующие",
+          "wave_distance": 39
+        },
+        {
+          "evidence_milli": 500,
+          "surface": "плагиирующим",
+          "wave_distance": 39
+        },
+        {
+          "evidence_milli": 500,
+          "surface": "плагиирующих",
+          "wave_distance": 39
+        },
+        {
+          "evidence_milli": 461,
+          "surface": "плагиирующими",
+          "wave_distance": 39
+        },
+        {
+          "evidence_milli": 428,
+          "surface": "плагиировавший",
+          "wave_distance": 39
+        },
+        {
+          "evidence_milli": 416,
+          "surface": "вдавливающий",
+          "wave_distance": 38
+        }
+      ],
+      "class": "adjacent_transposition",
+      "damaged": "плешиевющий",
+      "target": "плешивеющий",
+      "top16": false,
+      "top8": false,
+      "unique_top1": false
+    },
+    {
+      "births": [
+        {
+          "evidence_milli": 928,
+          "surface": "подписывающим",
+          "wave_distance": 22
+        },
+        {
+          "evidence_milli": 928,
+          "surface": "подписывающими",
+          "wave_distance": 22
+        },
+        {
+          "evidence_milli": 857,
+          "surface": "подписывающем",
+          "wave_distance": 22
+        },
+        {
+          "evidence_milli": 857,
+          "surface": "подписывающие",
+          "wave_distance": 22
+        },
+        {
+          "evidence_milli": 857,
+          "surface": "подписывающий",
+          "wave_distance": 22
+        },
+        {
+          "evidence_milli": 857,
+          "surface": "подписывающих",
+          "wave_distance": 22
+        },
+        {
+          "evidence_milli": 785,
+          "surface": "подписывавшим",
+          "wave_distance": 22
+        },
+        {
+          "evidence_milli": 785,
+          "surface": "подписывавшими",
+          "wave_distance": 22
+        }
+      ],
+      "class": "adjacent_transposition",
+      "damaged": "подписывающиим",
+      "target": "подписывающими",
+      "top16": true,
+      "top8": true,
+      "unique_top1": false
+    },
+    {
+      "births": [
+        {
+          "evidence_milli": 777,
+          "surface": "фризового",
+          "wave_distance": 37
+        },
+        {
+          "evidence_milli": 555,
+          "surface": "фризовое",
+          "wave_distance": 37
+        },
+        {
+          "evidence_milli": 555,
+          "surface": "фризовой",
+          "wave_distance": 37
+        },
+        {
+          "evidence_milli": 555,
+          "surface": "фризовом",
+          "wave_distance": 37
+        },
+        {
+          "evidence_milli": 555,
+          "surface": "фризовому",
+          "wave_distance": 37
+        },
+        {
+          "evidence_milli": 555,
+          "surface": "фризовою",
+          "wave_distance": 37
+        },
+        {
+          "evidence_milli": 444,
+          "surface": "фризовая",
+          "wave_distance": 37
+        },
+        {
+          "evidence_milli": 444,
+          "surface": "фризовую",
+          "wave_distance": 37
+        }
+      ],
+      "class": "adjacent_transposition",
+      "damaged": "фризксого",
+      "target": "фризского",
+      "top16": false,
+      "top8": false,
+      "unique_top1": false
+    },
+    {
+      "births": [
+        {
+          "evidence_milli": 545,
+          "surface": "воскуряющая",
+          "wave_distance": 32
+        },
+        {
+          "evidence_milli": 454,
+          "surface": "вопрошающая",
+          "wave_distance": 34
+        },
+        {
+          "evidence_milli": 400,
+          "surface": "яснеющая",
+          "wave_distance": 33
+        },
+        {
+          "evidence_milli": 363,
+          "surface": "воскурявшая",
+          "wave_distance": 32
+        },
+        {
+          "evidence_milli": 363,
+          "surface": "воскуряемая",
+          "wave_distance": 32
+        },
+        {
+          "evidence_milli": 363,
+          "surface": "воскуряющее",
+          "wave_distance": 32
+        },
+        {
+          "evidence_milli": 363,
+          "surface": "воскуряющей",
+          "wave_distance": 32
+        },
+        {
+          "evidence_milli": 363,
+          "surface": "воскуряющем",
+          "wave_distance": 32
+        }
+      ],
+      "class": "adjacent_transposition",
+      "damaged": "полуачющая",
+      "target": "получающая",
+      "top16": false,
+      "top8": false,
+      "unique_top1": false
+    },
+    {
+      "births": [
+        {
+          "evidence_milli": 615,
+          "surface": "досевающееся",
+          "wave_distance": 33
+        },
+        {
+          "evidence_milli": 600,
+          "surface": "аннексирующееся",
+          "wave_distance": 35
+        },
+        {
+          "evidence_milli": 538,
+          "surface": "досевающейся",
+          "wave_distance": 33
+        },
+        {
+          "evidence_milli": 538,
+          "surface": "досевающемся",
+          "wave_distance": 33
+        },
+        {
+          "evidence_milli": 538,
+          "surface": "досевающеюся",
+          "wave_distance": 33
+        },
+        {
+          "evidence_milli": 538,
+          "surface": "досевающиеся",
+          "wave_distance": 33
+        },
+        {
+          "evidence_milli": 538,
+          "surface": "бронирующееся",
+          "wave_distance": 35
+        },
+        {
+          "evidence_milli": 533,
+          "surface": "рассасывающееся",
+          "wave_distance": 34
+        }
+      ],
+      "class": "adjacent_transposition",
+      "damaged": "аттсетующееся",
+      "target": "аттестующееся",
+      "top16": false,
+      "top8": false,
+      "unique_top1": false
+    },
+    {
+      "births": [
+        {
+          "evidence_milli": 750,
+          "surface": "пробежался",
+          "wave_distance": 33
+        },
+        {
+          "evidence_milli": 692,
+          "surface": "пробежавшаяся",
+          "wave_distance": 33
+        },
+        {
+          "evidence_milli": 666,
+          "surface": "пробежимся",
+          "wave_distance": 33
+        },
+        {
+          "evidence_milli": 666,
+          "surface": "пробежится",
+          "wave_distance": 33
+        },
+        {
+          "evidence_milli": 666,
+          "surface": "пробежишься",
+          "wave_distance": 33
+        },
+        {
+          "evidence_milli": 642,
+          "surface": "пробежавшимися",
+          "wave_distance": 33
+        },
+        {
+          "evidence_milli": 615,
+          "surface": "пробежавшееся",
+          "wave_distance": 33
+        },
+        {
+          "evidence_milli": 615,
+          "surface": "пробежавшейся",
+          "wave_distance": 33
+        }
+      ],
+      "class": "adjacent_transposition",
+      "damaged": "процежвиался",
+      "target": "процеживался",
+      "top16": false,
+      "top8": false,
+      "unique_top1": false
+    },
+    {
+      "births": [
+        {
+          "evidence_milli": 454,
+          "surface": "нарративную",
+          "wave_distance": 38
+        },
+        {
+          "evidence_milli": 416,
+          "surface": "нарративному",
+          "wave_distance": 38
+        },
+        {
+          "evidence_milli": 400,
+          "surface": "нарративен",
+          "wave_distance": 38
+        },
+        {
+          "evidence_milli": 400,
+          "surface": "нарративна",
+          "wave_distance": 38
+        },
+        {
+          "evidence_milli": 400,
+          "surface": "нарративно",
+          "wave_distance": 38
+        },
+        {
+          "evidence_milli": 400,
+          "surface": "нарративны",
+          "wave_distance": 38
+        },
+        {
+          "evidence_milli": 363,
+          "surface": "нарративная",
+          "wave_distance": 38
+        },
+        {
+          "evidence_milli": 363,
+          "surface": "нарративное",
+          "wave_distance": 38
+        }
+      ],
+      "class": "adjacent_transposition",
+      "damaged": "налакирйу",
+      "target": "налакируй",
+      "top16": false,
+      "top8": false,
+      "unique_top1": false
+    },
+    {
+      "births": [
+        {
+          "evidence_milli": 555,
+          "surface": "недобитые",
+          "wave_distance": 35
+        },
+        {
+          "evidence_milli": 500,
+          "surface": "недосоле",
+          "wave_distance": 32
+        },
+        {
+          "evidence_milli": 500,
+          "surface": "недосолы",
+          "wave_distance": 32
+        },
+        {
+          "evidence_milli": 500,
+          "surface": "некуряще",
+          "wave_distance": 34
+        },
+        {
+          "evidence_milli": 444,
+          "surface": "недосолам",
+          "wave_distance": 32
+        },
+        {
+          "evidence_milli": 444,
+          "surface": "недосолах",
+          "wave_distance": 32
+        },
+        {
+          "evidence_milli": 444,
+          "surface": "недосолов",
+          "wave_distance": 32
+        },
+        {
+          "evidence_milli": 444,
+          "surface": "недосолом",
+          "wave_distance": 32
+        }
+      ],
+      "class": "adjacent_transposition",
+      "damaged": "нексилые",
+      "target": "некислые",
+      "top16": false,
+      "top8": false,
+      "unique_top1": false
+    },
+    {
+      "births": [
+        {
+          "evidence_milli": 636,
+          "surface": "удваиваемые",
+          "wave_distance": 37
+        },
+        {
+          "evidence_milli": 555,
+          "surface": "вживание",
+          "wave_distance": 39
+        },
+        {
+          "evidence_milli": 555,
+          "surface": "вживанье",
+          "wave_distance": 39
+        },
+        {
+          "evidence_milli": 545,
+          "surface": "удваиваемое",
+          "wave_distance": 37
+        },
+        {
+          "evidence_milli": 545,
+          "surface": "удваиваемый",
+          "wave_distance": 37
+        },
+        {
+          "evidence_milli": 545,
+          "surface": "удваиваемым",
+          "wave_distance": 37
+        },
+        {
+          "evidence_milli": 545,
+          "surface": "удваиваемых",
+          "wave_distance": 37
+        },
+        {
+          "evidence_milli": 500,
+          "surface": "удваиваемы",
+          "wave_distance": 37
+        }
+      ],
+      "class": "adjacent_transposition",
+      "damaged": "впивамеые",
+      "target": "впиваемые",
+      "top16": false,
+      "top8": false,
+      "unique_top1": false
+    },
+    {
+      "births": [
+        {
+          "evidence_milli": 642,
+          "surface": "определявшийся",
+          "wave_distance": 31
+        },
+        {
+          "evidence_milli": 571,
+          "surface": "вкраплявшийся",
+          "wave_distance": 30
+        },
+        {
+          "evidence_milli": 571,
+          "surface": "определявшейся",
+          "wave_distance": 31
+        },
+        {
+          "evidence_milli": 571,
+          "surface": "определявшиеся",
+          "wave_distance": 31
+        },
+        {
+          "evidence_milli": 571,
+          "surface": "определявшимся",
+          "wave_distance": 31
+        },
+        {
+          "evidence_milli": 571,
+          "surface": "определявшихся",
+          "wave_distance": 31
+        },
+        {
+          "evidence_milli": 533,
+          "surface": "определявшимися",
+          "wave_distance": 31
+        },
+        {
+          "evidence_milli": 500,
+          "surface": "вкраплявшейся",
+          "wave_distance": 30
+        }
+      ],
+      "class": "adjacent_transposition",
+      "damaged": "расчхелявшийся",
+      "target": "расчехлявшийся",
+      "top16": false,
+      "top8": false,
+      "unique_top1": false
+    },
+    {
+      "births": [
+        {
+          "evidence_milli": 545,
+          "surface": "выбегаешься",
+          "wave_distance": 36
+        },
+        {
+          "evidence_milli": 500,
+          "surface": "вделаешься",
+          "wave_distance": 36
+        },
+        {
+          "evidence_milli": 500,
+          "surface": "выбегается",
+          "wave_distance": 36
+        },
+        {
+          "evidence_milli": 500,
+          "surface": "выбегаться",
+          "wave_distance": 36
+        },
+        {
+          "evidence_milli": 500,
+          "surface": "выбегаются",
+          "wave_distance": 36
+        },
+        {
+          "evidence_milli": 444,
+          "surface": "вделается",
+          "wave_distance": 36
+        },
+        {
+          "evidence_milli": 444,
+          "surface": "вделаются",
+          "wave_distance": 36
+        },
+        {
+          "evidence_milli": 444,
+          "surface": "выбегайся",
+          "wave_distance": 36
+        }
+      ],
+      "class": "adjacent_transposition",
+      "damaged": "выпиештся",
+      "target": "выпишется",
+      "top16": false,
+      "top8": false,
+      "unique_top1": false
+    },
+    {
+      "births": [
+        {
+          "evidence_milli": 600,
+          "surface": "обедняющий",
+          "wave_distance": 37
+        },
+        {
+          "evidence_milli": 545,
+          "surface": "увольняющий",
+          "wave_distance": 36
+        },
+        {
+          "evidence_milli": 500,
+          "surface": "умерщвляющий",
+          "wave_distance": 31
+        },
+        {
+          "evidence_milli": 500,
+          "surface": "замеряющий",
+          "wave_distance": 35
+        },
+        {
+          "evidence_milli": 500,
+          "surface": "обедняющей",
+          "wave_distance": 37
+        },
+        {
+          "evidence_milli": 500,
+          "surface": "обедняющие",
+          "wave_distance": 37
+        },
+        {
+          "evidence_milli": 500,
+          "surface": "обедняющим",
+          "wave_distance": 37
+        },
+        {
+          "evidence_milli": 500,
+          "surface": "обедняющих",
+          "wave_distance": 37
+        }
+      ],
+      "class": "adjacent_transposition",
+      "damaged": "сбалвяющий",
+      "target": "сбавляющий",
+      "top16": false,
+      "top8": false,
+      "unique_top1": false
+    },
+    {
+      "births": [
+        {
+          "evidence_milli": 909,
+          "surface": "сколупавшее",
+          "wave_distance": 33
+        },
+        {
+          "evidence_milli": 909,
+          "surface": "сколупавшею",
+          "wave_distance": 33
+        },
+        {
+          "evidence_milli": 909,
+          "surface": "сколупавшие",
+          "wave_distance": 33
+        },
+        {
+          "evidence_milli": 818,
+          "surface": "сколупавшая",
+          "wave_distance": 33
+        },
+        {
+          "evidence_milli": 818,
+          "surface": "сколупавшей",
+          "wave_distance": 33
+        },
+        {
+          "evidence_milli": 818,
+          "surface": "сколупавшем",
+          "wave_distance": 33
+        },
+        {
+          "evidence_milli": 818,
+          "surface": "сколупавши",
+          "wave_distance": 33
+        },
+        {
+          "evidence_milli": 818,
+          "surface": "сколупавший",
+          "wave_distance": 33
+        }
+      ],
+      "class": "adjacent_transposition",
+      "damaged": "сколупавшюе",
+      "target": "сколупавшею",
+      "top16": true,
+      "top8": true,
+      "unique_top1": false
+    },
+    {
+      "births": [
+        {
+          "evidence_milli": 769,
+          "surface": "перевевающие",
+          "wave_distance": 26
+        },
+        {
+          "evidence_milli": 769,
+          "surface": "переодевающие",
+          "wave_distance": 34
+        },
+        {
+          "evidence_milli": 692,
+          "surface": "перевевающее",
+          "wave_distance": 26
+        },
+        {
+          "evidence_milli": 692,
+          "surface": "перевевающий",
+          "wave_distance": 26
+        },
+        {
+          "evidence_milli": 692,
+          "surface": "перевевающим",
+          "wave_distance": 26
+        },
+        {
+          "evidence_milli": 692,
+          "surface": "перевевающих",
+          "wave_distance": 26
+        },
+        {
+          "evidence_milli": 692,
+          "surface": "переодевающее",
+          "wave_distance": 34
+        },
+        {
+          "evidence_milli": 692,
+          "surface": "переодевающий",
+          "wave_distance": 34
+        }
+      ],
+      "class": "adjacent_transposition",
+      "damaged": "перезрвеающие",
+      "target": "перезревающие",
+      "top16": false,
+      "top8": false,
+      "unique_top1": false
+    },
+    {
+      "births": [
+        {
+          "evidence_milli": 636,
+          "surface": "затолкавшую",
+          "wave_distance": 34
+        },
+        {
+          "evidence_milli": 615,
+          "surface": "замалчивавшую",
+          "wave_distance": 32
+        },
+        {
+          "evidence_milli": 545,
+          "surface": "затолкавшею",
+          "wave_distance": 34
+        },
+        {
+          "evidence_milli": 538,
+          "surface": "замалчивавшею",
+          "wave_distance": 32
+        },
+        {
+          "evidence_milli": 500,
+          "surface": "отбегавшую",
+          "wave_distance": 34
+        },
+        {
+          "evidence_milli": 461,
+          "surface": "замалчивавшая",
+          "wave_distance": 32
+        },
+        {
+          "evidence_milli": 461,
+          "surface": "замалчивавшее",
+          "wave_distance": 32
+        },
+        {
+          "evidence_milli": 461,
+          "surface": "замалчивавшей",
+          "wave_distance": 32
+        }
+      ],
+      "class": "adjacent_transposition",
+      "damaged": "зажмиавшую",
+      "target": "зажимавшую",
+      "top16": false,
+      "top8": false,
+      "unique_top1": false
+    },
+    {
+      "births": [
+        {
+          "evidence_milli": 769,
+          "surface": "диатоническим",
+          "wave_distance": 27
+        },
+        {
+          "evidence_milli": 769,
+          "surface": "демоническим",
+          "wave_distance": 29
+        },
+        {
+          "evidence_milli": 733,
+          "surface": "филармоническим",
+          "wave_distance": 26
+        },
+        {
+          "evidence_milli": 714,
+          "surface": "диатоническими",
+          "wave_distance": 27
+        },
+        {
+          "evidence_milli": 692,
+          "surface": "диатонические",
+          "wave_distance": 27
+        },
+        {
+          "evidence_milli": 692,
+          "surface": "диатонический",
+          "wave_distance": 27
+        },
+        {
+          "evidence_milli": 692,
+          "surface": "диатонических",
+          "wave_distance": 27
+        },
+        {
+          "evidence_milli": 692,
+          "surface": "диатоническом",
+          "wave_distance": 27
+        }
+      ],
+      "class": "adjacent_transposition",
+      "damaged": "питмоническим",
+      "target": "питомническим",
+      "top16": false,
+      "top8": false,
+      "unique_top1": false
+    },
+    {
+      "births": [
+        {
+          "evidence_milli": 833,
+          "surface": "застругавшим",
+          "wave_distance": 34
+        },
+        {
+          "evidence_milli": 769,
+          "surface": "застругавшими",
+          "wave_distance": 34
+        },
+        {
+          "evidence_milli": 750,
+          "surface": "застругавшем",
+          "wave_distance": 34
+        },
+        {
+          "evidence_milli": 750,
+          "surface": "застругавши",
+          "wave_distance": 34
+        },
+        {
+          "evidence_milli": 750,
+          "surface": "застругавшие",
+          "wave_distance": 34
+        },
+        {
+          "evidence_milli": 750,
+          "surface": "застругавший",
+          "wave_distance": 34
+        },
+        {
+          "evidence_milli": 750,
+          "surface": "застругавших",
+          "wave_distance": 34
+        },
+        {
+          "evidence_milli": 692,
+          "surface": "застругавшему",
+          "wave_distance": 34
+        }
+      ],
+      "class": "adjacent_transposition",
+      "damaged": "застргоавшим",
+      "target": "застрогавшим",
+      "top16": false,
+      "top8": false,
+      "unique_top1": false
+    },
+    {
+      "births": [
+        {
+          "evidence_milli": 428,
+          "surface": "откосят",
+          "wave_distance": 39
+        },
+        {
+          "evidence_milli": 285,
+          "surface": "откосит",
+          "wave_distance": 39
+        },
+        {
+          "evidence_milli": 250,
+          "surface": "поатлетичнее",
+          "wave_distance": 38
+        },
+        {
+          "evidence_milli": 250,
+          "surface": "поатлетичней",
+          "wave_distance": 38
+        },
+        {
+          "evidence_milli": 250,
+          "surface": "откосите",
+          "wave_distance": 39
+        },
+        {
+          "evidence_milli": 250,
+          "surface": "откосить",
+          "wave_distance": 39
+        },
+        {
+          "evidence_milli": 222,
+          "surface": "откосимте",
+          "wave_distance": 39
+        },
+        {
+          "evidence_milli": 200,
+          "surface": "упаривание",
+          "wave_distance": 38
+        }
+      ],
+      "class": "adjacent_transposition",
+      "damaged": "уматсят",
+      "target": "умастят",
+      "top16": false,
+      "top8": false,
+      "unique_top1": false
+    },
+    {
+      "births": [
+        {
+          "evidence_milli": 800,
+          "surface": "подметания",
+          "wave_distance": 34
+        },
+        {
+          "evidence_milli": 800,
+          "surface": "подметанья",
+          "wave_distance": 34
+        },
+        {
+          "evidence_milli": 800,
+          "surface": "подметай",
+          "wave_distance": 35
+        },
+        {
+          "evidence_milli": 800,
+          "surface": "подметая",
+          "wave_distance": 35
+        },
+        {
+          "evidence_milli": 727,
+          "surface": "подметаниям",
+          "wave_distance": 34
+        },
+        {
+          "evidence_milli": 727,
+          "surface": "подметаниях",
+          "wave_distance": 34
+        },
+        {
+          "evidence_milli": 727,
+          "surface": "подметаньям",
+          "wave_distance": 34
+        },
+        {
+          "evidence_milli": 727,
+          "surface": "подметаньях",
+          "wave_distance": 34
+        }
+      ],
+      "class": "adjacent_transposition",
+      "damaged": "подметасйя",
+      "target": "подметайся",
+      "top16": false,
+      "top8": false,
+      "unique_top1": false
+    },
+    {
+      "births": [
+        {
+          "evidence_milli": 888,
+          "surface": "карасёво",
+          "wave_distance": 25
+        },
+        {
+          "evidence_milli": 888,
+          "surface": "карасёвою",
+          "wave_distance": 25
+        },
+        {
+          "evidence_milli": 800,
+          "surface": "карасёвого",
+          "wave_distance": 25
+        },
+        {
+          "evidence_milli": 777,
+          "surface": "карасёв",
+          "wave_distance": 25
+        },
+        {
+          "evidence_milli": 777,
+          "surface": "карасёва",
+          "wave_distance": 25
+        },
+        {
+          "evidence_milli": 777,
+          "surface": "карасёвая",
+          "wave_distance": 25
+        },
+        {
+          "evidence_milli": 777,
+          "surface": "карасёвее",
+          "wave_distance": 25
+        },
+        {
+          "evidence_milli": 777,
+          "surface": "карасёвей",
+          "wave_distance": 25
+        }
+      ],
+      "class": "adjacent_transposition",
+      "damaged": "карасёвюо",
+      "target": "карасёвою",
+      "top16": true,
+      "top8": true,
+      "unique_top1": false
+    },
+    {
+      "births": [
+        {
+          "evidence_milli": 444,
+          "surface": "поранятся",
+          "wave_distance": 37
+        },
+        {
+          "evidence_milli": 400,
+          "surface": "подтирался",
+          "wave_distance": 36
+        },
+        {
+          "evidence_milli": 384,
+          "surface": "подтиравшаяся",
+          "wave_distance": 36
+        },
+        {
+          "evidence_milli": 384,
+          "surface": "подтирающаяся",
+          "wave_distance": 36
+        },
+        {
+          "evidence_milli": 375,
+          "surface": "поранься",
+          "wave_distance": 37
+        },
+        {
+          "evidence_milli": 375,
+          "surface": "поранясь",
+          "wave_distance": 37
+        },
+        {
+          "evidence_milli": 363,
+          "surface": "подтираемся",
+          "wave_distance": 36
+        },
+        {
+          "evidence_milli": 363,
+          "surface": "подтирается",
+          "wave_distance": 36
+        }
+      ],
+      "class": "adjacent_transposition",
+      "damaged": "чикаляся",
+      "target": "чикаялся",
+      "top16": false,
+      "top8": false,
+      "unique_top1": false
+    },
+    {
+      "births": [
+        {
+          "evidence_milli": 833,
+          "surface": "поставивший",
+          "wave_distance": 32
+        },
+        {
+          "evidence_milli": 750,
+          "surface": "поставившей",
+          "wave_distance": 32
+        },
+        {
+          "evidence_milli": 750,
+          "surface": "поставивши",
+          "wave_distance": 32
+        },
+        {
+          "evidence_milli": 750,
+          "surface": "поставившие",
+          "wave_distance": 32
+        },
+        {
+          "evidence_milli": 750,
+          "surface": "поставившим",
+          "wave_distance": 32
+        },
+        {
+          "evidence_milli": 750,
+          "surface": "поставивших",
+          "wave_distance": 32
+        },
+        {
+          "evidence_milli": 750,
+          "surface": "подставивший",
+          "wave_distance": 35
+        },
+        {
+          "evidence_milli": 666,
+          "surface": "поставитившийся",
+          "wave_distance": 30
+        }
+      ],
+      "class": "adjacent_transposition",
+      "damaged": "поставялвший",
+      "target": "поставлявший",
+      "top16": false,
+      "top8": false,
+      "unique_top1": false
+    },
+    {
+      "births": [
+        {
+          "evidence_milli": 692,
+          "surface": "мужеподобных",
+          "wave_distance": 34
+        },
+        {
+          "evidence_milli": 692,
+          "surface": "жизнеподобных",
+          "wave_distance": 37
+        },
+        {
+          "evidence_milli": 615,
+          "surface": "мужеподобны",
+          "wave_distance": 34
+        },
+        {
+          "evidence_milli": 615,
+          "surface": "мужеподобные",
+          "wave_distance": 34
+        },
+        {
+          "evidence_milli": 615,
+          "surface": "мужеподобный",
+          "wave_distance": 34
+        },
+        {
+          "evidence_milli": 615,
+          "surface": "мужеподобным",
+          "wave_distance": 34
+        },
+        {
+          "evidence_milli": 615,
+          "surface": "жизнеподобные",
+          "wave_distance": 37
+        },
+        {
+          "evidence_milli": 615,
+          "surface": "жизнеподобный",
+          "wave_distance": 37
+        }
+      ],
+      "class": "adjacent_transposition",
+      "damaged": "коренподобных",
+      "target": "корнеподобных",
+      "top16": false,
+      "top8": false,
+      "unique_top1": false
+    },
+    {
+      "births": [
+        {
+          "evidence_milli": 500,
+          "surface": "эфирное",
+          "wave_distance": 33
+        },
+        {
+          "evidence_milli": 500,
+          "surface": "эфирном",
+          "wave_distance": 33
+        },
+        {
+          "evidence_milli": 500,
+          "surface": "эфирному",
+          "wave_distance": 33
+        },
+        {
+          "evidence_milli": 500,
+          "surface": "эфирными",
+          "wave_distance": 33
+        },
+        {
+          "evidence_milli": 428,
+          "surface": "эфирами",
+          "wave_distance": 33
+        },
+        {
+          "evidence_milli": 428,
+          "surface": "эфиром",
+          "wave_distance": 33
+        },
+        {
+          "evidence_milli": 428,
+          "surface": "эфирен",
+          "wave_distance": 33
+        },
+        {
+          "evidence_milli": 428,
+          "surface": "эфирна",
+          "wave_distance": 33
+        }
+      ],
+      "class": "adjacent_transposition",
+      "damaged": "эфирномсаличен",
+      "target": "эфирномасличен",
+      "top16": false,
+      "top8": false,
+      "unique_top1": false
+    }
+  ],
+  "false_authority": 0,
+  "false_authority_examples": [],
+  "forms": 1875032,
+  "gates": {
+    "clean_top16_retained_at_least_percent": 99.9,
+    "clean_unique_birth_top1_at_least_percent": 99.9,
+    "each_top16_retained_at_least_percent": 99.0,
+    "each_top8_retained_at_least_percent": 99.0,
+    "each_unique_birth_top1_strictly_above_percent": 95.0,
+    "false_authority_equals": 0
+  },
+  "heldout_per_class": 100,
+  "kind": "canonical_l2_compositional_restoration_fixed_proof",
+  "l1_package": "artifacts/l11-l2-global-compaction-2026-07-30/package.v8.bin",
+  "l1_package_fingerprint": 11810333104793978882,
+  "l2_package": "artifacts/l2-v13-compositional-v2-2026-08-09/LAY-L2-RU-FULL-v13.compact-v2.bin",
+  "latency": {
+    "birth_p50_us": 5266,
+    "birth_p99_us": 7154,
+    "composition_only_readout_p50_us": 223,
+    "composition_only_readout_p99_us": 536,
+    "proof_us": 388362,
+    "workers": 20
+  },
+  "limits": {
+    "form_lattice": 16,
+    "lemma_frontier": 4
+  },
+  "memory": {
+    "compositional_index_resident_bytes": 23250264,
+    "compositional_index_source": "compact_v2_embedded",
+    "package_bytes": 86794442,
+    "package_resident_bytes": 86794442,
+    "package_storage": "compact_v2_compositional",
+    "rss_after_l2_load_kib": 146044,
+    "rss_peak_kib": 306136
+  },
+  "not_tested": [
+    "sentence-context ranking between valid morphology cells",
+    "final L3/L4/DecisionCore apply authority",
+    "daemon and IBus latency"
+  ],
+  "runtime_authority_changed_by_proof": false,
+  "sampling": {
+    "eligible_l2_only_forms": 442,
+    "sampling_us": 47359,
+    "scanned_forms": 634,
+    "selected_target_forms": 391,
+    "strategy": "deterministic coprime form permutation; at most one heldout damage per target and class"
+  },
+  "scope": "L2-only exact form birth and lattice retention over the shared L1.1 damage generator",
+  "verdict": "FAIL"
+}

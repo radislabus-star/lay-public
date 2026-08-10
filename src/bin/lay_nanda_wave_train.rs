@@ -63,6 +63,27 @@ fn main() -> io::Result<()> {
     if args.iter().any(|arg| arg == "--watch-l3-context-online") {
         return l3_online::run(&args);
     }
+    if let Some(reference) = arg_path(&args, "--compact-canonical-l2") {
+        let output = arg_path(&args, "--out")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--out is required"))?;
+        let report = lay::nanda_wave::compact_canonical_l2_package(&reference, &output)?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if let Some(compact) = arg_path(&args, "--prove-compact-canonical-l2") {
+        let reference = arg_path(&args, "--reference").ok_or_else(|| {
+            io::Error::new(io::ErrorKind::InvalidInput, "--reference is required")
+        })?;
+        let report = lay::nanda_wave::prove_compact_canonical_l2_parity(&reference, &compact)?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
     if args.iter().any(|arg| arg == "--canonical-l2-status") {
         println!(
             "{}",
@@ -142,6 +163,74 @@ fn main() -> io::Result<()> {
             &morphology_corpus,
             arg_usize(&args, "--limit").unwrap_or(0),
         )?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if let Some(l2_package) = arg_path(&args, "--prove-compositional-l2") {
+        let l1_package = arg_path(&args, "--memory")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--memory is required"))?;
+        let report = lay::nanda_wave::prove_compositional_l2_restoration(
+            &l1_package,
+            &l2_package,
+            arg_usize(&args, "--heldout-per-class").unwrap_or(20_000),
+            arg_usize(&args, "--workers").unwrap_or_else(|| {
+                std::thread::available_parallelism()
+                    .map(usize::from)
+                    .unwrap_or(1)
+            }),
+            arg_usize(&args, "--lemma-limit").unwrap_or(4),
+            arg_usize(&args, "--form-limit").unwrap_or(16),
+            arg_usize(&args, "--atom-relation-limit")
+                .unwrap_or(lay::nanda_wave::CANONICAL_L2_ATOM_RELATION_LIMIT),
+        )?;
+        if let Some(receipt) = arg_path(&args, "--receipt") {
+            let mut bytes = serde_json::to_vec_pretty(&report).map_err(io::Error::other)?;
+            bytes.push(b'\n');
+            lay::private_file::write_private_bytes(&receipt, &bytes)?;
+        }
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if let Some(l2_package) = arg_path(&args, "--prove-contextual-compositional-l2") {
+        let l1_package = arg_path(&args, "--memory")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--memory is required"))?;
+        let morphology_corpus = arg_path(&args, "--morphology-corpus").ok_or_else(|| {
+            io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "--morphology-corpus is required",
+            )
+        })?;
+        let report = lay::nanda_wave::prove_contextual_compositional_l2_restoration(
+            &l1_package,
+            &l2_package,
+            &morphology_corpus,
+            arg_usize(&args, "--heldout-per-class").unwrap_or(100),
+            arg_usize(&args, "--workers").unwrap_or_else(|| {
+                std::thread::available_parallelism()
+                    .map(usize::from)
+                    .unwrap_or(1)
+            }),
+            arg_usize(&args, "--lemma-limit")
+                .unwrap_or(lay::nanda_wave::CANONICAL_L2_LEMMA_FRONTIER),
+            arg_usize(&args, "--active-lemma-limit")
+                .unwrap_or(lay::nanda_wave::CANONICAL_L2_ACTIVE_LEMMA_LIMIT),
+            arg_usize(&args, "--feature-limit")
+                .unwrap_or(lay::nanda_wave::CANONICAL_L2_FEATURE_LIMIT),
+            arg_usize(&args, "--form-limit").unwrap_or(lay::nanda_wave::CANONICAL_L2_FORM_LIMIT),
+            arg_usize(&args, "--atom-relation-limit")
+                .unwrap_or(lay::nanda_wave::CANONICAL_L2_ATOM_RELATION_LIMIT),
+        )?;
+        if let Some(receipt) = arg_path(&args, "--receipt") {
+            let mut bytes = serde_json::to_vec_pretty(&report).map_err(io::Error::other)?;
+            bytes.push(b'\n');
+            lay::private_file::write_private_bytes(&receipt, &bytes)?;
+        }
         println!(
             "{}",
             serde_json::to_string_pretty(&report).map_err(io::Error::other)?
@@ -972,6 +1061,10 @@ fn print_usage() {
          \nRun with no arguments only to compile the legacy default training package.\n\
          Common safe inspection commands:\n\
            --canonical-l2-status\n\
+           --compact-canonical-l2 REFERENCE.bin --out COMPACT.bin\n\
+           --prove-compact-canonical-l2 COMPACT.bin --reference REFERENCE.bin\n\
+           --prove-compositional-l2 L2.bin --memory L1.bin [--heldout-per-class N] [--workers N] [--lemma-limit N] [--form-limit N] [--atom-relation-limit N] [--receipt PATH]\n\
+           --prove-contextual-compositional-l2 L2.bin --memory L1.bin --morphology-corpus CORPUS.tsv [--heldout-per-class N] [--workers N] [--lemma-limit N] [--active-lemma-limit N] [--feature-limit N] [--form-limit N] [--atom-relation-limit N] [--receipt PATH]\n\
            --l3-context-phase-status [--memory PATH]\n\
            --l4-cross-scene-status PATH\n\
            --compile-l4-cross-scene --input EVENTS.jsonl --out PACKAGE.bin\n\

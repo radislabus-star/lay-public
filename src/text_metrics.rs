@@ -173,6 +173,21 @@ pub fn is_adjacent_transposition(left: &str, right: &str) -> bool {
     is_adjacent_transposition_chars(&left, &right)
 }
 
+pub(crate) fn typed_damage_geometry_priority(input: &str, candidate: &str) -> u8 {
+    if is_adjacent_transposition(input, candidate) {
+        return 4;
+    }
+    if sparse_internal_omission_count(input, candidate).is_some() {
+        return 3;
+    }
+    if candidate.chars().count() == input.chars().count() + 1
+        && damerau_levenshtein(input, candidate) == 1
+    {
+        return 2;
+    }
+    0
+}
+
 /// True when one internal character moved to another internal position while
 /// the word kept its boundaries and character mass.
 pub(crate) fn is_single_internal_char_move(left: &str, right: &str) -> bool {
@@ -349,7 +364,7 @@ mod tests {
         current_token_repaired_boundary_split, damerau_levenshtein, damerau_levenshtein_bounded,
         internal_char_confusion_preserves_frame, is_single_internal_char_move,
         sparse_internal_omission_count, transition_changed_token_count,
-        transition_left_context_changed,
+        transition_left_context_changed, typed_damage_geometry_priority,
     };
 
     #[test]
@@ -371,6 +386,18 @@ mod tests {
                 );
             }
         }
+    }
+
+    #[test]
+    fn typed_damage_geometry_preserves_operator_strength() {
+        assert!(
+            typed_damage_geometry_priority("acbd", "abcd")
+                > typed_damage_geometry_priority("acbd", "axbd")
+        );
+        assert!(
+            typed_damage_geometry_priority("abde", "abcde")
+                > typed_damage_geometry_priority("abde", "abce")
+        );
     }
 
     #[test]

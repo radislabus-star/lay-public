@@ -27,3 +27,15 @@ Rules:
 - Keep estimates, hypotheses, measured facts, and promotion gates visibly distinct.
 - Never dismiss or rhetorically rank L1 proof dimensions against each other. Per-class restoration, clean preservation, lattice coverage, false certainty, package/RSS budgets, and latency form one conjunctive contract; all must be reported and all required gates must pass.
 - The accepted L1 working gate is strict `unique top-1 > 95%` for every damage class. Aggregate top-1 cannot hide a failing class.
+
+## Systemic wave-contour fixes
+
+- Never repair a failing L1.1/L2/L3/L4 case by adding a literal word, phrase, suffix, test name, source ID, or case-specific branch to runtime code.
+- Never work through a failing example list one item at a time. Group failures by their first shared mechanism, fix that mechanism once, and rerun the whole fixed proof set.
+- A fixture may prove a general invariant, but fixture text must never become a runtime condition or a manually weighted exception.
+- For restoration regressions, inspect the complete authority path first: `L1.1 Winner | Tied lattice | ABSTAIN -> L2 -> L3 -> L4 -> DecisionCore -> verifier`. Record the first layer where target retention, rank, or authority is lost.
+- A grounded L1.1 candidate must remain in the bounded lattice. Higher layers may add candidates and apply calibrated positive or contradictory evidence, but generic uncertainty, an unrelated basin, or a second mutation-oriented veto must not erase it.
+- A grounded L1.1 Winner may be downgraded only by explicit independently measured contradictory evidence. A generic L2/L3/L4 tie or abstention is not contradictory evidence.
+- Do not weaken `SafetyGate`, edit-plan validation, or verifier authority to compensate for a candidate-generation, target-retention, ranking, or authority-transfer defect.
+- Semantic tests must assert surfaces, verdicts, proofs, and safety effects. Do not make runtime ownership migrations fail only because an old producer `source_id` changed.
+- If a change improves selected examples but the aggregate fixed proof or any required error class regresses, reject the change as a systemic failure.

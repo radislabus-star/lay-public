@@ -49,10 +49,160 @@ fn evaluate_candidates_with_phase(
     replacements: &[&str],
 ) -> Vec<Option<L3PhraseGateReport>> {
     let context_tokens = llmwave::tokenize(original).len().saturating_sub(1);
-    reports_from_phase_readouts(
+    let mut reports = reports_from_phase_readouts(
         context_tokens,
         super::context_phase::readout_default_candidates(original, replacements),
-    )
+    );
+    apply_context_recurrence_certificate(original, replacements, &mut reports);
+    reports
+}
+
+/// Certifies a one-edit restoration when the exact target already occurred in
+/// the current sentence and no competing candidate has the same witness.
+/// This is bounded current-input evidence, not a phrase-specific rewrite.
+fn apply_context_recurrence_certificate(
+    original: &str,
+    replacements: &[&str],
+    reports: &mut [Option<L3PhraseGateReport>],
+) {
+    if replacements.len() != reports.len() {
+        return;
+    }
+    let original_tokens = llmwave::tokenize(original);
+    let Some(damaged) = original_tokens.last() else {
+        return;
+    };
+    if damaged.chars().count() < 2 {
+        return;
+    }
+    let sentence_context = current_sentence_context_tokens(original);
+    if sentence_context.is_empty() {
+        return;
+    }
+
+    let mut witnessed = std::collections::BTreeMap::<String, Vec<usize>>::new();
+    for (index, replacement) in replacements.iter().enumerate() {
+        if reports[index]
+            .as_ref()
+            .is_some_and(|report| report.decision == L3PhraseGateDecision::Suppress)
+        {
+            continue;
+        }
+        let Some(candidate) = context_preserving_next_token(&original_tokens, replacement) else {
+            continue;
+        };
+        if candidate == *damaged
+            || !same_lexical_script(damaged, &candidate)
+            || crate::text_metrics::damerau_levenshtein(damaged, &candidate) != 1
+            || !sentence_context.iter().any(|word| word == &candidate)
+        {
+            continue;
+        }
+        witnessed.entry(candidate).or_default().push(index);
+    }
+
+    let Some((target, indices)) = (witnessed.len() == 1)
+        .then(|| witnessed.into_iter().next())
+        .flatten()
+    else {
+        return;
+    };
+    let support = sentence_context
+        .iter()
+        .filter(|word| word.as_str() == target)
+        .count()
+        .max(1);
+    for index in indices {
+        let existing = reports[index].take();
+        reports[index] = Some(context_recurrence_report(
+            existing.as_ref(),
+            support,
+            sentence_context.len(),
+        ));
+    }
+}
+
+fn current_sentence_context_tokens(original: &str) -> Vec<String> {
+    let trimmed = original.trim_end_matches(char::is_whitespace);
+    let current_start = trimmed
+        .char_indices()
+        .rev()
+        .find(|(_, ch)| ch.is_whitespace())
+        .map(|(index, ch)| index + ch.len_utf8())
+        .unwrap_or(0);
+    if current_start == 0 {
+        return Vec::new();
+    }
+    let before_current = trimmed[..current_start].trim_end_matches(char::is_whitespace);
+    let sentence_start = before_current
+        .char_indices()
+        .rev()
+        .find(|(_, ch)| matches!(ch, '.' | '!' | '?' | '\n' | '\r'))
+        .map(|(index, ch)| index + ch.len_utf8())
+        .unwrap_or(0);
+    llmwave::tokenize(&before_current[sentence_start..])
+}
+
+fn same_lexical_script(left: &str, right: &str) -> bool {
+    (left.chars().all(crate::keyboard::is_cyrillic_letter)
+        && right.chars().all(crate::keyboard::is_cyrillic_letter))
+        || (left.chars().all(|ch| ch.is_ascii_alphabetic())
+            && right.chars().all(|ch| ch.is_ascii_alphabetic()))
+}
+
+fn context_recurrence_report(
+    existing: Option<&L3PhraseGateReport>,
+    support: usize,
+    width: usize,
+) -> L3PhraseGateReport {
+    const SCORE: f32 = 0.72;
+    const POSITIVE_MICRO: i64 = 720_000;
+    L3PhraseGateReport {
+        decision: L3PhraseGateDecision::Support,
+        source: "context_recurrence_certificate",
+        score: existing
+            .map(|report| report.score)
+            .unwrap_or_default()
+            .max(SCORE),
+        rank_energy: existing
+            .map(|report| report.rank_energy)
+            .unwrap_or_default()
+            .max(0.16),
+        support: existing
+            .map(|report| report.support)
+            .unwrap_or_default()
+            .max(support),
+        width: existing
+            .map(|report| report.width)
+            .unwrap_or_default()
+            .max(width),
+        sequential_score: existing
+            .map(|report| report.sequential_score)
+            .unwrap_or_default()
+            .max(SCORE),
+        scene_score: existing
+            .map(|report| report.scene_score)
+            .unwrap_or_default()
+            .max(SCORE),
+        competition_margin: existing
+            .map(|report| report.competition_margin)
+            .unwrap_or_default()
+            .max(0.20),
+        positive_micro: existing
+            .map(|report| report.positive_micro)
+            .unwrap_or_default()
+            .max(POSITIVE_MICRO),
+        anti_micro: existing.map(|report| report.anti_micro).unwrap_or_default(),
+        threshold_micro: existing
+            .map(|report| report.threshold_micro)
+            .unwrap_or(500_000),
+        relation_class: existing
+            .map(|report| report.relation_class)
+            .filter(|relation| *relation != 0)
+            .unwrap_or_else(|| super::phase_field::hash_text("l3_context_recurrence_certificate")),
+        pairwise_certified: true,
+        reason: "l3_unique_context_recurrence",
+    }
 }
 
 pub(crate) fn evaluate_context_candidates_default(
@@ -399,5 +549,45 @@ mod tests {
 
         assert_eq!(report.decision, L3PhraseGateDecision::Neutral);
         assert_eq!(report.rank_energy, 0.0);
+    }
+
+    #[test]
+    fn unique_one_edit_recurrence_certifies_current_sentence_repair() {
+        let original = "сделать ошибку в слове мало и написать мло ";
+        let replacements = [
+            "сделать ошибку в слове мало и написать мало ",
+            "сделать ошибку в слове мало и написать смело ",
+        ];
+        let mut reports = vec![None, None];
+
+        apply_context_recurrence_certificate(original, &replacements, &mut reports);
+
+        let report = reports[0].as_ref().expect("recurrence certificate");
+        assert_eq!(report.decision, L3PhraseGateDecision::Support);
+        assert!(report.pairwise_certified);
+        assert_eq!(report.reason, "l3_unique_context_recurrence");
+        assert!(reports[1].is_none());
+    }
+
+    #[test]
+    fn competing_one_edit_recurrences_stay_ambiguous() {
+        let original = "мало мыло и написать мло ";
+        let replacements = ["мало мыло и написать мало ", "мало мыло и написать мыло "];
+        let mut reports = vec![None, None];
+
+        apply_context_recurrence_certificate(original, &replacements, &mut reports);
+
+        assert!(reports.iter().all(Option::is_none), "reports={reports:?}");
+    }
+
+    #[test]
+    fn recurrence_before_sentence_boundary_does_not_grant_authority() {
+        let original = "это мало. теперь написать мло ";
+        let replacements = ["это мало. теперь написать мало "];
+        let mut reports = vec![None];
+
+        apply_context_recurrence_certificate(original, &replacements, &mut reports);
+
+        assert!(reports[0].is_none());
     }
 }

@@ -124,15 +124,12 @@ pub fn active_layout_preserves_known_token(
     let Some(active_layout_is_ru) = active_layout_is_ru else {
         return false;
     };
-    // An internal ASCII punctuation key can encode a Russian letter (`;` ->
-    // `ж`, `[` -> `х`, and so on).  When the complete physical-key projection
-    // is a known Russian surface, do not let generic ASCII protection suppress
-    // the exact layout transition.  Technical tokens remain protected because
-    // the layout autoswitch classifier rejects them before this point.
+    // When the complete physical-key projection is a known Russian surface,
+    // do not let generic ASCII protection suppress the exact layout
+    // transition. This includes short words such as `yt` -> `не` as well as
+    // internal punctuation keys (`;` -> `ж`). Technical and real English
+    // tokens remain protected by the layout autoswitch classifier itself.
     if !active_layout_is_ru
-        && token
-            .chars()
-            .any(crate::layout_autoswitch::is_ascii_layout_letter_symbol)
         && crate::layout_autoswitch::correct_wrong_layout_ascii_word(token).is_some()
     {
         return false;
@@ -344,6 +341,22 @@ mod tests {
             assert_eq!(decision.replacement, expected);
             committed_tail.push_str(expected);
         }
+    }
+
+    #[test]
+    fn live_l2_space_route_keeps_short_wrong_layout_function_word_authority() {
+        let cfg = live_l2_phase_config();
+        let decision = decide_active_composition_autocorrect(ActiveCompositionAutocorrectRequest {
+            text: "yt ",
+            committed_tail: "yt",
+            config: &cfg,
+            active_layout_is_ru: Some(false),
+        })
+        .expect("short wrong-layout function word");
+
+        assert_eq!(decision.replacement, "не ");
+        assert_eq!(decision.action.selected_error_class(), Some("wrong_layout"));
+        assert!(decision.action.allow_apply());
     }
 
     #[test]
@@ -574,6 +587,42 @@ mod tests {
                 "tail={committed_tail:?} action={:?}",
                 decision.action
             );
+        }
+    }
+
+    #[test]
+    fn committed_tail_context_recurrence_restores_unique_one_edit_word() {
+        assert_replacement(
+            "мло ",
+            "сделать ошибку в слове мало и написать мло",
+            "мало ",
+        );
+    }
+
+    #[test]
+    fn isolated_short_one_edit_word_remains_ambiguous() {
+        let cfg = config();
+        let decision = decide_active_composition_autocorrect(ActiveCompositionAutocorrectRequest {
+            text: "мло ",
+            committed_tail: "мло",
+            config: &cfg,
+            active_layout_is_ru: Some(true),
+        });
+
+        assert!(
+            decision.is_none(),
+            "decision={:?}",
+            decision.map(|item| item.replacement)
+        );
+    }
+
+    #[test]
+    fn committed_tail_space_route_restores_trailing_function_boundaries() {
+        for (tail, token, expected) in [
+            ("Готовь документыдля", "документыдля ", "документы для "),
+            ("Какие документыим", "документыим ", "документы им "),
+        ] {
+            assert_replacement(token, tail, expected);
         }
     }
 

@@ -34,7 +34,18 @@ pub(super) fn boundary_split_candidates(
     // A decoded motif may be a broad form-only surface rather than a stable
     // lexical state. Let the compact two-center boundary readout compete
     // before that broad surface suppresses every split proposal.
-    if let Some(replacement) = light_boundary_replacement(&normalized) {
+    let mut fuzzy_typo_candidates: Option<Vec<String>> = None;
+    let light_started = std::time::Instant::now();
+    let light_replacement =
+        light_boundary_replacement_with_fuzzy(&normalized, &mut fuzzy_typo_candidates);
+    if std::env::var_os("LAY_L2_FIELD_TRACE").is_some() {
+        eprintln!(
+            "l2_boundary_light_trace elapsed_us={} found={}",
+            light_started.elapsed().as_micros(),
+            light_replacement.is_some(),
+        );
+    }
+    if let Some(replacement) = light_replacement {
         if boundary_replacement_beats_known_whole(
             &normalized,
             &replacement,
@@ -62,7 +73,16 @@ pub(super) fn boundary_split_candidates(
     if surface_motif_known_surface(&normalized) {
         return Vec::new();
     }
-    if let Some(replacement) = crate::phrase_reader::correct_glued_russian_phrase(&normalized) {
+    let phrase_started = std::time::Instant::now();
+    let phrase_replacement = crate::phrase_reader::correct_glued_russian_phrase(&normalized);
+    if std::env::var_os("LAY_L2_FIELD_TRACE").is_some() {
+        eprintln!(
+            "l2_boundary_phrase_trace elapsed_us={} found={}",
+            phrase_started.elapsed().as_micros(),
+            phrase_replacement.is_some(),
+        );
+    }
+    if let Some(replacement) = phrase_replacement {
         if replacement != normalized
             && boundary_replacement_beats_known_whole(
                 &normalized,
@@ -87,20 +107,27 @@ pub(super) fn boundary_split_candidates(
         }
     }
     let chars = normalized.chars().collect::<Vec<_>>();
-    let mut fuzzy_typo_candidates: Option<Vec<String>> = None;
     let mut candidates = Vec::new();
     for split in 1..chars.len() {
         let left = chars[..split].iter().collect::<String>();
         let right = chars[split..].iter().collect::<String>();
-        let trailing_short_pronoun =
-            right.chars().count() == 1 && crate::lexicon::is_ru_short_pronoun(&right);
-        if left.chars().count() > 2 && right.chars().count() < 3 && !trailing_short_pronoun {
+        let trailing_short_function =
+            !whole_surface_known && trailing_short_function_center(&right);
+        if trailing_short_function
+            && fuzzy_typo_candidates
+                .get_or_insert_with(|| boundary_fuzzy_candidates(&normalized))
+                .iter()
+                .any(|candidate| damerau_levenshtein(&normalized, candidate) == 1)
+        {
+            continue;
+        }
+        if left.chars().count() > 2 && right.chars().count() < 3 && !trailing_short_function {
             continue;
         }
         let short_function_boundary =
             left.chars().count() == 1 && is_ru_one_letter_function_word(&left);
         if short_function_boundary && fuzzy_typo_candidates.is_none() {
-            fuzzy_typo_candidates = Some(crate::ru_typo::fuzzy_known_word_candidates(&normalized));
+            fuzzy_typo_candidates = Some(boundary_fuzzy_candidates(&normalized));
         }
         if short_function_boundary
             && fuzzy_typo_candidates
@@ -110,12 +137,14 @@ pub(super) fn boundary_split_candidates(
         {
             continue;
         }
-        // Boundary field is bidirectional: an attached one-letter function
-        // word or pronoun can be on either side of a stable lexical center.
+        // Boundary field is bidirectional: an attached short function word or
+        // pronoun can be on either side of a stable lexical center.
         // Both halves still need compact lexical evidence; this is not a
         // phrase-specific rewrite table.
-        let known_left = short_function_boundary || surface_motif_known_surface(&left);
-        let known_right = trailing_short_pronoun || surface_motif_known_surface(&right);
+        let known_left = short_function_boundary
+            || surface_motif_known_surface(&left)
+            || (trailing_short_function && stable_boundary_left_center(&left));
+        let known_right = trailing_short_function || surface_motif_known_surface(&right);
         let two_content_centers =
             !whole_surface_known && independent_content_boundary_centers(&left, &right);
         if (!known_left || !known_right) && !two_content_centers {
@@ -125,7 +154,7 @@ pub(super) fn boundary_split_candidates(
         // they create many plausible but false segmentations. A lexical
         // boundary needs an explicit short functional anchor; richer
         // multiword repairs stay in the typed phrase/boundary operator route.
-        if !short_function_boundary && !trailing_short_pronoun {
+        if !short_function_boundary && !trailing_short_function {
             if !two_content_centers {
                 continue;
             }
@@ -211,6 +240,16 @@ fn stable_boundary_right_center(word: &str) -> bool {
         || is_known_russian_word_or_form(word)
 }
 
+fn stable_boundary_left_center(word: &str) -> bool {
+    word.chars().count() >= 4 && stable_boundary_right_center(word)
+}
+
+fn trailing_short_function_center(word: &str) -> bool {
+    (1..=3).contains(&word.chars().count())
+        && (crate::phrase_lexicon::is_short_russian_function_word(word)
+            || crate::lexicon::is_ru_short_pronoun(word))
+}
+
 fn independent_content_boundary_centers(left: &str, right: &str) -> bool {
     if left.chars().count() < 4 || right.chars().count() < 4 {
         return false;
@@ -224,35 +263,60 @@ fn independent_content_boundary_centers(left: &str, right: &str) -> bool {
 }
 
 fn light_boundary_replacement(word: &str) -> Option<String> {
+    light_boundary_replacement_with_fuzzy(word, &mut None)
+}
+
+fn light_boundary_replacement_with_fuzzy(
+    word: &str,
+    fuzzy_typo_candidates: &mut Option<Vec<String>>,
+) -> Option<String> {
     let chars = word.chars().collect::<Vec<_>>();
-    let mut fuzzy_typo_candidates: Option<Vec<String>> = None;
     let mut best = None::<(usize, String)>;
     for split in 1..chars.len() {
         let left = chars[..split].iter().collect::<String>();
         let right = chars[split..].iter().collect::<String>();
-        if left.chars().count() > 3 || right.chars().count() < 3 {
+        let trailing_short_function =
+            trailing_short_function_center(&right) && stable_boundary_left_center(&left);
+        if trailing_short_function
+            && fuzzy_typo_candidates
+                .get_or_insert_with(|| boundary_fuzzy_candidates(word))
+                .iter()
+                .any(|candidate| damerau_levenshtein(word, candidate) == 1)
+        {
             continue;
         }
-        if left.chars().count() > 1 && crate::lexicon::is_ru_short_preposition(&left) {
+        let leading_short_center = left.chars().count() <= 3 && right.chars().count() >= 3;
+        if !leading_short_center && !trailing_short_function {
+            continue;
+        }
+        if leading_short_center
+            && left.chars().count() > 1
+            && crate::lexicon::is_ru_short_preposition(&left)
+        {
             continue;
         }
         let known_left_function = is_ru_one_letter_function_word(&left);
         let known_left_pronoun = crate::lexicon::is_ru_single_letter_pronoun(&left)
             || crate::lexicon::is_ru_short_pronoun(&left);
         let known_left_common = is_common_ru_word(&left);
-        let known_left = known_left_function || known_left_pronoun || known_left_common;
+        let known_left = known_left_function
+            || known_left_pronoun
+            || known_left_common
+            || trailing_short_function;
         let known_right = surface_motif_known_surface(&right)
             || (known_left_pronoun
                 && right.chars().count() >= 4
-                && stable_boundary_right_center(&right));
+                && stable_boundary_right_center(&right))
+            || trailing_short_function;
         if known_left_function && !known_left_pronoun {
-            let fuzzy = fuzzy_typo_candidates
-                .get_or_insert_with(|| crate::ru_typo::fuzzy_known_word_candidates(word));
+            let fuzzy =
+                fuzzy_typo_candidates.get_or_insert_with(|| boundary_fuzzy_candidates(word));
             if !fuzzy.is_empty() && !strong_boundary_right_anchor(&right) {
                 continue;
             }
         }
-        if word.chars().count() < 6
+        if !trailing_short_function
+            && word.chars().count() < 6
             && (!(known_left_function || known_left_pronoun) || !is_common_ru_word(&right))
         {
             continue;
@@ -262,7 +326,7 @@ fn light_boundary_replacement(word: &str) -> Option<String> {
                 left.chars().count(),
                 right.chars().count(),
                 known_left_function,
-                known_left_pronoun || known_left_common,
+                known_left_pronoun || known_left_common || trailing_short_function,
                 is_common_ru_word(&right),
             );
             let replacement = format!("{left} {right}");
@@ -276,6 +340,19 @@ fn light_boundary_replacement(word: &str) -> Option<String> {
         }
     }
     best.map(|(_, replacement)| replacement)
+}
+
+fn boundary_fuzzy_candidates(word: &str) -> Vec<String> {
+    let started = std::time::Instant::now();
+    let candidates = crate::ru_typo::fuzzy_known_word_candidates(word);
+    if std::env::var_os("LAY_L2_FIELD_TRACE").is_some() {
+        eprintln!(
+            "l2_boundary_fuzzy_trace elapsed_us={} candidates={}",
+            started.elapsed().as_micros(),
+            candidates.len(),
+        );
+    }
+    candidates
 }
 
 fn boundary_split_score(
@@ -410,30 +487,40 @@ pub(super) fn boundary_scan_candidates(
 }
 
 fn boundary_replacement_for_word(word: &str) -> Option<String> {
-    crate::phrase_reader::correct_glued_russian_phrase(word).or_else(|| {
-        let lower = word.to_lowercase();
-        if lower.chars().count() < 6
-            || is_common_ru_word(&lower)
-            || is_known_russian_word_or_form(&lower)
-        {
-            return None;
+    let lower = word.to_lowercase();
+    if is_common_ru_word(&lower)
+        || is_ru_live_protected_word(&lower)
+        || surface_motif_strict_known_surface(&lower)
+    {
+        return None;
+    }
+    let whole_surface_known = is_known_russian_word_or_form(&lower);
+    if let Some(replacement) = light_boundary_replacement(&lower) {
+        if !whole_surface_known || trusted_leading_pronoun_boundary(&replacement) {
+            return Some(apply_word_case(word, &replacement));
         }
-        let chars = lower.chars().collect::<Vec<_>>();
-        for split in 1..chars.len() {
-            let left = chars[..split].iter().collect::<String>();
-            let right = chars[split..].iter().collect::<String>();
-            if left.chars().count() > 2 && right.chars().count() < 3 {
-                continue;
-            }
-            let known_left = left.chars().count() == 1 && is_ru_one_letter_function_word(&left);
-            let known_right = is_common_ru_word(&right) || is_known_russian_word_or_form(&right);
-            if known_left && known_right {
-                let replacement = format!("{left} {right}");
-                return Some(apply_word_case(word, &replacement));
-            }
+    }
+    if lower.chars().count() < 6 || whole_surface_known {
+        return None;
+    }
+    if let Some(replacement) = crate::phrase_reader::correct_glued_russian_phrase(word) {
+        return Some(replacement);
+    }
+    let chars = lower.chars().collect::<Vec<_>>();
+    for split in 1..chars.len() {
+        let left = chars[..split].iter().collect::<String>();
+        let right = chars[split..].iter().collect::<String>();
+        if left.chars().count() > 2 && right.chars().count() < 3 {
+            continue;
         }
-        None
-    })
+        let known_left = left.chars().count() == 1 && is_ru_one_letter_function_word(&left);
+        let known_right = is_common_ru_word(&right) || is_known_russian_word_or_form(&right);
+        if known_left && known_right {
+            let replacement = format!("{left} {right}");
+            return Some(apply_word_case(word, &replacement));
+        }
+    }
+    None
 }
 
 fn contextual_boundary_replacement_for_word(word: &str, previous: Option<&str>) -> Option<String> {

@@ -263,13 +263,13 @@ fn handle_request(
             match &*host {
                 HostedMemory::Ready(host) => lay::nanda_wave::L1ServiceResponse::Lattice {
                     seeds: host
-                        .lattice_seed_rows(&surface, limit)
+                        .typed_lattice_seed_rows(&surface, limit)
                         .into_iter()
-                        .map(|(terminal_id, surface, score_milli)| {
+                        .map(|(terminal_id, surface, authority, score_milli)| {
                             lay::nanda_wave::L11SeedSurface {
                                 terminal_id: Some(terminal_id),
                                 surface,
-                                authority: false,
+                                authority,
                                 score_milli,
                             }
                         })

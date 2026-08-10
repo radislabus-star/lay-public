@@ -36,6 +36,7 @@ pub struct LiveCompletionRequest<'a> {
     pub context_prefix: &'a str,
     pub partial: &'a str,
     pub max_suffix_chars: usize,
+    pub active_composition: bool,
     pub allow_short_lexical: bool,
     pub limit: usize,
 }
@@ -80,6 +81,7 @@ pub(crate) fn warm_up_live_candidate_readout() {
         context_prefix: "",
         partial: "пр",
         max_suffix_chars: 12,
+        active_composition: true,
         allow_short_lexical: true,
         limit: 12,
     });
@@ -157,6 +159,7 @@ pub fn live_completion_candidates(
         context_tail: live_completion_context_tail(request.context_prefix),
         partial: partial.clone(),
         max_suffix_chars: request.max_suffix_chars,
+        active_composition: request.active_composition,
         allow_short_lexical: request.allow_short_lexical,
         limit: request.limit,
     };
@@ -177,16 +180,23 @@ pub fn live_completion_candidates(
     let usage_snapshot = super::usage_prior::cached_usage_prior_snapshot();
     let l2_started = Instant::now();
     let mut raw = live_l2_word_candidates(request.context_prefix, &partial, request.limit);
-    for candidate in live_l3_context_birth_candidates(
+    let context_birth_candidates = live_l3_context_birth_candidates(
         &context_tokens,
         &partial,
         &usage_snapshot,
         LIVE_L3_CONTEXT_BIRTH_LIMIT,
-    ) {
-        if raw
-            .iter()
-            .all(|current| current.surface != candidate.surface)
+    );
+    let context_birth_surfaces = context_birth_candidates
+        .iter()
+        .map(|candidate| candidate.surface.clone())
+        .collect::<HashSet<_>>();
+    for candidate in context_birth_candidates {
+        if let Some(current) = raw
+            .iter_mut()
+            .find(|current| current.surface == candidate.surface)
         {
+            merge_live_candidate_evidence(current, &candidate);
+        } else {
             raw.push(candidate);
         }
     }
@@ -231,20 +241,27 @@ pub fn live_completion_candidates(
                 &state_id,
                 &candidate.surface,
             );
-            let usage = memory_readout.word_prior;
-            let context_usage = memory_readout.context_prior;
-            let accepted = memory_readout.accepted_count;
+            // Context births may carry a bounded specificity witness from the
+            // frontier. Preserve it when the same surface was also born by L2;
+            // otherwise global word frequency can erase an exact multiword
+            // context match during common-field arbitration.
+            let usage = memory_readout.word_prior.max(candidate.usage_prior);
+            let context_usage = memory_readout.context_prior.max(candidate.context_prior);
+            let accepted = memory_readout.accepted_count.max(candidate.accepted_count);
             let common = crate::lexicon::is_common_ru_word(&candidate.surface)
                 || crate::lexicon::is_common_en_technical_word(&candidate.surface);
             let foundation_rank = l2::l2_surface_foundation_rank(&candidate.surface);
+            let lexical_center_grounded =
+                matches!(candidate.source, L2ImeWordCandidateSource::LexicalPhase);
             let boundary_center_grounded =
                 matches!(candidate.source, L2ImeWordCandidateSource::BoundaryPhase);
             let corrected_prefix_completion = matches!(
                 candidate.source,
                 L2ImeWordCandidateSource::CorrectedPrefixPhase
             );
-            let context_birth = matches!(candidate.source, L2ImeWordCandidateSource::ContextPhase);
-            let l2_center_grounded = foundation_rank.is_some()
+            let context_birth = context_birth_surfaces.contains(&candidate.surface);
+            let l2_center_grounded = lexical_center_grounded
+                || foundation_rank.is_some()
                 || boundary_center_grounded
                 || corrected_prefix_completion
                 || context_birth;
@@ -333,6 +350,7 @@ pub fn live_completion_candidates(
                 partial_len,
                 suffix_len: if is_completion { suffix_len } else { 0 },
                 partial_state_known,
+                active_composition: request.active_composition,
                 allow_short_lexical: request.allow_short_lexical,
                 structural,
                 usage,
@@ -437,31 +455,106 @@ fn live_l3_context_birth_candidates(
         return Vec::new();
     }
     let prepared = usage.prepare_hot_context(context_tokens);
-    usage
+    let mut material = usage
         .context_prefix_candidates(&prepared, partial, limit.saturating_mul(2))
         .into_iter()
         .filter(|candidate| l2::l2_decoder_contains_surface(&candidate.word))
         .take(limit)
-        .map(|candidate| {
+        .map(|candidate| (candidate, L2ImeWordCandidateKind::Completion))
+        .collect::<Vec<_>>();
+    let mut seen = material
+        .iter()
+        .map(|(candidate, _)| candidate.word.clone())
+        .collect::<HashSet<_>>();
+    if partial.chars().count() >= 4 && material.len() < limit {
+        for candidate in usage.context_candidates(&prepared, limit.saturating_mul(8)) {
+            if material.len() >= limit {
+                break;
+            }
+            if seen.contains(&candidate.word)
+                || !l2::l2_decoder_contains_surface(&candidate.word)
+                || !one_edit_context_prefix(partial, &candidate.word)
+            {
+                continue;
+            }
+            seen.insert(candidate.word.clone());
+            material.push((candidate, L2ImeWordCandidateKind::Replacement));
+        }
+    }
+
+    material
+        .into_iter()
+        .map(|(candidate, kind)| {
             let prior = usage.candidate_prior_prepared(&prepared, &candidate.word);
             let phase = l2::l2_surface_phase_readout(&candidate.word);
+            let context_prior = (prior.context_prior
+                + context_birth_specificity_prior(candidate.ngram_len))
+            .min(0.42);
             l2::L2ImeWordCandidate {
                 surface: candidate.word,
-                kind: L2ImeWordCandidateKind::Completion,
+                kind,
                 source: L2ImeWordCandidateSource::ContextPhase,
                 score: 900u32
                     .saturating_add(candidate.support.min(32) * 24)
                     .saturating_add(candidate.ngram_len.min(5) as u32 * 80)
                     .saturating_add(phase.coherence_milli()),
-                l1_overlap: partial.chars().count(),
+                l1_overlap: partial.chars().count().saturating_sub(
+                    if kind == L2ImeWordCandidateKind::Replacement {
+                        1
+                    } else {
+                        0
+                    },
+                ),
                 l2_overlap: phase.covered_l1_refs,
                 motif_overlap: phase.motif_refs,
                 usage_prior: prior.word_prior,
-                context_prior: prior.context_prior,
+                context_prior,
                 accepted_count: prior.accepted_count,
             }
         })
         .collect()
+}
+
+fn context_birth_specificity_prior(ngram_len: usize) -> f32 {
+    // One-word contexts remain frequency-ranked because they are inherently
+    // ambiguous. Every additional matched context token contributes bounded
+    // independent evidence, up to the five-token online-memory horizon.
+    (ngram_len.saturating_sub(1).min(4) as f32) * 0.020
+}
+
+fn one_edit_context_prefix(partial: &str, target: &str) -> bool {
+    if partial == target {
+        return false;
+    }
+    let partial_len = partial.chars().count();
+    let target_chars = target.chars().collect::<Vec<_>>();
+    let mut prefix_lengths = vec![
+        partial_len.saturating_sub(1),
+        partial_len,
+        partial_len.saturating_add(1),
+    ];
+    prefix_lengths.sort_unstable();
+    prefix_lengths.dedup();
+    prefix_lengths
+        .into_iter()
+        .filter(|prefix_len| *prefix_len >= 2 && *prefix_len <= target_chars.len())
+        .any(|prefix_len| {
+            let target_prefix = target_chars[..prefix_len].iter().collect::<String>();
+            crate::text_metrics::damerau_levenshtein(partial, &target_prefix) == 1
+        })
+}
+
+fn merge_live_candidate_evidence(
+    target: &mut l2::L2ImeWordCandidate,
+    evidence: &l2::L2ImeWordCandidate,
+) {
+    target.score = target.score.max(evidence.score);
+    target.l1_overlap = target.l1_overlap.max(evidence.l1_overlap);
+    target.l2_overlap = target.l2_overlap.max(evidence.l2_overlap);
+    target.motif_overlap = target.motif_overlap.max(evidence.motif_overlap);
+    target.usage_prior = target.usage_prior.max(evidence.usage_prior);
+    target.context_prior = target.context_prior.max(evidence.context_prior);
+    target.accepted_count = target.accepted_count.max(evidence.accepted_count);
 }
 
 fn live_l2_material_limit(limit: usize) -> usize {
@@ -832,6 +925,7 @@ mod tests {
             context_prefix,
             partial,
             max_suffix_chars: 24,
+            active_composition: true,
             allow_short_lexical: true,
             limit: 12,
         }
@@ -849,6 +943,7 @@ mod tests {
             partial_len: 3,
             suffix_len: 3,
             partial_state_known: false,
+            active_composition: true,
             allow_short_lexical: true,
             structural: 0.6,
             usage: 0.0,
@@ -906,7 +1001,7 @@ mod tests {
     fn l2_lattice_births_decoded_morphology_from_prefix() {
         super::super::warm_up_l2_for_ime();
         let candidates =
-            live_l2_word_candidates("ну давай обновимся только без ", "перезагрузк", 48);
+            live_l2_word_candidates("ну давай обновимся только без ", "перезагрузк", 12);
 
         assert!(
             candidates
@@ -955,23 +1050,27 @@ mod tests {
             "one-letter input must reach L2 candidate memory"
         );
         assert!(
-            candidates
-                .iter()
-                .all(|candidate| candidate.surface.starts_with('п')),
-            "one-letter readout must stay prefix preserving: {candidates:?}"
+            !candidates.is_empty()
+                && candidates
+                    .iter()
+                    .all(|candidate| candidate.surface.starts_with('п')),
+            "one-letter T9 display lane must be non-empty and prefix preserving: {candidates:?}"
         );
     }
 
     #[test]
-    fn live_gate_keeps_full_token_replacements_out_of_preedit() {
+    fn live_gate_keeps_same_length_typo_repair_out_of_preedit() {
         super::super::warm_up_l2_for_ime();
         let raw = live_l2_word_candidates("", "звгрузи", 12);
         let candidates = live_completion_candidates(request("", "звгрузи"));
         assert!(
             candidates
                 .iter()
-                .all(|candidate| candidate.surface != "загрузи" && !candidate.suffix.is_empty()),
-            "full-token typo repairs belong to Space/autocorrect, not IME preedit: raw={raw:?}, selected={candidates:?}"
+                .all(|candidate| candidate.surface != "загрузи"
+                    && (!candidate.suffix.is_empty()
+                        || (candidate.source == "L2CorrectedPrefixCell32"
+                            && candidate.surface.chars().count() > "звгрузи".chars().count()))),
+            "same-length typo repairs belong to Space; only longer display replacements may enter IME: raw={raw:?}, selected={candidates:?}"
         );
     }
 
@@ -1047,6 +1146,69 @@ mod tests {
                 .any(|candidate| candidate.surface == "проверка"),
             "L2 must keep the observed context target available to L3: {candidates:?}"
         );
+    }
+
+    #[test]
+    fn fuzzy_context_birth_keeps_one_edit_prefix_as_display_replacement() {
+        super::super::warm_up_l2_for_ime();
+        let usage = super::super::usage_prior::snapshot_from_usage_events_for_tests(
+            r#"{"ts":1,"kind":"confirmed_ime_prediction","word":"проверка","context":["нужна","быстрая"],"source":"ime","operation":"prediction_match","outcome":"confirmed_positive"}"#,
+        );
+        let context = super::super::llmwave::tokenize("нужна быстрая ");
+
+        let candidates = live_l3_context_birth_candidates(&context, "провр", &usage, 4);
+
+        assert!(
+            candidates.iter().any(|candidate| {
+                candidate.surface == "проверка"
+                    && candidate.kind == L2ImeWordCandidateKind::Replacement
+                    && candidate.source == L2ImeWordCandidateSource::ContextPhase
+            }),
+            "candidates={candidates:?}"
+        );
+    }
+
+    #[test]
+    fn duplicate_l2_l3_surface_merges_evidence_without_losing_l2_source() {
+        let mut l2_candidate = l2::L2ImeWordCandidate {
+            surface: "проверка".to_string(),
+            kind: L2ImeWordCandidateKind::Completion,
+            source: L2ImeWordCandidateSource::LexicalPhase,
+            score: 1_200,
+            l1_overlap: 2,
+            l2_overlap: 3,
+            motif_overlap: 1,
+            usage_prior: 0.01,
+            context_prior: 0.0,
+            accepted_count: 0,
+        };
+        let l3_candidate = l2::L2ImeWordCandidate {
+            source: L2ImeWordCandidateSource::ContextPhase,
+            score: 1_100,
+            l1_overlap: 1,
+            l2_overlap: 2,
+            motif_overlap: 0,
+            usage_prior: 0.08,
+            context_prior: 0.12,
+            accepted_count: 3,
+            ..l2_candidate.clone()
+        };
+
+        merge_live_candidate_evidence(&mut l2_candidate, &l3_candidate);
+
+        assert_eq!(l2_candidate.source, L2ImeWordCandidateSource::LexicalPhase);
+        assert_eq!(l2_candidate.score, 1_200);
+        assert_eq!(l2_candidate.l2_overlap, 3);
+        assert_eq!(l2_candidate.context_prior, 0.12);
+        assert_eq!(l2_candidate.accepted_count, 3);
+    }
+
+    #[test]
+    fn context_specificity_is_bounded_and_does_not_bias_one_word_scenes() {
+        assert_eq!(context_birth_specificity_prior(1), 0.0);
+        assert_eq!(context_birth_specificity_prior(2), 0.020);
+        assert_eq!(context_birth_specificity_prior(5), 0.080);
+        assert_eq!(context_birth_specificity_prior(12), 0.080);
     }
 
     #[test]

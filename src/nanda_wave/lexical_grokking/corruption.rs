@@ -32,12 +32,12 @@ impl ScaleTrainingSurfacePolicy {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub(super) struct DamageExample {
-    pub(super) class: &'static str,
-    pub(super) surface: String,
+pub(crate) struct DamageExample {
+    pub(crate) class: &'static str,
+    pub(crate) surface: String,
 }
 
-pub(super) fn split_damages(word: &str) -> (Vec<DamageExample>, Vec<DamageExample>) {
+pub(crate) fn split_damages(word: &str) -> (Vec<DamageExample>, Vec<DamageExample>) {
     split_damages_with_training_augmentations(word, true)
 }
 

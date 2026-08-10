@@ -377,12 +377,6 @@ fn sort_and_truncate_ime_l2_candidates(
     candidates: &mut Vec<L2ImeWordCandidate>,
     limit: usize,
 ) {
-    let corrected_prefix_reserve = candidates
-        .iter()
-        .filter(|candidate| candidate.source == L2ImeWordCandidateSource::CorrectedPrefixPhase)
-        .take(8)
-        .cloned()
-        .collect::<Vec<_>>();
     candidates.sort_by(|left, right| {
         l2_ime_word_candidate_operator_priority(input, right)
             .cmp(&l2_ime_word_candidate_operator_priority(input, left))
@@ -402,37 +396,70 @@ fn sort_and_truncate_ime_l2_candidates(
     });
     let mut seen = HashSet::new();
     candidates.retain(|candidate| seen.insert(candidate.surface.clone()));
-    candidates.truncate(limit);
-    for candidate in corrected_prefix_reserve {
-        if candidates
+    if candidates.len() <= limit {
+        return;
+    }
+
+    // Exact and typo-tolerant prefixes are independent birth lanes. A strong
+    // corrected-prefix basin may reorder the field, but it must not evict the
+    // entire exact-prefix lane before L3/L4 can compare their evidence.
+    let exact_reserve_limit = limit.saturating_div(3).max(1);
+    let corrected_reserve_limit = limit.saturating_div(4).max(1);
+    let exact_reserve = candidates
+        .iter()
+        .filter(|candidate| {
+            candidate.kind == L2ImeWordCandidateKind::Completion
+                && candidate.surface.starts_with(input)
+        })
+        .take(exact_reserve_limit)
+        .cloned()
+        .collect::<Vec<_>>();
+    let corrected_reserve = candidates
+        .iter()
+        .filter(|candidate| candidate.source == L2ImeWordCandidateSource::CorrectedPrefixPhase)
+        .take(corrected_reserve_limit)
+        .cloned()
+        .collect::<Vec<_>>();
+    let ranked = std::mem::take(candidates);
+    let mut bounded = Vec::with_capacity(limit);
+    for candidate in exact_reserve
+        .into_iter()
+        .chain(corrected_reserve)
+        .chain(ranked)
+    {
+        if bounded
             .iter()
-            .any(|current| current.surface == candidate.surface)
+            .any(|current: &L2ImeWordCandidate| current.surface == candidate.surface)
         {
             continue;
         }
-        if candidates.len() == limit {
-            candidates.pop();
+        bounded.push(candidate);
+        if bounded.len() == limit {
+            break;
         }
-        candidates.push(candidate);
     }
+    bounded.sort_by(|left, right| {
+        l2_ime_word_candidate_operator_priority(input, right)
+            .cmp(&l2_ime_word_candidate_operator_priority(input, left))
+            .then_with(|| {
+                l2_ime_word_candidate_score(right).cmp(&l2_ime_word_candidate_score(left))
+            })
+            .then_with(|| right.motif_overlap.cmp(&left.motif_overlap))
+            .then_with(|| right.l2_overlap.cmp(&left.l2_overlap))
+            .then_with(|| right.l1_overlap.cmp(&left.l1_overlap))
+            .then_with(|| {
+                left.surface
+                    .chars()
+                    .count()
+                    .cmp(&right.surface.chars().count())
+            })
+            .then_with(|| left.surface.cmp(&right.surface))
+    });
+    *candidates = bounded;
 }
 
 fn l2_ime_word_candidate_operator_priority(input: &str, candidate: &L2ImeWordCandidate) -> u8 {
-    if candidate.kind == L2ImeWordCandidateKind::AdjacentTransposition {
-        return 4;
-    }
-    if crate::text_metrics::sparse_internal_omission_count(input, &candidate.surface).is_some() {
-        return 3;
-    }
-    if single_missing_letter_shape(input, &candidate.surface) {
-        return 2;
-    }
-    0
-}
-
-fn single_missing_letter_shape(input: &str, candidate: &str) -> bool {
-    candidate.chars().count() == input.chars().count() + 1
-        && damerau_levenshtein(input, candidate) == 1
+    crate::text_metrics::typed_damage_geometry_priority(input, &candidate.surface)
 }
 
 fn l2_ime_word_candidate_score(candidate: &L2ImeWordCandidate) -> u32 {
@@ -468,6 +495,64 @@ mod tests {
             phase_coherence_milli: 1_000,
             reconstructed: false,
         }
+    }
+
+    fn ime_candidate(
+        surface: String,
+        source: L2ImeWordCandidateSource,
+        score: u32,
+    ) -> L2ImeWordCandidate {
+        L2ImeWordCandidate {
+            surface,
+            kind: if source == L2ImeWordCandidateSource::CorrectedPrefixPhase {
+                L2ImeWordCandidateKind::Replacement
+            } else {
+                L2ImeWordCandidateKind::Completion
+            },
+            source,
+            score,
+            l1_overlap: 4,
+            l2_overlap: 4,
+            motif_overlap: 2,
+            usage_prior: 0.0,
+            context_prior: 0.0,
+            accepted_count: 0,
+        }
+    }
+
+    #[test]
+    fn corrected_prefix_rank_cannot_erase_exact_prefix_birth_lane() {
+        let mut candidates = (0..12)
+            .map(|index| {
+                ime_candidate(
+                    format!("corrected{index}"),
+                    L2ImeWordCandidateSource::CorrectedPrefixPhase,
+                    2_000 - index,
+                )
+            })
+            .chain((0..6).map(|index| {
+                ime_candidate(
+                    format!("prefixexact{index}"),
+                    L2ImeWordCandidateSource::LexicalPhase,
+                    1_000 - index,
+                )
+            }))
+            .collect::<Vec<_>>();
+
+        sort_and_truncate_ime_l2_candidates("prefix", &mut candidates, 6);
+
+        assert_eq!(candidates.len(), 6);
+        assert!(
+            candidates
+                .iter()
+                .filter(|candidate| candidate.surface.starts_with("prefix"))
+                .count()
+                >= 2,
+            "candidates={candidates:?}"
+        );
+        assert!(candidates.iter().any(|candidate| {
+            candidate.source == L2ImeWordCandidateSource::CorrectedPrefixPhase
+        }));
     }
 
     #[test]

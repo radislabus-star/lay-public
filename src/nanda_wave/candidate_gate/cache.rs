@@ -15,6 +15,7 @@ pub(super) struct LiveCompletionCacheKey {
     pub(super) context_tail: String,
     pub(super) partial: String,
     pub(super) max_suffix_chars: usize,
+    pub(super) active_composition: bool,
     pub(super) allow_short_lexical: bool,
     pub(super) limit: usize,
 }

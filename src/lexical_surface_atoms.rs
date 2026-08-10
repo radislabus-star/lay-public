@@ -55,13 +55,27 @@ pub(crate) struct SurfaceWaveTrit {
 }
 
 pub(crate) fn visit_surface_atoms(text: &str, mut visit: impl FnMut(u64, &[u8])) {
-    for (position, gram) in text.as_bytes().windows(SURFACE_WAVE_NGRAM).enumerate() {
-        visit(position as u64, gram);
-    }
-    visit_boundary_atoms(text, &mut visit);
+    visit_appended_surface_byte_atoms(text, 0, &mut visit);
+    visit_surface_boundary_atoms(text, &mut visit);
 }
 
-fn visit_boundary_atoms(text: &str, visit: &mut impl FnMut(u64, &[u8])) {
+pub(crate) fn visit_appended_surface_byte_atoms(
+    text: &str,
+    previous_byte_len: usize,
+    visit: &mut impl FnMut(u64, &[u8]),
+) {
+    let bytes = text.as_bytes();
+    for end in previous_byte_len.min(bytes.len())..bytes.len() {
+        let byte_len = end + 1;
+        if byte_len < SURFACE_WAVE_NGRAM {
+            continue;
+        }
+        let start = byte_len - SURFACE_WAVE_NGRAM;
+        visit(start as u64, &bytes[start..byte_len]);
+    }
+}
+
+pub(crate) fn visit_surface_boundary_atoms(text: &str, visit: &mut impl FnMut(u64, &[u8])) {
     for raw_token in text.split_whitespace() {
         let chars = lower_token_chars(raw_token);
         if chars.is_empty() {

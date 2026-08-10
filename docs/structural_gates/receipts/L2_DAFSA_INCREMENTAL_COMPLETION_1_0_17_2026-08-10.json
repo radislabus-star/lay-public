@@ -1,0 +1,147 @@
+{
+  "schema": "lay.l2-dafsa-incremental-completion.v1",
+  "kind": "l2_dafsa_incremental_completion_release_benchmark",
+  "experiment_date": "2026-08-10",
+  "release": "1.0.17",
+  "host": "e@192.168.3.94",
+  "remote_root": "/home/e/build/lay-l1-shadow",
+  "route": "decoded DAFSA completion -> incremental surface feature accumulator -> unchanged lexical candidate sort/readout",
+  "field": {
+    "decoder_states": 142470,
+    "decoder_arcs": 368025,
+    "decoder_surfaces": 1600423,
+    "observed_nodes_visited_min": 226,
+    "observed_nodes_visited_max": 1190
+  },
+  "unchanged_runtime_bounds": {
+    "result_limit": 96,
+    "material_limit": 576,
+    "maximum_decoder_visits": 24000,
+    "maximum_completion_suffix_chars": 8
+  },
+  "implementation": {
+    "old": "recompute and sort the complete phase/key feature vector at every decoded terminal",
+    "new": [
+      "compute prefix byte-gram features once",
+      "checkpoint and restore one accumulator while traversing the DAFSA frontier",
+      "add only newly completed byte 4-grams on each decoder edge",
+      "add prefix/suffix boundary atoms only while scoring a terminal",
+      "count unique query overlap without cloning and sorting the complete candidate key vector"
+    ],
+    "candidate_sources_removed": 0,
+    "material_frontier_reduced": false,
+    "score_changed": false,
+    "authority_changed": false
+  },
+  "exact_parity_benchmark": {
+    "command": "scripts/cargo-guard.sh test --release --lib -j 20 incremental_decoder_completion_preserves_full_candidate_field -- --nocapture --test-threads=1",
+    "prefixes": ["пол", "цел", "рас", "оста", "дост", "остан"],
+    "passed": 1,
+    "failed": 0,
+    "rescan_us": 8427,
+    "incremental_us": 6239,
+    "saved_us": 2188,
+    "speedup_percent": 25.97,
+    "candidate_count_order_scores_and_evidence_equal": true,
+    "test_runtime_seconds": 0.14,
+    "filtered_tests": 1205
+  },
+  "related_gates": {
+    "incremental_accumulator_parity": "PASS",
+    "lexical_phase_runtime_completion": "9/9 PASS",
+    "sequential_product_candidate_gate": "26/26 PASS",
+    "sequential_product_candidate_gate_elapsed_seconds": 224.18
+  },
+  "release_build": {
+    "jobs": 20,
+    "elapsed_seconds": 133.16,
+    "average_cpu_percent": 321,
+    "peak_rss_kib": 1818692,
+    "swaps": 0,
+    "exit_status": 0
+  },
+  "release_test_harness_build": {
+    "jobs": 20,
+    "test_threads": 1,
+    "elapsed_seconds": 155.03,
+    "average_cpu_percent": 101,
+    "peak_rss_kib": 2022216,
+    "swaps": 0,
+    "exit_status": 0
+  },
+  "source_sha256": {
+    "src/lexical_surface_atoms.rs": "f56dfca6d90dbcd876c4204806bd8b5e42d4d20a5e3d2fb5ff47f3f37aace10a",
+    "src/nanda_wave/lexical_phase/format.rs": "0befb7d2e5b918fedc797c795303bdb47d6aeddd9e8bee4d7138bd6595787931",
+    "src/nanda_wave/lexical_phase/runtime.rs": "d67008a65a4e878f754774bb4a4f8ca57532f4cffe97024d9189eedfaead98cf"
+  },
+  "installation": {
+    "remote_to_staging_sha_parity": "10/10 PASS",
+    "staging_to_installed_sha_parity": "10/10 PASS",
+    "installed_versions": {
+      "lay": "1.0.17",
+      "lay-daemon": "1.0.17",
+      "lay-ibus-engine": "1.0.17",
+      "lay-nanda-wave-train": "1.0.17",
+      "gnome_extension": "1.0.17"
+    },
+    "active_sha256": {
+      "lay-daemon": "90a370e222a46eb5e78829116770c7b832772ff2105ff48624f2ae00f2af8355",
+      "lay-nanda-wave-train": "fec9ddd4b46db7f2241e62d92c7c5ec47b0958d743de0f7c22f2ec685b5ace34",
+      "lay-ibus-engine": "31fa555647f2ae46e8ca3022864ae6b403ff529f260f558d4269e630d3527f20",
+      "lay-l1.1-serve": "efbdabb6a0675e9ccc085a772242e1fc50b220bc94d4d417fdd41a912cba3dab"
+    },
+    "process_pid_before_after": {
+      "lay-daemon": [715155, 3950357],
+      "lay-l3-online": [464460, 3950363],
+      "lay-ibus-engine": [1544653, 3950397],
+      "lay-l1.1-serve": [715237, 3950434]
+    },
+    "global_ibus_pid_before": 3702,
+    "global_ibus_pid_after": 3702,
+    "global_ibus_restarted": false,
+    "active_ibus_engine": "lay-ime-ru",
+    "daemon_service": "active",
+    "l3_online_service": "active",
+    "l11_health": "ready",
+    "l11_package_bytes": 190139182,
+    "l11_terminal_count": 852582,
+    "canonical_l2_package_bytes": 135121803,
+    "canonical_l2_package_sha256": "bbe67a772b684e0f187483796fca248ac0b10576195b1aa524f0b2bde0f6601e",
+    "recent_service_warnings": 0,
+    "immediate_post_restart_memory_kib": {
+      "scope": "first warm post-restart snapshot, not a steady-state comparison",
+      "lay-daemon_rss": 831776,
+      "lay-daemon_pss": 798549,
+      "lay-l3-online_rss": 4064,
+      "lay-l3-online_pss": 1779,
+      "lay-ibus-engine_rss": 800712,
+      "lay-ibus-engine_pss": 767416,
+      "lay-l1.1-serve_rss": 278660,
+      "lay-l1.1-serve_pss": 276606
+    }
+  },
+  "evidence": {
+    "remote_log": "/home/e/build/lay-l1-shadow/artifacts/lay-1.0.17-release-2026-08-10/incremental-dafsa-release-test.log",
+    "remote_log_sha256": "680a191af032c22752da64e93ba86f25bc00d8658a7bb36c74f1a1b36379cc10",
+    "remote_test_telemetry": "/home/e/build/lay-l1-shadow/artifacts/lay-1.0.17-release-2026-08-10/incremental-dafsa-release-test.time",
+    "remote_test_telemetry_sha256": "f53855feb8d327148a2ad8ee7f2ec95a71d04f0d65d398cc30961b0fc0c61f9c",
+    "remote_build_telemetry": "/home/e/build/lay-l1-shadow/artifacts/lay-1.0.17-release-2026-08-10/release-build.time",
+    "remote_build_telemetry_sha256": "ec4fb22831fb60ed434795ce702884f1bd3db9676b09bb5ce39accbb0ba470a5"
+  },
+  "tested": [
+    "incremental prefix accumulation equals complete surface feature extraction",
+    "incremental decoded completion output equals the previous full-rescan reference for six final-package prefixes",
+    "candidate objects retain identical surface order, scores, overlap evidence, phase coherence, and reconstruction flags",
+    "the release-optimized implementation passes the isolated remote benchmark",
+    "remote release binaries were installed with two-hop SHA parity and activated without restarting global IBus"
+  ],
+  "not_tested": [
+    "L1.1 fixed 13 x 20,000 restoration proof, because package and scoring authority did not change",
+    "L2 or L3 package recompilation",
+    "physical key-to-frame latency across desktop applications",
+    "multi-day completion-cache churn"
+  ],
+  "verdict": "PASS_EXACT_PARITY_RELEASE_BENCH",
+  "runtime_authority_changed": false,
+  "receipt": "/home/ubu/projects/lay/docs/structural_gates/receipts/L2_DAFSA_INCREMENTAL_COMPLETION_1_0_17_2026-08-10.json"
+}

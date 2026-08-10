@@ -401,6 +401,63 @@ mod tests {
     }
 
     #[test]
+    #[ignore = "requires the canonical packages, L1.1 service, and a fixed surface corpus"]
+    fn live_canonical_l2_field_reports_diverse_first_touch_latency() {
+        use std::collections::BTreeSet;
+        use std::time::Instant;
+
+        let input_path = std::env::var("LAY_CANONICAL_L2_FIRST_TOUCH_INPUTS")
+            .expect("LAY_CANONICAL_L2_FIRST_TOUCH_INPUTS must name the fixed surface corpus");
+        let sample_count = std::env::var("LAY_CANONICAL_L2_FIRST_TOUCH_SAMPLES")
+            .ok()
+            .and_then(|value| value.parse::<usize>().ok())
+            .unwrap_or(50)
+            .max(1);
+        let inputs = std::fs::read_to_string(&input_path)
+            .expect("fixed first-touch surface corpus must be readable")
+            .lines()
+            .map(str::trim)
+            .filter(|surface| !surface.is_empty())
+            .map(|surface| format!("{surface} "))
+            .collect::<BTreeSet<_>>()
+            .into_iter()
+            .collect::<Vec<_>>();
+        assert!(
+            inputs.len() > sample_count,
+            "first-touch corpus needs at least {} unique surfaces, found {}",
+            sample_count + 1,
+            inputs.len()
+        );
+
+        let pipeline = default_typing_assist_pipeline();
+        let mut warmup = request(&inputs[0], &pipeline, CorrectionMode::NandaOnly);
+        warmup.nanda_candidate_route = CandidateReadoutRoute::live_default();
+        let _ = resolve_text_correction(warmup);
+
+        let mut timings = Vec::with_capacity(sample_count);
+        for input in inputs.iter().skip(1).take(sample_count) {
+            let mut req = request(input, &pipeline, CorrectionMode::NandaOnly);
+            req.nanda_candidate_route = CandidateReadoutRoute::live_default();
+            let started = Instant::now();
+            let _ = resolve_text_correction(req);
+            timings.push(started.elapsed().as_micros() as u64);
+        }
+        timings.sort_unstable();
+        let p50 = timings[timings.len() / 2];
+        let p90 = timings[timings.len() * 90 / 100];
+        let p99 = timings[timings.len() * 99 / 100];
+        let max = *timings.last().expect("first-touch latency samples");
+        eprintln!(
+            "CanonicalL2Field diverse first touch: n={} p50={}us p90={}us p99={}us max={}us",
+            timings.len(),
+            p50,
+            p90,
+            p99,
+            max
+        );
+    }
+
+    #[test]
     fn live_canonical_l2_field_applies_verified_two_content_boundary() {
         let pipeline = default_typing_assist_pipeline();
         let mut req = request(
@@ -443,6 +500,29 @@ mod tests {
         assert_eq!(selected.error_class, TypingErrorClass::GluedWords);
         assert_eq!(selected.source_id, "CanonicalL2FieldBoundary");
         assert_eq!(selected.gate.action, CandidateGateAction::Eligible);
+    }
+
+    #[test]
+    fn live_canonical_l2_field_applies_trailing_short_function_boundary() {
+        let pipeline = default_typing_assist_pipeline();
+        for (input, expected) in [
+            ("Готовь документыдля ", "Готовь документы для "),
+            ("Какие документыим ", "Какие документы им "),
+        ] {
+            let mut req = request(input, &pipeline, CorrectionMode::DeterministicThenNanda);
+            req.nanda_candidate_route = CandidateReadoutRoute::live_default();
+
+            let resolution = resolve_text_correction(req);
+            let selected = resolution
+                .selected
+                .as_ref()
+                .unwrap_or_else(|| panic!("missing boundary decision: {resolution:#?}"));
+
+            assert_eq!(selected.replacement, expected, "input={input:?}");
+            assert_eq!(selected.origin, CandidateOrigin::Boundary);
+            assert_eq!(selected.error_class, TypingErrorClass::GluedWords);
+            assert_eq!(selected.source_id, "CanonicalL2FieldBoundary");
+        }
     }
 
     #[test]

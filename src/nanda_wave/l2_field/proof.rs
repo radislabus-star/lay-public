@@ -4,7 +4,7 @@ use std::io;
 use std::path::Path;
 use std::time::Instant;
 
-use super::runtime::{L2LexicalSeed, L2LocalVerdict, StandaloneL2Field};
+use super::runtime::{L2LexicalSeed, L2LexicalSeedOrigin, L2LocalVerdict, StandaloneL2Field};
 use super::teacher::{L2TeacherCorpus, TeacherScene};
 
 #[derive(Default)]
@@ -213,6 +213,7 @@ pub(crate) fn prove_package(
                 terminal_id: terminal_by_surface.get(*surface).copied(),
                 surface: Some((*surface).to_string()),
                 evidence_milli: 1_000,
+                origin: L2LexicalSeedOrigin::GroundedL11,
             })
             .collect::<Vec<_>>();
         let readout = field.readout(&scene.context, &seeds, 32);
@@ -343,6 +344,7 @@ fn evaluate_morphology_scenes(
                 terminal_id: Some(*terminal_id),
                 surface: None,
                 evidence_milli: 1_000,
+                origin: L2LexicalSeedOrigin::GroundedL11,
             })
             .collect::<Vec<_>>();
         let started = Instant::now();

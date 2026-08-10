@@ -3001,6 +3001,51 @@ impl L1RestorationHost {
         self.lattice_seed_rows_with_parallel_packages(surface, limit, true)
     }
 
+    pub fn typed_lattice_seed_rows(
+        &self,
+        surface: &str,
+        limit: usize,
+    ) -> Vec<(u32, String, bool, u32)> {
+        if self.is_composite() {
+            return self
+                .lattice_seed_rows(surface, limit)
+                .into_iter()
+                .map(|(terminal_id, surface, score_milli)| {
+                    (terminal_id, surface, false, score_milli)
+                })
+                .collect();
+        }
+
+        let limit = limit.max(1);
+        let mut candidates = self.memory.readout(surface, limit, ReadoutMode::Full);
+        let readout = self.memory.classify_restoration(
+            surface,
+            &mut candidates,
+            self.memory.package.restoration_calibration,
+        );
+        let authority_terminal = match readout {
+            super::restoration::RestorationReadout::Winner { candidate } => {
+                Some(candidate.terminal_id)
+            }
+            super::restoration::RestorationReadout::Tied { .. }
+            | super::restoration::RestorationReadout::TiedOverflow { .. }
+            | super::restoration::RestorationReadout::Abstain { .. } => None,
+        };
+        candidates
+            .into_iter()
+            .filter_map(|candidate| {
+                let terminal_id = candidate.terminal_id;
+                Some((
+                    terminal_id,
+                    self.memory.decode_terminal(terminal_id)?,
+                    authority_terminal == Some(terminal_id),
+                    lattice_seed_score(candidate),
+                ))
+            })
+            .take(limit)
+            .collect()
+    }
+
     pub(super) fn lattice_seed_rows_batched(
         &self,
         surface: &str,

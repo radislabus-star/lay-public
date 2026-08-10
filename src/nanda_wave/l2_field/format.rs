@@ -124,7 +124,7 @@ pub(crate) fn decode_package(bytes: &[u8]) -> Result<L2FieldPackage, String> {
     Ok(package)
 }
 
-fn validate_package(package: &L2FieldPackage) -> Result<(), String> {
+pub(super) fn validate_package(package: &L2FieldPackage) -> Result<(), String> {
     let mut previous_surface = None;
     for (index, form) in package.form_refs.iter().enumerate() {
         let surface = decoder_surface(&package.decoder_bytes, form.decoder_ref)
@@ -161,7 +161,7 @@ fn validate_package(package: &L2FieldPackage) -> Result<(), String> {
     Ok(())
 }
 
-fn decoder_surface(decoder: &[u8], decoder_ref: u32) -> Result<&str, String> {
+pub(super) fn decoder_surface(decoder: &[u8], decoder_ref: u32) -> Result<&str, String> {
     let start = decoder_ref as usize;
     let tail = decoder
         .get(start..)
@@ -208,7 +208,7 @@ fn read_form_ref(cursor: &mut Cursor<'_>) -> Result<FormCenterRef, String> {
     })
 }
 
-fn put_lemma_center(out: &mut Vec<u8>, value: LemmaCenter) {
+pub(super) fn put_lemma_center(out: &mut Vec<u8>, value: LemmaCenter) {
     put_u16(out, value.primary_pos);
     put_u16(out, value.flags);
     put_u32(out, value.form_start);
@@ -220,7 +220,7 @@ fn put_lemma_center(out: &mut Vec<u8>, value: LemmaCenter) {
     put_u32(out, value.reserved);
 }
 
-fn read_lemma_center(cursor: &mut Cursor<'_>) -> Result<LemmaCenter, String> {
+pub(super) fn read_lemma_center(cursor: &mut Cursor<'_>) -> Result<LemmaCenter, String> {
     Ok(LemmaCenter {
         primary_pos: cursor.u16()?,
         flags: cursor.u16()?,
@@ -254,7 +254,7 @@ fn read_morph_binding(cursor: &mut Cursor<'_>) -> Result<MorphBinding, String> {
     })
 }
 
-fn put_context_mode(out: &mut Vec<u8>, value: LocalContextMode) {
+pub(super) fn put_context_mode(out: &mut Vec<u8>, value: LocalContextMode) {
     put_u16(out, value.left_class);
     put_u16(out, value.right_class);
     out.push(value.punctuation_class);
@@ -265,7 +265,7 @@ fn put_context_mode(out: &mut Vec<u8>, value: LocalContextMode) {
     put_u32(out, value.stable_key);
 }
 
-fn read_context_mode(cursor: &mut Cursor<'_>) -> Result<LocalContextMode, String> {
+pub(super) fn read_context_mode(cursor: &mut Cursor<'_>) -> Result<LocalContextMode, String> {
     Ok(LocalContextMode {
         left_class: cursor.u16()?,
         right_class: cursor.u16()?,
@@ -278,7 +278,7 @@ fn read_context_mode(cursor: &mut Cursor<'_>) -> Result<LocalContextMode, String
     })
 }
 
-fn put_slot_center(out: &mut Vec<u8>, value: SlotPhaseCenter) {
+pub(super) fn put_slot_center(out: &mut Vec<u8>, value: SlotPhaseCenter) {
     out.extend(value.cells.iter().map(|value| *value as u8));
     put_u32(out, value.feature_mask);
     put_u32(out, value.context_mode_id);
@@ -289,7 +289,7 @@ fn put_slot_center(out: &mut Vec<u8>, value: SlotPhaseCenter) {
     put_u16(out, value.reserved);
 }
 
-fn read_slot_center(cursor: &mut Cursor<'_>) -> Result<SlotPhaseCenter, String> {
+pub(super) fn read_slot_center(cursor: &mut Cursor<'_>) -> Result<SlotPhaseCenter, String> {
     let mut cells = [0_i8; L2_PHASE_CELLS];
     for cell in &mut cells {
         *cell = cursor.i8()?;
@@ -306,7 +306,7 @@ fn read_slot_center(cursor: &mut Cursor<'_>) -> Result<SlotPhaseCenter, String> 
     })
 }
 
-fn put_neighbor_coupling(out: &mut Vec<u8>, value: NeighborCoupling) {
+pub(super) fn put_neighbor_coupling(out: &mut Vec<u8>, value: NeighborCoupling) {
     put_u32(out, value.context_mode_id);
     put_u32(out, value.target_lemma_id);
     put_u32(out, value.target_feature_mask);
@@ -317,7 +317,7 @@ fn put_neighbor_coupling(out: &mut Vec<u8>, value: NeighborCoupling) {
     put_u16(out, value.reserved);
 }
 
-fn read_neighbor_coupling(cursor: &mut Cursor<'_>) -> Result<NeighborCoupling, String> {
+pub(super) fn read_neighbor_coupling(cursor: &mut Cursor<'_>) -> Result<NeighborCoupling, String> {
     Ok(NeighborCoupling {
         context_mode_id: cursor.u32()?,
         target_lemma_id: cursor.u32()?,
@@ -330,7 +330,7 @@ fn read_neighbor_coupling(cursor: &mut Cursor<'_>) -> Result<NeighborCoupling, S
     })
 }
 
-fn put_competition_edge(out: &mut Vec<u8>, value: CompetitionEdge) {
+pub(super) fn put_competition_edge(out: &mut Vec<u8>, value: CompetitionEdge) {
     put_u32(out, value.left_form_ref);
     put_u32(out, value.right_form_ref);
     put_u32(out, value.context_mode_id);
@@ -341,7 +341,7 @@ fn put_competition_edge(out: &mut Vec<u8>, value: CompetitionEdge) {
     put_u16(out, value.reserved);
 }
 
-fn read_competition_edge(cursor: &mut Cursor<'_>) -> Result<CompetitionEdge, String> {
+pub(super) fn read_competition_edge(cursor: &mut Cursor<'_>) -> Result<CompetitionEdge, String> {
     Ok(CompetitionEdge {
         left_form_ref: cursor.u32()?,
         right_form_ref: cursor.u32()?,
@@ -354,7 +354,7 @@ fn read_competition_edge(cursor: &mut Cursor<'_>) -> Result<CompetitionEdge, Str
     })
 }
 
-fn put_calibration(out: &mut Vec<u8>, value: TieCalibration) {
+pub(super) fn put_calibration(out: &mut Vec<u8>, value: TieCalibration) {
     put_i32(out, value.minimum_positive);
     put_i32(out, value.minimum_margin);
     put_i32(out, value.tie_window);
@@ -364,7 +364,7 @@ fn put_calibration(out: &mut Vec<u8>, value: TieCalibration) {
     put_u32(out, value.evidence_count);
 }
 
-fn read_calibration(cursor: &mut Cursor<'_>) -> Result<TieCalibration, String> {
+pub(super) fn read_calibration(cursor: &mut Cursor<'_>) -> Result<TieCalibration, String> {
     Ok(TieCalibration {
         minimum_positive: cursor.i32()?,
         minimum_margin: cursor.i32()?,
@@ -376,13 +376,13 @@ fn read_calibration(cursor: &mut Cursor<'_>) -> Result<TieCalibration, String> {
     })
 }
 
-fn checksum64(bytes: &[u8]) -> u64 {
+pub(super) fn checksum64(bytes: &[u8]) -> u64 {
     bytes.iter().fold(0xcbf29ce484222325_u64, |state, byte| {
         state.wrapping_mul(0x100000001b3) ^ u64::from(*byte)
     })
 }
 
-fn put_u16(out: &mut Vec<u8>, value: u16) {
+pub(super) fn put_u16(out: &mut Vec<u8>, value: u16) {
     out.extend_from_slice(&value.to_le_bytes());
 }
 
@@ -390,7 +390,7 @@ fn put_i16(out: &mut Vec<u8>, value: i16) {
     out.extend_from_slice(&value.to_le_bytes());
 }
 
-fn put_u32(out: &mut Vec<u8>, value: u32) {
+pub(super) fn put_u32(out: &mut Vec<u8>, value: u32) {
     out.extend_from_slice(&value.to_le_bytes());
 }
 
@@ -398,17 +398,17 @@ fn put_i32(out: &mut Vec<u8>, value: i32) {
     out.extend_from_slice(&value.to_le_bytes());
 }
 
-fn put_u64(out: &mut Vec<u8>, value: u64) {
+pub(super) fn put_u64(out: &mut Vec<u8>, value: u64) {
     out.extend_from_slice(&value.to_le_bytes());
 }
 
-struct Cursor<'a> {
+pub(super) struct Cursor<'a> {
     bytes: &'a [u8],
     offset: usize,
 }
 
 impl<'a> Cursor<'a> {
-    fn new(bytes: &'a [u8]) -> Self {
+    pub(super) fn new(bytes: &'a [u8]) -> Self {
         Self { bytes, offset: 0 }
     }
 
@@ -427,15 +427,15 @@ impl<'a> Cursor<'a> {
             .map_err(|_| "invalid L2 package field width".to_string())
     }
 
-    fn u8(&mut self) -> Result<u8, String> {
+    pub(super) fn u8(&mut self) -> Result<u8, String> {
         Ok(self.take::<1>()?[0])
     }
 
-    fn i8(&mut self) -> Result<i8, String> {
+    pub(super) fn i8(&mut self) -> Result<i8, String> {
         Ok(self.u8()? as i8)
     }
 
-    fn u16(&mut self) -> Result<u16, String> {
+    pub(super) fn u16(&mut self) -> Result<u16, String> {
         Ok(u16::from_le_bytes(self.take()?))
     }
 
@@ -443,7 +443,7 @@ impl<'a> Cursor<'a> {
         Ok(i16::from_le_bytes(self.take()?))
     }
 
-    fn u32(&mut self) -> Result<u32, String> {
+    pub(super) fn u32(&mut self) -> Result<u32, String> {
         Ok(u32::from_le_bytes(self.take()?))
     }
 
@@ -451,11 +451,11 @@ impl<'a> Cursor<'a> {
         Ok(i32::from_le_bytes(self.take()?))
     }
 
-    fn u64(&mut self) -> Result<u64, String> {
+    pub(super) fn u64(&mut self) -> Result<u64, String> {
         Ok(u64::from_le_bytes(self.take()?))
     }
 
-    fn bytes(&mut self, length: usize) -> Result<&'a [u8], String> {
+    pub(super) fn bytes(&mut self, length: usize) -> Result<&'a [u8], String> {
         let end = self
             .offset
             .checked_add(length)
@@ -468,7 +468,7 @@ impl<'a> Cursor<'a> {
         Ok(bytes)
     }
 
-    fn remaining(&self) -> usize {
+    pub(super) fn remaining(&self) -> usize {
         self.bytes.len().saturating_sub(self.offset)
     }
 }

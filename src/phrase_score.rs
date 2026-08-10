@@ -223,7 +223,7 @@ fn is_strong_phrase_part(part: &str) -> bool {
     char_len(part) >= 4 && is_known_multiword_glue_part(part)
 }
 
-fn is_known_multiword_glue_part(part: &str) -> bool {
+pub(crate) fn is_known_multiword_glue_part(part: &str) -> bool {
     is_known_russian_phrase_part(part)
         || (char_len(part) >= 5 && crate::nanda_wave::l2::l2_surface_foundation_contains(part))
 }

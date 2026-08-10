@@ -123,6 +123,7 @@ pub fn ime_l2_boundary_candidates(
     token: &str,
     limit: usize,
 ) -> Vec<L2ImeWordCandidate> {
+    let started = std::time::Instant::now();
     if limit == 0 {
         return Vec::new();
     }
@@ -138,6 +139,7 @@ pub fn ime_l2_boundary_candidates(
     }
     tail.push_str(token);
     let context = TailContext::from_text(&tail);
+    let context_ready = std::time::Instant::now();
     let l1 = super::l1::run_l1(token);
     let mut candidates = boundary_split_candidates("", token, &l1, &context)
         .into_iter()
@@ -156,6 +158,7 @@ pub fn ime_l2_boundary_candidates(
             accepted_count: 0,
         })
         .collect::<Vec<_>>();
+    let split_ready = std::time::Instant::now();
     candidates.sort_by(|left, right| {
         right
             .score
@@ -163,6 +166,17 @@ pub fn ime_l2_boundary_candidates(
             .then_with(|| left.surface.cmp(&right.surface))
     });
     candidates.truncate(limit);
+    if std::env::var_os("LAY_L2_FIELD_TRACE").is_some() {
+        eprintln!(
+            "l2_boundary_projection_trace context_us={} split_us={} settle_us={} candidates={}",
+            context_ready.duration_since(started).as_micros(),
+            split_ready.duration_since(context_ready).as_micros(),
+            std::time::Instant::now()
+                .duration_since(split_ready)
+                .as_micros(),
+            candidates.len(),
+        );
+    }
     candidates
 }
 

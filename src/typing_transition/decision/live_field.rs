@@ -89,7 +89,15 @@ fn live_admission_reason(candidate_visible: bool, suffix_visible: bool) -> &'sta
 }
 
 fn live_candidate_field_has_authority(candidate: &LiveCompletionProposal) -> bool {
-    if candidate.partial_state_known && !candidate.context_birth && candidate.context_usage < 0.018
+    let grounded_active_extension = candidate.active_composition
+        && candidate.allow_short_lexical
+        && !candidate.suffix.is_empty()
+        && candidate.l2_center_grounded
+        && candidate.completed_state_known;
+    if candidate.partial_state_known
+        && !candidate.context_birth
+        && candidate.context_usage < 0.018
+        && !grounded_active_extension
     {
         return false;
     }
@@ -98,6 +106,8 @@ fn live_candidate_field_has_authority(candidate: &LiveCompletionProposal) -> boo
     let lexical_signal = candidate.common || candidate.hot || candidate.l2_center_grounded;
     let structural_signal = candidate.structural >= 0.34;
     let bound_structural_signal = candidate.l2_center_grounded && structural_signal;
+    let short_prefix_suffix_supported =
+        candidate.suffix_len <= 12 || (candidate.context_birth && candidate.l3_memory_supported);
 
     match candidate.partial_len {
         0 => false,
@@ -106,8 +116,9 @@ fn live_candidate_field_has_authority(candidate: &LiveCompletionProposal) -> boo
                 && (candidate.l3_memory_supported
                     || candidate.context_usage >= 0.040
                     || candidate.usage >= 0.080
-                    || candidate.accepted >= 2)
-                && candidate.suffix_len <= 8
+                    || candidate.accepted >= 2
+                    || (candidate.l2_center_grounded && (candidate.common || candidate.hot)))
+                && short_prefix_suffix_supported
         }
         2 => {
             candidate.allow_short_lexical
@@ -116,7 +127,7 @@ fn live_candidate_field_has_authority(candidate: &LiveCompletionProposal) -> boo
                     || candidate.context_usage >= 0.018
                     || candidate.hot
                     || candidate.common)
-                && candidate.suffix_len <= 8
+                && short_prefix_suffix_supported
         }
         3 => {
             if !candidate.allow_short_lexical {
@@ -125,6 +136,7 @@ fn live_candidate_field_has_authority(candidate: &LiveCompletionProposal) -> boo
                 usage_signal
                     || bound_structural_signal
                     || (lexical_signal && candidate.suffix_len <= 7)
+                    || (candidate.context_birth && candidate.l3_memory_supported)
             }
         }
         4 => usage_signal || bound_structural_signal || lexical_signal,
@@ -158,6 +170,7 @@ mod tests {
             partial_len,
             suffix_len: suffix.chars().count(),
             partial_state_known: false,
+            active_composition: true,
             allow_short_lexical: true,
             structural: 0.50,
             usage: 0.0,
@@ -183,6 +196,36 @@ mod tests {
 
         assert!(admission.visible(), "{admission:?}");
         assert_eq!(admission.reason, "field_visible");
+    }
+
+    #[test]
+    fn learned_context_birth_can_show_long_suffix_after_short_prefix() {
+        let mut candidate = proposal(1, "родолжительный");
+        candidate.context_birth = true;
+        candidate.l3_memory_supported = true;
+
+        let admission = TransitionDecisionCore::admit_live_completion(&candidate);
+
+        assert!(admission.visible(), "admission={admission:?}");
+    }
+
+    #[test]
+    fn grounded_hot_candidate_is_visible_after_first_letter() {
+        let mut candidate = proposal(1, "bounded-tail");
+        candidate.hot = true;
+
+        let admission = TransitionDecisionCore::admit_live_completion(&candidate);
+
+        assert!(admission.visible(), "admission={admission:?}");
+    }
+
+    #[test]
+    fn lexical_only_long_suffix_after_short_prefix_stays_hidden() {
+        let candidate = proposal(1, "родолжительный");
+
+        let admission = TransitionDecisionCore::admit_live_completion(&candidate);
+
+        assert!(!admission.candidate_visible, "admission={admission:?}");
     }
 
     #[test]
@@ -213,12 +256,16 @@ mod tests {
     }
 
     #[test]
-    fn known_complete_word_needs_context_evidence_before_extension() {
-        let mut candidate = proposal(3, "мых");
+    fn known_complete_word_allows_grounded_active_ime_extension_only() {
+        let mut candidate = proposal(3, "extension");
         candidate.partial_state_known = true;
 
         let admission = TransitionDecisionCore::admit_live_completion(&candidate);
-        assert!(!admission.candidate_visible, "{admission:?}");
+        assert!(admission.visible(), "{admission:?}");
+
+        candidate.active_composition = false;
+        let inactive = TransitionDecisionCore::admit_live_completion(&candidate);
+        assert!(!inactive.candidate_visible, "{inactive:?}");
 
         candidate.context_birth = true;
         let supported = TransitionDecisionCore::admit_live_completion(&candidate);

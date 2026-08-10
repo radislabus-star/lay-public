@@ -46,9 +46,12 @@ pub use eval::{evaluate_wave, evaluate_wave_with_options, WaveEvalResult, WaveEv
 pub use l2_candidate_phase::L2PhaseTrainingEntry;
 pub(crate) use l2_candidate_phase::{PhaseReadout, PhaseVerdict};
 pub use l2_field::{
-    canonical_l2_status, compile_canonical_l2_package, default_l2_model_dir,
-    discover_installed_l2_package, export_unseeded_l11_seed_corpus, prove_canonical_l2_package,
-    query_canonical_l2_package,
+    canonical_l2_status, compact_canonical_l2_package, compile_canonical_l2_package,
+    default_l2_model_dir, discover_installed_l2_package, export_unseeded_l11_seed_corpus,
+    prove_canonical_l2_package, prove_compact_canonical_l2_parity,
+    prove_compositional_l2_restoration, prove_contextual_compositional_l2_restoration,
+    query_canonical_l2_package, CANONICAL_L2_ACTIVE_LEMMA_LIMIT, CANONICAL_L2_ATOM_RELATION_LIMIT,
+    CANONICAL_L2_FEATURE_LIMIT, CANONICAL_L2_FORM_LIMIT, CANONICAL_L2_LEMMA_FRONTIER,
 };
 pub use lexical_grokking::{
     admit_l11_delta, admit_l11_tombstone, analyze_l1_forward_compression,
@@ -262,6 +265,51 @@ pub fn compile_l3_context_delta_for_manifest(
         object.insert("runtime_authority".to_string(), serde_json::json!(false));
     }
     Ok(value)
+}
+
+/// Compiles a bounded L3 delta from causally labelled sentence scenes.
+///
+/// `target` and `competitors` are evidence labels for one observed sentence
+/// slot. They are converted to directional pair profiles and are never used as
+/// runtime exceptions or stored as raw strings in the package.
+pub fn compile_l3_supervised_relation_delta_for_manifest(
+    manifest_path: &std::path::Path,
+    scenes: &[String],
+    target: &str,
+    competitors: &[String],
+    output_path: &std::path::Path,
+    min_profile_support: u32,
+) -> std::io::Result<serde_json::Value> {
+    let baseline = context_phase::L3CompositeMemory::load_manifest(manifest_path)?;
+    let signature_schema = baseline.package().signature_schema;
+    let (package, mut report) = context_phase::compile_supervised_relation_delta(
+        baseline.package(),
+        scenes,
+        target,
+        competitors,
+        min_profile_support,
+        signature_schema,
+    )?;
+    context_phase::write_package(output_path, &package)?;
+    if let Some(object) = report.as_object_mut() {
+        object.insert("manifest".to_string(), serde_json::json!(manifest_path));
+        object.insert("output".to_string(), serde_json::json!(output_path));
+        object.insert(
+            "projection_base_semantic_states".to_string(),
+            serde_json::json!(baseline.package().semantic_states.len()),
+        );
+        object.insert(
+            "projection_base_inherited".to_string(),
+            serde_json::json!(true),
+        );
+        object.insert(
+            "artifact_bytes".to_string(),
+            serde_json::json!(std::fs::metadata(output_path)?.len()),
+        );
+        object.insert("base_loaded".to_string(), serde_json::json!(true));
+        object.insert("base_rewritten".to_string(), serde_json::json!(false));
+    }
+    Ok(report)
 }
 
 pub fn compile_l3_context_phase_memory_with_progress<F>(
@@ -665,175 +713,21 @@ pub fn reload_l3_context_composite() -> std::io::Result<serde_json::Value> {
     context_phase::reload_default_memory()
 }
 
-/// Proves one small delta against explicit changed scenes and fixed safety
-/// sentinels. TSV rows are: `improve|safety<TAB>context<TAB>a|b<TAB>expected|-`.
+/// Proves one small delta against explicit changed sentence scenes and fixed
+/// safety sentinels. The sentence proof parser is the sole owner of the TSV
+/// contract: `split<TAB>class<TAB>original<TAB>a|b<TAB>expected|-`.
 pub fn prove_l3_context_delta_targeted(
     manifest_path: &std::path::Path,
     delta_path: &std::path::Path,
     cases_path: &std::path::Path,
     receipt_path: &std::path::Path,
 ) -> std::io::Result<serde_json::Value> {
-    let baseline = context_phase::L3CompositeMemory::load_manifest(manifest_path)?;
-    let base = baseline.package().clone();
-    let delta = context_phase::read_package(delta_path)?;
-    if base.signature_schema != delta.signature_schema {
-        return Err(std::io::Error::new(
-            std::io::ErrorKind::InvalidInput,
-            "L3 delta signature schema does not match the immutable base",
-        ));
-    }
-    let baseline_sha256 = context_phase::package_sha256(&base);
-    let delta_sha256 = context_phase::package_path_sha256(delta_path)?;
-    let candidate = baseline.compose_delta_path(delta_path)?;
-    let text = std::fs::read_to_string(cases_path)?;
-    let mut improve_cases = 0_u64;
-    let mut improved = 0_u64;
-    let mut target_failures = 0_u64;
-    let mut safety_cases = 0_u64;
-    let mut false_supports = 0_u64;
-    let mut failures = Vec::new();
-    for (index, raw_line) in text.lines().enumerate() {
-        let line = raw_line.trim();
-        if line.is_empty() || line.starts_with('#') {
-            continue;
-        }
-        let fields = line.split('\t').collect::<Vec<_>>();
-        if fields.len() != 4 {
-            return Err(std::io::Error::new(
-                std::io::ErrorKind::InvalidData,
-                format!("invalid targeted L3 case at line {}", index + 1),
-            ));
-        }
-        let candidates = fields[2]
-            .split('|')
-            .map(str::trim)
-            .filter(|value| !value.is_empty())
-            .collect::<Vec<_>>();
-        if candidates.len() < 2 {
-            return Err(std::io::Error::new(
-                std::io::ErrorKind::InvalidData,
-                format!(
-                    "targeted L3 case needs at least two candidates at line {}",
-                    index + 1
-                ),
-            ));
-        }
-        let context = context_phase::tokenize_context_text(fields[1]);
-        let base_readouts = base.score_candidates(&context, &candidates);
-        let candidate_readouts = candidate.score_candidates(&context, &candidates);
-        match fields[0] {
-            "improve" => {
-                improve_cases += 1;
-                let expected = fields[3];
-                let Some(expected_index) = candidates
-                    .iter()
-                    .position(|candidate| *candidate == expected)
-                else {
-                    return Err(std::io::Error::new(
-                        std::io::ErrorKind::InvalidData,
-                        format!("expected candidate is absent at line {}", index + 1),
-                    ));
-                };
-                let before = base_readouts[expected_index];
-                let after = candidate_readouts[expected_index];
-                if after.disposition == context_phase::ContextPhaseDisposition::Support
-                    && (before.disposition != context_phase::ContextPhaseDisposition::Support
-                        || after.margin_micro > before.margin_micro)
-                {
-                    improved += 1;
-                } else {
-                    target_failures += 1;
-                    failures.push(serde_json::json!({
-                        "line": index + 1,
-                        "kind": "target_not_improved",
-                        "expected": expected,
-                        "before": format!("{:?}", before.disposition),
-                        "after": format!("{:?}", after.disposition),
-                        "before_margin_micro": before.margin_micro,
-                        "after_margin_micro": after.margin_micro,
-                        "after_threshold_micro": after.threshold_micro,
-                        "after_competition_margin_micro": after.competition_margin_micro,
-                        "after_positive_examples": after.positive_examples,
-                        "after_positive_center_support": after.positive_center_support,
-                        "after_pairwise_certified": after.pairwise_certified,
-                        "after_pairwise_blocked": after.pairwise_blocked,
-                        "after_pairwise_conflict": after.pairwise_conflict,
-                        "after_pairwise_known_edges": after.pairwise_known_edges,
-                        "after_pairwise_unknown_edges": after.pairwise_unknown_edges,
-                        "candidate_readouts": candidates.iter().zip(&candidate_readouts).map(|(surface, readout)| serde_json::json!({
-                            "surface": surface,
-                            "disposition": format!("{:?}", readout.disposition),
-                            "margin_micro": readout.margin_micro,
-                            "threshold_micro": readout.threshold_micro,
-                            "competition_margin_micro": readout.competition_margin_micro,
-                            "pairwise_blocked": readout.pairwise_blocked,
-                            "pairwise_certified": readout.pairwise_certified,
-                        })).collect::<Vec<_>>(),
-                        "pair_debug": candidate.pair_debug(&context, &candidates),
-                    }));
-                }
-            }
-            "safety" => {
-                safety_cases += 1;
-                let allowed = (fields[3] != "-").then_some(fields[3]);
-                if allowed.is_some_and(|expected| !candidates.contains(&expected)) {
-                    return Err(std::io::Error::new(
-                        std::io::ErrorKind::InvalidData,
-                        format!("allowed safety candidate is absent at line {}", index + 1),
-                    ));
-                }
-                for (surface, readout) in candidates.iter().zip(&candidate_readouts) {
-                    if Some(*surface) != allowed
-                        && readout.disposition == context_phase::ContextPhaseDisposition::Support
-                    {
-                        false_supports += 1;
-                        failures.push(serde_json::json!({
-                            "line": index + 1,
-                            "kind": "false_support",
-                            "candidate": surface,
-                            "margin_micro": readout.margin_micro,
-                        }));
-                    }
-                }
-            }
-            kind => {
-                return Err(std::io::Error::new(
-                    std::io::ErrorKind::InvalidData,
-                    format!(
-                        "unknown targeted L3 case kind {kind:?} at line {}",
-                        index + 1
-                    ),
-                ));
-            }
-        }
-    }
-    let passed = improve_cases > 0
-        && safety_cases > 0
-        && improved == improve_cases
-        && target_failures == 0
-        && false_supports == 0;
-    let report = serde_json::json!({
-        "kind": "l3_context_delta_targeted_proof",
-        "manifest": manifest_path,
-        "delta": delta_path,
-        "baseline_sha256": baseline_sha256,
-        "delta_sha256": delta_sha256,
-        "cases": cases_path,
-        "improve_cases": improve_cases,
-        "improved": improved,
-        "target_failures": target_failures,
-        "safety_cases": safety_cases,
-        "false_supports": false_supports,
-        "failures": failures,
-        "base_rewritten": false,
-        "full_corpus_recompiled": false,
-        "runtime_authority": false,
-        "verdict": if passed { "PASS" } else { "WATCH" },
-    });
-    let mut bytes = serde_json::to_vec_pretty(&report).map_err(std::io::Error::other)?;
-    bytes.push(b'\n');
-    crate::private_file::write_private_bytes(receipt_path, &bytes)?;
-    Ok(report)
+    context_phase::prove_sentence_context_delta_path(
+        manifest_path,
+        delta_path,
+        cases_path,
+        receipt_path,
+    )
 }
 
 pub fn prove_l3_sentence_context_delta_targeted(

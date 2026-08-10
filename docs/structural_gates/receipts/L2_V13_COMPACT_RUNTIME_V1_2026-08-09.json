@@ -1,0 +1,106 @@
+{
+  "kind": "l2_v13_compact_runtime_v1",
+  "date": "2026-08-09",
+  "verdict": "PASS_compact_runtime_full_v13",
+  "runtime_authority_changed": false,
+  "live_runtime_installed": false,
+  "storage": {
+    "implementation": "owned Vec<u8> direct compact sections",
+    "mmap": false,
+    "reference_kind": "reference_v2_owned",
+    "compact_kind": "compact_v1_direct",
+    "reference_backing_bytes": 135121803,
+    "compact_backing_bytes": 63544178,
+    "reference_peak_rss_kib": 266400,
+    "compact_peak_rss_kib": 107296,
+    "rss_saved_kib": 159104,
+    "rss_saved_percent": 59.723724,
+    "reference_status_wall_seconds": 0.56,
+    "compact_status_wall_seconds": 0.56
+  },
+  "field": {
+    "forms": 1875032,
+    "l1_bound_forms": 517257,
+    "l2_materialized_forms": 1357775,
+    "lemmas": 93672,
+    "morph_bindings": 3255785,
+    "competition_edges": 215121,
+    "raw_decoder_bytes": 43797471,
+    "l1_package_fingerprint": 11810333104793979000
+  },
+  "full_fixed_proof": {
+    "workers": 20,
+    "same_lemma_total": 2501613,
+    "same_lemma_target_coverage_percent": 99.99808123798525,
+    "same_lemma_false_authority": 0,
+    "same_lemma_winner_correct": 1165387,
+    "same_lemma_tied_contains": 1336178,
+    "same_lemma_abstain": 36,
+    "near_neighbor_total": 42195,
+    "near_neighbor_target_coverage_percent": 100.0,
+    "near_neighbor_false_authority": 0,
+    "near_neighbor_winner_correct": 363,
+    "near_neighbor_tied_contains": 41832,
+    "per_pos_target_coverage_percent": {
+      "noun": 100.0,
+      "adjective": 100.0,
+      "pronoun": 100.0,
+      "verb": 99.98649006175168
+    },
+    "cold_load_us": 611508,
+    "hot_p50_us": 38,
+    "hot_p99_us": 183,
+    "wall_seconds": 26.02,
+    "cpu_percent": 649,
+    "user_seconds": 167.76,
+    "system_seconds": 1.24,
+    "peak_rss_kib": 3670024
+  },
+  "parity": {
+    "focused_complete_readout_objects_equal": true,
+    "full_proof_normalized_json_equal": true,
+    "normalization_removed_fields": [
+      "l2_package",
+      "package_bytes",
+      "cold_load_us",
+      "hot_p50_us",
+      "hot_p99_us"
+    ],
+    "reference_normalized_sha256": "61b57a2522d3173d061668759d9ac25063d3a94dc65ec20617c12de5790f4efc",
+    "compact_normalized_sha256": "61b57a2522d3173d061668759d9ac25063d3a94dc65ec20617c12de5790f4efc",
+    "reference_package_sha256": "bbe67a772b684e0f187483796fca248ac0b10576195b1aa524f0b2bde0f6601e",
+    "compact_package_sha256": "353cd9526429b35ec5c7846b81b06fc16f06b6ea262ffad1005630fcf9bff9b1"
+  },
+  "gates": {
+    "same_lemma_target_retention": "PASS",
+    "near_neighbor_target_retention": "PASS",
+    "false_authority": "PASS_zero",
+    "hot_p99_le_5000_us": "PASS",
+    "standalone_rss_100_to_250_mib": "PASS",
+    "package_le_195_mib": "PASS"
+  },
+  "tested": [
+    "compact runtime load over all 1875032 exact surfaces",
+    "reference and compact complete readout equality in focused Winner Tied Abstain probes",
+    "full fixed V13 same-lemma heldout proof",
+    "full fixed V13 near-neighbor heldout proof",
+    "all per-POS target coverage and false-authority counters",
+    "standalone package backing bytes and process peak RSS",
+    "cold load and hot p50 p99 latency"
+  ],
+  "not_tested": [
+    "mmap ownership or page-fault behavior",
+    "separate L1.1 thirteen-damage-class proof",
+    "daemon or IME installation",
+    "multi-day live stability"
+  ],
+  "remote_evidence": {
+    "reference_proof": "/home/e/build/lay-l1-shadow/artifacts/l2-v13-ruslit-full-neighbors-2026-07-30/proof.json",
+    "compact_proof": "/home/e/build/lay-l1-shadow/artifacts/l2-v13-compact-runtime-v1-2026-08-09/proof.json",
+    "compact_proof_time": "/home/e/build/lay-l1-shadow/artifacts/l2-v13-compact-runtime-v1-2026-08-09/proof.time",
+    "compact_status": "/home/e/build/lay-l1-shadow/artifacts/l2-v13-compact-runtime-v1-2026-08-09/status-compact.json",
+    "compact_status_time": "/home/e/build/lay-l1-shadow/artifacts/l2-v13-compact-runtime-v1-2026-08-09/status-compact.time",
+    "reference_status": "/home/e/build/lay-l1-shadow/artifacts/l2-v13-compact-runtime-v1-2026-08-09/status-reference.json",
+    "reference_status_time": "/home/e/build/lay-l1-shadow/artifacts/l2-v13-compact-runtime-v1-2026-08-09/status-reference.time"
+  }
+}

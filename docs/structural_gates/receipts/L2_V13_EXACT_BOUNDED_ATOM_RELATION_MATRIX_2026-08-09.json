@@ -1,0 +1,60 @@
+{
+  "kind": "l2_v13_exact_bounded_atom_relation_matrix",
+  "date": "2026-08-09",
+  "scope": "fixed 13 x 1000 contextual compositional proof; 256 broad lemmas, 256 active lemmas, 16 features, 32 forms",
+  "variants": [
+    {
+      "atom_relations": 65536,
+      "sparse_broad_percent": 94,
+      "sparse_form_percent": 94,
+      "sparse_readout_percent": 94,
+      "lemma_p99_us": 4382,
+      "form_p99_us": 30947,
+      "false_authority": 0,
+      "verdict": "FAIL"
+    },
+    {
+      "atom_relations": 98304,
+      "sparse_broad_percent": 94.9,
+      "sparse_form_percent": 94.9,
+      "sparse_readout_percent": 94.9,
+      "lemma_p99_us": 4936,
+      "form_p99_us": 31245,
+      "false_authority": 0,
+      "verdict": "FAIL"
+    },
+    {
+      "atom_relations": 131072,
+      "sparse_broad_percent": 95.9,
+      "sparse_form_percent": 95.9,
+      "sparse_readout_percent": 95.9,
+      "lemma_p99_us": 5985,
+      "form_p99_us": 34981,
+      "false_authority": 0,
+      "verdict": "PASS_shadow_retention"
+    },
+    {
+      "atom_relations": 196608,
+      "sparse_broad_percent": 96.8,
+      "sparse_form_percent": 96.8,
+      "sparse_readout_percent": 96.8,
+      "lemma_p99_us": 10228,
+      "form_p99_us": 44697,
+      "false_authority": 0,
+      "verdict": "PASS_shadow_retention"
+    },
+    {
+      "atom_relations": 262144,
+      "sparse_broad_percent": 97,
+      "sparse_form_percent": 97,
+      "sparse_readout_percent": 97,
+      "lemma_p99_us": 10888,
+      "form_p99_us": 37788,
+      "false_authority": 0,
+      "verdict": "PASS_shadow_retention"
+    }
+  ],
+  "selected_atom_relations": 196608,
+  "runtime_authority_changed_by_experiment": false,
+  "full_proof_receipt": "docs/structural_gates/receipts/L2_V13_EXACT_BOUNDED_REL196608_FULL_20K_2026-08-09.json"
+}

@@ -335,6 +335,86 @@ fn repeated_pair_direction_narrows_only_its_learned_uncertainty_band() {
 }
 
 #[test]
+fn repeated_pair_direction_settles_across_independent_subcenters() {
+    let mut first_scene = empty_vector(CELLS);
+    first_scene[0] = PhaseCell { re: 1.0, im: 0.0 };
+    let mut second_scene = empty_vector(CELLS);
+    second_scene[1] = PhaseCell { re: 1.0, im: 0.0 };
+    let mut unseen_scene = empty_vector(CELLS);
+    unseen_scene[2] = PhaseCell { re: 1.0, im: 0.0 };
+    let low = hash_text("первый");
+    let high = hash_text("второй");
+    let key = PairKey::new(low, high).unwrap();
+    let view_index = sentence::PAIR_VIEW_LEFT_EXACT;
+    let view_winner = pair_view_hash(key.low_hash, view_index);
+    let view_loser = pair_view_hash(key.high_hash, view_index);
+    let view_key = PairKey::new(view_winner, view_loser).unwrap();
+    let centers = vec![
+        PhaseCenter::from_center(first_scene.clone(), 1),
+        PhaseCenter::from_center(second_scene.clone(), 1),
+    ];
+    let (low_wins, high_wins) = if view_winner == view_key.low_hash {
+        (centers, Vec::new())
+    } else {
+        (Vec::new(), centers)
+    };
+    let package = ContextPhasePackage {
+        pairwise_threshold_micro: 10,
+        pair_profiles: vec![ContextPairPhaseProfile {
+            low_hash: view_key.low_hash,
+            high_hash: view_key.high_hash,
+            low_wins,
+            high_wins,
+            ..ContextPairPhaseProfile::default()
+        }],
+        ..ContextPhasePackage::default()
+    };
+
+    assert_eq!(
+        package
+            .pair_view_edge_evidence(
+                &first_scene,
+                key.low_hash,
+                key.high_hash,
+                1,
+                2,
+                view_index,
+                false,
+            )
+            .outcome,
+        PairEdgeOutcome::LowWins
+    );
+    assert_eq!(
+        package
+            .pair_view_edge_evidence(
+                &second_scene,
+                key.low_hash,
+                key.high_hash,
+                1,
+                2,
+                view_index,
+                false,
+            )
+            .outcome,
+        PairEdgeOutcome::LowWins
+    );
+    assert_eq!(
+        package
+            .pair_view_edge_evidence(
+                &unseen_scene,
+                key.low_hash,
+                key.high_hash,
+                1,
+                2,
+                view_index,
+                false,
+            )
+            .outcome,
+        PairEdgeOutcome::Unknown
+    );
+}
+
+#[test]
 fn relation_pair_key_is_canonical_without_retaining_candidate_text() {
     let left = hash_text("дождь");
     let right = hash_text("день");

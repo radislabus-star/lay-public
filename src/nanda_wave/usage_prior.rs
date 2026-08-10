@@ -410,6 +410,14 @@ impl UsagePriorSnapshot {
         self.hot.context_prefix_candidates(context, partial, limit)
     }
 
+    pub(crate) fn context_candidates(
+        &self,
+        context: &UsageHotContext,
+        limit: usize,
+    ) -> Vec<UsageContextCandidate> {
+        self.hot.context_candidates(context, limit)
+    }
+
     pub(crate) fn hot_readout_prepared(
         &self,
         context: &UsageHotContext,

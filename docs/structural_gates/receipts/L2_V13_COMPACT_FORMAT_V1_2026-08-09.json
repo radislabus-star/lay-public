@@ -1,0 +1,94 @@
+{
+  "kind": "l2_v13_compact_format_v1",
+  "date": "2026-08-09",
+  "verdict": "PASS_format_only",
+  "runtime_authority_changed": false,
+  "quality_proof_run": false,
+  "reference": {
+    "path": "/home/e/build/lay-l1-shadow/artifacts/l2-v13-ruslit-full-neighbors-2026-07-30/LAY-L2-RU-FULL-v13.bin",
+    "bytes": 135121803,
+    "mib": 128.86,
+    "sha256": "bbe67a772b684e0f187483796fca248ac0b10576195b1aa524f0b2bde0f6601e"
+  },
+  "compact": {
+    "path": "/home/e/build/lay-l1-shadow/artifacts/l2-v13-compact-format-v1-2026-08-09/LAY-L2-RU-FULL-v13.compact-v1.bin",
+    "bytes": 63544178,
+    "mib": 60.60045051574707,
+    "sha256": "353cd9526429b35ec5c7846b81b06fc16f06b6ea262ffad1005630fcf9bff9b1",
+    "compression_ratio": 0.4702733133304919,
+    "saved_bytes": 71577625,
+    "saved_percent": 52.97266866695081
+  },
+  "field": {
+    "forms": 1875032,
+    "lemmas": 93672,
+    "morph_bindings": 3255785,
+    "feature_dictionary_entries": 248,
+    "decoder_block_forms": 32,
+    "decoder_blocks": 58595
+  },
+  "sections_bytes": {
+    "header": 128,
+    "form_refs": 15000256,
+    "decoder_offsets": 234380,
+    "decoder_payload": 9775225,
+    "feature_dictionary": 992,
+    "lemma_centers": 2997504,
+    "morph_bindings": 29302065,
+    "context_modes": 671472,
+    "slot_centers": 17100,
+    "neighbor_couplings": 382128,
+    "competition_edges": 5162904,
+    "calibration": 24
+  },
+  "decoder_block_measurement": [
+    {"block_forms": 8, "encoded_bytes": 14185917, "average_decode_steps": 4.5},
+    {"block_forms": 16, "encoded_bytes": 11401158, "average_decode_steps": 8.5},
+    {"block_forms": 32, "encoded_bytes": 10009605, "average_decode_steps": 16.5},
+    {"block_forms": 64, "encoded_bytes": 9313981, "average_decode_steps": 32.5},
+    {"block_forms": 128, "encoded_bytes": 8965866, "average_decode_steps": 64.5},
+    {"block_forms": 256, "encoded_bytes": 8792152, "average_decode_steps": 128.5}
+  ],
+  "parity": {
+    "exact_package_roundtrip": true,
+    "reference_bytes_equal_after_decode": true,
+    "l1_package_fingerprint": true,
+    "form_refs": true,
+    "decoder_bytes": true,
+    "lemma_centers": true,
+    "morph_bindings": true,
+    "context_modes": true,
+    "slot_centers": true,
+    "neighbor_couplings": true,
+    "competition_edges": true,
+    "calibration": true
+  },
+  "cold_work": {
+    "compact_wall_seconds": 1.18,
+    "compact_cpu_percent": 98,
+    "compact_peak_rss_kib": 485540,
+    "parity_wall_seconds": 1.08,
+    "parity_cpu_percent": 99,
+    "parity_peak_rss_kib": 732908
+  },
+  "tested": [
+    "full V13 compact encode and exact decode",
+    "all package sections record-equal after decode",
+    "reference bytes equal after compact decode and canonical re-encode",
+    "UTF-8, multi-lemma surface, and same-feature variant fixtures",
+    "compact checksum corruption rejection"
+  ],
+  "not_tested": [
+    "direct mmap or zero-copy compact runtime",
+    "compact runtime cold startup, steady RSS, and hot latency",
+    "new L1.1 per-damage-class quality proof",
+    "new L2 heldout quality proof",
+    "live daemon or IME installation"
+  ],
+  "remote_evidence": {
+    "compact_report": "/home/e/build/lay-l1-shadow/artifacts/l2-v13-compact-format-v1-2026-08-09/compact.json",
+    "compact_time": "/home/e/build/lay-l1-shadow/artifacts/l2-v13-compact-format-v1-2026-08-09/compact.time",
+    "parity_report": "/home/e/build/lay-l1-shadow/artifacts/l2-v13-compact-format-v1-2026-08-09/parity.json",
+    "parity_time": "/home/e/build/lay-l1-shadow/artifacts/l2-v13-compact-format-v1-2026-08-09/parity.time"
+  }
+}

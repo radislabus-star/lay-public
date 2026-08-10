@@ -700,6 +700,30 @@ fn shadow_query_reads_terminal_ids_without_a_string_table() {
 }
 
 #[test]
+fn typed_lattice_transfers_only_the_classified_l11_winner_authority() {
+    let package = compile(&fixture_words()).expect("compile fixture package");
+    let bytes = format::encode(&package).expect("encode fixture package");
+    let path =
+        std::env::temp_dir().join(format!("lay-l11-typed-lattice-{}.bin", std::process::id()));
+    std::fs::write(&path, bytes).expect("write fixture package");
+    let host = super::runtime::L1RestorationHost::load(&path).expect("load fixture host");
+    let restore = host.restore("время", 8);
+    let expected = restore["result"]["candidate"]["terminal_id"]
+        .as_u64()
+        .and_then(|terminal_id| u32::try_from(terminal_id).ok())
+        .expect("classified winner terminal");
+    let typed = host.typed_lattice_seed_rows("время", 8);
+    let authority = typed
+        .iter()
+        .filter_map(|(terminal_id, _, authority, _)| authority.then_some(*terminal_id))
+        .collect::<Vec<_>>();
+
+    assert_eq!(restore["result"]["authority"], true);
+    assert_eq!(authority, vec![expected]);
+    let _ = std::fs::remove_file(path);
+}
+
+#[test]
 fn append_only_manifest_adds_centers_and_applies_tombstones_without_rewriting_base() {
     let root = std::env::temp_dir().join(format!(
         "lay-l11-composite-{}-{}",
@@ -780,6 +804,10 @@ fn append_only_manifest_adds_centers_and_applies_tombstones_without_rewriting_ba
         "кристаллизатор",
         "an exact delta surface must remain the first composite seed"
     );
+    assert!(host
+        .typed_lattice_seed_rows("кристаллизатор", 8)
+        .iter()
+        .all(|(_, _, authority, _)| !authority));
     let benchmark = super::runtime::benchmark_package(&manifest_path, "кристаллизатор", 3, 8)
         .expect("benchmark composite");
     assert_eq!(benchmark["delta_count"], 1);

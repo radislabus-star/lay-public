@@ -298,3 +298,30 @@ L2 ownership cleanup
 -> performance
 -> общий release gate
 ```
+
+## 8. Release 1.0.17: Incremental DAFSA Completion
+
+**Статус: выполнено 2026-08-10, release `1.0.17` установлен.** Холодный
+completion-маршрут больше не пересчитывает полный фазовый/key-вектор отдельно
+для каждой из `576` декодированных поверхностей. Один аккумулятор переносится
+по DAFSA frontier с checkpoint/restore; на ребре добавляются только новые byte
+4-grams, boundary-атомы добавляются временно только в terminal.
+
+```text
+remote release build                    133.16 s
+build jobs                                     20
+build peak RSS                     1,818,692 KiB
+old full rescan                         8,427 us
+incremental readout                     6,239 us
+improvement                                25.97%
+candidate parity                           exact
+product candidate gate                26 / 26 PASS
+installed binaries                    10 / 10 PASS
+global IBus PID                       3702 -> 3702
+active engine                         lay-ime-ru
+```
+
+L1.1 и L2 не перекристаллизовывались; лимиты `96 / 576`, candidate sources,
+score, package identity и runtime authority не менялись. Exact receipt:
+
+`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_DAFSA_INCREMENTAL_COMPLETION_1_0_17_2026-08-10.json`.
