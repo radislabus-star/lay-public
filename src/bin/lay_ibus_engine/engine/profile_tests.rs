@@ -138,7 +138,11 @@ fn layout_switch_path_preserves_fresh_committed_tail_handoff() {
     assert!(first.bind_focus_path());
     first.tail_buffer = "вот ".to_string();
     first.publish_tail_handoff();
-    first.remember_pending_ime_auto_undo("djn ".to_string(), "вот ".to_string());
+    first.remember_pending_ime_auto_undo(
+        "djn ".to_string(),
+        "вот ".to_string(),
+        lay::typing_cpu::ObservedSystemTransition::LayoutProjection,
+    );
     first.publish_active_path_preserve_handoff(Instant::now() + Duration::from_millis(700));
 
     let mut second = LayIbusEngine::new(

@@ -713,6 +713,10 @@ pub fn reload_l3_context_composite() -> std::io::Result<serde_json::Value> {
     context_phase::reload_default_memory()
 }
 
+pub fn l3_context_runtime_status_json() -> serde_json::Value {
+    context_phase::default_memory_runtime_status_json()
+}
+
 /// Proves one small delta against explicit changed sentence scenes and fixed
 /// safety sentinels. The sentence proof parser is the sole owner of the TSV
 /// contract: `split<TAB>class<TAB>original<TAB>a|b<TAB>expected|-`.
@@ -1416,6 +1420,20 @@ pub fn compile_l4_cross_scene_memory(
     serde_json::to_value(report).map_err(std::io::Error::other)
 }
 
+pub fn compile_l4_cross_scene_memory_with_corrections(
+    input: &std::path::Path,
+    corrections: &std::path::Path,
+    output: &std::path::Path,
+) -> std::io::Result<serde_json::Value> {
+    let report = l4_cross_scene::compile_usage_events_with_corrections_path(
+        input,
+        Some(corrections),
+        output,
+        l4_cross_scene::CrossSceneCompileConfig::default(),
+    )?;
+    serde_json::to_value(report).map_err(std::io::Error::other)
+}
+
 /// Builds and proves transferable whole-token and grapheme layout scenes on a
 /// word-disjoint heldout split. Passing this proof still means SuggestOnly.
 pub fn prove_l4_cross_scene_memory(
@@ -1496,6 +1514,19 @@ pub fn record_observed_system_apply_usage(
     usage_prior::record_observed_system_apply_if_enabled(
         from,
         to,
+        transition.evidence_source(),
+        transition.operation(),
+    );
+}
+
+pub fn record_reverted_system_apply_usage(
+    original: &str,
+    rejected: &str,
+    transition: crate::typing_cpu::ObservedSystemTransition,
+) {
+    usage_prior::record_reverted_system_apply_if_enabled(
+        original,
+        rejected,
         transition.evidence_source(),
         transition.operation(),
     );

@@ -5,6 +5,7 @@ use std::time::Instant;
 pub(crate) struct PendingImeAutoUndo {
     pub(crate) original: String,
     pub(crate) replacement: String,
+    pub(crate) transition: lay::typing_cpu::ObservedSystemTransition,
     pub(crate) recorded_at: Instant,
 }
 

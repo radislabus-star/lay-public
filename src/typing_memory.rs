@@ -475,6 +475,15 @@ impl TypingMemoryEvent {
         )
     }
 
+    pub(crate) fn reverted_system_apply(
+        original: &str,
+        rejected: &str,
+        evidence_source: TypingMemoryEvidenceSource,
+        operation: TypingMemoryOperation,
+    ) -> Vec<Self> {
+        rejected_events(original, rejected, evidence_source, operation)
+    }
+
     pub(crate) fn accepted_ime(context_tail: &str, accepted_text: &str) -> Vec<Self> {
         ime_events(
             TypingMemoryEventKind::AcceptedIme,
@@ -573,42 +582,56 @@ impl TypingMemoryEvent {
         source: &str,
         operation: &str,
     ) -> Vec<Self> {
-        let from_words = normalized_words(context_tail);
-        let rejected_words = normalized_words(rejected_text);
-        let episode_id = next_causal_episode_id();
-        changed_target_indexes(&from_words, &rejected_words)
-            .into_iter()
-            .filter_map(|index| {
-                let word = rejected_words.get(index)?.clone();
-                let context = words_before_last(&rejected_words[..index]);
-                Some(Self {
-                    kind: TypingMemoryEventKind::RejectedCandidate,
-                    feedback: TypingMemoryFeedback::Rejected,
-                    outcome: TypingMemoryOutcome::Reverted,
-                    word,
-                    context,
-                    from: Some(context_tail.trim().to_string()),
-                    to: Some(rejected_text.trim().to_string()),
-                    evidence_source: TypingMemoryEvidenceSource::from_legacy(source),
-                    operation: TypingMemoryOperation::from_legacy(operation),
-                    identity: TypingTransitionIdentity::observed(
-                        context_tail,
-                        rejected_text,
-                        operation,
-                    ),
-                    surface: Some(transition_surface_key(
-                        context_tail,
-                        rejected_text,
-                        source,
-                        operation,
-                    )),
-                    completion_edit: None,
-                    episode_id: Some(episode_id.clone()),
-                    proposal: None,
-                })
-            })
-            .collect()
+        rejected_events(
+            context_tail,
+            rejected_text,
+            TypingMemoryEvidenceSource::from_legacy(source),
+            TypingMemoryOperation::from_legacy(operation),
+        )
     }
+}
+
+fn rejected_events(
+    original: &str,
+    rejected: &str,
+    evidence_source: TypingMemoryEvidenceSource,
+    operation: TypingMemoryOperation,
+) -> Vec<TypingMemoryEvent> {
+    let original_words = normalized_words(original);
+    let rejected_words = normalized_words(rejected);
+    let episode_id = next_causal_episode_id();
+    changed_target_indexes(&original_words, &rejected_words)
+        .into_iter()
+        .filter_map(|index| {
+            let word = rejected_words.get(index)?.clone();
+            let context = words_before_last(&rejected_words[..index]);
+            Some(TypingMemoryEvent {
+                kind: TypingMemoryEventKind::RejectedCandidate,
+                feedback: TypingMemoryFeedback::Rejected,
+                outcome: TypingMemoryOutcome::Reverted,
+                word,
+                context,
+                from: Some(original.trim().to_string()),
+                to: Some(rejected.trim().to_string()),
+                evidence_source: evidence_source.clone(),
+                operation: operation.clone(),
+                identity: TypingTransitionIdentity::observed(
+                    original,
+                    rejected,
+                    operation.as_str(),
+                ),
+                surface: Some(transition_surface_key(
+                    original,
+                    rejected,
+                    evidence_source.as_str(),
+                    operation.as_str(),
+                )),
+                completion_edit: None,
+                episode_id: Some(episode_id.clone()),
+                proposal: Some(rejected.trim().to_string()),
+            })
+        })
+        .collect()
 }
 
 fn accepted_events(
@@ -1071,6 +1094,35 @@ mod tests {
         assert_eq!(events[0].context, ["ну"]);
         assert_eq!(events[0].word, "даша");
         assert!(events[0].surface.is_some());
+    }
+
+    #[test]
+    fn reverted_system_apply_keeps_the_rejected_proposal_and_typed_source() {
+        let events = TypingMemoryEvent::reverted_system_apply(
+            "обновлять модель по ходу ",
+            "обновлять модель по ход ",
+            TypingMemoryEvidenceSource::Autocorrect,
+            TypingMemoryOperation::Replacement,
+        );
+
+        assert_eq!(events.len(), 1);
+        assert_eq!(events[0].kind, TypingMemoryEventKind::RejectedCandidate);
+        assert_eq!(events[0].feedback, TypingMemoryFeedback::Rejected);
+        assert_eq!(events[0].outcome, TypingMemoryOutcome::Reverted);
+        assert_eq!(events[0].word, "ход");
+        assert_eq!(events[0].context, ["обновлять", "модель", "по"]);
+        assert_eq!(events[0].from.as_deref(), Some("обновлять модель по ходу"));
+        assert_eq!(events[0].to.as_deref(), Some("обновлять модель по ход"));
+        assert_eq!(
+            events[0].proposal.as_deref(),
+            Some("обновлять модель по ход")
+        );
+        assert_eq!(
+            events[0].evidence_source,
+            TypingMemoryEvidenceSource::Autocorrect
+        );
+        assert_eq!(events[0].operation, TypingMemoryOperation::Replacement);
+        assert!(events[0].episode_id.is_some());
     }
 
     #[test]

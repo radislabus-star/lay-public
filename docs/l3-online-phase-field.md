@@ -2258,6 +2258,72 @@ Exact receipt:
 /home/ubu/projects/lay/docs/structural_gates/receipts/LAY_RUNTIME_MEMORY_COMPACT_L3_1_0_1_2026-08-03.json
 ```
 
+## Process-local manifest refresh, 2026-08-10
+
+### What was tested
+
+The default L3 runtime owner was extracted into
+`src/nanda_wave/context_phase/runtime_refresh.rs`. A process warms one
+`Arc<L3CompositeMemory>`, starts one watcher, checks the manifest stamp at most
+once per second, loads a changed composite on a background thread, and swaps
+the complete immutable `Arc` under a short write lock. Readout continues on the
+previous `Arc` while loading occurs.
+
+Every process publishes an atomic private status file under
+`/run/user/1000/lay/l3-context/<process>-<pid>.json` with generation, refresh
+success/failure counters, watcher state and the loaded memory report. A failed
+or partial manifest load leaves the previous memory active.
+
+Focused gates passed:
+
+```text
+process refresh unit tests                  2 / 2
+atomic private status-file replacement      1 / 1
+installed daemon physical refresh           1 / 1
+installed managed IBus physical refresh     1 / 1
+```
+
+### Measured facts
+
+```text
+watch sleep interval                       250 ms
+manifest stamp check interval            1,000 ms
+reader object                         immutable Arc
+load path                         background thread
+status write                  atomic rename, mode 0600
+installed version                              1.0.19
+daemon PID                              128173 -> 128173
+daemon load generation                         1 -> 2
+managed IBus PID                        128200 -> 128200
+managed IBus load generation                    1 -> 2
+global ibus-daemon PID                    3702 -> 3702
+refresh failures                                    0
+manifest/base/model report changed              false
+direct edit authority changed                false
+```
+
+### What was not tested
+
+- candidate UI behavior after a semantically different admitted delta; the
+  physical refresh proof intentionally republished byte-identical manifest and
+  base contents so it measured lifecycle, not ranking quality;
+- multi-day watcher residency and allocator plateau;
+- L1.1/L2 quality or L4 organic promotion.
+
+### Verdict scope
+
+- process-local ownership and atomic swap: `PASS_targeted`;
+- private per-process telemetry: `PASS_targeted`;
+- installed daemon and managed IBus refresh: `PASS_installed`;
+- runtime decision authority changed: `false`.
+
+Exact receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L3_PROCESS_REFRESH_L4_ROLLBACK_FEEDBACK_1_0_19_2026-08-10.json
+/home/ubu/projects/lay/docs/structural_gates/receipts/L3_PROCESS_LOCAL_REFRESH_2026-08-10.json
+```
+
 ## Supervised sentence online delta closure, 2026-08-10
 
 ### What was tested

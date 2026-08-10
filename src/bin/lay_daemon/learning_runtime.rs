@@ -14,7 +14,8 @@ pub(super) use log_file::keep_jsonl_tail_bytes;
 pub(super) use log_file::keep_last_jsonl_lines;
 #[cfg(test)]
 pub(super) use log_file::{
-    append_learning_log_to_path, append_user_correction_learning_log_to_path,
+    append_learning_log_to_path, append_reverted_system_apply_learning_log_to_path,
+    append_user_correction_learning_log_to_path,
 };
 pub(super) use promotion::{promote_user_correction_if_repeated, LearningPromotion};
 
@@ -66,6 +67,32 @@ pub(super) fn append_user_correction_learning_log(correction: &UserLearningCorre
         }
         LearningPromotion::Skipped => {}
     }
+}
+
+pub(super) fn append_reverted_system_apply_learning_log(correction: &UserLearningCorrection) {
+    let Some(user_target) = correction.user_target() else {
+        return;
+    };
+    if user_target != correction.lay_from
+        || correction.from != correction.lay_to
+        || correction.to != correction.lay_from
+    {
+        runtime_log("  learn: rejected non-exact system rollback receipt");
+        return;
+    }
+    lay::typing_cpu::TypingCpu::record_reverted_system_apply(
+        &correction.lay_from,
+        &correction.lay_to,
+        lay::typing_cpu::ObservedSystemTransition::Correction,
+    );
+    if !active_learning_log() {
+        return;
+    }
+    let Some(home) = std::env::var_os("HOME") else {
+        return;
+    };
+    let path = std::path::PathBuf::from(home).join(LEARN_LOG_PATH);
+    log_file::append_reverted_system_apply_learning_log_to_path(&path, correction);
 }
 
 fn record_user_correction_memory(correction: &UserLearningCorrection) {

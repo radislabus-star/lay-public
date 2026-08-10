@@ -9,13 +9,12 @@ mod composite;
 mod format;
 mod online;
 mod proof;
+mod runtime_refresh;
 mod sentence;
 mod stream;
 mod surface_field;
 
 use std::path::{Path, PathBuf};
-use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
-use std::sync::{Arc, OnceLock, RwLock};
 use std::{env, io};
 
 use super::phase_field::{
@@ -43,6 +42,10 @@ pub(crate) use proof::{
     build_and_prove_context_phase_path, prove_context_phase_package_delta,
     prove_context_phase_package_delta_path, prove_context_phase_package_path,
     prove_context_phase_package_path_with_surface_field, prove_context_phase_path,
+};
+pub(crate) use runtime_refresh::{
+    default_memory_is_warm, default_memory_runtime_status_json, reload_default_memory,
+    warm_default_memory, with_default_memory,
 };
 pub(crate) use sentence::{
     build_and_prove_sentence_context_path, compile_supervised_relation_delta,
@@ -2309,119 +2312,6 @@ pub(crate) fn default_manifest_path() -> PathBuf {
     env::var_os("LAY_NANDA_L3_CONTEXT_MANIFEST")
         .map(PathBuf::from)
         .unwrap_or_else(|| default_memory_path().with_extension("runtime.json"))
-}
-
-static DEFAULT_MEMORY: OnceLock<RwLock<Arc<L3CompositeMemory>>> = OnceLock::new();
-static DEFAULT_MEMORY_WARM: AtomicBool = AtomicBool::new(false);
-static DEFAULT_MEMORY_REFRESH_CHECK_MS: AtomicU64 = AtomicU64::new(0);
-static DEFAULT_MEMORY_REFRESH_IN_FLIGHT: AtomicBool = AtomicBool::new(false);
-
-pub(crate) fn warm_default_memory() {
-    let _ = default_memory_lock();
-}
-
-pub(crate) fn default_memory_is_warm() -> bool {
-    DEFAULT_MEMORY_WARM.load(Ordering::Acquire)
-}
-
-fn load_default_composite() -> L3CompositeMemory {
-    let manifest_path = default_manifest_path();
-    if manifest_path.is_file() {
-        if let Ok(memory) = L3CompositeMemory::load_manifest(&manifest_path) {
-            return memory;
-        }
-    }
-    L3CompositeMemory::from_package(&default_memory_path())
-        .unwrap_or_else(|_| L3CompositeMemory::empty(default_memory_path()))
-}
-
-fn default_memory_lock() -> &'static RwLock<Arc<L3CompositeMemory>> {
-    DEFAULT_MEMORY.get_or_init(|| {
-        let memory = load_default_composite();
-        DEFAULT_MEMORY_WARM.store(true, Ordering::Release);
-        RwLock::new(Arc::new(memory))
-    })
-}
-
-pub(crate) fn with_default_memory<T>(read: impl FnOnce(&ContextPhasePackage) -> T) -> T {
-    maybe_reload_default_memory();
-    let memory = default_memory_lock()
-        .read()
-        .unwrap_or_else(|error| error.into_inner());
-    read(memory.package())
-}
-
-fn maybe_reload_default_memory() {
-    let now = std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .unwrap_or_default()
-        .as_millis()
-        .min(u128::from(u64::MAX)) as u64;
-    let previous = DEFAULT_MEMORY_REFRESH_CHECK_MS.load(Ordering::Relaxed);
-    if now.saturating_sub(previous) < 1_000
-        || DEFAULT_MEMORY_REFRESH_CHECK_MS
-            .compare_exchange(previous, now, Ordering::AcqRel, Ordering::Relaxed)
-            .is_err()
-    {
-        return;
-    }
-    let manifest_path = default_manifest_path();
-    let Ok(stamp) = composite::file_stamp(&manifest_path) else {
-        return;
-    };
-    {
-        let current = default_memory_lock()
-            .read()
-            .unwrap_or_else(|error| error.into_inner());
-        if current.manifest_stamp == stamp {
-            return;
-        }
-    }
-    if DEFAULT_MEMORY_REFRESH_IN_FLIGHT
-        .compare_exchange(false, true, Ordering::AcqRel, Ordering::Relaxed)
-        .is_err()
-    {
-        return;
-    }
-    if std::thread::Builder::new()
-        .name("lay-l3-memory-refresh".to_string())
-        .spawn(move || {
-            struct RefreshGuard;
-            impl Drop for RefreshGuard {
-                fn drop(&mut self) {
-                    DEFAULT_MEMORY_REFRESH_IN_FLIGHT.store(false, Ordering::Release);
-                }
-            }
-            let _guard = RefreshGuard;
-            let Ok(memory) = L3CompositeMemory::load_manifest(&manifest_path) else {
-                return;
-            };
-            let mut current = default_memory_lock()
-                .write()
-                .unwrap_or_else(|error| error.into_inner());
-            if current.manifest_stamp != memory.manifest_stamp {
-                *current = Arc::new(memory);
-            }
-        })
-        .is_err()
-    {
-        DEFAULT_MEMORY_REFRESH_IN_FLIGHT.store(false, Ordering::Release);
-    }
-}
-
-pub(crate) fn reload_default_memory() -> io::Result<serde_json::Value> {
-    let manifest_path = default_manifest_path();
-    let memory = if manifest_path.is_file() {
-        L3CompositeMemory::load_manifest(&manifest_path)?
-    } else {
-        L3CompositeMemory::from_package(&default_memory_path())?
-    };
-    let report = memory.report();
-    let mut current = default_memory_lock()
-        .write()
-        .unwrap_or_else(|error| error.into_inner());
-    *current = Arc::new(memory);
-    Ok(report)
 }
 
 pub(crate) fn readout_default_candidates(

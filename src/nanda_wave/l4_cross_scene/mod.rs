@@ -23,7 +23,9 @@ pub(crate) use model::{
 };
 pub(crate) use proof::prove_cross_scene_word_lists;
 pub(crate) use runtime::{reload_shadow_package, shadow_readout};
-pub(crate) use usage_adapter::compile_usage_events_path;
+pub(crate) use usage_adapter::{
+    compile_usage_events_path, compile_usage_events_with_corrections_path,
+};
 
 pub(crate) const CELLS: usize = 64;
 pub(crate) const ENCODER_VERSION: u32 = 1;

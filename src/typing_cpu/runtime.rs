@@ -142,6 +142,14 @@ impl TypingCpu {
         crate::nanda_wave::record_observed_system_apply_usage(original, replacement, transition);
     }
 
+    pub fn record_reverted_system_apply(
+        original: &str,
+        rejected: &str,
+        transition: ObservedSystemTransition,
+    ) {
+        crate::nanda_wave::record_reverted_system_apply_usage(original, rejected, transition);
+    }
+
     pub fn record_accepted_layout_projection(original: &str, replacement: &str) {
         crate::nanda_wave::record_accepted_layout_projection_usage(original, replacement);
     }

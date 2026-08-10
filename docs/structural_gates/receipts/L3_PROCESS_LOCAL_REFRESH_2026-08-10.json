@@ -1,0 +1,40 @@
+{
+  "gate": "L3_PROCESS_LOCAL_REFRESH",
+  "date": "2026-08-10",
+  "verdict": "PASS",
+  "method": "atomic byte-identical manifest republish with process-local Arc generation telemetry",
+  "manifest": "/home/ubu/.local/share/lay/nanda_wave/l3_context_phase.runtime.json",
+  "manifest_bytes": 97,
+  "manifest_sha256_before_after_equal": true,
+  "manifest_sha256": "7872b3cf3104b5c1c4ab377903d6507a8e49e86e60dee6d17c88d74f98d4a1d9",
+  "base": "/home/ubu/.local/share/lay/nanda_wave/l3-online/compact-base-b.nwpc",
+  "base_sha256_before_after_equal": true,
+  "base_sha256": "c293ee3d59b18c485414f6adbc70744c14fb9201ad0d12638cd5c3c0b81ec575",
+  "model_report_before_after_equal": true,
+  "daemon": {
+    "pid": 128173,
+    "status": "/run/user/1000/lay/l3-context/lay-daemon-128173.json",
+    "load_generation_before": 1,
+    "load_generation_after": 2,
+    "refresh_successes_before": 0,
+    "refresh_successes_after": 1,
+    "pid_preserved": true
+  },
+  "managed_ibus": {
+    "pid": 128200,
+    "status": "/run/user/1000/lay/l3-context/lay-ibus-engine-128200.json",
+    "load_generation_before": 1,
+    "load_generation_after": 2,
+    "refresh_successes_before": 0,
+    "refresh_successes_after": 1,
+    "pid_preserved": true
+  },
+  "global_ibus_pid": 3702,
+  "global_ibus_pid_preserved": true,
+  "candidate_or_weight_mutation": false,
+  "direct_edit_authority_changed": false,
+  "not_tested": [
+    "candidate UI rendering after a semantically different admitted delta",
+    "multi-day watcher residency"
+  ]
+}

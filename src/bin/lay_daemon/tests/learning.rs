@@ -147,6 +147,41 @@ fn writes_user_correction_learning_log_with_lay_context() {
 }
 
 #[test]
+fn writes_system_rollback_as_a_distinct_causal_receipt() {
+    let tmp = std::env::temp_dir().join(format!(
+        "lay-system-revert-log-test-{}",
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_nanos()
+    ));
+    std::fs::create_dir_all(&tmp).unwrap();
+
+    let path = tmp.join("corrections.jsonl");
+    append_reverted_system_apply_learning_log_to_path(
+        &path,
+        &UserLearningCorrection {
+            lay_kind: "typing-assist".to_string(),
+            lay_from: "проверрка ".to_string(),
+            lay_to: "проверка ".to_string(),
+            from: "проверка ".to_string(),
+            to: "проверрка ".to_string(),
+            replace_words: 1,
+            words: 1,
+        },
+    );
+
+    let line = std::fs::read_to_string(&path).unwrap();
+    let value: serde_json::Value = serde_json::from_str(line.trim()).unwrap();
+    assert_eq!(value["kind"], "system-apply-reverted");
+    assert_eq!(value["lay_from"], "проверрка ");
+    assert_eq!(value["lay_to"], "проверка ");
+    assert_eq!(value["user_target"], "проверрка ");
+
+    let _ = std::fs::remove_dir_all(tmp);
+}
+
+#[test]
 fn repeated_user_correction_promotes_exact_rule() {
     let tmp = std::env::temp_dir().join(format!(
         "lay-learn-promote-test-{}",

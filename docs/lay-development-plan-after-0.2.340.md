@@ -343,3 +343,57 @@ Release собран на `e@192.168.3.94` с `20` Cargo jobs за `141.56 s`, p
 
 Receipt:
 `/home/ubu/projects/lay/docs/structural_gates/receipts/L3_ONLINE_PROOF_PIPELINE_REVISION_1_0_18_2026-08-10.json`.
+
+## 10. Release Target 1.0.19: process refresh and exact rollback learning
+
+**Статус: release 1.0.19 собран, установлен и физически проверен.** L3 получает
+process-local watcher manifest с фоновой загрузкой и атомарной заменой
+`Arc<L3CompositeMemory>`. Каждый клиент публикует отдельный status receipt в
+`/run/user/1000/lay/l3-context/`; глобальный `ibus-daemon` для обновления модели
+не нужен.
+
+L4 получает единый причинный rollback-контур для daemon и IBus. Исторический
+backfill принимает только точный цикл `lay_from -> lay_to -> lay_from`.
+Текущие `172` receipts дали `176` token observations; вместе с `10` live
+positives пакет содержит `186` joined observations, `16` profiles и `58` pair
+profiles при размере `13,228 B`. Пакет остаётся `SuggestOnly`, automatic apply
+невозможен.
+
+Пройдены focused gates:
+
+```text
+L4 cross-scene                         13 / 13
+typed rollback                          1 / 1
+auto-undo contracts                    12 / 12
+daemon rollback receipt                 1 / 1
+IBus rollback path                       4 / 4
+L3 process refresh                       2 / 2
+atomic private status write              1 / 1
+context phase                            88 / 88
+L3 phrase gate                             8 / 8
+L4 hidden state                            4 / 4
+authority contract                       20 / 20
+mutation monopoly                        15 / 15
+unsafe-edit release gate              0 failures
+```
+
+Remote release build выполнен на `e@192.168.3.94` с Cargo `1.97.1` и `20`
+jobs: `2:20.56`, средняя загрузка CPU `336%`, peak RSS `1,817,728 KiB`, swap
+`0`. Все `10` переданных бинарников совпали с remote bundle:
+`bc1ae669aeb6a9225d3e30bc133e09eec73a974073f61b080c93ccbf405c695b`.
+
+Установленные daemon и managed IBus сохранили PID `128173` и `128200`, но оба
+обновили L3 generation `1 -> 2`; refresh failures `0`. Глобальный
+`ibus-daemon` сохранил PID `3702`, активный engine остался `lay-ime-ru`.
+Установленный L4 пакет имеет `13,228 B` и SHA-256
+`5a32cf50b94105679ec40bec7bd5c46c2937075ede864bd7961203427a6cf1b5`.
+
+Органический promotion остаётся заблокирован: `10` positives и `4` conflict
+scenes не образуют достаточный heldout/anti-ablation denominator. Это отдельный
+evidence gate, а не незакрытая часть release `1.0.19`.
+
+Receipt:
+`/home/ubu/projects/lay/docs/structural_gates/receipts/L3_PROCESS_REFRESH_L4_ROLLBACK_FEEDBACK_1_0_19_2026-08-10.json`.
+
+Physical refresh receipt:
+`/home/ubu/projects/lay/docs/structural_gates/receipts/L3_PROCESS_LOCAL_REFRESH_2026-08-10.json`.

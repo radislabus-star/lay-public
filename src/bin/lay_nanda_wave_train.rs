@@ -97,7 +97,15 @@ fn main() -> io::Result<()> {
             .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--input is required"))?;
         let output = arg_path(&args, "--out")
             .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--out is required"))?;
-        let report = lay::nanda_wave::compile_l4_cross_scene_memory(&input, &output)?;
+        let report = if let Some(corrections) = arg_path(&args, "--corrections") {
+            lay::nanda_wave::compile_l4_cross_scene_memory_with_corrections(
+                &input,
+                &corrections,
+                &output,
+            )?
+        } else {
+            lay::nanda_wave::compile_l4_cross_scene_memory(&input, &output)?
+        };
         println!(
             "{}",
             serde_json::to_string_pretty(&report).map_err(io::Error::other)?
@@ -1067,7 +1075,7 @@ fn print_usage() {
            --prove-contextual-compositional-l2 L2.bin --memory L1.bin --morphology-corpus CORPUS.tsv [--heldout-per-class N] [--workers N] [--lemma-limit N] [--active-lemma-limit N] [--feature-limit N] [--form-limit N] [--atom-relation-limit N] [--receipt PATH]\n\
            --l3-context-phase-status [--memory PATH]\n\
            --l4-cross-scene-status PATH\n\
-           --compile-l4-cross-scene --input EVENTS.jsonl --out PACKAGE.bin\n\
+           --compile-l4-cross-scene --input EVENTS.jsonl [--corrections CORRECTIONS.jsonl] --out PACKAGE.bin\n\
            --prove-l4-cross-scene --russian-words RU --english-words EN --out PACKAGE.bin\n\
            --reload-l3-context-composite\n\
            --version"

@@ -154,7 +154,12 @@ impl LayIbusEngine {
             total_started.elapsed().as_micros(),
         );
         if handled {
-            self.remember_pending_ime_auto_undo(boundary_text, replacement);
+            let transition = if layout_transition {
+                lay::typing_cpu::ObservedSystemTransition::LayoutProjection
+            } else {
+                lay::typing_cpu::ObservedSystemTransition::Correction
+            };
+            self.remember_pending_ime_auto_undo(boundary_text, replacement, transition);
         }
         Ok(handled)
     }
@@ -299,11 +304,10 @@ impl LayIbusEngine {
             )
             .await?;
         if handled {
-            lay::typing_cpu::TypingCpu::record_user_correction(
-                &rejected_context,
-                &rejected_context,
+            lay::typing_cpu::TypingCpu::record_reverted_system_apply(
                 &accepted_context,
-                "ime_auto_undo",
+                &rejected_context,
+                pending.transition,
             );
             trace::record(r#"{"kind":"ibus_auto_undo","status":"restored_exact_original"}"#);
             self.trace_key("double_shift_auto_undo", 0, 0, true, None);

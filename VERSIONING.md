@@ -17,7 +17,7 @@ integer metadata version remains monotonic and is encoded as
 
 Current publication branch version:
 
-- `1.0.18`
+- `1.0.19`
 
 Do not rely on commit counts. Before publishing or pushing, run the bump script
 or verify the version fields manually.

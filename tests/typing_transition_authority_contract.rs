@@ -208,6 +208,7 @@ fn daemon_uses_typing_cpu_as_its_nanda_runtime_front_door() {
     }
     assert!(
         typing_cpu.contains("pub fn record_user_correction")
+            && typing_cpu.contains("pub fn record_reverted_system_apply")
             && typing_cpu.contains("pub fn record_precognition_tick")
             && typing_cpu.contains("pub fn record_typing_assist_trace"),
         "TypingCpu must own the daemon-facing feedback and trace boundary"

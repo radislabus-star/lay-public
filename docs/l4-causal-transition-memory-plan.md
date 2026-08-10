@@ -785,3 +785,86 @@ IME, Space, Tab, Backspace, double Shift and app smoke gates pass
 The end state is a local causal memory that learns which typed transition
 succeeds in which semantic scene, transfers the relation through compact phase
 centers, and abstains when scene or outcome is not proven.
+
+## 21. Exact User Rollback Feedback And Standard Publication, 2026-08-10
+
+### What was tested
+
+The same causal outcome now owns both live rollback adapters:
+
+```text
+successful system apply
+-> exact user rollback
+-> TypingMemoryOutcome::Reverted
+-> typed L4 anti / hard-negative evidence
+```
+
+IBus preserves the typed system transition in `PendingImeAutoUndo`; double
+Shift records `record_reverted_system_apply` and no longer mislabels the action
+as a generic user correction. The daemon writes the distinct receipt kind
+`system-apply-reverted`. Historical correction backfill accepts only the exact
+structural cycle `lay_from -> lay_to -> lay_from`; an unrelated later edit is
+not inferred to be a rollback.
+
+The standard `scripts/rebuild-l4-feedback-memory.sh` now compiles the bounded
+cross-scene package from the live usage journal plus exact correction receipts,
+validates that the package is `shadow_suggest_only`, and atomically publishes
+it. The older bounded usage-count snapshot remains a separate output of the
+same rebuild command. The published package was then verified at
+`/home/ubu/.local/share/lay/nanda_wave/l4_cross_scene_v1.bin` without granting
+automatic edit authority.
+
+### Measured facts
+
+```text
+live usage source                    1,634 rows / 511,837 B
+correction source                    2,950 rows / 390,502 B
+exact rollback receipts                                   172
+rollback token observations                               176
+live joined positives                                      10
+joined observations total                                 186
+ignored live observations                               1,624
+invalid observations                                        0
+conflict scenes                                              4
+consolidated scenes                                         61
+profiles / pair profiles                               16 / 58
+package bytes                                           13,228
+package SHA-256       5a32cf50b94105679ec40bec7bd5c46c2937075ede864bd7961203427a6cf1b5
+installed package bytes                                  13,228
+installed package SHA-256   5a32cf50b94105679ec40bec7bd5c46c2937075ede864bd7961203427a6cf1b5
+raw text stored                                         false
+runtime authority                         shadow_suggest_only
+automatic apply possible                                 false
+```
+
+Two independent compile routes, direct CLI and the standard rebuild script,
+produced the same package SHA-256. Focused gates passed: L4 cross-scene
+`13/13`, typed rollback `1/1`, related auto-undo contracts `12/12`, daemon
+receipt `1/1`, IBus auto-undo `4/4`, authority contract `20/20`, mutation
+monopoly `15/15`, and the final unsafe-edit scoreboard with `0` gate failures.
+
+### What was not tested
+
+- organic heldout transfer or organic anti-center ablation: only `10` positive
+  observations and `4` conflict scenes exist, so a promotion denominator is
+  not credible;
+- automatic edit promotion;
+- physical automatic application behavior, because the installed package is
+  deliberately `shadow_suggest_only` and has no apply authority;
+- L1.1 or L2 quality, package, RSS, or latency gates.
+
+### Verdict scope
+
+- exact live rollback identity: `PASS_targeted`;
+- exact historical rollback backfill: `PASS_targeted`;
+- deterministic bounded package compilation: `PASS_shadow`;
+- standard atomic package publication: `PASS_installed`;
+- organic L4 promotion: `WATCH_insufficient_independent_scenes`;
+- runtime decision authority changed: `false`;
+- automatic apply authority: `NOT_GRANTED`.
+
+Exact receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L3_PROCESS_REFRESH_L4_ROLLBACK_FEEDBACK_1_0_19_2026-08-10.json
+```

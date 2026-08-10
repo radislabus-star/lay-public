@@ -506,6 +506,20 @@ pub(crate) fn record_observed_system_apply_if_enabled(
     }
 }
 
+pub(crate) fn record_reverted_system_apply_if_enabled(
+    original: &str,
+    rejected: &str,
+    source: TypingMemoryEvidenceSource,
+    operation: TypingMemoryOperation,
+) {
+    if !usage_learning_enabled() || original == rejected {
+        return;
+    }
+    for event in TypingMemoryEvent::reverted_system_apply(original, rejected, source, operation) {
+        record_typing_memory_event_if_enabled(&event);
+    }
+}
+
 pub(crate) fn record_accepted_layout_projection_if_enabled(from: &str, to: &str) {
     if !usage_learning_enabled() || from == to {
         return;
@@ -1565,13 +1579,7 @@ pub fn compile_usage_feedback_snapshot(
 fn correction_feedback_events_from_jsonl(text: &str) -> Vec<UsageEvent> {
     let mut events = Vec::new();
     for receipt in correction_feedback_receipts_from_jsonl(text) {
-        let user_target = receipt.user_target.clone().or_else(|| {
-            crate::word_buffer::reconstruct_user_correction_target(
-                &receipt.lay_to,
-                &receipt.from,
-                &receipt.to,
-            )
-        });
+        let user_target = correction_receipt_user_target(&receipt);
         let Some(user_target) = user_target else {
             continue;
         };
@@ -1579,6 +1587,10 @@ fn correction_feedback_events_from_jsonl(text: &str) -> Vec<UsageEvent> {
             || receipt.lay_to.trim().is_empty()
             || user_target.trim().is_empty()
         {
+            continue;
+        }
+        if correction_receipt_is_exact_system_revert(&receipt, &user_target) {
+            events.extend(reverted_system_apply_usage_events(&receipt));
             continue;
         }
         let operation = if receipt.lay_kind.trim().is_empty() {
@@ -1607,13 +1619,70 @@ fn correction_feedback_events_from_jsonl(text: &str) -> Vec<UsageEvent> {
     events
 }
 
+pub(crate) fn exact_reverted_system_apply_usage_jsonl(text: &str) -> (String, u32) {
+    let mut output = String::new();
+    let mut receipts = 0_u32;
+    for receipt in correction_feedback_receipts_from_jsonl(text) {
+        let Some(user_target) = correction_receipt_user_target(&receipt) else {
+            continue;
+        };
+        if !correction_receipt_is_exact_system_revert(&receipt, &user_target) {
+            continue;
+        }
+        receipts = receipts.saturating_add(1);
+        for event in reverted_system_apply_usage_events(&receipt) {
+            if let Ok(line) = serde_json::to_string(&event) {
+                output.push_str(&line);
+                output.push('\n');
+            }
+        }
+    }
+    (output, receipts)
+}
+
+fn correction_receipt_user_target(receipt: &CorrectionFeedbackReceipt) -> Option<String> {
+    receipt.user_target.clone().or_else(|| {
+        crate::word_buffer::reconstruct_user_correction_target(
+            &receipt.lay_to,
+            &receipt.from,
+            &receipt.to,
+        )
+    })
+}
+
+fn reverted_system_apply_usage_events(receipt: &CorrectionFeedbackReceipt) -> Vec<UsageEvent> {
+    TypingMemoryEvent::reverted_system_apply(
+        &receipt.lay_from,
+        &receipt.lay_to,
+        TypingMemoryEvidenceSource::Autocorrect,
+        TypingMemoryOperation::Replacement,
+    )
+    .iter()
+    .map(UsageEvent::from_typing_memory_event)
+    .collect()
+}
+
+fn correction_receipt_is_exact_system_revert(
+    receipt: &CorrectionFeedbackReceipt,
+    user_target: &str,
+) -> bool {
+    user_target == receipt.lay_from
+        && receipt.from == receipt.lay_to
+        && receipt.to == receipt.lay_from
+}
+
 fn correction_feedback_receipts_from_jsonl(
     text: &str,
 ) -> impl Iterator<Item = CorrectionFeedbackReceipt> + '_ {
     text.lines()
         .filter(|line| !line.trim().is_empty())
         .filter_map(|line| serde_json::from_str::<CorrectionFeedbackReceipt>(line).ok())
-        .filter(|receipt| receipt.kind == "user-correction")
+        .filter(|receipt| {
+            matches!(
+                receipt.kind.as_str(),
+                "user-correction" | "system-apply-reverted"
+            )
+        })
 }
 
 fn compact_usage_counts_for_persist(counts: &UsageCounts) -> UsageCounts {
@@ -2717,7 +2786,7 @@ mod tests {
     }
 
     #[test]
-    fn compiled_feedback_snapshot_accepts_auto_undo_correction_receipt() {
+    fn compiled_feedback_snapshot_recovers_reverted_auto_undo_receipt() {
         let dir = std::env::temp_dir().join(format!(
             "lay-l4-correction-feedback-snapshot-{}",
             std::process::id()
@@ -2736,8 +2805,7 @@ mod tests {
         let counts = load_persisted_usage_counts(&output, None).unwrap();
         let usage = usage_snapshot_from_counts(counts);
         let state = crate::transition_relation::signed_memory_state_id("проверрка");
-        let readout =
-            usage.hot_readout(&[], "user_correction", "typing-assist", &state, "проверка");
+        let readout = usage.hot_readout(&[], "autocorrect", "replacement", &state, "проверка");
         let unseen = usage.hot_readout(
             &[],
             "new_runtime_source",
@@ -2748,7 +2816,7 @@ mod tests {
 
         assert_eq!(report["usage_events"], 0);
         assert_eq!(report["correction_receipts"], 1);
-        assert_eq!(report["correction_events"], 2);
+        assert_eq!(report["correction_events"], 1);
         assert!(readout.transition.state_specific);
         assert!(readout.transition.repulsion > readout.transition.attraction);
         assert!(unseen.transition.state_specific);

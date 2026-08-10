@@ -202,6 +202,9 @@ pub(crate) struct L4CrossSceneReadout {
 #[derive(Clone, Debug, Default, serde::Serialize)]
 pub(crate) struct CrossSceneCompileReport {
     pub(crate) source_observations: u32,
+    pub(crate) live_source_observations: u32,
+    pub(crate) backfilled_revert_receipts: u32,
+    pub(crate) backfilled_revert_observations: u32,
     pub(crate) joined_observations: u32,
     pub(crate) orphan_observations: u32,
     pub(crate) ignored_observations: u32,

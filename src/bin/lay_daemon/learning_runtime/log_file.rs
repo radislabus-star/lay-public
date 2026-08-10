@@ -51,13 +51,28 @@ pub(crate) fn append_user_correction_learning_log_to_path(
     path: &std::path::Path,
     correction: &UserLearningCorrection,
 ) {
+    append_correction_learning_log_to_path(path, "user-correction", correction);
+}
+
+pub(crate) fn append_reverted_system_apply_learning_log_to_path(
+    path: &std::path::Path,
+    correction: &UserLearningCorrection,
+) {
+    append_correction_learning_log_to_path(path, "system-apply-reverted", correction);
+}
+
+fn append_correction_learning_log_to_path(
+    path: &std::path::Path,
+    kind: &str,
+    correction: &UserLearningCorrection,
+) {
     let user_target = correction.user_target();
     let entry = LearningEntry {
         ts: SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .unwrap_or_default()
             .as_secs(),
-        kind: "user-correction",
+        kind,
         from: &correction.from,
         to: &correction.to,
         replace_words: correction.replace_words,

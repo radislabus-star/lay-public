@@ -8,7 +8,12 @@ use std::time::{Duration, Instant};
 const IME_AUTO_UNDO_MAX_AGE: Duration = Duration::from_secs(30);
 
 impl LayIbusEngine {
-    pub(super) fn remember_pending_ime_auto_undo(&self, original: String, replacement: String) {
+    pub(super) fn remember_pending_ime_auto_undo(
+        &self,
+        original: String,
+        replacement: String,
+        transition: lay::typing_cpu::ObservedSystemTransition,
+    ) {
         let Ok(mut state) = self.shared.lock() else {
             return;
         };
@@ -18,6 +23,7 @@ impl LayIbusEngine {
         .then_some(PendingImeAutoUndo {
             original,
             replacement,
+            transition,
             recorded_at: Instant::now(),
         });
     }
@@ -692,7 +698,11 @@ mod tests {
             LayConfig::default(),
         );
         engine.tail_buffer = "проверка ".to_string();
-        engine.remember_pending_ime_auto_undo("проверрка ".to_string(), "проверка ".to_string());
+        engine.remember_pending_ime_auto_undo(
+            "проверрка ".to_string(),
+            "проверка ".to_string(),
+            lay::typing_cpu::ObservedSystemTransition::Correction,
+        );
 
         let pending = engine
             .take_pending_ime_auto_undo()
@@ -712,7 +722,11 @@ mod tests {
             LayConfig::default(),
         );
         engine.tail_buffer = "проверка дальше".to_string();
-        engine.remember_pending_ime_auto_undo("проверрка ".to_string(), "проверка ".to_string());
+        engine.remember_pending_ime_auto_undo(
+            "проверрка ".to_string(),
+            "проверка ".to_string(),
+            lay::typing_cpu::ObservedSystemTransition::Correction,
+        );
 
         assert!(engine.take_pending_ime_auto_undo().is_none());
     }
