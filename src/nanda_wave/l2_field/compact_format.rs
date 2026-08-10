@@ -5,7 +5,11 @@ use super::model::{
     CompetitionEdge, FormCenterRef, L2FieldPackage, LemmaCenter, LocalContextMode, MorphBinding,
     NeighborCoupling, SlotPhaseCenter, TieCalibration,
 };
-use super::{compositional::LemmaWaveIndex, compositional_format};
+use super::package_bytes::PackageBytes;
+use super::{
+    compositional::{CompactLemmaWaveIndexView, LemmaWaveIndex, RuntimeLemmaWaveIndex},
+    compositional_format,
+};
 
 const MAGIC: &[u8; 8] = b"LAYL2C01";
 const LEGACY_VERSION: u32 = 1;
@@ -399,7 +403,11 @@ pub(super) fn decode_package(bytes: &[u8]) -> Result<L2FieldPackage, String> {
             )
         })
         .transpose()?;
-    validate_embedded_wave_index(version, counts.lemma_centers, lemma_wave_index.as_ref())?;
+    validate_embedded_wave_index(
+        version,
+        counts.lemma_centers,
+        lemma_wave_index.as_ref().map(|index| index.ranges().len()),
+    )?;
     if cursor.remaining() != 0 {
         return Err(format!(
             "compact L2 package has {} trailing bytes",
@@ -722,7 +730,7 @@ struct HeaderCounts {
 
 #[derive(Clone, Debug)]
 pub(super) struct CompactPackageView {
-    bytes: Vec<u8>,
+    bytes: PackageBytes,
     version: u32,
     l1_package_fingerprint: u64,
     counts: HeaderCounts,
@@ -737,16 +745,21 @@ pub(super) struct CompactPackageView {
     neighbor_couplings: Vec<NeighborCoupling>,
     competition_edges: Vec<CompetitionEdge>,
     calibration: TieCalibration,
-    lemma_wave_index: Option<LemmaWaveIndex>,
+    lemma_wave_index: Option<CompactLemmaWaveIndexView>,
     raw_decoder_bytes: usize,
 }
 
 impl CompactPackageView {
     pub(super) fn from_bytes(bytes: Vec<u8>) -> Result<Self, String> {
-        if bytes.len() < HEADER_BYTES || !is_compact_package(&bytes) {
+        Self::from_backing(PackageBytes::from_vec(bytes))
+    }
+
+    pub(super) fn from_backing(bytes: PackageBytes) -> Result<Self, String> {
+        let data = bytes.as_slice();
+        if data.len() < HEADER_BYTES || !is_compact_package(data) {
             return Err("invalid compact L2 package magic or truncated header".to_string());
         }
-        let mut header = Cursor::new(&bytes[MAGIC.len()..HEADER_BYTES]);
+        let mut header = Cursor::new(&data[MAGIC.len()..HEADER_BYTES]);
         let version = header.u32()?;
         if !matches!(version, LEGACY_VERSION | VERSION) {
             return Err(format!("unsupported compact L2 package version {version}"));
@@ -757,17 +770,17 @@ impl CompactPackageView {
         }
         let total_bytes = usize::try_from(header.u64()?)
             .map_err(|_| "compact L2 package size does not fit usize".to_string())?;
-        if total_bytes != bytes.len() {
+        if total_bytes != data.len() {
             return Err(format!(
                 "compact L2 package size mismatch: header={total_bytes} actual={}",
-                bytes.len()
+                data.len()
             ));
         }
         let expected_checksum = header.u64()?;
         let l1_package_fingerprint = header.u64()?;
         let counts = read_header_counts(&mut header, version)?;
         validate_header_counts(version, counts)?;
-        if format::checksum64(&bytes[HEADER_BYTES..]) != expected_checksum {
+        if format::checksum64(&data[HEADER_BYTES..]) != expected_checksum {
             return Err("compact L2 package checksum mismatch".to_string());
         }
 
@@ -776,7 +789,7 @@ impl CompactPackageView {
             &mut next,
             counts.form_refs,
             COMPACT_FORM_REF_BYTES,
-            bytes.len(),
+            data.len(),
             "form refs",
         )?
         .start;
@@ -784,7 +797,7 @@ impl CompactPackageView {
             &mut next,
             counts.decoder_blocks,
             std::mem::size_of::<u32>(),
-            bytes.len(),
+            data.len(),
             "decoder offsets",
         )?
         .start;
@@ -792,7 +805,7 @@ impl CompactPackageView {
             &mut next,
             counts.decoder_payload_bytes,
             1,
-            bytes.len(),
+            data.len(),
             "decoder payload",
         )?
         .start;
@@ -800,21 +813,21 @@ impl CompactPackageView {
             &mut next,
             counts.feature_masks,
             std::mem::size_of::<u32>(),
-            bytes.len(),
+            data.len(),
             "feature dictionary",
         )?;
         let lemma_range = take_section(
             &mut next,
             counts.lemma_centers,
             LEMMA_CENTER_BYTES,
-            bytes.len(),
+            data.len(),
             "lemma centers",
         )?;
         let binding_start = take_section(
             &mut next,
             counts.morph_bindings,
             COMPACT_BINDING_BYTES,
-            bytes.len(),
+            data.len(),
             "morph bindings",
         )?
         .start;
@@ -822,137 +835,134 @@ impl CompactPackageView {
             &mut next,
             counts.context_modes,
             CONTEXT_MODE_BYTES,
-            bytes.len(),
+            data.len(),
             "context modes",
         )?;
         let slot_range = take_section(
             &mut next,
             counts.slot_centers,
             SLOT_CENTER_BYTES,
-            bytes.len(),
+            data.len(),
             "slot centers",
         )?;
         let neighbor_range = take_section(
             &mut next,
             counts.neighbor_couplings,
             NEIGHBOR_COUPLING_BYTES,
-            bytes.len(),
+            data.len(),
             "neighbor couplings",
         )?;
         let competition_range = take_section(
             &mut next,
             counts.competition_edges,
             COMPETITION_EDGE_BYTES,
-            bytes.len(),
+            data.len(),
             "competition edges",
         )?;
         let calibration_range =
-            take_section(&mut next, 1, CALIBRATION_BYTES, bytes.len(), "calibration")?;
+            take_section(&mut next, 1, CALIBRATION_BYTES, data.len(), "calibration")?;
         let lemma_wave_range = take_section(
             &mut next,
             counts.lemma_wave_ranges,
             compositional_format::LEMMA_WAVE_RANGE_BYTES,
-            bytes.len(),
+            data.len(),
             "lemma wave ranges",
         )?;
         let surface_wave_range = take_section(
             &mut next,
             counts.surface_wave_codes,
             compositional_format::SURFACE_WAVE_CODE_BYTES,
-            bytes.len(),
+            data.len(),
             "surface wave codes",
         )?;
         let wave_band_offset_range = take_section(
             &mut next,
             counts.wave_band_offsets,
             compositional_format::WAVE_BAND_OFFSET_BYTES,
-            bytes.len(),
+            data.len(),
             "wave band offsets",
         )?;
         let wave_band_posting_range = take_section(
             &mut next,
             counts.wave_band_postings,
             compositional_format::WAVE_BAND_POSTING_BYTES,
-            bytes.len(),
+            data.len(),
             "wave band postings",
         )?;
         let atom_key_range = take_section(
             &mut next,
             counts.atom_keys,
             compositional_format::ATOM_KEY_BYTES,
-            bytes.len(),
+            data.len(),
             "typed atom keys",
         )?;
         let atom_offset_range = take_section(
             &mut next,
             counts.atom_offsets,
             compositional_format::ATOM_OFFSET_BYTES,
-            bytes.len(),
+            data.len(),
             "typed atom offsets",
         )?;
         let atom_posting_range = take_section(
             &mut next,
             counts.atom_postings,
             compositional_format::ATOM_POSTING_BYTES,
-            bytes.len(),
+            data.len(),
             "typed atom postings",
         )?;
-        if next != bytes.len() {
+        if next != data.len() {
             return Err(format!(
                 "compact L2 package has {} trailing bytes",
-                bytes.len().saturating_sub(next)
+                data.len().saturating_sub(next)
             ));
         }
 
-        let feature_masks = read_section(&bytes[feature_range], counts.feature_masks, |cursor| {
+        let feature_masks = read_section(&data[feature_range], counts.feature_masks, |cursor| {
             cursor.u32()
         })?;
         if feature_masks.windows(2).any(|pair| pair[0] >= pair[1]) {
             return Err("compact L2 feature dictionary is not strictly ordered".to_string());
         }
-        let lemma_centers = read_section(&bytes[lemma_range], counts.lemma_centers, |cursor| {
+        let lemma_centers = read_section(&data[lemma_range], counts.lemma_centers, |cursor| {
             format::read_lemma_center(cursor)
         })?;
         validate_lemma_binding_ranges(&lemma_centers, counts.morph_bindings, None)?;
-        let context_modes = read_section(&bytes[context_range], counts.context_modes, |cursor| {
+        let context_modes = read_section(&data[context_range], counts.context_modes, |cursor| {
             format::read_context_mode(cursor)
         })?;
-        let slot_centers = read_section(&bytes[slot_range], counts.slot_centers, |cursor| {
+        let slot_centers = read_section(&data[slot_range], counts.slot_centers, |cursor| {
             format::read_slot_center(cursor)
         })?;
-        let neighbor_couplings = read_section(
-            &bytes[neighbor_range],
-            counts.neighbor_couplings,
-            |cursor| format::read_neighbor_coupling(cursor),
-        )?;
+        let neighbor_couplings =
+            read_section(&data[neighbor_range], counts.neighbor_couplings, |cursor| {
+                format::read_neighbor_coupling(cursor)
+            })?;
         let competition_edges = read_section(
-            &bytes[competition_range],
+            &data[competition_range],
             counts.competition_edges,
             |cursor| format::read_competition_edge(cursor),
         )?;
-        let mut calibration_cursor = Cursor::new(&bytes[calibration_range]);
+        let mut calibration_cursor = Cursor::new(&data[calibration_range]);
         let calibration = format::read_calibration(&mut calibration_cursor)?;
         let lemma_wave_index = (counts.lemma_wave_ranges != 0 || counts.surface_wave_codes != 0)
             .then(|| {
-                compositional_format::decode(
-                    &bytes[lemma_wave_range],
-                    counts.lemma_wave_ranges,
-                    &bytes[surface_wave_range],
-                    counts.surface_wave_codes,
-                    &bytes[wave_band_offset_range],
-                    counts.wave_band_offsets,
-                    &bytes[wave_band_posting_range],
-                    counts.wave_band_postings,
-                    &bytes[atom_key_range],
-                    counts.atom_keys,
-                    &bytes[atom_offset_range],
-                    counts.atom_offsets,
-                    &bytes[atom_posting_range],
-                    counts.atom_postings,
+                CompactLemmaWaveIndexView::from_sections(
+                    bytes.clone(),
+                    lemma_wave_range,
+                    surface_wave_range,
+                    wave_band_offset_range,
+                    wave_band_posting_range,
+                    atom_key_range,
+                    atom_offset_range,
+                    atom_posting_range,
                 )
             })
             .transpose()?;
-        validate_embedded_wave_index(version, counts.lemma_centers, lemma_wave_index.as_ref())?;
+        validate_embedded_wave_index(
+            version,
+            counts.lemma_centers,
+            lemma_wave_index.as_ref().map(|index| index.range_count()),
+        )?;
 
         let mut view = Self {
             bytes,
@@ -982,6 +992,10 @@ impl CompactPackageView {
         self.bytes.len()
     }
 
+    pub(super) fn mmap_backed(&self) -> bool {
+        self.bytes.is_mapped()
+    }
+
     pub(super) fn storage_kind(&self) -> &'static str {
         match self.version {
             LEGACY_VERSION => "compact_v1_direct",
@@ -990,8 +1004,10 @@ impl CompactPackageView {
         }
     }
 
-    pub(super) fn take_lemma_wave_index(&mut self) -> Option<LemmaWaveIndex> {
-        self.lemma_wave_index.take()
+    pub(super) fn take_lemma_wave_index(&mut self) -> Option<RuntimeLemmaWaveIndex> {
+        self.lemma_wave_index
+            .take()
+            .map(RuntimeLemmaWaveIndex::Compact)
     }
 
     pub(super) fn l1_package_fingerprint(&self) -> u64 {
@@ -1014,7 +1030,11 @@ impl CompactPackageView {
         let start = self
             .form_start
             .checked_add(index.checked_mul(COMPACT_FORM_REF_BYTES)?)?;
-        let mut cursor = Cursor::new(self.bytes.get(start..start + COMPACT_FORM_REF_BYTES)?);
+        let mut cursor = Cursor::new(
+            self.bytes
+                .as_slice()
+                .get(start..start + COMPACT_FORM_REF_BYTES)?,
+        );
         Some(FormCenterRef {
             l1_terminal_id: cursor.u32().ok()?,
             decoder_ref: 0,
@@ -1063,7 +1083,11 @@ impl CompactPackageView {
         let start = self
             .binding_start
             .checked_add(index.checked_mul(COMPACT_BINDING_BYTES)?)?;
-        let mut cursor = Cursor::new(self.bytes.get(start..start + COMPACT_BINDING_BYTES)?);
+        let mut cursor = Cursor::new(
+            self.bytes
+                .as_slice()
+                .get(start..start + COMPACT_BINDING_BYTES)?,
+        );
         let form_center_ref = cursor.u32().ok()?;
         let feature_id = cursor.u8().ok()? as usize;
         Some(MorphBinding {
@@ -1105,12 +1129,16 @@ impl CompactPackageView {
             .decoder_offset_start
             .checked_add(block.checked_mul(std::mem::size_of::<u32>())?)?;
         Some(u32::from_le_bytes(
-            self.bytes.get(start..start + 4)?.try_into().ok()?,
+            self.bytes
+                .as_slice()
+                .get(start..start + 4)?
+                .try_into()
+                .ok()?,
         ))
     }
 
     fn decoder_payload(&self) -> &[u8] {
-        &self.bytes[self.decoder_payload_start
+        &self.bytes.as_slice()[self.decoder_payload_start
             ..self.decoder_payload_start + self.counts.decoder_payload_bytes]
     }
 
@@ -1247,14 +1275,13 @@ fn validate_header_counts(version: u32, counts: HeaderCounts) -> Result<(), Stri
 fn validate_embedded_wave_index(
     version: u32,
     lemma_count: usize,
-    index: Option<&LemmaWaveIndex>,
+    range_count: Option<usize>,
 ) -> Result<(), String> {
-    match (version, index) {
+    match (version, range_count) {
         (LEGACY_VERSION, None) => Ok(()),
-        (VERSION, Some(index)) if index.ranges().len() == lemma_count => Ok(()),
-        (VERSION, Some(index)) => Err(format!(
-            "compact L2 lemma wave range count {} does not match lemma count {lemma_count}",
-            index.ranges().len()
+        (VERSION, Some(range_count)) if range_count == lemma_count => Ok(()),
+        (VERSION, Some(range_count)) => Err(format!(
+            "compact L2 lemma wave range count {range_count} does not match lemma count {lemma_count}",
         )),
         (VERSION, None) => Err(format!(
             "compact L2 V{version} is missing lemma wave sections"
@@ -1446,8 +1473,7 @@ mod tests {
             direct
                 .take_lemma_wave_index()
                 .expect("embedded lemma wave index")
-                .atom_keys()
-                .len(),
+                .atom_key_count(),
             stats.atom_keys
         );
     }
@@ -1465,7 +1491,7 @@ mod tests {
         assert_eq!(decode_package(&bytes), Ok(package));
         let mut direct = CompactPackageView::from_bytes(bytes).expect("legacy direct view");
         assert_eq!(direct.storage_kind(), "compact_v1_direct");
-        assert_eq!(direct.take_lemma_wave_index(), None);
+        assert!(direct.take_lemma_wave_index().is_none());
     }
 
     #[test]

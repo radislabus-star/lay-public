@@ -9,6 +9,7 @@ mod context;
 mod contextual_compositional_proof;
 mod format;
 mod model;
+mod package_bytes;
 mod proof;
 mod runtime;
 mod runtime_storage;
@@ -90,8 +91,10 @@ pub fn canonical_l2_status() -> serde_json::Value {
                 "package": package,
                 "package_storage": package_storage,
                 "package_backing_bytes": package_backing_bytes,
+                "package_mmap_backed": field.package_mmap_backed(),
                 "compositional_index_source": field.compositional_index_source(),
                 "compositional_index_resident_bytes": field.compositional_index_bytes(),
+                "compositional_index_view_bytes": field.compositional_index_view_bytes(),
                 "compositional_limits": {
                     "lemma_frontier": CANONICAL_L2_LEMMA_FRONTIER,
                     "active_lemma_limit": CANONICAL_L2_ACTIVE_LEMMA_LIMIT,

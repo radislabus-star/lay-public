@@ -2352,6 +2352,91 @@ Exact receipt:
 /home/ubu/projects/lay/docs/structural_gates/receipts/L3_SUPERVISED_SENTENCE_ONLINE_DELTA_FULL_GATE_2026-08-10.json
 ```
 
+## Proof pipeline revision and first live admission, 2026-08-10
+
+### What was tested
+
+The first eligible relation had already consumed its two independent episodes
+in an earlier `WATCH` attempt. The general sentence compiler and proof pipeline
+later improved, but the scheduler correctly refused to retry identical evidence
+and would otherwise wait for a fourth episode. The lifecycle now carries an
+explicit `PROOF_PIPELINE_REVISION`. A stored revision mismatch reopens old
+pending attempts exactly once without creating evidence or weakening a gate.
+
+The migration changes only:
+
+```text
+proof_pipeline_revision                 old -> current
+pending[*].last_attempted_episodes        N -> 0
+```
+
+It preserves source cursor state, generation, admitted count, relation keys,
+episode IDs, scenes, evidence, and feedback counters. Legacy format migration
+remains separate. A second load at the same revision does not retry again.
+
+### Measured facts
+
+```text
+focused online tests                         25 / 25 PASS
+isolated old attempt                   targeted PASS, full WATCH
+isolated revision retry                targeted PASS, full PASS
+isolated regression counters                         0 / 5
+
+live release                                      1.0.18
+state revision                                   0 -> 1
+generation                                      2 -> 3
+admitted deltas                                 0 -> 1
+pending relations                              30 -> 29
+live targeted target cases                       2 / 2
+live targeted safety cases                       5 / 5
+live targeted false supports                         0
+live frozen compared transitions                41,064
+live frozen lost target/support/top-1             0/0/0
+live frozen new false support/top-1                 0/0
+live proof wall time                           172.247 s
+observed learner RSS                           226,372 KiB
+observed learner CPU                              487%
+```
+
+The admitted field was not rebuilt from the corpus:
+
+```text
+append-only delta                                  4,372 B
+delta SHA-256              3dca1e61369d15490ee97a4ce54f401f...
+compacted live base                           30,784,516 B
+manifest                                             97 B
+manifest deltas                                         0
+```
+
+The background learner admitted the delta only after targeted and full proof,
+folded it into the inactive compact base, and atomically published a delta-free
+manifest. Runtime readers compare the manifest stamp at most once per second
+and load a changed field on a background refresh thread. Global IBus PID `3702`
+and managed engine PID `3950397` were unchanged during installation and proof.
+
+The remote `1.0.18` release build used `20` Cargo jobs and completed in
+`141.56 s` at `358%` average CPU, `1,776,368 KiB` peak RSS, and zero swaps.
+
+### What was not tested
+
+- physical candidate output after an in-process daemon or IBus manifest refresh;
+- L1.1 or L2 quality, package, RSS, or latency gates;
+- cross-scene L4 promotion or the physical application matrix.
+
+### Verdict scope
+
+- revision migration and one-time retry: `PASS`;
+- automatic live admission and compact manifest publication: `PASS`;
+- physical client refresh: `WATCH_not_observed`;
+- direct edit authority changed: `false`;
+- L3 ranking evidence changed: `true`.
+
+Exact receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L3_ONLINE_PROOF_PIPELINE_REVISION_1_0_18_2026-08-10.json
+```
+
 ## 2026-08-04 Confirmed Prediction Operator Sanitation
 
 What was tested:

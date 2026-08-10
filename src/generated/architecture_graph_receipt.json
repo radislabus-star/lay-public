@@ -3,12 +3,12 @@
     {
       "evidence": [
         "src/typing_transition/candidate.rs:L9:L2CandidateLattice",
-        "src/typing_transition/decision.rs:L26:TransitionDecisionCore",
-        "src/typing_transition/decision.rs:L50:.evaluate_candidates()",
+        "src/typing_transition/decision.rs:L27:TransitionDecisionCore",
+        "src/typing_transition/decision.rs:L51:.evaluate_candidates()",
         "src/typing_transition/decision/live_field.rs:L44:TransitionDecisionCore",
-        "src/typing_transition/live_candidate.rs:L115:.select_ime_readout()",
-        "src/typing_transition/live_candidate.rs:L47:TransitionDecisionCore",
-        "src/typing_transition/live_candidate.rs:L48:.select_live_completions()"
+        "src/typing_transition/live_candidate.rs:L143:.select_ime_readout()",
+        "src/typing_transition/live_candidate.rs:L56:TransitionDecisionCore",
+        "src/typing_transition/live_candidate.rs:L57:.select_live_completions()"
       ],
       "id": "decision-authority",
       "status": "WATCH",
@@ -21,7 +21,7 @@
     {
       "evidence": [
         "src/bin/lay_ibus_engine/state.rs:L151:.with_winner_action()",
-        "src/bin/lay_ibus_engine/state.rs:L302:.replace_committed_tail()",
+        "src/bin/lay_ibus_engine/state.rs:L314:.replace_committed_tail()",
         "src/text_edit/structural_verifier.rs:L18:verify_visible_text_transition()",
         "src/text_edit/visible_tail.rs:L100:VisibleTailSnapshot",
         "src/text_edit/visible_tail.rs:L65:SnapshotIdentity"
@@ -41,8 +41,8 @@
     },
     {
       "evidence": [
-        "src/bin/lay_daemon/layout_controller.rs:L174:call_replace_text()",
-        "src/bin/lay_daemon/layout_controller.rs:L204:try_ime_replace_tail()",
+        "src/bin/lay_daemon/layout_controller.rs:L175:call_replace_text()",
+        "src/bin/lay_daemon/layout_controller.rs:L205:try_ime_replace_tail()",
         "src/bin/lay_daemon/text_output/replacement.rs:L77:apply_text_replacement_pipeline()",
         "src/text_edit/executor.rs:L108:AuthorizedEdit",
         "src/text_edit/executor.rs:L139:authorize_backend_edit()"
@@ -77,7 +77,7 @@
     },
     {
       "evidence": [
-        "src/nanda_wave/lexical_phase/runtime.rs:L62:LexicalPhaseMemory",
+        "src/nanda_wave/lexical_phase/runtime.rs:L68:LexicalPhaseMemory",
         "src/typing_transition/candidate.rs:L9:L2CandidateLattice"
       ],
       "id": "hot-field-memory",
@@ -89,7 +89,7 @@
     {
       "evidence": [
         "src/keyboard/text_input/script.rs:L1:is_cyrillic_letter()",
-        "src/lexical_surface_atoms.rs:L157:surface_atom_projection()",
+        "src/lexical_surface_atoms.rs:L171:surface_atom_projection()",
         "src/lexical_surface_atoms.rs:L34:SurfaceFieldEncoder"
       ],
       "id": "l1-surface-field",
@@ -109,7 +109,7 @@
       "evidence": [
         "src/nanda_wave/l4_signed_memory.rs:L4:L4SignedMemorySignal",
         "src/nanda_wave/usage_prior.rs:L311:UsagePriorSnapshot",
-        "src/typing_memory.rs:L355:TypingMemoryEvent"
+        "src/typing_memory.rs:L363:TypingMemoryEvent"
       ],
       "id": "l3-l4-learning",
       "status": "PASS",
@@ -117,26 +117,27 @@
     },
     {
       "evidence": [
-        "graph_links:29495",
-        "graph_nodes:11501"
+        "graph_links:31469",
+        "graph_nodes:12238"
       ],
       "id": "fast-verifiable",
       "status": "WATCH",
       "violations": [
-        "duplicate_symbol:normalize_surface():2"
+        "duplicate_symbol:normalize_surface():3"
       ]
     }
   ],
   "duplicate_symbols": {
     "normalize_surface()": [
+      "src/nanda_wave/l2_field/compositional.rs:L1751:normalize_surface()",
       "src/nanda_wave/lexical_grokking/composite.rs:L442:normalize_surface()",
       "src/nanda_wave/lexical_phase/format.rs:L109:normalize_surface()"
     ]
   },
-  "graph_fingerprint": "ffffbe6e2e01b588fee1a0c319f553cad0f4d6b5dd712906c9377178b3a120a2",
-  "graph_links": 29495,
-  "graph_nodes": 11501,
+  "graph_fingerprint": "3076e5b3045a2aec9120e785ded97573e6635e6f1fd72492edd4ee1a68c3b8c7",
+  "graph_links": 31469,
+  "graph_nodes": 12238,
   "schema": "lay.architecture-graph-receipt.v1",
-  "source_fingerprint": "40e283636cebad6060d0f8f280d3efe80c92507e7fe055da43be5b5b405bf88b",
+  "source_fingerprint": "3e13161df42ebc7cbaf1fb82157bc68812bc18c11f87283b01bc53b272abfe29",
   "verdict": "WATCH"
 }

@@ -9,7 +9,8 @@ mod selector;
 
 use feedback::{
     enforce_relation_bound, insert_relation_observation, relation_observation, ObservationSource,
-    OnlineState, UsageEvent, DIRECT_STATE_FORMAT, LEGACY_STATE_FORMAT, STATE_FORMAT,
+    OnlineState, UsageEvent, DIRECT_STATE_FORMAT, LEGACY_STATE_FORMAT, PROOF_PIPELINE_REVISION,
+    STATE_FORMAT,
 };
 use proof_chain::attempt_relation;
 use selector::select_impact_probe;
@@ -69,6 +70,7 @@ pub(super) fn run(args: &[String]) -> io::Result<()> {
             serde_json::json!({
                 "kind": "l3_online_initialized",
                 "manifest": paths.manifest,
+                "proof_pipeline_revision": state.proof_pipeline_revision,
                 "source_offset": state.source_offset,
                 "source_inode": state.source_inode,
                 "historical_events_replayed": false,
@@ -156,6 +158,7 @@ fn process_once(paths: &Paths, state: &mut OnlineState) -> io::Result<()> {
                     "direct_correction_observations": direct_observations,
                     "partial_ime_edit_observations": partial_ime_edit_observations,
                     "causal_ime_choice_observations": 0,
+                    "proof_pipeline_revision": state.proof_pipeline_revision,
                     "pending_relations": state.pending.len(),
                     "recent_ime_rejections": 0,
                 })
@@ -189,6 +192,7 @@ fn replay_existing_feedback(
             "kind": "l3_online_feedback_replay",
             "status": "already_completed",
             "source_bytes": state.replayed_source_bytes,
+            "proof_pipeline_revision": state.proof_pipeline_revision,
             "pending_relations": state.pending.len(),
             "runtime_authority": false,
         }));
@@ -231,6 +235,7 @@ fn replay_existing_feedback(
         "direct_correction_observations": direct_observations,
         "partial_ime_edit_observations": partial_ime_edit_observations,
         "causal_ime_choice_observations": 0,
+        "proof_pipeline_revision": state.proof_pipeline_revision,
         "pending_relations": state.pending.len(),
         "ready_relations": state.pending.values().filter(|relation| relation.ready_for_impact_probe()).count(),
         "runtime_authority": false,
@@ -258,6 +263,7 @@ fn load_state(path: &Path) -> io::Result<(OnlineState, bool)> {
     let mut state: OnlineState = serde_json::from_slice(&bytes).map_err(io::Error::other)?;
     if state.format == LEGACY_STATE_FORMAT {
         state.format = STATE_FORMAT.to_string();
+        state.proof_pipeline_revision = PROOF_PIPELINE_REVISION;
         state.source_offset = 0;
         state.source_device = 0;
         state.source_inode = 0;
@@ -270,6 +276,7 @@ fn load_state(path: &Path) -> io::Result<(OnlineState, bool)> {
     }
     if state.format == DIRECT_STATE_FORMAT {
         state.format = STATE_FORMAT.to_string();
+        state.proof_pipeline_revision = PROOF_PIPELINE_REVISION;
         for (key, relation) in &mut state.pending {
             if relation.episode_ids.is_empty() {
                 relation.episode_ids = relation
@@ -287,6 +294,13 @@ fn load_state(path: &Path) -> io::Result<(OnlineState, bool)> {
             io::ErrorKind::InvalidData,
             format!("unsupported L3 online state format: {}", state.format),
         ));
+    }
+    if state.proof_pipeline_revision != PROOF_PIPELINE_REVISION {
+        state.proof_pipeline_revision = PROOF_PIPELINE_REVISION;
+        for relation in state.pending.values_mut() {
+            relation.last_attempted_episodes = 0;
+        }
+        return Ok((state, true));
     }
     Ok((state, false))
 }
@@ -408,6 +422,55 @@ mod tests {
         let relation = migrated.pending.values().next().unwrap();
         assert_eq!(relation.independent_episodes(), 2);
         assert_eq!(relation.distinct_scenes(), 2);
+        let _ = fs::remove_file(path);
+    }
+
+    #[test]
+    fn proof_pipeline_revision_retries_old_watch_once_without_changing_evidence() {
+        let unique = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let path = std::env::temp_dir().join(format!("lay-l3-online-proof-revision-{unique}.json"));
+        let mut old = OnlineState::default();
+        old.proof_pipeline_revision = 0;
+        old.generation = 2;
+        old.admitted_deltas = 1;
+        old.pending.insert(
+            "old-watch".to_string(),
+            PendingRelation {
+                rejected: "source".to_string(),
+                expected: "target".to_string(),
+                scenes: vec!["scene one".to_string(), "scene two".to_string()],
+                episode_ids: vec!["episode-1".to_string(), "episode-2".to_string()],
+                last_attempted_episodes: 2,
+                last_observed_ordinal: 20,
+            },
+        );
+        save_state(&path, &old).unwrap();
+
+        let (mut migrated, changed) = load_state(&path).unwrap();
+
+        assert!(changed);
+        assert_eq!(migrated.proof_pipeline_revision, PROOF_PIPELINE_REVISION);
+        assert_eq!(migrated.generation, 2);
+        assert_eq!(migrated.admitted_deltas, 1);
+        let relation = migrated.pending.values_mut().next().unwrap();
+        assert_eq!(relation.independent_episodes(), 2);
+        assert_eq!(relation.distinct_scenes(), 2);
+        assert_eq!(relation.last_attempted_episodes, 0);
+        assert!(relation.ready_for_impact_probe());
+
+        relation.last_attempted_episodes = relation.independent_episodes();
+        save_state(&path, &migrated).unwrap();
+        let (loaded, changed_again) = load_state(&path).unwrap();
+        assert!(!changed_again);
+        assert!(!loaded
+            .pending
+            .values()
+            .next()
+            .unwrap()
+            .ready_for_impact_probe());
         let _ = fs::remove_file(path);
     }
 }

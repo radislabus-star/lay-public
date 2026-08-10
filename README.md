@@ -10,16 +10,16 @@
 **Статус: alpha.** Основной сценарий уже рабочий. Главная зона активной
 доводки — автопомощь после пробела и редкие desktop edge cases.
 
-Текущая версия: **1.0.16**.
+Текущая версия: **1.0.18**.
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scripts/install-remote.sh | bash
 ```
 
-The installer downloads the canonical L2 V13 model from the matching GitHub
-Release when it is not already present locally. The 128.86 MiB asset is cached
-under `~/.cache/lay/models/` and accepted only when both its byte count and
-pinned SHA-256 match the released model contract.
+The installer downloads the canonical compact L2 V13 model from the matching
+GitHub Release when it is not already present locally. The 134.05 MiB asset is
+cached under `~/.cache/lay/models/` and accepted only when both its byte count
+and pinned SHA-256 match the released model contract.
 
 [![Rust](https://img.shields.io/badge/Rust-1.75+-orange?logo=rust)](https://www.rust-lang.org/)
 [![GNOME](https://img.shields.io/badge/GNOME-45--47%2C%2050-4A86CF?logo=gnome)](https://gnome.org/)
@@ -110,8 +110,9 @@ pinned SHA-256 match the released model contract.
   автозамену и возвращает исходный ввод;
 - live lexical route закрыт в один контур:
   `L1.1 bounded lattice -> Canonical L2 V13 -> L3 -> DecisionCore -> verifier`;
-- установленный Canonical L2 V13 занимает `135121803` байта (`128.86 MiB`) и
-  загружается как неизменяемый локальный пакет.
+- установленный Canonical L2 V13 занимает `140556462` байта (`134.05 MiB`),
+  хранит hot lemma-wave index внутри compact V2 и загружается как неизменяемый
+  локальный пакет без его повторного построения в каждом live-клиенте.
 
 Измерение, из-за которого Space был переделан:
 

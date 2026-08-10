@@ -8,7 +8,7 @@ use crate::correction_core::UnifiedCorrectionCandidate;
 use super::compositional::{
     prepared_normalized_similarity_at_least_milli, prepared_normalized_similarity_milli,
     prepared_surface_atom_profile, prepared_surface_atom_similarity_milli, surface_scoring_profile,
-    LemmaWaveIndex,
+    LemmaWaveIndex, RuntimeLemmaWaveIndex,
 };
 use super::context::{context_mode, scene_wave};
 use super::model::{
@@ -172,7 +172,7 @@ pub(crate) struct StandaloneL2Readout {
 #[derive(Clone, Debug)]
 pub(crate) struct StandaloneL2Field {
     package: RuntimeL2Package,
-    lemma_wave_index: LemmaWaveIndex,
+    lemma_wave_index: RuntimeLemmaWaveIndex,
     lemma_wave_source: &'static str,
     form_by_terminal: Vec<(u32, u32)>,
     binding_offsets_by_form: Vec<u32>,
@@ -184,9 +184,7 @@ pub(crate) struct StandaloneL2Field {
 
 impl StandaloneL2Field {
     pub(crate) fn load(path: &Path) -> Result<Self, String> {
-        let bytes = std::fs::read(path)
-            .map_err(|error| format!("failed to read L2 package {}: {error}", path.display()))?;
-        Self::from_owned_bytes(bytes)
+        Self::from_runtime_package(RuntimeL2Package::load(path)?)
     }
 
     pub(crate) fn from_bytes(bytes: &[u8]) -> Result<Self, String> {
@@ -203,8 +201,18 @@ impl StandaloneL2Field {
 
     fn from_runtime_package(mut package: RuntimeL2Package) -> Result<Self, String> {
         let (lemma_wave_index, lemma_wave_source) = match package.take_lemma_wave_index() {
-            Some(index) => (index, "compact_v2_embedded"),
-            None => (LemmaWaveIndex::build(&package)?, "runtime_rebuilt"),
+            Some(index) => {
+                let source = if package.mmap_backed() {
+                    "compact_v2_mmap_view"
+                } else {
+                    "compact_v2_owned_view"
+                };
+                (index, source)
+            }
+            None => (
+                RuntimeLemmaWaveIndex::from_owned(LemmaWaveIndex::build(&package)?),
+                "runtime_rebuilt",
+            ),
         };
         let mut form_by_terminal = Vec::new();
         for form_ref in 0..package.form_count() {
@@ -310,8 +318,16 @@ impl StandaloneL2Field {
         (self.package.storage_kind(), self.package.backing_bytes())
     }
 
+    pub(crate) fn package_mmap_backed(&self) -> bool {
+        self.package.mmap_backed()
+    }
+
     pub(crate) fn compositional_index_bytes(&self) -> usize {
-        self.lemma_wave_index.resident_bytes()
+        self.lemma_wave_index.owned_resident_bytes()
+    }
+
+    pub(crate) fn compositional_index_view_bytes(&self) -> usize {
+        self.lemma_wave_index.backing_view_bytes()
     }
 
     pub(crate) fn compositional_index_source(&self) -> &'static str {
@@ -1748,6 +1764,17 @@ mod standalone_tests {
         let (compact_bytes, _) = encode_compact_package(&package).expect("compact encode");
         let reference = StandaloneL2Field::from_bytes(&reference_bytes).expect("reference load");
         let compact = StandaloneL2Field::from_bytes(&compact_bytes).expect("compact load");
+        let mmap_path = std::env::temp_dir().join(format!(
+            "lay-l2-compact-mmap-{}-{}.bin",
+            std::process::id(),
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .expect("clock")
+                .as_nanos()
+        ));
+        std::fs::write(&mmap_path, &compact_bytes).expect("write mmap fixture");
+        let mapped = StandaloneL2Field::load(&mmap_path).expect("mmap load");
+        std::fs::remove_file(&mmap_path).expect("remove mmap fixture");
 
         assert_eq!(reference.package_counts(), compact.package_counts());
         assert_eq!(reference.package_storage().0, "reference_v2_owned");
@@ -1755,7 +1782,27 @@ mod standalone_tests {
             compact.package_storage(),
             ("compact_v2_compositional", compact_bytes.len())
         );
-        assert_eq!(compact.compositional_index_source(), "compact_v2_embedded");
+        assert_eq!(
+            compact.compositional_index_source(),
+            "compact_v2_owned_view"
+        );
+        assert!(!compact.package_mmap_backed());
+        assert!(compact.compositional_index_bytes() > 0);
+        assert!(compact.compositional_index_bytes() < compact.compositional_index_view_bytes());
+        assert!(compact.compositional_index_view_bytes() > 0);
+        #[cfg(target_os = "linux")]
+        {
+            assert!(mapped.package_mmap_backed());
+            assert_eq!(mapped.compositional_index_source(), "compact_v2_mmap_view");
+        }
+        assert_eq!(
+            mapped.compositional_index_bytes(),
+            compact.compositional_index_bytes()
+        );
+        assert_eq!(
+            mapped.compositional_index_view_bytes(),
+            compact.compositional_index_view_bytes()
+        );
         assert_eq!(
             reference.single_edit_form_refs("дмо", 16),
             compact.single_edit_form_refs("дмо", 16)
@@ -1811,6 +1858,11 @@ mod standalone_tests {
                 reference.readout(context, &seeds, 8),
                 compact.readout(context, &seeds, 8),
                 "runtime parity failed for context {context:?}"
+            );
+            assert_eq!(
+                reference.readout(context, &seeds, 8),
+                mapped.readout(context, &seeds, 8),
+                "mmap runtime parity failed for context {context:?}"
             );
         }
     }

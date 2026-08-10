@@ -325,3 +325,21 @@ L1.1 и L2 не перекристаллизовывались; лимиты `96
 score, package identity и runtime authority не менялись. Exact receipt:
 
 `/home/ubu/projects/lay/docs/structural_gates/receipts/L2_DAFSA_INCREMENTAL_COMPLETION_1_0_17_2026-08-10.json`.
+
+## 9. Release 1.0.18: first automatic L3 online admission
+
+**Статус: live admission выполнен 2026-08-10.** Общая revision-схема
+переоткрыла старый `WATCH` один раз после изменения proof pipeline, не добавляя
+evidence и не снижая пороги. Live state перешёл `generation 2 -> 3`,
+`admitted_deltas 0 -> 1`, pending `30 -> 29`. Targeted `2/2 + 5/5` и frozen
+`41,064` differential прошли с пятью нулевыми regression counters. Delta
+`4,372 B` сложен в inactive compact base `30,784,516 B`; опубликован delta-free
+manifest `97 B`.
+
+Release собран на `e@192.168.3.94` с `20` Cargo jobs за `141.56 s`, peak RSS
+`1,776,368 KiB`, swap `0`. Global IBus PID `3702` и managed engine PID
+`3950397` не менялись. Physical in-process refresh остаётся отдельным `WATCH`;
+он не подменяется успешной manifest publication.
+
+Receipt:
+`/home/ubu/projects/lay/docs/structural_gates/receipts/L3_ONLINE_PROOF_PIPELINE_REVISION_1_0_18_2026-08-10.json`.

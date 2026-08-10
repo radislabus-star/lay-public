@@ -156,6 +156,8 @@ pub(super) fn prove_package(
     let l2_started = Instant::now();
     let field = StandaloneL2Field::load(l2_package_path).map_err(io::Error::other)?;
     let l2_cold_load_us = l2_started.elapsed().as_micros() as u64;
+    let rss_after_l2_load_kib = proc_status_kib("VmRSS:");
+    let (package_storage, package_backing_bytes) = field.package_storage();
     let l1_started = Instant::now();
     let l1 = crate::nanda_wave::L1RestorationHost::load(l1_package_path)?;
     let l1_cold_load_us = l1_started.elapsed().as_micros() as u64;
@@ -285,7 +287,13 @@ pub(super) fn prove_package(
         },
         "memory": {
             "package_bytes": package_bytes,
+            "package_storage": package_storage,
+            "package_backing_bytes": package_backing_bytes,
+            "package_mmap_backed": field.package_mmap_backed(),
+            "compositional_index_source": field.compositional_index_source(),
             "compositional_index_resident_bytes": field.compositional_index_bytes(),
+            "compositional_index_view_bytes": field.compositional_index_view_bytes(),
+            "rss_after_l2_load_kib": rss_after_l2_load_kib,
             "rss_peak_kib": proc_status_kib("VmHWM:"),
         },
         "cold_load": {

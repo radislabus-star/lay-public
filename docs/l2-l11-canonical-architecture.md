@@ -1027,6 +1027,177 @@ Exact receipt:
 
 Runtime authority changed by this proof: `false`.
 
+### 18.5 Mmap-Backed Compositional Index View, 2026-08-10
+
+This experiment changes only immutable L2 package ownership and index storage.
+Candidate birth, geometry, scores, calibration, frontier limits, and
+`Winner | Tied | ABSTAIN` readout are unchanged.
+
+```text
+StandaloneL2Field::load
+-> RuntimeL2Package::Compact
+-> immutable Linux mmap of the 140,556,462-byte V2 package
+-> CompactPackageView
+-> embedded compositional sections exposed as CompactLemmaWaveIndexView
+-> keep only the derived atom degree table as private runtime memory
+```
+
+The package remains the exact V2 package for `1,875,032` forms. No section is
+discarded: the typed atom keys, offsets, postings, surface wave codes, wave-band
+offsets, wave-band postings, and lemma ranges remain addressable through the
+bounded view. Reverse reconstruction is performed only for the active bounded
+frontier; the complete relation field stays available in the mmap.
+
+Measured storage comparison against the previous owned compositional index:
+
+```text
+metric                                      owned V2       mmap view        delta
+package bytes                            140,556,462     140,556,462            0
+compositional index private bytes         77,182,508         170,224  -77,012,284
+embedded zero-copy view bytes                      0      77,012,284  +77,012,284
+full-proof RSS peak, internal receipt          597,476 KiB     481,844 KiB  -115,632 KiB
+full-proof RSS peak reduction                                           19.353%
+RSS immediately after L2 load                              176,576 KiB
+L2 cold load                                                  734,284 us
+package mmap-backed                                                true
+index source                                      compact_v2_mmap_view
+```
+
+The `170,224 B` private allocation is the derived degree table:
+`42,556 atom degrees x 4 B`. It preserves rarity-ordered lemma birth. A variant
+without this table was rejected because lemma-birth p50 regressed to
+`11,462 us`; the retained table restores it to `2,944 us` in this run.
+
+Fixed `13 x 100` micro-proof over the same corpus and capacities
+`256 / 256 / 16 / 32 / 196,608`:
+
+```text
+evaluated                                      1,300 cases
+workers                                                 20
+wall time, complete process                           6.12 s
+average CPU                                            796%
+lemma birth p50 / p99                         2,944 / 9,161 us
+form birth p50 / p99                       15,773 / 449,355 us
+readout p50 / p99                              433 / 1,087 us
+readout target retention, 12 classes                 100%
+sparse multi-omission readout retention                98%
+false authority                                          0
+verdict                              PASS_shadow_retention
+```
+
+The complete fixed `13 x 20,000` proof then evaluated the same deterministic
+`260,000` cases as the canonical owned-index baseline:
+
+```text
+class                         broad lemma   form top-16   readout retained   false authority
+adjacent transposition             99.980%         99.980%            99.980%                 0
+double substitution                98.875%         98.835%            98.835%                 0
+extra letter                      100.000%        100.000%           100.000%                 0
+layout projection                  99.995%         99.995%            99.995%                 0
+letter substitution                99.970%         99.970%            99.970%                 0
+missing letter                     99.960%         99.960%            99.960%                 0
+non-adjacent transposition         99.665%         99.530%            99.530%                 0
+omission + transposition           99.535%         99.505%            99.505%                 0
+prefix truncation                  99.950%         99.950%            99.950%                 0
+punctuation suffix                100.000%        100.000%           100.000%                 0
+repeated fragment                 100.000%        100.000%           100.000%                 0
+sparse multi-omission              95.350%         95.415%            95.415%                 0
+suffix truncation                 100.000%        100.000%           100.000%                 0
+```
+
+All quality fields, including complete per-class counters, failures, false
+authority, sampling denominators, capacities, gates, and verdict, were
+canonicalized after removing only latency, cold-load, memory, and sampling-time
+fields. The owned and mmap JSON values are byte-identical:
+
+```text
+normalized quality SHA-256  73d95a71f6ccb8abe863990f0b3b28fe56d87c702d4d5a82d4c18bdcf795a4c4
+quality counters            EXACT MATCH
+```
+
+Full-proof execution facts:
+
+```text
+evaluated                                      260,000 cases
+selected target forms                            74,252
+workers                                                20
+complete wall time                                10:44.44
+average CPU                                          1487%
+internal proof time                              631.008 s
+internal peak RSS                              481,844 KiB
+external peak RSS                              480,100 KiB
+lemma birth p50 / p99                       3,396 / 10,547 us
+form birth p50 / p99                      17,925 / 467,537 us
+readout p50 / p99                            524 / 1,295 us
+false authority                                          0
+verdict                              PASS_shadow_retention
+```
+
+The concurrent proof's form-birth p99 values are not single-client IME latency
+measurements and are not promoted as such.
+
+What was tested:
+
+- exact reference, owned compact, and mmap-view readout parity in focused
+  runtime tests;
+- all `61/61` focused L2 field tests and `25/25` L3 online tests on the
+  isolated remote gate with `20` test threads;
+- mmap ownership, zero-copy index access, private index bytes, cold load, RSS,
+  and all thirteen retention classes on both the micro and complete fixed
+  denominators;
+- exact equality of every quality counter against the canonical owned-index
+  baseline;
+- `0` false authority with unchanged runtime capacities.
+
+What was not tested by this experiment:
+
+- single-client daemon and IBus latency or settled PSS;
+- final L3/L4/DecisionCore apply authority;
+- clean L1.1 preservation, owned by its separate fixed proof.
+
+Verdict: `PASS_mmap_full_storage_and_retention`. The storage implementation is
+accepted without a quality or authority change; product promotion still
+requires the daemon/IME and release-package gates.
+
+Exact receipts:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_V13_MMAP_ZERO_COPY_13X100_2026-08-10.json
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_V13_MMAP_ZERO_COPY_13X100_2026-08-10.time.txt
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_V13_MMAP_ZERO_COPY_FIXED_RETENTION_13X20000_2026-08-10.json
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_V13_MMAP_ZERO_COPY_FIXED_RETENTION_13X20000_2026-08-10.time.txt
+```
+
+Installed daemon and managed-IBus runtime measurement:
+
+```text
+process                  settled PSS   target PSS   result
+lay-daemon                242,166 KiB   204,800 KiB  WATCH +37,366 KiB
+lay-ibus-engine           206,849 KiB   204,800 KiB  WATCH  +2,049 KiB
+lay-l1.1-serve            275,002 KiB   358,400 KiB  PASS
+lay-l3-online               1,339 KiB             -  PASS
+complete runtime          725,356 KiB   768,000 KiB  PASS -42,644 KiB
+```
+
+The complete runtime was stable at `725,356 KiB PSS` at `0`, `30`, `60`, and
+`120` seconds. Settled totals were `933,340 KiB RSS`, `463,060 KiB`
+PrivateDirty, and `0 KiB` swap. Both daemon and managed IBus mapped the same
+`140,556,462 B` package as one read-only private file region. The managed engine
+changed from PID `4020744` to `4135074`, retained `lay-ime-ru`, and the global
+`ibus-daemon` remained PID `3702`.
+
+This closes the conjunctive complete-runtime PSS gate but not the two
+per-process memory targets. Those remain explicit optimization debt rather than
+being hidden by the aggregate PASS.
+
+Exact installed-runtime receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_V13_MMAP_LIVE_RUNTIME_2026-08-10.json
+```
+
+Runtime authority changed by this experiment: `false`.
+
 ## 17. Compact Exact-Surface Format V1, 2026-08-09
 
 This experiment changes only the physical representation of the immutable V13

@@ -1,0 +1,109 @@
+{
+  "schema": "lay.structural_gate_receipt.v1",
+  "gate": "L2_V13_MMAP_LIVE_RUNTIME_2026-08-10",
+  "date": "2026-08-10",
+  "version_observed": "1.0.18",
+  "scope": "installed mmap-backed L2 V13 storage in lay-daemon and the managed lay-ibus-engine",
+  "verdict": "PASS_COMPLETE_RUNTIME_PSS_WITH_INDIVIDUAL_WATCH",
+  "runtime_authority_changed": false,
+  "quality": {
+    "fixed_receipt": "/home/ubu/projects/lay/docs/structural_gates/receipts/L2_V13_MMAP_ZERO_COPY_FIXED_RETENTION_13X20000_2026-08-10.json",
+    "evaluated": 260000,
+    "false_authority": 0,
+    "minimum_readout_retention_percent": 95.415,
+    "normalized_quality_sha256": "73d95a71f6ccb8abe863990f0b3b28fe56d87c702d4d5a82d4c18bdcf795a4c4",
+    "owned_and_mmap_quality_counters_exact_match": true
+  },
+  "package": {
+    "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-RU-FULL-v13.bin",
+    "bytes": 140556462,
+    "sha256": "cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b",
+    "daemon_mmap_regions": 1,
+    "ibus_mmap_regions": 1,
+    "mapping_permissions": "r--p"
+  },
+  "installed": {
+    "daemon": {
+      "pid_before": 4020280,
+      "pid_after": 4123507,
+      "binary_sha256_before": "c6f9fae7a0b80e75e6d0dbd85356ee8fbeb8d4c33048db4d3686903e3cadef9f",
+      "binary_sha256_after": "989b05e643d1e91eb29913b98631d2a2b95033bfd39a1ce141f1e9d73e21551b"
+    },
+    "managed_ibus_engine": {
+      "pid_before": 4020744,
+      "pid_after": 4135074,
+      "binary_sha256_before": "19a68592517e97e6b2261e8fb8070041100eef17ce8dd9069f44306b79aa4149",
+      "binary_sha256_after": "4a81ed34f8a218373378c6a4b134a6de9ba76e6053a1e3983717283056fa370c",
+      "engine_before": "lay-ime-ru",
+      "engine_after": "lay-ime-ru"
+    },
+    "global_ibus_daemon_pid_before": 3702,
+    "global_ibus_daemon_pid_after": 3702,
+    "global_ibus_daemon_restarted": false
+  },
+  "settled_samples_kib": [
+    {
+      "seconds": 0,
+      "daemon_pss": 242166,
+      "ibus_engine_pss": 206849,
+      "l11_sidecar_pss": 275002,
+      "l3_online_pss": 1339,
+      "total_pss": 725356
+    },
+    {
+      "seconds": 30,
+      "daemon_pss": 242166,
+      "ibus_engine_pss": 206849,
+      "l11_sidecar_pss": 275002,
+      "l3_online_pss": 1339,
+      "total_pss": 725356
+    },
+    {
+      "seconds": 60,
+      "daemon_pss": 242166,
+      "ibus_engine_pss": 206849,
+      "l11_sidecar_pss": 275002,
+      "l3_online_pss": 1339,
+      "total_pss": 725356
+    },
+    {
+      "seconds": 120,
+      "daemon_pss": 242166,
+      "ibus_engine_pss": 206849,
+      "l11_sidecar_pss": 275002,
+      "l3_online_pss": 1339,
+      "total_pss": 725356
+    }
+  ],
+  "settled_totals_kib": {
+    "rss": 933340,
+    "pss": 725356,
+    "private_dirty": 463060,
+    "swap": 0
+  },
+  "budgets_kib": {
+    "daemon_settled_pss": 204800,
+    "ibus_engine_settled_pss": 204800,
+    "l11_sidecar_settled_pss": 358400,
+    "complete_runtime_settled_pss": 768000
+  },
+  "gate_results": {
+    "daemon": "WATCH_37366_KIB_ABOVE_TARGET",
+    "ibus_engine": "WATCH_2049_KIB_ABOVE_TARGET",
+    "l11_sidecar": "PASS",
+    "complete_runtime": "PASS_42644_KIB_BELOW_BUDGET"
+  },
+  "tested": [
+    "remote Cargo-guard release builds for lay-daemon and lay-ibus-engine with swap 0",
+    "two-hop SHA-256 parity for both installed binaries",
+    "read-only mmap of the exact fixed L2 V13 package in daemon and managed IBus",
+    "managed IBus child replacement with global ibus-daemon PID continuity and lay-ime-ru restoration",
+    "four stable complete-runtime PSS snapshots through 120 seconds"
+  ],
+  "not_tested": [
+    "multi-day allocator and page-residency plateau",
+    "physical typing behavior after this binary replacement",
+    "single-client daemon and IBus latency",
+    "individual daemon and IBus PSS targets remain WATCH"
+  ]
+}

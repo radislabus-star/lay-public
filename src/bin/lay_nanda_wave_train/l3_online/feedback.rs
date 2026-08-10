@@ -4,6 +4,9 @@ use std::collections::BTreeMap;
 pub(super) const STATE_FORMAT: &str = "lay-l3-online-v3-causal-episodes";
 pub(super) const DIRECT_STATE_FORMAT: &str = "lay-l3-online-v2-direct-relations";
 pub(super) const LEGACY_STATE_FORMAT: &str = "lay-l3-online-v1";
+/// Bump only when general compiler/readout/proof semantics can change the
+/// verdict of an already attempted relation without adding new evidence.
+pub(super) const PROOF_PIPELINE_REVISION: u32 = 1;
 pub(super) const MIN_EPISODES: usize = 2;
 pub(super) const MIN_SCENES: usize = 2;
 const MAX_SCENES: usize = 8;
@@ -94,6 +97,8 @@ pub(super) struct OnlineFeedbackStats {
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub(super) struct OnlineState {
     pub(super) format: String,
+    #[serde(default)]
+    pub(super) proof_pipeline_revision: u32,
     pub(super) source_offset: u64,
     #[serde(default)]
     pub(super) source_device: u64,
@@ -118,6 +123,7 @@ impl Default for OnlineState {
     fn default() -> Self {
         Self {
             format: STATE_FORMAT.to_string(),
+            proof_pipeline_revision: PROOF_PIPELINE_REVISION,
             source_offset: 0,
             source_device: 0,
             source_inode: 0,

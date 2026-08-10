@@ -1,12 +1,14 @@
 use std::borrow::Cow;
+use std::path::Path;
 
 use super::compact_format::{self, CompactPackageView};
-use super::compositional::LemmaWaveIndex;
+use super::compositional::RuntimeLemmaWaveIndex;
 use super::format;
 use super::model::{
     CompetitionEdge, FormCenterRef, L2FieldPackage, LemmaCenter, LocalContextMode, MorphBinding,
     NeighborCoupling, SlotPhaseCenter, TieCalibration,
 };
+use super::package_bytes::PackageBytes;
 
 #[derive(Clone, Debug)]
 pub(super) enum RuntimeL2Package {
@@ -15,6 +17,15 @@ pub(super) enum RuntimeL2Package {
 }
 
 impl RuntimeL2Package {
+    pub(super) fn load(path: &Path) -> Result<Self, String> {
+        let bytes = PackageBytes::load(path)?;
+        if compact_format::is_compact_package(bytes.as_slice()) {
+            CompactPackageView::from_backing(bytes).map(Self::Compact)
+        } else {
+            format::decode_package(bytes.as_slice()).map(Self::Reference)
+        }
+    }
+
     pub(super) fn from_bytes(bytes: Vec<u8>) -> Result<Self, String> {
         if compact_format::is_compact_package(&bytes) {
             CompactPackageView::from_bytes(bytes).map(Self::Compact)
@@ -34,10 +45,17 @@ impl RuntimeL2Package {
         }
     }
 
-    pub(super) fn take_lemma_wave_index(&mut self) -> Option<LemmaWaveIndex> {
+    pub(super) fn take_lemma_wave_index(&mut self) -> Option<RuntimeLemmaWaveIndex> {
         match self {
             Self::Reference(_) => None,
             Self::Compact(package) => package.take_lemma_wave_index(),
+        }
+    }
+
+    pub(super) fn mmap_backed(&self) -> bool {
+        match self {
+            Self::Reference(_) => false,
+            Self::Compact(package) => package.mmap_backed(),
         }
     }
 

@@ -1,7 +1,9 @@
 use std::borrow::Cow;
 use std::collections::{BTreeSet, BinaryHeap, HashMap};
+use std::ops::Range;
 
 use super::model::{L2FieldPackage, LemmaCenter, MorphBinding};
+use super::package_bytes::PackageBytes;
 use super::runtime_storage::RuntimeL2Package;
 use super::CANONICAL_L2_ATOM_RELATION_LIMIT;
 
@@ -78,6 +80,68 @@ pub(super) struct LemmaWaveIndex {
     atom_offsets: Vec<u32>,
     atom_postings: Vec<u8>,
     atom_degrees: Vec<u32>,
+}
+
+#[derive(Clone, Debug)]
+pub(super) struct CompactLemmaWaveIndexView {
+    bytes: PackageBytes,
+    range_section: Range<usize>,
+    center_section: Range<usize>,
+    band_offset_section: Range<usize>,
+    band_posting_section: Range<usize>,
+    atom_key_section: Range<usize>,
+    atom_offset_section: Range<usize>,
+    atom_posting_section: Range<usize>,
+    atom_degrees: Vec<u32>,
+}
+
+#[derive(Clone, Debug)]
+pub(super) enum RuntimeLemmaWaveIndex {
+    Owned(LemmaWaveIndex),
+    Compact(CompactLemmaWaveIndexView),
+}
+
+impl RuntimeLemmaWaveIndex {
+    pub(super) fn from_owned(index: LemmaWaveIndex) -> Self {
+        Self::Owned(index)
+    }
+
+    pub(super) fn rank_lemmas_with_atom_relation_limit(
+        &self,
+        surface: &str,
+        limit: usize,
+        atom_relation_limit: usize,
+    ) -> Vec<LemmaWaveMatch> {
+        match self {
+            Self::Owned(index) => {
+                index.rank_lemmas_with_atom_relation_limit(surface, limit, atom_relation_limit)
+            }
+            Self::Compact(index) => {
+                rank_lemmas_with_atom_relation_limit(index, surface, limit, atom_relation_limit)
+            }
+        }
+    }
+
+    pub(super) fn owned_resident_bytes(&self) -> usize {
+        match self {
+            Self::Owned(index) => index.resident_bytes(),
+            Self::Compact(index) => index.owned_resident_bytes(),
+        }
+    }
+
+    pub(super) fn backing_view_bytes(&self) -> usize {
+        match self {
+            Self::Owned(_) => 0,
+            Self::Compact(index) => index.view_bytes(),
+        }
+    }
+
+    pub(super) fn atom_key_count(&self) -> usize {
+        match self {
+            Self::Owned(index) => index.atom_keys.len(),
+            Self::Compact(index) => index.atom_key_count(),
+        }
+    }
 }
 
 impl LemmaWaveIndex {
@@ -240,243 +304,7 @@ impl LemmaWaveIndex {
         limit: usize,
         atom_relation_limit: usize,
     ) -> Vec<LemmaWaveMatch> {
-        if limit == 0 {
-            return Vec::new();
-        }
-        let normalized = normalize_surface(surface);
-        let input_length = normalized.chars().count().min(u8::MAX as usize) as u8;
-        if input_length < 2 {
-            return Vec::new();
-        }
-        let input = surface_wave_code(&normalized);
-        let atom_ranked =
-            self.rank_atom_lemmas(&normalized, input, input_length, limit, atom_relation_limit);
-        if atom_ranked.len() >= limit {
-            return atom_ranked;
-        }
-        let mut candidates = self.band_candidate_lemmas(input, 2);
-        let mut ranked = self.rank_candidate_lemmas(input, input_length, limit, &candidates);
-        if ranked.len() >= limit && ranked.last().is_some_and(|item| item.wave_distance <= 23) {
-            return merge_lemma_matches(atom_ranked, ranked, limit);
-        }
-        candidates = self.band_candidate_lemmas(input, 3);
-        ranked = self.rank_candidate_lemmas(input, input_length, limit, &candidates);
-        if ranked.len() >= limit && ranked.last().is_some_and(|item| item.wave_distance <= 31) {
-            return merge_lemma_matches(atom_ranked, ranked, limit);
-        }
-        let exhaustive = self.rank_candidate_lemmas(
-            input,
-            input_length,
-            limit,
-            &(0..self.ranges.len() as u32).collect::<Vec<_>>(),
-        );
-        merge_lemma_matches(atom_ranked, exhaustive, limit)
-    }
-
-    fn rank_atom_lemmas(
-        &self,
-        surface: &str,
-        input: SurfaceWaveCode,
-        input_length: u8,
-        limit: usize,
-        atom_relation_limit: usize,
-    ) -> Vec<LemmaWaveMatch> {
-        let atoms = surface_atom_keys(surface);
-        let mut active_atoms = atoms
-            .into_iter()
-            .filter_map(|atom| {
-                let index = self.atom_keys.binary_search(&atom).ok()?;
-                let degree = usize::try_from(*self.atom_degrees.get(index)?).ok()?.max(1);
-                let inverse_degree = (self.ranges.len().max(1) / degree).max(1);
-                let evidence = u32::from(atom_weight(atom))
-                    .saturating_mul(inverse_degree.ilog2().saturating_add(1));
-                Some((atom, index, degree, evidence))
-            })
-            .collect::<Vec<_>>();
-        active_atoms.sort_unstable_by(|left, right| {
-            let left_density = u64::from(left.3).saturating_mul(right.2 as u64);
-            let right_density = u64::from(right.3).saturating_mul(left.2 as u64);
-            right_density
-                .cmp(&left_density)
-                .then_with(|| right.3.cmp(&left.3))
-                .then_with(|| left.2.cmp(&right.2))
-                .then_with(|| left.0.cmp(&right.0))
-        });
-
-        let mut selected_relations = 0_usize;
-        active_atoms.retain(|(_, _, degree, _)| {
-            let next = selected_relations.saturating_add(*degree);
-            if next > atom_relation_limit {
-                false
-            } else {
-                selected_relations = next;
-                true
-            }
-        });
-        if active_atoms.is_empty() {
-            return Vec::new();
-        }
-
-        let total_evidence = active_atoms
-            .iter()
-            .map(|(_, _, _, evidence)| *evidence)
-            .sum::<u32>()
-            .max(1);
-        let mut scores = vec![0_u32; self.ranges.len()];
-        let mut touched = Vec::with_capacity(selected_relations.min(self.ranges.len()));
-        for (_, index, _, evidence) in active_atoms {
-            let Some((&start, &end)) = self
-                .atom_offsets
-                .get(index)
-                .zip(self.atom_offsets.get(index + 1))
-            else {
-                continue;
-            };
-            let posting = self
-                .atom_postings
-                .get(start as usize..end as usize)
-                .unwrap_or_default();
-            let _ = decode_delta_postings(posting, |lemma_id| {
-                let score = &mut scores[lemma_id as usize];
-                if *score == 0 {
-                    touched.push(lemma_id);
-                }
-                *score = score.saturating_add(evidence);
-            });
-        }
-        let mut ranked = touched
-            .into_iter()
-            .map(|lemma_id| (lemma_id, scores[lemma_id as usize]))
-            .collect::<Vec<_>>();
-        ranked.sort_unstable_by(|(left_id, left_score), (right_id, right_score)| {
-            right_score
-                .cmp(left_score)
-                .then_with(|| left_id.cmp(right_id))
-        });
-        ranked.truncate(limit);
-        let mut resolved = ranked
-            .into_iter()
-            .filter_map(|(lemma_id, atom_evidence)| {
-                let range = self.ranges.get(lemma_id as usize)?;
-                let start = range.start as usize;
-                let end = start.saturating_add(range.count as usize);
-                let wave_distance = self
-                    .centers
-                    .get(start..end)?
-                    .iter()
-                    .map(|center| center.distance(input))
-                    .min()?;
-                let length_gap = if input_length < range.minimum_length {
-                    range.minimum_length - input_length
-                } else {
-                    input_length.saturating_sub(range.maximum_length)
-                };
-                let atom_evidence_milli = atom_evidence
-                    .saturating_mul(1_000)
-                    .checked_div(total_evidence)
-                    .unwrap_or_default()
-                    .min(1_000) as u16;
-                Some((
-                    lemma_id,
-                    atom_evidence,
-                    atom_evidence_milli,
-                    wave_distance,
-                    length_gap,
-                ))
-            })
-            .collect::<Vec<_>>();
-        resolved.sort_unstable_by(|left, right| {
-            right
-                .1
-                .cmp(&left.1)
-                .then_with(|| left.4.cmp(&right.4))
-                .then_with(|| left.3.cmp(&right.3))
-                .then_with(|| left.0.cmp(&right.0))
-        });
-        resolved
-            .into_iter()
-            .map(
-                |(lemma_id, atom_evidence, atom_evidence_milli, wave_distance, _)| LemmaWaveMatch {
-                    lemma_id,
-                    wave_distance,
-                    atom_evidence,
-                    atom_evidence_milli,
-                },
-            )
-            .collect()
-    }
-
-    fn rank_candidate_lemmas(
-        &self,
-        input: SurfaceWaveCode,
-        input_length: u8,
-        limit: usize,
-        lemma_ids: &[u32],
-    ) -> Vec<LemmaWaveMatch> {
-        let mut best = BinaryHeap::<(u16, u8, u32)>::with_capacity(limit + 1);
-        for lemma_id in lemma_ids.iter().copied() {
-            let Some(range) = self.ranges.get(lemma_id as usize) else {
-                continue;
-            };
-            let start = range.start as usize;
-            let end = start.saturating_add(range.count as usize);
-            let Some(wave_distance) = self
-                .centers
-                .get(start..end)
-                .and_then(|centers| centers.iter().map(|center| center.distance(input)).min())
-            else {
-                continue;
-            };
-            let length_gap = if input_length < range.minimum_length {
-                range.minimum_length - input_length
-            } else {
-                input_length.saturating_sub(range.maximum_length)
-            };
-            let rank = (wave_distance, length_gap, lemma_id);
-            if best.len() < limit {
-                best.push(rank);
-            } else if best.peek().is_some_and(|worst| rank < *worst) {
-                best.pop();
-                best.push(rank);
-            }
-        }
-        let mut ranked = best.into_vec();
-        ranked.sort_unstable();
-        ranked
-            .into_iter()
-            .map(|(wave_distance, _, lemma_id)| LemmaWaveMatch {
-                lemma_id,
-                wave_distance,
-                atom_evidence: 0,
-                atom_evidence_milli: 0,
-            })
-            .collect()
-    }
-
-    fn band_candidate_lemmas(&self, input: SurfaceWaveCode, radius: usize) -> Vec<u32> {
-        let masks = probe_masks(radius);
-        let mut candidates = Vec::new();
-        for band in 0..WAVE_BANDS {
-            let value = wave_band(input, band);
-            for mask in masks {
-                let key = band * WAVE_BAND_VALUES + usize::from(value ^ mask);
-                let Some((&start, &end)) = self
-                    .band_offsets
-                    .get(key)
-                    .zip(self.band_offsets.get(key + 1))
-                else {
-                    continue;
-                };
-                candidates.extend_from_slice(
-                    self.band_postings
-                        .get(start as usize..end as usize)
-                        .unwrap_or_default(),
-                );
-            }
-        }
-        candidates.sort_unstable();
-        candidates.dedup();
-        candidates
+        rank_lemmas_with_atom_relation_limit(self, surface, limit, atom_relation_limit)
     }
 
     pub(super) fn resident_bytes(&self) -> usize {
@@ -500,13 +328,717 @@ impl LemmaWaveIndex {
         let normalized = normalize_surface(surface);
         let input_length = normalized.chars().count().min(u8::MAX as usize) as u8;
         let input = surface_wave_code(&normalized);
-        self.rank_candidate_lemmas(
+        rank_candidate_lemmas(
+            self,
             input,
             input_length,
             limit,
             &(0..self.ranges.len() as u32).collect::<Vec<_>>(),
         )
     }
+
+    #[cfg(test)]
+    fn band_candidate_lemmas(&self, input: SurfaceWaveCode, radius: usize) -> Vec<u32> {
+        band_candidate_lemmas(self, input, radius)
+    }
+}
+
+impl CompactLemmaWaveIndexView {
+    #[allow(clippy::too_many_arguments)]
+    pub(super) fn from_sections(
+        bytes: PackageBytes,
+        range_section: Range<usize>,
+        center_section: Range<usize>,
+        band_offset_section: Range<usize>,
+        band_posting_section: Range<usize>,
+        atom_key_section: Range<usize>,
+        atom_offset_section: Range<usize>,
+        atom_posting_section: Range<usize>,
+    ) -> Result<Self, String> {
+        let mut view = Self {
+            bytes,
+            range_section,
+            center_section,
+            band_offset_section,
+            band_posting_section,
+            atom_key_section,
+            atom_offset_section,
+            atom_posting_section,
+            atom_degrees: Vec::new(),
+        };
+        view.validate_section_widths()?;
+        view.atom_degrees = validate_read_index(&view)?;
+        Ok(view)
+    }
+
+    pub(super) fn range_count(&self) -> usize {
+        self.range_section.len() / super::compositional_format::LEMMA_WAVE_RANGE_BYTES
+    }
+
+    pub(super) fn atom_key_count(&self) -> usize {
+        self.atom_key_section.len() / super::compositional_format::ATOM_KEY_BYTES
+    }
+
+    pub(super) fn view_bytes(&self) -> usize {
+        self.range_section.len()
+            + self.center_section.len()
+            + self.band_offset_section.len()
+            + self.band_posting_section.len()
+            + self.atom_key_section.len()
+            + self.atom_offset_section.len()
+            + self.atom_posting_section.len()
+    }
+
+    pub(super) fn owned_resident_bytes(&self) -> usize {
+        self.atom_degrees.capacity() * std::mem::size_of::<u32>()
+    }
+
+    fn center_count(&self) -> usize {
+        self.center_section.len() / super::compositional_format::SURFACE_WAVE_CODE_BYTES
+    }
+
+    fn band_offset_count(&self) -> usize {
+        self.band_offset_section.len() / super::compositional_format::WAVE_BAND_OFFSET_BYTES
+    }
+
+    fn band_posting_count(&self) -> usize {
+        self.band_posting_section.len() / super::compositional_format::WAVE_BAND_POSTING_BYTES
+    }
+
+    fn atom_offset_count(&self) -> usize {
+        self.atom_offset_section.len() / super::compositional_format::ATOM_OFFSET_BYTES
+    }
+
+    fn validate_section_widths(&self) -> Result<(), String> {
+        let sections = [
+            (
+                "lemma wave ranges",
+                self.range_section.len(),
+                super::compositional_format::LEMMA_WAVE_RANGE_BYTES,
+            ),
+            (
+                "surface wave codes",
+                self.center_section.len(),
+                super::compositional_format::SURFACE_WAVE_CODE_BYTES,
+            ),
+            (
+                "wave band offsets",
+                self.band_offset_section.len(),
+                super::compositional_format::WAVE_BAND_OFFSET_BYTES,
+            ),
+            (
+                "wave band postings",
+                self.band_posting_section.len(),
+                super::compositional_format::WAVE_BAND_POSTING_BYTES,
+            ),
+            (
+                "typed atom keys",
+                self.atom_key_section.len(),
+                super::compositional_format::ATOM_KEY_BYTES,
+            ),
+            (
+                "typed atom offsets",
+                self.atom_offset_section.len(),
+                super::compositional_format::ATOM_OFFSET_BYTES,
+            ),
+            (
+                "typed atom postings",
+                self.atom_posting_section.len(),
+                super::compositional_format::ATOM_POSTING_BYTES,
+            ),
+        ];
+        for (name, bytes, width) in sections {
+            if bytes % width != 0 {
+                return Err(format!("compact L2 {name} section width mismatch"));
+            }
+        }
+        Ok(())
+    }
+
+    fn item(&self, section: &Range<usize>, index: usize, width: usize) -> Option<&[u8]> {
+        let start = section.start.checked_add(index.checked_mul(width)?)?;
+        let end = start.checked_add(width)?;
+        if end > section.end {
+            return None;
+        }
+        self.bytes.as_slice().get(start..end)
+    }
+}
+
+trait LemmaWaveReadIndex {
+    fn lemma_count(&self) -> usize;
+    fn center_count(&self) -> usize;
+    fn range(&self, index: usize) -> Option<LemmaWaveRange>;
+    fn center(&self, index: usize) -> Option<SurfaceWaveCode>;
+    fn band_offset_count(&self) -> usize;
+    fn band_posting_count(&self) -> usize;
+    fn band_offset(&self, index: usize) -> Option<u32>;
+    fn band_posting(&self, index: usize) -> Option<u32>;
+    fn atom_key_count(&self) -> usize;
+    fn atom_offset_count(&self) -> usize;
+    fn atom_posting_bytes(&self) -> usize;
+    fn atom_key(&self, index: usize) -> Option<u64>;
+    fn atom_offset(&self, index: usize) -> Option<u32>;
+    fn atom_posting_slice(&self, start: usize, end: usize) -> Option<&[u8]>;
+
+    fn atom_posting(&self, index: usize) -> Option<&[u8]> {
+        let start = self.atom_offset(index)? as usize;
+        let end = self.atom_offset(index + 1)? as usize;
+        self.atom_posting_slice(start, end)
+    }
+
+    fn atom_degree(&self, index: usize) -> Option<usize> {
+        let mut degree = 0_usize;
+        decode_delta_postings(self.atom_posting(index)?, |_| {
+            degree = degree.saturating_add(1);
+        })
+        .ok()?;
+        Some(degree)
+    }
+}
+
+impl LemmaWaveReadIndex for LemmaWaveIndex {
+    fn lemma_count(&self) -> usize {
+        self.ranges.len()
+    }
+
+    fn center_count(&self) -> usize {
+        self.centers.len()
+    }
+
+    fn range(&self, index: usize) -> Option<LemmaWaveRange> {
+        self.ranges.get(index).copied()
+    }
+
+    fn center(&self, index: usize) -> Option<SurfaceWaveCode> {
+        self.centers.get(index).copied()
+    }
+
+    fn band_offset_count(&self) -> usize {
+        self.band_offsets.len()
+    }
+
+    fn band_posting_count(&self) -> usize {
+        self.band_postings.len()
+    }
+
+    fn band_offset(&self, index: usize) -> Option<u32> {
+        self.band_offsets.get(index).copied()
+    }
+
+    fn band_posting(&self, index: usize) -> Option<u32> {
+        self.band_postings.get(index).copied()
+    }
+
+    fn atom_key_count(&self) -> usize {
+        self.atom_keys.len()
+    }
+
+    fn atom_offset_count(&self) -> usize {
+        self.atom_offsets.len()
+    }
+
+    fn atom_posting_bytes(&self) -> usize {
+        self.atom_postings.len()
+    }
+
+    fn atom_key(&self, index: usize) -> Option<u64> {
+        self.atom_keys.get(index).copied()
+    }
+
+    fn atom_offset(&self, index: usize) -> Option<u32> {
+        self.atom_offsets.get(index).copied()
+    }
+
+    fn atom_posting_slice(&self, start: usize, end: usize) -> Option<&[u8]> {
+        self.atom_postings.get(start..end)
+    }
+
+    fn atom_degree(&self, index: usize) -> Option<usize> {
+        usize::try_from(*self.atom_degrees.get(index)?).ok()
+    }
+}
+
+impl LemmaWaveReadIndex for CompactLemmaWaveIndexView {
+    fn lemma_count(&self) -> usize {
+        self.range_count()
+    }
+
+    fn center_count(&self) -> usize {
+        self.center_count()
+    }
+
+    fn range(&self, index: usize) -> Option<LemmaWaveRange> {
+        let bytes = self.item(
+            &self.range_section,
+            index,
+            super::compositional_format::LEMMA_WAVE_RANGE_BYTES,
+        )?;
+        Some(LemmaWaveRange {
+            start: u32::from_le_bytes(bytes[0..4].try_into().ok()?),
+            count: u16::from_le_bytes(bytes[4..6].try_into().ok()?),
+            minimum_length: bytes[6],
+            maximum_length: bytes[7],
+        })
+    }
+
+    fn center(&self, index: usize) -> Option<SurfaceWaveCode> {
+        let bytes = self.item(
+            &self.center_section,
+            index,
+            super::compositional_format::SURFACE_WAVE_CODE_BYTES,
+        )?;
+        Some(SurfaceWaveCode {
+            character: u64::from_le_bytes(bytes[0..8].try_into().ok()?),
+            keyboard: u64::from_le_bytes(bytes[8..16].try_into().ok()?),
+        })
+    }
+
+    fn band_offset_count(&self) -> usize {
+        self.band_offset_count()
+    }
+
+    fn band_posting_count(&self) -> usize {
+        self.band_posting_count()
+    }
+
+    fn band_offset(&self, index: usize) -> Option<u32> {
+        let bytes = self.item(
+            &self.band_offset_section,
+            index,
+            super::compositional_format::WAVE_BAND_OFFSET_BYTES,
+        )?;
+        Some(u32::from_le_bytes(bytes.try_into().ok()?))
+    }
+
+    fn band_posting(&self, index: usize) -> Option<u32> {
+        let bytes = self.item(
+            &self.band_posting_section,
+            index,
+            super::compositional_format::WAVE_BAND_POSTING_BYTES,
+        )?;
+        Some(u32::from_le_bytes(bytes.try_into().ok()?))
+    }
+
+    fn atom_key_count(&self) -> usize {
+        self.atom_key_count()
+    }
+
+    fn atom_offset_count(&self) -> usize {
+        self.atom_offset_count()
+    }
+
+    fn atom_posting_bytes(&self) -> usize {
+        self.atom_posting_section.len()
+    }
+
+    fn atom_key(&self, index: usize) -> Option<u64> {
+        let bytes = self.item(
+            &self.atom_key_section,
+            index,
+            super::compositional_format::ATOM_KEY_BYTES,
+        )?;
+        Some(u64::from_le_bytes(bytes.try_into().ok()?))
+    }
+
+    fn atom_offset(&self, index: usize) -> Option<u32> {
+        let bytes = self.item(
+            &self.atom_offset_section,
+            index,
+            super::compositional_format::ATOM_OFFSET_BYTES,
+        )?;
+        Some(u32::from_le_bytes(bytes.try_into().ok()?))
+    }
+
+    fn atom_posting_slice(&self, start: usize, end: usize) -> Option<&[u8]> {
+        if start > end || end > self.atom_posting_section.len() {
+            return None;
+        }
+        let absolute_start = self.atom_posting_section.start.checked_add(start)?;
+        let absolute_end = self.atom_posting_section.start.checked_add(end)?;
+        self.bytes.as_slice().get(absolute_start..absolute_end)
+    }
+
+    fn atom_degree(&self, index: usize) -> Option<usize> {
+        usize::try_from(*self.atom_degrees.get(index)?).ok()
+    }
+}
+
+fn rank_lemmas_with_atom_relation_limit(
+    index: &impl LemmaWaveReadIndex,
+    surface: &str,
+    limit: usize,
+    atom_relation_limit: usize,
+) -> Vec<LemmaWaveMatch> {
+    if limit == 0 {
+        return Vec::new();
+    }
+    let normalized = normalize_surface(surface);
+    let input_length = normalized.chars().count().min(u8::MAX as usize) as u8;
+    if input_length < 2 {
+        return Vec::new();
+    }
+    let input = surface_wave_code(&normalized);
+    let atom_ranked = rank_atom_lemmas(
+        index,
+        &normalized,
+        input,
+        input_length,
+        limit,
+        atom_relation_limit,
+    );
+    if atom_ranked.len() >= limit {
+        return atom_ranked;
+    }
+    let mut candidates = band_candidate_lemmas(index, input, 2);
+    let mut ranked = rank_candidate_lemmas(index, input, input_length, limit, &candidates);
+    if ranked.len() >= limit && ranked.last().is_some_and(|item| item.wave_distance <= 23) {
+        return merge_lemma_matches(atom_ranked, ranked, limit);
+    }
+    candidates = band_candidate_lemmas(index, input, 3);
+    ranked = rank_candidate_lemmas(index, input, input_length, limit, &candidates);
+    if ranked.len() >= limit && ranked.last().is_some_and(|item| item.wave_distance <= 31) {
+        return merge_lemma_matches(atom_ranked, ranked, limit);
+    }
+    let exhaustive = rank_candidate_lemmas(
+        index,
+        input,
+        input_length,
+        limit,
+        &(0..index.lemma_count() as u32).collect::<Vec<_>>(),
+    );
+    merge_lemma_matches(atom_ranked, exhaustive, limit)
+}
+
+fn rank_atom_lemmas(
+    index: &impl LemmaWaveReadIndex,
+    surface: &str,
+    input: SurfaceWaveCode,
+    input_length: u8,
+    limit: usize,
+    atom_relation_limit: usize,
+) -> Vec<LemmaWaveMatch> {
+    let atoms = surface_atom_keys(surface);
+    let mut active_atoms = atoms
+        .into_iter()
+        .filter_map(|atom| {
+            let atom_index = find_atom_key(index, atom)?;
+            let degree = index.atom_degree(atom_index)?.max(1);
+            let inverse_degree = (index.lemma_count().max(1) / degree).max(1);
+            let evidence = u32::from(atom_weight(atom))
+                .saturating_mul(inverse_degree.ilog2().saturating_add(1));
+            Some((atom, atom_index, degree, evidence))
+        })
+        .collect::<Vec<_>>();
+    active_atoms.sort_unstable_by(|left, right| {
+        let left_density = u64::from(left.3).saturating_mul(right.2 as u64);
+        let right_density = u64::from(right.3).saturating_mul(left.2 as u64);
+        right_density
+            .cmp(&left_density)
+            .then_with(|| right.3.cmp(&left.3))
+            .then_with(|| left.2.cmp(&right.2))
+            .then_with(|| left.0.cmp(&right.0))
+    });
+
+    let mut selected_relations = 0_usize;
+    active_atoms.retain(|(_, _, degree, _)| {
+        let next = selected_relations.saturating_add(*degree);
+        if next > atom_relation_limit {
+            false
+        } else {
+            selected_relations = next;
+            true
+        }
+    });
+    if active_atoms.is_empty() {
+        return Vec::new();
+    }
+
+    let total_evidence = active_atoms
+        .iter()
+        .map(|(_, _, _, evidence)| *evidence)
+        .sum::<u32>()
+        .max(1);
+    let mut scores = vec![0_u32; index.lemma_count()];
+    let mut touched = Vec::with_capacity(selected_relations.min(index.lemma_count()));
+    for (_, atom_index, _, evidence) in active_atoms {
+        let Some(posting) = index.atom_posting(atom_index) else {
+            continue;
+        };
+        let _ = decode_delta_postings(posting, |lemma_id| {
+            let score = &mut scores[lemma_id as usize];
+            if *score == 0 {
+                touched.push(lemma_id);
+            }
+            *score = score.saturating_add(evidence);
+        });
+    }
+    let mut ranked = touched
+        .into_iter()
+        .map(|lemma_id| (lemma_id, scores[lemma_id as usize]))
+        .collect::<Vec<_>>();
+    ranked.sort_unstable_by(|(left_id, left_score), (right_id, right_score)| {
+        right_score
+            .cmp(left_score)
+            .then_with(|| left_id.cmp(right_id))
+    });
+    ranked.truncate(limit);
+    let mut resolved = ranked
+        .into_iter()
+        .filter_map(|(lemma_id, atom_evidence)| {
+            let range = index.range(lemma_id as usize)?;
+            let wave_distance = minimum_wave_distance(index, range, input)?;
+            let length_gap = if input_length < range.minimum_length {
+                range.minimum_length - input_length
+            } else {
+                input_length.saturating_sub(range.maximum_length)
+            };
+            let atom_evidence_milli = atom_evidence
+                .saturating_mul(1_000)
+                .checked_div(total_evidence)
+                .unwrap_or_default()
+                .min(1_000) as u16;
+            Some((
+                lemma_id,
+                atom_evidence,
+                atom_evidence_milli,
+                wave_distance,
+                length_gap,
+            ))
+        })
+        .collect::<Vec<_>>();
+    resolved.sort_unstable_by(|left, right| {
+        right
+            .1
+            .cmp(&left.1)
+            .then_with(|| left.4.cmp(&right.4))
+            .then_with(|| left.3.cmp(&right.3))
+            .then_with(|| left.0.cmp(&right.0))
+    });
+    resolved
+        .into_iter()
+        .map(
+            |(lemma_id, atom_evidence, atom_evidence_milli, wave_distance, _)| LemmaWaveMatch {
+                lemma_id,
+                wave_distance,
+                atom_evidence,
+                atom_evidence_milli,
+            },
+        )
+        .collect()
+}
+
+fn rank_candidate_lemmas(
+    index: &impl LemmaWaveReadIndex,
+    input: SurfaceWaveCode,
+    input_length: u8,
+    limit: usize,
+    lemma_ids: &[u32],
+) -> Vec<LemmaWaveMatch> {
+    let mut best = BinaryHeap::<(u16, u8, u32)>::with_capacity(limit + 1);
+    for lemma_id in lemma_ids.iter().copied() {
+        let Some(range) = index.range(lemma_id as usize) else {
+            continue;
+        };
+        let Some(wave_distance) = minimum_wave_distance(index, range, input) else {
+            continue;
+        };
+        let length_gap = if input_length < range.minimum_length {
+            range.minimum_length - input_length
+        } else {
+            input_length.saturating_sub(range.maximum_length)
+        };
+        let rank = (wave_distance, length_gap, lemma_id);
+        if best.len() < limit {
+            best.push(rank);
+        } else if best.peek().is_some_and(|worst| rank < *worst) {
+            best.pop();
+            best.push(rank);
+        }
+    }
+    let mut ranked = best.into_vec();
+    ranked.sort_unstable();
+    ranked
+        .into_iter()
+        .map(|(wave_distance, _, lemma_id)| LemmaWaveMatch {
+            lemma_id,
+            wave_distance,
+            atom_evidence: 0,
+            atom_evidence_milli: 0,
+        })
+        .collect()
+}
+
+fn minimum_wave_distance(
+    index: &impl LemmaWaveReadIndex,
+    range: LemmaWaveRange,
+    input: SurfaceWaveCode,
+) -> Option<u16> {
+    let start = range.start as usize;
+    let end = start.checked_add(range.count as usize)?;
+    (start..end)
+        .filter_map(|center_index| index.center(center_index))
+        .map(|center| center.distance(input))
+        .min()
+}
+
+fn band_candidate_lemmas(
+    index: &impl LemmaWaveReadIndex,
+    input: SurfaceWaveCode,
+    radius: usize,
+) -> Vec<u32> {
+    let masks = probe_masks(radius);
+    let mut candidates = Vec::new();
+    for band in 0..WAVE_BANDS {
+        let value = wave_band(input, band);
+        for mask in masks {
+            let key = band * WAVE_BAND_VALUES + usize::from(value ^ mask);
+            let Some((start, end)) = index.band_offset(key).zip(index.band_offset(key + 1)) else {
+                continue;
+            };
+            candidates.extend(
+                (start as usize..end as usize)
+                    .filter_map(|posting_index| index.band_posting(posting_index)),
+            );
+        }
+    }
+    candidates.sort_unstable();
+    candidates.dedup();
+    candidates
+}
+
+fn find_atom_key(index: &impl LemmaWaveReadIndex, target: u64) -> Option<usize> {
+    let mut left = 0_usize;
+    let mut right = index.atom_key_count();
+    while left < right {
+        let middle = left + (right - left) / 2;
+        match index.atom_key(middle)?.cmp(&target) {
+            std::cmp::Ordering::Less => left = middle + 1,
+            std::cmp::Ordering::Greater => right = middle,
+            std::cmp::Ordering::Equal => return Some(middle),
+        }
+    }
+    None
+}
+
+fn validate_read_index(index: &impl LemmaWaveReadIndex) -> Result<Vec<u32>, String> {
+    let mut expected_center = 0_usize;
+    for lemma_id in 0..index.lemma_count() {
+        let range = index
+            .range(lemma_id)
+            .ok_or_else(|| format!("L2 lemma wave range {lemma_id} is missing"))?;
+        if range.count == 0 || range.minimum_length > range.maximum_length {
+            return Err(format!("L2 lemma wave range {lemma_id} is invalid"));
+        }
+        if range.start as usize != expected_center {
+            return Err(format!(
+                "L2 lemma wave range {lemma_id} starts at {}, expected {expected_center}",
+                range.start
+            ));
+        }
+        expected_center = expected_center
+            .checked_add(range.count as usize)
+            .ok_or_else(|| "L2 lemma wave center range overflow".to_string())?;
+        if expected_center > index.center_count() {
+            return Err(format!(
+                "L2 lemma wave range {lemma_id} exceeds center section"
+            ));
+        }
+    }
+    if expected_center != index.center_count() {
+        return Err(format!(
+            "L2 lemma wave ranges cover {expected_center} of {} centers",
+            index.center_count()
+        ));
+    }
+
+    if index.band_offset_count() != WAVE_BAND_KEYS + 1
+        || index.band_offset(0) != Some(0)
+        || index.band_offset(WAVE_BAND_KEYS) != Some(index.band_posting_count() as u32)
+    {
+        return Err("L2 lemma wave band offsets are invalid".to_string());
+    }
+    for key in 0..WAVE_BAND_KEYS {
+        let start = index
+            .band_offset(key)
+            .ok_or_else(|| "L2 lemma wave band offset is missing".to_string())?
+            as usize;
+        let end = index
+            .band_offset(key + 1)
+            .ok_or_else(|| "L2 lemma wave band offset is missing".to_string())?
+            as usize;
+        if start > end || end > index.band_posting_count() {
+            return Err("L2 lemma wave band posting range is invalid".to_string());
+        }
+        let mut previous = None;
+        for posting_index in start..end {
+            let lemma_id = index
+                .band_posting(posting_index)
+                .ok_or_else(|| "L2 lemma wave band posting is missing".to_string())?;
+            if lemma_id as usize >= index.lemma_count()
+                || previous.is_some_and(|previous| previous >= lemma_id)
+            {
+                return Err(format!("L2 lemma wave band bucket {key} is invalid"));
+            }
+            previous = Some(lemma_id);
+        }
+    }
+
+    if index.atom_key_count() == 0
+        && index.atom_offset_count() == 0
+        && index.atom_posting_bytes() == 0
+    {
+        return Ok(Vec::new());
+    }
+    if index.atom_offset_count() != index.atom_key_count() + 1
+        || index.atom_offset(0) != Some(0)
+        || index.atom_offset(index.atom_key_count()) != Some(index.atom_posting_bytes() as u32)
+    {
+        return Err("L2 typed atom key or offset section is invalid".to_string());
+    }
+    let mut previous_key = None;
+    let mut atom_degrees = Vec::with_capacity(index.atom_key_count());
+    for atom_index in 0..index.atom_key_count() {
+        let atom = index
+            .atom_key(atom_index)
+            .ok_or_else(|| format!("L2 typed atom key {atom_index} is missing"))?;
+        let start = index
+            .atom_offset(atom_index)
+            .ok_or_else(|| "L2 typed atom offset is missing".to_string())?
+            as usize;
+        let end = index
+            .atom_offset(atom_index + 1)
+            .ok_or_else(|| "L2 typed atom offset is missing".to_string())?
+            as usize;
+        if previous_key.is_some_and(|previous| previous >= atom)
+            || atom_weight(atom) == 0
+            || start >= end
+            || end > index.atom_posting_bytes()
+        {
+            return Err("L2 typed atom key or offset section is invalid".to_string());
+        }
+        let posting = index
+            .atom_posting_slice(start, end)
+            .ok_or_else(|| format!("L2 typed atom posting {atom_index} is out of range"))?;
+        let mut previous_lemma = None;
+        let mut degree = 0_u32;
+        decode_delta_postings(posting, |lemma_id| {
+            degree = degree.saturating_add(1);
+            if lemma_id as usize >= index.lemma_count()
+                || previous_lemma.is_some_and(|previous| previous >= lemma_id)
+            {
+                previous_lemma = Some(u32::MAX);
+            } else {
+                previous_lemma = Some(lemma_id);
+            }
+        })?;
+        if previous_lemma.is_none() || previous_lemma == Some(u32::MAX) {
+            return Err(format!("L2 typed atom posting {atom_index} is invalid"));
+        }
+        atom_degrees.push(degree);
+        previous_key = Some(atom);
+    }
+    Ok(atom_degrees)
 }
 
 fn merge_lemma_matches(

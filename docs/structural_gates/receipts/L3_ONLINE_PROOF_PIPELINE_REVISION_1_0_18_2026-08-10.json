@@ -1,0 +1,142 @@
+{
+  "kind": "l3_online_proof_pipeline_revision_live_gate",
+  "experiment_date": "2026-08-10",
+  "release": "1.0.18",
+  "proof_pipeline_revision": 1,
+  "defect": "a pending relation which had already produced WATCH was not retried after general compiler and proof semantics improved until a fourth independent episode arrived",
+  "migration": {
+    "trigger": "stored proof_pipeline_revision differs from the compiled revision",
+    "changed_fields": [
+      "proof_pipeline_revision",
+      "pending[*].last_attempted_episodes"
+    ],
+    "preserved_fields": [
+      "source cursor and journal overlap state",
+      "generation",
+      "admitted delta count",
+      "pending relation evidence",
+      "independent episode IDs",
+      "distinct scenes",
+      "feedback counters"
+    ],
+    "thresholds_lowered": false,
+    "one_time_retry": true
+  },
+  "focused_tests": {
+    "passed": 25,
+    "failed": 0,
+    "filtered_out": 15
+  },
+  "isolated_frozen_retry": {
+    "live_state_modified": false,
+    "before": {
+      "generation": 3,
+      "targeted_verdict": "PASS",
+      "full_differential_verdict": "WATCH"
+    },
+    "after": {
+      "generation": 4,
+      "targeted_verdict": "PASS",
+      "full_differential_verdict": "PASS",
+      "lost_target_profiles": 0,
+      "lost_supports": 0,
+      "lost_top1": 0,
+      "new_false_supports": 0,
+      "new_false_top1": 0
+    }
+  },
+  "live_cutover": {
+    "state_before": {
+      "proof_pipeline_revision": 0,
+      "generation": 2,
+      "admitted_deltas": 0,
+      "pending_relations": 30,
+      "eligible_relations": 1,
+      "eligible_last_attempted_episodes": 2
+    },
+    "state_after": {
+      "proof_pipeline_revision": 1,
+      "generation": 3,
+      "admitted_deltas": 1,
+      "pending_relations": 29
+    },
+    "targeted": {
+      "heldout_rows": 7,
+      "improve_cases": 2,
+      "improve_unique_top1": 2,
+      "safety_cases": 5,
+      "safety_passed": 5,
+      "false_supports": 0,
+      "target_failures": 0,
+      "regressions": 0,
+      "verdict": "PASS"
+    },
+    "frozen_differential": {
+      "source_cap_fragments": 80000,
+      "heldout_fragments": 15704,
+      "lattice_transitions": 50592,
+      "compared_transitions": 41064,
+      "baseline_target_profiles": 41064,
+      "candidate_target_profiles": 41064,
+      "baseline_supports": 1808,
+      "candidate_supports": 1808,
+      "baseline_top1": 1754,
+      "candidate_top1": 1754,
+      "lost_target_profiles": 0,
+      "lost_supports": 0,
+      "lost_top1": 0,
+      "new_false_supports": 0,
+      "new_false_top1": 0,
+      "verdict": "PASS"
+    },
+    "started_at": "2026-08-10T05:00:17.569526+03:00",
+    "admitted_at": "2026-08-10T05:03:09.816042+03:00",
+    "wall_seconds": 172.247,
+    "observed_learner_rss_kib": 226372,
+    "observed_learner_cpu_percent": 487,
+    "global_ibus_pid_before": 3702,
+    "global_ibus_pid_after": 3702,
+    "managed_ibus_engine_pid_before": 3950397,
+    "managed_ibus_engine_pid_after": 3950397
+  },
+  "published_field": {
+    "delta_bytes": 4372,
+    "delta_sha256": "3dca1e61369d15490ee97a4ce54f401fb32de4c64bd256f5cd801ed234272cf6",
+    "compact_base_bytes": 30784516,
+    "compact_base_sha256": "c293ee3d59b18c485414f6adbc70744c14fb9201ad0d12638cd5c3c0b81ec575",
+    "manifest_bytes": 97,
+    "manifest_sha256": "7872b3cf3104b5c1c4ab377903d6507a8e49e86e60dee6d17c88d74f98d4a1d9",
+    "manifest_base": "l3-online/compact-base-b.nwpc",
+    "manifest_delta_count": 0,
+    "full_corpus_recompiled": false
+  },
+  "proof_sources": {
+    "fixed_corpus_sha256": "56243b510c93930632c069d440d49c49a5ec58422d622523a0d5130dd085eac7",
+    "surface_evidence_sha256": "9aef85b94831ea72e5027816f9a8258ef3039d218bfc20459a664259cd120673"
+  },
+  "live_receipts": {
+    "targeted_path": "/home/ubu/.local/share/lay/nanda_wave/l3-online/delta-00000003-1786327217.targeted-proof.json",
+    "targeted_sha256": "485ddce8a6b9f334a57362821d158aa5d5c05cfd5416e6b28ffa9cf90174d900",
+    "full_path": "/home/ubu/.local/share/lay/nanda_wave/l3-online/delta-00000003-1786327217.full-proof.json",
+    "full_sha256": "120cbe9164d55ff36d541b8fcf4078a67fc1040fdd77a517e39854c666965685"
+  },
+  "remote_release_build": {
+    "host": "e@192.168.3.94",
+    "cargo_jobs": 20,
+    "cargo_version": "1.97.1",
+    "elapsed_seconds": 141.56,
+    "average_cpu_percent": 358,
+    "peak_rss_kib": 1776368,
+    "swaps": 0,
+    "exit_status": 0
+  },
+  "runtime_authority_changed": false,
+  "runtime_ranking_evidence_changed": true,
+  "not_tested": [
+    "physical candidate output after an in-process daemon or IBus manifest refresh",
+    "L1.1 and L2 quality, package, RSS, or latency gates",
+    "cross-scene L4 promotion",
+    "physical application matrix"
+  ],
+  "verdict": "PASS_LIVE_ADMISSION_AND_PUBLICATION"
+}
