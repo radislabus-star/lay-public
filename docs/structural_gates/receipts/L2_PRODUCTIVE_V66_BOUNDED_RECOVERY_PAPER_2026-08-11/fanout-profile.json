@@ -1,0 +1,45 @@
+{
+  "kind": "l2_productive_v66_anchor_recovery_fanout_profile",
+  "status": "MEASURED_READ_ONLY",
+  "measured_on": "e-MEGA-MINI-M1-13th",
+  "source": {
+    "path": "/home/e/projects/lay-productive-v1-build-20260811/out/LAY-L2-PRODUCTIVE-PARADIGM-V1-SHADOW-V65.p2r",
+    "bytes": 3514208,
+    "sha256": "744a11a8c88921bc3b63899840982ecadc3260485808dd60ea4858bcd54a8436"
+  },
+  "parser": {
+    "byte_order": "little-endian",
+    "header_format": "<8sHHIQQQQQQIIIIIHHHHQ",
+    "index_record_format": "<HHIII",
+    "percentile_method": "nearest-rank"
+  },
+  "counts": {
+    "index_records": 159,
+    "posting_records": 36915
+  },
+  "posting_fanout": {
+    "min": 1,
+    "p50": 211,
+    "p75": 271,
+    "p90": 386,
+    "p95": 418,
+    "p99": 543,
+    "max": 641,
+    "mean": 232.17
+  },
+  "integrity": {
+    "sum_fanout_equals_posting_count": true,
+    "contiguous_posting_ranges": true
+  },
+  "tested": [
+    "all 159 V65 recovery index records",
+    "posting range contiguity",
+    "posting count conservation"
+  ],
+  "not_tested": [
+    "post-intersection eligible paradigm counts",
+    "post-dedup reverse execution counts",
+    "V66 latency or quality"
+  ],
+  "runtime_authority_changed": false
+}

@@ -131,6 +131,109 @@ pub(crate) fn parse_features(raw: &str) -> Result<u32, String> {
     Ok(features)
 }
 
+pub(crate) fn canonical_feature_labels(features: u32) -> Result<Vec<&'static str>, String> {
+    if !valid_feature_shape(features) || (features & POS_MASK).count_ones() != 1 {
+        return Err("cannot decode an invalid canonical morphology feature mask".to_string());
+    }
+    let mut labels = Vec::new();
+    let one = |mask: u32, values: &[(u32, &'static str)]| -> Result<Option<&'static str>, String> {
+        let present = values
+            .iter()
+            .filter_map(|(bit, label)| (mask & *bit != 0).then_some(*label))
+            .collect::<Vec<_>>();
+        if present.len() > 1 {
+            return Err("canonical morphology mask repeats one typed axis".to_string());
+        }
+        Ok(present.first().copied())
+    };
+    labels.push(match features & POS_MASK {
+        POS_NOUN => "noun",
+        POS_VERB => "verb",
+        POS_ADJECTIVE => "adj",
+        POS_PRONOUN => "pron",
+        _ => return Err("canonical morphology mask has no POS".to_string()),
+    });
+    for label in [
+        one(
+            features & NUMBER_MASK,
+            &[(NUMBER_SINGULAR, "sg"), (NUMBER_PLURAL, "pl")],
+        )?,
+        one(
+            features & IMPERATIVE_KIND_MASK,
+            &[
+                (IMPERATIVE_INCLUSIVE, "imp_incl"),
+                (IMPERATIVE_EXCLUSIVE, "imp_excl"),
+            ],
+        )?,
+        one(
+            features & CASE_MASK,
+            &[
+                (CASE_NOMINATIVE, "nom"),
+                (CASE_GENITIVE, "gen"),
+                (CASE_DATIVE, "dat"),
+                (CASE_ACCUSATIVE, "acc"),
+                (CASE_INSTRUMENTAL, "ins"),
+                (CASE_PREPOSITIONAL, "prep"),
+                (CASE_PARTITIVE, "part"),
+                (CASE_SECOND_LOCATIVE, "loc2"),
+                (CASE_VOCATIVE, "voc"),
+            ],
+        )?,
+        one(
+            features & GENDER_MASK,
+            &[
+                (GENDER_MASCULINE, "masc"),
+                (GENDER_FEMININE, "fem"),
+                (GENDER_NEUTER, "neut"),
+            ],
+        )?,
+        one(
+            features & PERSON_MASK,
+            &[
+                (PERSON_FIRST, "p1"),
+                (PERSON_SECOND, "p2"),
+                (PERSON_THIRD, "p3"),
+            ],
+        )?,
+        one(
+            features & TENSE_MASK,
+            &[
+                (TENSE_PAST, "past"),
+                (TENSE_PRESENT, "pres"),
+                (TENSE_FUTURE, "fut"),
+            ],
+        )?,
+        one(
+            features & MOOD_MASK,
+            &[(MOOD_INDICATIVE, "ind"), (MOOD_IMPERATIVE, "imp")],
+        )?,
+        one(
+            features & ASPECT_MASK,
+            &[(ASPECT_PERFECTIVE, "perf"), (ASPECT_IMPERFECTIVE, "imperf")],
+        )?,
+    ]
+    .into_iter()
+    .flatten()
+    {
+        labels.push(label);
+    }
+    if features & FORM_KIND_A != 0 {
+        labels.push(match features & POS_MASK {
+            POS_VERB => "inf",
+            POS_ADJECTIVE => "short",
+            _ => return Err("canonical morphology form-kind A has no typed label".to_string()),
+        });
+    }
+    if features & FORM_KIND_B != 0 {
+        labels.push(match features & POS_MASK {
+            POS_VERB => "ger",
+            POS_ADJECTIVE => "comp",
+            _ => return Err("canonical morphology form-kind B has no typed label".to_string()),
+        });
+    }
+    Ok(labels)
+}
+
 pub(crate) fn feature_primary_pos(features: u32) -> u16 {
     match features & POS_MASK {
         POS_NOUN => 1,
@@ -147,6 +250,60 @@ pub(crate) fn contextual_slot_features(features: u32) -> u32 {
     } else {
         features
     }
+}
+
+pub(crate) fn productive_context_slot_features(features: u32) -> u32 {
+    if matches!(features & POS_MASK, POS_NOUN | POS_PRONOUN) {
+        return features & CASE_MASK;
+    }
+    features
+        & (NUMBER_MASK
+            | IMPERATIVE_KIND_MASK
+            | CASE_MASK
+            | GENDER_MASK
+            | PERSON_MASK
+            | TENSE_MASK
+            | MOOD_MASK
+            | FORM_KIND_A
+            | FORM_KIND_B)
+}
+
+pub(crate) fn productive_neighbor_context_slot_features(features: u32) -> u32 {
+    match features & POS_MASK {
+        POS_NOUN | POS_ADJECTIVE | POS_PRONOUN => features & CASE_MASK,
+        POS_VERB => features & (NUMBER_MASK | PERSON_MASK | IMPERATIVE_KIND_MASK),
+        _ => 0,
+    }
+}
+
+pub(crate) fn productive_source_priority(features: u32) -> u8 {
+    let base = match features & POS_MASK {
+        POS_NOUN
+            if features & NUMBER_MASK == NUMBER_SINGULAR
+                && features & CASE_MASK == CASE_NOMINATIVE =>
+        {
+            0
+        }
+        POS_VERB if features & FORM_KIND_A != 0 => 0,
+        POS_ADJECTIVE
+            if features & NUMBER_MASK == NUMBER_SINGULAR
+                && features & CASE_MASK == CASE_NOMINATIVE
+                && features & GENDER_MASK == GENDER_MASCULINE =>
+        {
+            0
+        }
+        POS_PRONOUN
+            if features & NUMBER_MASK == NUMBER_SINGULAR
+                && features & CASE_MASK == CASE_NOMINATIVE =>
+        {
+            0
+        }
+        POS_NOUN if features & NUMBER_MASK == NUMBER_SINGULAR => 1,
+        POS_ADJECTIVE if features & NUMBER_MASK == NUMBER_SINGULAR => 1,
+        POS_PRONOUN if features & CASE_MASK == CASE_NOMINATIVE => 1,
+        _ => 2,
+    };
+    base
 }
 
 pub(crate) fn same_inclusive_imperative_family(left: u32, right: u32) -> bool {
@@ -301,5 +458,37 @@ mod tests {
             parse_features("verb:fut:ind:p1:sg:imperf").expect("future first singular");
         assert!(same_finite_agreement_family(future, imperative));
         assert!(!same_finite_agreement_family(future, first_person));
+    }
+
+    #[test]
+    fn productive_noun_context_controls_case_without_inventing_number_authority() {
+        let genitive_singular = parse_features("noun:gen:sg").expect("genitive singular");
+        let genitive_plural = parse_features("noun:gen:pl").expect("genitive plural");
+        let dative_singular = parse_features("noun:dat:sg").expect("dative singular");
+
+        assert_eq!(
+            productive_context_slot_features(genitive_singular),
+            productive_context_slot_features(genitive_plural)
+        );
+        assert_ne!(
+            productive_context_slot_features(genitive_singular),
+            productive_context_slot_features(dative_singular)
+        );
+    }
+
+    #[test]
+    fn productive_neighbor_context_does_not_invent_adjective_agreement_axes() {
+        let singular = parse_features("adj:ins:sg:masc").expect("singular adjective");
+        let plural = parse_features("adj:ins:pl").expect("plural adjective");
+        let dative = parse_features("adj:dat:sg:masc").expect("dative adjective");
+
+        assert_eq!(
+            productive_neighbor_context_slot_features(singular),
+            productive_neighbor_context_slot_features(plural)
+        );
+        assert_ne!(
+            productive_neighbor_context_slot_features(singular),
+            productive_neighbor_context_slot_features(dative)
+        );
     }
 }

@@ -61,10 +61,11 @@ impl TransitionDecisionCore {
         if limit == 0 {
             return Vec::new();
         }
-        let proposals = proposals
+        let mut proposals = proposals
             .into_iter()
             .filter(|proposal| Self::admit_live_completion(proposal).visible())
             .collect::<Vec<_>>();
+        retain_settled_state_continuations(&mut proposals);
         // This route only exposes display candidates. L4 attraction/repulsion
         // has already contributed to `rank_score`; mutation-oriented hidden
         // state must not erase a grounded L1.1/L2 candidate. The separate
@@ -201,6 +202,45 @@ impl TransitionDecisionCore {
     }
 }
 
+fn retain_settled_state_continuations(proposals: &mut Vec<LiveCompletionProposal>) {
+    let unique_grounded_single_suffix = {
+        let mut suffixes = proposals
+            .iter()
+            .filter(|proposal| {
+                proposal.partial_state_known
+                    && proposal.active_composition
+                    && proposal.partial_len > 3
+                    && !independent_continuation_evidence(proposal)
+                    && proposal.suffix_len == 1
+                    && proposal.l2_center_grounded
+                    && proposal.completed_state_known
+            })
+            .map(|proposal| proposal.suffix.as_str())
+            .collect::<HashSet<_>>();
+        (suffixes.len() == 1)
+            .then(|| suffixes.drain().next().map(str::to_owned))
+            .flatten()
+    };
+
+    proposals.retain(|proposal| {
+        !proposal.partial_state_known
+            || !proposal.active_composition
+            || proposal.partial_len <= 3
+            || independent_continuation_evidence(proposal)
+            || (proposal.suffix_len == 1
+                && unique_grounded_single_suffix.as_deref() == Some(proposal.suffix.as_str()))
+    });
+}
+
+fn independent_continuation_evidence(candidate: &LiveCompletionProposal) -> bool {
+    candidate.context_birth
+        || candidate.l3_memory_supported
+        || candidate.context_usage >= 0.018
+        || candidate.accepted >= 1
+        || (candidate.l4_transition_state_specific
+            && candidate.l4_transition_attract_count > candidate.l4_transition_repel_count)
+}
+
 #[cfg(test)]
 pub(crate) fn live_completion_has_authority(candidate: &LiveCompletionProposal) -> bool {
     TransitionDecisionCore::admit_live_completion(candidate).candidate_visible
@@ -306,6 +346,40 @@ mod tests {
             .iter()
             .any(|candidate| candidate.surface == "exact-continuation"));
         assert!(selected.iter().any(|candidate| candidate.suffix.is_empty()));
+    }
+
+    #[test]
+    fn settled_exact_state_abstains_on_competing_unconfirmed_endings() {
+        let mut first = completion("center-a", "а", 0.8);
+        first.partial_state_known = true;
+        let mut second = completion("center-b", "б", 0.7);
+        second.partial_state_known = true;
+
+        let selected = TransitionDecisionCore::select_live_completions(vec![first, second], 8);
+
+        assert!(selected.is_empty());
+    }
+
+    #[test]
+    fn settled_exact_state_keeps_a_unique_grounded_ending() {
+        let mut proposal = completion("center-a", "а", 0.8);
+        proposal.partial_state_known = true;
+
+        let selected = TransitionDecisionCore::select_live_completions(vec![proposal], 8);
+
+        assert_eq!(selected.len(), 1);
+    }
+
+    #[test]
+    fn settled_exact_state_keeps_independently_supported_continuation() {
+        let mut proposal = completion("center-a", "ending", 0.8);
+        proposal.partial_state_known = true;
+        proposal.context_birth = true;
+        proposal.l3_memory_supported = true;
+
+        let selected = TransitionDecisionCore::select_live_completions(vec![proposal], 8);
+
+        assert_eq!(selected.len(), 1);
     }
 
     #[test]

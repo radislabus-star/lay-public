@@ -1,0 +1,53 @@
+{
+  "kind": "l2_productive_v1_transition_induction_v48",
+  "date": "2026-08-11",
+  "verdict": "PASS_scoped_bounded_transition_induction_and_compatibility",
+  "runtime_authority_changed": false,
+  "tested": [
+    "explicit morphology axis labels and POS applicability masks are canonical, fingerprinted, complete, and reject missing or unused values",
+    "canonical anchors emit exact scalar edit templates for every reduced TRAIN form",
+    "transition observations are externally sorted under fixed record, buffer, and open-run limits",
+    "transfer support counts distinct TRAIN lemma identities without retaining a whole transition group in memory",
+    "support is externally merge-joined back to transitions and records are externally resorted by numeric lemma identity",
+    "nontransferable observations reconstruct as lemma-local exact allomorph programs",
+    "equivalent sorted transition sets receive one canonical paradigm identity",
+    "paradigm bindings are emitted streaming without retaining a mass-paradigm lemma vector",
+    "compatibility index and postings are canonical and bounded",
+    "productive trie terminal surface ownership uses generated path output instead of a duplicated decoder segment"
+  ],
+  "measured_facts": {
+    "productive_v1_tests_passed": 50,
+    "productive_v1_tests_failed": 0,
+    "micro_train_lemmas": 300,
+    "micro_transition_observations": 600,
+    "micro_transferable_observations": 600,
+    "micro_paradigms": 1,
+    "micro_bindings": 300,
+    "micro_compatibility_index_rows": 1,
+    "micro_compatibility_postings": 1,
+    "numeric_sort_test_crosses_lemma_id": 255,
+    "cargo_target_bytes_after_gate": 8139276288,
+    "cargo_target_budget_bytes": 12884901888
+  },
+  "not_tested": [
+    "full-corpus one-raw-pass compilation",
+    "corpus-trained Productive V1 package sections",
+    "context evidence fitting and disjoint calibration replay",
+    "fixed 13-class V39 candidate identity and order parity",
+    "seen, slot-heldout, lemma-heldout, ambiguity, false-authority, and false-singleton proof denominators",
+    "composite 32 grounded plus 32 productive lattice and L3 handoff",
+    "remote package bytes, cold publish, steady or peak RSS, hot p99, and physical product matrix"
+  ],
+  "commands": [
+    "scripts/cargo-guard.sh test --lib productive_v1::transition_reduce::",
+    "scripts/cargo-guard.sh test --lib productive_v1::",
+    "scripts/cargo-guard.sh --status"
+  ],
+  "source": [
+    "src/nanda_wave/l2_field/productive_v1/induce.rs",
+    "src/nanda_wave/l2_field/productive_v1/transition_reduce.rs",
+    "src/nanda_wave/l2_field/productive_v1/records.rs",
+    "src/nanda_wave/l2_field/productive_v1/format_validation.rs",
+    "docs/l2-productive-paradigm-field-paper-implementation.md"
+  ]
+}

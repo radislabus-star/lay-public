@@ -12,7 +12,7 @@ use super::engine::{
     LayIbusEngine, PendingSystemOutcomeFeedback, RecentCommittedTailReplace,
     SurroundingTextSnapshot,
 };
-use super::protocol::Shared;
+use super::protocol::{Shared, KEY_LEFT, KEY_RIGHT, RELEASE_MASK};
 use super::text::make_ibus_text;
 use super::trace;
 
@@ -64,6 +64,8 @@ pub(crate) struct CommittedTailReplaceRequest {
     pub(crate) intent: TextTransitionIntent,
     pub(crate) suppress_next_autocorrect: bool,
     pub(crate) expected_tail: Option<VisibleTailSnapshot>,
+    boundary_elided_external_snapshot: bool,
+    causal_precondition_external_snapshot: Option<String>,
     /// Authority selected before this adapter boundary. When present, the
     /// committed-tail backend must preserve this exact action after structural
     /// verification instead of reconstructing a replacement from strings.
@@ -87,6 +89,8 @@ impl CommittedTailReplaceRequest {
             intent: TextTransitionIntent::ImeAutocorrect,
             suppress_next_autocorrect: false,
             expected_tail: None,
+            boundary_elided_external_snapshot: false,
+            causal_precondition_external_snapshot: None,
             winner_action: None,
             outcome_feedback: None,
             layout_postcondition_owner: LayoutPostconditionOwner::Ime,
@@ -105,6 +109,8 @@ impl CommittedTailReplaceRequest {
             intent: TextTransitionIntent::ImeManualToggle,
             suppress_next_autocorrect,
             expected_tail: None,
+            boundary_elided_external_snapshot: false,
+            causal_precondition_external_snapshot: None,
             winner_action: None,
             outcome_feedback: None,
             layout_postcondition_owner: LayoutPostconditionOwner::Ime,
@@ -119,6 +125,8 @@ impl CommittedTailReplaceRequest {
             intent: TextTransitionIntent::ImeAutoUndo,
             suppress_next_autocorrect: true,
             expected_tail: None,
+            boundary_elided_external_snapshot: false,
+            causal_precondition_external_snapshot: None,
             winner_action: None,
             outcome_feedback: None,
             layout_postcondition_owner: LayoutPostconditionOwner::Ime,
@@ -137,6 +145,8 @@ impl CommittedTailReplaceRequest {
             intent: TextTransitionIntent::DaemonBridge,
             suppress_next_autocorrect,
             expected_tail: None,
+            boundary_elided_external_snapshot: false,
+            causal_precondition_external_snapshot: None,
             winner_action: None,
             outcome_feedback: None,
             layout_postcondition_owner: LayoutPostconditionOwner::Caller,
@@ -145,6 +155,19 @@ impl CommittedTailReplaceRequest {
 
     pub(crate) fn with_expected_tail(mut self, expected_tail: VisibleTailSnapshot) -> Self {
         self.expected_tail = Some(expected_tail);
+        self
+    }
+
+    pub(crate) fn with_boundary_elided_external_snapshot(mut self, allowed: bool) -> Self {
+        self.boundary_elided_external_snapshot = allowed;
+        self
+    }
+
+    pub(crate) fn with_causal_precondition_external_snapshot(
+        mut self,
+        precondition: String,
+    ) -> Self {
+        self.causal_precondition_external_snapshot = Some(precondition);
         self
     }
 
@@ -210,6 +233,7 @@ impl LayIbusEngine {
             preedit_candidate_index: 0,
             preedit_fast: Default::default(),
             preedit_dirty: false,
+            pending_passthrough_preedit_clear: false,
             cursor_cell_width: 0,
             surrounding_text_supported: false,
             surrounding_text_snapshot: None,
@@ -246,6 +270,7 @@ impl LayIbusEngine {
         self.preedit_candidate_index = 0;
         self.preedit_fast.clear_candidate_tracking();
         self.preedit_dirty = false;
+        self.pending_passthrough_preedit_clear = false;
         self.last_shift_release_at = None;
         if !preserve_tail {
             self.last_tail_input_at = None;
@@ -294,6 +319,7 @@ impl LayIbusEngine {
         self.preedit_candidate_index = 0;
         self.preedit_fast.reset();
         self.preedit_dirty = false;
+        self.pending_passthrough_preedit_clear = false;
         self.last_shift_release_at = None;
         self.recent_committed_tail_replace = None;
         self.shift_used_as_modifier = false;
@@ -322,11 +348,14 @@ impl LayIbusEngine {
         let source = request.source;
         let backspaces = request.backspaces;
         let intent = request.intent;
+        let boundary_elided_external_snapshot = request.boundary_elided_external_snapshot;
+        let causal_precondition_external_snapshot =
+            request.causal_precondition_external_snapshot.clone();
         if !matches!(
             intent,
             TextTransitionIntent::ImeAutocorrect | TextTransitionIntent::ImeAutoUndo
         ) {
-            self.clear_pending_ime_auto_undo();
+            self.clear_pending_ime_auto_undo("non_undo_committed_tail_replace");
         }
         let suppress_next_autocorrect = request.suppress_next_autocorrect;
         let ime_owns_layout_postcondition = request.ime_owns_layout_postcondition();
@@ -339,13 +368,26 @@ impl LayIbusEngine {
         let mut visible_state =
             VisibleFieldState::committed_tail(self.tail_buffer.clone(), Some(self.path.clone()))
                 .with_epoch(self.tail_epoch);
-        if let Some((external_tail, has_selection)) = committed_tail_external_observation(
+        if let Some(observation) = committed_tail_external_observation(
             source,
+            intent,
             self.surrounding_text_snapshot.as_ref(),
+            &self.tail_buffer,
             backspaces as usize,
+            boundary_elided_external_snapshot,
+            causal_precondition_external_snapshot.as_deref(),
         ) {
-            visible_state =
-                visible_state.with_external_tail_before_cursor(external_tail, has_selection);
+            visible_state = if observation.trailing_boundary_elided {
+                visible_state.with_boundary_elided_external_tail_before_cursor(
+                    observation.tail_before_cursor,
+                    observation.has_selection,
+                )
+            } else {
+                visible_state.with_external_tail_before_cursor(
+                    observation.tail_before_cursor,
+                    observation.has_selection,
+                )
+            };
         }
         let transition_candidate = LatentTextTransitionCandidate::new(
             source,
@@ -410,6 +452,7 @@ impl LayIbusEngine {
         } else {
             structural_action
         };
+        let logical_text = edit_action.to_text().to_string();
         lay::action_log::record_candidate_edit_action_before_apply(
             &edit_action,
             lay::action_log::MutationLogRoute::IME_COMMITTED_TAIL,
@@ -436,7 +479,7 @@ impl LayIbusEngine {
             );
             return Ok(false);
         };
-        if authorized_plan.backspaces != backspaces || authorized_plan.insert != plan.insert {
+        if authorized_plan != &plan {
             trace::record_committed_tail_replace(
                 source,
                 "authorized_edit_plan_mismatch",
@@ -445,9 +488,10 @@ impl LayIbusEngine {
             );
             return Ok(false);
         }
+        let surrounding_postcondition_available = self.surrounding_text_supported;
         let output_profile = CommittedTailOutputProfile::select(
             self.cursor_cell_width,
-            self.surrounding_text_supported,
+            surrounding_postcondition_available,
             backspaces,
         );
         if !output_profile.can_execute() {
@@ -460,6 +504,17 @@ impl LayIbusEngine {
             );
             return Ok(false);
         }
+        if (authorized_plan.move_left != 0 || authorized_plan.move_right != 0)
+            && output_profile != CommittedTailOutputProfile::SurroundingText
+        {
+            trace::record_committed_tail_replace(
+                source,
+                "cursor_plan_requires_surrounding_text",
+                backspaces,
+                &logical_text,
+            );
+            return Ok(false);
+        }
         let text = authorized_plan.insert.clone();
         let now = Instant::now();
         self.last_commit_at = Some(now);
@@ -468,8 +523,13 @@ impl LayIbusEngine {
             self.suppress_next_committed_tail_autocorrect = true;
             self.publish_autocorrect_suppression_handoff();
         }
-        if self.should_skip_duplicate_committed_tail_replace(backspaces, &text, now) {
-            trace::record_committed_tail_replace(source, "duplicate_skip", backspaces, &text);
+        if self.should_skip_duplicate_committed_tail_replace(backspaces, &logical_text, now) {
+            trace::record_committed_tail_replace(
+                source,
+                "duplicate_skip",
+                backspaces,
+                &logical_text,
+            );
             return Ok(true);
         }
         let total_started = Instant::now();
@@ -477,16 +537,21 @@ impl LayIbusEngine {
         self.clear_preedit(emitter).await?;
         let clear_us = clear_started.elapsed().as_micros();
         let output_route = output_profile.output_route();
-        trace::record_committed_tail_replace(source, output_route, backspaces, &text);
+        trace::record_committed_tail_replace(source, output_route, backspaces, &logical_text);
         let mut delete_us = 0;
         let commit_text = if output_profile.uses_terminal_erase() {
             terminal_erase_prefix(backspaces) + &text
         } else {
+            forward_cursor_steps(emitter, KEY_LEFT, authorized_plan.move_left).await?;
             let delete_started = Instant::now();
-            if backspaces > 0 {
-                Self::delete_surrounding_text(emitter, -(backspaces as i32), backspaces)
-                    .await
-                    .map_err(|e| fdo::Error::Failed(e.to_string()))?;
+            if authorized_plan.backspaces > 0 {
+                Self::delete_surrounding_text(
+                    emitter,
+                    -(authorized_plan.backspaces as i32),
+                    authorized_plan.backspaces,
+                )
+                .await
+                .map_err(|e| fdo::Error::Failed(e.to_string()))?;
             }
             delete_us = delete_started.elapsed().as_micros();
             text.clone()
@@ -497,6 +562,7 @@ impl LayIbusEngine {
                 .await
                 .map_err(|e| fdo::Error::Failed(e.to_string()))?;
         }
+        forward_cursor_steps(emitter, KEY_RIGHT, authorized_plan.move_right).await?;
         let commit_us = commit_started.elapsed().as_micros();
         let state_started = Instant::now();
         for _ in 0..backspaces {
@@ -504,20 +570,27 @@ impl LayIbusEngine {
             self.preedit_fast.backspace();
         }
         self.surrounding_text_snapshot = None;
-        self.tail_buffer.push_str(&text);
+        self.tail_buffer.push_str(&logical_text);
         self.preedit_fast.reset();
-        for ch in text.chars() {
+        for ch in logical_text.chars() {
             self.preedit_fast.push(ch);
         }
-        if text.chars().last().is_some_and(char::is_whitespace) {
+        if logical_text.chars().last().is_some_and(char::is_whitespace) {
             self.word_input_mode = None;
         }
         self.publish_tail_handoff();
         self.buffer.clear();
         self.composition_cursor = 0;
         self.clear_preedit_completion_state();
-        if ime_owns_layout_postcondition {
-            self.sync_layout_after_committed_text(&text);
+        let deferred_layout_sync_text = (ime_owns_layout_postcondition
+            && surrounding_postcondition_available)
+            .then(|| logical_text.clone());
+        trace::record(format!(
+            r#"{{"kind":"ibus_layout_postcondition_route","intent":"{intent:?}","surrounding_dispatch":{surrounding_postcondition_available},"deferred":{}}}"#,
+            deferred_layout_sync_text.is_some(),
+        ));
+        if ime_owns_layout_postcondition && deferred_layout_sync_text.is_none() {
+            self.sync_layout_after_committed_text(&logical_text, "committed_tail_immediate");
         }
         let state_us = state_started.elapsed().as_micros();
         trace::record_committed_tail_replace_timing(
@@ -531,10 +604,16 @@ impl LayIbusEngine {
         );
         self.recent_committed_tail_replace = Some(RecentCommittedTailReplace {
             backspaces,
-            text,
+            text: logical_text,
             at: now,
         });
-        self.arm_visible_postcondition_with_feedback(now, outcome_feedback);
+        if surrounding_postcondition_available {
+            self.arm_visible_postcondition_from_surrounding_dispatch(
+                now,
+                outcome_feedback,
+                deferred_layout_sync_text,
+            );
+        }
         Ok(true)
     }
 
@@ -556,22 +635,122 @@ impl LayIbusEngine {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct CommittedTailExternalObservation {
+    tail_before_cursor: Option<String>,
+    has_selection: bool,
+    trailing_boundary_elided: bool,
+}
+
 fn committed_tail_external_observation(
     source: VisibleTailSource,
+    intent: TextTransitionIntent,
     snapshot: Option<&SurroundingTextSnapshot>,
+    visible_tail: &str,
     backspaces: usize,
-) -> Option<(Option<String>, bool)> {
+    allow_trailing_boundary_elision: bool,
+    causal_precondition: Option<&str>,
+) -> Option<CommittedTailExternalObservation> {
     let snapshot = snapshot?;
+    if intent == TextTransitionIntent::ImeAutoUndo
+        && !snapshot.has_selection()
+        && causal_precondition.is_some_and(|precondition| {
+            matches!(
+                surrounding_snapshot_match_for_suffix(snapshot, precondition),
+                ExternalSuffixMatch::Exact | ExternalSuffixMatch::TrailingBoundaryElided
+            )
+        })
+    {
+        trace::record(
+            r#"{"kind":"ibus_auto_undo_authority","evidence":"causal_precondition_snapshot"}"#,
+        );
+        return None;
+    }
     if source == VisibleTailSource::ImeCommittedTail
         && snapshot.text.is_empty()
         && !snapshot.has_selection()
     {
         return None;
     }
-    Some((
-        snapshot.suffix_before_cursor(backspaces),
-        snapshot.has_selection(),
-    ))
+
+    if allow_trailing_boundary_elision
+        && source == VisibleTailSource::ImeCommittedTail
+        && intent == TextTransitionIntent::ImeAutoUndo
+        && !snapshot.has_selection()
+    {
+        let without_boundary = visible_tail.trim_end_matches(char::is_whitespace);
+        let boundary_chars = visible_tail
+            .chars()
+            .count()
+            .saturating_sub(without_boundary.chars().count());
+        if boundary_chars > 0
+            && backspaces > boundary_chars
+            && snapshot
+                .suffix_before_cursor(without_boundary.chars().count())
+                .as_deref()
+                == Some(without_boundary)
+        {
+            return Some(CommittedTailExternalObservation {
+                tail_before_cursor: snapshot.suffix_before_cursor(backspaces - boundary_chars),
+                has_selection: false,
+                trailing_boundary_elided: true,
+            });
+        }
+    }
+
+    Some(CommittedTailExternalObservation {
+        tail_before_cursor: snapshot.suffix_before_cursor(backspaces),
+        has_selection: snapshot.has_selection(),
+        trailing_boundary_elided: false,
+    })
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum ExternalSuffixMatch {
+    Exact,
+    TrailingBoundaryElided,
+    Missing,
+}
+
+fn surrounding_snapshot_match_for_suffix(
+    snapshot: &SurroundingTextSnapshot,
+    expected_suffix: &str,
+) -> ExternalSuffixMatch {
+    if snapshot
+        .suffix_before_cursor(expected_suffix.chars().count())
+        .as_deref()
+        == Some(expected_suffix)
+    {
+        return ExternalSuffixMatch::Exact;
+    }
+    let without_boundary = expected_suffix.trim_end_matches(char::is_whitespace);
+    if without_boundary.len() != expected_suffix.len()
+        && !without_boundary.is_empty()
+        && snapshot
+            .suffix_before_cursor(without_boundary.chars().count())
+            .as_deref()
+            == Some(without_boundary)
+    {
+        ExternalSuffixMatch::TrailingBoundaryElided
+    } else {
+        ExternalSuffixMatch::Missing
+    }
+}
+
+async fn forward_cursor_steps(
+    emitter: &SignalEmitter<'_>,
+    keyval: u32,
+    count: u32,
+) -> fdo::Result<()> {
+    for _ in 0..count {
+        LayIbusEngine::forward_key_event(emitter, keyval, 0, 0)
+            .await
+            .map_err(|error| fdo::Error::Failed(error.to_string()))?;
+        LayIbusEngine::forward_key_event(emitter, keyval, 0, RELEASE_MASK)
+            .await
+            .map_err(|error| fdo::Error::Failed(error.to_string()))?;
+    }
+    Ok(())
 }
 
 fn warm_runtime(config: &LayConfig) {
@@ -600,9 +779,9 @@ fn terminal_erase_prefix(count: u32) -> String {
 #[cfg(test)]
 mod tests {
     use super::{
-        committed_tail_external_observation, CommittedTailOutputProfile,
-        CommittedTailReplaceRequest, LayIbusEngine, RecentCommittedTailReplace,
-        SurroundingTextSnapshot,
+        committed_tail_external_observation, CommittedTailExternalObservation,
+        CommittedTailOutputProfile, CommittedTailReplaceRequest, LayIbusEngine,
+        RecentCommittedTailReplace, SurroundingTextSnapshot,
     };
     use lay::config::LayConfig;
     use lay::manual_toggle::VisibleTailSource;
@@ -662,8 +841,12 @@ mod tests {
         assert_eq!(
             committed_tail_external_observation(
                 VisibleTailSource::ImeCommittedTail,
+                TextTransitionIntent::ImeManualToggle,
                 Some(&snapshot),
+                "abc",
                 3,
+                false,
+                None,
             ),
             None
         );
@@ -676,10 +859,146 @@ mod tests {
         assert_eq!(
             committed_tail_external_observation(
                 VisibleTailSource::DaemonWordBuffer,
+                TextTransitionIntent::DaemonBridge,
                 Some(&snapshot),
+                "abc",
                 3,
+                false,
+                None,
             ),
-            Some((None, false))
+            Some(CommittedTailExternalObservation {
+                tail_before_cursor: None,
+                has_selection: false,
+                trailing_boundary_elided: false,
+            })
+        );
+    }
+
+    #[test]
+    fn recorded_undo_classifies_an_exact_full_tail_boundary_elision() {
+        let snapshot = SurroundingTextSnapshot::new("собака".to_string(), 6, 6);
+
+        assert_eq!(
+            committed_tail_external_observation(
+                VisibleTailSource::ImeCommittedTail,
+                TextTransitionIntent::ImeAutoUndo,
+                Some(&snapshot),
+                "собака ",
+                7,
+                true,
+                None,
+            ),
+            Some(CommittedTailExternalObservation {
+                tail_before_cursor: Some("собака".to_string()),
+                has_selection: false,
+                trailing_boundary_elided: true,
+            })
+        );
+    }
+
+    #[test]
+    fn recorded_undo_classifies_boundary_elision_after_sentence_context() {
+        let snapshot = SurroundingTextSnapshot::new("до собака".to_string(), 9, 9);
+
+        assert_eq!(
+            committed_tail_external_observation(
+                VisibleTailSource::ImeCommittedTail,
+                TextTransitionIntent::ImeAutoUndo,
+                Some(&snapshot),
+                "собака ",
+                7,
+                true,
+                None,
+            ),
+            Some(CommittedTailExternalObservation {
+                tail_before_cursor: Some("собака".to_string()),
+                has_selection: false,
+                trailing_boundary_elided: true,
+            })
+        );
+    }
+
+    #[test]
+    fn automatic_correction_cannot_claim_boundary_elision() {
+        let snapshot = SurroundingTextSnapshot::new("собака".to_string(), 6, 6);
+
+        assert_eq!(
+            committed_tail_external_observation(
+                VisibleTailSource::ImeCommittedTail,
+                TextTransitionIntent::ImeAutocorrect,
+                Some(&snapshot),
+                "собака ",
+                7,
+                true,
+                None,
+            ),
+            Some(CommittedTailExternalObservation {
+                tail_before_cursor: None,
+                has_selection: false,
+                trailing_boundary_elided: false,
+            })
+        );
+    }
+
+    #[test]
+    fn recorded_undo_accepts_exact_causal_precondition_from_a_lagging_client() {
+        let snapshot = SurroundingTextSnapshot::new("до cj,frf".to_string(), 9, 9);
+
+        assert_eq!(
+            committed_tail_external_observation(
+                VisibleTailSource::ImeCommittedTail,
+                TextTransitionIntent::ImeAutoUndo,
+                Some(&snapshot),
+                "до собака ",
+                7,
+                false,
+                Some("cj,frf "),
+            ),
+            None
+        );
+    }
+
+    #[test]
+    fn non_undo_edits_cannot_claim_causal_precondition_authority() {
+        let snapshot = SurroundingTextSnapshot::new("cj,frf".to_string(), 6, 6);
+
+        assert_eq!(
+            committed_tail_external_observation(
+                VisibleTailSource::ImeCommittedTail,
+                TextTransitionIntent::ImeAutocorrect,
+                Some(&snapshot),
+                "собака ",
+                7,
+                false,
+                Some("cj,frf "),
+            ),
+            Some(CommittedTailExternalObservation {
+                tail_before_cursor: None,
+                has_selection: false,
+                trailing_boundary_elided: false,
+            })
+        );
+    }
+
+    #[test]
+    fn unrelated_snapshot_cannot_claim_causal_precondition_authority() {
+        let snapshot = SurroundingTextSnapshot::new("другой текст".to_string(), 12, 12);
+
+        assert_eq!(
+            committed_tail_external_observation(
+                VisibleTailSource::ImeCommittedTail,
+                TextTransitionIntent::ImeAutoUndo,
+                Some(&snapshot),
+                "собака ",
+                7,
+                false,
+                Some("cj,frf "),
+            ),
+            Some(CommittedTailExternalObservation {
+                tail_before_cursor: Some("й текст".to_string()),
+                has_selection: false,
+                trailing_boundary_elided: false,
+            })
         );
     }
 

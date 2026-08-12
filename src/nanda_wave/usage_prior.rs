@@ -549,13 +549,18 @@ pub(crate) fn record_edited_ime_if_enabled(
     typed_prefix: &str,
     suggested_text: &str,
     final_text: &str,
+    shared_morphology_identity: bool,
 ) {
     if !usage_learning_enabled() {
         return;
     }
-    let Some(event) =
-        TypingMemoryEvent::edited_ime(context_tail, typed_prefix, suggested_text, final_text)
-    else {
+    let Some(event) = TypingMemoryEvent::edited_ime_with_shared_identity(
+        context_tail,
+        typed_prefix,
+        suggested_text,
+        final_text,
+        shared_morphology_identity,
+    ) else {
         return;
     };
     record_typing_memory_event_if_enabled(&event);

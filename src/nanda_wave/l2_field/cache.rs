@@ -43,6 +43,12 @@ pub(super) fn store(original: &str, readout: &CanonicalL2FieldReadout) {
     }
 }
 
+pub(super) fn clear() {
+    if let Ok(mut cache) = canonical_l2_readout_cache().lock() {
+        cache.clear();
+    }
+}
+
 fn canonical_l2_readout_cache() -> &'static Mutex<VecDeque<CanonicalL2ReadoutCacheEntry>> {
     static CACHE: OnceLock<Mutex<VecDeque<CanonicalL2ReadoutCacheEntry>>> = OnceLock::new();
     CACHE.get_or_init(|| Mutex::new(VecDeque::new()))

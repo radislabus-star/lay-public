@@ -29,6 +29,7 @@ pub(crate) struct LayIbusEngine {
     pub(super) preedit_candidate_index: usize,
     pub(super) preedit_fast: PreeditFastState,
     pub(super) preedit_dirty: bool,
+    pub(super) pending_passthrough_preedit_clear: bool,
     pub(super) cursor_cell_width: i32,
     pub(super) surrounding_text_supported: bool,
     pub(super) surrounding_text_snapshot: Option<SurroundingTextSnapshot>,
@@ -79,6 +80,7 @@ impl LayIbusEngine {
             self.buffer.clear();
             self.composition_cursor = 0;
             self.clear_preedit_completion_state();
+            self.pending_passthrough_preedit_clear = false;
             self.close_committed_tail_field();
         }
         true
@@ -114,6 +116,7 @@ impl LayIbusEngine {
                     state.handoff_focus_receipt = None;
                     state.suppress_next_committed_tail_autocorrect = false;
                     state.pending_auto_undo = None;
+                    state.pending_auto_undo_retry = None;
                 }
                 (true, handoff)
             }
@@ -125,6 +128,7 @@ impl LayIbusEngine {
         self.buffer.clear();
         self.composition_cursor = 0;
         self.clear_preedit_completion_state();
+        self.pending_passthrough_preedit_clear = false;
         if let Some((tail, epoch, focus_receipt)) = preserved_handoff {
             self.tail_buffer = tail;
             self.tail_epoch = epoch;
@@ -176,7 +180,15 @@ impl LayIbusEngine {
     }
 
     pub(super) fn set_client_capabilities(&mut self, caps: u32) {
+        let surrounding_text_was_supported = self.surrounding_text_supported;
         self.surrounding_text_supported = caps & IBUS_CAP_SURROUNDING_TEXT != 0;
+        if !surrounding_text_was_supported
+            && self.surrounding_text_supported
+            && self.word_input_mode == Some(WordInputMode::TerminalPassthrough)
+        {
+            self.word_input_mode = Some(WordInputMode::ManagedCommit);
+            self.pending_passthrough_preedit_clear = true;
+        }
         if !self.surrounding_text_supported {
             self.surrounding_text_snapshot = None;
         }

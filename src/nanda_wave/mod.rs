@@ -46,12 +46,22 @@ pub use eval::{evaluate_wave, evaluate_wave_with_options, WaveEvalResult, WaveEv
 pub use l2_candidate_phase::L2PhaseTrainingEntry;
 pub(crate) use l2_candidate_phase::{PhaseReadout, PhaseVerdict};
 pub use l2_field::{
-    canonical_l2_status, compact_canonical_l2_package, compile_canonical_l2_package,
-    default_l2_model_dir, discover_installed_l2_package, export_unseeded_l11_seed_corpus,
-    prove_canonical_l2_package, prove_compact_canonical_l2_parity,
-    prove_compositional_l2_restoration, prove_contextual_compositional_l2_restoration,
-    query_canonical_l2_package, CANONICAL_L2_ACTIVE_LEMMA_LIMIT, CANONICAL_L2_ATOM_RELATION_LIMIT,
-    CANONICAL_L2_FEATURE_LIMIT, CANONICAL_L2_FORM_LIMIT, CANONICAL_L2_LEMMA_FRONTIER,
+    audit_productive_anchor_recovery_v1, canonical_l2_status, compact_canonical_l2_package,
+    compile_canonical_l2_package, compile_productive_l2_sidecar,
+    compile_productive_paradigm_field_v1, default_l2_model_dir, discover_installed_l2_package,
+    discover_installed_productive_l2_sidecar, discover_installed_productive_l2_v1_package,
+    estimate_productive_semantic_transducer_heldout_v1, estimate_productive_semantic_transducer_v1,
+    export_unseeded_l11_seed_corpus, productive_l2_v1_status, prove_canonical_l2_package,
+    prove_compact_canonical_l2_parity, prove_compositional_l2_restoration,
+    prove_contextual_compositional_l2_restoration, prove_productive_l2_restoration,
+    prove_productive_l2_sidecar, prove_productive_paradigm_field_v1,
+    prove_productive_paradigm_field_v1_semantic, query_canonical_l2_package,
+    query_live_canonical_l2, reinduce_productive_paradigm_field_v1, reload_productive_l2_sidecar,
+    reload_productive_l2_v1, resume_productive_paradigm_field_v1,
+    resume_productive_paradigm_field_v1_shared_support, CANONICAL_L2_ACTIVE_LEMMA_LIMIT,
+    CANONICAL_L2_ATOM_RELATION_LIMIT, CANONICAL_L2_FEATURE_LIMIT, CANONICAL_L2_FORM_LIMIT,
+    CANONICAL_L2_LEMMA_FRONTIER, CANONICAL_L2_PRODUCTIVE_FORM_LIMIT,
+    CANONICAL_L2_PRODUCTIVE_LEMMA_LIMIT,
 };
 pub use lexical_grokking::{
     admit_l11_delta, admit_l11_tombstone, analyze_l1_forward_compression,
@@ -1545,12 +1555,14 @@ pub fn record_edited_ime_usage(
     typed_prefix: &str,
     suggested_text: &str,
     final_text: &str,
+    shared_morphology_identity: bool,
 ) {
     usage_prior::record_edited_ime_if_enabled(
         context_tail,
         typed_prefix,
         suggested_text,
         final_text,
+        shared_morphology_identity,
     );
 }
 

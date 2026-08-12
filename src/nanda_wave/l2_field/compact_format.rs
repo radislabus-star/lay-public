@@ -1,4 +1,5 @@
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::{BTreeMap, BTreeSet, VecDeque};
+use std::sync::{Arc, Mutex};
 
 use super::format::{self, Cursor};
 use super::model::{
@@ -16,6 +17,8 @@ const LEGACY_VERSION: u32 = 1;
 const VERSION: u32 = 2;
 const HEADER_BYTES: usize = 128;
 pub(super) const DECODER_BLOCK_FORMS: usize = 32;
+const DECODER_CACHE_SHARDS: usize = 16;
+const DECODER_CACHE_BLOCKS_PER_SHARD: usize = 128;
 const COMPACT_FORM_REF_BYTES: usize = 8;
 const COMPACT_BINDING_BYTES: usize = 9;
 const LEMMA_CENTER_BYTES: usize = 32;
@@ -747,6 +750,28 @@ pub(super) struct CompactPackageView {
     calibration: TieCalibration,
     lemma_wave_index: Option<CompactLemmaWaveIndexView>,
     raw_decoder_bytes: usize,
+    decoder_cache: Arc<DecoderBlockCache>,
+}
+
+#[derive(Debug)]
+struct DecoderBlockCache {
+    shards: Vec<Mutex<VecDeque<DecodedBlock>>>,
+}
+
+#[derive(Debug)]
+struct DecodedBlock {
+    block: usize,
+    surfaces: Arc<[String]>,
+}
+
+impl DecoderBlockCache {
+    fn new() -> Self {
+        Self {
+            shards: (0..DECODER_CACHE_SHARDS)
+                .map(|_| Mutex::new(VecDeque::new()))
+                .collect(),
+        }
+    }
 }
 
 impl CompactPackageView {
@@ -982,6 +1007,7 @@ impl CompactPackageView {
             calibration,
             lemma_wave_index,
             raw_decoder_bytes: 0,
+            decoder_cache: Arc::new(DecoderBlockCache::new()),
         };
         view.raw_decoder_bytes = view.validate_decoder()?;
         view.validate_bindings_and_edges()?;
@@ -1051,10 +1077,76 @@ impl CompactPackageView {
         }
         let block = form_ref / DECODER_BLOCK_FORMS;
         let block_first = block * DECODER_BLOCK_FORMS;
+        let block_offset = form_ref.checked_sub(block_first)?;
+        self.decode_block_cached(block)?.get(block_offset).cloned()
+    }
+
+    pub(super) fn form_ref_for_surface(&self, surface: &str) -> Option<u32> {
+        let mut low = 0_usize;
+        let mut high = self.counts.decoder_blocks;
+        while low < high {
+            let middle = low + (high - low) / 2;
+            let first = self.surface(middle.checked_mul(DECODER_BLOCK_FORMS)?)?;
+            if first.as_str() <= surface {
+                low = middle + 1;
+            } else {
+                high = middle;
+            }
+        }
+        let block = low.checked_sub(1)?;
+        let block_first = block.checked_mul(DECODER_BLOCK_FORMS)?;
+        self.decode_block_cached(block)?
+            .binary_search_by(|candidate| candidate.as_str().cmp(surface))
+            .ok()
+            .and_then(|offset| u32::try_from(block_first.checked_add(offset)?).ok())
+    }
+
+    fn decode_block_cached(&self, block: usize) -> Option<Arc<[String]>> {
+        let shard = self
+            .decoder_cache
+            .shards
+            .get(block % DECODER_CACHE_SHARDS)?;
+        if let Ok(mut cached) = shard.lock() {
+            if let Some(index) = cached.iter().position(|entry| entry.block == block) {
+                let entry = cached.remove(index)?;
+                let surfaces = entry.surfaces.clone();
+                cached.push_back(entry);
+                return Some(surfaces);
+            }
+        }
+
+        let surfaces = Arc::<[String]>::from(self.decode_block(block)?);
+        if let Ok(mut cached) = shard.lock() {
+            if let Some(index) = cached.iter().position(|entry| entry.block == block) {
+                let entry = cached.remove(index)?;
+                let existing = entry.surfaces.clone();
+                cached.push_back(entry);
+                return Some(existing);
+            }
+            cached.push_back(DecodedBlock {
+                block,
+                surfaces: surfaces.clone(),
+            });
+            while cached.len() > DECODER_CACHE_BLOCKS_PER_SHARD {
+                cached.pop_front();
+            }
+        }
+        Some(surfaces)
+    }
+
+    fn decode_block(&self, block: usize) -> Option<Vec<String>> {
+        let block_first = block.checked_mul(DECODER_BLOCK_FORMS)?;
+        if block_first >= self.counts.form_refs {
+            return None;
+        }
+        let block_end = block_first
+            .saturating_add(DECODER_BLOCK_FORMS)
+            .min(self.counts.form_refs);
         let payload = self.decoder_payload();
         let mut offset = self.decoder_block_offset(block)? as usize;
         let mut previous = Vec::<u8>::new();
-        for index in block_first..=form_ref {
+        let mut surfaces = Vec::with_capacity(block_end.saturating_sub(block_first));
+        for index in block_first..block_end {
             let prefix = read_var_u32(payload, &mut offset).ok()? as usize;
             let suffix_len = read_var_u32(payload, &mut offset).ok()? as usize;
             if prefix > previous.len() || (index == block_first && prefix != 0) {
@@ -1065,8 +1157,9 @@ impl CompactPackageView {
             offset = end;
             previous.truncate(prefix);
             previous.extend_from_slice(suffix);
+            surfaces.push(String::from_utf8(previous.clone()).ok()?);
         }
-        String::from_utf8(previous).ok()
+        Some(surfaces)
     }
 
     pub(super) fn binding(&self, index: usize) -> Option<MorphBinding> {
@@ -1076,8 +1169,17 @@ impl CompactPackageView {
         let lemma_id = self.lemma_centers.partition_point(|center| {
             center.form_start as usize + center.form_count as usize <= index
         });
+        self.binding_for_lemma(index, lemma_id)
+    }
+
+    pub(super) fn binding_for_lemma(&self, index: usize, lemma_id: usize) -> Option<MorphBinding> {
+        if index >= self.counts.morph_bindings {
+            return None;
+        }
         let center = self.lemma_centers.get(lemma_id)?;
-        if index < center.form_start as usize {
+        if index < center.form_start as usize
+            || index >= center.form_start as usize + center.form_count as usize
+        {
             return None;
         }
         let start = self
@@ -1476,6 +1578,33 @@ mod tests {
                 .atom_key_count(),
             stats.atom_keys
         );
+    }
+
+    #[test]
+    fn decoder_cache_preserves_parallel_surface_lookup() {
+        let (bytes, _) = encode_package(&fixture()).expect("compact encode");
+        let direct = Arc::new(CompactPackageView::from_bytes(bytes).expect("compact direct view"));
+        let surfaces = ["дом", "дома", "замки", "замок"];
+
+        std::thread::scope(|scope| {
+            for _ in 0..32 {
+                let direct = Arc::clone(&direct);
+                scope.spawn(move || {
+                    for _ in 0..64 {
+                        for (index, surface) in surfaces.iter().enumerate() {
+                            assert_eq!(direct.surface(index).as_deref(), Some(*surface));
+                            assert_eq!(direct.form_ref_for_surface(surface), Some(index as u32));
+                        }
+                    }
+                });
+            }
+        });
+
+        for shard in &direct.decoder_cache.shards {
+            assert!(
+                shard.lock().expect("decoder cache shard").len() <= DECODER_CACHE_BLOCKS_PER_SHARD
+            );
+        }
     }
 
     #[test]

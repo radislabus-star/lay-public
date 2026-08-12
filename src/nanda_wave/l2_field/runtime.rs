@@ -1,19 +1,24 @@
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::{BTreeMap, BTreeSet, HashMap};
 use std::path::Path;
 
 use rayon::prelude::*;
 
-use crate::correction_core::UnifiedCorrectionCandidate;
+use crate::correction_core::{MorphologySlotEvidence, UnifiedCorrectionCandidate};
 
 use super::compositional::{
     prepared_normalized_similarity_at_least_milli, prepared_normalized_similarity_milli,
     prepared_surface_atom_profile, prepared_surface_atom_similarity_milli, surface_scoring_profile,
-    LemmaWaveIndex, RuntimeLemmaWaveIndex,
+    LemmaWaveIndex, RuntimeLemmaWaveIndex, SurfaceGeometryWorkspace,
 };
 use super::context::{context_mode, scene_wave};
 use super::model::{
     L2FieldPackage, MorphBinding, SlotPhaseCenter, TieCalibration,
     COMPETITION_FLAG_EXPLICIT_NEIGHBOR, L2_PHASE_CELLS, NO_L1_TERMINAL,
+};
+use super::productive::{
+    directional_evidence_margin, package_canonical_source, package_lemma,
+    PreparedProductiveGeneration, ProductiveBirthStatus, ProductiveContextPairEvidence,
+    ProductiveForm, ProductiveMorphologyIndex, ProductiveMorphologySource,
 };
 use super::runtime_storage::RuntimeL2Package;
 use super::CANONICAL_L2_ATOM_RELATION_LIMIT;
@@ -23,6 +28,7 @@ const INHERITED_L1_ATTENUATION_MILLI: i32 = 240;
 
 pub(crate) const CANONICAL_L2_SURFACE_SOURCE_ID: &str = "CanonicalL2FieldSurface";
 pub(crate) const CANONICAL_L2_READOUT_SOURCE_ID: &str = "CanonicalL2FieldReadout";
+pub(crate) const CANONICAL_L2_PRODUCTIVE_SOURCE_ID: &str = "CanonicalL2ProductiveSurface";
 
 #[derive(Debug, Clone, Default, PartialEq)]
 pub(crate) struct CanonicalL2FieldReadout {
@@ -93,6 +99,61 @@ pub(crate) struct CompositionalLemmaBirth {
     pub(crate) atom_evidence: u32,
     pub(crate) atom_evidence_milli: u16,
     pub(crate) wave_distance: u16,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub(crate) struct LexicalExactSourceObservationV1 {
+    pub(crate) form_ref: u32,
+    pub(crate) feature_mask: u32,
+    pub(crate) support: u16,
+    pub(crate) canonical_preference: u8,
+    pub(crate) normalized_surface: String,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub(crate) struct LexicalLemmaObservationV1 {
+    pub(crate) lemma_id: u32,
+    pub(crate) known_pos_domains: Vec<u16>,
+    pub(crate) exact_source_forms: Vec<LexicalExactSourceObservationV1>,
+    pub(crate) canonical_source_form_ref: Option<u32>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub(super) struct ProductiveL2FormBirth {
+    pub(super) surface: String,
+    pub(super) lemma_id: u32,
+    pub(super) source_form_ref: u32,
+    pub(super) source_feature_mask: u32,
+    pub(super) target_feature_mask: u32,
+    pub(super) geometry_evidence_milli: u16,
+    pub(super) profile_evidence_milli: u16,
+    pub(super) slot_evidence_milli: i32,
+    pub(super) context_positive_support: u32,
+    pub(super) context_unlabeled_alternative_support: u32,
+    pub(super) context_posterior_milli: u16,
+    pub(super) context_observed: bool,
+    pub(super) context_pair_evidence: Vec<ProductiveL2ContextPairEvidence>,
+    pub(super) joint_evidence_milli: u16,
+    pub(super) positive_support: u32,
+    pub(super) anti_support: u32,
+    pub(super) family_specificity: u8,
+    pub(super) lemma_atom_evidence_milli: u16,
+    pub(super) lemma_wave_distance: u16,
+    pub(super) exact_surface_form_ref: Option<u32>,
+    pub(super) status: ProductiveBirthStatus,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub(super) struct ProductiveL2ContextPairEvidence {
+    pub(super) competitor_feature_mask: u32,
+    pub(super) evidence: ProductiveContextPairEvidence,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub(super) enum ProductiveL2Readout {
+    Winner { surface: String },
+    Tied { surfaces: Vec<String> },
+    Abstain,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -177,6 +238,8 @@ pub(crate) struct StandaloneL2Field {
     form_by_terminal: Vec<(u32, u32)>,
     binding_offsets_by_form: Vec<u32>,
     binding_indices_by_form: Vec<u32>,
+    productive_source_by_lemma:
+        std::sync::Arc<[std::sync::OnceLock<Option<(u16, ProductiveForm)>>]>,
     context_by_key: BTreeMap<u32, u32>,
     slot_centers_by_mode_feature: BTreeMap<(u32, u32), Vec<u32>>,
     neighbor_couplings_by_mode_lemma_feature: BTreeMap<(u32, u32, u32), Vec<u32>>,
@@ -257,6 +320,10 @@ impl StandaloneL2Field {
             binding_indices_by_form[output] = binding_index as u32;
             next[form_ref] += 1;
         }
+        let productive_source_by_lemma = (0..package.lemma_centers().len())
+            .map(|_| std::sync::OnceLock::new())
+            .collect::<Vec<_>>()
+            .into();
         let context_by_key = package
             .context_modes()
             .iter()
@@ -289,6 +356,7 @@ impl StandaloneL2Field {
             form_by_terminal,
             binding_offsets_by_form,
             binding_indices_by_form,
+            productive_source_by_lemma,
             context_by_key,
             slot_centers_by_mode_feature,
             neighbor_couplings_by_mode_lemma_feature,
@@ -346,6 +414,343 @@ impl StandaloneL2Field {
             form_limit,
             CANONICAL_L2_ATOM_RELATION_LIMIT,
         )
+    }
+
+    pub(super) fn train_productive_morphology(
+        &self,
+        include_lemma: impl Fn(u32) -> bool,
+        minimum_support: u32,
+    ) -> Result<ProductiveMorphologyIndex, String> {
+        ProductiveMorphologyIndex::train_from_package(&self.package, include_lemma, minimum_support)
+    }
+
+    pub(super) fn productive_form_births_from_lemmas<I: ProductiveMorphologySource + ?Sized>(
+        &self,
+        index: &I,
+        context: &str,
+        observed_surface: &str,
+        lemma_births: &[CompositionalLemmaBirth],
+        feature_limit: usize,
+        form_limit: usize,
+    ) -> Vec<ProductiveL2FormBirth> {
+        self.productive_form_births_from_lemmas_impl(
+            index,
+            context,
+            observed_surface,
+            lemma_births,
+            feature_limit,
+            form_limit,
+            true,
+        )
+    }
+
+    pub(super) fn productive_form_births_from_lemmas_exact_masked<
+        I: ProductiveMorphologySource + ?Sized,
+    >(
+        &self,
+        index: &I,
+        context: &str,
+        observed_surface: &str,
+        lemma_births: &[CompositionalLemmaBirth],
+        feature_limit: usize,
+        form_limit: usize,
+    ) -> Vec<ProductiveL2FormBirth> {
+        self.productive_form_births_from_lemmas_impl(
+            index,
+            context,
+            observed_surface,
+            lemma_births,
+            feature_limit,
+            form_limit,
+            false,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn productive_form_births_from_lemmas_impl<I: ProductiveMorphologySource + ?Sized>(
+        &self,
+        index: &I,
+        context: &str,
+        observed_surface: &str,
+        lemma_births: &[CompositionalLemmaBirth],
+        feature_limit: usize,
+        form_limit: usize,
+        annotate_exact_surface: bool,
+    ) -> Vec<ProductiveL2FormBirth> {
+        if feature_limit == 0 || form_limit == 0 {
+            return Vec::new();
+        }
+        let mode = context_mode(context);
+        let context_mode_id = self.context_by_key.get(&mode.stable_key).copied();
+        let wave = scene_wave(context);
+        let observed_profile = surface_scoring_profile(observed_surface);
+        let source_keys = lemma_births
+            .iter()
+            .filter_map(|lemma_birth| {
+                self.productive_canonical_source(lemma_birth.lemma_id)
+                    .map(|(primary_pos, source)| (*primary_pos, source.feature_mask))
+            })
+            .collect::<BTreeSet<_>>();
+        let target_features_by_source = source_keys
+            .into_iter()
+            .map(|(primary_pos, source_feature_mask)| {
+                let mut target_features = index
+                    .target_features_vec(primary_pos, source_feature_mask)
+                    .into_iter()
+                    .filter(|target| *target != source_feature_mask)
+                    .map(|target_feature_mask| {
+                        let context_evidence =
+                            index.context_slot_evidence_for(context, target_feature_mask);
+                        let slot_features =
+                            crate::nanda_wave::morphology_phase::contextual_slot_features(
+                                target_feature_mask,
+                            );
+                        let slot_evidence_milli = context_mode_id
+                            .and_then(|context_mode_id| {
+                                self.slot_centers_by_mode_feature
+                                    .get(&(context_mode_id, slot_features))
+                            })
+                            .into_iter()
+                            .flatten()
+                            .filter_map(|index| self.package.slot_centers().get(*index as usize))
+                            .map(|center| slot_center_score(center, &wave))
+                            .max()
+                            .unwrap_or_default();
+                        (target_feature_mask, context_evidence, slot_evidence_milli)
+                    })
+                    .collect::<Vec<_>>();
+                let has_context_compatible_slot = target_features
+                    .iter()
+                    .any(|(_, evidence, _)| evidence.positive_support > 0);
+                if has_context_compatible_slot {
+                    target_features.retain(|(_, evidence, _)| evidence.positive_support > 0);
+                }
+                target_features.sort_unstable_by(|left, right| {
+                    right.2.cmp(&left.2).then_with(|| left.0.cmp(&right.0))
+                });
+                target_features.truncate(feature_limit);
+                ((primary_pos, source_feature_mask), target_features)
+            })
+            .collect::<HashMap<_, _>>();
+        let candidates = lemma_births
+            .par_iter()
+            .map_init(
+                || {
+                    (
+                        HashMap::<String, u16>::new(),
+                        SurfaceGeometryWorkspace::default(),
+                    )
+                },
+                |(geometry_by_surface, geometry_workspace), lemma_birth| {
+                    let Some((primary_pos, source)) =
+                        self.productive_canonical_source(lemma_birth.lemma_id)
+                    else {
+                        return Vec::new();
+                    };
+                    let source_chars = source.surface.chars().collect::<Vec<_>>();
+                    let family_suffixes =
+                        super::productive::productive_family_suffixes(&source_chars);
+                    let family_lane_starts = super::productive::productive_family_lane_starts(
+                        &source.surface,
+                        observed_surface,
+                    );
+                    let prepared = PreparedProductiveGeneration {
+                        observed_surface,
+                        observed_profile: &observed_profile,
+                        source_surface: &source.surface,
+                        source_chars: &source_chars,
+                        family_suffixes: &family_suffixes,
+                        family_lane_starts: &family_lane_starts,
+                    };
+                    let Some(target_features) =
+                        target_features_by_source.get(&(*primary_pos, source.feature_mask))
+                    else {
+                        return Vec::new();
+                    };
+                    let mut candidates = Vec::new();
+                    for &(target_feature_mask, context_evidence, slot_evidence_milli) in
+                        target_features.iter()
+                    {
+                        for birth in index.generate_forms_prepared(
+                            &prepared,
+                            *primary_pos,
+                            source.feature_mask,
+                            target_feature_mask,
+                            form_limit,
+                            geometry_by_surface,
+                            geometry_workspace,
+                        ) {
+                            let joint_evidence_milli = productive_joint_evidence_milli(
+                                lemma_birth.atom_evidence_milli,
+                                birth.profile_evidence_milli,
+                                birth.geometry_evidence_milli,
+                            );
+                            candidates.push(ProductiveL2FormBirth {
+                                exact_surface_form_ref: annotate_exact_surface
+                                    .then(|| self.form_ref_for_surface(&birth.surface))
+                                    .flatten(),
+                                surface: birth.surface,
+                                lemma_id: lemma_birth.lemma_id,
+                                source_form_ref: source.form_ref,
+                                source_feature_mask: birth.source_feature_mask,
+                                target_feature_mask: birth.target_feature_mask,
+                                geometry_evidence_milli: birth.geometry_evidence_milli,
+                                profile_evidence_milli: birth.profile_evidence_milli,
+                                slot_evidence_milli,
+                                context_positive_support: context_evidence.positive_support,
+                                context_unlabeled_alternative_support: context_evidence
+                                    .unlabeled_alternative_support,
+                                context_posterior_milli: context_evidence.posterior_milli,
+                                context_observed: context_evidence.context_observed,
+                                context_pair_evidence: Vec::new(),
+                                joint_evidence_milli,
+                                positive_support: birth.positive_support,
+                                anti_support: birth.anti_support,
+                                family_specificity: birth.family_specificity,
+                                lemma_atom_evidence_milli: lemma_birth.atom_evidence_milli,
+                                lemma_wave_distance: lemma_birth.wave_distance,
+                                status: birth.status,
+                            });
+                        }
+                    }
+                    candidates
+                },
+            )
+            .flatten()
+            .collect::<Vec<_>>();
+        let mut by_surface = HashMap::<(u32, String), ProductiveL2FormBirth>::new();
+        for candidate in candidates {
+            by_surface
+                .entry((candidate.lemma_id, candidate.surface.clone()))
+                .and_modify(|current| {
+                    if productive_l2_birth_rank(&candidate) > productive_l2_birth_rank(current) {
+                        *current = candidate.clone();
+                    }
+                })
+                .or_insert(candidate);
+        }
+        let mut births = by_surface.into_values().collect::<Vec<_>>();
+        births.sort_by(|left, right| {
+            productive_l2_birth_rank(right)
+                .cmp(&productive_l2_birth_rank(left))
+                .then_with(|| left.surface.cmp(&right.surface))
+                .then_with(|| left.lemma_id.cmp(&right.lemma_id))
+        });
+        births.truncate(form_limit);
+        attach_productive_context_pair_evidence(index, context, &mut births);
+        births
+    }
+
+    pub(super) fn productive_lemma(
+        &self,
+        lemma_id: u32,
+    ) -> Result<super::productive::ProductiveLemma, String> {
+        package_lemma(&self.package, lemma_id)
+    }
+
+    fn productive_canonical_source(&self, lemma_id: u32) -> Option<&(u16, ProductiveForm)> {
+        self.productive_source_by_lemma
+            .get(lemma_id as usize)?
+            .get_or_init(|| package_canonical_source(&self.package, lemma_id).ok())
+            .as_ref()
+    }
+
+    pub(super) fn lemma_count(&self) -> usize {
+        self.package.lemma_centers().len()
+    }
+
+    pub(super) fn imported_binding_pairs_for_lemma(&self, lemma_ref: u32) -> Vec<(u32, u32)> {
+        self.bindings_for_lemma(lemma_ref)
+            .map(|binding| (binding.form_center_ref, binding.feature_mask))
+            .collect()
+    }
+
+    pub(super) fn imported_binding_identities_for_form(&self, form_ref: u32) -> Vec<(u32, u32)> {
+        self.bindings_for_form(form_ref)
+            .map(|binding| (binding.lemma_center_id, binding.feature_mask))
+            .collect()
+    }
+
+    pub(super) fn imported_surface_for_form(&self, form_ref: u32) -> Option<String> {
+        self.package
+            .surface(form_ref as usize)
+            .map(|surface| surface.into_owned())
+    }
+
+    pub(crate) fn lexical_lemma_observation_v1(
+        &self,
+        lemma_id: u32,
+    ) -> Result<Option<LexicalLemmaObservationV1>, String> {
+        let Some(center) = self.package.lemma_centers().get(lemma_id as usize).copied() else {
+            return Ok(None);
+        };
+        let mut exact_source_forms = self
+            .bindings_for_lemma(lemma_id)
+            .map(|binding| {
+                let normalized_surface = self
+                    .package
+                    .surface(binding.form_center_ref as usize)
+                    .ok_or_else(|| {
+                        format!(
+                            "canonical L2 lexical observation lacks form {}",
+                            binding.form_center_ref
+                        )
+                    })?
+                    .into_owned();
+                Ok(LexicalExactSourceObservationV1 {
+                    form_ref: binding.form_center_ref,
+                    feature_mask: binding.feature_mask,
+                    support: binding.support,
+                    canonical_preference:
+                        crate::nanda_wave::morphology_phase::productive_source_priority(
+                            binding.feature_mask,
+                        ),
+                    normalized_surface,
+                })
+            })
+            .collect::<Result<Vec<_>, String>>()?;
+        exact_source_forms.sort_by(|left, right| {
+            (
+                left.canonical_preference,
+                left.normalized_surface.chars().count(),
+                left.feature_mask,
+                &left.normalized_surface,
+                left.form_ref,
+            )
+                .cmp(&(
+                    right.canonical_preference,
+                    right.normalized_surface.chars().count(),
+                    right.feature_mask,
+                    &right.normalized_surface,
+                    right.form_ref,
+                ))
+        });
+        exact_source_forms.dedup_by(|duplicate, retained| {
+            if (duplicate.form_ref, duplicate.feature_mask)
+                != (retained.form_ref, retained.feature_mask)
+            {
+                return false;
+            }
+            retained.support = retained.support.max(duplicate.support);
+            true
+        });
+        let canonical_source_form_ref = exact_source_forms.first().map(|source| source.form_ref);
+        let mut known_pos_domains = exact_source_forms
+            .iter()
+            .map(|source| {
+                crate::nanda_wave::morphology_phase::feature_primary_pos(source.feature_mask)
+            })
+            .filter(|pos| *pos != 0)
+            .collect::<Vec<_>>();
+        known_pos_domains.push(center.primary_pos);
+        known_pos_domains.sort_unstable();
+        known_pos_domains.dedup();
+        Ok(Some(LexicalLemmaObservationV1 {
+            lemma_id,
+            known_pos_domains,
+            exact_source_forms,
+            canonical_source_form_ref,
+        }))
     }
 
     pub(crate) fn compositional_form_births_with_atom_relation_limit(
@@ -765,21 +1170,71 @@ impl StandaloneL2Field {
     }
 
     pub(crate) fn form_ref_for_surface(&self, surface: &str) -> Option<u32> {
-        let mut left = 0_usize;
-        let mut right = self.package.form_count();
-        while left < right {
-            let middle = left + (right - left) / 2;
-            match self.package.surface(middle)?.as_ref().cmp(surface) {
-                std::cmp::Ordering::Less => left = middle + 1,
-                std::cmp::Ordering::Greater => right = middle,
-                std::cmp::Ordering::Equal => return u32::try_from(middle).ok(),
-            }
-        }
-        None
+        self.package.form_ref_for_surface(surface)
     }
 
     pub(crate) fn decode_form_ref(&self, form_ref: u32) -> Option<std::borrow::Cow<'_, str>> {
         self.package.surface(form_ref as usize)
+    }
+
+    pub(super) fn exact_morphology_slot_evidence<I: ProductiveMorphologySource + ?Sized>(
+        &self,
+        index: &I,
+        context: &str,
+        surface: &str,
+    ) -> Vec<MorphologySlotEvidence> {
+        let Some(form_ref) = self.form_ref_for_surface(surface) else {
+            return Vec::new();
+        };
+        let mode = context_mode(context);
+        let context_mode_id = self.context_by_key.get(&mode.stable_key).copied();
+        let wave = scene_wave(context);
+        let mut evidence = self
+            .bindings_for_form(form_ref)
+            .filter_map(|binding| {
+                let context_evidence =
+                    index.context_slot_evidence_for(context, binding.feature_mask);
+                Some(MorphologySlotEvidence {
+                    lemma_id: binding.lemma_center_id,
+                    // An exact package form is already grounded in this slot. It does not
+                    // need the productive generator's canonical source form, and decoding
+                    // the complete lemma here would put an unbounded loop on the IME path.
+                    source_feature_mask:
+                        crate::nanda_wave::morphology_phase::productive_context_slot_features(
+                            binding.feature_mask,
+                        ),
+                    target_feature_mask:
+                        crate::nanda_wave::morphology_phase::productive_context_slot_features(
+                            binding.feature_mask,
+                        ),
+                    context_positive_support: context_evidence.positive_support,
+                    context_alternative_support: context_evidence.unlabeled_alternative_support,
+                    context_posterior_milli: context_evidence.posterior_milli,
+                    slot_evidence_milli: self.binding_slot_context_evidence(
+                        binding,
+                        context_mode_id,
+                        &wave,
+                    ),
+                    joint_evidence_milli: 0,
+                    generated: false,
+                })
+            })
+            .collect::<Vec<_>>();
+        evidence.sort_unstable_by_key(|item| {
+            (
+                item.lemma_id,
+                item.source_feature_mask,
+                item.target_feature_mask,
+            )
+        });
+        evidence.dedup_by_key(|item| {
+            (
+                item.lemma_id,
+                item.source_feature_mask,
+                item.target_feature_mask,
+            )
+        });
+        evidence
     }
 
     pub(crate) fn lemma_ids_for_form_feature(&self, form_ref: u32, feature_mask: u32) -> Vec<u32> {
@@ -1488,6 +1943,144 @@ fn compositional_candidate_rank(
     )
 }
 
+fn attach_productive_context_pair_evidence<I: ProductiveMorphologySource + ?Sized>(
+    index: &I,
+    context: &str,
+    births: &mut [ProductiveL2FormBirth],
+) {
+    let competitors = births
+        .iter()
+        .map(|birth| (birth.lemma_id, birth.target_feature_mask))
+        .collect::<Vec<_>>();
+    for birth in births {
+        birth.context_pair_evidence.clear();
+        for (competitor_lemma_id, competitor_feature_mask) in &competitors {
+            if *competitor_lemma_id != birth.lemma_id
+                || *competitor_feature_mask == birth.target_feature_mask
+            {
+                continue;
+            }
+            let evidence = index.context_pair_evidence_for(
+                context,
+                birth.target_feature_mask,
+                *competitor_feature_mask,
+            );
+            if evidence.context_observed
+                && (evidence.positive_support > 0 || evidence.anti_support > 0)
+                && !birth
+                    .context_pair_evidence
+                    .iter()
+                    .any(|current| current.competitor_feature_mask == *competitor_feature_mask)
+            {
+                birth
+                    .context_pair_evidence
+                    .push(ProductiveL2ContextPairEvidence {
+                        competitor_feature_mask: *competitor_feature_mask,
+                        evidence,
+                    });
+            }
+        }
+        birth
+            .context_pair_evidence
+            .sort_by_key(|edge| edge.competitor_feature_mask);
+    }
+}
+
+pub(super) fn productive_l2_birth_rank(
+    birth: &ProductiveL2FormBirth,
+) -> (
+    u16,
+    u16,
+    u16,
+    u16,
+    i32,
+    u8,
+    u32,
+    std::cmp::Reverse<u32>,
+    std::cmp::Reverse<u16>,
+) {
+    (
+        birth.joint_evidence_milli,
+        birth.lemma_atom_evidence_milli,
+        birth.geometry_evidence_milli,
+        birth.profile_evidence_milli,
+        birth.slot_evidence_milli,
+        birth.family_specificity,
+        birth.positive_support,
+        std::cmp::Reverse(birth.anti_support),
+        std::cmp::Reverse(birth.lemma_wave_distance),
+    )
+}
+
+pub(super) fn productive_l2_readout(
+    observed_surface: &str,
+    births: &[ProductiveL2FormBirth],
+) -> ProductiveL2Readout {
+    if births.is_empty() || births.iter().any(|birth| birth.surface == observed_surface) {
+        return ProductiveL2Readout::Abstain;
+    }
+    let surfaces = births
+        .iter()
+        .enumerate()
+        .filter(|(index, candidate)| {
+            !births.iter().enumerate().any(|(other_index, other)| {
+                other_index != *index && productive_evidence_dominates(other, candidate)
+            })
+        })
+        .map(|(_, birth)| birth.surface.clone())
+        .collect::<BTreeSet<_>>()
+        .into_iter()
+        .collect::<Vec<_>>();
+    match surfaces.as_slice() {
+        [] => ProductiveL2Readout::Abstain,
+        [surface] => ProductiveL2Readout::Winner {
+            surface: surface.clone(),
+        },
+        _ => ProductiveL2Readout::Tied { surfaces },
+    }
+}
+
+fn productive_evidence_dominates(
+    left: &ProductiveL2FormBirth,
+    right: &ProductiveL2FormBirth,
+) -> bool {
+    // Productive L2 owns morphology-slot competition inside a lemma basin.
+    // Cross-lemma authority requires independent L1.1 or L3 evidence.
+    if left.lemma_id != right.lemma_id {
+        return false;
+    }
+    if let Some(evidence) = left
+        .context_pair_evidence
+        .iter()
+        .find(|edge| edge.competitor_feature_mask == right.target_feature_mask)
+        .map(|edge| edge.evidence)
+    {
+        if evidence.positive_support > 0 || evidence.anti_support > 0 {
+            return directional_evidence_margin(evidence) == std::cmp::Ordering::Greater;
+        }
+    }
+    let left_context = u8::from(left.context_positive_support > 0);
+    let right_context = u8::from(right.context_positive_support > 0);
+    let no_weaker_axis = left.lemma_atom_evidence_milli >= right.lemma_atom_evidence_milli
+        && left.geometry_evidence_milli >= right.geometry_evidence_milli
+        && left_context >= right_context;
+    let stronger_axis = left.lemma_atom_evidence_milli > right.lemma_atom_evidence_milli
+        || left.geometry_evidence_milli > right.geometry_evidence_milli
+        || left_context > right_context;
+    no_weaker_axis && stronger_axis
+}
+
+fn productive_joint_evidence_milli(
+    lemma_evidence_milli: u16,
+    profile_evidence_milli: u16,
+    geometry_evidence_milli: u16,
+) -> u16 {
+    let product = u64::from(lemma_evidence_milli)
+        .saturating_mul(u64::from(profile_evidence_milli))
+        .saturating_mul(u64::from(geometry_evidence_milli));
+    (product / 1_000_000).min(1_000) as u16
+}
+
 fn classify_local(candidates: &[L2LocalCandidate], calibration: TieCalibration) -> L2LocalVerdict {
     const MAX_SUPPORT_UNCERTAINTY: i32 = 16 * 8;
 
@@ -1674,6 +2267,130 @@ mod standalone_tests {
     use super::super::teacher::L2TeacherCorpus;
     use super::*;
 
+    fn productive_birth(
+        surface: &str,
+        lemma_id: u32,
+        lemma_evidence: u16,
+        geometry_evidence: u16,
+    ) -> ProductiveL2FormBirth {
+        ProductiveL2FormBirth {
+            surface: surface.to_string(),
+            lemma_id,
+            source_form_ref: 0,
+            source_feature_mask: 0,
+            target_feature_mask: 0,
+            geometry_evidence_milli: geometry_evidence,
+            profile_evidence_milli: 1_000,
+            slot_evidence_milli: 1_000,
+            context_positive_support: 1,
+            context_unlabeled_alternative_support: 0,
+            context_posterior_milli: 1_000,
+            context_observed: true,
+            context_pair_evidence: Vec::new(),
+            joint_evidence_milli: lemma_evidence.min(geometry_evidence),
+            positive_support: 1,
+            anti_support: 0,
+            family_specificity: 1,
+            lemma_atom_evidence_milli: lemma_evidence,
+            lemma_wave_distance: 0,
+            exact_surface_form_ref: None,
+            status: ProductiveBirthStatus::ShadowUnverified,
+        }
+    }
+
+    #[test]
+    fn productive_readout_cannot_collapse_distinct_lemma_basins() {
+        let births = vec![
+            productive_birth("strong", 1, 900, 900),
+            productive_birth("retained", 2, 500, 500),
+        ];
+
+        assert_eq!(
+            productive_l2_readout("damaged", &births),
+            ProductiveL2Readout::Tied {
+                surfaces: vec!["retained".to_string(), "strong".to_string()]
+            }
+        );
+    }
+
+    #[test]
+    fn productive_readout_can_settle_a_form_inside_one_lemma_basin() {
+        let births = vec![
+            productive_birth("strong", 1, 900, 900),
+            productive_birth("weak", 1, 500, 500),
+        ];
+
+        assert_eq!(
+            productive_l2_readout("damaged", &births),
+            ProductiveL2Readout::Winner {
+                surface: "strong".to_string()
+            }
+        );
+    }
+
+    #[test]
+    fn directional_context_pair_can_settle_only_its_same_lemma_competitor() {
+        let mut preferred = productive_birth("preferred", 1, 700, 700);
+        preferred.target_feature_mask = 11;
+        preferred.context_pair_evidence = vec![ProductiveL2ContextPairEvidence {
+            competitor_feature_mask: 22,
+            evidence: ProductiveContextPairEvidence {
+                positive_support: 3,
+                anti_support: 1,
+                posterior_milli: 666,
+                context_observed: true,
+                exact_positive_support: 3,
+                exact_anti_support: 1,
+                ..ProductiveContextPairEvidence::default()
+            },
+        }];
+        let mut competitor = productive_birth("competitor", 1, 900, 900);
+        competitor.target_feature_mask = 22;
+        competitor.context_pair_evidence = vec![ProductiveL2ContextPairEvidence {
+            competitor_feature_mask: 11,
+            evidence: ProductiveContextPairEvidence {
+                positive_support: 1,
+                anti_support: 3,
+                posterior_milli: 333,
+                context_observed: true,
+                exact_positive_support: 1,
+                exact_anti_support: 3,
+                ..ProductiveContextPairEvidence::default()
+            },
+        }];
+        let mut other_lemma = productive_birth("other-lemma", 2, 500, 500);
+        other_lemma.target_feature_mask = 22;
+
+        assert_eq!(
+            productive_l2_readout(
+                "damaged",
+                &[preferred.clone(), competitor, other_lemma.clone()]
+            ),
+            ProductiveL2Readout::Tied {
+                surfaces: vec!["other-lemma".to_string(), "preferred".to_string()]
+            }
+        );
+        assert_eq!(
+            productive_l2_readout("damaged", &[preferred, other_lemma]),
+            ProductiveL2Readout::Tied {
+                surfaces: vec!["other-lemma".to_string(), "preferred".to_string()]
+            }
+        );
+    }
+
+    #[test]
+    fn productive_readout_abstains_when_input_is_already_a_generated_form() {
+        let births = vec![
+            productive_birth("observed", 1, 900, 900),
+            productive_birth("alternative", 1, 500, 500),
+        ];
+
+        assert_eq!(
+            productive_l2_readout("observed", &births),
+            ProductiveL2Readout::Abstain
+        );
+    }
+
     #[test]
     fn exact_geometry_prefers_a_unique_stronger_operator() {
         let preferred = preferred_exact_geometry_form_refs(
@@ -1803,6 +2520,17 @@ mod standalone_tests {
             mapped.compositional_index_view_bytes(),
             compact.compositional_index_view_bytes()
         );
+        for runtime in [&reference, &compact, &mapped] {
+            for lemma_id in 0..runtime.package.lemma_centers().len() as u32 {
+                let (primary_pos, fast) = package_canonical_source(&runtime.package, lemma_id)
+                    .expect("fast canonical source");
+                let lemma = package_lemma(&runtime.package, lemma_id).expect("full lemma");
+                let full = super::super::productive::canonical_source(&lemma.forms)
+                    .expect("full canonical source");
+                assert_eq!(primary_pos, lemma.primary_pos);
+                assert_eq!(&fast, full);
+            }
+        }
         assert_eq!(
             reference.single_edit_form_refs("дмо", 16),
             compact.single_edit_form_refs("дмо", 16)
@@ -1919,6 +2647,60 @@ mod standalone_tests {
                 .iter()
                 .any(|binding| binding.form_center_ref == shared_form));
         }
+    }
+
+    #[test]
+    fn lexical_lemma_observation_exposes_complete_typed_read_only_sources() {
+        let corpus = L2TeacherCorpus::parse_tsv(
+            "F\tlemma-a\tform-a\tnoun:nom:sg\n\
+             F\tlemma-a\tform-b\tnoun:gen:sg\n\
+             F\tlemma-a\tform-c\tverb:inf\n\
+             T\tlemma-a\tform-a\tnoun:nom:sg\t_ context\n\
+             H\tlemma-a\tform-b\tnoun:gen:sg\theldout _\n",
+        )
+        .expect("teacher");
+        let terminals = BTreeMap::from([("form-a", 1), ("form-b", 2), ("form-c", 3)]);
+        let (package, _) =
+            compile_l2_package(&corpus, 99, |surface| terminals.get(surface).copied())
+                .expect("compile");
+        let field = StandaloneL2Field::from_package(package).expect("load");
+
+        let observation = field
+            .lexical_lemma_observation_v1(0)
+            .expect("observation")
+            .expect("known lemma");
+
+        assert_eq!(observation.lemma_id, 0);
+        assert_eq!(observation.known_pos_domains, vec![1, 2]);
+        assert_eq!(observation.exact_source_forms.len(), 3);
+        assert_eq!(
+            observation.canonical_source_form_ref,
+            observation
+                .exact_source_forms
+                .first()
+                .map(|source| source.form_ref)
+        );
+        assert!(observation.exact_source_forms.windows(2).all(|pair| {
+            (
+                pair[0].canonical_preference,
+                pair[0].normalized_surface.chars().count(),
+                pair[0].feature_mask,
+                &pair[0].normalized_surface,
+                pair[0].form_ref,
+            ) <= (
+                pair[1].canonical_preference,
+                pair[1].normalized_surface.chars().count(),
+                pair[1].feature_mask,
+                &pair[1].normalized_surface,
+                pair[1].form_ref,
+            )
+        }));
+        assert_eq!(
+            field
+                .lexical_lemma_observation_v1(1)
+                .expect("unknown lemma"),
+            None
+        );
     }
 
     #[test]

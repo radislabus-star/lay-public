@@ -1,0 +1,46 @@
+{
+  "kind": "l2_productive_v1_phase_format_v46",
+  "date": "2026-08-11",
+  "verdict": "PASS_scoped_phase_and_package_semantics",
+  "runtime_authority_changed": false,
+  "tested": [
+    "independent positive, anti, hard-negative, and ambiguity phase banks use deterministic integer cosine and fold-only center-count selection",
+    "all Productive Package V1 fixed records preserve normative little-endian widths and reject partial, reserved, or unknown values",
+    "SPV1 and ADV1 pools validate magic, counts, UTF-8, scalar lengths, ordering, deduplication, typed payloads, references, and zero padding",
+    "fixed section ranges have complete non-overlapping ownership",
+    "morph programs have one owner, complete operation ownership, a final TERMINATE, valid slot identities, and checked segment references",
+    "trie nodes form an acyclic single-parent forest reachable from exactly one paradigm root",
+    "terminal, phase polarity, coefficient, calibration, provenance, and delta-manifest references fail closed before mmap publication",
+    "a fully attributed semantic package loads and checksum-valid semantic corruptions are rejected"
+  ],
+  "measured_facts": {
+    "productive_v1_tests_passed": 45,
+    "productive_v1_tests_failed": 0,
+    "format_tests_passed": 7,
+    "phase_tests_passed": 4,
+    "fixed_record_codec_tests_passed": 2,
+    "required_sections": 22,
+    "fixed_feature_coefficients": 15,
+    "cargo_target_bytes_after_gate": 8137715712,
+    "cargo_target_budget_bytes": 12884901888
+  },
+  "not_tested": [
+    "one-raw-pass full-corpus compiler and deterministic reduce",
+    "a corpus-trained Productive V1 package",
+    "fixed 13-class V39 candidate identity and order parity",
+    "seen, slot-heldout, lemma-heldout, ambiguity, false-authority, and false-singleton proof denominators",
+    "composite 32 grounded plus 32 productive lattice and L3 handoff",
+    "remote package bytes, cold publish, steady or peak RSS, hot p99, and physical product matrix"
+  ],
+  "commands": [
+    "scripts/cargo-guard.sh test --lib productive_v1::format::",
+    "scripts/cargo-guard.sh test --lib productive_v1::"
+  ],
+  "source": [
+    "src/nanda_wave/l2_field/productive_v1/phase.rs",
+    "src/nanda_wave/l2_field/productive_v1/records.rs",
+    "src/nanda_wave/l2_field/productive_v1/format.rs",
+    "src/nanda_wave/l2_field/productive_v1/format_validation.rs",
+    "docs/l2-productive-paradigm-field-paper-implementation.md"
+  ]
+}

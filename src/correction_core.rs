@@ -128,6 +128,24 @@ pub struct UnifiedCorrectionCandidate {
     pub error_class: TypingErrorClass,
     pub gate: CandidateGateDecision,
     pub(crate) evidence: Vec<CandidateEvidence>,
+    pub(crate) morphology_slot_evidence: Vec<MorphologySlotEvidence>,
+}
+
+/// Typed L2 evidence for choosing a morphology slot inside one lemma basin.
+///
+/// This metadata may affect candidate order, but it never grants mutation
+/// authority. Generated surfaces remain subject to their producer gate.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct MorphologySlotEvidence {
+    pub(crate) lemma_id: u32,
+    pub(crate) source_feature_mask: u32,
+    pub(crate) target_feature_mask: u32,
+    pub(crate) context_positive_support: u32,
+    pub(crate) context_alternative_support: u32,
+    pub(crate) context_posterior_milli: u16,
+    pub(crate) slot_evidence_milli: i32,
+    pub(crate) joint_evidence_milli: u16,
+    pub(crate) generated: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -163,6 +181,7 @@ impl UnifiedCorrectionCandidate {
                 error_class,
                 gate,
             }],
+            morphology_slot_evidence: Vec::new(),
         }
     }
 
@@ -230,6 +249,7 @@ impl UnifiedCorrectionCandidate {
                 self.evidence.push(evidence);
             }
         }
+        self.extend_morphology_slot_evidence(candidate.morphology_slot_evidence);
     }
 
     pub(crate) fn has_origin(&self, origin: CandidateOrigin) -> bool {
@@ -246,6 +266,17 @@ impl UnifiedCorrectionCandidate {
 
     pub(crate) fn evidence_count(&self) -> usize {
         self.evidence.len()
+    }
+
+    pub(crate) fn extend_morphology_slot_evidence(
+        &mut self,
+        evidence: impl IntoIterator<Item = MorphologySlotEvidence>,
+    ) {
+        for evidence in evidence {
+            if !self.morphology_slot_evidence.contains(&evidence) {
+                self.morphology_slot_evidence.push(evidence);
+            }
+        }
     }
 }
 
@@ -355,6 +386,16 @@ pub(crate) struct CorrectionCandidateScoreTrace {
     pub(crate) l2_transition_phase_positive_centers: u8,
     pub(crate) l2_transition_phase_anti_centers: u8,
     pub(crate) l2_transition_phase_surfaces: u32,
+    pub(crate) l2_morphology_milli: i16,
+    pub(crate) l2_morphology_disposition: &'static str,
+    pub(crate) l2_morphology_lemma_id: u32,
+    pub(crate) l2_morphology_source_feature_mask: u32,
+    pub(crate) l2_morphology_target_feature_mask: u32,
+    pub(crate) l2_morphology_context_posterior_milli: u16,
+    pub(crate) l2_morphology_slot_evidence_milli: i32,
+    pub(crate) l2_morphology_joint_evidence_milli: u16,
+    pub(crate) l2_morphology_competitors: u16,
+    pub(crate) l2_morphology_generated: bool,
     pub(crate) l3_phrase_milli: i16,
     pub(crate) l3_phrase_decision: &'static str,
     pub(crate) l4_hidden_disposition: &'static str,
@@ -448,6 +489,88 @@ pub fn correction_gate_stats_json() -> serde_json::Value {
         "selected_apply": stats.selected_apply,
         "avg_us": avg_us,
         "max_us": stats.max_us,
+    })
+}
+
+pub fn query_canonical_l2_context(text: &str) -> serde_json::Value {
+    let pipeline = crate::config::default_typing_assist_pipeline();
+    let started = Instant::now();
+    let resolution = resolve_text_correction(CorrectionRequest {
+        text,
+        auto_replace: true,
+        typing_assist: true,
+        auto_switch_layout: true,
+        correction_safety: CorrectionSafety::Experimental,
+        typing_assist_pipeline: &pipeline,
+        nanda_autocorrect: true,
+        nanda_candidate_route: CandidateReadoutRoute::CanonicalL2Field,
+        nanda_wave_options: WaveOptions::default(),
+        mode: CorrectionMode::NandaOnly,
+    });
+    let mut candidates = resolution
+        .candidates
+        .iter()
+        .zip(&resolution.candidate_scores)
+        .map(|(candidate, score)| {
+            serde_json::json!({
+                "replacement": candidate.replacement,
+                "source_id": candidate.source_id,
+                "error_class": candidate.error_class.as_str(),
+                "gate_action": format!("{:?}", candidate.gate.action),
+                "gate_reason": candidate.gate.reason,
+                "productive": candidate.source_id == "CanonicalL2ProductiveSurface",
+                "morphology_evidence": candidate.morphology_slot_evidence.iter().map(|evidence| serde_json::json!({
+                    "lemma_id": evidence.lemma_id,
+                    "source_feature_mask": evidence.source_feature_mask,
+                    "target_feature_mask": evidence.target_feature_mask,
+                    "context_positive_support": evidence.context_positive_support,
+                    "context_alternative_support": evidence.context_alternative_support,
+                    "context_posterior_milli": evidence.context_posterior_milli,
+                    "slot_evidence_milli": evidence.slot_evidence_milli,
+                    "joint_evidence_milli": evidence.joint_evidence_milli,
+                    "generated": evidence.generated,
+                })).collect::<Vec<_>>(),
+                "l2_morphology_milli": score.l2_morphology_milli,
+                "l2_morphology_disposition": score.l2_morphology_disposition,
+                "l2_morphology_lemma_id": score.l2_morphology_lemma_id,
+                "l2_morphology_target_feature_mask": score.l2_morphology_target_feature_mask,
+                "l2_morphology_competitors": score.l2_morphology_competitors,
+                "l3_phrase_milli": score.l3_phrase_milli,
+                "l3_phrase_decision": score.l3_phrase_decision,
+                "l4_cross_scene_disposition": score.l4_cross_scene_disposition,
+                "posterior_milli": score.posterior_milli,
+                "risk_milli": score.risk_milli,
+                "decision_rank_milli": score.decision_rank_milli,
+                "selected": score.selected,
+            })
+        })
+        .collect::<Vec<_>>();
+    candidates.sort_by(|left, right| {
+        right["decision_rank_milli"]
+            .as_i64()
+            .cmp(&left["decision_rank_milli"].as_i64())
+            .then_with(|| {
+                left["replacement"]
+                    .as_str()
+                    .cmp(&right["replacement"].as_str())
+            })
+    });
+    serde_json::json!({
+        "kind": "canonical_l2_l3_context_live_query",
+        "text": text,
+        "route": "L1.1 bounded lattice -> canonical L2 local field -> L3 sentence field -> DecisionCore",
+        "elapsed_us": started.elapsed().as_micros() as u64,
+        "selected": resolution.selected.as_ref().map(|candidate| candidate.replacement.as_str()),
+        "decision": resolution.decision.as_ref().map(|decision| decision.replacement.as_str()),
+        "scoreboard": {
+            "total_candidates": resolution.scoreboard.total_candidates,
+            "apply_candidates": resolution.scoreboard.apply_candidates,
+            "suggest_only_candidates": resolution.scoreboard.suggest_only_candidates,
+            "keep_original_candidates": resolution.scoreboard.keep_original_candidates,
+            "veto_candidates": resolution.scoreboard.veto_candidates,
+        },
+        "candidates": candidates,
+        "runtime_authority_changed": false,
     })
 }
 
@@ -652,6 +775,21 @@ impl CorrectionCandidateScoreTrace {
                     l2_transition_phase_anti_centers: decision_signals
                         .l2_transition_phase_anti_centers,
                     l2_transition_phase_surfaces: decision_signals.l2_transition_phase_surfaces,
+                    l2_morphology_milli: decision_signals.l2_morphology_milli,
+                    l2_morphology_disposition: decision_signals.l2_morphology_disposition,
+                    l2_morphology_lemma_id: decision_signals.l2_morphology_lemma_id,
+                    l2_morphology_source_feature_mask: decision_signals
+                        .l2_morphology_source_feature_mask,
+                    l2_morphology_target_feature_mask: decision_signals
+                        .l2_morphology_target_feature_mask,
+                    l2_morphology_context_posterior_milli: decision_signals
+                        .l2_morphology_context_posterior_milli,
+                    l2_morphology_slot_evidence_milli: decision_signals
+                        .l2_morphology_slot_evidence_milli,
+                    l2_morphology_joint_evidence_milli: decision_signals
+                        .l2_morphology_joint_evidence_milli,
+                    l2_morphology_competitors: decision_signals.l2_morphology_competitors,
+                    l2_morphology_generated: decision_signals.l2_morphology_generated,
                     l3_phrase_milli: decision_signals.l3_phrase_milli,
                     l3_phrase_decision: decision_signals.l3_phrase_decision.as_str(),
                     l4_hidden_disposition: decision_signals.l4_hidden_disposition.as_str(),

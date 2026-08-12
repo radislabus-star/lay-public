@@ -28,18 +28,75 @@ const PREEDIT_MODE_CLEAR: u32 = 0;
 
 include!("preedit_readout.rs");
 
+#[derive(Clone, Debug, PartialEq, Eq)]
+struct ObservedPrediction {
+    typed_prefix: String,
+    target_surface: String,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum ObservedPredictionOutcome {
+    ConfirmedAttested,
+    EndingChanged,
+    DivergedAfterPrefix,
+    MatchedUnattested,
+    Censored,
+}
+
+impl ObservedPredictionOutcome {
+    const fn trace_status(self) -> &'static str {
+        match self {
+            Self::ConfirmedAttested => "confirmed_attested",
+            Self::EndingChanged => "ending_changed",
+            Self::DivergedAfterPrefix => "diverged_after_prefix_censored",
+            Self::MatchedUnattested => "matched_unattested",
+            Self::Censored => "rejected_censored",
+        }
+    }
+}
+
+fn observed_prediction_outcome(
+    typed_prefix: &str,
+    predicted_word: &str,
+    observed_word: &str,
+    observed_is_attested: bool,
+) -> ObservedPredictionOutcome {
+    if predicted_word == observed_word {
+        return if observed_is_attested {
+            ObservedPredictionOutcome::ConfirmedAttested
+        } else {
+            ObservedPredictionOutcome::MatchedUnattested
+        };
+    }
+    if !observed_is_attested
+        || !predicted_word.starts_with(typed_prefix)
+        || !observed_word.starts_with(typed_prefix)
+    {
+        return ObservedPredictionOutcome::Censored;
+    }
+    if lay::typing_cpu::TypingCpu::completion_edit_geometry_is_linked(
+        typed_prefix,
+        predicted_word,
+        observed_word,
+    ) {
+        ObservedPredictionOutcome::EndingChanged
+    } else {
+        ObservedPredictionOutcome::DivergedAfterPrefix
+    }
+}
+
 #[derive(Debug, Default)]
 pub(crate) struct PreeditFastState {
     token: String,
     target_surface: Option<String>,
-    observed_prediction_target: Option<String>,
+    observed_prediction: Option<ObservedPrediction>,
 }
 
 impl PreeditFastState {
     pub(crate) fn reset(&mut self) {
         self.token.clear();
         self.target_surface = None;
-        self.observed_prediction_target = None;
+        self.observed_prediction = None;
     }
 
     pub(crate) fn push(&mut self, ch: char) {
@@ -50,7 +107,7 @@ impl PreeditFastState {
         // A typed grapheme is an explicit continuation choice. Recompute the
         // visible completion from the new prefix instead of pinning an earlier
         // automatic target such as "перезагрузка" across the whole word.
-        // Keep observed_prediction_target for boundary feedback only.
+        // Keep the first visible prediction for boundary feedback only.
         self.target_surface = None;
         self.token.push(ch);
         trim_tail_buffer_to(&mut self.token, PREEDIT_TOKEN_LIMIT);
@@ -71,14 +128,22 @@ impl PreeditFastState {
     /// Keep the first visible full-word prediction until the word boundary.
     /// Readout may change its suffix while the user keeps typing, but that
     /// initial target is the prediction whose outcome must be learned.
-    fn observe_prediction_target(&mut self, target: Option<String>) {
-        if self.observed_prediction_target.is_none() {
-            self.observed_prediction_target = target.filter(|target| !target.is_empty());
+    fn observe_prediction_target(&mut self, typed_prefix: &str, target: Option<String>) {
+        if self.observed_prediction.is_none() {
+            self.observed_prediction =
+                target
+                    .filter(|target| !target.is_empty())
+                    .map(|target_surface| ObservedPrediction {
+                        typed_prefix: typed_prefix.to_lowercase(),
+                        target_surface,
+                    });
         }
     }
 
     fn observed_prediction_target(&self) -> Option<&str> {
-        self.observed_prediction_target.as_deref()
+        self.observed_prediction
+            .as_ref()
+            .map(|prediction| prediction.target_surface.as_str())
     }
 
     fn clear_target(&mut self) {
@@ -87,7 +152,7 @@ impl PreeditFastState {
 
     pub(crate) fn clear_candidate_tracking(&mut self) {
         self.target_surface = None;
-        self.observed_prediction_target = None;
+        self.observed_prediction = None;
     }
 
     #[cfg(test)]
@@ -329,7 +394,8 @@ impl LayIbusEngine {
                     .get(self.preedit_candidate_index)
                     .map(|suffix| format!("{partial}{suffix}"))
             });
-        self.preedit_fast.observe_prediction_target(target.clone());
+        self.preedit_fast
+            .observe_prediction_target(partial, target.clone());
         self.preedit_fast.remember_target(target);
     }
 
@@ -432,11 +498,7 @@ impl LayIbusEngine {
         // Whitespace resets the fast preedit state. Preserve the prediction
         // first so the boundary can turn it into supervised feedback.
         let prediction_before_boundary = is_boundary
-            .then(|| {
-                self.preedit_fast
-                    .observed_prediction_target()
-                    .map(str::to_owned)
-            })
+            .then(|| self.preedit_fast.observed_prediction.clone())
             .flatten();
         self.surrounding_text_snapshot = None;
         self.tail_buffer.push(ch);
@@ -448,9 +510,9 @@ impl LayIbusEngine {
                 .is_some_and(|tail| self.finalize_pending_ime_completion_edit(tail));
             if let Some(tail_before_boundary) = tail_before_boundary.as_deref() {
                 if !completion_edit_finalized {
-                    self.record_ignored_precognition_at_boundary(
+                    self.record_precognition_outcome_at_boundary(
                         tail_before_boundary,
-                        prediction_before_boundary.as_deref(),
+                        prediction_before_boundary.as_ref(),
                     );
                 }
             }
@@ -463,10 +525,10 @@ impl LayIbusEngine {
         self.publish_tail_handoff();
     }
 
-    fn record_ignored_precognition_at_boundary(
+    fn record_precognition_outcome_at_boundary(
         &self,
         tail_before_boundary: &str,
-        prediction_before_boundary: Option<&str>,
+        prediction_before_boundary: Option<&ObservedPrediction>,
     ) {
         let Some((prefix, observed_word)) = split_last_alphabetic_token(tail_before_boundary)
         else {
@@ -474,32 +536,66 @@ impl LayIbusEngine {
         };
         let observed_word = observed_word.to_lowercase();
         let context = lay::nanda_wave::llmwave::tokenize(prefix);
-        let predicted_word = prediction_before_boundary.map(str::to_owned).or_else(|| {
+        let fallback_prediction;
+        let prediction = if let Some(prediction) = prediction_before_boundary {
+            prediction
+        } else {
             let suffix = self.selected_visible_completion_suffix();
-            preedit_suffix_context_and_word(tail_before_boundary, &suffix)
-                .map(|(_, predicted)| predicted)
-        });
-        let Some(predicted_word) = predicted_word.filter(|word| !word.is_empty()) else {
-            return;
+            let Some((_, target_surface)) =
+                preedit_suffix_context_and_word(tail_before_boundary, &suffix)
+            else {
+                return;
+            };
+            let typed_prefix = target_surface
+                .strip_suffix(&suffix)
+                .unwrap_or(&observed_word)
+                .to_lowercase();
+            fallback_prediction = ObservedPrediction {
+                typed_prefix,
+                target_surface,
+            };
+            &fallback_prediction
         };
-        if predicted_word == observed_word
-            && lay::typing_cpu::TypingCpu::learning_target_is_attested(&observed_word)
-        {
-            lay::typing_cpu::TypingCpu::record_confirmed_completion_prediction(
-                &context.join(" "),
-                &predicted_word,
-            );
-            trace::record(r#"{"kind":"ibus_prediction_outcome","status":"confirmed_attested"}"#);
+        let predicted_word = prediction.target_surface.to_lowercase();
+        let typed_prefix = prediction.typed_prefix.to_lowercase();
+        if predicted_word.is_empty() || typed_prefix.is_empty() {
             return;
         }
-        let status = if predicted_word == observed_word {
-            "matched_unattested"
-        } else {
-            "ignored"
-        };
+        let outcome = observed_prediction_outcome(
+            &typed_prefix,
+            &predicted_word,
+            &observed_word,
+            lay::typing_cpu::TypingCpu::learning_target_is_attested(&observed_word),
+        );
+        match outcome {
+            ObservedPredictionOutcome::ConfirmedAttested => {
+                lay::typing_cpu::TypingCpu::record_confirmed_completion_prediction(
+                    &context.join(" "),
+                    &predicted_word,
+                );
+            }
+            ObservedPredictionOutcome::EndingChanged => {
+                lay::typing_cpu::TypingCpu::record_edited_completion(
+                    &context.join(" "),
+                    &typed_prefix,
+                    &predicted_word,
+                    &observed_word,
+                );
+            }
+            ObservedPredictionOutcome::DivergedAfterPrefix
+            | ObservedPredictionOutcome::MatchedUnattested
+            | ObservedPredictionOutcome::Censored => {
+                // Absence of Tab and an unrelated continuation are censored.
+                // Neither is evidence against the lemma or visible suggestion.
+            }
+        }
+        let status = outcome.trace_status();
         trace::record(format!(
-            r#"{{"kind":"ibus_prediction_outcome","status":{}}}"#,
-            serde_json::to_string(status).unwrap_or_else(|_| "\"ignored\"".to_string())
+            r#"{{"kind":"ibus_prediction_outcome","status":{},"typed_prefix":{},"suggested":{},"final":{}}}"#,
+            serde_json::to_string(status).unwrap_or_else(|_| "\"rejected_censored\"".to_string()),
+            serde_json::to_string(&typed_prefix).unwrap_or_else(|_| "\"\"".to_string()),
+            serde_json::to_string(&predicted_word).unwrap_or_else(|_| "\"\"".to_string()),
+            serde_json::to_string(&observed_word).unwrap_or_else(|_| "\"\"".to_string()),
         ));
     }
 

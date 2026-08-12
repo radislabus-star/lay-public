@@ -32,6 +32,10 @@ pub(crate) struct PendingVisiblePostcondition {
     pub(crate) dispatched_epoch: u64,
     pub(crate) dispatched_at: Instant,
     pub(crate) feedback: Option<PendingSystemOutcomeFeedback>,
+    /// IME layout ownership follows the externally confirmed committed text.
+    /// Keeping it on the receipt prevents an engine switch from destroying the
+    /// observation path before the client publishes the new surrounding tail.
+    pub(crate) layout_sync_text: Option<String>,
 }
 
 /// Payload retained until IBus exposes the post-dispatch visible state.

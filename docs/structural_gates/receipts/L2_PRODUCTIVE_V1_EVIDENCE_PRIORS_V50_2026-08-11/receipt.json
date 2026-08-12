@@ -1,0 +1,49 @@
+{
+  "kind": "l2_productive_v1_evidence_priors_v50",
+  "date": "2026-08-11",
+  "verdict": "PASS_scoped_self_contained_train_prior_wire_contract",
+  "runtime_authority_changed": false,
+  "paper_defect_closed": "section 10.2 required four TRAIN priors but the V49 package had no serialized owner",
+  "tested": [
+    "productive model packages require exactly four canonical evidence-prior channels",
+    "V39 speed-parity packages require an empty evidence-prior section",
+    "Jeffreys-smoothed priors use exact nonzero odd 2*count+1 wire values",
+    "compiler fails on u64 smoothing overflow",
+    "deep package validation rejects malformed, missing, repeated, or reordered prior channels",
+    "the amended 23-section package compiles twice to byte-identical output and reopens through mmap"
+  ],
+  "measured_facts": {
+    "productive_v1_tests_passed": 51,
+    "productive_v1_tests_failed": 0,
+    "required_sections_before": 22,
+    "required_sections_after": 23,
+    "evidence_prior_channels": 4,
+    "evidence_prior_record_bytes": 24,
+    "micro_package_bytes_before": 14600,
+    "micro_package_bytes_after": 14728,
+    "micro_package_increment_bytes": 128,
+    "micro_package_sha256": "ef0bc135fba29c952b2c3353f6850288f2b3dbeb330a5b125e809e067e351ac0",
+    "deterministic_publications_compared": 2,
+    "cargo_target_bytes_after_gate": 8140054528,
+    "cargo_target_budget_bytes": 12884901888
+  },
+  "not_tested": [
+    "full-corpus prior counts",
+    "corpus-trained coefficient or calibration quality",
+    "trained mmap runtime traversal and fixed heldout proof",
+    "remote resource and physical product gates",
+    "live runtime authority"
+  ],
+  "commands": [
+    "scripts/cargo-guard.sh test --lib productive_v1::",
+    "scripts/cargo-guard.sh test --lib compiler_is_deterministic_and_reopens_a_deep_valid_mmap_package -- --nocapture",
+    "scripts/cargo-guard.sh --status"
+  ],
+  "source": [
+    "src/nanda_wave/l2_field/productive_v1/records.rs",
+    "src/nanda_wave/l2_field/productive_v1/format.rs",
+    "src/nanda_wave/l2_field/productive_v1/format_validation.rs",
+    "src/nanda_wave/l2_field/productive_v1/compiler.rs",
+    "docs/l2-productive-paradigm-field-paper-implementation.md"
+  ]
+}

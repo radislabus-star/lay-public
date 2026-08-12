@@ -1,0 +1,63 @@
+{
+  "kind": "l2_productive_v1_package_compiler_v49",
+  "date": "2026-08-11",
+  "verdict": "PASS_scoped_deterministic_deep_valid_mmap_package_compiler",
+  "runtime_authority_changed": false,
+  "tested": [
+    "typed morphology events pass through bounded external sort, one-lemma reduce, and transition induction into the package compiler",
+    "one transferable mass paradigm and one lemma-local exact allomorph are compiled in the same package",
+    "all 22 required package sections are assembled and deep-validated",
+    "productive terminals reconstruct their complete trie path and therefore retain decoder_ref zero",
+    "exact lemma-local allomorph operations retain a checked nonzero segment-pool reference",
+    "evidence coefficients are fitted through all five inner folds and serialized as one complete feature vector",
+    "calibration is fitted from 220 disjoint groups and serialized by collision-checked observable stratum hashes",
+    "published package reopens through mmap and passes fail-closed semantic validation",
+    "two independent compiler publications are byte-identical and have the same SHA-256"
+  ],
+  "measured_facts": {
+    "productive_v1_tests_passed": 51,
+    "productive_v1_tests_failed": 0,
+    "micro_train_lemmas": 301,
+    "micro_transition_observations": 602,
+    "micro_transferable_observations": 601,
+    "micro_exact_allomorph_observations": 1,
+    "micro_evidence_training_pairs": 5,
+    "micro_calibration_groups": 220,
+    "micro_package_bytes": 14600,
+    "micro_package_sha256": "593a234a0448b37528649e3568f429ac440edfaa71df6a4964fef5d0cfe59ca8",
+    "micro_paradigms": 2,
+    "micro_bindings": 301,
+    "micro_programs": 4,
+    "micro_operations": 9,
+    "micro_trie_nodes": 7,
+    "micro_trie_arcs": 5,
+    "micro_terminals": 3,
+    "micro_calibration_rows": 5,
+    "deterministic_publications_compared": 2,
+    "cargo_target_bytes_after_gate": 8139993088,
+    "cargo_target_budget_bytes": 12884901888
+  },
+  "not_tested": [
+    "full-corpus one-raw-pass compilation",
+    "corpus-trained context evidence, phase centers, coefficients, and calibration quality",
+    "full-corpus package bytes, cold publish, steady RSS, and peak RSS",
+    "trained mmap prefix-trie runtime traversal and top-32 parity",
+    "seen, slot-heldout, lemma-heldout, ambiguity, false-authority, and false-singleton proof denominators",
+    "composite 32 grounded plus 32 productive lattice and L3 handoff",
+    "remote hot p99 and physical product matrix",
+    "live runtime authority"
+  ],
+  "commands": [
+    "scripts/cargo-guard.sh test --lib compiler_is_deterministic_and_reopens_a_deep_valid_mmap_package -- --nocapture",
+    "scripts/cargo-guard.sh test --lib productive_v1::",
+    "scripts/cargo-guard.sh --status"
+  ],
+  "source": [
+    "src/nanda_wave/l2_field/productive_v1/compiler.rs",
+    "src/nanda_wave/l2_field/productive_v1/calibrate.rs",
+    "src/nanda_wave/l2_field/productive_v1/score.rs",
+    "src/nanda_wave/l2_field/productive_v1/format.rs",
+    "src/nanda_wave/l2_field/productive_v1/format_validation.rs",
+    "docs/l2-productive-paradigm-field-paper-implementation.md"
+  ]
+}

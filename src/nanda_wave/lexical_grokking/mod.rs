@@ -17,7 +17,7 @@ mod pairwise;
 mod posting_codec;
 mod posting_spool;
 mod proof;
-mod restoration;
+pub(super) mod restoration;
 mod runtime;
 mod service;
 mod training_budget;

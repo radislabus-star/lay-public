@@ -16,6 +16,15 @@ impl LayIbusEngine {
         // PROTECTED USER CONTRACT: an immediate double Shift after autocorrect
         // restores the exact recorded input before any layout/manual toggle.
         // Keep this first; typing_transition_authority_contract enforces order.
+        if self.defer_pending_ime_auto_undo_until_visible() {
+            trace::record_auto_undo_retry("requested_exact_snapshot");
+            Self::require_surrounding_text(emitter)
+                .await
+                .map_err(|error| fdo::Error::Failed(error.to_string()))?;
+            // The IME owns the pending rollback. Keep the daemon from replaying
+            // a second route while SetSurroundingText confirms the exact tail.
+            return Ok(Some(self.layout_is_ru));
+        }
         if let Some(target_layout_is_ru) = self.undo_last_ime_autocorrect(emitter).await? {
             return Ok(Some(target_layout_is_ru));
         }

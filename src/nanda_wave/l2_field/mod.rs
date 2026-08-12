@@ -10,6 +10,10 @@ mod contextual_compositional_proof;
 mod format;
 mod model;
 mod package_bytes;
+mod productive;
+mod productive_format;
+mod productive_proof;
+mod productive_v1;
 mod proof;
 mod runtime;
 mod runtime_storage;
@@ -23,9 +27,33 @@ pub const CANONICAL_L2_ACTIVE_LEMMA_LIMIT: usize = 256;
 pub const CANONICAL_L2_FEATURE_LIMIT: usize = 16;
 pub const CANONICAL_L2_FORM_LIMIT: usize = 32;
 pub const CANONICAL_L2_ATOM_RELATION_LIMIT: usize = 196_608;
+pub const CANONICAL_L2_PRODUCTIVE_LEMMA_LIMIT: usize = 32;
+pub const CANONICAL_L2_PRODUCTIVE_FORM_LIMIT: usize = 8;
 
 const DEFAULT_L2_MODEL_DIR_SUFFIX: &str = ".local/share/lay/nanda_wave/l2";
 const DEFAULT_L2_PACKAGE_NAME: &str = "LAY-L2-RU-FULL-v13.bin";
+const DEFAULT_PRODUCTIVE_L2_PACKAGE_NAME: &str = "LAY-L2-RU-PRODUCTIVE-v1.bin";
+const DEFAULT_PRODUCTIVE_L2_V1_PACKAGE_NAME: &str = "LAY-L2-PRODUCTIVE-PARADIGM-v90.p2m";
+
+fn productive_sidecar_state() -> &'static std::sync::RwLock<
+    Option<std::sync::Arc<productive_format::CompactProductiveMorphologyView>>,
+> {
+    static STATE: std::sync::OnceLock<
+        std::sync::RwLock<
+            Option<std::sync::Arc<productive_format::CompactProductiveMorphologyView>>,
+        >,
+    > = std::sync::OnceLock::new();
+    STATE.get_or_init(|| std::sync::RwLock::new(None))
+}
+
+fn productive_v1_state(
+) -> &'static std::sync::RwLock<Option<std::sync::Arc<productive_v1::PackagedProductiveRuntimeV1>>>
+{
+    static STATE: std::sync::OnceLock<
+        std::sync::RwLock<Option<std::sync::Arc<productive_v1::PackagedProductiveRuntimeV1>>>,
+    > = std::sync::OnceLock::new();
+    STATE.get_or_init(|| std::sync::RwLock::new(None))
+}
 
 pub fn default_l2_model_dir() -> std::path::PathBuf {
     if let Some(explicit) = std::env::var_os("LAY_L2_MODEL_DIR") {
@@ -55,6 +83,180 @@ pub fn discover_installed_l2_package() -> std::io::Result<Option<std::path::Path
     Ok(path.is_file().then_some(path))
 }
 
+pub fn discover_installed_productive_l2_sidecar() -> std::io::Result<Option<std::path::PathBuf>> {
+    if let Some(explicit) = std::env::var_os("LAY_L2_PRODUCTIVE_PACKAGE") {
+        let path = std::path::PathBuf::from(explicit);
+        if path.is_file() {
+            return Ok(Some(path));
+        }
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::NotFound,
+            format!(
+                "LAY_L2_PRODUCTIVE_PACKAGE points to a missing package: {}",
+                path.display()
+            ),
+        ));
+    }
+    let path = default_l2_model_dir().join(DEFAULT_PRODUCTIVE_L2_PACKAGE_NAME);
+    Ok(path.is_file().then_some(path))
+}
+
+pub fn discover_installed_productive_l2_v1_package() -> std::io::Result<Option<std::path::PathBuf>>
+{
+    if let Some(explicit) = std::env::var_os("LAY_L2_PRODUCTIVE_V1_PACKAGE") {
+        let path = std::path::PathBuf::from(explicit);
+        if path.is_file() {
+            return Ok(Some(path));
+        }
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::NotFound,
+            format!(
+                "LAY_L2_PRODUCTIVE_V1_PACKAGE points to a missing package: {}",
+                path.display()
+            ),
+        ));
+    }
+    let path = default_l2_model_dir().join(DEFAULT_PRODUCTIVE_L2_V1_PACKAGE_NAME);
+    Ok(path.is_file().then_some(path))
+}
+
+fn installed_productive_l2_v1(
+) -> Result<std::sync::Arc<productive_v1::PackagedProductiveRuntimeV1>, String> {
+    if let Some(runtime) = productive_v1_state()
+        .read()
+        .map_err(|_| "productive V1 runtime lock poisoned")?
+        .clone()
+    {
+        return Ok(runtime);
+    }
+    reload_productive_l2_v1_inner()
+}
+
+fn reload_productive_l2_v1_inner(
+) -> Result<std::sync::Arc<productive_v1::PackagedProductiveRuntimeV1>, String> {
+    let productive_path = discover_installed_productive_l2_v1_package()
+        .map_err(|error| error.to_string())?
+        .ok_or_else(|| "productive L2 V1 package is not installed".to_string())?;
+    let l11_path = crate::nanda_wave::discover_installed_l11_package()
+        .map_err(|error| error.to_string())?
+        .ok_or_else(|| "L1.1 package is not installed".to_string())?
+        .artifact_path;
+    let canonical_l2_path = discover_installed_l2_package()
+        .map_err(|error| error.to_string())?
+        .ok_or_else(|| "canonical L2 package is not installed".to_string())?;
+    let l11_sha256 = sha256_file(&l11_path)?;
+    let canonical_l2_sha256 = sha256_file(&canonical_l2_path)?;
+    let runtime = std::sync::Arc::new(
+        productive_v1::PackagedProductiveRuntimeV1::load_with_semantic_transducer(
+            &productive_path,
+            l11_sha256,
+            canonical_l2_sha256,
+        )?,
+    );
+    *productive_v1_state()
+        .write()
+        .map_err(|_| "productive V1 runtime lock poisoned")? = Some(runtime.clone());
+    Ok(runtime)
+}
+
+pub fn reload_productive_l2_v1() -> serde_json::Value {
+    match reload_productive_l2_v1_inner() {
+        Ok(runtime) => serde_json::json!({
+            "status": "reloaded_live_owner",
+            "package_bytes": runtime.package_bytes(),
+            "recovery_package_bytes": runtime.anchor_recovery_package_bytes(),
+            "resident_cache_bytes": runtime.resident_cache_bytes(),
+            "mmap_backed": runtime.mmap_backed(),
+            "package_sha256": hex_sha256(runtime.package_sha256()),
+            "runtime_authority_changed": true,
+        }),
+        Err(error) => serde_json::json!({
+            "status": "unavailable",
+            "message": error,
+            "runtime_authority_changed": false,
+        }),
+    }
+}
+
+pub fn productive_l2_v1_status() -> serde_json::Value {
+    let package = discover_installed_productive_l2_v1_package()
+        .ok()
+        .flatten()
+        .map(|path| path.display().to_string());
+    match installed_productive_l2_v1() {
+        Ok(runtime) => serde_json::json!({
+            "status": "ready_live_owner",
+            "package": package,
+            "package_bytes": runtime.package_bytes(),
+            "recovery_package_bytes": runtime.anchor_recovery_package_bytes(),
+            "recovery_paths": runtime.anchor_recovery_path_count(),
+            "resident_cache_bytes": runtime.resident_cache_bytes(),
+            "mmap_backed": runtime.mmap_backed(),
+            "package_sha256": hex_sha256(runtime.package_sha256()),
+            "route": "L1.1 bounded lattice -> Productive V90 L2 -> common L3 -> DecisionCore -> verifier",
+            "runtime_authority_changed": true,
+        }),
+        Err(error) => serde_json::json!({
+            "status": "unavailable",
+            "package": package,
+            "message": error,
+            "runtime_authority_changed": false,
+        }),
+    }
+}
+
+fn installed_productive_l2_sidecar(
+) -> Result<std::sync::Arc<productive_format::CompactProductiveMorphologyView>, String> {
+    if let Some(view) = productive_sidecar_state()
+        .read()
+        .map_err(|_| "productive sidecar lock poisoned")?
+        .clone()
+    {
+        return Ok(view);
+    }
+    reload_productive_l2_sidecar_inner()
+}
+
+fn reload_productive_l2_sidecar_inner(
+) -> Result<std::sync::Arc<productive_format::CompactProductiveMorphologyView>, String> {
+    let path = discover_installed_productive_l2_sidecar()
+        .map_err(|error| error.to_string())?
+        .ok_or_else(|| "productive L2 sidecar is not installed".to_string())?;
+    let view = std::sync::Arc::new(productive_format::CompactProductiveMorphologyView::load(
+        &path,
+    )?);
+    if let Ok(field) = installed_l2_field() {
+        if view.l2_fingerprint() != field.l1_package_fingerprint() {
+            return Err(
+                "productive sidecar L1.1 fingerprint does not match canonical L2".to_string(),
+            );
+        }
+    }
+    *productive_sidecar_state()
+        .write()
+        .map_err(|_| "productive sidecar lock poisoned")? = Some(view.clone());
+    cache::clear();
+    bridge::clear_prepared_field_cache();
+    Ok(view)
+}
+
+pub fn reload_productive_l2_sidecar() -> serde_json::Value {
+    match reload_productive_l2_sidecar_inner() {
+        Ok(view) => serde_json::json!({
+            "status": "reloaded",
+            "backing_bytes": view.backing_bytes(),
+            "mmap_backed": view.mmap_backed(),
+            "l2_package_fingerprint": view.l2_fingerprint(),
+            "runtime_authority_changed": false,
+        }),
+        Err(error) => serde_json::json!({
+            "status": "unavailable",
+            "message": error,
+            "runtime_authority_changed": false,
+        }),
+    }
+}
+
 fn installed_l2_field() -> Result<&'static runtime::StandaloneL2Field, &'static str> {
     static FIELD: std::sync::OnceLock<Result<runtime::StandaloneL2Field, String>> =
         std::sync::OnceLock::new();
@@ -69,11 +271,33 @@ fn installed_l2_field() -> Result<&'static runtime::StandaloneL2Field, &'static 
         .map_err(String::as_str)
 }
 
+pub(crate) fn surfaces_share_morphology_identity(left: &str, right: &str) -> bool {
+    let Ok(field) = installed_l2_field() else {
+        return false;
+    };
+    let (Some(left_ref), Some(right_ref)) = (
+        field.form_ref_for_surface(left),
+        field.form_ref_for_surface(right),
+    ) else {
+        return false;
+    };
+    let left_lemmas = field
+        .imported_binding_identities_for_form(left_ref)
+        .into_iter()
+        .map(|(lemma_id, _)| lemma_id)
+        .collect::<std::collections::BTreeSet<_>>();
+    field
+        .imported_binding_identities_for_form(right_ref)
+        .into_iter()
+        .any(|(lemma_id, _)| left_lemmas.contains(&lemma_id))
+}
+
 pub(crate) fn warm_up_installed_l2_field() {
     // Loading and indexing the standalone package can take hundreds of
     // milliseconds. Keep that first touch on the existing background IME
     // warmup thread instead of charging it to the user's first Space.
     let _ = installed_l2_field();
+    let _ = installed_productive_l2_v1();
 }
 
 pub fn canonical_l2_status() -> serde_json::Value {
@@ -118,6 +342,260 @@ pub fn canonical_l2_status() -> serde_json::Value {
             "message": error,
         }),
     }
+}
+
+pub fn compile_productive_l2_sidecar(
+    l2_package_path: &std::path::Path,
+    morphology_corpus_path: &std::path::Path,
+    output_path: &std::path::Path,
+    minimum_profile_support: u32,
+) -> std::io::Result<serde_json::Value> {
+    if minimum_profile_support == 0 {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::InvalidInput,
+            "productive sidecar profile support must be greater than zero",
+        ));
+    }
+    let started = std::time::Instant::now();
+    let field = runtime::StandaloneL2Field::load(l2_package_path).map_err(std::io::Error::other)?;
+    let load_us = started.elapsed().as_micros() as u64;
+    let training_started = std::time::Instant::now();
+    let mut index = field
+        .train_productive_morphology(|_| true, minimum_profile_support)
+        .map_err(std::io::Error::other)?;
+    index.train_context_slots_from_corpus(
+        morphology_corpus_path,
+        &std::collections::BTreeSet::new(),
+    )?;
+    let training_us = training_started.elapsed().as_micros() as u64;
+    let report = index.report().clone();
+    let encoding_started = std::time::Instant::now();
+    let (bytes, stats) = productive_format::encode_index(&index, field.l1_package_fingerprint())
+        .map_err(std::io::Error::other)?;
+    let encoded_sha256 = sha256_hex(&bytes);
+    let view = productive_format::CompactProductiveMorphologyView::from_bytes(bytes.clone())
+        .map_err(std::io::Error::other)?;
+    if view.l2_fingerprint() != field.l1_package_fingerprint()
+        || view.report() != report
+        || view.backing_bytes() != bytes.len()
+    {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::InvalidData,
+            "productive sidecar round-trip changed metadata",
+        ));
+    }
+    let encoding_us = encoding_started.elapsed().as_micros() as u64;
+    write_atomic(output_path, &bytes)?;
+    Ok(serde_json::json!({
+        "kind": "canonical_l2_productive_morphology_sidecar_v2",
+        "verdict": "PASS_format_roundtrip",
+        "l2_package": l2_package_path,
+        "l2_package_fingerprint": field.l1_package_fingerprint(),
+        "morphology_corpus": morphology_corpus_path,
+        "minimum_profile_support": minimum_profile_support,
+        "output": output_path,
+        "output_bytes": bytes.len(),
+        "output_sha256": encoded_sha256,
+        "format_version": stats.version,
+        "rules": stats.rules,
+        "target_features": stats.target_features,
+        "context_slots": stats.context_slots,
+        "known_contexts": stats.known_contexts,
+        "context_pairs": stats.context_pairs,
+        "payload_bytes": stats.payload_bytes,
+        "observed_lemmas": report.observed_lemmas,
+        "admitted_lemmas": report.admitted_lemmas,
+        "observed_transforms": report.observed_transforms,
+        "admitted_profiles": report.admitted_profiles,
+        "rejected_low_support_profiles": report.rejected_low_support_profiles,
+        "observed_context_rows": report.observed_context_rows,
+        "admitted_context_rows": report.admitted_context_rows,
+        "rejected_context_rows": report.rejected_context_rows,
+        "observed_competitor_rows": report.observed_competitor_rows,
+        "observed_competitor_surfaces": report.observed_competitor_surfaces,
+        "same_lemma_competitor_surfaces": report.same_lemma_competitor_surfaces,
+        "admitted_pair_observations": report.admitted_pair_observations,
+        "load_us": load_us,
+        "training_us": training_us,
+        "encoding_us": encoding_us,
+        "peak_rss_kib": proc_status_kib("VmHWM:"),
+        "runtime_authority_changed": false,
+        "not_tested": [
+            "generated-form parity against the trained index",
+            "fixed restoration quality",
+            "live L2/L3 integration",
+            "daemon and IBus latency",
+        ],
+    }))
+}
+
+pub fn audit_productive_anchor_recovery_v1(
+    axis_schema_path: &std::path::Path,
+    work_root: &std::path::Path,
+    scratch_root: &std::path::Path,
+) -> std::io::Result<serde_json::Value> {
+    productive_v1::audit_productive_anchor_recovery_v1(axis_schema_path, work_root, scratch_root)
+        .map_err(std::io::Error::other)
+}
+
+pub fn estimate_productive_semantic_transducer_v1(
+    productive_package_path: &std::path::Path,
+) -> std::io::Result<serde_json::Value> {
+    productive_v1::estimate_productive_semantic_transducer_v1(productive_package_path)
+        .map_err(std::io::Error::other)
+}
+
+#[allow(clippy::too_many_arguments)]
+pub fn estimate_productive_semantic_transducer_heldout_v1(
+    l1_package_path: &std::path::Path,
+    l2_package_path: &std::path::Path,
+    productive_package_path: &std::path::Path,
+    axis_schema_path: &std::path::Path,
+    work_dir: &std::path::Path,
+    heldout_per_class: usize,
+    requested_workers: usize,
+) -> std::io::Result<serde_json::Value> {
+    productive_v1::estimate_productive_semantic_transducer_heldout_v1(
+        l1_package_path,
+        l2_package_path,
+        productive_package_path,
+        axis_schema_path,
+        work_dir,
+        heldout_per_class,
+        requested_workers,
+    )
+}
+
+#[allow(clippy::too_many_arguments)]
+pub fn compile_productive_paradigm_field_v1(
+    l11_package_path: &std::path::Path,
+    canonical_l2_path: &std::path::Path,
+    corpus_path: &std::path::Path,
+    axis_schema_path: &std::path::Path,
+    work_root: &std::path::Path,
+    output_path: &std::path::Path,
+    expected_corpus_sha256: &str,
+    expected_corpus_bytes: u64,
+    workers: usize,
+) -> std::io::Result<serde_json::Value> {
+    let expected_corpus_sha256 = parse_sha256_hex(expected_corpus_sha256)
+        .map_err(|error| std::io::Error::new(std::io::ErrorKind::InvalidInput, error))?;
+    let mut progress = |stage: &str| eprintln!("productive_v1 stage={stage}");
+    productive_v1::compile_productive_paradigm_field_v1(
+        &productive_v1::ProductiveOrchestratorConfigV1 {
+            l11_package_path: l11_package_path.to_path_buf(),
+            canonical_l2_path: canonical_l2_path.to_path_buf(),
+            corpus_path: corpus_path.to_path_buf(),
+            axis_schema_path: axis_schema_path.to_path_buf(),
+            work_root: work_root.to_path_buf(),
+            output_path: output_path.to_path_buf(),
+            expected_corpus_sha256,
+            expected_corpus_bytes,
+            workers,
+            shared_support_recovery: false,
+        },
+        &mut progress,
+    )
+    .map_err(std::io::Error::other)
+}
+
+#[allow(clippy::too_many_arguments)]
+pub fn resume_productive_paradigm_field_v1(
+    l11_package_path: &std::path::Path,
+    canonical_l2_path: &std::path::Path,
+    corpus_path: &std::path::Path,
+    axis_schema_path: &std::path::Path,
+    work_root: &std::path::Path,
+    output_path: &std::path::Path,
+    expected_corpus_sha256: &str,
+    expected_corpus_bytes: u64,
+    workers: usize,
+) -> std::io::Result<serde_json::Value> {
+    let expected_corpus_sha256 = parse_sha256_hex(expected_corpus_sha256)
+        .map_err(|error| std::io::Error::new(std::io::ErrorKind::InvalidInput, error))?;
+    let mut progress = |stage: &str| eprintln!("productive_v1 stage={stage}");
+    productive_v1::resume_productive_paradigm_field_v1(
+        &productive_v1::ProductiveOrchestratorConfigV1 {
+            l11_package_path: l11_package_path.to_path_buf(),
+            canonical_l2_path: canonical_l2_path.to_path_buf(),
+            corpus_path: corpus_path.to_path_buf(),
+            axis_schema_path: axis_schema_path.to_path_buf(),
+            work_root: work_root.to_path_buf(),
+            output_path: output_path.to_path_buf(),
+            expected_corpus_sha256,
+            expected_corpus_bytes,
+            workers,
+            shared_support_recovery: false,
+        },
+        &mut progress,
+    )
+    .map_err(std::io::Error::other)
+}
+
+#[allow(clippy::too_many_arguments)]
+pub fn resume_productive_paradigm_field_v1_shared_support(
+    l11_package_path: &std::path::Path,
+    canonical_l2_path: &std::path::Path,
+    corpus_path: &std::path::Path,
+    axis_schema_path: &std::path::Path,
+    work_root: &std::path::Path,
+    output_path: &std::path::Path,
+    expected_corpus_sha256: &str,
+    expected_corpus_bytes: u64,
+    workers: usize,
+) -> std::io::Result<serde_json::Value> {
+    let expected_corpus_sha256 = parse_sha256_hex(expected_corpus_sha256)
+        .map_err(|error| std::io::Error::new(std::io::ErrorKind::InvalidInput, error))?;
+    let mut progress = |stage: &str| eprintln!("productive_v1 stage={stage}");
+    productive_v1::resume_productive_paradigm_field_v1(
+        &productive_v1::ProductiveOrchestratorConfigV1 {
+            l11_package_path: l11_package_path.to_path_buf(),
+            canonical_l2_path: canonical_l2_path.to_path_buf(),
+            corpus_path: corpus_path.to_path_buf(),
+            axis_schema_path: axis_schema_path.to_path_buf(),
+            work_root: work_root.to_path_buf(),
+            output_path: output_path.to_path_buf(),
+            expected_corpus_sha256,
+            expected_corpus_bytes,
+            workers,
+            shared_support_recovery: true,
+        },
+        &mut progress,
+    )
+    .map_err(std::io::Error::other)
+}
+
+#[allow(clippy::too_many_arguments)]
+pub fn reinduce_productive_paradigm_field_v1(
+    l11_package_path: &std::path::Path,
+    canonical_l2_path: &std::path::Path,
+    corpus_path: &std::path::Path,
+    axis_schema_path: &std::path::Path,
+    work_root: &std::path::Path,
+    output_path: &std::path::Path,
+    expected_corpus_sha256: &str,
+    expected_corpus_bytes: u64,
+    workers: usize,
+) -> std::io::Result<serde_json::Value> {
+    let expected_corpus_sha256 = parse_sha256_hex(expected_corpus_sha256)
+        .map_err(|error| std::io::Error::new(std::io::ErrorKind::InvalidInput, error))?;
+    let mut progress = |stage: &str| eprintln!("productive_v1 stage={stage}");
+    productive_v1::reinduce_productive_paradigm_field_v1(
+        &productive_v1::ProductiveOrchestratorConfigV1 {
+            l11_package_path: l11_package_path.to_path_buf(),
+            canonical_l2_path: canonical_l2_path.to_path_buf(),
+            corpus_path: corpus_path.to_path_buf(),
+            axis_schema_path: axis_schema_path.to_path_buf(),
+            work_root: work_root.to_path_buf(),
+            output_path: output_path.to_path_buf(),
+            expected_corpus_sha256,
+            expected_corpus_bytes,
+            workers,
+            shared_support_recovery: false,
+        },
+        &mut progress,
+    )
+    .map_err(std::io::Error::other)
 }
 
 pub fn compact_canonical_l2_package(
@@ -259,6 +737,46 @@ fn sha256_hex(bytes: &[u8]) -> String {
         .collect()
 }
 
+fn sha256_file(path: &std::path::Path) -> Result<[u8; 32], String> {
+    use sha2::Digest;
+
+    let mut file = std::fs::File::open(path).map_err(|error| error.to_string())?;
+    let mut hasher = sha2::Sha256::new();
+    std::io::copy(&mut file, &mut hasher).map_err(|error| error.to_string())?;
+    Ok(hasher.finalize().into())
+}
+
+fn hex_sha256(value: [u8; 32]) -> String {
+    value.iter().map(|byte| format!("{byte:02x}")).collect()
+}
+
+fn parse_sha256_hex(value: &str) -> Result<[u8; 32], &'static str> {
+    if value.len() != 64 || !value.bytes().all(|byte| byte.is_ascii_hexdigit()) {
+        return Err("expected corpus SHA-256 must contain exactly 64 hexadecimal digits");
+    }
+    let mut output = [0_u8; 32];
+    for (index, byte) in output.iter_mut().enumerate() {
+        *byte = u8::from_str_radix(&value[index * 2..index * 2 + 2], 16)
+            .map_err(|_| "expected corpus SHA-256 is invalid")?;
+    }
+    Ok(output)
+}
+
+fn proc_status_kib(prefix: &str) -> u64 {
+    std::fs::read_to_string("/proc/self/status")
+        .ok()
+        .and_then(|status| {
+            status.lines().find_map(|line| {
+                line.strip_prefix(prefix)?
+                    .split_whitespace()
+                    .next()?
+                    .parse::<u64>()
+                    .ok()
+            })
+        })
+        .unwrap_or_default()
+}
+
 pub fn prove_canonical_l2_package(
     l1_package_path: &std::path::Path,
     l2_package_path: &std::path::Path,
@@ -317,6 +835,104 @@ pub fn prove_contextual_compositional_l2_restoration(
         feature_limit,
         form_limit,
         atom_relation_limit,
+    )
+}
+
+#[allow(clippy::too_many_arguments)]
+pub fn prove_productive_l2_restoration(
+    l1_package_path: &std::path::Path,
+    l2_package_path: &std::path::Path,
+    morphology_corpus_path: &std::path::Path,
+    heldout_per_class: usize,
+    requested_workers: usize,
+    broad_lemma_limit: usize,
+    active_lemma_limit: usize,
+    feature_limit: usize,
+    form_limit: usize,
+    atom_relation_limit: usize,
+    minimum_profile_support: u32,
+) -> std::io::Result<serde_json::Value> {
+    productive_proof::prove_package(
+        l1_package_path,
+        l2_package_path,
+        morphology_corpus_path,
+        heldout_per_class,
+        requested_workers,
+        broad_lemma_limit,
+        active_lemma_limit,
+        feature_limit,
+        form_limit,
+        atom_relation_limit,
+        minimum_profile_support,
+    )
+}
+
+#[allow(clippy::too_many_arguments)]
+pub fn prove_productive_l2_sidecar(
+    l1_package_path: &std::path::Path,
+    l2_package_path: &std::path::Path,
+    productive_sidecar_path: &std::path::Path,
+    morphology_corpus_path: &std::path::Path,
+    heldout_per_class: usize,
+    requested_workers: usize,
+    broad_lemma_limit: usize,
+    active_lemma_limit: usize,
+    feature_limit: usize,
+    form_limit: usize,
+    atom_relation_limit: usize,
+) -> std::io::Result<serde_json::Value> {
+    productive_proof::prove_compact_sidecar(
+        l1_package_path,
+        l2_package_path,
+        productive_sidecar_path,
+        morphology_corpus_path,
+        heldout_per_class,
+        requested_workers,
+        broad_lemma_limit,
+        active_lemma_limit,
+        feature_limit,
+        form_limit,
+        atom_relation_limit,
+    )
+}
+
+pub fn prove_productive_paradigm_field_v1(
+    l1_package_path: &std::path::Path,
+    l2_package_path: &std::path::Path,
+    productive_package_path: &std::path::Path,
+    axis_schema_path: &std::path::Path,
+    work_dir: &std::path::Path,
+    heldout_per_class: usize,
+    requested_workers: usize,
+) -> std::io::Result<serde_json::Value> {
+    productive_v1::prove_productive_paradigm_field_v1(
+        l1_package_path,
+        l2_package_path,
+        productive_package_path,
+        axis_schema_path,
+        work_dir,
+        heldout_per_class,
+        requested_workers,
+    )
+}
+
+pub fn prove_productive_paradigm_field_v1_semantic(
+    l1_package_path: &std::path::Path,
+    l2_package_path: &std::path::Path,
+    productive_package_path: &std::path::Path,
+    axis_schema_path: &std::path::Path,
+    work_dir: &std::path::Path,
+    heldout_per_class: usize,
+    requested_workers: usize,
+) -> std::io::Result<serde_json::Value> {
+    productive_v1::prove_productive_paradigm_field_v1_semantic(
+        l1_package_path,
+        l2_package_path,
+        productive_package_path,
+        axis_schema_path,
+        work_dir,
+        heldout_per_class,
+        requested_workers,
     )
 }
 
@@ -390,6 +1006,36 @@ pub fn query_canonical_l2_package(
         })).collect::<Vec<_>>(),
         "runtime_authority_changed": false,
     }))
+}
+
+pub fn query_live_canonical_l2(
+    original: &str,
+    repeat: usize,
+    productive_lemma_limit: usize,
+) -> std::io::Result<serde_json::Value> {
+    if original.trim().is_empty() {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::InvalidInput,
+            "live L2 query text must not be empty",
+        ));
+    }
+    if repeat == 0 || repeat > 10_000 {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::InvalidInput,
+            "live L2 query repeat must be in 1..=10000",
+        ));
+    }
+    if productive_lemma_limit == 0 || productive_lemma_limit > CANONICAL_L2_ACTIVE_LEMMA_LIMIT {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::InvalidInput,
+            format!("productive lemma limit must be in 1..={CANONICAL_L2_ACTIVE_LEMMA_LIMIT}"),
+        ));
+    }
+    Ok(bridge::query_live_canonical_l2(
+        original,
+        repeat,
+        productive_lemma_limit,
+    ))
 }
 
 pub fn export_unseeded_l11_seed_corpus(

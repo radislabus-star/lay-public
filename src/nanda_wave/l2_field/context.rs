@@ -1,5 +1,17 @@
 use super::model::{LocalContextMode, L2_PHASE_CELLS};
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) enum ContextEvidenceScope {
+    Exact,
+    Neighbor,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) struct ContextEvidenceLane {
+    pub(crate) key: u32,
+    pub(crate) scope: ContextEvidenceScope,
+}
+
 pub(crate) fn context_mode(context: &str) -> LocalContextMode {
     let tokens = bounded_context_tokens(context);
     let slot = tokens.iter().position(|token| *token == "_").unwrap_or(0);
@@ -23,6 +35,44 @@ pub(crate) fn context_mode(context: &str) -> LocalContextMode {
         lexical_anchor: bounded_context_key("l2-anchor", &tokens, slot),
         stable_key: context_key,
     }
+}
+
+pub(crate) fn context_evidence_keys(context: &str) -> Vec<u32> {
+    context_evidence_lanes(context)
+        .into_iter()
+        .map(|lane| lane.key)
+        .collect()
+}
+
+pub(crate) fn context_evidence_lanes(context: &str) -> Vec<ContextEvidenceLane> {
+    let tokens = bounded_context_tokens(context);
+    let slot = tokens.iter().position(|token| *token == "_").unwrap_or(0);
+    let mut lanes = vec![ContextEvidenceLane {
+        key: bounded_context_key("l2-context", &tokens, slot),
+        scope: ContextEvidenceScope::Exact,
+    }];
+    if let Some(left) = slot.checked_sub(1).and_then(|index| tokens.get(index)) {
+        lanes.push(ContextEvidenceLane {
+            key: bounded_context_key("l2-context-left1", &[*left, "_"], 1),
+            scope: ContextEvidenceScope::Neighbor,
+        });
+    }
+    if let Some(right) = tokens.get(slot + 1) {
+        lanes.push(ContextEvidenceLane {
+            key: bounded_context_key("l2-context-right1", &["_", *right], 0),
+            scope: ContextEvidenceScope::Neighbor,
+        });
+    }
+    lanes.dedup_by_key(|lane| lane.key);
+    lanes
+}
+
+pub(crate) fn scoped_context_evidence_key(context_key: u32, primary_pos: u16) -> u32 {
+    stable_key(&[
+        "l2-context-pos",
+        &context_key.to_string(),
+        &primary_pos.to_string(),
+    ])
 }
 
 pub(crate) fn scene_wave(context: &str) -> [i8; L2_PHASE_CELLS] {
@@ -141,5 +191,28 @@ mod tests {
     fn context_mode_keeps_two_tokens_after_the_slot() {
         assert_ne!(context_mode("_ его тащи"), context_mode("_ его в"));
         assert_ne!(scene_wave("_ его тащи"), scene_wave("_ его в"));
+    }
+
+    #[test]
+    fn morphology_evidence_can_back_off_to_the_nearest_observed_neighbor() {
+        let trained = context_evidence_keys("подошел к _ окну");
+        let live = context_evidence_keys("к _");
+
+        assert_ne!(trained[0], live[0]);
+        assert_eq!(trained[1], live[1]);
+        assert_ne!(
+            scoped_context_evidence_key(trained[1], 1),
+            scoped_context_evidence_key(trained[1], 2)
+        );
+    }
+
+    #[test]
+    fn morphology_evidence_marks_exact_and_neighbor_lanes_independently() {
+        let lanes = context_evidence_lanes("подошел к _ окну");
+
+        assert_eq!(lanes[0].scope, ContextEvidenceScope::Exact);
+        assert!(lanes[1..]
+            .iter()
+            .all(|lane| lane.scope == ContextEvidenceScope::Neighbor));
     }
 }

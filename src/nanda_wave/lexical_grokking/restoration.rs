@@ -26,7 +26,7 @@ impl RestorationCalibration {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "snake_case")]
-pub(super) enum AbstainReason {
+pub(in crate::nanda_wave) enum AbstainReason {
     NoCandidates,
     OutsideCalibratedBasin,
     WeakPositivePhase,
@@ -34,26 +34,26 @@ pub(super) enum AbstainReason {
     ConflictingEvidence,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
-pub(super) struct RestorationEvidence {
-    pub(super) geometry_distance: u8,
-    pub(super) reconstruction_modes: u8,
-    pub(super) positive_milli: u16,
-    pub(super) backward_milli: u16,
-    pub(super) anti_milli: u16,
-    pub(super) hard_negative_milli: u16,
-    pub(super) ambiguity_milli: u16,
-    pub(super) ambiguity_threshold_milli: u16,
-    pub(super) ambiguity_linked: bool,
-    pub(super) ambiguity_shell: bool,
-    pub(super) crystallization_wins: u8,
-    pub(super) crystallization_required: u8,
-    pub(super) crystallization_margin_milli: u16,
-    pub(super) crystallization_known_edges: u16,
-    pub(super) crystallization_unknown_edges: u16,
-    pub(super) crystallization_tied_edges: u16,
-    pub(super) crystallization_conflicts: u16,
-    pub(super) crystallization_cycles: u16,
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize)]
+pub(in crate::nanda_wave) struct RestorationEvidence {
+    pub(in crate::nanda_wave) geometry_distance: u8,
+    pub(in crate::nanda_wave) reconstruction_modes: u8,
+    pub(in crate::nanda_wave) positive_milli: u16,
+    pub(in crate::nanda_wave) backward_milli: u16,
+    pub(in crate::nanda_wave) anti_milli: u16,
+    pub(in crate::nanda_wave) hard_negative_milli: u16,
+    pub(in crate::nanda_wave) ambiguity_milli: u16,
+    pub(in crate::nanda_wave) ambiguity_threshold_milli: u16,
+    pub(in crate::nanda_wave) ambiguity_linked: bool,
+    pub(in crate::nanda_wave) ambiguity_shell: bool,
+    pub(in crate::nanda_wave) crystallization_wins: u8,
+    pub(in crate::nanda_wave) crystallization_required: u8,
+    pub(in crate::nanda_wave) crystallization_margin_milli: u16,
+    pub(in crate::nanda_wave) crystallization_known_edges: u16,
+    pub(in crate::nanda_wave) crystallization_unknown_edges: u16,
+    pub(in crate::nanda_wave) crystallization_tied_edges: u16,
+    pub(in crate::nanda_wave) crystallization_conflicts: u16,
+    pub(in crate::nanda_wave) crystallization_cycles: u16,
 }
 
 impl From<&GrokkingCandidate> for RestorationEvidence {
@@ -84,9 +84,9 @@ impl From<&GrokkingCandidate> for RestorationEvidence {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
-pub(super) struct RestorationCandidate {
-    pub(super) terminal_id: u32,
-    pub(super) evidence: RestorationEvidence,
+pub(in crate::nanda_wave) struct RestorationCandidate {
+    pub(in crate::nanda_wave) terminal_id: u32,
+    pub(in crate::nanda_wave) evidence: RestorationEvidence,
 }
 
 impl From<&GrokkingCandidate> for RestorationCandidate {
@@ -100,7 +100,7 @@ impl From<&GrokkingCandidate> for RestorationCandidate {
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
 #[serde(tag = "verdict", rename_all = "snake_case")]
-pub(super) enum RestorationReadout {
+pub(in crate::nanda_wave) enum RestorationReadout {
     Winner {
         candidate: RestorationCandidate,
     },

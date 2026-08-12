@@ -1,0 +1,42 @@
+{
+  "receipt_id": "L2_PRODUCTIVE_V1_FULL_PACKAGE_V60_2026-08-11",
+  "date": "2026-08-11",
+  "verdict": "PASS_shadow_suggest_only_package",
+  "runtime_authority_changed": false,
+  "authority_blocked_by_target_loss": true,
+  "remote_host": "e@192.168.3.94",
+  "workers": 19,
+  "measured_facts": {
+    "wall_seconds": 59.97,
+    "internal_total_ms": 59948,
+    "peak_rss_kib": 768244,
+    "package_bytes": 36641392,
+    "package_sha256": "5dbf20c68920e721a2763729c478f33fa882e149467493bbd2df69496f991238",
+    "runtime_constant_cache_bytes": 124,
+    "calibration_source_groups": 1348,
+    "calibration_target_retained_groups": 119,
+    "calibration_target_lost_groups": 1229,
+    "calibration_target_retained_percent": 8.8278931751,
+    "calibration_target_lost_percent": 91.1721068249,
+    "selected_phase_centers": 0,
+    "training_pairs": 20,
+    "direct_contradiction_events": 20
+  },
+  "evidence": [
+    "receipt.json",
+    "time.txt",
+    "run.log"
+  ],
+  "not_tested": [
+    "fixed seen cohort",
+    "fixed bank-unseen cohort",
+    "fixed slot-heldout cohort",
+    "fixed lemma-heldout cohort",
+    "ambiguity cohort",
+    "all 13 damage classes",
+    "false authority and false singleton",
+    "cold startup and hot latency",
+    "physical product matrix",
+    "live runtime authority"
+  ]
+}

@@ -17,7 +17,11 @@ impl LayIbusEngine {
         keycode: u32,
         state: u32,
     ) -> fdo::Result<bool> {
-        self.clear_pending_ime_auto_undo();
+        if self.pending_passthrough_preedit_clear {
+            self.clear_preedit(emitter).await?;
+            self.pending_passthrough_preedit_clear = false;
+        }
+        self.clear_pending_ime_auto_undo("next_pressed_key");
         if keyval == KEY_BACKSPACE {
             self.begin_pending_ime_completion_edit_before_backspace();
             let handled = self.backspace(emitter).await?;

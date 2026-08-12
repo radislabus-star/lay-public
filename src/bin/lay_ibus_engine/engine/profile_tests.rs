@@ -51,6 +51,48 @@ fn surrounding_text_client_uses_managed_commit_even_with_cursor_width() {
 }
 
 #[test]
+fn late_surrounding_text_capability_promotes_current_terminal_word() {
+    let mut engine = engine();
+    engine.cursor_cell_width = 2;
+    engine.word_input_mode = Some(WordInputMode::TerminalPassthrough);
+    engine.preedit_suffix = "suffix".to_string();
+
+    engine.set_client_capabilities(1 << 5);
+
+    assert_eq!(engine.word_input_mode, Some(WordInputMode::ManagedCommit));
+    assert!(engine.pending_passthrough_preedit_clear);
+    assert_eq!(engine.preedit_suffix, "suffix");
+}
+
+#[test]
+fn capability_loss_does_not_demote_current_managed_word() {
+    let mut engine = engine();
+    engine.cursor_cell_width = 2;
+    engine.word_input_mode = Some(WordInputMode::ManagedCommit);
+    engine.set_client_capabilities(1 << 5);
+
+    engine.set_client_capabilities(1 | 1 << 3);
+
+    assert_eq!(engine.word_input_mode, Some(WordInputMode::ManagedCommit));
+    assert!(!engine.pending_passthrough_preedit_clear);
+}
+
+#[test]
+fn terminal_profile_stays_passthrough_without_surrounding_capability() {
+    let mut engine = engine();
+    engine.cursor_cell_width = 2;
+    engine.word_input_mode = Some(WordInputMode::TerminalPassthrough);
+
+    engine.set_client_capabilities(1 | 1 << 3);
+
+    assert_eq!(
+        engine.word_input_mode,
+        Some(WordInputMode::TerminalPassthrough)
+    );
+    assert!(!engine.pending_passthrough_preedit_clear);
+}
+
+#[test]
 fn cursor_driven_client_defers_preedit_until_cursor_ack() {
     let mut engine = engine();
     engine.cursor_cell_width = 11;
@@ -147,7 +189,7 @@ fn layout_switch_path_preserves_fresh_committed_tail_handoff() {
 
     let mut second = LayIbusEngine::new(
         "/engine/ru".to_string(),
-        shared,
+        Arc::clone(&shared),
         true,
         true,
         LayConfig::default(),
@@ -164,6 +206,159 @@ fn layout_switch_path_preserves_fresh_committed_tail_handoff() {
         .expect("autocorrect undo must cross the layout handoff");
     assert_eq!(pending.original, "djn ");
     assert_eq!(pending.replacement, "вот ");
+}
+
+#[test]
+fn layout_switch_double_shift_waits_for_exact_surrounding_snapshot() {
+    let shared = Arc::new(Mutex::new(Default::default()));
+    let mut first = LayIbusEngine::new(
+        "/engine/us".to_string(),
+        Arc::clone(&shared),
+        false,
+        true,
+        LayConfig::default(),
+    );
+    assert!(first.bind_focus_path());
+    first.tail_buffer = "собака ".to_string();
+    first.publish_tail_handoff();
+    first.remember_pending_ime_auto_undo(
+        "cj,frf ".to_string(),
+        "собака ".to_string(),
+        lay::typing_cpu::ObservedSystemTransition::LayoutProjection,
+    );
+    first.publish_active_path_preserve_handoff(Instant::now() + Duration::from_millis(700));
+
+    let mut second = LayIbusEngine::new(
+        "/engine/ru".to_string(),
+        Arc::clone(&shared),
+        true,
+        true,
+        LayConfig::default(),
+    );
+    assert!(second.bind_focus_path());
+    second.surrounding_text_supported = true;
+    second.surrounding_text_snapshot =
+        Some(super::SurroundingTextSnapshot::new(String::new(), 0, 0));
+
+    assert!(second.defer_pending_ime_auto_undo_until_visible());
+    assert_eq!(
+        second.pending_ime_auto_undo_retry_status(),
+        "waiting_exact_snapshot"
+    );
+    let preserve_remaining = second
+        .shared
+        .lock()
+        .expect("shared state")
+        .preserve_active_path_until
+        .expect("retry must preserve engine handoff")
+        .saturating_duration_since(Instant::now());
+    assert!(preserve_remaining >= Duration::from_secs(4));
+
+    let mut refreshed = LayIbusEngine::new(
+        "/engine/ru-refresh".to_string(),
+        shared,
+        true,
+        true,
+        LayConfig::default(),
+    );
+    assert!(refreshed.bind_focus_path());
+    refreshed.surrounding_text_supported = true;
+    refreshed.surrounding_text_snapshot = Some(super::SurroundingTextSnapshot::new(
+        "собака ".to_string(),
+        7,
+        7,
+    ));
+    assert_eq!(refreshed.pending_ime_auto_undo_retry_status(), "ready");
+
+    let pending = refreshed
+        .take_pending_ime_auto_undo()
+        .expect("exact snapshot releases the recorded undo");
+    assert_eq!(pending.original, "cj,frf ");
+    assert_eq!(pending.replacement, "собака ");
+    assert_eq!(refreshed.pending_ime_auto_undo_retry_status(), "none");
+}
+
+#[test]
+fn recorded_undo_accepts_only_a_fresh_full_tail_boundary_elision() {
+    let mut engine = engine();
+    assert!(engine.bind_focus_path());
+    engine.tail_buffer = "собака ".to_string();
+    engine.publish_tail_handoff();
+    engine.remember_pending_ime_auto_undo(
+        "cj,frf ".to_string(),
+        "собака ".to_string(),
+        lay::typing_cpu::ObservedSystemTransition::LayoutProjection,
+    );
+    engine.surrounding_text_supported = true;
+    engine.surrounding_text_snapshot =
+        Some(super::SurroundingTextSnapshot::new(String::new(), 0, 0));
+
+    assert!(engine.defer_pending_ime_auto_undo_until_visible());
+    engine.surrounding_text_snapshot = Some(super::SurroundingTextSnapshot::new(
+        "собака".to_string(),
+        6,
+        6,
+    ));
+
+    assert_eq!(
+        engine.pending_ime_auto_undo_retry_status(),
+        "ready_boundary_elided"
+    );
+    assert!(engine.pending_ime_auto_undo_uses_boundary_elided_snapshot());
+
+    engine.tail_buffer = "другая поверхность ".to_string();
+    assert_eq!(engine.pending_ime_auto_undo_retry_status(), "invalidated");
+    assert!(engine.take_pending_ime_auto_undo().is_none());
+}
+
+#[test]
+fn recorded_undo_uses_an_already_visible_boundary_elision_without_waiting() {
+    let mut engine = engine();
+    assert!(engine.bind_focus_path());
+    engine.tail_buffer = "собака ".to_string();
+    engine.publish_tail_handoff();
+    engine.remember_pending_ime_auto_undo(
+        "cj,frf ".to_string(),
+        "собака ".to_string(),
+        lay::typing_cpu::ObservedSystemTransition::LayoutProjection,
+    );
+    engine.surrounding_text_supported = true;
+    engine.surrounding_text_snapshot = Some(super::SurroundingTextSnapshot::new(
+        "собака".to_string(),
+        6,
+        6,
+    ));
+
+    assert!(!engine.defer_pending_ime_auto_undo_until_visible());
+    assert_eq!(
+        engine.pending_ime_auto_undo_retry_status(),
+        "ready_boundary_elided"
+    );
+}
+
+#[test]
+fn recorded_undo_accepts_boundary_elision_inside_a_sentence_tail() {
+    let mut engine = engine();
+    assert!(engine.bind_focus_path());
+    engine.tail_buffer = "контекст собака ".to_string();
+    engine.publish_tail_handoff();
+    engine.remember_pending_ime_auto_undo(
+        "cj,frf ".to_string(),
+        "собака ".to_string(),
+        lay::typing_cpu::ObservedSystemTransition::LayoutProjection,
+    );
+    engine.surrounding_text_supported = true;
+    engine.surrounding_text_snapshot = Some(super::SurroundingTextSnapshot::new(
+        "контекст собака".to_string(),
+        15,
+        15,
+    ));
+
+    assert!(!engine.defer_pending_ime_auto_undo_until_visible());
+    assert_eq!(
+        engine.pending_ime_auto_undo_retry_status(),
+        "ready_boundary_elided"
+    );
 }
 
 #[test]

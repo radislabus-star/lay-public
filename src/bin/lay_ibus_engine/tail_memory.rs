@@ -1,11 +1,20 @@
 use super::engine::{
     LayIbusEngine, PendingImeCompletionLearning, PendingSystemOutcomeFeedback, SystemOutcomeKind,
 };
-use super::protocol::PendingImeAutoUndo;
+use super::protocol::{PendingImeAutoUndo, PendingImeAutoUndoRetry, SharedState};
 use lay::text_edit::{VisibleTailSnapshot, VisibleTailSource};
 use std::time::{Duration, Instant};
 
 const IME_AUTO_UNDO_MAX_AGE: Duration = Duration::from_secs(30);
+const IME_AUTO_UNDO_RETRY_MAX_AGE: Duration = Duration::from_secs(5);
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum SurroundingSnapshotMatch {
+    Exact,
+    TrailingBoundaryElided,
+    CausalPrecondition,
+    Missing,
+}
 
 impl LayIbusEngine {
     pub(super) fn remember_pending_ime_auto_undo(
@@ -17,45 +26,203 @@ impl LayIbusEngine {
         let Ok(mut state) = self.shared.lock() else {
             return;
         };
+        state.pending_auto_undo_retry = None;
         state.pending_auto_undo = (original != replacement
             && !original.trim().is_empty()
             && !replacement.trim().is_empty())
         .then_some(PendingImeAutoUndo {
             original,
             replacement,
+            visible_tail: self.tail_buffer.clone(),
             transition,
             recorded_at: Instant::now(),
         });
+        record_pending_ime_auto_undo_lifecycle(
+            self,
+            &state,
+            "remember",
+            if state.pending_auto_undo.is_some() {
+                "stored"
+            } else {
+                "rejected"
+            },
+        );
     }
 
     pub(super) fn take_pending_ime_auto_undo(&self) -> Option<PendingImeAutoUndo> {
         let Ok(mut state) = self.shared.lock() else {
             return None;
         };
-        let pending = state.pending_auto_undo.take()?;
-        if pending.recorded_at.elapsed() > IME_AUTO_UNDO_MAX_AGE
-            || !self.tail_buffer.ends_with(&pending.replacement)
-        {
+        let Some(pending) = state.pending_auto_undo.take() else {
+            record_pending_ime_auto_undo_lifecycle(self, &state, "take", "missing");
+            return None;
+        };
+        state.pending_auto_undo_retry = None;
+        if let Some(reason) = pending_ime_auto_undo_invalid_reason(self, &pending) {
+            record_detached_ime_auto_undo_lifecycle(self, &state, &pending, "take", reason);
             return None;
         }
+        record_detached_ime_auto_undo_lifecycle(self, &state, &pending, "take", "released");
         Some(pending)
     }
 
     pub(super) fn restore_pending_ime_auto_undo(&self, pending: PendingImeAutoUndo) {
-        if pending.recorded_at.elapsed() > IME_AUTO_UNDO_MAX_AGE {
+        if let Some(reason) = pending_ime_auto_undo_invalid_reason(self, &pending) {
+            if let Ok(state) = self.shared.lock() {
+                record_detached_ime_auto_undo_lifecycle(self, &state, &pending, "restore", reason);
+            }
             return;
         }
         let Ok(mut state) = self.shared.lock() else {
             return;
         };
+        state.pending_auto_undo_retry = None;
         state.pending_auto_undo = Some(pending);
+        record_pending_ime_auto_undo_lifecycle(self, &state, "restore", "stored");
     }
 
-    pub(super) fn clear_pending_ime_auto_undo(&self) {
+    pub(super) fn clear_pending_ime_auto_undo(&self, reason: &'static str) {
         let Ok(mut state) = self.shared.lock() else {
             return;
         };
+        record_pending_ime_auto_undo_lifecycle(self, &state, "clear", reason);
         state.pending_auto_undo = None;
+        state.pending_auto_undo_retry = None;
+    }
+
+    /// Records exact user intent while the client publishes the post-edit
+    /// surrounding text. A client that keeps returning the exact precondition
+    /// may use the recorded transition as authority; unrelated snapshots never
+    /// release the undo.
+    pub(super) fn defer_pending_ime_auto_undo_until_visible(&self) -> bool {
+        if !self.surrounding_text_supported {
+            if let Ok(state) = self.shared.lock() {
+                record_pending_ime_auto_undo_lifecycle(
+                    self,
+                    &state,
+                    "defer",
+                    "surrounding_text_unsupported",
+                );
+            }
+            return false;
+        }
+        let Ok(mut state) = self.shared.lock() else {
+            return false;
+        };
+        let Some(pending) = state.pending_auto_undo.as_ref() else {
+            state.pending_auto_undo_retry = None;
+            record_pending_ime_auto_undo_lifecycle(self, &state, "defer", "missing");
+            return false;
+        };
+        if let Some(reason) = pending_ime_auto_undo_invalid_reason(self, pending) {
+            record_pending_ime_auto_undo_lifecycle(self, &state, "defer", reason);
+            state.pending_auto_undo = None;
+            state.pending_auto_undo_retry = None;
+            return false;
+        }
+        let snapshot_match =
+            pending_ime_auto_undo_snapshot_match(self.surrounding_text_snapshot.as_ref(), pending);
+        if snapshot_match == SurroundingSnapshotMatch::Exact {
+            state.pending_auto_undo_retry = None;
+            record_pending_ime_auto_undo_lifecycle(self, &state, "defer", "exact_snapshot_ready");
+            return false;
+        }
+        let undo_recorded_at = pending.recorded_at;
+        let requested_at = Instant::now();
+        state.pending_auto_undo_retry = Some(PendingImeAutoUndoRetry {
+            undo_recorded_at,
+            requested_at,
+        });
+        state.preserve_active_path_until = Some(requested_at + IME_AUTO_UNDO_RETRY_MAX_AGE);
+        match snapshot_match {
+            SurroundingSnapshotMatch::TrailingBoundaryElided => {
+                record_pending_ime_auto_undo_lifecycle(
+                    self,
+                    &state,
+                    "defer",
+                    "boundary_elided_snapshot_ready",
+                );
+                false
+            }
+            SurroundingSnapshotMatch::CausalPrecondition => {
+                record_pending_ime_auto_undo_lifecycle(
+                    self,
+                    &state,
+                    "defer",
+                    "causal_precondition_snapshot_ready",
+                );
+                false
+            }
+            SurroundingSnapshotMatch::Missing => {
+                record_pending_ime_auto_undo_lifecycle(
+                    self,
+                    &state,
+                    "defer",
+                    "waiting_exact_snapshot",
+                );
+                true
+            }
+            SurroundingSnapshotMatch::Exact => false,
+        }
+    }
+
+    pub(super) fn pending_ime_auto_undo_retry_status(&self) -> &'static str {
+        let Ok(mut state) = self.shared.lock() else {
+            return "state_unavailable";
+        };
+        let Some(retry) = state.pending_auto_undo_retry else {
+            return "none";
+        };
+        if retry.requested_at.elapsed() > IME_AUTO_UNDO_RETRY_MAX_AGE {
+            record_pending_ime_auto_undo_lifecycle(self, &state, "retry", "expired");
+            state.pending_auto_undo_retry = None;
+            return "expired";
+        }
+        let Some(pending) = state.pending_auto_undo.as_ref() else {
+            record_pending_ime_auto_undo_lifecycle(self, &state, "retry", "missing_undo");
+            state.pending_auto_undo_retry = None;
+            return "missing_undo";
+        };
+        if retry.undo_recorded_at != pending.recorded_at {
+            record_pending_ime_auto_undo_lifecycle(self, &state, "retry", "superseded");
+            state.pending_auto_undo_retry = None;
+            return "superseded";
+        }
+        if state.active_path.as_deref() != Some(self.path.as_str()) {
+            return "inactive_engine";
+        }
+        if let Some(reason) = pending_ime_auto_undo_invalid_reason(self, pending) {
+            record_pending_ime_auto_undo_lifecycle(self, &state, "retry", reason);
+            state.pending_auto_undo = None;
+            state.pending_auto_undo_retry = None;
+            return "invalidated";
+        }
+        match pending_ime_auto_undo_snapshot_match(self.surrounding_text_snapshot.as_ref(), pending)
+        {
+            SurroundingSnapshotMatch::Exact => "ready",
+            SurroundingSnapshotMatch::TrailingBoundaryElided => "ready_boundary_elided",
+            SurroundingSnapshotMatch::CausalPrecondition => "ready_causal_precondition",
+            SurroundingSnapshotMatch::Missing => "waiting_exact_snapshot",
+        }
+    }
+
+    pub(super) fn pending_ime_auto_undo_uses_boundary_elided_snapshot(&self) -> bool {
+        self.pending_ime_auto_undo_snapshot_match()
+            == SurroundingSnapshotMatch::TrailingBoundaryElided
+    }
+
+    pub(super) fn pending_ime_auto_undo_uses_causal_precondition_snapshot(&self) -> bool {
+        self.pending_ime_auto_undo_snapshot_match() == SurroundingSnapshotMatch::CausalPrecondition
+    }
+
+    fn pending_ime_auto_undo_snapshot_match(&self) -> SurroundingSnapshotMatch {
+        let Ok(state) = self.shared.lock() else {
+            return SurroundingSnapshotMatch::Missing;
+        };
+        let Some(pending) = state.pending_auto_undo.as_ref() else {
+            return SurroundingSnapshotMatch::Missing;
+        };
+        pending_ime_auto_undo_snapshot_match(self.surrounding_text_snapshot.as_ref(), pending)
     }
 
     pub(super) fn arm_pending_ime_completion_learning(
@@ -166,7 +333,7 @@ impl LayIbusEngine {
     }
 
     pub(super) fn arm_visible_postcondition(&mut self, dispatched_at: Instant) {
-        self.arm_visible_postcondition_with_feedback(dispatched_at, None);
+        self.arm_visible_postcondition_with_effects(dispatched_at, None, None);
     }
 
     pub(super) fn arm_visible_postcondition_with_feedback(
@@ -174,9 +341,31 @@ impl LayIbusEngine {
         dispatched_at: Instant,
         feedback: Option<PendingSystemOutcomeFeedback>,
     ) {
+        self.arm_visible_postcondition_with_effects(dispatched_at, feedback, None);
+    }
+
+    pub(super) fn arm_visible_postcondition_with_effects(
+        &mut self,
+        dispatched_at: Instant,
+        feedback: Option<PendingSystemOutcomeFeedback>,
+        layout_sync_text: Option<String>,
+    ) {
         if !self.surrounding_text_supported {
             return;
         }
+        self.arm_visible_postcondition_from_surrounding_dispatch(
+            dispatched_at,
+            feedback,
+            layout_sync_text,
+        );
+    }
+
+    pub(super) fn arm_visible_postcondition_from_surrounding_dispatch(
+        &mut self,
+        dispatched_at: Instant,
+        feedback: Option<PendingSystemOutcomeFeedback>,
+        layout_sync_text: Option<String>,
+    ) {
         let snapshot = VisibleTailSnapshot::new(
             VisibleTailSource::ImeCommittedTail,
             self.tail_buffer.clone(),
@@ -190,6 +379,7 @@ impl LayIbusEngine {
             dispatched_epoch: self.tail_epoch,
             dispatched_at,
             feedback,
+            layout_sync_text,
         });
     }
 
@@ -204,16 +394,24 @@ impl LayIbusEngine {
             record_causal_outcome("censored", &pending, self.tail_epoch);
             return;
         }
-        let observed = self
-            .surrounding_text_snapshot
-            .as_ref()
-            .and_then(|snapshot| {
-                snapshot.suffix_before_cursor(pending.expected_suffix.chars().count())
-            });
-        let status = if observed.as_deref() == Some(pending.expected_suffix.as_str()) {
+        let observed = surrounding_snapshot_match(
+            self.surrounding_text_snapshot.as_ref(),
+            &pending.expected_suffix,
+        );
+        let status = if matches!(
+            observed,
+            SurroundingSnapshotMatch::Exact | SurroundingSnapshotMatch::TrailingBoundaryElided
+        ) {
             self.record_observed_system_outcome(pending.feedback.as_ref());
             record_causal_outcome("confirmed_positive", &pending, self.tail_epoch);
-            "observed"
+            if let Some(text) = pending.layout_sync_text.as_deref() {
+                self.sync_layout_after_committed_text(text, "visible_postcondition_confirmed");
+            }
+            if observed == SurroundingSnapshotMatch::TrailingBoundaryElided {
+                "observed_boundary_elided"
+            } else {
+                "observed"
+            }
         } else if elapsed_ms <= SETTLE_GRACE_MS {
             record_causal_outcome("pending_stale_observation", &pending, self.tail_epoch);
             self.pending_visible_postcondition = Some(pending);
@@ -324,12 +522,14 @@ impl LayIbusEngine {
         let Ok(mut state) = self.shared.lock() else {
             return;
         };
+        record_pending_ime_auto_undo_lifecycle(self, &state, "clear", "close_committed_tail_field");
         state.handoff_tail_buffer.clear();
         state.handoff_tail_epoch = self.tail_epoch;
         state.handoff_focus_receipt = None;
         state.suppress_next_committed_tail_autocorrect = false;
         state.preserve_active_path_until = None;
         state.pending_auto_undo = None;
+        state.pending_auto_undo_retry = None;
     }
 
     fn quarantine_visible_postcondition_mismatch(&mut self) {
@@ -345,12 +545,19 @@ impl LayIbusEngine {
         self.suppress_next_committed_tail_autocorrect = false;
         self.tail_epoch = self.tail_epoch.wrapping_add(1);
         if let Ok(mut state) = shared.lock() {
+            record_pending_ime_auto_undo_lifecycle(
+                self,
+                &state,
+                "clear",
+                "visible_postcondition_mismatch",
+            );
             state.handoff_tail_buffer.clear();
             state.handoff_tail_epoch = self.tail_epoch;
             state.handoff_focus_receipt = None;
             state.suppress_next_committed_tail_autocorrect = false;
             state.preserve_active_path_until = None;
             state.pending_auto_undo = None;
+            state.pending_auto_undo_retry = None;
         };
     }
 
@@ -414,6 +621,130 @@ impl LayIbusEngine {
         state.preserve_active_path_until = None;
         false
     }
+}
+
+fn surrounding_snapshot_match(
+    snapshot: Option<&super::engine::SurroundingTextSnapshot>,
+    expected_suffix: &str,
+) -> SurroundingSnapshotMatch {
+    let Some(snapshot) = snapshot else {
+        return SurroundingSnapshotMatch::Missing;
+    };
+    if snapshot.has_selection() {
+        return SurroundingSnapshotMatch::Missing;
+    }
+    if snapshot
+        .suffix_before_cursor(expected_suffix.chars().count())
+        .as_deref()
+        == Some(expected_suffix)
+    {
+        return SurroundingSnapshotMatch::Exact;
+    }
+
+    let without_boundary = expected_suffix.trim_end_matches(char::is_whitespace);
+    if without_boundary.len() == expected_suffix.len() || without_boundary.is_empty() {
+        return SurroundingSnapshotMatch::Missing;
+    }
+    if snapshot
+        .suffix_before_cursor(without_boundary.chars().count())
+        .as_deref()
+        == Some(without_boundary)
+    {
+        SurroundingSnapshotMatch::TrailingBoundaryElided
+    } else {
+        SurroundingSnapshotMatch::Missing
+    }
+}
+
+fn pending_ime_auto_undo_snapshot_match(
+    snapshot: Option<&super::engine::SurroundingTextSnapshot>,
+    pending: &PendingImeAutoUndo,
+) -> SurroundingSnapshotMatch {
+    let replacement = surrounding_snapshot_match(snapshot, &pending.replacement);
+    if replacement != SurroundingSnapshotMatch::Missing {
+        return replacement;
+    }
+    if matches!(
+        surrounding_snapshot_match(snapshot, &pending.original),
+        SurroundingSnapshotMatch::Exact | SurroundingSnapshotMatch::TrailingBoundaryElided
+    ) {
+        SurroundingSnapshotMatch::CausalPrecondition
+    } else {
+        SurroundingSnapshotMatch::Missing
+    }
+}
+
+fn pending_ime_auto_undo_invalid_reason(
+    engine: &LayIbusEngine,
+    pending: &PendingImeAutoUndo,
+) -> Option<&'static str> {
+    if pending.recorded_at.elapsed() > IME_AUTO_UNDO_MAX_AGE {
+        return Some("expired");
+    }
+    if pending.visible_tail != engine.tail_buffer {
+        return Some("visible_tail_changed");
+    }
+    if !pending.visible_tail.ends_with(&pending.replacement) {
+        return Some("replacement_not_tail_suffix");
+    }
+    None
+}
+
+fn record_pending_ime_auto_undo_lifecycle(
+    engine: &LayIbusEngine,
+    state: &SharedState,
+    stage: &'static str,
+    reason: &'static str,
+) {
+    let (pending_tail_chars, replacement_chars) = state
+        .pending_auto_undo
+        .as_ref()
+        .map(|pending| {
+            (
+                pending.visible_tail.chars().count(),
+                pending.replacement.chars().count(),
+            )
+        })
+        .unwrap_or_default();
+    super::trace::record_auto_undo_lifecycle(
+        stage,
+        reason,
+        &engine.path,
+        state.active_path.as_deref() == Some(engine.path.as_str()),
+        state.pending_auto_undo.is_some(),
+        state.pending_auto_undo_retry.is_some(),
+        engine.tail_buffer.chars().count(),
+        pending_tail_chars,
+        replacement_chars,
+        engine
+            .surrounding_text_snapshot
+            .as_ref()
+            .map_or(0, |snapshot| snapshot.text.chars().count()),
+    );
+}
+
+fn record_detached_ime_auto_undo_lifecycle(
+    engine: &LayIbusEngine,
+    state: &SharedState,
+    pending: &PendingImeAutoUndo,
+    stage: &'static str,
+    reason: &'static str,
+) {
+    super::trace::record_auto_undo_lifecycle(
+        stage,
+        reason,
+        &engine.path,
+        state.active_path.as_deref() == Some(engine.path.as_str()),
+        true,
+        state.pending_auto_undo_retry.is_some(),
+        engine.tail_buffer.chars().count(),
+        pending.visible_tail.chars().count(),
+        pending.replacement.chars().count(),
+        engine
+            .surrounding_text_snapshot
+            .as_ref()
+            .map_or(0, |snapshot| snapshot.text.chars().count()),
+    );
 }
 
 fn record_causal_outcome(
@@ -515,6 +846,65 @@ mod tests {
         let state = shared.lock().expect("lay ime state poisoned");
         assert_eq!(state.handoff_tail_buffer, "проверка ");
         assert_eq!(state.handoff_tail_epoch, epoch);
+    }
+
+    #[test]
+    fn visible_postcondition_accepts_a_client_elided_trailing_boundary() {
+        let shared = Arc::new(Mutex::new(Default::default()));
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            shared,
+            true,
+            true,
+            LayConfig::default(),
+        );
+        engine.surrounding_text_supported = true;
+        engine.tail_buffer = "собака ".to_string();
+        engine.publish_tail_handoff();
+        engine.arm_visible_postcondition(Instant::now());
+        engine.surrounding_text_snapshot = Some(
+            super::super::engine::SurroundingTextSnapshot::new("собака".to_string(), 6, 6),
+        );
+
+        engine.observe_visible_postcondition();
+
+        assert!(engine.pending_visible_postcondition.is_none());
+        assert_eq!(engine.tail_buffer, "собака ");
+    }
+
+    #[test]
+    fn layout_sync_waits_for_the_committed_text_postcondition() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            false,
+            true,
+            LayConfig::default(),
+        );
+        // The output plan captured SurroundingText authority before dispatch;
+        // a transient capability update cannot erase that causal receipt.
+        engine.surrounding_text_supported = false;
+        engine.tail_buffer = "собака ".to_string();
+        engine.publish_tail_handoff();
+        engine.arm_visible_postcondition_from_surrounding_dispatch(
+            Instant::now(),
+            None,
+            Some("собака ".to_string()),
+        );
+
+        engine.surrounding_text_snapshot = Some(
+            super::super::engine::SurroundingTextSnapshot::new("cj,frf".to_string(), 6, 6),
+        );
+        engine.observe_visible_postcondition();
+        assert!(!engine.layout_is_ru);
+        assert!(engine.pending_visible_postcondition.is_some());
+
+        engine.surrounding_text_snapshot = Some(
+            super::super::engine::SurroundingTextSnapshot::new("собака".to_string(), 6, 6),
+        );
+        engine.observe_visible_postcondition();
+        assert!(engine.layout_is_ru);
+        assert!(engine.pending_visible_postcondition.is_none());
     }
 
     #[test]
@@ -710,6 +1100,66 @@ mod tests {
 
         assert_eq!(pending.original, "проверрка ");
         assert_eq!(pending.replacement, "проверка ");
+    }
+
+    #[test]
+    fn pending_ime_auto_undo_accepts_exact_causal_precondition_snapshot() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            false,
+            true,
+            LayConfig::default(),
+        );
+        assert!(engine.bind_focus_path());
+        engine.tail_buffer = "собака ".to_string();
+        engine.publish_tail_handoff();
+        engine.remember_pending_ime_auto_undo(
+            "cj,frf ".to_string(),
+            "собака ".to_string(),
+            lay::typing_cpu::ObservedSystemTransition::LayoutProjection,
+        );
+        engine.surrounding_text_supported = true;
+        engine.surrounding_text_snapshot = Some(
+            super::super::engine::SurroundingTextSnapshot::new("cj,frf".to_string(), 6, 6),
+        );
+
+        assert!(!engine.defer_pending_ime_auto_undo_until_visible());
+        assert!(engine.pending_ime_auto_undo_uses_causal_precondition_snapshot());
+        assert_eq!(
+            engine.pending_ime_auto_undo_retry_status(),
+            "ready_causal_precondition"
+        );
+    }
+
+    #[test]
+    fn pending_ime_auto_undo_rejects_unrelated_surrounding_snapshot() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            false,
+            true,
+            LayConfig::default(),
+        );
+        assert!(engine.bind_focus_path());
+        engine.tail_buffer = "собака ".to_string();
+        engine.publish_tail_handoff();
+        engine.remember_pending_ime_auto_undo(
+            "cj,frf ".to_string(),
+            "собака ".to_string(),
+            lay::typing_cpu::ObservedSystemTransition::LayoutProjection,
+        );
+        engine.surrounding_text_supported = true;
+        engine.surrounding_text_snapshot = Some(
+            super::super::engine::SurroundingTextSnapshot::new("другой".to_string(), 6, 6),
+        );
+
+        assert!(engine.defer_pending_ime_auto_undo_until_visible());
+        assert!(!engine.pending_ime_auto_undo_uses_causal_precondition_snapshot());
+        assert_eq!(
+            engine.pending_ime_auto_undo_retry_status(),
+            "waiting_exact_snapshot"
+        );
     }
 
     #[test]

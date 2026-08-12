@@ -1,0 +1,244 @@
+   Compiling lay v1.0.20 (/home/ubu/projects/lay)
+warning: variable does not need to be mutable
+   --> src/nanda_wave/l2_field/productive_v1/calibrate.rs:869:13
+    |
+869 |         let mut base = ReadoutCandidateV1 {
+    |             ----^^^^
+    |             |
+    |             help: remove this `mut`
+    |
+    = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: method `pair_debug` is never used
+   --> src/nanda_wave/context_phase/mod.rs:910:19
+    |
+314 | impl ContextPhasePackage {
+    | ------------------------ method in this implementation
+...
+910 |     pub(crate) fn pair_debug(
+    |                   ^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: method `update_hard_negative_relation` is never used
+    --> src/nanda_wave/context_phase/online.rs:1247:8
+     |
+ 483 | impl OnlineContextPhaseLearner {
+     | ------------------------------ method in this implementation
+...
+1247 |     fn update_hard_negative_relation(&mut self, token_hash: u64, vector: &[PhaseCell]) {
+     |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: methods `recover_anchor` and `recover_anchor_into` are never used
+   --> src/nanda_wave/l2_field/productive_v1/anchor_recovery_package.rs:361:19
+    |
+244 | impl AnchorRecoveryPackageViewV1 {
+    | -------------------------------- methods in this implementation
+...
+361 |     pub(super) fn recover_anchor(
+    |                   ^^^^^^^^^^^^^^
+...
+372 |     pub(super) fn recover_anchor_into(
+    |                   ^^^^^^^^^^^^^^^^^^^
+
+warning: variants `ExplicitAnti`, `AmbiguityObservation`, `DirectionalResidual`, `ExactLemmaLocalAllomorph`, and `Supersedes` are never constructed
+  --> src/nanda_wave/l2_field/productive_v1/delta.rs:14:5
+   |
+11 | pub(super) enum DeltaRecordKindV1 {
+   |                 ----------------- variants in this enum
+...
+14 |     ExplicitAnti = 3,
+   |     ^^^^^^^^^^^^
+15 |     AmbiguityObservation = 4,
+   |     ^^^^^^^^^^^^^^^^^^^^
+16 |     DirectionalResidual = 5,
+   |     ^^^^^^^^^^^^^^^^^^^
+...
+19 |     ExactLemmaLocalAllomorph = 8,
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^
+20 |     Supersedes = 9,
+   |     ^^^^^^^^^^
+   |
+   = note: `DeltaRecordKindV1` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: function `verify_compaction_semantic_parity` is never used
+   --> src/nanda_wave/l2_field/productive_v1/delta.rs:217:15
+    |
+217 | pub(super) fn verify_compaction_semantic_parity(
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: variants `HardNegative` and `Anti` are never constructed
+  --> src/nanda_wave/l2_field/productive_v1/phase.rs:16:5
+   |
+15 | pub(super) enum PhaseBankKindV1 {
+   |                 --------------- variants in this enum
+16 |     HardNegative = -2,
+   |     ^^^^^^^^^^^^
+17 |     Anti = -1,
+   |     ^^^^
+   |
+   = note: `PhaseBankKindV1` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: function `maximum_phase_coherence` is never used
+   --> src/nanda_wave/l2_field/productive_v1/phase.rs:104:15
+    |
+104 | pub(super) fn maximum_phase_coherence(wave: &SceneWaveV1, centers: &[FittedPhaseCenterV1]) -> i64 {
+    |               ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: method `validate_for_count` is never used
+  --> src/nanda_wave/l2_field/productive_v1/types.rs:13:19
+   |
+12 | impl ImportedCanonicalL2LemmaRefV1 {
+   | ---------------------------------- method in this implementation
+13 |     pub(super) fn validate_for_count(self, count: usize) -> Result<(), &'static str> {
+   |                   ^^^^^^^^^^^^^^^^^^
+
+warning: method `validate_for_count` is never used
+  --> src/nanda_wave/l2_field/productive_v1/types.rs:26:19
+   |
+25 | impl ImportedCanonicalL2FormRefV1 {
+   | --------------------------------- method in this implementation
+26 |     pub(super) fn validate_for_count(self, count: usize) -> Result<(), &'static str> {
+   |                   ^^^^^^^^^^^^^^^^^^
+
+warning: struct `FormIdentityV1` is never constructed
+   --> src/nanda_wave/l2_field/productive_v1/types.rs:219:19
+    |
+219 | pub(super) struct FormIdentityV1 {
+    |                   ^^^^^^^^^^^^^^
+
+warning: method `validate` is never used
+   --> src/nanda_wave/l2_field/productive_v1/types.rs:227:19
+    |
+226 | impl FormIdentityV1 {
+    | ------------------- method in this implementation
+227 |     pub(super) fn validate(self) -> Result<(), &'static str> {
+    |                   ^^^^^^^^
+
+warning: variants `ExplicitFeedback`, `StructurallyImpossibleAgreement`, and `LocalContextAntiCenter` are never constructed
+   --> src/nanda_wave/l2_field/productive_v1/types.rs:263:5
+    |
+262 | pub(super) enum IndependentEvidenceSourceKindV1 {
+    |                 ------------------------------- variants in this enum
+263 |     ExplicitFeedback = 1,
+    |     ^^^^^^^^^^^^^^^^
+264 |     StructurallyImpossibleAgreement = 2,
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+265 |     LocalContextAntiCenter = 3,
+    |     ^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `IndependentEvidenceSourceKindV1` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: methods `center_candidates` and `has_local_single_edit_peak` are never used
+  --> src/nanda_wave/l2_wave_peak.rs:31:19
+   |
+30 | impl L2CorrectionPeakContext {
+   | ---------------------------- methods in this implementation
+31 |     pub(crate) fn center_candidates(&self) -> &[l2::L2ImeWordCandidate] {
+   |                   ^^^^^^^^^^^^^^^^^
+...
+35 |     pub(crate) fn has_local_single_edit_peak(&self) -> bool {
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: fields `state_before` and `l3_relation_class` are never read
+  --> src/typing_transition/live_candidate.rs:12:16
+   |
+11 | pub(crate) struct LiveCompletionProposal {
+   |                   ---------------------- fields in this struct
+12 |     pub(crate) state_before: u64,
+   |                ^^^^^^^^^^^^
+...
+41 |     pub(crate) l3_relation_class: u64,
+   |                ^^^^^^^^^^^^^^^^^
+   |
+   = note: `LiveCompletionProposal` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code analysis
+
+warning: `lay` (lib test) generated 15 warnings (run `cargo fix --lib -p lay --tests` to apply 1 suggestion)
+    Finished `test` profile [unoptimized] target(s) in 28.14s
+     Running unittests src/lib.rs (target/debug/deps/lay-5f83e56a7d6736c4)
+
+running 80 tests
+test nanda_wave::l2_field::productive_v1::calibrate::tests::readout_total_order_matches_grounding_geometry_and_exact_provenance ... ok
+test nanda_wave::l2_field::productive_v1::calibrate::tests::recovered_candidate_requires_a_cross_lane_certificate_to_lead ... ok
+test nanda_wave::l2_field::productive_v1::compiler::tests::actual_trie_segments_repack_existing_operation_references ... ok
+test nanda_wave::l2_field::productive_v1::compiler::tests::stable_terminal_ids_resolve_u32_collisions_deterministically ... ok
+test nanda_wave::l2_field::productive_v1::composite::tests::composite_preserves_all_32_plus_32_identities_before_display_dedup ... ok
+test nanda_wave::l2_field::productive_v1::composite::tests::productive_verdict_cannot_remove_a_grounded_winner ... ok
+test nanda_wave::l2_field::productive_v1::compiler::tests::segment_pool_covers_radix_compacted_emit_runs ... ok
+test nanda_wave::l2_field::productive_v1::corpus::tests::raw_context_spool_roundtrips_and_rejects_crc_corruption ... ok
+test nanda_wave::l2_field::productive_v1::delta::tests::coefficient_and_calibration_generations_are_atomic ... ok
+test nanda_wave::l2_field::productive_v1::corpus::tests::russian_axis_schema_loads_and_parses_applicable_unknowns ... ok
+test nanda_wave::l2_field::productive_v1::delta::tests::delta_chain_rejects_gap_and_conflicting_duplicate_event ... ok
+test nanda_wave::l2_field::productive_v1::events::tests::canonical_spool_decoder_roundtrips_every_typed_event_kind ... ok
+test nanda_wave::l2_field::productive_v1::delta::tests::promotion_manifest_is_256_bytes_and_fails_closed ... ok
+test nanda_wave::l2_field::productive_v1::events::tests::feedback_non_selection_is_not_anti_evidence ... ok
+test nanda_wave::l2_field::productive_v1::events::tests::event_sort_deduplicates_only_identical_full_events ... ok
+test nanda_wave::l2_field::productive_v1::events::tests::full_event_identity_is_idempotent_but_keeps_provenance_distinct ... ok
+test nanda_wave::l2_field::productive_v1::events::tests::sharded_spool_roundtrip_checks_sequence_crc_and_hash ... ok
+test nanda_wave::l2_field::productive_v1::events::tests::split_and_inner_fold_are_lemma_owned ... ok
+test nanda_wave::l2_field::productive_v1::calibrate::tests::sparse_exact_stratum_backs_off_in_normative_order ... ok
+test nanda_wave::l2_field::productive_v1::calibrate::tests::grounded_winner_cannot_be_downgraded_without_certificate ... ok
+test nanda_wave::l2_field::productive_v1::evidence_reduce::tests::missing_counts_stay_neutral_and_explicit_anti_is_directional ... ok
+test nanda_wave::l2_field::productive_v1::format::tests::checked_package_roundtrip_preserves_header_and_sections ... ok
+test nanda_wave::l2_field::productive_v1::calibrate::tests::pava_is_nonincreasing_and_tie_radius_retains_valid_alternatives ... ok
+test nanda_wave::l2_field::productive_v1::format::tests::deep_reader_rejects_a_terminal_decoder_reference_to_no_pool_entry ... ok
+test nanda_wave::l2_field::productive_v1::format::tests::deep_reader_accepts_a_fully_attributed_semantic_package ... ok
+test nanda_wave::l2_field::productive_v1::format::tests::package_load_is_checked_and_mmap_backed ... ok
+test nanda_wave::l2_field::productive_v1::format::tests::deep_reader_rejects_phase_section_polarity_disagreement ... ok
+test nanda_wave::l2_field::productive_v1::format::tests::deep_reader_rejects_a_trie_cycle_with_valid_section_checksums ... ok
+test nanda_wave::l2_field::productive_v1::format::tests::package_reader_rejects_section_corruption ... ok
+test nanda_wave::l2_field::productive_v1::geometry::tests::cloned_branch_state_preserves_complete_parent_path_identity ... ok
+test nanda_wave::l2_field::productive_v1::geometry::tests::batched_keyboard_emission_matches_scalar_emission ... ok
+test nanda_wave::l2_field::productive_v1::geometry::tests::incremental_osa_is_score_identical_to_v39_adapter ... ok
+test nanda_wave::l2_field::productive_v1::geometry::tests::reset_reuses_atom_tables_without_changing_terminal_evidence ... ok
+test nanda_wave::l2_field::productive_v1::geometry::tests::incremental_atom_and_simhash_match_v39_materialized_surface ... ok
+test nanda_wave::l2_field::productive_v1::calibrate::tests::winner_threshold_requires_two_hundred_zero_error_groups ... ok
+test nanda_wave::l2_field::productive_v1::induce::tests::canonical_anchor_uses_the_normative_total_order ... ok
+test nanda_wave::l2_field::productive_v1::induce::tests::compatibility_is_exact_and_checks_instantiated_ranges ... ok
+test nanda_wave::l2_field::productive_v1::induce::tests::transfer_requires_two_distinct_train_lemmas ... ok
+test nanda_wave::l2_field::productive_v1::l3_handoff::tests::l3_projection_keeps_all_64_typed_identities_even_when_surfaces_deduplicate ... ok
+test nanda_wave::l2_field::productive_v1::packaged_runtime::tests::dense_paradigm_flags_preserve_independent_sorted_memberships ... ok
+test nanda_wave::l2_field::productive_v1::packaged_runtime::tests::exact_surface_matcher_streams_unicode_chunks_without_materializing_output ... ok
+test nanda_wave::l2_field::productive_v1::induce::tests::scalar_dp_reconstructs_edge_and_internal_edits_byte_exactly ... ok
+test nanda_wave::l2_field::productive_v1::packaged_runtime::tests::exposed_constraints_keep_dense_offsets_after_ordered_dedup ... ok
+test nanda_wave::l2_field::productive_v1::packaged_runtime::tests::geometry_aware_slot_birth_selects_after_terminal_scoring ... ok
+test nanda_wave::l2_field::productive_v1::packaged_runtime::tests::recovered_lane_cannot_demote_or_consume_a_base_lane_candidate ... ok
+test nanda_wave::l2_field::productive_v1::packaged_runtime::tests::surface_basin_coalesces_paradigms_but_preserves_slots ... ok
+test nanda_wave::l2_field::productive_v1::induce::tests::end_relative_replacement_has_one_cross_length_program_identity ... ok
+test nanda_wave::l2_field::productive_v1::phase::tests::integer_cosine_is_exact_for_zero_equal_and_opposite_waves ... ok
+test nanda_wave::l2_field::productive_v1::geometry::tests::batch_geometry_is_exactly_equal_to_incremental_geometry ... ok
+test nanda_wave::l2_field::productive_v1::records::tests::codecs_reject_reserved_unknown_and_partial_records ... ok
+test nanda_wave::l2_field::productive_v1::records::tests::fixed_record_codecs_preserve_normative_widths_and_fields ... ok
+test nanda_wave::l2_field::productive_v1::phase::tests::ranking_bank_selects_centers_only_from_independent_fold_improvement ... ok
+test nanda_wave::l2_field::productive_v1::phase::tests::deterministic_clustering_rejects_duplicate_empty_modes ... ok
+test nanda_wave::l2_field::productive_v1::runtime::tests::source_length_incompatible_arc_is_pruned_without_integrity_failure ... ok
+test nanda_wave::l2_field::productive_v1::phase::tests::ambiguity_banks_are_independent_and_reject_false_singletons ... ok
+test nanda_wave::l2_field::productive_v1::scene::tests::empty_scene_is_sixty_zero_cells ... ok
+test nanda_wave::l2_field::productive_v1::scene::tests::scene_wave_is_order_independent_after_feature_sort ... ok
+test nanda_wave::l2_field::productive_v1::score::tests::fixed_point_polarity_subtracts_only_explicit_negative_features ... ok
+test nanda_wave::l2_field::productive_v1::score::tests::missing_evidence_is_exact_neutral_zero ... ok
+test nanda_wave::l2_field::productive_v1::runtime::tests::speed_parity_runtime_uses_v39_tuple_and_keeps_top_32_bounded ... ok
+test nanda_wave::l2_field::productive_v1::score::tests::q16_rounding_is_ties_to_even ... ok
+test nanda_wave::l2_field::productive_v1::spool_sort::tests::external_sort_is_bounded_deduplicated_and_input_order_deterministic ... ok
+test nanda_wave::l2_field::productive_v1::spool_sort::tests::external_sort_uses_canonical_lexical_order_not_length_prefixed_wire_order ... ok
+test nanda_wave::l2_field::productive_v1::transition_reduce::tests::axis_schema_rejects_implicit_or_unused_dictionary_values ... ok
+test nanda_wave::l2_field::productive_v1::corpus::tests::context_replay_separates_train_contradiction_and_read_only_proof_events ... ok
+test nanda_wave::l2_field::productive_v1::reduce::tests::imported_reduce_and_reopen_preserve_sparse_canonical_refs ... ok
+test nanda_wave::l2_field::productive_v1::trie::tests::end_relative_replacement_keeps_the_variable_stem_length ... ok
+test nanda_wave::l2_field::productive_v1::trie::tests::relative_anchor_program_instantiates_for_a_different_length_lemma ... ok
+test nanda_wave::l2_field::productive_v1::trie::tests::trie_compile_is_byte_order_deterministic_under_input_permutation ... ok
+test nanda_wave::l2_field::productive_v1::trie::tests::trie_instantiation_matches_edit_program_candidates_and_order ... ok
+test nanda_wave::l2_field::productive_v1::transition_reduce::tests::transition_reduce_separates_pos_basins_for_one_canonical_lemma ... ok
+test nanda_wave::l2_field::productive_v1::trie::tests::trie_shares_scalar_prefixes_and_keeps_one_parent ... ok
+test nanda_wave::l2_field::productive_v1::types::tests::applicability_distinguishes_inapplicable_from_unknown ... ok
+test nanda_wave::l2_field::productive_v1::types::tests::morphology_slot_key_has_normative_width ... ok
+test nanda_wave::l2_field::productive_v1::score::tests::projected_training_is_deterministic_and_nonnegative ... ok
+test nanda_wave::l2_field::productive_v1::reduce::tests::train_reduce_keeps_one_lemma_in_memory_and_assigns_canonical_ids ... ok
+test nanda_wave::l2_field::productive_v1::l3_handoff::tests::l3_context_observes_both_lanes_without_granting_runtime_authority ... ok
+test nanda_wave::l2_field::productive_v1::evidence_reduce::tests::evidence_reduce_fits_disjoint_evidence_and_reopens_the_compiled_package ... ok
+test nanda_wave::l2_field::productive_v1::transition_reduce::tests::transition_reduce_is_bounded_and_counts_distinct_train_lemmas ... ok
+productive_compiler_micro package_bytes=14744 package_sha256=ed8764ab946ec905c1ddfd59eea065b104425293407ca0c23141b9a98b4b8a42 paradigms=2 bindings=301 programs=4 operations=10 trie_nodes=7 trie_arcs=5 terminals=3 calibration_rows=5 runtime_logical_terminals=2 runtime_cache_bytes=824
+test nanda_wave::l2_field::productive_v1::compiler::tests::compiler_is_deterministic_and_reopens_a_deep_valid_mmap_package ... ok
+
+test result: ok. 80 passed; 0 failed; 0 ignored; 0 measured; 1250 filtered out; finished in 3.00s
+

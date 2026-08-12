@@ -1,0 +1,52 @@
+{
+  "kind": "l2_productive_v1_l3_handoff_v54",
+  "date": "2026-08-11",
+  "verdict": "PASS_scoped_typed_l3_shadow_handoff_micro",
+  "runtime_authority_changed": false,
+  "tested": [
+    "the immutable L3 handoff carries complete grounded and productive candidate records in addition to display surface groups",
+    "the legacy L3 WordCandidate projection emits one aligned entry per typed identity instead of flattening the composite field to top-32",
+    "all 32 grounded plus 32 productive identities reach the L3 projection even when many identities decode to the same display surface",
+    "every projected surface preserves the original left context and replaces only the active word",
+    "projected candidates retain typed identity ownership in a sidecar and use neutral legacy energy and risk instead of manually invented cross-lane weights",
+    "the existing L3 context field observes both lanes without changing live authority",
+    "identity count overflow, lane misalignment, and an input with no replaceable active word fail closed"
+  ],
+  "measured_facts": {
+    "productive_v1_tests_passed": 56,
+    "productive_v1_tests_failed": 0,
+    "l3_handoff_tests_passed": 2,
+    "l3_handoff_tests_failed": 0,
+    "maximum_projected_identities": 64,
+    "maximum_grounded_identities": 32,
+    "maximum_productive_identities": 32,
+    "grounded_identity_loss_in_micro": 0,
+    "grounded_winner_protection_violations_in_micro": 0,
+    "manual_cross_lane_weights_added": 0,
+    "runtime_authority_changed": false,
+    "cargo_target_bytes_after_gate": 8140812288,
+    "cargo_target_budget_bytes": 12884901888
+  },
+  "not_tested": [
+    "fixed-corpus L3 candidate retention and verifier replay",
+    "full fixed-corpus V39 candidate and geometry parity",
+    "seen, bank-unseen, slot-heldout, lemma-heldout, ambiguity, false-authority, and false-singleton proof denominators",
+    "full-corpus package size, cold publish, request arena, steady RSS, and peak RSS",
+    "remote single-client and 20-client latency gates",
+    "physical IME product matrix",
+    "live runtime authority"
+  ],
+  "commands": [
+    "rustfmt --edition 2021 src/nanda_wave/l2_field/productive_v1/{composite,l3_handoff,mod}.rs",
+    "scripts/cargo-guard.sh test --lib productive_v1::",
+    "scripts/cargo-guard.sh --status"
+  ],
+  "source": [
+    "src/nanda_wave/l2_field/productive_v1/composite.rs",
+    "src/nanda_wave/l2_field/productive_v1/l3_handoff.rs",
+    "src/nanda_wave/l2_field/productive_v1/mod.rs",
+    "src/nanda_wave/l3.rs",
+    "src/nanda_wave/signal.rs",
+    "docs/l2-productive-paradigm-field-paper-implementation.md"
+  ]
+}

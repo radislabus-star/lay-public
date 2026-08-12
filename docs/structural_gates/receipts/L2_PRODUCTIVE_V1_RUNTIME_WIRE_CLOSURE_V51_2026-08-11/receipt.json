@@ -1,0 +1,51 @@
+{
+  "kind": "l2_productive_v1_runtime_wire_closure_v51",
+  "date": "2026-08-11",
+  "verdict": "PASS_scoped_packaged_runtime_wire_contract",
+  "runtime_authority_changed": false,
+  "tested": [
+    "slot profiles serialize and deep-load independently typed explicit anti support",
+    "all 23 required sections remain byte-deterministic after the 44-byte slot-profile amendment",
+    "directional scene identity has one canonical train/runtime SHA-256 derivation",
+    "packaged feature 14 and feature 15 ownership is explicit and reproducible",
+    "generated candidate identity is the collision-checked terminal stable identity combined with lemma identity",
+    "lemma-local exact allomorph programs remain outside the productive trie"
+  ],
+  "measured_facts": {
+    "productive_v1_tests_passed": 51,
+    "productive_v1_tests_failed": 0,
+    "slot_phase_profile_bytes_before": 40,
+    "slot_phase_profile_bytes_after": 44,
+    "micro_slot_phase_profiles": 4,
+    "micro_package_bytes_before": 14728,
+    "micro_package_bytes_after": 14744,
+    "micro_package_increment_bytes": 16,
+    "micro_package_sha256": "336ad181cc8f53e498bbdb824f5a834a3fecdc191751bfa019bfaff13928b185",
+    "deterministic_publications_compared": 2,
+    "cargo_target_bytes_after_gate": 8140066816,
+    "cargo_target_budget_bytes": 12884901888
+  },
+  "not_tested": [
+    "full-corpus slot anti counts and directional rows",
+    "trained mmap traversal and complete 15-feature score",
+    "fixed seen, slot-heldout, lemma-heldout, ambiguity, and authority denominators",
+    "composite grounded plus productive lattice",
+    "remote latency, RSS, package budget, and physical product gates",
+    "live runtime authority"
+  ],
+  "commands": [
+    "rustfmt --edition 2021 src/nanda_wave/l2_field/productive_v1/*.rs",
+    "scripts/cargo-guard.sh test --lib productive_v1::",
+    "scripts/cargo-guard.sh test --lib productive_v1::compiler::tests::compiler_is_deterministic_and_reopens_a_deep_valid_mmap_package -- --nocapture",
+    "scripts/cargo-guard.sh --status"
+  ],
+  "source": [
+    "src/nanda_wave/l2_field/productive_v1/records.rs",
+    "src/nanda_wave/l2_field/productive_v1/format.rs",
+    "src/nanda_wave/l2_field/productive_v1/format_validation.rs",
+    "src/nanda_wave/l2_field/productive_v1/compiler.rs",
+    "src/nanda_wave/l2_field/productive_v1/scene.rs",
+    "src/nanda_wave/l2_field/productive_v1/calibrate.rs",
+    "docs/l2-productive-paradigm-field-paper-implementation.md"
+  ]
+}

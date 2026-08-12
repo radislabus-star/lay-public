@@ -1,0 +1,86 @@
+{
+  "actual_calibration": {
+    "authority_blocked_by_target_loss": true,
+    "candidate_rows": 3599,
+    "fitted_groups": 121,
+    "source_groups": 1348,
+    "target_lost_groups": 1227,
+    "target_retained_groups": 121
+  },
+  "anchor_recovery_support_policy": "fine_applicability_with_shared_certificate",
+  "evidence": {
+    "bootstrap_calibration_groups": 1348,
+    "context_occurrence_events": 15942,
+    "direct_contradiction_events": 20,
+    "exact_only_morphology_events": 74,
+    "exact_only_morphology_forms": 74,
+    "excluded_context_occurrence_events": 47,
+    "excluded_direct_contradiction_events": 0,
+    "feedback_events": 0,
+    "phase_profiles": 50750,
+    "proof_events": 2501633,
+    "selected_phase_centers": 0,
+    "training_pairs": 20
+  },
+  "induction": {
+    "anchor_recovery_definitions": 62115,
+    "bound_lemma_pos_basins": 94151,
+    "exact_allomorph_observations": 5824,
+    "paradigms": 2099,
+    "transferable_observations": 2595033,
+    "transition_observations": 2600857
+  },
+  "kind": "l2_productive_paradigm_field_v1_resume_after_induction",
+  "package": {
+    "anchor_recovery": {
+      "bytes": 5898104,
+      "indexes": 161,
+      "operations": 228351,
+      "path": "out/LAY-L2-PRODUCTIVE-PARADIGM-V1-SHADOW-V67.p2r",
+      "postings": 62115,
+      "programs": 62115,
+      "sha256": "95e976c7b142537ce8182db7e8273e6dc30d4f107ab146ad226912a6cdee92ec",
+      "shared_support_certified_postings": 25200
+    },
+    "bindings": 94151,
+    "bytes": 17309944,
+    "mmap_backed": true,
+    "operations": 270449,
+    "paradigms": 2099,
+    "path": "out/LAY-L2-PRODUCTIVE-PARADIGM-V1-SHADOW-V67.p2m",
+    "programs": 77854,
+    "resident_cache_bytes": 10766704,
+    "sha256": "9fd8c950398fb8ba47a2c9f2236880239d9f4376b191a691b0d01c47ddd3e438",
+    "terminals": 72104,
+    "trie_arcs": 80247,
+    "trie_nodes": 82346
+  },
+  "proof_status": "PENDING_fixed_read_only_proof",
+  "reduced": {
+    "imported_identity_verified": true,
+    "train_events": 2600857,
+    "train_forms": 2600857,
+    "train_lemmas": 74852
+  },
+  "reused_complete_stages": [
+    "raw_corpus_pass",
+    "morphology_external_sort",
+    "imported_ownership_reduce",
+    "transition_paradigm_induction",
+    "context_typed_replay",
+    "context_external_sort"
+  ],
+  "runtime_authority_changed": false,
+  "stage_timings_ms": {
+    "actual_candidate_calibration": 12231,
+    "bootstrap_package": 8043,
+    "evidence_reduce_and_fit": 11786,
+    "final_deterministic_package": 7989,
+    "resume_induce_shared_support_anchor_recovery": 39739,
+    "resume_reopen_induction": 2448,
+    "resume_reopen_reduced_morphology": 8108
+  },
+  "total_ms": 90565,
+  "verdict": "PASS_shadow_suggest_only_package",
+  "workers": 20
+}

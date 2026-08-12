@@ -1,0 +1,42 @@
+{
+  "kind": "l2_productive_v1_stream_reduce_v47",
+  "date": "2026-08-11",
+  "verdict": "PASS_scoped_bounded_sort_and_train_morphology_reduce",
+  "runtime_authority_changed": false,
+  "tested": [
+    "canonical spool decoding covers morphology, context occurrence, feedback, and proof event kinds",
+    "bounded chunk sort produces deterministic runs under a configured memory budget",
+    "bounded multi-pass merge deduplicates only byte-identical full events and merges all input shards globally",
+    "forward and reverse input order produce byte-identical globally sorted spool bytes",
+    "TRAIN morphology reduce retains one lemma at a time and assigns contiguous canonical lemma and form identities",
+    "slot variants, support aggregation, complete event SHA-256 provenance, payload checksums, and reduced reader validation roundtrip"
+  ],
+  "measured_facts": {
+    "productive_v1_tests_passed": 48,
+    "productive_v1_tests_failed": 0,
+    "external_sort_input_records": 80,
+    "external_sort_unique_records": 40,
+    "external_sort_merge_passes_minimum": 2,
+    "external_sort_forward_reverse_byte_identical": true,
+    "cargo_target_bytes_after_gate": 8138199040,
+    "cargo_target_budget_bytes": 12884901888
+  },
+  "not_tested": [
+    "full-corpus one-raw-pass compilation",
+    "external transition-key support reduce and merge join",
+    "corpus-trained Productive V1 package",
+    "fixed 13-class V39 candidate identity and order parity",
+    "seen, slot-heldout, lemma-heldout, ambiguity, false-authority, and false-singleton proof denominators",
+    "composite 32 grounded plus 32 productive lattice and L3 handoff",
+    "remote package bytes, cold publish, steady or peak RSS, hot p99, and physical product matrix"
+  ],
+  "commands": [
+    "scripts/cargo-guard.sh test --lib productive_v1::"
+  ],
+  "source": [
+    "src/nanda_wave/l2_field/productive_v1/events.rs",
+    "src/nanda_wave/l2_field/productive_v1/spool_sort.rs",
+    "src/nanda_wave/l2_field/productive_v1/reduce.rs",
+    "docs/l2-productive-paradigm-field-paper-implementation.md"
+  ]
+}

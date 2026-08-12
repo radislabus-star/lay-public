@@ -20,18 +20,18 @@
     "semantic_hash": "236e46a80b6d2865de3d1816fb645158"
   },
   "extension/lay@radislabus-star.github.io/lay-impl.js": {
-    "mtime": 1786337013.0128899,
+    "mtime": 1786341195.755445,
     "ast_hash": "4b795e86b2cf94e522b648b448bb5e87",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1786337013.0067346,
-    "ast_hash": "a5de84537535b1c8070ca494ae916126",
+    "mtime": 1786528455.00548,
+    "ast_hash": "12892ca5034a1107c15303ffdfcb7564",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
-    "mtime": 1786337013.0198517,
-    "ast_hash": "0a71ceafa41e4f6311b66503fd360027",
+    "mtime": 1786528455.00948,
+    "ast_hash": "84dd23a6aca7fb7329922b9adb01c91a",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/recent_actions_menu.js": {
@@ -40,13 +40,13 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/settings.js": {
-    "mtime": 1786337013.018806,
-    "ast_hash": "448688fb1a67107b06c96c4cfcbc45a3",
+    "mtime": 1786528455.00948,
+    "ast_hash": "f817764f1b0583379cd42564a44fb08c",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1786337013.018699,
-    "ast_hash": "c605e51f526115b80563d08dc0b59129",
+    "mtime": 1786528455.00848,
+    "ast_hash": "620ab5fbaa168a4842c6f3becf245c0d",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -875,13 +875,13 @@
     "semantic_hash": "562af74b70d3d9a2ef9b8fe78fb73ccf"
   },
   "src/bin/lay_ibus_engine/committed_tail.rs": {
-    "mtime": 1786335531.0539632,
-    "ast_hash": "9baf173ef8445a40982a325ac547892c",
+    "mtime": 1786349658.873463,
+    "ast_hash": "1bc277e08ba59440841be5a4958ccd94",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/composition_commit.rs": {
-    "mtime": 1786007368.547241,
-    "ast_hash": "de4a767afc3590c00f6a80a6748ad4b9",
+    "mtime": 1786348183.4318793,
+    "ast_hash": "5467425c6d5f64f284dd948f8d32014b",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/composition_edit.rs": {
@@ -890,13 +890,13 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/engine.rs": {
-    "mtime": 1785754450.0568917,
-    "ast_hash": "3be9ff1e8f050df56f0fd87025eff1f4",
+    "mtime": 1786342443.5003376,
+    "ast_hash": "557056b85bcf152ab9ece1eafbbb816f",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/engine/profile_tests.rs": {
-    "mtime": 1786335531.0619633,
-    "ast_hash": "cc8fb7067c1c49a2570d37909abf6931",
+    "mtime": 1786346967.3067768,
+    "ast_hash": "232aadb3fabc8e648162d82a73bb0b3c",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/factory.rs": {
@@ -905,8 +905,8 @@
     "semantic_hash": "c5ff75d88517eed471e5a4ae72718525"
   },
   "src/bin/lay_ibus_engine/ibus_interface.rs": {
-    "mtime": 1785754450.0598917,
-    "ast_hash": "8d6f1954e32888335396251bbe775afe",
+    "mtime": 1786349779.453055,
+    "ast_hash": "44afa1066cc8fa24aa5983ce0cfac899",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/key_decode.rs": {
@@ -920,23 +920,23 @@
     "semantic_hash": "1e60acb8c4b8e69c3564b40d7e06292b"
   },
   "src/bin/lay_ibus_engine/layout_sync.rs": {
-    "mtime": 1786025360.376324,
-    "ast_hash": "d02941b77b49e1070378995b425593d4",
+    "mtime": 1786348183.4288793,
+    "ast_hash": "67f513a5f98619e64ab0309d0c1dbeb5",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/managed.rs": {
-    "mtime": 1785972587.574612,
-    "ast_hash": "0a7a62c6a218c72f703944ba5bca150f",
+    "mtime": 1786345900.6745725,
+    "ast_hash": "9193030ec63eb4abeb3af19ce763cbb7",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/preedit.rs": {
-    "mtime": 1785522499.0714996,
-    "ast_hash": "50c7f49d10845c0a61ea9782065d7d92",
+    "mtime": 1786523664.5053582,
+    "ast_hash": "f58c3753f0b748644fed115367e074f4",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/protocol.rs": {
-    "mtime": 1785141507.8562171,
-    "ast_hash": "13c17b5ccd07937373e444dc14962765",
+    "mtime": 1786342539.6975336,
+    "ast_hash": "18203f3e0504b1f217da19cf8fb5dfd1",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/protocol/keys.rs": {
@@ -950,8 +950,8 @@
     "semantic_hash": "6cb0ccb27d824964bdbc826c780bad84"
   },
   "src/bin/lay_ibus_engine/protocol/state.rs": {
-    "mtime": 1786335531.0449631,
-    "ast_hash": "e12b3bfbd2bbb65716afd67f70f6bb22",
+    "mtime": 1786345207.6170516,
+    "ast_hash": "fd2930d9ffc8c632c90b760f146af197",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/server.rs": {
@@ -960,18 +960,18 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/shift.rs": {
-    "mtime": 1785143377.3695512,
-    "ast_hash": "6911f90b451f52e22089ef05db7edb40",
+    "mtime": 1786342443.5823386,
+    "ast_hash": "b6c7b463d6a7612c84d4b16c6b86d497",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/state.rs": {
-    "mtime": 1785754450.0578918,
-    "ast_hash": "3bc44c0b0432a65a539a517f42d01d5b",
+    "mtime": 1786349895.2647712,
+    "ast_hash": "d73b48901ee155d5566ef8c19d143a2e",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/tail_memory.rs": {
-    "mtime": 1786335531.0539632,
-    "ast_hash": "e521dd8abb1d338cba8dc3fbfe31a297",
+    "mtime": 1786349857.3225226,
+    "ast_hash": "3d1fe0c94264d8916813f5b45b5a330e",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/text.rs": {
@@ -985,8 +985,8 @@
     "semantic_hash": "b3829004dfdff10df2fe639623f4e5d5"
   },
   "src/bin/lay_ibus_engine/trace.rs": {
-    "mtime": 1786025360.3773239,
-    "ast_hash": "589676448ba04ef012af6762a102aa87",
+    "mtime": 1786349799.232168,
+    "ast_hash": "52e55b9874426207eefffca97f7cf6da",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/xml.rs": {
@@ -1050,8 +1050,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_nanda_wave_train.rs": {
-    "mtime": 1786335945.0239136,
-    "ast_hash": "76935142cb022c53bf4f2f6e8f71baad",
+    "mtime": 1786519544.009723,
+    "ast_hash": "9699e5c379bab255fb7710335475dbd1",
     "semantic_hash": ""
   },
   "src/bin/lay_ngram_corpus.rs": {
@@ -1155,8 +1155,8 @@
     "semantic_hash": ""
   },
   "src/correction_core.rs": {
-    "mtime": 1785618041.1448228,
-    "ast_hash": "13fd8f53b04d85bd264a61f366fccfa2",
+    "mtime": 1786361169.192887,
+    "ast_hash": "d18e2649ff2f01d19946e2220578aa67",
     "semantic_hash": ""
   },
   "src/correction_tests.rs": {
@@ -1255,9 +1255,9 @@
     "semantic_hash": ""
   },
   "src/keyboard.rs": {
-    "mtime": 1781862160.1882365,
-    "ast_hash": "54ed11416baba45f5707caf2d6e2e531",
-    "semantic_hash": "54ed11416baba45f5707caf2d6e2e531"
+    "mtime": 1786384139.5687556,
+    "ast_hash": "eb4177ead6e020e58421018b8576482e",
+    "semantic_hash": ""
   },
   "src/keyboard/event_words.rs": {
     "mtime": 1781862160.1852365,
@@ -1305,19 +1305,19 @@
     "semantic_hash": "dedaad1e91e8e57785267b1d2feb792f"
   },
   "src/keyboard/text_input.rs": {
-    "mtime": 1779566809.8471105,
-    "ast_hash": "7eea82059b5108c40d4bddd562c32a9a",
-    "semantic_hash": "7eea82059b5108c40d4bddd562c32a9a"
+    "mtime": 1786384139.5617554,
+    "ast_hash": "2585c93accd21f27a990c2b5b3b4a902",
+    "semantic_hash": ""
   },
   "src/keyboard/text_input/ru_emit.rs": {
-    "mtime": 1779566859.477289,
+    "mtime": 1786384128.0245862,
     "ast_hash": "114a959d8ba21bb211f41dbedcb95b93",
-    "semantic_hash": "114a959d8ba21bb211f41dbedcb95b93"
+    "semantic_hash": ""
   },
   "src/keyboard/text_input/runs.rs": {
-    "mtime": 1779566834.5971968,
-    "ast_hash": "4caf6647dfe82cb5db50443e5c99dda0",
-    "semantic_hash": "4caf6647dfe82cb5db50443e5c99dda0"
+    "mtime": 1786384128.0245862,
+    "ast_hash": "a55ee054b9470b8305bafd0f362dc49a",
+    "semantic_hash": ""
   },
   "src/keyboard/text_input/script.rs": {
     "mtime": 1779566818.5891404,
@@ -1330,9 +1330,9 @@
     "semantic_hash": "0c9e947540fc96a96f9dcdfa38066f3f"
   },
   "src/keyboard_tests.rs": {
-    "mtime": 1781862160.1882365,
-    "ast_hash": "3f0b881abab70eb22bbbd7fb77c113ff",
-    "semantic_hash": "3f0b881abab70eb22bbbd7fb77c113ff"
+    "mtime": 1786384128.087587,
+    "ast_hash": "288049bf91b1b252497fcb544d0a94c6",
+    "semantic_hash": ""
   },
   "src/language_action.rs": {
     "mtime": 1784387764.6397266,
@@ -1485,8 +1485,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/candidate_gate.rs": {
-    "mtime": 1786322170.3527253,
-    "ast_hash": "837b052b621fd9671490b9bedf7cf23a",
+    "mtime": 1786351836.722467,
+    "ast_hash": "7e637208faed6a3183c474b989b9be5c",
     "semantic_hash": ""
   },
   "src/nanda_wave/cell32.rs": {
@@ -1575,8 +1575,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/mod.rs": {
-    "mtime": 1786335945.0219138,
-    "ast_hash": "3e5777129ac8fcf71a0ee17d424092e6",
+    "mtime": 1786523858.8147788,
+    "ast_hash": "0a31c8ad09a5813c37796aba7723c5ee",
     "semantic_hash": ""
   },
   "src/nanda_wave/mode.rs": {
@@ -1635,8 +1635,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/usage_prior.rs": {
-    "mtime": 1786336105.8265522,
-    "ast_hash": "0e7b122ff1a18c088d239a9f71191d5e",
+    "mtime": 1786523919.8025336,
+    "ast_hash": "a8aa174f1af485cf8ffdd405cf5c3531",
     "semantic_hash": ""
   },
   "src/ngram.rs": {
@@ -2000,8 +2000,8 @@
     "semantic_hash": ""
   },
   "src/text_edit/transition.rs": {
-    "mtime": 1785142019.0084383,
-    "ast_hash": "ad0ef32a27525458a0daa86b77270b79",
+    "mtime": 1786344363.5319562,
+    "ast_hash": "5f663b20bf7fce4527b18ac80133ef6c",
     "semantic_hash": ""
   },
   "src/text_edit/types.rs": {
@@ -2125,8 +2125,8 @@
     "semantic_hash": "c5eb584efd158316a5facacb4cb0574e"
   },
   "src/typing_memory.rs": {
-    "mtime": 1786335638.1429358,
-    "ast_hash": "c8885a5a6a047b48e8a0153a4fa1c806",
+    "mtime": 1786523919.8945348,
+    "ast_hash": "f2d58e4812ef439b74000af246acbb10",
     "semantic_hash": ""
   },
   "src/typing_pipeline.rs": {
@@ -2240,8 +2240,8 @@
     "semantic_hash": ""
   },
   "src/typing_transition/decision.rs": {
-    "mtime": 1786316848.0255249,
-    "ast_hash": "985eb62263b4350a6b780658bbfb2d3f",
+    "mtime": 1786361780.704454,
+    "ast_hash": "4682cadcd015ebfb78fb0750e888b3ba",
     "semantic_hash": ""
   },
   "src/typing_transition/executor_contract.rs": {
@@ -2425,8 +2425,8 @@
     "semantic_hash": ""
   },
   ".codex/hooks.json": {
-    "mtime": 1783632394.0492563,
-    "ast_hash": "8d89303313e6f07bbdf25aa5d5d5e3f5",
+    "mtime": 1786374669.6631408,
+    "ast_hash": "6743b3e1a4b443f838e37cfe489e7c85",
     "semantic_hash": ""
   },
   ".codex/skills/graphify/SKILL.md": {
@@ -2515,8 +2515,8 @@
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1786337013.021559,
-    "ast_hash": "ef7f172a06365cd16a3a854430a6c520",
+    "mtime": 1786528455.00548,
+    "ast_hash": "691a8befcfd49c551a100acd0d7026e1",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -3095,8 +3095,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/preedit_readout.rs": {
-    "mtime": 1786322170.4287262,
-    "ast_hash": "c5b34de849b74ae37b1edb7c86ffcf3f",
+    "mtime": 1786351478.7285333,
+    "ast_hash": "e84bf90dbd77a87bd47210118afa4ea4",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2/surface.rs": {
@@ -3120,8 +3120,8 @@
     "semantic_hash": ""
   },
   "src/typing_transition/decision_signals.rs": {
-    "mtime": 1785617982.0753207,
-    "ast_hash": "033aae1b757a00cad520625d83cc92a2",
+    "mtime": 1786364598.8797863,
+    "ast_hash": "478a3185fa4f83be09f415712dc4e971",
     "semantic_hash": ""
   },
   "docs/structural_gates/lay-live-transition-gate.profile.json": {
@@ -3285,13 +3285,13 @@
     "semantic_hash": ""
   },
   "src/typing_transition/live_candidate.rs": {
-    "mtime": 1786322170.3537252,
-    "ast_hash": "e18f6060f33b829df6294de77c62914c",
+    "mtime": 1786351651.0785334,
+    "ast_hash": "497cc8d6b256b7897debe4a218cd0c51",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/preedit/tests.rs": {
-    "mtime": 1785840409.1095376,
-    "ast_hash": "7147c158565e0a7f356707cc3657c356",
+    "mtime": 1786523345.9783144,
+    "ast_hash": "5f408f900558f5c2a75b5ce2c112a248",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2/grammar_adapter.rs": {
@@ -3335,8 +3335,8 @@
     "semantic_hash": ""
   },
   "src/typing_transition/decision/tests.rs": {
-    "mtime": 1785608620.2793124,
-    "ast_hash": "56c8eca7f7860011ae2db1d8af619e43",
+    "mtime": 1786526166.6930325,
+    "ast_hash": "d8f23c41a79df4028da819941234483b",
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/TYPING_TRANSITION_MEMORY_PROOF_V1.json": {
@@ -3370,8 +3370,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/engine/types.rs": {
-    "mtime": 1785614953.4783556,
-    "ast_hash": "dccb365e9f84fe66c318fad28ddd9e6f",
+    "mtime": 1786347584.6544993,
+    "ast_hash": "ff5cde4f22c1468fb5cc8acc9bb4e87b",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/correction_runtime/output/replay/action.rs": {
@@ -3525,8 +3525,8 @@
     "semantic_hash": ""
   },
   "src/typing_cpu/runtime.rs": {
-    "mtime": 1786335509.6937747,
-    "ast_hash": "53707c7e674dd24abe1e841833da289f",
+    "mtime": 1786523858.815779,
+    "ast_hash": "cb2355fd5d2c5e3cdbe8387665bfd502",
     "semantic_hash": ""
   },
   "tests/input_gate_space_contract.rs": {
@@ -3580,8 +3580,8 @@
     "semantic_hash": ""
   },
   "src/text_edit/structural_verifier.rs": {
-    "mtime": 1785143377.370551,
-    "ast_hash": "fd4a8797471f7b41050732479d0c930e",
+    "mtime": 1786344363.5289562,
+    "ast_hash": "a729c312fc41b740b18be7f10d700191",
     "semantic_hash": ""
   },
   "src/typing_transition/decision/hard_structural_veto.rs": {
@@ -3740,8 +3740,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/mod.rs": {
-    "mtime": 1786285718.0179253,
-    "ast_hash": "6e279765433d788da5e96bd5a0075870",
+    "mtime": 1786407500.0134811,
+    "ast_hash": "d73abc4a50f748ee02dd1e7dfb0c6166",
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/model.rs": {
@@ -4080,8 +4080,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/restoration.rs": {
-    "mtime": 1784835484.3176377,
-    "ast_hash": "2019fa3a6f3cd837996a3d05cdb9839c",
+    "mtime": 1786407500.021481,
+    "ast_hash": "c9b1802301637b4292a6620608601181",
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/L1_1_MULTIMODAL_CRYSTAL_E2_10K_2026-07-23.json": {
@@ -4150,8 +4150,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/morphology_phase/mod.rs": {
-    "mtime": 1785407411.9165142,
-    "ast_hash": "5a85d66d6429adeac6a949278486f324",
+    "mtime": 1786410498.6991858,
+    "ast_hash": "4e46702f8083abb263d4e3c8a70b9b74",
     "semantic_hash": ""
   },
   "src/nanda_wave/morphology_phase/proof.rs": {
@@ -4695,13 +4695,13 @@
     "semantic_hash": ""
   },
   "docs/l2-l11-canonical-architecture.md": {
-    "mtime": 1786333048.5350742,
-    "ast_hash": "50ea88559aea06560b1b1ea58ea73f4c",
+    "mtime": 1786529302.5696614,
+    "ast_hash": "b404f70acf82dd5be4a1ffac88f03b6c",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2_field/bridge.rs": {
-    "mtime": 1786316461.1421785,
-    "ast_hash": "f874660b3323bf4251f4e049d71f09fa",
+    "mtime": 1786526330.3634796,
+    "ast_hash": "0c8b4bce9e674ce064e35ca332f5969e",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2_field/format.rs": {
@@ -4710,8 +4710,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/l2_field/mod.rs": {
-    "mtime": 1786329111.9348347,
-    "ast_hash": "0b80f25acae57bd3233057cae3c054fb",
+    "mtime": 1786523858.6477768,
+    "ast_hash": "7909299c132e347c57ee1abf51701a62",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2_field/proof.rs": {
@@ -4720,8 +4720,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/l2_field/runtime.rs": {
-    "mtime": 1786329659.4450116,
-    "ast_hash": "446928cc8923d43f131b4ef38f0fd46c",
+    "mtime": 1786441606.0617816,
+    "ast_hash": "edcc458da4b7964f269d256565bd50ad",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2_field/teacher.rs": {
@@ -4865,8 +4865,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/l2_field/context.rs": {
-    "mtime": 1785753745.180623,
-    "ast_hash": "ed65b40444569e8bb2e0ab83b5468c71",
+    "mtime": 1786368042.7729266,
+    "ast_hash": "2376734ab047c66906a60c43fe28d79a",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2_field/model.rs": {
@@ -5070,8 +5070,8 @@
     "semantic_hash": ""
   },
   "docs/lay-development-plan-after-0.2.340.md": {
-    "mtime": 1786338025.9792097,
-    "ast_hash": "f0157a70801480e89ee4b3f0f17aa007",
+    "mtime": 1786458935.169263,
+    "ast_hash": "ab013bbeeefbea838920e29a955d9604",
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/PUBLIC_INSTALL_CANONICAL_L2_V13_2026-08-01.json": {
@@ -5395,18 +5395,18 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/l2_field/cache.rs": {
-    "mtime": 1786312524.0205102,
-    "ast_hash": "657b64bfea36efb99fa02f15bf6002ab",
+    "mtime": 1786358730.3477852,
+    "ast_hash": "827cd5da9fd29873c67edfc64f1f7aef",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2_field/compact_format.rs": {
-    "mtime": 1786329228.993387,
-    "ast_hash": "bef05518fe17e0275c2bb4336519d0c5",
+    "mtime": 1786377096.2271805,
+    "ast_hash": "f27faa2bc8db2aee1865530d1400da39",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2_field/compositional.rs": {
-    "mtime": 1786329690.5534146,
-    "ast_hash": "8c627cab5bf0043212fc96b31645c279",
+    "mtime": 1786396782.602385,
+    "ast_hash": "e9c9b5bd888eaa7ea625682a1fc4589e",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2_field/compositional_format.rs": {
@@ -5425,8 +5425,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/l2_field/runtime_storage.rs": {
-    "mtime": 1786329056.1190896,
-    "ast_hash": "faa5b072a7f5647d32c22f7bbc7b457b",
+    "mtime": 1786373069.684718,
+    "ast_hash": "c60e484daf4c2b1c3e967d59966de7ad",
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/L2_V13_MMAP_LIVE_RUNTIME_2026-08-10.json": {
@@ -5482,6 +5482,2121 @@
   "docs/structural_gates/receipts/L3_PROCESS_LOCAL_REFRESH_2026-08-10.json": {
     "mtime": 1786337573.412714,
     "ast_hash": "66ac00b31f70627a37364ecf3849fe39",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_COMPATIBILITY_V4_DEBUG_13X10_2026-08-10.json": {
+    "mtime": 1786356093.3631737,
+    "ast_hash": "07d14748db631fb147b5bb163bc1ba7d",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_CONTEXT_AXIS_BACKOFF_V8_DEBUG_13X100_2026-08-10.json": {
+    "mtime": 1786364976.3997738,
+    "ast_hash": "5b20b90b76b6ba01b68d6b07150bc545",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_CONTEXT_AXIS_BACKOFF_V8_FORMAT_2026-08-10.json": {
+    "mtime": 1786364506.8027802,
+    "ast_hash": "40231cdcc90be7dff0bc4a137b013253",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_CONTEXT_AXIS_BACKOFF_V8_MICRO_2026-08-10.json": {
+    "mtime": 1786365029.5041082,
+    "ast_hash": "8906e4ba5deb3078efe0ee4968d5640e",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_CONTEXT_POSTERIOR_V3_DEBUG_13X10_2026-08-10.json": {
+    "mtime": 1786355602.441137,
+    "ast_hash": "4caaa02ff026451b11400a183c773e16",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_DIRECTIONAL_NH_EXACT_V22_13X10_2026-08-10.json": {
+    "mtime": 1786372347.3851979,
+    "ast_hash": "076fe90ab1ff3c0f1a11b594a8361732",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_DIRECTIONAL_NH_RAW_V20_13X10_2026-08-10.json": {
+    "mtime": 1786371518.7103555,
+    "ast_hash": "bb93e122a7623516a1b4aeae1d7b2feb",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_DIRECTIONAL_NH_TWO_LANE_V21_13X10_2026-08-10.json": {
+    "mtime": 1786372033.6838362,
+    "ast_hash": "0ff5097789b60e4ba7d67f073f21058a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_EDGE_MORPHEME_V5_DEBUG_13X10_2026-08-10.json": {
+    "mtime": 1786356732.0641487,
+    "ast_hash": "b7febf6c5843210e048b0f5ef0a99d07",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_FAMILY_INDEX_V2_DEBUG_13X10_2026-08-10.json": {
+    "mtime": 1786354479.813304,
+    "ast_hash": "259b6e034fe1f0657edced8b4d72a46e",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_LEAVE_LEMMAS_OUT_MICRO_13X10_2026-08-10.json": {
+    "mtime": 1786354095.15591,
+    "ast_hash": "142375c4972908acf322c7fbf5695a93",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_LEMMA_BASIN_PARETO_V7_DEBUG_13X10_2026-08-10.json": {
+    "mtime": 1786357827.6421804,
+    "ast_hash": "2e2b180d78af6f2a4c92dbb4ee615255",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_PARETO_READOUT_V6_DEBUG_13X10_2026-08-10.json": {
+    "mtime": 1786357379.0991747,
+    "ast_hash": "69569717a8d2e83c2d884adeddea1902",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_SIDECAR_V1_FORMAT_2026-08-10.json": {
+    "mtime": 1786358816.7209911,
+    "ast_hash": "81a234af9913a3407137d494ba722213",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/l2_field/productive.rs": {
+    "mtime": 1786382298.2906575,
+    "ast_hash": "03c53d610405a3872b89652984197615",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/l2_field/productive_format.rs": {
+    "mtime": 1786382298.3006577,
+    "ast_hash": "6a8b09bcf64547af26b2348beb1c0029",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/l2_field/productive_proof.rs": {
+    "mtime": 1786377958.18986,
+    "ast_hash": "683fbcc51b89cf53c7cb1ea189731bb1",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_DIRECTIONAL_NH_EXACT_V22_13X10_2026-08-10.time.txt": {
+    "mtime": 1786372347.393198,
+    "ast_hash": "2173469a6882918d6db2041d2803b49c",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_DIRECTIONAL_NH_EXACT_V22_BUILD_2026-08-10.time.txt": {
+    "mtime": 1786372323.407023,
+    "ast_hash": "a617e37017120ef8f3c8dc4912554b7f",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_DECODER_CACHE_V26_WORKERS1_13X10_2026-08-10.json": {
+    "mtime": 1786375671.4644213,
+    "ast_hash": "68894169573bfe5b7cefe42926711b74",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_DECODER_CACHE_V26_WORKERS20_13X10_2026-08-10.json": {
+    "mtime": 1786375670.7054112,
+    "ast_hash": "2813b32cf39cabe5b43f4b0c4e7398b8",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_DECODER_CACHE_V26_BUILD_2026-08-10.time.txt": {
+    "mtime": 1786375672.8944407,
+    "ast_hash": "ff6ff8fefd3c100327f7d3a5287e5f10",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_DECODER_CACHE_V26_WORKERS1_13X10_2026-08-10.time.txt": {
+    "mtime": 1786375671.8444264,
+    "ast_hash": "7f4e1f5bb6dcc400094fd9c560ac7f90",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_DECODER_CACHE_V26_WORKERS20_13X10_2026-08-10.time.txt": {
+    "mtime": 1786375671.0844162,
+    "ast_hash": "7209966c4eaba1e0e6a45cc3d487d8c4",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_ASSOCIATIVE_CACHE_V28_WORKERS1_13X10_2026-08-10.json": {
+    "mtime": 1786376904.3441994,
+    "ast_hash": "b6f9ea38ded0ca3b037d11e84caab04a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_ASSOCIATIVE_CACHE_V28_WORKERS20_13X10_2026-08-10.json": {
+    "mtime": 1786376903.5641916,
+    "ast_hash": "82f4905ab53ac371e0a9cd1987c3182d",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_DIRECT_CACHE_V27_WORKERS1_13X10_2026-08-10.json": {
+    "mtime": 1786376400.606788,
+    "ast_hash": "a7184ee5ead05df7edc630827cc7b4c6",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_DIRECT_CACHE_V27_WORKERS20_13X10_2026-08-10.json": {
+    "mtime": 1786376399.8347826,
+    "ast_hash": "6a6d4d4766f50e3830d9a70a18df0f33",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_GEOMETRY_CACHE_V30_WORKERS1_13X10_2026-08-10.json": {
+    "mtime": 1786377455.0461054,
+    "ast_hash": "76a9aaf1601df410cfa8ef7df691a758",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_GEOMETRY_CACHE_V30_WORKERS20_13X10_2026-08-10.json": {
+    "mtime": 1786377454.2550964,
+    "ast_hash": "d38bf41e85d06e2a43636245adfb7078",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_NORMALIZED_GEOMETRY_V33_WORKERS1_13X10_2026-08-10.json": {
+    "mtime": 1786378816.4618611,
+    "ast_hash": "a8e81015dde6f6a094d0e28cc8700fdb",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_NORMALIZED_GEOMETRY_V33_WORKERS20_13X10_2026-08-10.json": {
+    "mtime": 1786378815.6318502,
+    "ast_hash": "f106e83b5e7ff0aae4f1e426b06838f9",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_PARALLELISM_V29_OUTER1_INNER1_13X10_2026-08-10.json": {
+    "mtime": 1786376906.114217,
+    "ast_hash": "ab74729b0eb90f6961bb69bbfe0d4e63",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_PARALLELISM_V29_OUTER20_INNER1_13X10_2026-08-10.json": {
+    "mtime": 1786376905.3642097,
+    "ast_hash": "2bc5c170f46d68cd2b7faae305717fb3",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_WARM_REPEAT_V31_WORKERS1_13X10_2026-08-10.json": {
+    "mtime": 1786377864.4997754,
+    "ast_hash": "a47d3c5e7b1dfa7d7da95016efec7bcf",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_WARM_REPEAT_V31_WORKERS20_13X10_2026-08-10.json": {
+    "mtime": 1786377863.7467668,
+    "ast_hash": "46326bea3ce86e5631d8c049184d3bcb",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_WORKER_CACHE_V32_WORKERS1_13X10_2026-08-10.json": {
+    "mtime": 1786378452.0199108,
+    "ast_hash": "f473c44075328eebc5d79a0df47e7996",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_WORKER_CACHE_V32_WORKERS20_13X10_2026-08-10.json": {
+    "mtime": 1786378451.2398999,
+    "ast_hash": "8c5b0f837c41f2fabe9e8b525a946533",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_ASSOCIATIVE_CACHE_V28_BUILD_2026-08-10.time.txt": {
+    "mtime": 1786376905.0262063,
+    "ast_hash": "b6612dc97629609c6c8d2a34eaf888e2",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_ASSOCIATIVE_CACHE_V28_WORKERS1_13X10_2026-08-10.time.txt": {
+    "mtime": 1786376904.7162032,
+    "ast_hash": "da7c70986c7870ad89b5e70cb3a20167",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_ASSOCIATIVE_CACHE_V28_WORKERS20_13X10_2026-08-10.time.txt": {
+    "mtime": 1786376903.9541955,
+    "ast_hash": "0df22f8d138a38f9967953e9d88108af",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_DIRECT_CACHE_V27_BUILD_2026-08-10.time.txt": {
+    "mtime": 1786376401.3547933,
+    "ast_hash": "2da2605974bd5b969eceff8bfe5dd6d1",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_DIRECT_CACHE_V27_WORKERS1_13X10_2026-08-10.time.txt": {
+    "mtime": 1786376400.9747906,
+    "ast_hash": "a33c43e1e7662cff46d4ba4e0d8f3143",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_DIRECT_CACHE_V27_WORKERS20_13X10_2026-08-10.time.txt": {
+    "mtime": 1786376400.2147853,
+    "ast_hash": "9f3229bbaf770a7606c1dd23d761cd57",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_GEOMETRY_CACHE_V30_BUILD_2026-08-10.time.txt": {
+    "mtime": 1786377455.7951138,
+    "ast_hash": "aed8fa962a527fe5bfaac9ec9b81b60a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_GEOMETRY_CACHE_V30_WORKERS1_13X10_2026-08-10.time.txt": {
+    "mtime": 1786377455.4051094,
+    "ast_hash": "2773c4b3de0f1a2e8bb093e96d1cd7b3",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_GEOMETRY_CACHE_V30_WORKERS20_13X10_2026-08-10.time.txt": {
+    "mtime": 1786377454.6261005,
+    "ast_hash": "09522927ccbd25e3c059fe91cd9eb69d",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_NORMALIZED_GEOMETRY_V33_BUILD_2026-08-10.time.txt": {
+    "mtime": 1786378817.5638757,
+    "ast_hash": "5702be742d13e7c1f9ab2575b125932e",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_NORMALIZED_GEOMETRY_V33_WORKERS1_13X10_2026-08-10.time.txt": {
+    "mtime": 1786378816.8818667,
+    "ast_hash": "5994a4a31f90bf436f6d12d7cdd3cd9d",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_NORMALIZED_GEOMETRY_V33_WORKERS20_13X10_2026-08-10.time.txt": {
+    "mtime": 1786378816.0418558,
+    "ast_hash": "a8c7c60ecc8abf97f5d2c8246c81fd1a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_PARALLELISM_V29_OUTER1_INNER1_13X10_2026-08-10.time.txt": {
+    "mtime": 1786376906.494221,
+    "ast_hash": "89c1db893d1a884a59e5159ed00a2f8d",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_PARALLELISM_V29_OUTER20_INNER1_13X10_2026-08-10.time.txt": {
+    "mtime": 1786376905.7442133,
+    "ast_hash": "dbffaef0f01c28cf7db5f7b9f3374f21",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_WARM_REPEAT_V31_BUILD_2026-08-10.time.txt": {
+    "mtime": 1786377865.2667844,
+    "ast_hash": "5a74ebcd03013aeb9b0a3fd3f3083664",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_WARM_REPEAT_V31_WORKERS1_13X10_2026-08-10.time.txt": {
+    "mtime": 1786377864.8777797,
+    "ast_hash": "8d7d7978eec1fd0ce491363aa45beec1",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_WARM_REPEAT_V31_WORKERS20_13X10_2026-08-10.time.txt": {
+    "mtime": 1786377864.106771,
+    "ast_hash": "8f7aed59b16247ab3c4f785949108461",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_WORKER_CACHE_V32_BUILD_2026-08-10.time.txt": {
+    "mtime": 1786378452.7709215,
+    "ast_hash": "9f1b51e53f2dc0d904a6f1f4caec4fae",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_WORKER_CACHE_V32_WORKERS1_13X10_2026-08-10.time.txt": {
+    "mtime": 1786378452.400916,
+    "ast_hash": "3154fd7aa3eebab928cc9fe2f2287b32",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_WORKER_CACHE_V32_WORKERS20_13X10_2026-08-10.time.txt": {
+    "mtime": 1786378451.6209052,
+    "ast_hash": "f1458c44d8f3620944039b088c100b4a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_BOUNDED_EXPANSION_V34_WORKERS1_13X10_2026-08-10.json": {
+    "mtime": 1786379451.7639983,
+    "ast_hash": "2bc36c69362c2136bdc4600d4ba2fab8",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_BOUNDED_EXPANSION_V34_WORKERS20_13X10_2026-08-10.json": {
+    "mtime": 1786379451.0039885,
+    "ast_hash": "71700b4375dcd20a6a6741adc29c1f7e",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_GEOMETRY_SCRATCH_V36_WORKERS1_13X100_2026-08-10.json": {
+    "mtime": 1786381076.3088436,
+    "ast_hash": "b6921483c46996e989abc86075d15401",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_GEOMETRY_SCRATCH_V36_WORKERS1_13X10_2026-08-10.json": {
+    "mtime": 1786381075.4488294,
+    "ast_hash": "6c48f7c5f60981478a7e583eb1718ee3",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_GEOMETRY_SCRATCH_V36_WORKERS20_13X10_2026-08-10.json": {
+    "mtime": 1786381074.6688163,
+    "ast_hash": "9f0a4bd8e7a9dcf750b85645d7a0f9fa",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_GLOBAL_SLOT_CACHE_V38_WORKERS1_13X100_2026-08-10.json": {
+    "mtime": 1786381816.4234486,
+    "ast_hash": "238a17859350c8791087fca94e35e308",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_GLOBAL_SLOT_CACHE_V38_WORKERS1_13X10_2026-08-10.json": {
+    "mtime": 1786381815.6344366,
+    "ast_hash": "48807f5206a40b616e25285fe0a6e299",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_GLOBAL_SLOT_CACHE_V38_WORKERS20_13X10_2026-08-10.json": {
+    "mtime": 1786381814.8434246,
+    "ast_hash": "b2244b4e8cc6746b626c6ee358c17b5a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_LEMMA_BOUND_V35_WORKERS1_13X10_2026-08-10.json": {
+    "mtime": 1786379908.9967015,
+    "ast_hash": "355e9da9da7256c073aa6fb2de9149c7",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_LEMMA_BOUND_V35_WORKERS20_13X10_2026-08-10.json": {
+    "mtime": 1786379908.2426922,
+    "ast_hash": "f6d3a0d92080ceefca48a0bf2d7214d8",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_SLOT_CACHE_V37_WORKERS1_13X10_2026-08-10.json": {
+    "mtime": 1786381404.561122,
+    "ast_hash": "5d5186d81b828c65b940bda1ca983c25",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_SLOT_CACHE_V37_WORKERS20_13X10_2026-08-10.json": {
+    "mtime": 1786381403.79111,
+    "ast_hash": "9273293ce2c0c1b9b30c872ea8758988",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V33_PERF_WORKERS1_13X100_2026-08-10.json": {
+    "mtime": 1786381073.4687965,
+    "ast_hash": "4e5d6fa92da69200a7495c2706ca9de4",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_BOUNDED_EXPANSION_V34_BUILD_2026-08-10.time.txt": {
+    "mtime": 1786379452.5240078,
+    "ast_hash": "0bf98c9127a56fa525b9afa895c0cfaf",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_BOUNDED_EXPANSION_V34_WORKERS1_13X10_2026-08-10.time.txt": {
+    "mtime": 1786379452.144003,
+    "ast_hash": "d35915b9a32edede54b227ed75053418",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_BOUNDED_EXPANSION_V34_WORKERS20_13X10_2026-08-10.time.txt": {
+    "mtime": 1786379451.3749933,
+    "ast_hash": "7f2d294e40a1ae0dcefadd3522187500",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_GEOMETRY_SCRATCH_V36_BUILD_2026-08-10.time.txt": {
+    "mtime": 1786381077.0688562,
+    "ast_hash": "25547eb7a8771378d1d9819a5a801200",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_GEOMETRY_SCRATCH_V36_WORKERS1_13X100_2026-08-10.time.txt": {
+    "mtime": 1786381076.6788497,
+    "ast_hash": "42c8fa991a25f7413490a9d730429dc4",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_GEOMETRY_SCRATCH_V36_WORKERS1_13X10_2026-08-10.time.txt": {
+    "mtime": 1786381075.8588362,
+    "ast_hash": "b3333544038f20b822086125a9c77e4c",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_GEOMETRY_SCRATCH_V36_WORKERS20_13X10_2026-08-10.time.txt": {
+    "mtime": 1786381075.0488226,
+    "ast_hash": "3b346bce16c6975eba2873805a535fec",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_GLOBAL_SLOT_CACHE_V38_BUILD_2026-08-10.time.txt": {
+    "mtime": 1786381817.1644597,
+    "ast_hash": "1fd802935bcc778b440bca6cac1360c9",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_GLOBAL_SLOT_CACHE_V38_WORKERS1_13X100_2026-08-10.time.txt": {
+    "mtime": 1786381816.7844539,
+    "ast_hash": "7e0cf2436357c812280bbc1670001915",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_GLOBAL_SLOT_CACHE_V38_WORKERS1_13X10_2026-08-10.time.txt": {
+    "mtime": 1786381816.003442,
+    "ast_hash": "e0f9d5a14a539e8043da85215b68b3b8",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_GLOBAL_SLOT_CACHE_V38_WORKERS20_13X10_2026-08-10.time.txt": {
+    "mtime": 1786381815.2444305,
+    "ast_hash": "577852809a36a4c6e6d713c06bb15e46",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_LEMMA_BOUND_V35_BUILD_2026-08-10.time.txt": {
+    "mtime": 1786379909.7767112,
+    "ast_hash": "3f1986ee31675cc780a8d995c36dacb1",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_LEMMA_BOUND_V35_WORKERS1_13X10_2026-08-10.time.txt": {
+    "mtime": 1786379909.3767064,
+    "ast_hash": "5137de1082d419194eafc04e92c487fc",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_LEMMA_BOUND_V35_WORKERS20_13X10_2026-08-10.time.txt": {
+    "mtime": 1786379908.6066966,
+    "ast_hash": "803cc6d48a4795887f871aab607367fa",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_SLOT_CACHE_V37_BUILD_2026-08-10.time.txt": {
+    "mtime": 1786381405.4901366,
+    "ast_hash": "286c3fef00130d344c3309d7312fb4a9",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_SLOT_CACHE_V37_WORKERS1_13X10_2026-08-10.time.txt": {
+    "mtime": 1786381404.9611282,
+    "ast_hash": "bce676d59f6529b0f55864bf039d2bbd",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_SLOT_CACHE_V37_WORKERS20_13X10_2026-08-10.time.txt": {
+    "mtime": 1786381404.1601157,
+    "ast_hash": "1c349bbb43b43bb0378dfc772be4491e",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V33_PERF_BUILD_2026-08-10.time.txt": {
+    "mtime": 1786381074.27981,
+    "ast_hash": "7096c674971006b91371dcbb055f0d46",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V33_PERF_SELF_2026-08-10.txt": {
+    "mtime": 1786381073.8878036,
+    "ast_hash": "6fe62aaa1160982623384f14bf80aae2",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_SMALL_DEDUP_V39_2026-08-10/workers1-13x10.json": {
+    "mtime": 1786382817.1457949,
+    "ast_hash": "48e0f27be4fcb70fd0e2845bf34ced2a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_SMALL_DEDUP_V39_2026-08-10/workers1-13x100-run2.json": {
+    "mtime": 1786382940.5456583,
+    "ast_hash": "5701f3f584cfcf36006b29211f03973f",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_SMALL_DEDUP_V39_2026-08-10/workers1-13x100-run3.json": {
+    "mtime": 1786382955.9737654,
+    "ast_hash": "c739036e91f8316c39badd1275fc580a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_SMALL_DEDUP_V39_2026-08-10/workers1-13x100-run4.json": {
+    "mtime": 1786382971.385872,
+    "ast_hash": "91d73613a950975dcad685ce6323b763",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_SMALL_DEDUP_V39_2026-08-10/workers1-13x100.json": {
+    "mtime": 1786382877.1962168,
+    "ast_hash": "d1542f25477ea292488e3f608675a2f7",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_SMALL_DEDUP_V39_2026-08-10/workers20-13x10.json": {
+    "mtime": 1786382744.833281,
+    "ast_hash": "e194f91b35ddc14225d6037a5ec5876f",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_SMALL_DEDUP_V39_2026-08-10/build.time.txt": {
+    "mtime": 1786382692.1789029,
+    "ast_hash": "e303bad8e7e0703edfca1bfd483733b4",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_SMALL_DEDUP_V39_2026-08-10/workers1-13x10.time.txt": {
+    "mtime": 1786382817.1497948,
+    "ast_hash": "3aeffb688cc9702df8e2d0ec670b2878",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_SMALL_DEDUP_V39_2026-08-10/workers1-13x100-run2.time.txt": {
+    "mtime": 1786382940.5506585,
+    "ast_hash": "b3c7fb0d27bbdf21dc7c8f64b41b5da1",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_SMALL_DEDUP_V39_2026-08-10/workers1-13x100-run3.time.txt": {
+    "mtime": 1786382955.9787652,
+    "ast_hash": "eec18435cb1178c99bf8f25cca01e5b5",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_SMALL_DEDUP_V39_2026-08-10/workers1-13x100-run4.time.txt": {
+    "mtime": 1786382971.391872,
+    "ast_hash": "e3e244a0c0827f9c3d288e34fcfe3ef8",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_SMALL_DEDUP_V39_2026-08-10/workers1-13x100.time.txt": {
+    "mtime": 1786382877.201217,
+    "ast_hash": "b55e759601ec2e408ee0d91008ab7351",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_SMALL_DEDUP_V39_2026-08-10/workers20-13x10.time.txt": {
+    "mtime": 1786382744.839281,
+    "ast_hash": "ceb14c374a98bfa4b6145f8b5f16bef0",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_LOWER_KEY_UNITS_V40_2026-08-10/workers1-13x10.json": {
+    "mtime": 1786383821.5204349,
+    "ast_hash": "355db31135df6e8acc4440a382a7a516",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_LOWER_KEY_UNITS_V40_2026-08-10/workers1-13x100-run2.json": {
+    "mtime": 1786383928.9676256,
+    "ast_hash": "f704c7fbefb1c9164645d0957ce6e617",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_LOWER_KEY_UNITS_V40_2026-08-10/workers1-13x100-run3.json": {
+    "mtime": 1786383944.39779,
+    "ast_hash": "8ec6ee48aa3ca8ed7b45fae14ec5b993",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_LOWER_KEY_UNITS_V40_2026-08-10/workers1-13x100-run4.json": {
+    "mtime": 1786383960.1309562,
+    "ast_hash": "257aaae5d82c00fe8ab23c4d4cbfb778",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_LOWER_KEY_UNITS_V40_2026-08-10/workers1-13x100.json": {
+    "mtime": 1786383868.0389607,
+    "ast_hash": "d07ece7dbc76b2e2bd2f2cd9db5b6f3b",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_LOWER_KEY_UNITS_V40_2026-08-10/workers20-13x10.json": {
+    "mtime": 1786383793.0041041,
+    "ast_hash": "02e5bdd7e04eee583c3c52a8ec03e542",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_LOWER_KEY_UNITS_V40_2026-08-10/build.time.txt": {
+    "mtime": 1786383770.078833,
+    "ast_hash": "ea66f1c7d53ffa5446db3181cc1ddcb5",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_LOWER_KEY_UNITS_V40_2026-08-10/workers1-13x10.time.txt": {
+    "mtime": 1786383821.525435,
+    "ast_hash": "f60d72c00500c637f85b58fc31ddd1cb",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_LOWER_KEY_UNITS_V40_2026-08-10/workers1-13x100-run2.time.txt": {
+    "mtime": 1786383928.9746256,
+    "ast_hash": "519838f32104cc2bb98df65eaf776d06",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_LOWER_KEY_UNITS_V40_2026-08-10/workers1-13x100-run3.time.txt": {
+    "mtime": 1786383944.4047902,
+    "ast_hash": "20aaa634c1a006e22b19307522c63e38",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_LOWER_KEY_UNITS_V40_2026-08-10/workers1-13x100-run4.time.txt": {
+    "mtime": 1786383960.1369562,
+    "ast_hash": "ad98e78aea36a30ea4ab0a42dc34d372",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_LOWER_KEY_UNITS_V40_2026-08-10/workers1-13x100.time.txt": {
+    "mtime": 1786383868.0449607,
+    "ast_hash": "3ad6260307f06cc2a994a593d956d2ac",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_LOWER_KEY_UNITS_V40_2026-08-10/workers20-13x10.time.txt": {
+    "mtime": 1786383793.0101042,
+    "ast_hash": "f99fa0e894368c977c3c324dbe6d9478",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_SMALL_DEDUP_V39_2026-08-10/metrics-build.time.txt": {
+    "mtime": 1786383273.6719298,
+    "ast_hash": "fb5216ce5d41aad86b010eec6ecf9cb8",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_SMALL_DEDUP_V39_2026-08-10/perf-metrics-self.txt": {
+    "mtime": 1786383389.6107063,
+    "ast_hash": "c423aad6405ebb0d113026d364b3ec62",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_COMMON_EDGES_V41_2026-08-10/workers1-13x10.json": {
+    "mtime": 1786384675.017444,
+    "ast_hash": "ee1ed0c2d2a1e78485040a85072c84fb",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_COMMON_EDGES_V41_2026-08-10/workers1-13x100-run2.json": {
+    "mtime": 1786384785.1283345,
+    "ast_hash": "38b243c5d6e1257d74363fafdf46a835",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_COMMON_EDGES_V41_2026-08-10/workers1-13x100-run3.json": {
+    "mtime": 1786384800.8234603,
+    "ast_hash": "4e40ab72ea4401546194a687edc46c56",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_COMMON_EDGES_V41_2026-08-10/workers1-13x100-run4.json": {
+    "mtime": 1786384816.578586,
+    "ast_hash": "d718bea34fc74d2155e162f16a98442e",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_COMMON_EDGES_V41_2026-08-10/workers1-13x100.json": {
+    "mtime": 1786384724.2778444,
+    "ast_hash": "51ab124f183283e2f447732a57bfe348",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_COMMON_EDGES_V41_2026-08-10/workers20-13x10.json": {
+    "mtime": 1786384631.5310874,
+    "ast_hash": "5cb7e78ccd996cf24485534acc5d27c9",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_COMMON_EDGES_V41_2026-08-10/build.time.txt": {
+    "mtime": 1786384609.4019046,
+    "ast_hash": "5614b557bdd3612336f7be243a71522b",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_COMMON_EDGES_V41_2026-08-10/workers1-13x10.time.txt": {
+    "mtime": 1786384675.0214438,
+    "ast_hash": "b1cecb34912837d52dcd5818c6316b73",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_COMMON_EDGES_V41_2026-08-10/workers1-13x100-run2.time.txt": {
+    "mtime": 1786384785.1333346,
+    "ast_hash": "320e10fc90bed1c9ba7480450c141039",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_COMMON_EDGES_V41_2026-08-10/workers1-13x100-run3.time.txt": {
+    "mtime": 1786384800.8304603,
+    "ast_hash": "3908b686344297fd4b22a1900146b90e",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_COMMON_EDGES_V41_2026-08-10/workers1-13x100-run4.time.txt": {
+    "mtime": 1786384816.5855863,
+    "ast_hash": "aa6344e2c858630ab886d61d34c07117",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_COMMON_EDGES_V41_2026-08-10/workers1-13x100.time.txt": {
+    "mtime": 1786384724.2828445,
+    "ast_hash": "b11ec9b0e2a0137b2a176e9f89a5b81b",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_COMMON_EDGES_V41_2026-08-10/workers20-13x10.time.txt": {
+    "mtime": 1786384631.5380874,
+    "ast_hash": "309b379c9993d5b0ed67997f62831749",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_BOUNDED_LEMMA_CHUNKS_V42_2026-08-10/workers1-13x10.json": {
+    "mtime": 1786385586.201339,
+    "ast_hash": "af8046b24d6ddab577e21e1d77e2117b",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_BOUNDED_LEMMA_CHUNKS_V42_2026-08-10/workers1-13x100-run2.json": {
+    "mtime": 1786385660.4919298,
+    "ast_hash": "c89d1cd57b77de2542d2643c0886a340",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_BOUNDED_LEMMA_CHUNKS_V42_2026-08-10/workers1-13x100-run3.json": {
+    "mtime": 1786385678.3008492,
+    "ast_hash": "d599dd51531f1e47c086034ff21179c9",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_BOUNDED_LEMMA_CHUNKS_V42_2026-08-10/workers1-13x100-run4.json": {
+    "mtime": 1786385696.812772,
+    "ast_hash": "0ddf05e632a6e206bb99b990beafe506",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_BOUNDED_LEMMA_CHUNKS_V42_2026-08-10/workers1-13x100.json": {
+    "mtime": 1786385644.3490083,
+    "ast_hash": "2dd8e3265474f5b52d4c61993c2fc865",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_BOUNDED_LEMMA_CHUNKS_V42_2026-08-10/workers20-13x10.json": {
+    "mtime": 1786385562.6803339,
+    "ast_hash": "1525729d8696cb4674f5cb2c845af1ec",
+    "semantic_hash": ""
+  },
+  "docs/l2-productive-paradigm-field-canonical-design.md": {
+    "mtime": 1786451783.5790536,
+    "ast_hash": "a6afb3f27badee9146314dc1fccda916",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_BOUNDED_LEMMA_CHUNKS_V42_2026-08-10/build.time.txt": {
+    "mtime": 1786385541.3481731,
+    "ast_hash": "2a9b2cdeaf486c9133d2c13fb4f0a8bc",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_BOUNDED_LEMMA_CHUNKS_V42_2026-08-10/workers1-13x10.time.txt": {
+    "mtime": 1786385586.205339,
+    "ast_hash": "58e92627c80875307f5e30716e6daa17",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_BOUNDED_LEMMA_CHUNKS_V42_2026-08-10/workers1-13x100-run2.time.txt": {
+    "mtime": 1786385660.4969296,
+    "ast_hash": "2b1100c18e94cb24c996b0d30f451df4",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_BOUNDED_LEMMA_CHUNKS_V42_2026-08-10/workers1-13x100-run3.time.txt": {
+    "mtime": 1786385678.305849,
+    "ast_hash": "a3404b643e9da45581b7c20449fd7ab3",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_BOUNDED_LEMMA_CHUNKS_V42_2026-08-10/workers1-13x100-run4.time.txt": {
+    "mtime": 1786385696.819772,
+    "ast_hash": "ca36f1b14979a6f1101abaa6325e03c1",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_BOUNDED_LEMMA_CHUNKS_V42_2026-08-10/workers1-13x100.time.txt": {
+    "mtime": 1786385644.3550084,
+    "ast_hash": "5a89d4a18205d076fc428e4bf9eec20d",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_BOUNDED_LEMMA_CHUNKS_V42_2026-08-10/workers20-13x10.time.txt": {
+    "mtime": 1786385562.688334,
+    "ast_hash": "d91031b8472497b70f187cd0e1733770",
+    "semantic_hash": ""
+  },
+  "docs/l2-productive-paradigm-field-paper-implementation.md": {
+    "mtime": 1786445675.2910523,
+    "ast_hash": "d28a3e9b612ea7d8a28f20582faada8a",
+    "semantic_hash": ""
+  },
+  "docs/l2-productive-paradigm-field-paper-review-2026-08-10.md": {
+    "mtime": 1786394279.1377974,
+    "ast_hash": "cc2846d0d7f96177406dcb1f74339a39",
+    "semantic_hash": ""
+  },
+  "data/morphology/productive_v1_ru_axis_schema.json": {
+    "mtime": 1786415636.4468014,
+    "ast_hash": "6ed29b959013cedf83ad4a1be1358cc5",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V1_COMPOSITE_LATTICE_V53_2026-08-11/receipt.json": {
+    "mtime": 1786407898.176248,
+    "ast_hash": "c6ff200af505ea6edb0a8d7fb0f0f295",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V1_EVIDENCE_PRIORS_V50_2026-08-11/receipt.json": {
+    "mtime": 1786405049.2629697,
+    "ast_hash": "d73a2e7d88dfd037c950eeff688b1171",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V1_GEOMETRY_RUNTIME_V45_2026-08-11/receipt.json": {
+    "mtime": 1786397441.2848945,
+    "ast_hash": "51825fa37f0aa474ca75c06cbe99d21d",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V1_INDUCTION_TRIE_V44_2026-08-11/receipt.json": {
+    "mtime": 1786396604.1544752,
+    "ast_hash": "f098a7ac40280e7f42518bad8c0e181f",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V1_L3_HANDOFF_V54_2026-08-11/receipt.json": {
+    "mtime": 1786408312.3974648,
+    "ast_hash": "cda0462c7ff087c62034b573273946e7",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V1_MMAP_RUNTIME_V52_2026-08-11/receipt.json": {
+    "mtime": 1786407324.3865216,
+    "ast_hash": "17657cd3bb5b227d8cfc0fe6634e3bc2",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V1_ORCHESTRATOR_V56_2026-08-11/receipt.json": {
+    "mtime": 1786415259.0660026,
+    "ast_hash": "4d9eee67d5cd2362e73a63440163ed26",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V1_PACKAGE_COMPILER_V49_2026-08-11/receipt.json": {
+    "mtime": 1786404607.9390604,
+    "ast_hash": "a5dbc784bc454ca1d5bbb2e8a787cb2c",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V1_PHASE_FORMAT_V46_2026-08-11/receipt.json": {
+    "mtime": 1786400494.9367588,
+    "ast_hash": "59ad8f1b99d0ee0cb8e241aaab0ceb36",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V1_RUNTIME_WIRE_CLOSURE_V51_2026-08-11/receipt.json": {
+    "mtime": 1786406088.1889925,
+    "ast_hash": "5d11b81a762ce7679a368048d3264ac1",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V1_STREAM_REDUCE_V47_2026-08-11/receipt.json": {
+    "mtime": 1786401931.116562,
+    "ast_hash": "a1b89b24d9e37f890c43db6a07cfae0a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V1_TRANSITION_INDUCTION_V48_2026-08-11/receipt.json": {
+    "mtime": 1786403176.313232,
+    "ast_hash": "8eb208f3ad1f6185ff9a05a97792d781",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V1_TYPED_EVENTS_V43_2026-08-10/receipt.json": {
+    "mtime": 1786395944.3607178,
+    "ast_hash": "7622a72740a83958b5968129c98c30d6",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/l2_field/productive_v1/calibrate.rs": {
+    "mtime": 1786502171.3344862,
+    "ast_hash": "90a9227c396e2cb86ac535b5a8092223",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/l2_field/productive_v1/compiler.rs": {
+    "mtime": 1786509231.991302,
+    "ast_hash": "b2a689e1676703f56d3f52d9a513f1f3",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/l2_field/productive_v1/composite.rs": {
+    "mtime": 1786523393.364924,
+    "ast_hash": "14b971f5464796bfc239f76c8ef8f8cf",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/l2_field/productive_v1/corpus.rs": {
+    "mtime": 1786415636.4478014,
+    "ast_hash": "901c4ee9506428ab61d3f409ceac280e",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/l2_field/productive_v1/delta.rs": {
+    "mtime": 1786405713.085333,
+    "ast_hash": "b913481dc3202075ce5b7c59de52df21",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/l2_field/productive_v1/events.rs": {
+    "mtime": 1786409742.1035497,
+    "ast_hash": "dcbb8a6c70a8b69f4c9400b31c1a3d96",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/l2_field/productive_v1/evidence_reduce.rs": {
+    "mtime": 1786509231.989302,
+    "ast_hash": "382349e4e23bf53a8bd05a3650c6097d",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/l2_field/productive_v1/format.rs": {
+    "mtime": 1786452938.031186,
+    "ast_hash": "37dc4fbbd675c069cd55d9831cb87d42",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/l2_field/productive_v1/format_validation.rs": {
+    "mtime": 1786433509.6146712,
+    "ast_hash": "adf3c8382e8d3e5bb7e67c2287966ca6",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/l2_field/productive_v1/geometry.rs": {
+    "mtime": 1786510982.6686413,
+    "ast_hash": "5c72c5edf947faa62b18f72332bc3cfe",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/l2_field/productive_v1/induce.rs": {
+    "mtime": 1786440713.3525195,
+    "ast_hash": "c9fb73f024f4ddb500a25b72a34a454f",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/l2_field/productive_v1/mod.rs": {
+    "mtime": 1786523132.3425493,
+    "ast_hash": "8d6b38dbc968df374fec4d39443dc296",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/l2_field/productive_v1/orchestrator.rs": {
+    "mtime": 1786487766.7757246,
+    "ast_hash": "16f43d34afc7b9a057f090bf53b6bffd",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/l2_field/productive_v1/packaged_runtime.rs": {
+    "mtime": 1786519651.08801,
+    "ast_hash": "e35d37d88ec92de5e460b2d15a3f4068",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/l2_field/productive_v1/phase.rs": {
+    "mtime": 1786405713.2533357,
+    "ast_hash": "7bbc1f4e194d5a640b8aacb4390c24e0",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/l2_field/productive_v1/records.rs": {
+    "mtime": 1786435330.6968887,
+    "ast_hash": "3d958ccda4a544b5bf979b32ebc35ac9",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/l2_field/productive_v1/reduce.rs": {
+    "mtime": 1786433122.3631842,
+    "ast_hash": "e1e2db53ea3b96b00e35f9c0da45f5fb",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/l2_field/productive_v1/runtime.rs": {
+    "mtime": 1786435830.2150424,
+    "ast_hash": "62b25b9fb335c71f1cdbee48f4d6df7c",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/l2_field/productive_v1/scene.rs": {
+    "mtime": 1786410498.632185,
+    "ast_hash": "fbffa469edd37c191e9434d71d5cf751",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/l2_field/productive_v1/score.rs": {
+    "mtime": 1786506893.476416,
+    "ast_hash": "c689465732eb9d676d8f3d4c1588ae09",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/l2_field/productive_v1/spool_sort.rs": {
+    "mtime": 1786415268.2630527,
+    "ast_hash": "384c78940f58efeeef9e083e3057334f",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/l2_field/productive_v1/transition_reduce.rs": {
+    "mtime": 1786453479.438418,
+    "ast_hash": "890c852353a820babc3df6bdfd7d1fed",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/l2_field/productive_v1/trie.rs": {
+    "mtime": 1786440456.3250716,
+    "ast_hash": "2a5935a62d08fe38a267a1c636d59d4a",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/l2_field/productive_v1/types.rs": {
+    "mtime": 1786409624.1662939,
+    "ast_hash": "3c7d684f0107816f0a4fed68ee837ae7",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V1_AXIS_SCHEMA_V58_2026-08-11/receipt.json": {
+    "mtime": 1786415711.863498,
+    "ast_hash": "e50efc63c4d1e9b83965cfcbc034b6d5",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V1_BRANCH_PRUNE_V59_2026-08-11/receipt.json": {
+    "mtime": 1786436023.2222803,
+    "ast_hash": "72115297a10923872b98e83d9b7e30f1",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V1_FIXED_SHADOW_PROOF_V61_2026-08-11/receipt.json": {
+    "mtime": 1786437808.5301733,
+    "ast_hash": "0f21232ab5b6ee44046cf105cabea9bd",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V1_FULL_PACKAGE_V60_2026-08-11/receipt.json": {
+    "mtime": 1786436547.4016728,
+    "ast_hash": "ad389769f8f6f682a86c5652230ce03a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V1_FULL_PACKAGE_V60_2026-08-11/summary.json": {
+    "mtime": 1786436583.5971243,
+    "ast_hash": "095bcd50940cf3bb8ccf09327f78c8f7",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V1_IMPORTED_OWNERSHIP_V57_2026-08-11/receipt.json": {
+    "mtime": 1786415320.976361,
+    "ast_hash": "9af3f27c548e67ce3c7e5a3d8c73c9d0",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/l2_field/productive_v1/proof.rs": {
+    "mtime": 1786513465.681689,
+    "ast_hash": "fc779cd6686296f69092dd953c52ba13",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V1_FIXED_SHADOW_PROOF_V61_2026-08-11/README.md": {
+    "mtime": 1786437832.3954382,
+    "ast_hash": "57ce0979796c1a0ce844802352fa6547",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V1_FULL_PACKAGE_V60_2026-08-11/time.txt": {
+    "mtime": 1786436547.7816775,
+    "ast_hash": "1beda5fcb859acd4ba0218fc82880ba6",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V1_BIRTH_DIAGNOSTIC_V62_2026-08-11/receipt.json": {
+    "mtime": 1786438639.4480698,
+    "ast_hash": "5d40f58e725c9e1acd3d20eae4f28d97",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V1_BIRTH_DIAGNOSTIC_V62_2026-08-11/README.md": {
+    "mtime": 1786438715.903961,
+    "ast_hash": "98e5c50b6268e6ac72e62cee16ea8742",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V63_COLD_BINDING_2026-08-11/fixed-shadow-13x100-receipt.json": {
+    "mtime": 1786445202.6006536,
+    "ast_hash": "a3a1b0820eedf6b7865d402991a7ef3d",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V63_COLD_BINDING_2026-08-11/reinduce-receipt.json": {
+    "mtime": 1786445202.5970025,
+    "ast_hash": "c157ececa4e1e8b309b0a26e2edccce4",
+    "semantic_hash": ""
+  },
+  "docs/l2-productive-morphology-identifiability-canonical-ru.md": {
+    "mtime": 1786445302.8767629,
+    "ast_hash": "bd7c20dcbde8bc86c18d49d6bbc4fed9",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V63_COLD_BINDING_2026-08-11/README.md": {
+    "mtime": 1786445302.8737628,
+    "ast_hash": "0821c4da7a6c519202cf8e8db5888db1",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V63_COLD_BINDING_2026-08-11/fixed-shadow-13x100.time.txt": {
+    "mtime": 1786445202.6016998,
+    "ast_hash": "09986414a3542a9723aa652a7873e2b5",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V63_COLD_BINDING_2026-08-11/reinduce.time.txt": {
+    "mtime": 1786445202.5983675,
+    "ast_hash": "3d09198e064458a8b0fdbd576d9dc887",
+    "semantic_hash": ""
+  },
+  "docs/l2-productive-post-v63-prebuild-review.md": {
+    "mtime": 1786451783.5800536,
+    "ast_hash": "41680ceb6c42568d1b9a73adcd2c149e",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V64_SURFACE_BASIN_2026-08-11/determinism-repeat-receipt.json": {
+    "mtime": 1786447515.9112322,
+    "ast_hash": "29f47dfd7be77b28edd735b91e735b19",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V64_SURFACE_BASIN_2026-08-11/fixed-shadow-13x100-receipt.json": {
+    "mtime": 1786447339.1001887,
+    "ast_hash": "a1335cf10776d265399bda8f805dd6cc",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V64_SURFACE_BASIN_2026-08-11/resume-receipt.json": {
+    "mtime": 1786447237.3585906,
+    "ast_hash": "09623a43111efd912710eaf9d4407c20",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V64_SURFACE_BASIN_2026-08-11/README.md": {
+    "mtime": 1786451756.9237168,
+    "ast_hash": "1e2ce342220eb1f72f20beb7025e0a88",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V64_SURFACE_BASIN_2026-08-11/hbs0-pos-diagnostic-13x100-receipt.json": {
+    "mtime": 1786451346.4190812,
+    "ast_hash": "c777ebed928e9ef81387ace431f908fc",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V64_SURFACE_BASIN_2026-08-11/s0-intersection-receipt.json": {
+    "mtime": 1786449820.043429,
+    "ast_hash": "e2a3090ceb56989d7c26e8ca1ab775f4",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/l2_field/productive_v1/anchor_recovery_package.rs": {
+    "mtime": 1786489225.2504141,
+    "ast_hash": "d868845821f8fbb4f8964a2b1ecd83ca",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/l2_field/productive_v1/anchor_recovery_reduce.rs": {
+    "mtime": 1786488482.4685454,
+    "ast_hash": "6c62fe79b5e81dd7d9359e07d9437ef5",
+    "semantic_hash": ""
+  },
+  "docs/l2-productive-post-v64-anchor-recovery-paper.md": {
+    "mtime": 1786457374.7176428,
+    "ast_hash": "b134905108a917a434070c4b4105c456",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V64_SURFACE_BASIN_2026-08-11/hbs0-pos-diagnostic-13x100.time.txt": {
+    "mtime": 1786451346.421081,
+    "ast_hash": "33c75f9b03a55613018262642d5f5586",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V65_ANCHOR_RECOVERY_2026-08-11/build-receipt.json": {
+    "mtime": 1786457165.546083,
+    "ast_hash": "054c19a49da93f576c5b872f97fab792",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V65_ANCHOR_RECOVERY_2026-08-11/full-13x100-receipt.json": {
+    "mtime": 1786457166.3460927,
+    "ast_hash": "5a3381b6373ed51573991b3d3c37f193",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V65_ANCHOR_RECOVERY_2026-08-11/micro-13x10-receipt.json": {
+    "mtime": 1786457165.9560878,
+    "ast_hash": "3567847c6067136b92378b70d22e918e",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V65_ANCHOR_RECOVERY_2026-08-11/README.md": {
+    "mtime": 1786457317.5859423,
+    "ast_hash": "e2e7a2ec26f88f515c55cc3024274d7a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/fanout-profile.json": {
+    "mtime": 1786458849.9333565,
+    "ast_hash": "d89630875d108434ef8dd3531f2332c6",
+    "semantic_hash": ""
+  },
+  "docs/l2-productive-post-v65-bounded-recovery-paper.md": {
+    "mtime": 1786494326.8692918,
+    "ast_hash": "d4cbb77f97cb5760e7f332bd46b82990",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-13x10-receipt.json": {
+    "mtime": 1786464350.9213483,
+    "ast_hash": "bc3a37a668c1e90df3c33bdd46bb4771",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-13x10.stdout.json": {
+    "mtime": 1786464350.9213483,
+    "ast_hash": "bc3a37a668c1e90df3c33bdd46bb4771",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/resume-build-receipt.json": {
+    "mtime": 1786464284.1500182,
+    "ast_hash": "ed4bceca6b779bde3d5c6f52d7f470b3",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/resume-build.stdout.json": {
+    "mtime": 1786464284.1500182,
+    "ast_hash": "ed4bceca6b779bde3d5c6f52d7f470b3",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-13x10.time.txt": {
+    "mtime": 1786464350.9253483,
+    "ast_hash": "dc64c9e01dc5913bcaeee550126b62e8",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build.time.txt": {
+    "mtime": 1786464121.576225,
+    "ast_hash": "12cabe59d6f4a08de7c4a4a5415cd90a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/resume-build.time.txt": {
+    "mtime": 1786464284.1620183,
+    "ast_hash": "781258a4ddb541474ca9545fa043a553",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-bounded-frontier-13x10-receipt.json": {
+    "mtime": 1786465208.886708,
+    "ast_hash": "66c177747b4bd5036726fb9be4c31fca",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-bounded-frontier-13x10.stdout.json": {
+    "mtime": 1786465208.886708,
+    "ast_hash": "66c177747b4bd5036726fb9be4c31fca",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-bounded-frontier-13x10.time.txt": {
+    "mtime": 1786465208.8907082,
+    "ast_hash": "456f5ccfa263b5e5889e8e01710a97d6",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-bounded-frontier.time.txt": {
+    "mtime": 1786465158.2484474,
+    "ast_hash": "21754b3a250b69540d1a9cdadfa12ee8",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-allocation-cut-13x10-receipt.json": {
+    "mtime": 1786466106.0343509,
+    "ast_hash": "2ec34cbb3ab269908471e86dbe159b12",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-allocation-cut-13x10.stdout.json": {
+    "mtime": 1786466106.0343509,
+    "ast_hash": "2ec34cbb3ab269908471e86dbe159b12",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-allocation-cut-13x10.time.txt": {
+    "mtime": 1786466106.037351,
+    "ast_hash": "8f93027821798165537f0258e57a5a87",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-allocation-cut.time.txt": {
+    "mtime": 1786466052.274072,
+    "ast_hash": "5e1f14edc3ce5e3ae16836b775bc9997",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-geometry-reuse-13x10-receipt.json": {
+    "mtime": 1786467098.2779198,
+    "ast_hash": "f54d9634d88d6ebf93a3f8444339c993",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-geometry-reuse-symbolized-13x10-receipt.json": {
+    "mtime": 1786467542.9085298,
+    "ast_hash": "4e72c9e86a40e7dbc229a3625c29945a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-geometry-reuse-13x10.time.txt": {
+    "mtime": 1786467098.2819197,
+    "ast_hash": "f0322087517e596f2f02d3fc9b3a31ce",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-geometry-reuse-symbolized-report.txt": {
+    "mtime": 1786467629.687308,
+    "ast_hash": "379479901dcd3807134f8a4276b9e63a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-geometry-reuse.time.txt": {
+    "mtime": 1786467067.147541,
+    "ast_hash": "a8938c7924bc6cc74b15e2f336ede44d",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-symbolized-profile.time.txt": {
+    "mtime": 1786467516.3162854,
+    "ast_hash": "3a08afeb7a1b9ce728ce90d23c2654c8",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-atom-hash-13x10-receipt.json": {
+    "mtime": 1786468083.1160362,
+    "ast_hash": "362b8b6a421bfd022b6313daadba565e",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-atom-hash-symbolized-13x10-receipt.json": {
+    "mtime": 1786468372.4532385,
+    "ast_hash": "080f532e5427f265e488e16d9f5c95c4",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-atom-hash-13x10.time.txt": {
+    "mtime": 1786468083.1200361,
+    "ast_hash": "7bd4e1a4f74c9a51b9bc8032f1890f52",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-atom-hash-symbolized-report.txt": {
+    "mtime": 1786468494.1891422,
+    "ast_hash": "01b4071890109484a2ddd03f32bde824",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-atom-hash.time.txt": {
+    "mtime": 1786468052.087794,
+    "ast_hash": "b554f627daa3285baa11a0fce8755f84",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-symbolized-atom-hash.time.txt": {
+    "mtime": 1786468340.6770005,
+    "ast_hash": "06068497ce5846cc72a8371b02adab55",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-batch-geometry-13x10-receipt.json": {
+    "mtime": 1786469361.9102347,
+    "ast_hash": "fdc0bbea1b2aa16ba2d51a2a976de94a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-batch-geometry-13x10.stdout.json": {
+    "mtime": 1786469361.9102347,
+    "ast_hash": "fdc0bbea1b2aa16ba2d51a2a976de94a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-batch-geometry-symbolized-13x10-receipt.json": {
+    "mtime": 1786469755.2589881,
+    "ast_hash": "ce81cd5e163138b7c99fa780b9d9e250",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-batch-geometry-symbolized-13x10.stdout.json": {
+    "mtime": 1786469755.259988,
+    "ast_hash": "ce81cd5e163138b7c99fa780b9d9e250",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-batch-geometry-13x10.time.txt": {
+    "mtime": 1786469361.9142349,
+    "ast_hash": "65bb8771b01affc002038588e2dcabe8",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-batch-geometry-symbolized-report.txt": {
+    "mtime": 1786469755.8549922,
+    "ast_hash": "35ac0e7bc35c036b2cac966a90610c1e",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-batch-geometry-symbolized-self-report.txt": {
+    "mtime": 1786469808.9063642,
+    "ast_hash": "2d3ee457f35a9f17f1019672b4baa0bf",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-batch-geometry.time.txt": {
+    "mtime": 1786469330.6290164,
+    "ast_hash": "28c0add88eb6be59306d32ab2df71367",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-symbolized-batch-geometry.time.txt": {
+    "mtime": 1786469706.347645,
+    "ast_hash": "7426095303769c5b13cf2850662d9b41",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-geometry-memo-13x10-receipt.json": {
+    "mtime": 1786472086.8546364,
+    "ast_hash": "24ae66f37e89964742135a7554e95eb7",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-geometry-memo-13x10.stdout.json": {
+    "mtime": 1786472087.2346447,
+    "ast_hash": "24ae66f37e89964742135a7554e95eb7",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-prepared-execution-13x10-receipt.json": {
+    "mtime": 1786471018.6381311,
+    "ast_hash": "54c35d62b2b79ca9f1b69784f368a2f8",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-prepared-execution-13x10.stdout.json": {
+    "mtime": 1786471018.6381311,
+    "ast_hash": "54c35d62b2b79ca9f1b69784f368a2f8",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-unified-direct-replay-13x10-receipt.json": {
+    "mtime": 1786472829.7409172,
+    "ast_hash": "387e2a87a7f0b6fd1dc37f8cdfd56f97",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-unified-direct-replay-13x10.stdout.json": {
+    "mtime": 1786472830.120923,
+    "ast_hash": "387e2a87a7f0b6fd1dc37f8cdfd56f97",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-geometry-memo-symbolized-13x10-receipt.json": {
+    "mtime": 1786472356.656024,
+    "ast_hash": "a27429b15098a65a7dffd0dbc18e5418",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-geometry-memo-symbolized-13x10.stdout.json": {
+    "mtime": 1786472357.0170307,
+    "ast_hash": "a27429b15098a65a7dffd0dbc18e5418",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-prepared-execution-symbolized-13x10-receipt.json": {
+    "mtime": 1786471583.7699752,
+    "ast_hash": "5bd4212a312319d8d26ac14eef22e03f",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-prepared-execution-symbolized-13x10.stdout.json": {
+    "mtime": 1786471584.16998,
+    "ast_hash": "5bd4212a312319d8d26ac14eef22e03f",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-unified-direct-symbolized-13x10-receipt.json": {
+    "mtime": 1786473091.162837,
+    "ast_hash": "cff57a21b5b5e887c4454261221863f5",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-unified-direct-symbolized-13x10.stdout.json": {
+    "mtime": 1786473091.5628428,
+    "ast_hash": "cff57a21b5b5e887c4454261221863f5",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/local-deferred-simhash-focused-tests.txt": {
+    "mtime": 1786473692.6893494,
+    "ast_hash": "d103f3068b4a6a2e73218265b0304b9d",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-geometry-memo-13x10.time.txt": {
+    "mtime": 1786472087.604653,
+    "ast_hash": "79a584861c413f4177a1432632abb805",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-prepared-execution-13x10.time.txt": {
+    "mtime": 1786471018.6421313,
+    "ast_hash": "8af69a59fa7b2a112ff90c6fe1106210",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-unified-direct-replay-13x10.time.txt": {
+    "mtime": 1786472830.5009289,
+    "ast_hash": "f80bcb6531c2223bb9c8bcb79d72ce3d",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-geometry-memo-symbolized-report.txt": {
+    "mtime": 1786472358.7770631,
+    "ast_hash": "346a9eed6f0e3d7101a5fd8f2b08d906",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-geometry-memo-symbolized-self-report.txt": {
+    "mtime": 1786472358.3270547,
+    "ast_hash": "0c14afdd5ffe287978012785a883fd1a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-prepared-execution-symbolized-report.txt": {
+    "mtime": 1786471585.801,
+    "ast_hash": "da5382cfd13289b864835a3723a9c3a5",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-prepared-execution-symbolized-self-report.txt": {
+    "mtime": 1786471585.3499947,
+    "ast_hash": "4ceedc2a0f1d1363d870b5536a9d668b",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-unified-direct-symbolized-report.txt": {
+    "mtime": 1786473093.1128657,
+    "ast_hash": "95e8ed51ce7b2535c49c8b330c094905",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-unified-direct-symbolized-self-report.txt": {
+    "mtime": 1786473092.6828592,
+    "ast_hash": "b70bdfd0e0c27a706524b19e87704f0c",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-geometry-memo-symbolized-13x10.time.txt": {
+    "mtime": 1786472357.5070398,
+    "ast_hash": "1217d13d287acaae01b397a09421409f",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-prepared-execution-symbolized-13x10.time.txt": {
+    "mtime": 1786471584.5609848,
+    "ast_hash": "eedc7558f0c183240dbdd7c95fda0053",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-unified-direct-symbolized-13x10.time.txt": {
+    "mtime": 1786473091.9228482,
+    "ast_hash": "1512711933c61e8e3f0f41421359ed6f",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-geometry-memo.time.txt": {
+    "mtime": 1786472087.9936614,
+    "ast_hash": "78f9f99947f07345b5e3689476550f93",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-prepared-execution.time.txt": {
+    "mtime": 1786470984.5349653,
+    "ast_hash": "5b9b123aaf158a26e29690b80d617535",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-symbolized-geometry-memo.time.txt": {
+    "mtime": 1786472356.2760172,
+    "ast_hash": "f3ae36d0060264a13b228d76982caa60",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-symbolized-prepared-execution.time.txt": {
+    "mtime": 1786471583.3809705,
+    "ast_hash": "73e88f4ecd9b991aa27065f51b6749eb",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-symbolized-unified-direct.time.txt": {
+    "mtime": 1786473090.7728314,
+    "ast_hash": "cc64037438f762f73ffa04cc632bf17b",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-unified-direct-replay.time.txt": {
+    "mtime": 1786472830.8699346,
+    "ast_hash": "98948fe653b90a78933013e1fbf3db19",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-deferred-simhash-13x10-receipt.json": {
+    "mtime": 1786474089.539927,
+    "ast_hash": "8fafdff268edb7b357d8da59205a5a90",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-deferred-simhash-13x10.stdout.json": {
+    "mtime": 1786474089.539927,
+    "ast_hash": "8fafdff268edb7b357d8da59205a5a90",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-deferred-simhash-symbolized-13x10-receipt.json": {
+    "mtime": 1786474445.596689,
+    "ast_hash": "194981f833bf5b5bf75552d5dde8e371",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-deferred-simhash-symbolized-13x10.stdout.json": {
+    "mtime": 1786474445.596689,
+    "ast_hash": "194981f833bf5b5bf75552d5dde8e371",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/local-prepared-sidecar-focused-tests.txt": {
+    "mtime": 1786474916.5957716,
+    "ast_hash": "4d74dabf43401923554ac240a0d90829",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-deferred-simhash-13x10.time.txt": {
+    "mtime": 1786474089.543927,
+    "ast_hash": "81d4b6d46e30259da4c5f3b527c7e764",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-deferred-simhash-symbolized-report.txt": {
+    "mtime": 1786474459.7637978,
+    "ast_hash": "8b8eb5a3d44b00449bdff26ecbc81017",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-deferred-simhash-symbolized-self-report.txt": {
+    "mtime": 1786474460.1378007,
+    "ast_hash": "050a135ebcd33a96709a746e2838d319",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-deferred-simhash-symbolized-13x10.time.txt": {
+    "mtime": 1786474445.73369,
+    "ast_hash": "daa9e76483e4c8c0d0f66d709218bfdf",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-deferred-simhash-v2.time.txt": {
+    "mtime": 1786474052.4256349,
+    "ast_hash": "518726a4eda327b656d540e695432c7a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-deferred-simhash.time.txt": {
+    "mtime": 1786473807.6336787,
+    "ast_hash": "81accbd16af387130ef44e0e96319fe7",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-symbolized-deferred-simhash.time.txt": {
+    "mtime": 1786474415.9544613,
+    "ast_hash": "f08ca5b386e80816e448223a0f1a7af6",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-prepared-sidecar-13x10-receipt.json": {
+    "mtime": 1786475237.9138103,
+    "ast_hash": "5cdba5a7da8b65f99e23c65f084592e4",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-prepared-sidecar-13x10.stdout.json": {
+    "mtime": 1786475237.9138103,
+    "ast_hash": "5cdba5a7da8b65f99e23c65f084592e4",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-prepared-sidecar-symbolized-13x10-receipt.json": {
+    "mtime": 1786475531.0922093,
+    "ast_hash": "65898395be70caa5a4d03da8ef0db9b7",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-prepared-sidecar-symbolized-13x10.stdout.json": {
+    "mtime": 1786475531.0932093,
+    "ast_hash": "65898395be70caa5a4d03da8ef0db9b7",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/local-prepared-slot-search-focused-tests.txt": {
+    "mtime": 1786475874.4536705,
+    "ast_hash": "5df0c835ee00ae1dd89adbf0f590e18e",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-prepared-sidecar-13x10.time.txt": {
+    "mtime": 1786475237.9178104,
+    "ast_hash": "0c791605084a44d58dedbc15cb7089bb",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-prepared-sidecar-symbolized-report.txt": {
+    "mtime": 1786475543.3392744,
+    "ast_hash": "73ff028f133fdb448e29d4beaa3a30d0",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-prepared-sidecar-symbolized-self-report.txt": {
+    "mtime": 1786475543.7082763,
+    "ast_hash": "dc071dce25ac583ac9b5701c52d37ef9",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-prepared-sidecar-symbolized-13x10.time.txt": {
+    "mtime": 1786475531.1362095,
+    "ast_hash": "cf2f9ceae3cda7e5158ee8e99bd07d40",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-prepared-sidecar.time.txt": {
+    "mtime": 1786475204.983677,
+    "ast_hash": "03498b96c1d6365c4de70a48ad46500f",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-symbolized-prepared-sidecar.time.txt": {
+    "mtime": 1786475506.6330807,
+    "ast_hash": "7586694e00dc442b34ef54b521ee69f9",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-prepared-slot-search-13x10-receipt.json": {
+    "mtime": 1786476127.3157296,
+    "ast_hash": "0abc72a51ea96724c67b4e084d159e12",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-prepared-slot-search-13x10.stdout.json": {
+    "mtime": 1786476127.3157296,
+    "ast_hash": "0abc72a51ea96724c67b4e084d159e12",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-prepared-slot-search-symbolized-13x10-receipt.json": {
+    "mtime": 1786476427.3736598,
+    "ast_hash": "82068fcb421dacd478fe1ebbd5f806bd",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-prepared-slot-search-symbolized-13x10.stdout.json": {
+    "mtime": 1786476427.3746598,
+    "ast_hash": "82068fcb421dacd478fe1ebbd5f806bd",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/local-dense-eligibility-focused-tests.txt": {
+    "mtime": 1786476909.4968793,
+    "ast_hash": "1642f5ba0381b442069bf8ac1c99aec9",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-prepared-slot-search-13x10.time.txt": {
+    "mtime": 1786476127.3197296,
+    "ast_hash": "150d0a9a4fe420775d7ce5507119e70b",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-prepared-slot-search-symbolized-report.txt": {
+    "mtime": 1786476440.0067422,
+    "ast_hash": "58cc7e14aca420846467ddc022bad177",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-prepared-slot-search-symbolized-self-report.txt": {
+    "mtime": 1786476440.384745,
+    "ast_hash": "687aea7328667453ae8cb724f02ffb97",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-prepared-slot-search-symbolized-13x10.time.txt": {
+    "mtime": 1786476427.7266622,
+    "ast_hash": "2217db1e03e8c8095991549c7ec040d7",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-prepared-slot-search.time.txt": {
+    "mtime": 1786476085.3534653,
+    "ast_hash": "1b8a9d864c8fe40df8f69b85909b28e6",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-symbolized-prepared-slot-search.time.txt": {
+    "mtime": 1786476391.176424,
+    "ast_hash": "34ee52ca16177c9ee15c5cdc310653a5",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-dense-eligibility-13x10-receipt.json": {
+    "mtime": 1786477254.4921165,
+    "ast_hash": "d069c6a3700b2b7feaba0fc4ae58c4c8",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-dense-eligibility-13x10.stdout.json": {
+    "mtime": 1786477254.4921165,
+    "ast_hash": "d069c6a3700b2b7feaba0fc4ae58c4c8",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-dense-eligibility-13x10.time.txt": {
+    "mtime": 1786477254.4961164,
+    "ast_hash": "df79cd918c0d85d65e693b1c7503f7d6",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-dense-eligibility.time.txt": {
+    "mtime": 1786477212.679926,
+    "ast_hash": "1275e3e1b51712897f991418622b2c05",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-dense-eligibility-repeat1-13x10-receipt.json": {
+    "mtime": 1786477405.3278494,
+    "ast_hash": "ebfde753660b1e3943e954660cda1921",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-dense-eligibility-repeat1-13x10.stdout.json": {
+    "mtime": 1786477405.3278494,
+    "ast_hash": "ebfde753660b1e3943e954660cda1921",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-dense-eligibility-repeat1-13x10.time.txt": {
+    "mtime": 1786477405.3318496,
+    "ast_hash": "05aa8600ae12386556e0db95e5745231",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-dense-eligibility-symbolized-13x10-receipt.json": {
+    "mtime": 1786477761.2097802,
+    "ast_hash": "0c83f28452bbbda0356dd53e43b8dcd2",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-dense-eligibility-symbolized-13x10.stdout.json": {
+    "mtime": 1786477761.2097802,
+    "ast_hash": "0c83f28452bbbda0356dd53e43b8dcd2",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/local-clone-free-exact-replay-focused-tests.txt": {
+    "mtime": 1786478067.3463402,
+    "ast_hash": "3c2d72f871e292e52bff9a8111c4c5d9",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-dense-eligibility-symbolized-report.txt": {
+    "mtime": 1786477806.333039,
+    "ast_hash": "0a18547a2a177cf1559a02a857cda55e",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-dense-eligibility-symbolized-self-report.txt": {
+    "mtime": 1786477806.2410386,
+    "ast_hash": "e2fe6cc098af240b36d7668a530fb05d",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-dense-eligibility-symbolized-13x10.time.txt": {
+    "mtime": 1786477761.691783,
+    "ast_hash": "8fdd37a1a4e151e18bdb71baaa41ebbe",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-symbolized-dense-eligibility.time.txt": {
+    "mtime": 1786477718.552538,
+    "ast_hash": "ee7cec433723f541e0b59db0b3cc49da",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-clone-free-exact-replay-13x10-receipt.json": {
+    "mtime": 1786478342.368247,
+    "ast_hash": "033587c87f1e351a3805ea2f99b8aabd",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-clone-free-exact-replay-13x10.stdout.json": {
+    "mtime": 1786478342.368247,
+    "ast_hash": "033587c87f1e351a3805ea2f99b8aabd",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-clone-free-exact-replay-13x10.time.txt": {
+    "mtime": 1786478342.3722472,
+    "ast_hash": "47e3df81f1a555a2b0fbf98ae1d19d78",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-clone-free-exact-replay.time.txt": {
+    "mtime": 1786478305.005018,
+    "ast_hash": "3b222f161bf12346e795327089370fd0",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-clone-free-exact-replay-symbolized-13x10-receipt.json": {
+    "mtime": 1786478627.6210127,
+    "ast_hash": "7a65fca2020a1090a43007717c2f6e76",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-clone-free-exact-replay-symbolized-13x10.stdout.json": {
+    "mtime": 1786478627.6210127,
+    "ast_hash": "7a65fca2020a1090a43007717c2f6e76",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/local-dense-diagnostic-flags-focused-tests.txt": {
+    "mtime": 1786478970.4477189,
+    "ast_hash": "6177c60b63e2ab2b57e8f04141175ddc",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-clone-free-exact-replay-symbolized-report.txt": {
+    "mtime": 1786478657.3961983,
+    "ast_hash": "44f697a2482755a55fbb32286f9f315b",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-clone-free-exact-replay-symbolized-self-report.txt": {
+    "mtime": 1786478657.3711982,
+    "ast_hash": "723042295c1ac3582d30fbeaa0eefa23",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-clone-free-exact-replay-symbolized-13x10.time.txt": {
+    "mtime": 1786478627.7960138,
+    "ast_hash": "5cd6dd6bb0e124e9b20d58903f7b52ec",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-symbolized-clone-free-exact-replay.time.txt": {
+    "mtime": 1786478599.406837,
+    "ast_hash": "547d7b623a1c5adbfaad787934500751",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-dense-diagnostic-flags-13x10.stdout.json": {
+    "mtime": 1786479534.238551,
+    "ast_hash": "99bac529524a7f5c7a202b8a9712a7e4",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-dense-diagnostic-flags-dwarf-13x10.stdout.json": {
+    "mtime": 1786479312.6564617,
+    "ast_hash": "28cd424b66e2347ab5b1d422ada75990",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/local-streaming-exact-replay-focused-tests.txt": {
+    "mtime": 1786480078.0668173,
+    "ast_hash": "fc023d531b57767cface7e522bc637ba",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-dense-diagnostic-flags-13x10.time.txt": {
+    "mtime": 1786479534.2425508,
+    "ast_hash": "edd3e08d7301b36e690f7cc9da48e1de",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-dense-diagnostic-flags-dwarf-self-report-no-inline.txt": {
+    "mtime": 1786479475.7402534,
+    "ast_hash": "d84065d16417bc36f74ae4ebfe2f8a03",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-dense-diagnostic-flags-dwarf-13x10.time.txt": {
+    "mtime": 1786479312.722462,
+    "ast_hash": "c2813e67d7c30e9a8aae5cb1fd4c0c3d",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-dwarf-dense-diagnostic-flags.time.txt": {
+    "mtime": 1786479266.6852503,
+    "ast_hash": "6e20897f93371033f9e2ed1615cff165",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/full-hot-gate-workers1-13x100.stdout.json": {
+    "mtime": 1786481314.3075838,
+    "ast_hash": "668342574913e00bf03bb8b59ee19a26",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/full-hot-gate-workers20-13x100.stdout.json": {
+    "mtime": 1786481328.7786965,
+    "ast_hash": "e1f8835cb2e833aac317c116a8115276",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-hot-scheduler-workers1-13x10.stdout.json": {
+    "mtime": 1786481072.6766067,
+    "ast_hash": "d97b6f6ab64585f148b013f78b89160d",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-hot-scheduler-workers2-13x10.stdout.json": {
+    "mtime": 1786481086.0607216,
+    "ast_hash": "80a2dbf33d74c8b7ecc66913dd6a942b",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-hot-scheduler-workers20-13x10.stdout.json": {
+    "mtime": 1786481124.6130488,
+    "ast_hash": "4b8010706afb4176ceaab50e99d3386b",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-hot-scheduler-workers4-13x10.stdout.json": {
+    "mtime": 1786481099.0638325,
+    "ast_hash": "7c5d9982626b369ae310d31e4d8c13e1",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-hot-scheduler-workers8-13x10.stdout.json": {
+    "mtime": 1786481111.8729413,
+    "ast_hash": "472b868f4db599e94b499101efab071d",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-streaming-exact-replay-13x10.stdout.json": {
+    "mtime": 1786480473.7508144,
+    "ast_hash": "636a33107388626de73fa79d8be425ba",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-streaming-exact-replay-dwarf-13x10.stdout.json": {
+    "mtime": 1786480424.7605276,
+    "ast_hash": "ddc85b69e44515656af612f4a09f1f4e",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/full-hot-gate-workers1-13x100.time.txt": {
+    "mtime": 1786481314.3105838,
+    "ast_hash": "6cf9d63a044d3d912d989e6aa13c4a92",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/full-hot-gate-workers20-13x100.time.txt": {
+    "mtime": 1786481328.7836967,
+    "ast_hash": "7ee8c110fb1f01454ad8abce04894be3",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-hot-scheduler-workers1-13x10.time.txt": {
+    "mtime": 1786481072.6776066,
+    "ast_hash": "c20ceceffc7a04a2581165c93faa8fc7",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-hot-scheduler-workers2-13x10.time.txt": {
+    "mtime": 1786481086.0627217,
+    "ast_hash": "88fa94eea078094752f2a14043261243",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-hot-scheduler-workers20-13x10.time.txt": {
+    "mtime": 1786481124.6170487,
+    "ast_hash": "f36b8c2a41c3e417b787ef790fb64506",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-hot-scheduler-workers4-13x10.time.txt": {
+    "mtime": 1786481099.0668325,
+    "ast_hash": "a2c088754b646b7dc990c8971f6f9563",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-hot-scheduler-workers8-13x10.time.txt": {
+    "mtime": 1786481111.8749413,
+    "ast_hash": "f1e7208207e64faf42169202aaea92e2",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-streaming-exact-replay-13x10.time.txt": {
+    "mtime": 1786480473.7548144,
+    "ast_hash": "4b0d5fdfd17a2af230ca022b01d5531f",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-streaming-exact-replay-dwarf-self-report-no-inline.txt": {
+    "mtime": 1786480436.7215977,
+    "ast_hash": "36a0bc20da2f9b4e2847d1d996e54a93",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-streaming-exact-replay-dwarf-13x10.time.txt": {
+    "mtime": 1786480425.7325332,
+    "ast_hash": "a1bb2205d597fe175ff7d802cf27f009",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-dwarf-streaming-exact-replay.time.txt": {
+    "mtime": 1786480390.8533294,
+    "ast_hash": "bd7f71f460fa1877ce00f63202f176fd",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V67_SHARED_SUPPORT_2026-08-12/anchor-support-audit.json": {
+    "mtime": 1786487397.6519585,
+    "ast_hash": "abe9cd719c1721895e0eb434b7c401c6",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V67_SHARED_SUPPORT_2026-08-12/anchor-support-audit.stdout.json": {
+    "mtime": 1786487397.6519585,
+    "ast_hash": "abe9cd719c1721895e0eb434b7c401c6",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V67_SHARED_SUPPORT_2026-08-12/anchor-support-audit.time.txt": {
+    "mtime": 1786487397.6549585,
+    "ast_hash": "96c87687730ce508314062c69ff8f51f",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V67_SHARED_SUPPORT_2026-08-12/anchor-support-audit-final.json": {
+    "mtime": 1786488368.9038088,
+    "ast_hash": "abe9cd719c1721895e0eb434b7c401c6",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V67_SHARED_SUPPORT_2026-08-12/anchor-support-audit-final.stdout.json": {
+    "mtime": 1786488368.9038088,
+    "ast_hash": "abe9cd719c1721895e0eb434b7c401c6",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V67_SHARED_SUPPORT_2026-08-12/micro-13x10-receipt.json": {
+    "mtime": 1786488885.2671154,
+    "ast_hash": "02d0834adecce59362652f218d26da7d",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V67_SHARED_SUPPORT_2026-08-12/micro-13x10.stdout.json": {
+    "mtime": 1786488885.2671154,
+    "ast_hash": "02d0834adecce59362652f218d26da7d",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V67_SHARED_SUPPORT_2026-08-12/resume-build-stage-root-fix-receipt.json": {
+    "mtime": 1786488835.7328014,
+    "ast_hash": "3aa57d884de12cdff0f342a8d0ff36ff",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V67_SHARED_SUPPORT_2026-08-12/resume-build-stage-root-fix.stdout.json": {
+    "mtime": 1786488835.7328014,
+    "ast_hash": "3aa57d884de12cdff0f342a8d0ff36ff",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V67_SHARED_SUPPORT_2026-08-12/resume-build.stdout.json": {
+    "mtime": 1786488397.9049973,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V67_SHARED_SUPPORT_2026-08-12/anchor-support-audit-final.time.txt": {
+    "mtime": 1786488368.9068089,
+    "ast_hash": "0205f15c8f8b719532049cf5a30c8156",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V67_SHARED_SUPPORT_2026-08-12/micro-13x10.time.txt": {
+    "mtime": 1786488885.2721152,
+    "ast_hash": "0642548e2cdd6c328ee30c6b1a0b904d",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V67_SHARED_SUPPORT_2026-08-12/release-build-stage-root-fix.time.txt": {
+    "mtime": 1786488733.4431517,
+    "ast_hash": "6ad9c16f6422175175050872195ae394",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V67_SHARED_SUPPORT_2026-08-12/release-build.time.txt": {
+    "mtime": 1786488310.176426,
+    "ast_hash": "475a2549dc80049d4bc0f27e05551ead",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V67_SHARED_SUPPORT_2026-08-12/resume-build-stage-root-fix.time.txt": {
+    "mtime": 1786488835.7478015,
+    "ast_hash": "e8ea3e263155eb70cf8078c85af01759",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V67_SHARED_SUPPORT_2026-08-12/resume-build.time.txt": {
+    "mtime": 1786488450.0093348,
+    "ast_hash": "c1a98ed11a0fe157f2bb85cd2b14fcc9",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V68_SHARED_PROGRAM_2026-08-12/full-workers1-13x100-receipt.json": {
+    "mtime": 1786490086.895035,
+    "ast_hash": "7cbaa8678f5418aa01380a3668d0a93f",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V68_SHARED_PROGRAM_2026-08-12/full-workers1-13x100.stdout.json": {
+    "mtime": 1786490086.895035,
+    "ast_hash": "7cbaa8678f5418aa01380a3668d0a93f",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V68_SHARED_PROGRAM_2026-08-12/full-workers20-13x100-receipt.json": {
+    "mtime": 1786490119.3522997,
+    "ast_hash": "e574b08e7db5c6792aa533ca0b560441",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V68_SHARED_PROGRAM_2026-08-12/full-workers20-13x100.stdout.json": {
+    "mtime": 1786490119.3522997,
+    "ast_hash": "e574b08e7db5c6792aa533ca0b560441",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V68_SHARED_PROGRAM_2026-08-12/micro-13x10-receipt.json": {
+    "mtime": 1786489708.8047273,
+    "ast_hash": "4aaa020fd6dc6d268aba051913965422",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V68_SHARED_PROGRAM_2026-08-12/micro-13x10.stdout.json": {
+    "mtime": 1786489708.8047273,
+    "ast_hash": "4aaa020fd6dc6d268aba051913965422",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V68_SHARED_PROGRAM_2026-08-12/resume-build-receipt.json": {
+    "mtime": 1786489640.8060727,
+    "ast_hash": "7fd086081d103c476d60841e0e473630",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V68_SHARED_PROGRAM_2026-08-12/resume-build.stdout.json": {
+    "mtime": 1786489640.8060727,
+    "ast_hash": "7fd086081d103c476d60841e0e473630",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V69_EXACT_REPLAY_2026-08-12/control-v67-current-binary-13x10-receipt.json": {
+    "mtime": 1786489955.1579344,
+    "ast_hash": "9dcdf8aa457508c2692bddff9a365f37",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V69_EXACT_REPLAY_2026-08-12/control-v67-current-binary-13x10.stdout.json": {
+    "mtime": 1786489955.1579344,
+    "ast_hash": "9dcdf8aa457508c2692bddff9a365f37",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V69_EXACT_REPLAY_2026-08-12/micro-workers20-13x10-receipt.json": {
+    "mtime": 1786491013.8478057,
+    "ast_hash": "7e10f8a4610e12f404515fe733a32fae",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V69_EXACT_REPLAY_2026-08-12/micro-workers20-13x10.stdout.json": {
+    "mtime": 1786491014.2168093,
+    "ast_hash": "7e10f8a4610e12f404515fe733a32fae",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V70_TRANSITION_EQUIVALENCE_2026-08-12/micro-workers20-13x10-receipt.json": {
+    "mtime": 1786491521.108033,
+    "ast_hash": "1531fa38349a318e8ce4c4c2a4fd8e1c",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V70_TRANSITION_EQUIVALENCE_2026-08-12/micro-workers20-13x10.stdout.json": {
+    "mtime": 1786491521.5080373,
+    "ast_hash": "1531fa38349a318e8ce4c4c2a4fd8e1c",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V80_SEMANTIC_ESTIMATOR_2026-08-12/remote-structural-estimate.json": {
+    "mtime": 1786495104.426052,
+    "ast_hash": "59ac40bdfc559fdcff6271b7e460a9cf",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V90_LIVE_OWNER_HANDOFF_2026-08-12.json": {
+    "mtime": 1786526727.3451781,
+    "ast_hash": "4df3a1836340e0d09f0b0ab1f9685c0b",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/l2_field/productive_v1/live.rs": {
+    "mtime": 1786526330.6384835,
+    "ast_hash": "b06f9d367012a6655d01c704ab9d8273",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/l2_field/productive_v1/semantic_estimator.rs": {
+    "mtime": 1786515454.2720482,
+    "ast_hash": "6378fbedc288d80854e45c7c4f198d71",
+    "semantic_hash": ""
+  },
+  "docs/l2-productive-v80-semantic-transducer-paper.md": {
+    "mtime": 1786517937.4812078,
+    "ast_hash": "a1327f4fb1fe093e9c72de2f8191b2d8",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V68_SHARED_PROGRAM_2026-08-12/full-workers1-13x100.time.txt": {
+    "mtime": 1786490086.8970351,
+    "ast_hash": "e96eba8bbc6482dade76f4d489ceaf63",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V68_SHARED_PROGRAM_2026-08-12/full-workers20-13x100.time.txt": {
+    "mtime": 1786490119.3582997,
+    "ast_hash": "78de56070b17262634b2920890fa639e",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V68_SHARED_PROGRAM_2026-08-12/micro-13x10.time.txt": {
+    "mtime": 1786489708.8087273,
+    "ast_hash": "1a3d3608557816651ddea953327b955f",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V68_SHARED_PROGRAM_2026-08-12/release-build-source-closure.time.txt": {
+    "mtime": 1786489530.5729566,
+    "ast_hash": "54b6ba2e68f29e725ee16f59ddd1bda8",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V68_SHARED_PROGRAM_2026-08-12/release-build.time.txt": {
+    "mtime": 1786489328.2396805,
+    "ast_hash": "4b9bbe6b4362f8ea31043c631fdd3117",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V68_SHARED_PROGRAM_2026-08-12/resume-build.time.txt": {
+    "mtime": 1786489640.8180728,
+    "ast_hash": "0cd2f98c3f1d49e510f2d783c7a2ed12",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V69_EXACT_REPLAY_2026-08-12/control-v67-current-binary-13x10.time.txt": {
+    "mtime": 1786489955.1629343,
+    "ast_hash": "637ff4f8c910011a73b3173df72b6353",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V69_EXACT_REPLAY_2026-08-12/micro-workers20-13x10.time.txt": {
+    "mtime": 1786491014.907816,
+    "ast_hash": "0c32928c6addb52c5663698d6e56816d",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V69_EXACT_REPLAY_2026-08-12/release-build.time.txt": {
+    "mtime": 1786491012.7847958,
+    "ast_hash": "acf0cff1b234e207414e4a08304a376c",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V70_TRANSITION_EQUIVALENCE_2026-08-12/local-focused-tests.txt": {
+    "mtime": 1786491267.9373405,
+    "ast_hash": "97bad041810f71fda0fb7039dc00ad54",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V70_TRANSITION_EQUIVALENCE_2026-08-12/micro-workers20-13x10.time.txt": {
+    "mtime": 1786491522.3080459,
+    "ast_hash": "f50994e91b6667cee33353fceb58bfe4",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V70_TRANSITION_EQUIVALENCE_2026-08-12/release-build.time.txt": {
+    "mtime": 1786491519.8080187,
+    "ast_hash": "66a9427224cc12d00efb47cac67ae65c",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V80_SEMANTIC_ESTIMATOR_2026-08-12/local-focused-tests.txt": {
+    "mtime": 1786494704.1501179,
+    "ast_hash": "ab32519c10717092276375ed05979659",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V80_SEMANTIC_ESTIMATOR_2026-08-12/remote-structural-estimate.time.txt": {
+    "mtime": 1786495104.8060553,
+    "ast_hash": "60e38c532ca3ea90ce6658b3d5495dee",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V90_LIVE_DEPLOY_2026-08-12.json": {
+    "mtime": 1786529302.5646613,
+    "ast_hash": "9e6917b5eb411827b8d09d773e583a15",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L2_PRODUCTIVE_V90_LIVE_DEPLOY_FIXED_PROOF_2026-08-12.json": {
+    "mtime": 1786529195.6378183,
+    "ast_hash": "658fcb46b25ca4d8dd739331197e3a71",
     "semantic_hash": ""
   }
 }

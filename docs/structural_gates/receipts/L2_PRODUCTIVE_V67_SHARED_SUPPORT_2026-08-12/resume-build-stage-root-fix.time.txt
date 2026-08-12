@@ -1,0 +1,23 @@
+	Command being timed: "/home/e/projects/lay/target/release/lay-nanda-wave-train --resume-productive-paradigm-v1 /home/e/.local/share/lay/nanda_wave/l2/LAY-L2-RU-FULL-v13.bin --memory input/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin --morphology-corpus /home/e/projects/lay-l2-build/data/morphology/lay_ru_l2_full_pos_v3.tsv --axis-schema data/morphology/productive_v1_ru_axis_schema.json --work-dir work/full-v1-v63-reinduce --out out/LAY-L2-PRODUCTIVE-PARADIGM-V1-SHADOW-V67.p2m --expected-corpus-sha256 85d9b5493e22c96569e3b331cc0059ae80853bd98e976c626ca8f791e75f22a6 --expected-corpus-bytes 434934248 --shared-support-recovery --workers 20 --receipt receipts/v67/resume-build-stage-root-fix-receipt.json"
+	User time (seconds): 88.95
+	System time (seconds): 1.36
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:30.59
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 649548
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 149291
+	Voluntary context switches: 1547
+	Involuntary context switches: 441
+	Swaps: 0
+	File system inputs: 966352
+	File system outputs: 103416
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

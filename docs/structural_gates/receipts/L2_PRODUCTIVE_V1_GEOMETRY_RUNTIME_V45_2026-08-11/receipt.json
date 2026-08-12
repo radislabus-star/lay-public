@@ -1,0 +1,40 @@
+{
+  "kind": "l2_productive_v1_geometry_runtime_v45",
+  "date": "2026-08-11",
+  "verdict": "PASS_scoped_micro_parity",
+  "runtime_authority_changed": false,
+  "tested": [
+    "incremental character and keyboard OSA scores match the existing V39 exhaustive adapter on normalized micro cases",
+    "incremental eight-channel typed atom similarity matches materialized V39 atom profiles",
+    "incremental character and keyboard simhash match V39 SurfaceWaveCode",
+    "cloned DFS state preserves the complete parent path and typed identity",
+    "relative START or END trie copy arcs remain instantiable against the active lemma anchor",
+    "speed-only traversal evaluates all logical terminals and retains an exact bounded top 32",
+    "speed-only comparator order matches productive_birth_rank plus stable surface order"
+  ],
+  "measured_facts": {
+    "new_tests_passed": 4,
+    "failed": 0,
+    "geometry_micro_pairs": 7,
+    "atom_wave_micro_pairs": 5,
+    "runtime_logical_terminals": 40,
+    "runtime_physical_candidates": 32
+  },
+  "not_tested": [
+    "fixed 13-class V39 candidate identity and order parity",
+    "all corpus-observed scalar and keyboard lengths",
+    "trained evidence score and calibration",
+    "composite grounded plus productive lattice",
+    "remote latency, RSS, package bytes, and product matrix"
+  ],
+  "commands": [
+    "scripts/cargo-guard.sh test --lib productive_v1::geometry::",
+    "scripts/cargo-guard.sh test --lib productive_v1::runtime::"
+  ],
+  "source": [
+    "src/nanda_wave/l2_field/productive_v1/geometry.rs",
+    "src/nanda_wave/l2_field/productive_v1/runtime.rs",
+    "src/nanda_wave/l2_field/productive_v1/trie.rs",
+    "src/nanda_wave/l2_field/compositional.rs"
+  ]
+}

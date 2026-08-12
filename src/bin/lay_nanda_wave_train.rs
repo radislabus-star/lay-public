@@ -92,6 +92,22 @@ fn main() -> io::Result<()> {
         );
         return Ok(());
     }
+    if args.iter().any(|arg| arg == "--productive-l2-v1-status") {
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&lay::nanda_wave::productive_l2_v1_status())
+                .map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if args.iter().any(|arg| arg == "--reload-productive-l2-v1") {
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&lay::nanda_wave::reload_productive_l2_v1())
+                .map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
     if args.iter().any(|arg| arg == "--compile-l4-cross-scene") {
         let input = arg_path(&args, "--input")
             .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--input is required"))?;
@@ -245,6 +261,368 @@ fn main() -> io::Result<()> {
         );
         return Ok(());
     }
+    if let Some(l2_package) = arg_path(&args, "--compile-productive-l2") {
+        let morphology_corpus = arg_path(&args, "--morphology-corpus").ok_or_else(|| {
+            io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "--morphology-corpus is required",
+            )
+        })?;
+        let output = arg_path(&args, "--out")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--out is required"))?;
+        let report = lay::nanda_wave::compile_productive_l2_sidecar(
+            &l2_package,
+            &morphology_corpus,
+            &output,
+            arg_u32(&args, "--minimum-profile-support").unwrap_or(2),
+        )?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if let Some(work_root) = arg_path(&args, "--audit-productive-anchor-recovery-v1") {
+        let axis_schema = arg_path(&args, "--axis-schema").ok_or_else(|| {
+            io::Error::new(io::ErrorKind::InvalidInput, "--axis-schema is required")
+        })?;
+        let scratch_root = arg_path(&args, "--scratch-dir").ok_or_else(|| {
+            io::Error::new(io::ErrorKind::InvalidInput, "--scratch-dir is required")
+        })?;
+        let report = lay::nanda_wave::audit_productive_anchor_recovery_v1(
+            &axis_schema,
+            &work_root,
+            &scratch_root,
+        )?;
+        if let Some(receipt) = arg_path(&args, "--receipt") {
+            let mut bytes = serde_json::to_vec_pretty(&report).map_err(io::Error::other)?;
+            bytes.push(b'\n');
+            lay::private_file::write_private_bytes(&receipt, &bytes)?;
+        }
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    let reinduce_productive = arg_path(&args, "--reinduce-productive-paradigm-v1");
+    let resume_productive = arg_path(&args, "--resume-productive-paradigm-v1");
+    if let Some(canonical_l2) = reinduce_productive.as_ref().or(resume_productive.as_ref()) {
+        let shared_support_recovery = args.iter().any(|arg| arg == "--shared-support-recovery");
+        if reinduce_productive.is_some() && shared_support_recovery {
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "--shared-support-recovery is authorized only for frozen-induction resume",
+            ));
+        }
+        let l11_package = arg_path(&args, "--memory")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--memory is required"))?;
+        let corpus = arg_path(&args, "--morphology-corpus").ok_or_else(|| {
+            io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "--morphology-corpus is required",
+            )
+        })?;
+        let axis_schema = arg_path(&args, "--axis-schema").ok_or_else(|| {
+            io::Error::new(io::ErrorKind::InvalidInput, "--axis-schema is required")
+        })?;
+        let work_root = arg_path(&args, "--work-dir")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--work-dir is required"))?;
+        let output = arg_path(&args, "--out")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--out is required"))?;
+        let expected_sha256 = arg_string(&args, "--expected-corpus-sha256").ok_or_else(|| {
+            io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "--expected-corpus-sha256 is required",
+            )
+        })?;
+        let expected_bytes = arg_u64(&args, "--expected-corpus-bytes").ok_or_else(|| {
+            io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "--expected-corpus-bytes is required",
+            )
+        })?;
+        let workers = arg_usize(&args, "--workers").unwrap_or_else(|| {
+            std::thread::available_parallelism()
+                .map(usize::from)
+                .unwrap_or(1)
+        });
+        let run = if reinduce_productive.is_some() {
+            lay::nanda_wave::reinduce_productive_paradigm_field_v1
+        } else if shared_support_recovery {
+            lay::nanda_wave::resume_productive_paradigm_field_v1_shared_support
+        } else {
+            lay::nanda_wave::resume_productive_paradigm_field_v1
+        };
+        let report = run(
+            &l11_package,
+            canonical_l2,
+            &corpus,
+            &axis_schema,
+            &work_root,
+            &output,
+            &expected_sha256,
+            expected_bytes,
+            workers,
+        )?;
+        if let Some(receipt) = arg_path(&args, "--receipt") {
+            let mut bytes = serde_json::to_vec_pretty(&report).map_err(io::Error::other)?;
+            bytes.push(b'\n');
+            lay::private_file::write_private_bytes(&receipt, &bytes)?;
+        }
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if let Some(canonical_l2) = arg_path(&args, "--compile-productive-paradigm-v1") {
+        let l11_package = arg_path(&args, "--memory")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--memory is required"))?;
+        let corpus = arg_path(&args, "--morphology-corpus").ok_or_else(|| {
+            io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "--morphology-corpus is required",
+            )
+        })?;
+        let axis_schema = arg_path(&args, "--axis-schema").ok_or_else(|| {
+            io::Error::new(io::ErrorKind::InvalidInput, "--axis-schema is required")
+        })?;
+        let work_root = arg_path(&args, "--work-dir")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--work-dir is required"))?;
+        let output = arg_path(&args, "--out")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--out is required"))?;
+        let expected_sha256 = arg_string(&args, "--expected-corpus-sha256").ok_or_else(|| {
+            io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "--expected-corpus-sha256 is required",
+            )
+        })?;
+        let expected_bytes = arg_u64(&args, "--expected-corpus-bytes").ok_or_else(|| {
+            io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "--expected-corpus-bytes is required",
+            )
+        })?;
+        let workers = arg_usize(&args, "--workers").unwrap_or_else(|| {
+            std::thread::available_parallelism()
+                .map(usize::from)
+                .unwrap_or(1)
+        });
+        let report = lay::nanda_wave::compile_productive_paradigm_field_v1(
+            &l11_package,
+            &canonical_l2,
+            &corpus,
+            &axis_schema,
+            &work_root,
+            &output,
+            &expected_sha256,
+            expected_bytes,
+            workers,
+        )?;
+        if let Some(receipt) = arg_path(&args, "--receipt") {
+            let mut bytes = serde_json::to_vec_pretty(&report).map_err(io::Error::other)?;
+            bytes.push(b'\n');
+            lay::private_file::write_private_bytes(&receipt, &bytes)?;
+        }
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if let Some(l2_package) = arg_path(&args, "--prove-productive-l2") {
+        let l1_package = arg_path(&args, "--memory")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--memory is required"))?;
+        let morphology_corpus = arg_path(&args, "--morphology-corpus").ok_or_else(|| {
+            io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "--morphology-corpus is required",
+            )
+        })?;
+        let report = lay::nanda_wave::prove_productive_l2_restoration(
+            &l1_package,
+            &l2_package,
+            &morphology_corpus,
+            arg_usize(&args, "--heldout-per-class").unwrap_or(100),
+            arg_usize(&args, "--workers").unwrap_or_else(|| {
+                std::thread::available_parallelism()
+                    .map(usize::from)
+                    .unwrap_or(1)
+            }),
+            arg_usize(&args, "--lemma-limit")
+                .unwrap_or(lay::nanda_wave::CANONICAL_L2_LEMMA_FRONTIER),
+            arg_usize(&args, "--active-lemma-limit")
+                .unwrap_or(lay::nanda_wave::CANONICAL_L2_ACTIVE_LEMMA_LIMIT),
+            arg_usize(&args, "--feature-limit")
+                .unwrap_or(lay::nanda_wave::CANONICAL_L2_FEATURE_LIMIT),
+            arg_usize(&args, "--form-limit").unwrap_or(lay::nanda_wave::CANONICAL_L2_FORM_LIMIT),
+            arg_usize(&args, "--atom-relation-limit")
+                .unwrap_or(lay::nanda_wave::CANONICAL_L2_ATOM_RELATION_LIMIT),
+            arg_u32(&args, "--minimum-profile-support").unwrap_or(2),
+        )?;
+        if let Some(receipt) = arg_path(&args, "--receipt") {
+            let mut bytes = serde_json::to_vec_pretty(&report).map_err(io::Error::other)?;
+            bytes.push(b'\n');
+            lay::private_file::write_private_bytes(&receipt, &bytes)?;
+        }
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if let Some(productive_sidecar) = arg_path(&args, "--prove-productive-l2-sidecar") {
+        let l1_package = arg_path(&args, "--memory")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--memory is required"))?;
+        let l2_package = arg_path(&args, "--l2-package").ok_or_else(|| {
+            io::Error::new(io::ErrorKind::InvalidInput, "--l2-package is required")
+        })?;
+        let morphology_corpus = arg_path(&args, "--morphology-corpus").ok_or_else(|| {
+            io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "--morphology-corpus is required",
+            )
+        })?;
+        let report = lay::nanda_wave::prove_productive_l2_sidecar(
+            &l1_package,
+            &l2_package,
+            &productive_sidecar,
+            &morphology_corpus,
+            arg_usize(&args, "--heldout-per-class").unwrap_or(100),
+            arg_usize(&args, "--workers").unwrap_or_else(|| {
+                std::thread::available_parallelism()
+                    .map(usize::from)
+                    .unwrap_or(1)
+            }),
+            arg_usize(&args, "--lemma-limit")
+                .unwrap_or(lay::nanda_wave::CANONICAL_L2_LEMMA_FRONTIER),
+            arg_usize(&args, "--active-lemma-limit")
+                .unwrap_or(lay::nanda_wave::CANONICAL_L2_ACTIVE_LEMMA_LIMIT),
+            arg_usize(&args, "--feature-limit")
+                .unwrap_or(lay::nanda_wave::CANONICAL_L2_FEATURE_LIMIT),
+            arg_usize(&args, "--form-limit").unwrap_or(lay::nanda_wave::CANONICAL_L2_FORM_LIMIT),
+            arg_usize(&args, "--atom-relation-limit")
+                .unwrap_or(lay::nanda_wave::CANONICAL_L2_ATOM_RELATION_LIMIT),
+        )?;
+        if let Some(receipt) = arg_path(&args, "--receipt") {
+            let mut bytes = serde_json::to_vec_pretty(&report).map_err(io::Error::other)?;
+            bytes.push(b'\n');
+            lay::private_file::write_private_bytes(&receipt, &bytes)?;
+        }
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    let semantic_productive_proof = arg_path(&args, "--prove-productive-paradigm-v1-semantic");
+    if let Some(productive_package) = semantic_productive_proof
+        .clone()
+        .or_else(|| arg_path(&args, "--prove-productive-paradigm-v1"))
+    {
+        let l1_package = arg_path(&args, "--memory")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--memory is required"))?;
+        let l2_package = arg_path(&args, "--l2-package").ok_or_else(|| {
+            io::Error::new(io::ErrorKind::InvalidInput, "--l2-package is required")
+        })?;
+        let axis_schema = arg_path(&args, "--axis-schema").ok_or_else(|| {
+            io::Error::new(io::ErrorKind::InvalidInput, "--axis-schema is required")
+        })?;
+        let work_dir = arg_path(&args, "--work-dir")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--work-dir is required"))?;
+        let heldout_per_class = arg_usize(&args, "--heldout-per-class").unwrap_or(100);
+        let workers = arg_usize(&args, "--workers").unwrap_or_else(|| {
+            std::thread::available_parallelism()
+                .map(usize::from)
+                .unwrap_or(1)
+        });
+        let report = if semantic_productive_proof.is_some() {
+            lay::nanda_wave::prove_productive_paradigm_field_v1_semantic(
+                &l1_package,
+                &l2_package,
+                &productive_package,
+                &axis_schema,
+                &work_dir,
+                heldout_per_class,
+                workers,
+            )
+        } else {
+            lay::nanda_wave::prove_productive_paradigm_field_v1(
+                &l1_package,
+                &l2_package,
+                &productive_package,
+                &axis_schema,
+                &work_dir,
+                heldout_per_class,
+                workers,
+            )
+        }?;
+        if let Some(receipt) = arg_path(&args, "--receipt") {
+            let mut bytes = serde_json::to_vec_pretty(&report).map_err(io::Error::other)?;
+            bytes.push(b'\n');
+            lay::private_file::write_private_bytes(&receipt, &bytes)?;
+        }
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if let Some(productive_package) = arg_path(
+        &args,
+        "--estimate-productive-semantic-transducer-heldout-v1",
+    ) {
+        let l1_package = arg_path(&args, "--memory")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--memory is required"))?;
+        let l2_package = arg_path(&args, "--l2-package").ok_or_else(|| {
+            io::Error::new(io::ErrorKind::InvalidInput, "--l2-package is required")
+        })?;
+        let axis_schema = arg_path(&args, "--axis-schema").ok_or_else(|| {
+            io::Error::new(io::ErrorKind::InvalidInput, "--axis-schema is required")
+        })?;
+        let work_dir = arg_path(&args, "--work-dir")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--work-dir is required"))?;
+        let report = lay::nanda_wave::estimate_productive_semantic_transducer_heldout_v1(
+            &l1_package,
+            &l2_package,
+            &productive_package,
+            &axis_schema,
+            &work_dir,
+            arg_usize(&args, "--heldout-per-class").unwrap_or(10),
+            arg_usize(&args, "--workers").unwrap_or_else(|| {
+                std::thread::available_parallelism()
+                    .map(usize::from)
+                    .unwrap_or(1)
+            }),
+        )?;
+        if let Some(receipt) = arg_path(&args, "--receipt") {
+            let mut bytes = serde_json::to_vec_pretty(&report).map_err(io::Error::other)?;
+            bytes.push(b'\n');
+            lay::private_file::write_private_bytes(&receipt, &bytes)?;
+        }
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if let Some(productive_package) =
+        arg_path(&args, "--estimate-productive-semantic-transducer-v1")
+    {
+        let report =
+            lay::nanda_wave::estimate_productive_semantic_transducer_v1(&productive_package)?;
+        if let Some(receipt) = arg_path(&args, "--receipt") {
+            let mut bytes = serde_json::to_vec_pretty(&report).map_err(io::Error::other)?;
+            bytes.push(b'\n');
+            lay::private_file::write_private_bytes(&receipt, &bytes)?;
+        }
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
     if let Some(l2_package) = arg_path(&args, "--query-canonical-l2") {
         let l1_package = arg_path(&args, "--memory")
             .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--memory is required"))?;
@@ -267,6 +645,27 @@ fn main() -> io::Result<()> {
         println!(
             "{}",
             serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if let Some(text) = arg_string(&args, "--query-live-l2") {
+        let report = lay::nanda_wave::query_live_canonical_l2(
+            &text,
+            arg_usize(&args, "--repeat").unwrap_or(2),
+            arg_usize(&args, "--productive-lemma-limit")
+                .unwrap_or(lay::nanda_wave::CANONICAL_L2_PRODUCTIVE_LEMMA_LIMIT),
+        )?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if let Some(text) = arg_string(&args, "--query-live-l2-context") {
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&lay::correction_core::query_canonical_l2_context(&text))
+                .map_err(io::Error::other)?
         );
         return Ok(());
     }
@@ -1069,10 +1468,25 @@ fn print_usage() {
          \nRun with no arguments only to compile the legacy default training package.\n\
          Common safe inspection commands:\n\
            --canonical-l2-status\n\
+           --productive-l2-v1-status\n\
+           --reload-productive-l2-v1\n\
            --compact-canonical-l2 REFERENCE.bin --out COMPACT.bin\n\
            --prove-compact-canonical-l2 COMPACT.bin --reference REFERENCE.bin\n\
            --prove-compositional-l2 L2.bin --memory L1.bin [--heldout-per-class N] [--workers N] [--lemma-limit N] [--form-limit N] [--atom-relation-limit N] [--receipt PATH]\n\
            --prove-contextual-compositional-l2 L2.bin --memory L1.bin --morphology-corpus CORPUS.tsv [--heldout-per-class N] [--workers N] [--lemma-limit N] [--active-lemma-limit N] [--feature-limit N] [--form-limit N] [--atom-relation-limit N] [--receipt PATH]\n\
+           --compile-productive-l2 L2.bin --morphology-corpus CORPUS.tsv --out SIDECAR.bin [--minimum-profile-support N]\n\
+           --audit-productive-anchor-recovery-v1 WORK_DIR --axis-schema SCHEMA.json --scratch-dir DIR [--receipt PATH]\n\
+           --compile-productive-paradigm-v1 L2.bin --memory L1.bin --morphology-corpus CORPUS.tsv --axis-schema SCHEMA.json --work-dir DIR --out PACKAGE.bin --expected-corpus-sha256 HEX --expected-corpus-bytes N [--workers N] [--receipt PATH]\n\
+	           --resume-productive-paradigm-v1 L2.bin --memory L1.bin --morphology-corpus CORPUS.tsv --axis-schema SCHEMA.json --work-dir COMPLETED_DIR --out PACKAGE.bin --expected-corpus-sha256 HEX --expected-corpus-bytes N [--shared-support-recovery] [--workers N] [--receipt PATH]\n\
+	           --reinduce-productive-paradigm-v1 L2.bin --memory L1.bin --morphology-corpus CORPUS.tsv --axis-schema SCHEMA.json --work-dir REUSED_DIR --out PACKAGE.bin --expected-corpus-sha256 HEX --expected-corpus-bytes N [--workers N] [--receipt PATH]\n\
+           --prove-productive-l2 L2.bin --memory L1.bin --morphology-corpus CORPUS.tsv [--heldout-per-class N] [--workers N] [--lemma-limit N] [--active-lemma-limit N] [--feature-limit N] [--form-limit N] [--atom-relation-limit N] [--minimum-profile-support N] [--receipt PATH]\n\
+           --prove-productive-l2-sidecar SIDECAR.bin --memory L1.bin --l2-package L2.bin --morphology-corpus CORPUS.tsv [--heldout-per-class N] [--workers N] [--lemma-limit N] [--active-lemma-limit N] [--feature-limit N] [--form-limit N] [--atom-relation-limit N] [--receipt PATH]\n\
+	           --prove-productive-paradigm-v1 PACKAGE.p2m --memory L1.bin --l2-package L2.bin --axis-schema SCHEMA.json --work-dir COMPLETED_DIR [--heldout-per-class N] [--workers N] [--receipt PATH]\n\
+	           --prove-productive-paradigm-v1-semantic PACKAGE.p2m --memory L1.bin --l2-package L2.bin --axis-schema SCHEMA.json --work-dir COMPLETED_DIR [--heldout-per-class N] [--workers N] [--receipt PATH]\n\
+	           --estimate-productive-semantic-transducer-v1 PACKAGE.p2m [--receipt PATH]\n\
+	           --estimate-productive-semantic-transducer-heldout-v1 PACKAGE.p2m --memory L1.bin --l2-package L2.bin --axis-schema AXIS.json --work-dir DIR [--heldout-per-class N] [--workers N] [--receipt PATH]\n\
+           --query-live-l2 TEXT [--repeat N] [--productive-lemma-limit N]\n\
+           --query-live-l2-context TEXT\n\
            --l3-context-phase-status [--memory PATH]\n\
            --l4-cross-scene-status PATH\n\
            --compile-l4-cross-scene --input EVENTS.jsonl [--corrections CORRECTIONS.jsonl] --out PACKAGE.bin\n\
@@ -1089,6 +1503,12 @@ fn arg_usize(args: &[String], name: &str) -> Option<usize> {
 }
 
 fn arg_u32(args: &[String], name: &str) -> Option<u32> {
+    args.windows(2)
+        .find(|window| window[0] == name)
+        .and_then(|window| window[1].parse().ok())
+}
+
+fn arg_u64(args: &[String], name: &str) -> Option<u64> {
     args.windows(2)
         .find(|window| window[0] == name)
         .and_then(|window| window[1].parse().ok())

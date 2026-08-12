@@ -4,8 +4,27 @@ use super::us_emit::char_to_us_key_event;
 use crate::keyboard::{KeyEvent, TextInputRun};
 
 pub fn text_to_key_events(text: &str, fallback_is_ru: bool) -> Option<Vec<KeyEvent>> {
-    let runs = text_to_uinput_runs(text, fallback_is_ru)?;
-    Some(runs.into_iter().flat_map(|run| run.events).collect())
+    let mut events = Vec::with_capacity(text.chars().count());
+    text_to_key_events_into(text, fallback_is_ru, &mut events)?;
+    Some(events)
+}
+
+pub(crate) fn text_to_key_events_into(
+    text: &str,
+    fallback_is_ru: bool,
+    events: &mut Vec<KeyEvent>,
+) -> Option<()> {
+    events.clear();
+    let mut current_is_ru = preferred_layout_for_text(text, fallback_is_ru);
+    for ch in text.chars() {
+        let Some((target_is_ru, event)) = char_to_layout_key_event(ch, current_is_ru) else {
+            events.clear();
+            return None;
+        };
+        current_is_ru = target_is_ru;
+        events.push(event);
+    }
+    Some(())
 }
 
 pub fn text_to_uinput_runs(text: &str, fallback_is_ru: bool) -> Option<Vec<TextInputRun>> {

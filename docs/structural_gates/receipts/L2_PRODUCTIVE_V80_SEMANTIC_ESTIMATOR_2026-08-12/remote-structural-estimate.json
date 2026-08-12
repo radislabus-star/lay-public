@@ -1,0 +1,67 @@
+{
+  "instruction_decomposition_duplicates_removed": 0,
+  "kind": "l2_productive_v80_semantic_transducer_structural_estimate",
+  "measured": [
+    "validated package structure",
+    "conservative semantic transform cardinality",
+    "owner cardinality and representation byte estimates",
+    "prefix trie and minimized DAG structural counts"
+  ],
+  "minimized_semantic_dag": {
+    "arcs": 7557,
+    "states": 1527
+  },
+  "not_tested": [
+    "fixed proof cases or candidate parity",
+    "per-request invariant selectivity",
+    "semantic executor output parity",
+    "cold or hot latency",
+    "L1.1/L2/L3/L4/verifier integration",
+    "daemon, IBus, or physical input"
+  ],
+  "package": "out/LAY-L2-PRODUCTIVE-PARADIGM-V1-SHADOW-V70.p2m",
+  "package_bytes": 17309944,
+  "package_compiler_version": 1,
+  "package_normalization_version": 1,
+  "package_operation_records": 270449,
+  "package_program_records": 77854,
+  "package_sha256": "9fd8c950398fb8ba47a2c9f2236880239d9f4376b191a691b0d01c47ddd3e438",
+  "paradigms": 2099,
+  "pos_domains": 4,
+  "prefix_trie": {
+    "arcs": 23238,
+    "nodes": 23239
+  },
+  "runtime_authority_changed": false,
+  "safety": {
+    "full_key_equality_not_hash_only": true,
+    "runtime_authority_changed": false,
+    "segment_refs_are_package_global_canonical": true,
+    "target_slot_retained": true,
+    "terminate_variant_excluded_from_execution_semantics": true,
+    "transferable_exact_allomorph_programs": 0
+  },
+  "scope": "validated existing package; no package write; no runtime authority",
+  "semantic_owner_cardinality": {
+    "maximum": 595,
+    "minimum": 1,
+    "p50": 2,
+    "p95": 21,
+    "p99": 81
+  },
+  "semantic_paradigm_memberships": 72104,
+  "storage_estimate": {
+    "canonical_piece_payload_bytes": 695661,
+    "dense_owner_bytes": 1250840,
+    "formula": "192 + transforms*32 + canonical_piece_payload + hybrid_owners + dag_states*16 + dag_arcs*24",
+    "hybrid_owner_bytes": 293872,
+    "semantic_sidecar_bytes": 1580037,
+    "sparse_owner_bytes": 384544
+  },
+  "transferable_owner_programs": 72104,
+  "unique_conservative_semantic_transforms": 12016,
+  "unique_full_programs": 14536,
+  "unique_variant_insensitive_programs": 12016,
+  "variant_identity_only_duplicates_removed": 2520,
+  "verdict": "STRUCTURAL_ESTIMATE_ONLY"
+}

@@ -46,6 +46,11 @@ impl PreeditFastState {
 }
 
 impl LayIbusEngine {
+    fn live_completion_input_is_active(&self) -> bool {
+        !self.buffer.is_empty()
+            || (self.last_tail_input_at.is_some() && !self.preedit_fast.token.is_empty())
+    }
+
     fn semantic_phrase_candidates(&self) -> Vec<ImeCandidateProposal> {
         if self.config.active_correction_safety() != lay::config::CorrectionSafety::Experimental {
             return Vec::new();
@@ -90,7 +95,10 @@ impl LayIbusEngine {
             context_prefix: prefix,
             partial: &partial,
             max_suffix_chars,
-            active_composition: !self.buffer.is_empty(),
+            // Managed IME clients commit each typed grapheme immediately. The
+            // token still remains an active input trajectory until its word
+            // boundary, even though the traditional preedit buffer is empty.
+            active_composition: self.live_completion_input_is_active(),
             // Candidate authority belongs to the shared L2/L3/L4 gate.
             // IME only renders its approved result, including in a phrase.
             allow_short_lexical: true,

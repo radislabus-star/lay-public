@@ -108,12 +108,36 @@ impl TypingCpu {
         suggested_text: &str,
         final_text: &str,
     ) {
+        let shared_morphology_identity =
+            crate::nanda_wave::l2_field::surfaces_share_morphology_identity(
+                suggested_text,
+                final_text,
+            );
         crate::nanda_wave::record_edited_ime_usage(
             context_tail,
             typed_prefix,
             suggested_text,
             final_text,
+            shared_morphology_identity,
         );
+    }
+
+    pub fn completion_edit_geometry_is_linked(
+        typed_prefix: &str,
+        suggested_text: &str,
+        final_text: &str,
+    ) -> bool {
+        let shared_morphology_identity =
+            crate::nanda_wave::l2_field::surfaces_share_morphology_identity(
+                suggested_text,
+                final_text,
+            );
+        crate::typing_memory::completion_edit_geometry_is_linked_with_identity(
+            typed_prefix,
+            suggested_text,
+            final_text,
+            shared_morphology_identity,
+        )
     }
 
     pub fn record_confirmed_completion_prediction(context_tail: &str, predicted_text: &str) {

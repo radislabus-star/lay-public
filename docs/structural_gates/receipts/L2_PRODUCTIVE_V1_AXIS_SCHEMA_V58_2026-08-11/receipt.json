@@ -1,0 +1,31 @@
+{
+  "receipt_id": "L2_PRODUCTIVE_V1_AXIS_SCHEMA_V58_2026-08-11",
+  "date": "2026-08-11",
+  "verdict": "PASS_COMPLETE_V3_LABEL_COVERAGE_PENDING_FULL_RERUN",
+  "runtime_authority_changed": false,
+  "remote_probe": {
+    "corpus": "/home/e/projects/lay-l2-build/data/morphology/lay_ru_l2_full_pos_v3.tsv",
+    "elapsed_seconds": 25.46,
+    "peak_rss_kib": 202860,
+    "failed_stage": "raw_corpus_pass",
+    "error": "line 5030350: productive axis schema has no label imp_excl"
+  },
+  "complete_label_audit": {
+    "missing_before_fix": ["imp_excl", "imp_incl"],
+    "missing_after_fix": [],
+    "axis": 12,
+    "axis_name": "variant_kind",
+    "imp_excl_value": 2,
+    "imp_incl_value": 3,
+    "verb_axis_12_was_already_applicable": true
+  },
+  "local_verification": {
+    "exclusive_imperative_parse": "PASS",
+    "inclusive_imperative_parse": "PASS"
+  },
+  "not_tested": [
+    "full v3 corpus completion after schema correction",
+    "fixed quality proof",
+    "production authority"
+  ]
+}

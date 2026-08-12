@@ -1,0 +1,74 @@
+{
+  "receipt_id": "L2_PRODUCTIVE_V90_LIVE_DEPLOY_2026-08-12",
+  "date": "2026-08-12",
+  "release": "1.0.21",
+  "verdict": "DEPLOYED_WITH_EXPLICIT_LATENCY_EXCEPTION_PHYSICAL_CONFIRMATION_PENDING",
+  "installed_runtime_authority_changed": true,
+  "canonical_route": "L1.1 bounded lattice -> Productive V90 L2 -> one composite lattice -> common live L3 -> TransitionDecisionCore -> verifier -> one physical mutation route",
+  "source_snapshot": "/home/e/projects/lay-v90-live-source-20260812",
+  "fixed_proof": {
+    "receipt": "/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_LIVE_DEPLOY_FIXED_PROOF_2026-08-12.json",
+    "evaluated": 2600,
+    "workers": 20,
+    "sampled_h": 1280,
+    "sampled_b": 1280,
+    "sampled_s0": 1280,
+    "h_to_b_losses": 0,
+    "b_to_s0_losses": 0,
+    "base_raw_top1": 267,
+    "semantic_raw_top1": 1109,
+    "minimum_class_top16_percent": 97.0,
+    "false_singleton": 0,
+    "integrity_errors": 0,
+    "base_projection_failures": 0,
+    "maximum_class_p99_us": 13139,
+    "previous_maximum_class_p99_us": 16635,
+    "non_timing_parity_with_accepted_v90": true,
+    "automatic_gate_verdict": "FAIL_measured_shadow_gates",
+    "automatic_gate_blocker": "maximum class p99 remains above the frozen 5000 us proof threshold",
+    "exception_scope": "the user explicitly accepted the separately measured 5.317 ms V90 runtime result; the frozen 5 ms proof gate was not edited or reported as passing"
+  },
+  "artifacts": {
+    "productive_package": {
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2m",
+      "bytes": 17309944,
+      "sha256": "9fd8c950398fb8ba47a2c9f2236880239d9f4376b191a691b0d01c47ddd3e438"
+    },
+    "anchor_recovery": {
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2r",
+      "bytes": 2123112,
+      "sha256": "44a20f7aaf7578a960477fbfb1d30c9828b9d71f037e3ad1b2d57bc7fa5568c4"
+    },
+    "l11_sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+    "canonical_l2_sha256": "cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b"
+  },
+  "release_build": {
+    "host": "e@192.168.3.94",
+    "logical_cpus": 20,
+    "elapsed_seconds": 184.52,
+    "maximum_resident_kib": 2371580,
+    "exit_status": 0
+  },
+  "installed_runtime": {
+    "productive_status": "ready_live_owner",
+    "mmap_backed": true,
+    "resident_constant_cache_bytes_per_process": 12927216,
+    "daemon_pid": 1232032,
+    "daemon_rss_kib": 401748,
+    "ibus_engine_pid": 1232903,
+    "ibus_engine_rss_kib": 367588,
+    "global_ibus_daemon_pid_before": 3702,
+    "global_ibus_daemon_pid_after": 3702,
+    "gnome_extension_version": "1.0.21",
+    "daemon_active": true,
+    "l3_online_active": true,
+    "productive_package_mapped_by_daemon": true,
+    "productive_package_mapped_by_ibus_engine": true
+  },
+  "rollback": "/home/ubu/.local/lib/lay/rollback/1.0.20-pre-v90-20260812-130206",
+  "not_tested": [
+    "physical ordinary typing after the final cutover",
+    "physical cj,frf plus Space autocorrect followed by double-Shift rollback",
+    "live Space-path p50, p95 and p99 after the final cutover"
+  ]
+}

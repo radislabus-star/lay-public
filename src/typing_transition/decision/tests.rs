@@ -4,9 +4,174 @@ use super::{
 };
 use crate::candidate_contract::{CandidateOrigin, CorrectionSourceRole};
 use crate::correction_core::{
-    CandidateGateAction, CandidateGateDecision, CorrectionDecisionSource, TypingErrorClass,
-    TypingErrorEvent, UnifiedCorrectionCandidate,
+    CandidateGateAction, CandidateGateDecision, CorrectionDecisionSource, MorphologySlotEvidence,
+    TypingErrorClass, TypingErrorEvent, UnifiedCorrectionCandidate,
 };
+
+fn morphology_evidence(
+    lemma_id: u32,
+    target_feature_mask: u32,
+    context_positive_support: u32,
+    context_alternative_support: u32,
+    context_posterior_milli: u16,
+    slot_evidence_milli: i32,
+    joint_evidence_milli: u16,
+) -> MorphologySlotEvidence {
+    MorphologySlotEvidence {
+        lemma_id,
+        source_feature_mask: 1,
+        target_feature_mask,
+        context_positive_support,
+        context_alternative_support,
+        context_posterior_milli,
+        slot_evidence_milli,
+        joint_evidence_milli,
+        generated: false,
+    }
+}
+
+#[test]
+fn morphology_same_lemma_slot_evidence_reranks_the_supported_ending() {
+    let mut supported = l2_candidate(
+        "вы принуждаете ",
+        "CanonicalL2FieldSurface",
+        TypingErrorClass::GrammarAgreement,
+    );
+    supported.extend_morphology_slot_evidence([morphology_evidence(17, 10, 4, 0, 820, 700, 910)]);
+    let mut alternative = l2_candidate(
+        "вы принуждали ",
+        "CanonicalL2FieldSurface",
+        TypingErrorClass::GrammarAgreement,
+    );
+    alternative.extend_morphology_slot_evidence([morphology_evidence(17, 11, 0, 4, 420, 300, 760)]);
+
+    let signals = super::l2_morphology_slot_signals(&[supported, alternative]);
+
+    assert_eq!(signals[0].disposition, "same_lemma_support");
+    assert!(signals[0].rank_energy > 0.0);
+    assert_eq!(signals[0].lemma_id, 17);
+    assert_eq!(signals[0].target_feature_mask, 10);
+    assert_eq!(signals[0].competitors, 1);
+    assert_eq!(signals[1].disposition, "not_applicable");
+    assert_eq!(signals[1].rank_energy, 0.0);
+}
+
+#[test]
+fn morphology_slot_evidence_cannot_settle_cross_lemma_competition() {
+    let mut left = l2_candidate(
+        "вы принуждаете ",
+        "CanonicalL2FieldSurface",
+        TypingErrorClass::GrammarAgreement,
+    );
+    left.extend_morphology_slot_evidence([morphology_evidence(17, 10, 4, 0, 900, 900, 950)]);
+    let mut right = l2_candidate(
+        "вы приближаете ",
+        "CanonicalL2FieldSurface",
+        TypingErrorClass::GrammarAgreement,
+    );
+    right.extend_morphology_slot_evidence([morphology_evidence(23, 10, 4, 0, 300, 200, 700)]);
+
+    let signals = super::l2_morphology_slot_signals(&[left, right]);
+
+    assert!(signals
+        .iter()
+        .all(|signal| signal.disposition == "not_applicable" && signal.rank_energy == 0.0));
+}
+
+#[test]
+fn morphology_two_context_supported_slots_remain_tied_despite_frequency_difference() {
+    let mut frequent = l2_candidate(
+        "ты принуждай ",
+        "CanonicalL2FieldSurface",
+        TypingErrorClass::GrammarAgreement,
+    );
+    frequent.extend_morphology_slot_evidence([morphology_evidence(17, 20, 12, 2, 900, 900, 950)]);
+    let mut less_frequent = l2_candidate(
+        "ты принуждаешь ",
+        "CanonicalL2FieldSurface",
+        TypingErrorClass::GrammarAgreement,
+    );
+    less_frequent
+        .extend_morphology_slot_evidence([morphology_evidence(17, 21, 2, 12, 300, 200, 700)]);
+
+    let signals = super::l2_morphology_slot_signals(&[frequent, less_frequent]);
+
+    assert!(signals
+        .iter()
+        .all(|signal| signal.disposition == "not_applicable" && signal.rank_energy == 0.0));
+}
+
+#[test]
+fn morphology_conflicting_same_lemma_axes_remain_tied() {
+    let mut context_favored = l2_candidate(
+        "они принуждают ",
+        "CanonicalL2FieldSurface",
+        TypingErrorClass::GrammarAgreement,
+    );
+    context_favored
+        .extend_morphology_slot_evidence([morphology_evidence(17, 20, 4, 0, 850, 200, 840)]);
+    let mut slot_favored = l2_candidate(
+        "они принуждали ",
+        "CanonicalL2FieldSurface",
+        TypingErrorClass::GrammarAgreement,
+    );
+    slot_favored
+        .extend_morphology_slot_evidence([morphology_evidence(17, 21, 4, 0, 650, 800, 820)]);
+
+    let signals = super::l2_morphology_slot_signals(&[context_favored, slot_favored]);
+
+    assert!(signals
+        .iter()
+        .all(|signal| signal.disposition == "not_applicable" && signal.rank_energy == 0.0));
+}
+
+#[test]
+fn morphology_budget_lift_preserves_number_geometry_inside_one_case_basin() {
+    let singular = super::lift_preserving_relative_geometry(0.42, 0.61, 0.90);
+    let plural = super::lift_preserving_relative_geometry(0.61, 0.61, 0.90);
+
+    assert!((plural - singular - 0.19).abs() < f32::EPSILON);
+    assert!((plural - 0.90).abs() < f32::EPSILON);
+}
+
+#[test]
+fn productive_v90_tie_requires_common_l3_and_verified_transition() {
+    let event = event("форма нужна форм ");
+    let mut recurrent = l2_candidate(
+        "форма нужна форма ",
+        "ProductiveL2V90Surface",
+        TypingErrorClass::GrammarAgreement,
+    );
+    recurrent.gate = CandidateGateDecision {
+        action: CandidateGateAction::SuggestOnly,
+        reason: "productive_v90_lattice_requires_common_l3",
+    };
+    recurrent.extend_morphology_slot_evidence([morphology_evidence(17, 10, 0, 0, 0, 0, 0)]);
+    let mut alternative = l2_candidate(
+        "форма нужна формы ",
+        "ProductiveL2V90Surface",
+        TypingErrorClass::GrammarAgreement,
+    );
+    alternative.gate = CandidateGateDecision {
+        action: CandidateGateAction::SuggestOnly,
+        reason: "productive_v90_lattice_requires_common_l3",
+    };
+    alternative.extend_morphology_slot_evidence([morphology_evidence(17, 11, 0, 0, 0, 0, 0)]);
+
+    let candidates = [recurrent, alternative];
+    let batch = super::TransitionDecisionCore::evaluate_candidates(
+        &event,
+        &candidates,
+        super::TransitionDecisionPolicy::default(),
+        None,
+    );
+
+    assert!(batch.evaluations[0].signals.l3_pairwise_certified);
+    assert!(!batch.evaluations[1].signals.l3_pairwise_certified);
+    assert!(batch.evaluations[0].action.verifier_passed);
+    assert_eq!(batch.selected_index, Some(0), "{batch:#?}");
+    assert!(batch.selected_transition.is_some());
+}
 
 #[test]
 fn transition_admission_blocks_unverified_left_context() {

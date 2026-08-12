@@ -1,0 +1,50 @@
+{
+  "receipt_id": "L2_PRODUCTIVE_V1_IMPORTED_OWNERSHIP_V57_2026-08-11",
+  "date": "2026-08-11",
+  "verdict": "PASS_LOCAL_SYSTEMIC_FIX_PENDING_FULL_V3_RERUN",
+  "runtime_authority_changed": false,
+  "full_corpus_probe": {
+    "corpus_bytes": 432122626,
+    "corpus_sha256": "9a48d4583fe5d23005586068fe9610e45adeea22b90cd4e352c63e444085bc9e",
+    "workers": 19,
+    "elapsed_seconds": 47.47,
+    "peak_rss_kib": 969516,
+    "last_completed_stage": "morphology_external_sort",
+    "failed_stage": "imported_ownership_reduce",
+    "error": "productive imported ownership mismatch lemma=\"я\" ref=0 source_bindings=6 package_bindings=7"
+  },
+  "second_probe": {
+    "corpus_bytes": 432122626,
+    "corpus_sha256": "9a48d4583fe5d23005586068fe9610e45adeea22b90cd4e352c63e444085bc9e",
+    "failed_stage": "imported_ownership_reduce",
+    "error": "productive imported source ownership mismatch lemma=\"я\" ref=0 source_bindings=6 package_bindings=7 unowned_source_bindings=6"
+  },
+  "mechanism": [
+    "length-prefixed wire identity order incorrectly proposed canonical lemma refs",
+    "the rejected probes used stale corpus v1 while canonical L2 V13 was built from v3"
+  ],
+  "systemic_contract": {
+    "sort_order": "ordinary normalized language and lemma lexical bytes, matching canonical L2 compiler order",
+    "binding_pairs": "strict complete equality with the proposed canonical lemma binding range",
+    "canonical_corpus": {
+      "path": "/home/e/projects/lay-l2-build/data/morphology/lay_ru_l2_full_pos_v3.tsv",
+      "bytes": 434934248,
+      "sha256": "85d9b5493e22c96569e3b331cc0059ae80853bd98e976c626ca8f791e75f22a6",
+      "form_rows": 3255785,
+      "heldout_rows": 2501613
+    }
+  },
+  "local_verification": {
+    "canonical_lexical_sort_test": "PASS",
+    "productive_v1_suite_passed": 63,
+    "productive_v1_suite_failed": 0,
+    "deterministic_micro_package_bytes": 14744,
+    "deterministic_micro_package_sha256": "c310856004230fa00533b2d1c14d81a63168d97127512abe00ec2aa0d6470e30"
+  },
+  "not_tested": [
+    "complete full-corpus ownership denominators after the fix",
+    "final package compilation",
+    "fixed quality proof",
+    "production authority"
+  ]
+}

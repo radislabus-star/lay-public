@@ -1,4 +1,5 @@
 use super::action::DecisionTransitionEditInput;
+use super::committed_tail::plan_committed_tail_full_token_replacement;
 use super::gate::{plan_decision_transition_edit, plan_recorded_undo_edit};
 use super::mutation::TransitionAudit;
 use super::transition::{
@@ -60,21 +61,48 @@ pub(crate) fn verify_visible_text_transition(
         );
     }
 
-    if state.external_state_present {
+    let plan = if state.external_trailing_boundary_elided {
         let actual = state
             .external_tail_before_cursor
             .clone()
             .unwrap_or_default();
-        if actual != original_text {
-            return stale_surrounding(original_text, actual);
+        let expected = original_text
+            .trim_end_matches(char::is_whitespace)
+            .to_string();
+        if !state.external_state_present
+            || candidate.intent != super::transition::TextTransitionIntent::ImeAutoUndo
+            || expected == original_text
+            || actual != expected
+        {
+            return stale_surrounding(expected, actual);
         }
-    }
-
-    let plan = TextReplacement {
-        move_left: 0,
-        backspaces: candidate.delete_chars,
-        insert: candidate.insert_text.clone(),
-        move_right: 0,
+        let Some(plan) =
+            plan_committed_tail_full_token_replacement(&original_text, &candidate.insert_text)
+        else {
+            return TextTransitionDecision::Reject {
+                rejection: TextTransitionRejection::UnsafeEdit {
+                    reason: "unsafe_boundary_elided_undo_plan",
+                },
+                action: None,
+            };
+        };
+        plan
+    } else {
+        if state.external_state_present {
+            let actual = state
+                .external_tail_before_cursor
+                .clone()
+                .unwrap_or_default();
+            if actual != original_text {
+                return stale_surrounding(original_text, actual);
+            }
+        }
+        TextReplacement {
+            move_left: 0,
+            backspaces: candidate.delete_chars,
+            insert: candidate.insert_text.clone(),
+            move_right: 0,
+        }
     };
     let receipt = DecisionTransitionReceipt::for_visible_tail(
         original_text.clone(),

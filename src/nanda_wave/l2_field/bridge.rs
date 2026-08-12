@@ -2,7 +2,7 @@ use crate::candidate_contract::CandidateOrigin;
 use crate::candidate_contract::CorrectionSourceRole;
 use crate::correction_core::{
     CandidateEvidence, CandidateGateAction, CandidateGateDecision, CorrectionDecisionSource,
-    TypingErrorClass, UnifiedCorrectionCandidate,
+    MorphologySlotEvidence, TypingErrorClass, UnifiedCorrectionCandidate,
 };
 use crate::text_case::apply_word_case;
 use crate::typing_transition::{action as action_operator, decision::TransitionDecisionCore};
@@ -11,9 +11,12 @@ use rayon::prelude::*;
 
 use super::runtime::{
     CanonicalL2FieldReadout, CompositionalFormBirth, CompositionalLemmaBirth, L2FieldAuthority,
-    L2LexicalSeed, L2LexicalSeedOrigin, L2LocalVerdict, StandaloneL2Field,
-    CANONICAL_L2_READOUT_SOURCE_ID, CANONICAL_L2_SURFACE_SOURCE_ID,
+    L2LexicalSeed, L2LexicalSeedOrigin, L2LocalVerdict, ProductiveL2FormBirth, StandaloneL2Field,
+    StandaloneL2Readout, CANONICAL_L2_PRODUCTIVE_SOURCE_ID, CANONICAL_L2_READOUT_SOURCE_ID,
+    CANONICAL_L2_SURFACE_SOURCE_ID,
 };
+
+const LIVE_L11_LATTICE_LIMIT: usize = 32;
 
 pub(crate) fn canonical_text_candidates(original: &str) -> Vec<UnifiedCorrectionCandidate> {
     canonical_text_readout(original).candidates
@@ -154,62 +157,346 @@ fn short_layout_candidates(original: &str) -> Vec<UnifiedCorrectionCandidate> {
 
 fn canonical_owned_text_candidates(original: &str) -> CanonicalL2FieldReadout {
     let started = std::time::Instant::now();
-    // L2 owns its Winner/Tied/Abstain verdict, but L3 must observe the whole
-    // bounded cohort. Non-winners remain SuggestOnly below; retaining them is
-    // evidence visibility, not lexical apply authority.
-    let Some(field) = standalone_surface_field_readout(original, false) else {
+    let Some((_, token)) = split_last_alphabetic_token(original) else {
         return CanonicalL2FieldReadout::default();
     };
-    let materialize_started = std::time::Instant::now();
-    let mut candidates =
-        l2_surface_unified_candidates(original, &field.token, &field.surface_candidates);
-    let unified_ready = std::time::Instant::now();
-    promote_canonical_local_readout(&mut candidates, &field.local_readout);
-    demote_canonical_local_surface_cohort(&mut candidates, &field.local_readout);
-    let authority = field.local_readout.authority();
-    apply_authority_to_candidate_lattice(&mut candidates, &authority);
-    let authority_ready = std::time::Instant::now();
+    let normalized_token = token.to_lowercase();
+    if normalized_token.chars().count() < 2
+        || !normalized_token
+            .chars()
+            .all(crate::keyboard::is_cyrillic_letter)
+    {
+        return CanonicalL2FieldReadout::default();
+    }
+    let seed_started = std::time::Instant::now();
+    let l11_seeds = live_l11_seed_surfaces(token, LIVE_L11_LATTICE_LIMIT);
+    let seed_duration = seed_started.elapsed();
+    if l11_seeds.is_empty() {
+        return CanonicalL2FieldReadout::default();
+    }
+    // Productive V90 consumes the bounded L1.1 lattice directly. The canonical
+    // package remains a read-only identity index; its historical candidate
+    // generation and local verdict are not executed on the live route.
+    let readout = match (
+        super::installed_l2_field(),
+        super::installed_productive_l2_v1(),
+    ) {
+        (Ok(canonical_index), Ok(runtime)) => super::productive_v1::live_productive_v1_readout(
+            original,
+            token,
+            canonical_index,
+            &runtime,
+            &l11_seeds,
+        )
+        .unwrap_or_default(),
+        _ => CanonicalL2FieldReadout::default(),
+    };
     if std::env::var_os("LAY_L2_FIELD_TRACE").is_some() {
         let finished = std::time::Instant::now();
         eprintln!(
-            "l2_field_trace seeds_us={} field_us={} materialize_us={} authority_us={} total_us={} seeds={} surfaces={} candidates={}",
-            field.seed_duration.as_micros(),
-            field.field_duration.as_micros(),
-            unified_ready.duration_since(materialize_started).as_micros(),
-            authority_ready.duration_since(unified_ready).as_micros(),
+            "l2_field_trace owner=productive_v90 seeds_us={} productive_us={} total_us={} seeds={} candidates={}",
+            seed_duration.as_micros(),
+            finished
+                .duration_since(started)
+                .saturating_sub(seed_duration)
+                .as_micros(),
             finished.duration_since(started).as_micros(),
-            field.seed_count,
-            field.surface_count,
-            candidates.len(),
+            l11_seeds.len(),
+            readout.candidates.len(),
         );
     }
+    readout
+}
 
-    CanonicalL2FieldReadout::new(candidates, authority)
+fn live_l11_seed_surfaces(
+    token: &str,
+    material_limit: usize,
+) -> Vec<crate::nanda_wave::L11SeedSurface> {
+    let socket_path = crate::nanda_wave::default_l11_socket_path();
+    if !socket_path.exists() {
+        return Vec::new();
+    }
+    crate::nanda_wave::request_l11_seed_surfaces(
+        &socket_path,
+        token,
+        material_limit.max(1),
+        l11_service_timeout(),
+    )
+    .unwrap_or_default()
+    .into_iter()
+    .filter(|seed| !seed.surface.chars().any(char::is_whitespace))
+    .take(material_limit)
+    .collect()
+}
+
+pub(super) fn query_live_canonical_l2(
+    original: &str,
+    repeat: usize,
+    productive_lemma_limit: usize,
+) -> serde_json::Value {
+    let mut iteration_us = Vec::with_capacity(repeat);
+    let mut field_us = Vec::with_capacity(repeat);
+    let mut productive_us = Vec::with_capacity(repeat);
+    let mut last_readout = None;
+    let mut last_seed_count = 0;
+    let mut last_surface_count = 0;
+    let mut last_productive_surfaces = std::collections::BTreeSet::new();
+    let mut prepared_cache_hits = 0_usize;
+
+    for _ in 0..repeat {
+        let started = std::time::Instant::now();
+        let Some(field) = standalone_surface_field_readout_with_productive_limit(
+            original,
+            false,
+            productive_lemma_limit,
+        ) else {
+            return serde_json::json!({
+                "kind": "canonical_l2_live_query",
+                "status": "unavailable",
+                "text": original,
+                "repeat": repeat,
+                "productive_lemma_limit": productive_lemma_limit,
+                "runtime_authority_changed": false,
+            });
+        };
+        let mut candidates =
+            l2_surface_unified_candidates(original, &field.token, &field.surface_candidates);
+        mark_productive_surface_candidates(
+            &mut candidates,
+            &field.productive_surfaces,
+            &field.morphology_evidence_by_surface,
+        );
+        promote_canonical_local_readout(&mut candidates, &field.local_readout);
+        demote_canonical_local_surface_cohort(&mut candidates, &field.local_readout);
+        let authority = field.local_readout.authority();
+        apply_authority_to_candidate_lattice(&mut candidates, &authority);
+        iteration_us.push(started.elapsed().as_micros() as u64);
+        field_us.push(field.field_duration.as_micros() as u64);
+        productive_us.push(field.productive_duration.as_micros() as u64);
+        prepared_cache_hits += usize::from(field.prepared_cache_hit);
+        last_seed_count = field.seed_count;
+        last_surface_count = field.surface_count;
+        last_productive_surfaces = field.productive_surfaces;
+        last_readout = Some(CanonicalL2FieldReadout::new(candidates, authority));
+    }
+
+    let readout = last_readout.expect("validated non-zero repeat");
+    let authority = match &readout.authority {
+        L2FieldAuthority::Winner { surface } => serde_json::json!({
+            "kind": "winner",
+            "surfaces": [surface],
+        }),
+        L2FieldAuthority::Tied { surfaces } => serde_json::json!({
+            "kind": "tied",
+            "surfaces": surfaces,
+        }),
+        L2FieldAuthority::Abstain => serde_json::json!({
+            "kind": "abstain",
+            "surfaces": [],
+        }),
+        L2FieldAuthority::Unavailable => serde_json::json!({
+            "kind": "unavailable",
+            "surfaces": [],
+        }),
+    };
+    let cold_us = iteration_us.first().copied().unwrap_or_default();
+    let hot_us = iteration_us.iter().skip(1).copied().collect::<Vec<_>>();
+    serde_json::json!({
+        "kind": "canonical_l2_live_query",
+        "status": "ready",
+        "text": original,
+        "repeat": repeat,
+        "productive_lemma_limit": productive_lemma_limit,
+        "productive_form_limit": super::CANONICAL_L2_PRODUCTIVE_FORM_LIMIT,
+        "cache_mode": "bounded_prepared_frontier_lru",
+        "prepared_cache_hits": prepared_cache_hits,
+        "cold_us": cold_us,
+        "hot": latency_summary(&hot_us),
+        "all_iterations": latency_summary(&iteration_us),
+        "field": latency_summary(&field_us),
+        "productive": latency_summary(&productive_us),
+        "seed_count": last_seed_count,
+        "pre_productive_surface_count": last_surface_count,
+        "productive_surfaces": last_productive_surfaces,
+        "authority": authority,
+        "candidates": readout.candidates.iter().map(|candidate| serde_json::json!({
+            "replacement": candidate.replacement,
+            "source_id": candidate.source_id,
+            "error_class": candidate.error_class.as_str(),
+            "gate_action": format!("{:?}", candidate.gate.action),
+            "gate_reason": candidate.gate.reason,
+            "productive": candidate.source_id == CANONICAL_L2_PRODUCTIVE_SOURCE_ID,
+        })).collect::<Vec<_>>(),
+        "peak_rss_kib": process_status_kib("VmHWM:"),
+        "resident_rss_kib": process_status_kib("VmRSS:"),
+        "runtime_authority_changed": false,
+    })
+}
+
+fn latency_summary(samples: &[u64]) -> serde_json::Value {
+    if samples.is_empty() {
+        return serde_json::json!({
+            "samples": 0,
+            "min_us": null,
+            "p50_us": null,
+            "p95_us": null,
+            "p99_us": null,
+            "max_us": null,
+            "mean_us": null,
+        });
+    }
+    let mut sorted = samples.to_vec();
+    sorted.sort_unstable();
+    let percentile = |numerator: usize, denominator: usize| {
+        let index = (sorted.len() * numerator)
+            .div_ceil(denominator)
+            .saturating_sub(1);
+        sorted[index.min(sorted.len() - 1)]
+    };
+    let total = sorted.iter().copied().map(u128::from).sum::<u128>();
+    serde_json::json!({
+        "samples": sorted.len(),
+        "min_us": sorted[0],
+        "p50_us": percentile(50, 100),
+        "p95_us": percentile(95, 100),
+        "p99_us": percentile(99, 100),
+        "max_us": sorted[sorted.len() - 1],
+        "mean_us": (total / sorted.len() as u128) as u64,
+    })
+}
+
+fn process_status_kib(prefix: &str) -> u64 {
+    std::fs::read_to_string("/proc/self/status")
+        .ok()
+        .and_then(|status| {
+            status.lines().find_map(|line| {
+                line.strip_prefix(prefix)?
+                    .split_whitespace()
+                    .next()?
+                    .parse::<u64>()
+                    .ok()
+            })
+        })
+        .unwrap_or_default()
 }
 
 struct StandaloneSurfaceFieldReadout {
     token: String,
     surface_candidates: Vec<crate::nanda_wave::l2::L2ImeWordCandidate>,
     local_readout: CanonicalCohortReadout,
+    productive_surfaces: std::collections::BTreeSet<String>,
+    morphology_evidence_by_surface: std::collections::BTreeMap<String, Vec<MorphologySlotEvidence>>,
     seed_count: usize,
     surface_count: usize,
-    seed_duration: std::time::Duration,
     field_duration: std::time::Duration,
+    productive_duration: std::time::Duration,
+    prepared_cache_hit: bool,
 }
 
+#[derive(Clone)]
 struct PreparedCompositionalField {
     broad_lemma_births: Vec<CompositionalLemmaBirth>,
     active_lemma_births: Vec<CompositionalLemmaBirth>,
     form_births: Vec<CompositionalFormBirth>,
+    productive_form_births: Vec<ProductiveL2FormBirth>,
     broad_duration: std::time::Duration,
     active_duration: std::time::Duration,
     form_duration: std::time::Duration,
+    productive_duration: std::time::Duration,
     total_duration: std::time::Duration,
+    cache_hit: bool,
+}
+
+const PREPARED_FIELD_CACHE_LIMIT: usize = 64;
+
+struct PreparedFieldCacheEntry {
+    context: String,
+    token: String,
+    productive_lemma_limit: usize,
+    field: PreparedCompositionalField,
+}
+
+fn prepared_field_cache(
+) -> &'static std::sync::Mutex<std::collections::VecDeque<PreparedFieldCacheEntry>> {
+    static CACHE: std::sync::OnceLock<
+        std::sync::Mutex<std::collections::VecDeque<PreparedFieldCacheEntry>>,
+    > = std::sync::OnceLock::new();
+    CACHE.get_or_init(|| std::sync::Mutex::new(std::collections::VecDeque::new()))
+}
+
+pub(super) fn clear_prepared_field_cache() {
+    if let Ok(mut cache) = prepared_field_cache().lock() {
+        cache.clear();
+    }
+}
+
+fn cached_prepared_field(
+    context: &str,
+    token: &str,
+    productive_lemma_limit: usize,
+) -> Option<PreparedCompositionalField> {
+    let Ok(mut cache) = prepared_field_cache().lock() else {
+        return None;
+    };
+    let index = cache.iter().position(|entry| {
+        entry.context == context
+            && entry.token == token
+            && entry.productive_lemma_limit == productive_lemma_limit
+    })?;
+    let entry = cache.remove(index)?;
+    let mut field = entry.field.clone();
+    field.broad_duration = std::time::Duration::ZERO;
+    field.active_duration = std::time::Duration::ZERO;
+    field.form_duration = std::time::Duration::ZERO;
+    field.productive_duration = std::time::Duration::ZERO;
+    field.total_duration = std::time::Duration::ZERO;
+    field.cache_hit = true;
+    cache.push_back(entry);
+    Some(field)
+}
+
+fn store_prepared_field(
+    context: &str,
+    token: &str,
+    productive_lemma_limit: usize,
+    field: &PreparedCompositionalField,
+) {
+    let Ok(mut cache) = prepared_field_cache().lock() else {
+        return;
+    };
+    if let Some(index) = cache.iter().position(|entry| {
+        entry.context == context
+            && entry.token == token
+            && entry.productive_lemma_limit == productive_lemma_limit
+    }) {
+        cache.remove(index);
+    }
+    cache.push_back(PreparedFieldCacheEntry {
+        context: context.to_string(),
+        token: token.to_string(),
+        productive_lemma_limit,
+        field: field.clone(),
+    });
+    while cache.len() > PREPARED_FIELD_CACHE_LIMIT {
+        cache.pop_front();
+    }
 }
 
 fn standalone_surface_field_readout(
     original: &str,
     settle_winner: bool,
+) -> Option<StandaloneSurfaceFieldReadout> {
+    standalone_surface_field_readout_with_productive_limit(
+        original,
+        settle_winner,
+        super::CANONICAL_L2_PRODUCTIVE_LEMMA_LIMIT,
+    )
+}
+
+fn standalone_surface_field_readout_with_productive_limit(
+    original: &str,
+    settle_winner: bool,
+    productive_lemma_limit: usize,
 ) -> Option<StandaloneSurfaceFieldReadout> {
     const HOT_L2_CANDIDATE_LIMIT: usize = 8;
     const SPARSE_OMISSION_RESERVE: usize = 2;
@@ -226,12 +513,11 @@ fn standalone_surface_field_readout(
     }
     let field = super::installed_l2_field().ok()?;
     let context = format!("{} _", context_prefix.trim());
-    let ((surface_candidates, l11_seeds), seed_duration, prepared) = std::thread::scope(|scope| {
-        let prepared = scope.spawn(|| prepare_compositional_field(field, &context, token));
-        let seed_started = std::time::Instant::now();
+    let ((surface_candidates, l11_seeds), mut prepared) = std::thread::scope(|scope| {
+        let prepared = scope
+            .spawn(|| prepare_compositional_field(field, &context, token, productive_lemma_limit));
         let seeds = l11_surface_seed_candidates(token, SHADOW_SURFACE_MATERIAL_LIMIT);
-        let seed_duration = seed_started.elapsed();
-        Some((seeds, seed_duration, prepared.join().ok()?))
+        Some((seeds, prepared.join().ok()?))
     })?;
     let seed_count = l11_seeds.len();
     let surface_count = surface_candidates.len();
@@ -268,8 +554,11 @@ fn standalone_surface_field_readout(
         }
     }
     let prepared_duration = prepared.total_duration;
+    let productive_duration = prepared.productive_duration;
+    let prepared_cache_hit = prepared.cache_hit;
+    let productive_form_births = std::mem::take(&mut prepared.productive_form_births);
     let apply_started = std::time::Instant::now();
-    let local_readout = apply_standalone_l2_field(
+    let (local_readout, _typed_local_readout) = apply_standalone_l2_field(
         field,
         &context,
         token,
@@ -285,14 +574,33 @@ fn standalone_surface_field_readout(
         local_readout,
         &bounded_surface_candidates,
     );
+    let mut productive_projection = append_productive_surface_candidates(
+        &normalized_token,
+        productive_form_births,
+        &mut bounded_surface_candidates,
+    );
+    if let Ok(index) = super::installed_productive_l2_sidecar() {
+        if index.l2_fingerprint() == field.l1_package_fingerprint() {
+            append_exact_morphology_evidence(
+                field,
+                index.as_ref(),
+                &context,
+                &bounded_surface_candidates,
+                &mut productive_projection.evidence_by_surface,
+            );
+        }
+    }
     Some(StandaloneSurfaceFieldReadout {
         token: token.to_string(),
         surface_candidates: bounded_surface_candidates,
         local_readout,
+        productive_surfaces: productive_projection.added_surfaces,
+        morphology_evidence_by_surface: productive_projection.evidence_by_surface,
         seed_count,
         surface_count,
-        seed_duration,
         field_duration,
+        productive_duration,
+        prepared_cache_hit,
     })
 }
 
@@ -300,7 +608,11 @@ fn prepare_compositional_field(
     field: &StandaloneL2Field,
     context: &str,
     token: &str,
+    productive_lemma_limit: usize,
 ) -> PreparedCompositionalField {
+    if let Some(field) = cached_prepared_field(context, token, productive_lemma_limit) {
+        return field;
+    }
     let started = std::time::Instant::now();
     let broad_lemma_births =
         field.compositional_lemma_births(token, super::CANONICAL_L2_LEMMA_FRONTIER);
@@ -319,14 +631,150 @@ fn prepare_compositional_field(
         super::CANONICAL_L2_FORM_LIMIT,
     );
     let form_ready = std::time::Instant::now();
-    PreparedCompositionalField {
+    let productive_started = std::time::Instant::now();
+    let productive_form_births = super::installed_productive_l2_sidecar()
+        .ok()
+        .filter(|index| index.l2_fingerprint() == field.l1_package_fingerprint())
+        .map(|index| {
+            field.productive_form_births_from_lemmas(
+                index.as_ref(),
+                context,
+                token,
+                &active_lemma_births[..active_lemma_births.len().min(productive_lemma_limit)],
+                super::CANONICAL_L2_FEATURE_LIMIT,
+                super::CANONICAL_L2_PRODUCTIVE_FORM_LIMIT,
+            )
+        })
+        .unwrap_or_default();
+    let productive_ready = std::time::Instant::now();
+    let prepared = PreparedCompositionalField {
         broad_lemma_births,
         active_lemma_births,
         form_births,
+        productive_form_births,
         broad_duration: broad_ready.duration_since(started),
         active_duration: active_ready.duration_since(broad_ready),
         form_duration: form_ready.duration_since(active_ready),
-        total_duration: form_ready.duration_since(started),
+        productive_duration: productive_ready.duration_since(productive_started),
+        total_duration: productive_ready.duration_since(started),
+        cache_hit: false,
+    };
+    store_prepared_field(context, token, productive_lemma_limit, &prepared);
+    prepared
+}
+
+fn append_productive_surface_candidates(
+    token: &str,
+    births: Vec<ProductiveL2FormBirth>,
+    candidates: &mut Vec<crate::nanda_wave::l2::L2ImeWordCandidate>,
+) -> ProductiveSurfaceProjection {
+    let mut projection = ProductiveSurfaceProjection::default();
+    for birth in births {
+        let surface = birth.surface.to_lowercase();
+        let generated = birth.exact_surface_form_ref.is_none();
+        projection
+            .evidence_by_surface
+            .entry(surface.clone())
+            .or_default()
+            .push(MorphologySlotEvidence {
+                lemma_id: birth.lemma_id,
+                source_feature_mask:
+                    crate::nanda_wave::morphology_phase::productive_context_slot_features(
+                        birth.source_feature_mask,
+                    ),
+                target_feature_mask:
+                    crate::nanda_wave::morphology_phase::productive_context_slot_features(
+                        birth.target_feature_mask,
+                    ),
+                context_positive_support: birth.context_positive_support,
+                context_alternative_support: birth.context_unlabeled_alternative_support,
+                context_posterior_milli: birth.context_posterior_milli,
+                slot_evidence_milli: birth.slot_evidence_milli,
+                joint_evidence_milli: birth.joint_evidence_milli,
+                generated,
+            });
+        if surface == token
+            || candidates
+                .iter()
+                .any(|candidate| candidate.surface.eq_ignore_ascii_case(&surface))
+        {
+            continue;
+        }
+        candidates.push(crate::nanda_wave::l2::L2ImeWordCandidate {
+            surface: surface.clone(),
+            kind: seeded_candidate_kind(token, &surface),
+            source: crate::nanda_wave::l2::L2ImeWordCandidateSource::LexicalPhase,
+            score: u32::from(birth.joint_evidence_milli),
+            l1_overlap: seed_surface_overlap(token, &surface),
+            l2_overlap: usize::from(birth.context_positive_support > 0)
+                + usize::from(birth.family_specificity > 0),
+            motif_overlap: seed_surface_motif_overlap(token, &surface),
+            usage_prior: 0.0,
+            context_prior: if birth.context_positive_support > 0 {
+                1.0
+            } else {
+                0.0
+            },
+            accepted_count: 0,
+        });
+        projection.added_surfaces.insert(surface);
+    }
+    projection
+}
+
+#[derive(Default)]
+struct ProductiveSurfaceProjection {
+    added_surfaces: std::collections::BTreeSet<String>,
+    evidence_by_surface: std::collections::BTreeMap<String, Vec<MorphologySlotEvidence>>,
+}
+
+fn append_exact_morphology_evidence(
+    field: &StandaloneL2Field,
+    index: &impl super::productive::ProductiveMorphologySource,
+    context: &str,
+    candidates: &[crate::nanda_wave::l2::L2ImeWordCandidate],
+    evidence_by_surface: &mut std::collections::BTreeMap<String, Vec<MorphologySlotEvidence>>,
+) {
+    for candidate in candidates {
+        let surface = candidate.surface.to_lowercase();
+        let slot_evidence = field.exact_morphology_slot_evidence(index, context, &surface);
+        let retained = evidence_by_surface.entry(surface).or_default();
+        for evidence in slot_evidence {
+            if !retained.iter().any(|existing| {
+                existing.lemma_id == evidence.lemma_id
+                    && existing.source_feature_mask == evidence.source_feature_mask
+                    && existing.target_feature_mask == evidence.target_feature_mask
+            }) {
+                retained.push(evidence);
+            }
+        }
+    }
+}
+
+fn mark_productive_surface_candidates(
+    candidates: &mut [UnifiedCorrectionCandidate],
+    productive_surfaces: &std::collections::BTreeSet<String>,
+    evidence_by_surface: &std::collections::BTreeMap<String, Vec<MorphologySlotEvidence>>,
+) {
+    for candidate in candidates {
+        let Some(surface) = candidate_last_word_lower(candidate) else {
+            continue;
+        };
+        if let Some(evidence) = evidence_by_surface.get(&surface) {
+            candidate.extend_morphology_slot_evidence(evidence.iter().copied());
+        }
+        if !productive_surfaces.contains(&surface) {
+            continue;
+        }
+        candidate.source_id = CANONICAL_L2_PRODUCTIVE_SOURCE_ID.to_string();
+        candidate.gate = CandidateGateDecision {
+            action: CandidateGateAction::SuggestOnly,
+            reason: "productive_morphology_requires_l3",
+        };
+        for evidence in &mut candidate.evidence {
+            evidence.source_id = CANONICAL_L2_PRODUCTIVE_SOURCE_ID.to_string();
+            evidence.gate = candidate.gate.clone();
+        }
     }
 }
 
@@ -510,7 +958,7 @@ fn apply_standalone_l2_field(
     seeds: &[crate::nanda_wave::L11SeedSurface],
     prepared: PreparedCompositionalField,
     settle_winner: bool,
-) -> Option<CanonicalCohortReadout> {
+) -> Option<(CanonicalCohortReadout, StandaloneL2Readout)> {
     let input_surface_reserve = surface_candidates
         .iter()
         .map(|candidate| candidate.surface.to_lowercase())
@@ -531,10 +979,13 @@ fn apply_standalone_l2_field(
         broad_lemma_births,
         active_lemma_births,
         form_births: compositional_form_births,
+        productive_form_births: _,
         broad_duration,
         active_duration,
         form_duration,
+        productive_duration: _,
         total_duration: _,
+        cache_hit: _,
     } = prepared;
 
     // The wave lane is allowed to recover an exact paradigm surface that has
@@ -744,7 +1195,8 @@ fn apply_standalone_l2_field(
     retained_surfaces.extend(surfaces_by_form.values().cloned());
     surface_candidates
         .retain(|candidate| retained_surfaces.contains(&candidate.surface.to_lowercase()));
-    match readout.verdict {
+    let typed_readout = readout.clone();
+    let cohort = match readout.verdict {
         L2LocalVerdict::Winner { form_ref } => {
             let winner_surface = surfaces_by_form.get(&form_ref)?.clone();
             let cohort_surfaces = surfaces_by_form.into_values().collect::<Vec<_>>();
@@ -764,7 +1216,7 @@ fn apply_standalone_l2_field(
                 surface_candidates,
                 settle_winner,
             ) {
-                return Some(readout);
+                return Some((readout, typed_readout));
             }
             let cohort_surfaces = form_refs
                 .into_iter()
@@ -780,13 +1232,14 @@ fn apply_standalone_l2_field(
                 surface_candidates,
                 settle_winner,
             ) {
-                return Some(readout);
+                return Some((readout, typed_readout));
             }
             Some(CanonicalCohortReadout::Abstain {
                 cohort_surfaces: surfaces_by_form.into_values().collect(),
             })
         }
-    }
+    }?;
+    Some((cohort, typed_readout))
 }
 
 fn compositional_evidence_milli(l11_peak: Option<i32>, similarity_milli: u16) -> i32 {
@@ -1202,6 +1655,66 @@ mod tests {
                 reason: "test",
             },
         )
+    }
+
+    fn morphology_evidence(
+        lemma_id: u32,
+        target_feature_mask: u32,
+        generated: bool,
+    ) -> MorphologySlotEvidence {
+        MorphologySlotEvidence {
+            lemma_id,
+            source_feature_mask: 1,
+            target_feature_mask,
+            context_positive_support: 4,
+            context_alternative_support: 1,
+            context_posterior_milli: 800,
+            slot_evidence_milli: 600,
+            joint_evidence_milli: 900,
+            generated,
+        }
+    }
+
+    #[test]
+    fn typed_morphology_evidence_reaches_exact_and_generated_surfaces() {
+        let mut candidates = vec![
+            unified_candidate(
+                "вы принуждаете ",
+                CandidateOrigin::L2Surface,
+                CANONICAL_L2_SURFACE_SOURCE_ID,
+            ),
+            unified_candidate(
+                "вы принуждаетеся ",
+                CandidateOrigin::L2Surface,
+                CANONICAL_L2_SURFACE_SOURCE_ID,
+            ),
+        ];
+        let productive_surfaces = ["принуждаетеся".to_string()].into_iter().collect();
+        let evidence_by_surface = [
+            (
+                "принуждаете".to_string(),
+                vec![morphology_evidence(17, 10, false)],
+            ),
+            (
+                "принуждаетеся".to_string(),
+                vec![morphology_evidence(17, 11, true)],
+            ),
+        ]
+        .into_iter()
+        .collect();
+
+        mark_productive_surface_candidates(
+            &mut candidates,
+            &productive_surfaces,
+            &evidence_by_surface,
+        );
+
+        assert_eq!(candidates[0].source_id, CANONICAL_L2_SURFACE_SOURCE_ID);
+        assert_eq!(candidates[0].morphology_slot_evidence.len(), 1);
+        assert!(!candidates[0].morphology_slot_evidence[0].generated);
+        assert_eq!(candidates[1].source_id, CANONICAL_L2_PRODUCTIVE_SOURCE_ID);
+        assert_eq!(candidates[1].gate.action, CandidateGateAction::SuggestOnly);
+        assert!(candidates[1].morphology_slot_evidence[0].generated);
     }
 
     #[test]

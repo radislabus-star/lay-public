@@ -65,6 +65,8 @@ impl TransitionDecisionCore {
         }
         let usage = crate::nanda_wave::cached_usage_prior_snapshot();
         let usage_ready = std::time::Instant::now();
+        let morphology_signals = l2_morphology_slot_signals(candidates);
+        let morphology_ready = std::time::Instant::now();
         let replacements = candidates
             .iter()
             .map(|candidate| candidate.replacement.as_str())
@@ -86,7 +88,8 @@ impl TransitionDecisionCore {
         let mut evaluations = candidates
             .par_iter()
             .zip(l3_reports.par_iter())
-            .map(|(candidate, l3_report)| {
+            .zip(morphology_signals.par_iter())
+            .map(|((candidate, l3_report), morphology)| {
                 CandidateDecisionEvaluation::build(
                     CandidateDecisionContext {
                         event,
@@ -94,12 +97,14 @@ impl TransitionDecisionCore {
                         usage: &usage,
                         l2_peak_context,
                         l3_report: l3_report.as_ref(),
+                        morphology: *morphology,
                     },
                     candidate,
                 )
             })
             .collect::<Vec<_>>();
         let evaluations_ready = std::time::Instant::now();
+        settle_l2_morphology_competition(candidates, &mut evaluations);
         settle_transition_interference(candidates, &mut evaluations, policy);
         let interference_ready = std::time::Instant::now();
         settle_l4_hidden_state(event, candidates, &mut evaluations);
@@ -107,7 +112,7 @@ impl TransitionDecisionCore {
         if std::env::var_os("LAY_DEBUG_DECISION_CORE").is_some() {
             for (candidate, evaluation) in candidates.iter().zip(&evaluations) {
                 eprintln!(
-                    "decision-core-candidate origin={:?} source_id={} class={} gate={:?} rank={:.3} posterior={:.3} risk={:.3} explain={} opfit={} lost={} field={} attract={} repel={} uncertainty={} phase_competition={} lexical_ready={} operator_consensus={} usage={:.3} context={:.3} l3={} l3_disposition={} l3_pairwise={} l3_relation={} l4={} l4_state_specific={} l4_attract={} l4_repel={} l4_phase={} l4_phase_supported={} cross_scene={} cross_margin={} cross_recommendation={} cross_auto_apply={} hidden={} hidden_classes={} hidden_selected={} hidden_probe={} hidden_certificate={} replacement={:?}",
+                    "decision-core-candidate origin={:?} source_id={} class={} gate={:?} rank={:.3} posterior={:.3} risk={:.3} explain={} opfit={} lost={} field={} attract={} repel={} uncertainty={} phase_competition={} lexical_ready={} morphology={} morphology_disposition={} morphology_lemma={} morphology_slot={} morphology_competitors={} operator_consensus={} usage={:.3} context={:.3} l3={} l3_disposition={} l3_pairwise={} l3_relation={} l4={} l4_state_specific={} l4_attract={} l4_repel={} l4_phase={} l4_phase_supported={} cross_scene={} cross_margin={} cross_recommendation={} cross_auto_apply={} hidden={} hidden_classes={} hidden_selected={} hidden_probe={} hidden_certificate={} replacement={:?}",
                     candidate.origin,
                     candidate.source_id,
                     candidate.error_class.as_str(),
@@ -126,6 +131,11 @@ impl TransitionDecisionCore {
                         .signals
                         .transition_field_phase_competition_milli,
                     evaluation.signals.l2_lexical_phase_competition_ready,
+                    evaluation.signals.l2_morphology_milli,
+                    evaluation.signals.l2_morphology_disposition,
+                    evaluation.signals.l2_morphology_lemma_id,
+                    evaluation.signals.l2_morphology_target_feature_mask,
+                    evaluation.signals.l2_morphology_competitors,
                     verified_operator_consensus_witness(candidate, evaluation),
                     evaluation.bayes.usage_prior,
                     evaluation.bayes.context_prior,
@@ -185,9 +195,10 @@ impl TransitionDecisionCore {
         if timing_enabled {
             let finished = std::time::Instant::now();
             eprintln!(
-                "lay_decision_core_timing usage_us={} l3_us={} peak_us={} evaluations_us={} interference_us={} hidden_us={} selection_us={} receipt_us={} total_us={} candidates={}",
+                "lay_decision_core_timing usage_us={} morphology_us={} l3_us={} peak_us={} evaluations_us={} interference_us={} hidden_us={} selection_us={} receipt_us={} total_us={} candidates={}",
                 usage_ready.duration_since(started).as_micros(),
-                l3_ready.duration_since(usage_ready).as_micros(),
+                morphology_ready.duration_since(usage_ready).as_micros(),
+                l3_ready.duration_since(morphology_ready).as_micros(),
                 peak_ready.duration_since(l3_ready).as_micros(),
                 evaluations_ready.duration_since(peak_ready).as_micros(),
                 interference_ready.duration_since(evaluations_ready).as_micros(),
@@ -267,6 +278,7 @@ struct CandidateDecisionContext<'a> {
     usage: &'a crate::nanda_wave::UsagePriorSnapshot,
     l2_peak_context: &'a crate::nanda_wave::l2_wave_peak::L2CorrectionPeakContext,
     l3_report: Option<&'a crate::nanda_wave::l3_phrase_gate::L3PhraseGateReport>,
+    morphology: L2MorphologySignal,
 }
 
 struct CandidateSignalReadouts<'a> {
@@ -389,6 +401,16 @@ pub(crate) struct CandidateDecisionSignals {
     pub(crate) l2_transition_phase_positive_centers: u8,
     pub(crate) l2_transition_phase_anti_centers: u8,
     pub(crate) l2_transition_phase_surfaces: u32,
+    pub(crate) l2_morphology_milli: i16,
+    pub(crate) l2_morphology_disposition: &'static str,
+    pub(crate) l2_morphology_lemma_id: u32,
+    pub(crate) l2_morphology_source_feature_mask: u32,
+    pub(crate) l2_morphology_target_feature_mask: u32,
+    pub(crate) l2_morphology_context_posterior_milli: u16,
+    pub(crate) l2_morphology_slot_evidence_milli: i32,
+    pub(crate) l2_morphology_joint_evidence_milli: u16,
+    pub(crate) l2_morphology_competitors: u16,
+    pub(crate) l2_morphology_generated: bool,
     pub(crate) l3_phrase_milli: i16,
     pub(crate) l3_phrase_decision: L3ContextDisposition,
     pub(crate) l3_relation_class: u64,
@@ -459,6 +481,7 @@ fn candidate_decision_signals_from_readouts(
     } = readouts;
     let event = context.event;
     let l3 = l3_phrase_signal(candidate.error_class, context.l3_report);
+    let morphology = context.morphology;
     let phase = crate::nanda_wave::l2_transition_phase_readout(
         action.operator.as_str(),
         relation.atoms(),
@@ -515,6 +538,16 @@ fn candidate_decision_signals_from_readouts(
         l2_transition_phase_positive_centers: l2_wave_peak.transition_phase_positive_centers,
         l2_transition_phase_anti_centers: l2_wave_peak.transition_phase_anti_centers,
         l2_transition_phase_surfaces: l2_wave_peak.transition_phase_surfaces,
+        l2_morphology_milli: morphology.signal_milli,
+        l2_morphology_disposition: morphology.disposition,
+        l2_morphology_lemma_id: morphology.lemma_id,
+        l2_morphology_source_feature_mask: morphology.source_feature_mask,
+        l2_morphology_target_feature_mask: morphology.target_feature_mask,
+        l2_morphology_context_posterior_milli: morphology.context_posterior_milli,
+        l2_morphology_slot_evidence_milli: morphology.slot_evidence_milli,
+        l2_morphology_joint_evidence_milli: morphology.joint_evidence_milli,
+        l2_morphology_competitors: morphology.competitors,
+        l2_morphology_generated: morphology.generated,
         l3_phrase_milli: score_to_milli(l3.signal),
         l3_phrase_decision: l3.decision,
         l3_relation_class: l3.relation_class,

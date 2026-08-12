@@ -60,6 +60,257 @@ struct L2WavePeakSignal {
     transition_phase_surfaces: u32,
 }
 
+#[derive(Debug, Clone, Copy)]
+struct L2MorphologySignal {
+    rank_energy: f32,
+    signal_milli: i16,
+    disposition: &'static str,
+    lemma_id: u32,
+    source_feature_mask: u32,
+    target_feature_mask: u32,
+    context_posterior_milli: u16,
+    slot_evidence_milli: i32,
+    joint_evidence_milli: u16,
+    competitors: u16,
+    generated: bool,
+}
+
+impl Default for L2MorphologySignal {
+    fn default() -> Self {
+        Self {
+            rank_energy: 0.0,
+            signal_milli: 0,
+            disposition: "not_applicable",
+            lemma_id: 0,
+            source_feature_mask: 0,
+            target_feature_mask: 0,
+            context_posterior_milli: 0,
+            slot_evidence_milli: 0,
+            joint_evidence_milli: 0,
+            competitors: 0,
+            generated: false,
+        }
+    }
+}
+
+fn l2_morphology_slot_signals(
+    candidates: &[UnifiedCorrectionCandidate],
+) -> Vec<L2MorphologySignal> {
+    use crate::correction_core::MorphologySlotEvidence;
+    use std::collections::BTreeMap;
+
+    let mut by_lemma = BTreeMap::<u32, Vec<(usize, MorphologySlotEvidence)>>::new();
+    for (candidate_index, candidate) in candidates.iter().enumerate() {
+        for evidence in &candidate.morphology_slot_evidence {
+            by_lemma
+                .entry(evidence.lemma_id)
+                .or_default()
+                .push((candidate_index, *evidence));
+        }
+    }
+
+    let mut signals = vec![L2MorphologySignal::default(); candidates.len()];
+    for (lemma_id, entries) in by_lemma {
+        let candidate_count = entries
+            .iter()
+            .map(|(candidate_index, _)| *candidate_index)
+            .collect::<std::collections::BTreeSet<_>>()
+            .len();
+        if candidate_count < 2 {
+            continue;
+        }
+
+        for (candidate_index, evidence) in &entries {
+            let competitors = entries
+                .iter()
+                .filter(|(other_index, other)| {
+                    other_index != candidate_index
+                        && other.target_feature_mask != evidence.target_feature_mask
+                })
+                .collect::<Vec<_>>();
+            if competitors.is_empty()
+                || evidence.context_positive_support == 0
+                || !competitors
+                    .iter()
+                    .all(|(_, other)| morphology_evidence_dominates(*evidence, *other))
+            {
+                continue;
+            }
+
+            let margin = competitors
+                .iter()
+                .map(|(_, other)| morphology_evidence_margin(*evidence, *other))
+                .min_by(f32::total_cmp)
+                .unwrap_or_default();
+            if margin <= 0.0 {
+                continue;
+            }
+            let signal = L2MorphologySignal {
+                rank_energy: margin,
+                signal_milli: crate::text_metrics::score_to_milli(margin),
+                disposition: "same_lemma_support",
+                lemma_id,
+                source_feature_mask: evidence.source_feature_mask,
+                target_feature_mask: evidence.target_feature_mask,
+                context_posterior_milli: evidence.context_posterior_milli,
+                slot_evidence_milli: evidence.slot_evidence_milli,
+                joint_evidence_milli: evidence.joint_evidence_milli,
+                competitors: competitors.len().min(u16::MAX as usize) as u16,
+                generated: evidence.generated,
+            };
+            if signal.rank_energy > signals[*candidate_index].rank_energy {
+                signals[*candidate_index] = signal;
+            }
+        }
+    }
+    signals
+}
+
+fn settle_l2_morphology_competition(
+    candidates: &[UnifiedCorrectionCandidate],
+    evaluations: &mut [CandidateDecisionEvaluation],
+) {
+    use std::collections::{BTreeMap, BTreeSet};
+
+    let mut winning_features = BTreeMap::<u32, BTreeSet<u32>>::new();
+    let mut margins = BTreeMap::<u32, f32>::new();
+    for evaluation in evaluations.iter() {
+        let signal = &evaluation.signals;
+        if signal.l2_morphology_disposition != "same_lemma_support" {
+            continue;
+        }
+        winning_features
+            .entry(signal.l2_morphology_lemma_id)
+            .or_default()
+            .insert(signal.l2_morphology_target_feature_mask);
+        margins
+            .entry(signal.l2_morphology_lemma_id)
+            .and_modify(|margin| {
+                *margin = margin.min(f32::from(signal.l2_morphology_milli) / 1_000.0)
+            })
+            .or_insert_with(|| f32::from(signal.l2_morphology_milli) / 1_000.0);
+    }
+
+    for (lemma_id, winning_features) in winning_features {
+        let members = candidates
+            .iter()
+            .enumerate()
+            .filter(|(_, candidate)| {
+                candidate
+                    .morphology_slot_evidence
+                    .iter()
+                    .any(|evidence| evidence.lemma_id == lemma_id)
+            })
+            .map(|(index, _)| index)
+            .collect::<Vec<_>>();
+        if members.len() < 2 {
+            continue;
+        }
+        let basin_leader = members
+            .iter()
+            .copied()
+            .max_by(|left, right| {
+                evaluations[*left]
+                    .signals
+                    .rank_score
+                    .total_cmp(&evaluations[*right].signals.rank_score)
+            })
+            .expect("validated morphology basin");
+        let basin_non_field_budget = evaluations[basin_leader].signals.non_field_rank_score;
+        let basin_l2_budget = evaluations[basin_leader].signals.l2_rank_energy;
+        let margin = margins.get(&lemma_id).copied().unwrap_or_default();
+        let selected_members = members
+            .iter()
+            .copied()
+            .filter(|index| {
+                candidates[*index]
+                    .morphology_slot_evidence
+                    .iter()
+                    .any(|evidence| {
+                        evidence.lemma_id == lemma_id
+                            && winning_features.contains(&evidence.target_feature_mask)
+                    })
+            })
+            .collect::<Vec<_>>();
+        let selected_non_field_peak = selected_members
+            .iter()
+            .map(|index| evaluations[*index].signals.non_field_rank_score)
+            .max_by(f32::total_cmp)
+            .unwrap_or(basin_non_field_budget);
+        let selected_l2_peak = selected_members
+            .iter()
+            .map(|index| evaluations[*index].signals.l2_rank_energy)
+            .max_by(f32::total_cmp)
+            .unwrap_or(basin_l2_budget);
+
+        for index in members {
+            let selected_slot = candidates[index]
+                .morphology_slot_evidence
+                .iter()
+                .any(|evidence| {
+                    evidence.lemma_id == lemma_id
+                        && winning_features.contains(&evidence.target_feature_mask)
+                });
+            let signals = &mut evaluations[index].signals;
+            if selected_slot {
+                signals.non_field_rank_score = lift_preserving_relative_geometry(
+                    signals.non_field_rank_score,
+                    selected_non_field_peak,
+                    basin_non_field_budget,
+                );
+                signals.l2_rank_energy = lift_preserving_relative_geometry(
+                    signals.l2_rank_energy,
+                    selected_l2_peak,
+                    basin_l2_budget,
+                );
+            } else {
+                signals.non_field_rank_score = signals
+                    .non_field_rank_score
+                    .min(basin_non_field_budget - margin);
+                signals.l2_rank_energy = signals
+                    .l2_rank_energy
+                    .min((basin_l2_budget - margin).max(0.0));
+            }
+        }
+    }
+}
+
+fn lift_preserving_relative_geometry(value: f32, cohort_peak: f32, basin_budget: f32) -> f32 {
+    value + (basin_budget - cohort_peak).max(0.0)
+}
+
+fn morphology_evidence_dominates(
+    left: crate::correction_core::MorphologySlotEvidence,
+    right: crate::correction_core::MorphologySlotEvidence,
+) -> bool {
+    let context_exclusive = left.context_positive_support > 0
+        && left.context_alternative_support == 0
+        && right.context_positive_support == 0;
+    let no_weaker_axis = left.context_posterior_milli >= right.context_posterior_milli
+        && left.slot_evidence_milli >= right.slot_evidence_milli;
+    let stronger_axis = left.context_posterior_milli > right.context_posterior_milli
+        || left.slot_evidence_milli > right.slot_evidence_milli;
+    context_exclusive && no_weaker_axis && stronger_axis
+}
+
+fn morphology_evidence_margin(
+    left: crate::correction_core::MorphologySlotEvidence,
+    right: crate::correction_core::MorphologySlotEvidence,
+) -> f32 {
+    let posterior = left
+        .context_posterior_milli
+        .saturating_sub(right.context_posterior_milli) as f32
+        / 1_000.0;
+    let slot_delta =
+        i64::from(left.slot_evidence_milli).saturating_sub(i64::from(right.slot_evidence_milli));
+    let slot_scale = i64::from(left.slot_evidence_milli)
+        .abs()
+        .saturating_add(i64::from(right.slot_evidence_milli).abs())
+        .max(1);
+    let slot = (slot_delta.max(0) as f64 / slot_scale as f64) as f32;
+    posterior.max(slot).clamp(0.0, 1.0)
+}
+
 fn l2_wave_peak_signal(
     candidate: &UnifiedCorrectionCandidate,
     candidate_count: usize,
@@ -212,10 +463,8 @@ fn l4_cross_scene_shadow_readout(
         &candidate.replacement,
         "replacement",
     );
-    let context = crate::typing_memory::transition_context_words(
-        &event.original,
-        &candidate.replacement,
-    );
+    let context =
+        crate::typing_memory::transition_context_words(&event.original, &candidate.replacement);
     let l2_signal = if l2.signal > 0.0 && l2.positive_milli > l2.negative_milli {
         crate::nanda_wave::l4_cross_scene::L4CrossSceneL2Signal::Support
     } else if l2.signal < 0.0 && l2.negative_milli > l2.positive_milli {

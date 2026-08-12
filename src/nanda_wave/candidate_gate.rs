@@ -176,7 +176,10 @@ pub fn live_completion_candidates(
     }
 
     let context_tokens = super::llmwave::tokenize(request.context_prefix);
-    let partial_state_known = l2::l2_decoder_contains_surface(&partial);
+    // Decoder presence proves that a surface can be reconstructed; it does not
+    // make every one of the 1.875M exact forms a settled live-input state. Only
+    // the active lexical foundation may close a productive prefix basin.
+    let partial_state_known = l2::l2_surface_foundation_has_authority(&partial);
     let usage_snapshot = super::usage_prior::cached_usage_prior_snapshot();
     let l2_started = Instant::now();
     let mut raw = live_l2_word_candidates(request.context_prefix, &partial, request.limit);

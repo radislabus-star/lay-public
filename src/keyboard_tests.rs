@@ -22,6 +22,21 @@ fn text_events(text: &str, layout_is_ru: bool) -> Vec<KeyEvent> {
 }
 
 #[test]
+fn reusable_text_event_buffer_preserves_flat_event_semantics() {
+    let expected = text_events("Привет Double", true);
+    let mut reused = vec![us_event(KeyCode::KEY_Z)];
+
+    text_to_key_events_into("Привет Double", true, &mut reused).expect("typable text");
+
+    assert_eq!(reused.len(), expected.len());
+    assert!(reused.iter().zip(&expected).all(|(left, right)| {
+        left.keycode == right.keycode
+            && left.shift == right.shift
+            && left.layout_is_ru == right.layout_is_ru
+    }));
+}
+
+#[test]
 fn maps_wrong_layout_word_to_russian_target() {
     let events = text_events("ltkfq", false);
 

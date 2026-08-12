@@ -1,0 +1,273 @@
+{
+  "kind": "canonical_l2_productive_context_axis_backoff_micro",
+  "scope": "live DecisionCore query with exact-form morphology evidence and compact productive sidecar",
+  "sidecar": {
+    "path": "artifacts/l2-productive-sidecar-v4-axis-context-backoff-2026-08-10/package.bin",
+    "bytes": 79424614,
+    "sha256": "ae4e2764febead3517329d7532f504a8e4701e6abef89d4631d5a540bffacd52",
+    "known_contexts": 194,
+    "context_slots": 416,
+    "format_verdict": "PASS_format_roundtrip"
+  },
+  "cases": [
+    {
+      "text": "без документы",
+      "elapsed_us": 8570349,
+      "selected": null,
+      "top": [
+        {
+          "replacement": "без документа",
+          "decision_rank_milli": 639,
+          "l2_morphology_disposition": "same_lemma_support",
+          "l2_morphology_milli": 1000,
+          "gate_action": "SuggestOnly",
+          "selected": false
+        },
+        {
+          "replacement": "без документов",
+          "decision_rank_milli": 460,
+          "l2_morphology_disposition": "same_lemma_support",
+          "l2_morphology_milli": 941,
+          "gate_action": "SuggestOnly",
+          "selected": false
+        },
+        {
+          "replacement": "без документные",
+          "decision_rank_milli": 231,
+          "l2_morphology_disposition": "not_applicable",
+          "l2_morphology_milli": 0,
+          "gate_action": "SuggestOnly",
+          "selected": false
+        },
+        {
+          "replacement": "без документный",
+          "decision_rank_milli": 231,
+          "l2_morphology_disposition": "not_applicable",
+          "l2_morphology_milli": 0,
+          "gate_action": "SuggestOnly",
+          "selected": false
+        },
+        {
+          "replacement": "без документным",
+          "decision_rank_milli": 231,
+          "l2_morphology_disposition": "not_applicable",
+          "l2_morphology_milli": 0,
+          "gate_action": "SuggestOnly",
+          "selected": false
+        }
+      ]
+    },
+    {
+      "text": "к документы",
+      "elapsed_us": 8532057,
+      "selected": null,
+      "top": [
+        {
+          "replacement": "к документу",
+          "decision_rank_milli": 632,
+          "l2_morphology_disposition": "same_lemma_support",
+          "l2_morphology_milli": 985,
+          "gate_action": "SuggestOnly",
+          "selected": false
+        },
+        {
+          "replacement": "к документам",
+          "decision_rank_milli": 453,
+          "l2_morphology_disposition": "same_lemma_support",
+          "l2_morphology_milli": 985,
+          "gate_action": "SuggestOnly",
+          "selected": false
+        },
+        {
+          "replacement": "к документные",
+          "decision_rank_milli": 231,
+          "l2_morphology_disposition": "not_applicable",
+          "l2_morphology_milli": 0,
+          "gate_action": "SuggestOnly",
+          "selected": false
+        },
+        {
+          "replacement": "к документный",
+          "decision_rank_milli": 231,
+          "l2_morphology_disposition": "not_applicable",
+          "l2_morphology_milli": 0,
+          "gate_action": "SuggestOnly",
+          "selected": false
+        },
+        {
+          "replacement": "к документным",
+          "decision_rank_milli": 231,
+          "l2_morphology_disposition": "not_applicable",
+          "l2_morphology_milli": 0,
+          "gate_action": "SuggestOnly",
+          "selected": false
+        }
+      ]
+    },
+    {
+      "text": "о документы",
+      "elapsed_us": 8612881,
+      "selected": null,
+      "top": [
+        {
+          "replacement": "о документе",
+          "decision_rank_milli": 632,
+          "l2_morphology_disposition": "same_lemma_support",
+          "l2_morphology_milli": 969,
+          "gate_action": "SuggestOnly",
+          "selected": false
+        },
+        {
+          "replacement": "о документах",
+          "decision_rank_milli": 453,
+          "l2_morphology_disposition": "same_lemma_support",
+          "l2_morphology_milli": 969,
+          "gate_action": "SuggestOnly",
+          "selected": false
+        },
+        {
+          "replacement": "о документные",
+          "decision_rank_milli": 231,
+          "l2_morphology_disposition": "not_applicable",
+          "l2_morphology_milli": 0,
+          "gate_action": "SuggestOnly",
+          "selected": false
+        },
+        {
+          "replacement": "о документный",
+          "decision_rank_milli": 231,
+          "l2_morphology_disposition": "not_applicable",
+          "l2_morphology_milli": 0,
+          "gate_action": "SuggestOnly",
+          "selected": false
+        },
+        {
+          "replacement": "о документным",
+          "decision_rank_milli": 231,
+          "l2_morphology_disposition": "not_applicable",
+          "l2_morphology_milli": 0,
+          "gate_action": "SuggestOnly",
+          "selected": false
+        }
+      ]
+    },
+    {
+      "text": "нет документовы",
+      "elapsed_us": 8897027,
+      "selected": null,
+      "top": [
+        {
+          "replacement": "нет документов",
+          "decision_rank_milli": 993,
+          "l2_morphology_disposition": "same_lemma_support",
+          "l2_morphology_milli": 941,
+          "gate_action": "SuggestOnly",
+          "selected": false
+        },
+        {
+          "replacement": "нет документиков",
+          "decision_rank_milli": 765,
+          "l2_morphology_disposition": "same_lemma_support",
+          "l2_morphology_milli": 941,
+          "gate_action": "SuggestOnly",
+          "selected": false
+        },
+        {
+          "replacement": "нет документные",
+          "decision_rank_milli": 723,
+          "l2_morphology_disposition": "not_applicable",
+          "l2_morphology_milli": 0,
+          "gate_action": "SuggestOnly",
+          "selected": false
+        },
+        {
+          "replacement": "нет документных",
+          "decision_rank_milli": 723,
+          "l2_morphology_disposition": "not_applicable",
+          "l2_morphology_milli": 0,
+          "gate_action": "SuggestOnly",
+          "selected": false
+        },
+        {
+          "replacement": "нет документа",
+          "decision_rank_milli": 620,
+          "l2_morphology_disposition": "same_lemma_support",
+          "l2_morphology_milli": 1000,
+          "gate_action": "SuggestOnly",
+          "selected": false
+        }
+      ]
+    },
+    {
+      "text": "на документы",
+      "elapsed_us": 8570504,
+      "selected": null,
+      "top": [
+        {
+          "replacement": "на документ",
+          "decision_rank_milli": 669,
+          "l2_morphology_disposition": "not_applicable",
+          "l2_morphology_milli": 0,
+          "gate_action": "SuggestOnly",
+          "selected": false
+        },
+        {
+          "replacement": "на документа",
+          "decision_rank_milli": 363,
+          "l2_morphology_disposition": "not_applicable",
+          "l2_morphology_milli": 0,
+          "gate_action": "SuggestOnly",
+          "selected": false
+        },
+        {
+          "replacement": "на документе",
+          "decision_rank_milli": 363,
+          "l2_morphology_disposition": "not_applicable",
+          "l2_morphology_milli": 0,
+          "gate_action": "SuggestOnly",
+          "selected": false
+        },
+        {
+          "replacement": "на документу",
+          "decision_rank_milli": 363,
+          "l2_morphology_disposition": "not_applicable",
+          "l2_morphology_milli": 0,
+          "gate_action": "SuggestOnly",
+          "selected": false
+        },
+        {
+          "replacement": "на документные",
+          "decision_rank_milli": 231,
+          "l2_morphology_disposition": "not_applicable",
+          "l2_morphology_milli": 0,
+          "gate_action": "SuggestOnly",
+          "selected": false
+        }
+      ]
+    }
+  ],
+  "hot_shadow_benchmark": {
+    "max_us": 105309,
+    "mean_us": 93665,
+    "min_us": 87413,
+    "p50_us": 93629,
+    "p95_us": 103745,
+    "p99_us": 105309,
+    "samples": 29
+  },
+  "productive_shadow_benchmark": {
+    "max_us": 52179,
+    "mean_us": 42443,
+    "min_us": 41342,
+    "p50_us": 41561,
+    "p95_us": 49991,
+    "p99_us": 52179,
+    "samples": 30
+  },
+  "runtime_authority_changed": false,
+  "not_tested": [
+    "automatic apply authority",
+    "installed daemon and IBus latency",
+    "full sentence semantic disambiguation beyond bounded local context"
+  ]
+}

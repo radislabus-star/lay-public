@@ -1,0 +1,47 @@
+{
+  "kind": "l2_productive_v1_composite_lattice_v53",
+  "date": "2026-08-11",
+  "verdict": "PASS_scoped_shadow_composite_lattice_micro",
+  "runtime_authority_changed": false,
+  "tested": [
+    "the composite lattice preserves separate bounded lanes of 32 grounded and 32 productive identities",
+    "surface display dedup retains every grounded terminal ID and productive typed identity",
+    "an original grounded L1.1 Winner remains present and protected when the productive lane has a different calibrated Winner",
+    "the typed L3 handoff carries grouped surfaces, both identity classes, original L1.1 verdict, productive verdict, contradiction certificate, overflow, and integrity state",
+    "repeated grounded terminal identities, repeated productive identities, empty normalized surfaces, undecodable grounded terminals, invalid contradiction certificates, and lane overflow fail closed"
+  ],
+  "measured_facts": {
+    "productive_v1_tests_passed": 54,
+    "productive_v1_tests_failed": 0,
+    "composite_tests_passed": 2,
+    "composite_tests_failed": 0,
+    "maximum_grounded_identities": 32,
+    "maximum_productive_identities": 32,
+    "maximum_pre_display_dedup_identities": 64,
+    "grounded_identity_loss_in_micro": 0,
+    "grounded_winner_protection_violations_in_micro": 0,
+    "runtime_authority_changed": false,
+    "cargo_target_bytes_after_gate": 8140705792,
+    "cargo_target_budget_bytes": 12884901888
+  },
+  "not_tested": [
+    "conversion of the typed composite handoff into the existing L3 WordCandidate input",
+    "L3 readout and verifier replay over all 64 identities",
+    "full fixed-corpus V39 candidate and geometry parity",
+    "seen, bank-unseen, slot-heldout, lemma-heldout, ambiguity, false-authority, and false-singleton proof denominators",
+    "full-corpus package size, cold publish, request arena, steady RSS, and peak RSS",
+    "remote single-client and 20-client latency gates",
+    "physical IME product matrix",
+    "live runtime authority"
+  ],
+  "commands": [
+    "rustfmt --edition 2021 src/nanda_wave/l2_field/productive_v1/*.rs",
+    "scripts/cargo-guard.sh test --lib productive_v1::",
+    "scripts/cargo-guard.sh --status"
+  ],
+  "source": [
+    "src/nanda_wave/l2_field/productive_v1/composite.rs",
+    "src/nanda_wave/l2_field/productive_v1/mod.rs",
+    "docs/l2-productive-paradigm-field-paper-implementation.md"
+  ]
+}

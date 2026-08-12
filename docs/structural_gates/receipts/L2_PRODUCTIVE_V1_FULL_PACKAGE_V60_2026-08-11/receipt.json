@@ -1,0 +1,73 @@
+{
+  "actual_calibration": {
+    "authority_blocked_by_target_loss": true,
+    "candidate_rows": 3780,
+    "fitted_groups": 119,
+    "source_groups": 1348,
+    "target_lost_groups": 1229,
+    "target_retained_groups": 119
+  },
+  "evidence": {
+    "bootstrap_calibration_groups": 1348,
+    "context_occurrence_events": 15942,
+    "direct_contradiction_events": 20,
+    "exact_only_morphology_events": 74,
+    "exact_only_morphology_forms": 74,
+    "excluded_context_occurrence_events": 49,
+    "excluded_direct_contradiction_events": 0,
+    "feedback_events": 0,
+    "phase_profiles": 129945,
+    "proof_events": 2501633,
+    "selected_phase_centers": 0,
+    "training_pairs": 20
+  },
+  "induction": {
+    "bound_lemma_pos_basins": 94151,
+    "exact_allomorph_observations": 25690,
+    "paradigms": 5606,
+    "transferable_observations": 2575167,
+    "transition_observations": 2600857
+  },
+  "kind": "l2_productive_paradigm_field_v1_resume_after_induction",
+  "package": {
+    "bindings": 94151,
+    "bytes": 36641392,
+    "mmap_backed": true,
+    "operations": 646762,
+    "paradigms": 5606,
+    "path": "/home/e/projects/lay-productive-v1-build-20260811/out/LAY-L2-PRODUCTIVE-PARADIGM-V1-SHADOW-run5-multi-pos.p2m",
+    "programs": 195406,
+    "resident_cache_bytes": 124,
+    "sha256": "5dbf20c68920e721a2763729c478f33fa882e149467493bbd2df69496f991238",
+    "terminals": 169790,
+    "trie_arcs": 191840,
+    "trie_nodes": 197446
+  },
+  "proof_status": "PENDING_fixed_read_only_proof",
+  "reduced": {
+    "imported_identity_verified": true,
+    "train_events": 2600857,
+    "train_forms": 2600857,
+    "train_lemmas": 74852
+  },
+  "reused_complete_stages": [
+    "raw_corpus_pass",
+    "morphology_external_sort",
+    "imported_ownership_reduce",
+    "transition_paradigm_induction",
+    "context_typed_replay",
+    "context_external_sort"
+  ],
+  "runtime_authority_changed": false,
+  "stage_timings_ms": {
+    "actual_candidate_calibration": 19431,
+    "bootstrap_package": 8849,
+    "evidence_reduce_and_fit": 12228,
+    "final_deterministic_package": 8792,
+    "resume_reopen_induction": 2450,
+    "resume_reopen_reduced_morphology": 7970
+  },
+  "total_ms": 59948,
+  "verdict": "PASS_shadow_suggest_only_package",
+  "workers": 19
+}

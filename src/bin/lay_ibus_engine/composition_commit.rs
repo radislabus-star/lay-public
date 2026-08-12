@@ -243,7 +243,7 @@ impl LayIbusEngine {
         }
         let output_ms = output_started_at.elapsed().as_micros() as u64;
         if sync_layout {
-            self.sync_layout_after_committed_text(&text);
+            self.sync_layout_after_committed_text(&text, "active_composition");
         }
         self.sync_tail_after_active_composition_commit(&text);
         self.buffer.clear();

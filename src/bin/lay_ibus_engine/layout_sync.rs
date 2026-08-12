@@ -10,7 +10,7 @@ use super::trace;
 const RU_ENGINE: &str = "lay-ime-ru";
 const US_ENGINE: &str = "lay-ime-us";
 impl LayIbusEngine {
-    pub(super) fn sync_layout_after_committed_text(&mut self, text: &str) {
+    pub(super) fn sync_layout_after_committed_text(&mut self, text: &str, owner: &'static str) {
         if !self.config.auto_switch_layout {
             return;
         }
@@ -28,6 +28,9 @@ impl LayIbusEngine {
         // latest-only background worker.
         self.layout_is_ru = target_is_ru;
         self.publish_tail_handoff();
+        trace::record(format!(
+            r#"{{"kind":"ibus_layout_sync_owner","owner":"{owner}","target_is_ru":{target_is_ru}}}"#
+        ));
         request_active_ime_engine_switch(target_is_ru, target_engine);
         trace::record_layout_sync_requested(target_is_ru, target_engine);
     }

@@ -27,6 +27,7 @@ pub use event_words::{
     split_event_words, ReplayLayoutDecision,
 };
 pub use keymap::{is_typing_key, keycode_to_ru_char, keycode_to_us_char};
+pub(crate) use text_input::text_to_key_events_into;
 pub use text_input::{
     is_cyrillic_letter, preferred_layout_for_text, text_to_key_events, text_to_uinput_runs,
 };

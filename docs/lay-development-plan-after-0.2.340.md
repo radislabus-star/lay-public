@@ -397,3 +397,904 @@ Receipt:
 
 Physical refresh receipt:
 `/home/ubu/projects/lay/docs/structural_gates/receipts/L3_PROCESS_LOCAL_REFRESH_2026-08-10.json`.
+
+## 11. L1.1 -> L2 Generative Morphology Closure
+
+**Статус: productive birth реализован, promotion не закрыт.** Каноническая ось
+сохраняет grounded target выше `95%` во всех `13` fixed damage classes. Новый
+productive L2 уже композиционно находит лемму из типизированных
+character/keyboard n-грамм и синтезирует ранее не сохранённую русскую словоформу
+как `LemmaCenter + MorphologySlot + prefix/stem/suffix evidence`. Exact bank из
+`1,875,032` форм остаётся evidence/verification bank, а не единственным
+источником кандидатов.
+
+Этот полиморфный контур пока остаётся `SuggestOnly`: строгий самостоятельный
+`unique top-1 >95%` по каждому классу и `hot p99 <=5 ms` не доказаны, поэтому
+runtime authority не изменена.
+
+Текущий fixed `13 x 20,000` proof доказал target retention, но не strict
+самостоятельный L2 readout. В частности:
+
+```text
+damage class                    L2 unique top-1
+double substitution                    75.870%
+non-adjacent transposition             77.330%
+sparse multi-omission                  78.300%
+```
+
+Это не уничтожает L1.1 winner: правильная цель остаётся в bounded lattice и
+может быть выбрана последующим L2/L3-контекстом. Однако такой результат не
+разрешает объявить самостоятельный L2 readout новым владельцем восстановления.
+
+Требуемое продолжение:
+
+1. Представить продуктивную словоформу как `LemmaCenter + MorphologySlot +`
+   `morpheme/ending evidence`, не требуя готовой exact surface в decoder bank.
+2. Рождать ранее не сохранённые формы на лету из общего морфологического поля;
+   сохранённые exact forms оставить evidence/verification bank, а не единственным
+   источником кандидатов.
+3. Обучать выбор морфем, слотов, positive/anti relations и tie calibration по
+   evidence без word-specific runtime branches и ручных исключений.
+4. Сохранять весь grounded L1.1 lattice и отдельные `Winner | Tied | ABSTAIN`;
+   генеративный донор не имеет права вытеснить grounded candidate общей
+   неопределённостью.
+5. Провести fixed heldout proof отдельно для seen exact forms и truly unseen
+   generated forms, включая все `13` классов повреждения.
+6. Сравнить exact-bank-only и generative configurations по качеству, package,
+   RSS, cold/hot latency и false authority до изменения runtime ownership.
+
+**Promotion gate:**
+
+```text
+unique L2 top-1, каждый damage class       >95.0%
+target retention, каждый damage class      >95.0%
+clean preservation                         >=99.9%
+ambiguity retention                        >=99.0%
+false authority                                   0
+false singleton                                   0
+grounded L1.1 candidate loss                      0
+hot p99                                      <=5 ms
+package/RSS                      без непринятой регрессии
+```
+
+Текущий measured baseline и границы доказательства находятся в:
+`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_V13_CANONICAL_FIXED_RETENTION_13X20000_2026-08-10.json`.
+Runtime authority этим пунктом пока не изменена.
+
+Первый productive morphology micro proof уже выполнен на реальном V13:
+
+```text
+heldout target lemmas                         40
+train/heldout overlap                          0
+13 damage classes x 10                       130
+context target-slot retention             90-100%
+unseen generated top-16 retention          60-90%
+unseen generated unique top-1              40-90%
+false singleton                                 40
+false authority                                   0
+generated p99                              1.635 s
+peak RSS                                  738.36 MiB
+```
+
+Verdict: `FAIL`, runtime authority не изменена. Общий дефект локализован в
+slot-wide переборе suffix rules и неправильном порядке evidence, а не в
+отдельных словах. Receipt:
+`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_LEAVE_LEMMAS_OUT_MICRO_13X10_2026-08-10.json`.
+
+Текущая работа: family-indexed longest-supported suffix postings и readout
+`lemma evidence -> context slot -> family/profile -> surface geometry`, затем
+повтор того же fixed denominator.
+
+Второй micro proof (`V2`, debug, тот же `13 x 10`) отделил рождение леммы от
+выбора окончания:
+
+```text
+target lemma retention, каждый класс        100.0%
+generated top-16                           50-100%
+generated unique top-1                     30-100%
+false authority                                  0
+admitted suffix profiles                 1,246,325
+profile training                            97.319 s
+RSS after training                     1,124,004 KiB
+peak RSS                               1,182,320 KiB
+generated p99                              707.402 ms
+```
+
+Verdict: `FAIL`, runtime authority не изменена. Family index оставлен как
+bounded lookup, но debug timing нельзя напрямую сравнивать с release V1.
+Первый общий дефект находится в выборе `MorphologySlot`: все положительные
+слоты одного exact context получают одинаковый `scene_wave`, coherence `1000`
+и насыщенный support `128`, то есть одинаковый score `1128` без anti-evidence.
+
+Текущее продолжение V3:
+
+```text
+streamed train-only T rows
+-> exclude selected heldout lemma names
+-> project NUMBER/CASE/GENDER/PERSON/TENSE/MOOD/FORM_KIND
+-> positive + anti context-slot posterior
+-> Laplace suffix posterior
+-> lemma x context-slot x suffix-profile x geometry
+-> deterministic generated readout
+```
+
+Exact V2 receipt:
+`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_FAMILY_INDEX_V2_DEBUG_13X10_2026-08-10.json`.
+
+V3 с marginal posterior и multiplicative joint evidence также выполнен и
+отвергнут:
+
+```text
+target lemma retention, каждый класс        100.0%
+generated top-16                           60-100%
+generated unique top-1                     40-100%
+false singleton                                  50
+false authority                                    0
+streamed T rows                                15,922
+context modes / slots                       105 / 227
+training                                      98.994 s
+generated p99                                927.801 ms
+peak RSS                                   1,184,804 KiB
+```
+
+Первый общий механизм: `T`-контексты являются multi-label. Другой положительный
+слот в том же контексте не является anti-evidence для target slot. Например,
+`они _` законно содержит несколько времён глагола и краткое прилагательное.
+Поэтому marginal frequency и `context_total - positive` нельзя умножать на
+lemma evidence как независимый posterior: частый допустимый слот вытесняет
+редкий, но грамматически допустимый target.
+
+Следующая конфигурация должна использовать set-valued compatibility lattice:
+контекст отсекает доказанно несовместимые окончания, но не ранжирует несколько
+совместимых окончаний по частоте учительского корпуса. Grounded L1.1 lemma и
+геометрия повреждённой поверхности сохраняют приоритет. Настоящий anti-support
+должен приходить из явных competitor observations, а не выводиться из других
+positive labels.
+
+Exact V3 receipt:
+`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_CONTEXT_POSTERIOR_V3_DEBUG_13X10_2026-08-10.json`.
+
+V4 заменил marginal posterior на set-valued compatibility lattice:
+
+```text
+target lemma retention, каждый класс        100.0%
+generated top-16                           90-100%
+generated unique top-1                     60-100%
+false singleton                                  17
+false authority                                    0
+generated p99                                672.383 ms
+peak RSS                                   1,171,400 KiB
+```
+
+Это принятый архитектурный вывод, но ещё `FAIL`: `V3 -> V4` снизил false
+singleton `50 -> 17`, поднял худший top-16 `60% -> 90%` и худший top-1
+`40% -> 60%`. Оставшиеся top-16 потери сосредоточены в morpheme operator:
+suffix-only transform не выражает bounded prefix/suffix comparative и теряет
+часть возвратных глагольных форм. Следующий V5 расширяет оператор до
+`prefix + retained stem + suffix`, не добавляя слов или фраз в runtime.
+
+Exact V4 receipt:
+`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_COMPATIBILITY_V4_DEBUG_13X10_2026-08-10.json`.
+
+V5 с bounded `prefix + retained stem + suffix` завершил productive birth на
+micro denominator:
+
+```text
+target lemma retention, каждый класс        100.0%
+generated top-16, каждый класс              100.0%
+generated unique top-1                     50-100%
+false singleton                                  16
+false authority                                    0
+admitted profiles                            1,267,969
+training                                      104.809 s
+generated p99                                774.631 ms
+peak RSS                                   1,327,088 KiB
+```
+
+Механизм рождения ранее не сохранённой русской словоформы теперь подтверждён
+на всех `13` damage classes этого micro. Оставшийся FAIL находится только в
+readout: близкие леммы имеют конфликтующие независимые evidence, а часть
+повреждённых поверхностей сама является допустимым словом. Следующий шаг не
+меняет morpheme birth и не вводит веса; он формирует Pareto
+`Winner | Tied | ABSTAIN`, передавая неоднозначный lattice в L3.
+
+Exact V5 receipt:
+`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_EDGE_MORPHEME_V5_DEBUG_13X10_2026-08-10.json`.
+
+V6 проверил глобальный Pareto-readout без изменения productive birth:
+
+```text
+generated top-16, каждый класс              100.0%
+raw generated unique top-1                 50-100%
+Pareto target retention                    90-100%
+Winner / Tied / ABSTAIN                 108 / 21 / 1
+false singleton                                  1
+false authority                                    0
+training                                      103.308 s
+generated p99                                696.428 ms
+peak RSS                                   1,326,524 KiB
+```
+
+Verdict: `FAIL`, runtime authority не изменена. Ошибка системная: productive
+L2 сравнивал разные лемменные бассейны как собственные окончания и позволял
+одной лемме уничтожить другую без независимого semantic evidence. Это нарушает
+ownership: L2 вправе выбирать `MorphologySlot` внутри леммы, но межлемменный
+выбор принадлежит grounded L1.1 evidence и L3. V7 ограничивает Pareto
+доминирование одним `lemma_id`; разные леммы сохраняются как `Tied`.
+
+Exact V6 receipt:
+`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_PARETO_READOUT_V6_DEBUG_13X10_2026-08-10.json`.
+
+V7 исправил ownership без изменения birth: Pareto-доминирование теперь
+разрешено только внутри одного `lemma_id`, а разные лемменные бассейны уходят
+в L3 как `Tied`.
+
+```text
+generated top-16, каждый класс              100.0%
+cross-lemma target retention                100.0%
+readout selected-target                    90-100%
+raw generated unique top-1                 50-100%
+Winner / Tied / ABSTAIN                  0 / 129 / 1
+false singleton                                  0
+false authority                                    0
+training                                      103.749 s
+generated p99                                801.219 ms
+peak RSS                                   1,326,744 KiB
+```
+
+Overall promotion verdict остаётся `FAIL`, потому что strict unique top-1 ещё
+ниже `>95%`. Узкий результат: `PASS_shadow_retention`. L2 уже умеет родить и
+сохранить неизвестную словоформу, но выбор между разными леммами и смысловыми
+окончаниями должен делать L3 по контексту предложения. Runtime authority не
+изменена.
+
+Exact V7 receipt:
+`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_LEMMA_BASIN_PARETO_V7_DEBUG_13X10_2026-08-10.json`.
+
+V8-V19 completed the compact productive sidecar, typed context-axis transport,
+release query path, and real `NT` directional same-lemma relations. The sidecar
+format is backward compatible and the current V2 artifact is:
+
+```text
+bytes                              81,688,382
+rules                               1,268,215
+context slots                          79,706
+directional pair relations              7,191
+same-lemma competitor surfaces          2,451
+```
+
+The old `13 x N` proof samples only `H` rows, while pair relations are trained
+from `NT`. V20 therefore added a separate full `NH` directional denominator.
+The first readout produced `892` target wins but `244` reverse false supports
+and was rejected. Requiring two agreeing neighbor lanes reduced the error to
+`24` but did not eliminate it, so V21 was also rejected.
+
+V22 closed the directional ownership boundary without package
+recrystallization:
+
+```text
+NH rows                               42,195
+same-lemma comparisons                3,483
+pair coverage                          42.463%
+exact target wins                          69
+reverse false supports                      0
+tied/no-evidence                    1,410 / 2,004
+directional verdict      PASS_shadow_directional_nh
+```
+
+Only exact independently observed competitor scenes may settle a morphology
+slot. Left/right neighbor relations retain candidates but cannot create
+authority; unresolved forms stay `Tied` for L3. Generated forms remain
+`SuggestOnly`, runtime authority is unchanged, and the overall promotion verdict
+remains `FAIL` because generated unique top-1 and hot latency are still below
+their gates.
+
+Exact V20-V22 receipts:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_DIRECTIONAL_NH_RAW_V20_13X10_2026-08-10.json
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_DIRECTIONAL_NH_TWO_LANE_V21_13X10_2026-08-10.json
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_DIRECTIONAL_NH_EXACT_V22_13X10_2026-08-10.json
+```
+
+V23-V26 isolated the generated-form latency without shrinking any frontier.
+V26 moves decoder-block decompression outside the shard mutex, rechecks the
+cache after decode and raises retained decoded forms from `16,384` to `65,536`.
+The unchanged `13 x 10` denominator produced byte-identical class and
+directional summaries versus V25:
+
+```text
+configuration                 workers   generated birth p50 / p99
+V25 source cache                    1                3.569 / 7.335 ms
+V25 source cache                   20              17.403 / 93.280 ms
+V26 decoder cache                   1                3.218 / 8.336 ms
+V26 decoder cache                  20              16.115 / 73.670 ms
+
+V26 workers=20 wall / peak RSS                         6.17 s / 358,136 KiB
+V26 workers=1 wall / peak RSS                          6.74 s / 337,016 KiB
+class summary SHA               d4aec55925b462c54a6a1004e1e3faba0f2366a85e306f4f2c6bd2b5cfa0dcdf
+directional summary SHA         72fbbbd2b9205a7cc895a432e789b219cbc7b5daab35d2f373c15a7ec2d307f0
+false authority / singleton                                             0 / 0
+```
+
+V26 is rejected as the final speed solution. It reduces the contended
+20-worker tail by `21.0%`, but misses the `<=5 ms` gate by `14.7x` and regresses
+the single-worker p99. Runtime authority remains unchanged.
+
+V27 replaced the associative LRU with a direct-mapped O(1) `RwLock` cache. It
+preserved byte-identical class/directional summaries and zero false authority,
+but collision-thrashing regressed generated p99 to `10.118 ms` on one worker
+and `218.109 ms` on twenty workers. V27 is rejected and must not be promoted.
+The next cache contour must preserve full shard associativity while removing
+linear hit lookup and hit-time mutation.
+
+V28 preserved full shard associativity with `HashMap block -> slot`, read-only
+hits and round-robin miss eviction. It also failed: generated p99 was
+`9.637 ms` on one worker and `107.674 ms` on twenty workers. V29 then forced
+the inner Rayon pool to one thread without changing code. This raised p99 to
+`34.380 ms` for one outer worker and `366.065 ms` for twenty outer workers.
+Therefore neither cache replacement nor removal of inner parallelism closes the
+budget. V26 remains the best storage baseline; the next optimization belongs
+inside repeated rule expansion, surface construction and geometry scoring.
+
+V30 kept the V26 decoder and cached generated-surface geometry inside each
+lemma basin while replacing deterministic post-generation tree dedup with hash
+dedup followed by the existing total sort. Class and directional summaries
+remain byte-identical. One-worker p99 improved `8.336 -> 7.705 ms`; twenty-worker
+p99 improved only `73.670 -> 73.085 ms`. V30 is retained as a lossless local
+optimization, but the overall verdict remains `FAIL_latency`.
+
+V31 repeated the complete generated proof inside the same process before the
+measured pass. A fully warm one-worker pass remained `7.727 ms` p99 versus
+`7.705 ms` cold, while the warm concurrent pass regressed to `172.221 ms`.
+Cold canonical-source materialization is therefore rejected as the dominant
+blocker; embedding those sources into the sidecar would add storage without
+closing latency. The diagnostic warmup is not part of runtime.
+
+V32 reuses generated geometry across lemma tasks on each Rayon worker, builds
+family suffix lanes once per source and reads encoded family specificity
+directly. Quality remains byte-identical. One-worker p99 improved to
+`6.866 ms`; twenty-worker p99 improved to `71.872 ms`. The optimization is
+retained, but both modes still fail `<=5 ms`.
+
+V33 removes repeated Unicode lowercase work and a duplicate normalized
+`String` allocation from generated-surface geometry without changing the
+bounded `256 / 256 / 16 / 32 / 196608` frontier. Its class, directional,
+safety and package summaries are exactly equal to V32. The fixed `13 x 10`
+proof measured `2.838 / 6.987 ms` on one worker and `13.923 / 65.649 ms` on
+twenty workers. Concurrent p99 improved by `8.7%`, but one-worker p99 regressed
+by `1.8%`; therefore the verdict is `PASS_parity_FAIL_latency`, runtime
+authority remains unchanged, and V33 is not the final speed solution. Peak RSS
+was `336,852 KiB` and `382,252 KiB`, respectively. The larger fixed proof,
+clean/ambiguity preservation, L3 handoff and installed-client behavior were not
+tested by V33.
+
+V34 tested an exact top-32 upper bound inside each selected family range. It
+preserved exact V33 quality and `0 / 0` false authority/singleton, but regressed
+generated p99 to `7.649 ms` on one worker and `69.901 ms` on twenty workers.
+The code was removed. Sidecar inspection established why: exact family ranges
+have p99 `1`, maximum `3` rules and no range above `32`; the real fanout is the
+parent transition level, where `1,183` transitions contain mean `1,072`, p99
+`20,301` and maximum `28,437` family variants. Verdict:
+`REJECT_wrong_bound_level`; runtime authority remains unchanged. The next bound
+must operate over complete lemma/slot hypotheses, not individual selected
+family rules.
+
+V35 tested the same proof at whole-lemma level: a sequential seed top-32
+provided a mathematically safe joint-evidence cutoff before the remaining
+parallel lemmas. Quality stayed exactly equal to V33 and false authority /
+singleton remained `0 / 0`, but p99 regressed to `7.939 ms` on one worker and
+`71.205 ms` on twenty workers. The seed serialization cost exceeded the removed
+work, so V35 was removed with verdict `REJECT_seed_serialization`. The next
+speed change requires a function-level CPU profile of the restored V33 path.
+
+The V33 `perf` profile used the normal stripped proof binary over the fixed
+`13 x 100` denominator. It located the first systemic hot path instead of
+another frontier experiment:
+
+```text
+damerau_levenshtein_rows                         16.31% CPU cycles
+allocator family                       approximately 22-24%
+context_slot_evidence_for                         4.02%
+decoder block cache                               3.16%
+bounded_context_key                               2.30%
+```
+
+V36 retained the full `256 / 256 / 16 / 32 / 196608` contour and removed
+per-comparison geometry allocations by reusing worker-local Damerau rows,
+keyboard event buffers and normalized surface storage. Keyboard distance is
+now evaluated only after the character score remains competitive. The fixed
+`13 x 100`, one-worker proof preserved byte-identical class and directional
+summaries and `0 / 0` false authority/singleton:
+
+```text
+configuration                         p50       p99       peak RSS
+V33 perf baseline                   3.018     6.970 ms   336,612 KiB
+V36 reusable geometry scratch       2.812     6.403 ms   337,016 KiB
+```
+
+Verdict: `PASS_lossless_geometry_optimization`, but overall
+`FAIL_latency`. The measured V36 twenty-worker `13 x 10` sample remained noisy
+at `11.953 / 143.717 ms`; no multi-client promotion is claimed.
+
+V37 moved morphology-slot preparation into a worker-local cache. It preserved
+quality and `0 / 0`, but repeated context-key work and cache ownership made the
+one-worker micro p99 regress to `8.165 ms`. The experiment was removed with
+verdict `REJECT_worker_local_slot_cache`.
+
+V38 prepares one immutable `target_features_by_source` map per request before
+the lemma `par_iter`, so all workers consume the same bounded slot evidence.
+The fixed `13 x 100` class and directional summaries remain byte-identical to
+V33/V36:
+
+```text
+generated birth p50 / p99                 2.328 / 5.885 ms
+steady / peak RSS                       315,644 / 336,692 KiB
+directional pair coverage                         42.463%
+directional target wins / reverse false              69 / 0
+false authority / singleton                           0 / 0
+```
+
+This is the current accepted source baseline. It improves V33 p50 by `22.9%`
+and p99 by `15.6%`, but remains `0.885 ms` above the `<=5 ms` gate. The
+twenty-worker `13 x 10` sample measured `9.974 / 85.832 ms`, so concurrent
+latency also remains unpromoted.
+
+V38 does not change the unresolved quality denominator:
+
+```text
+gate                                      required     current worst
+generated top-16, every class             >95%         94%
+generated readout target retention        >95%         91%
+generated unique top-1, every class       >95%         61%
+false authority / singleton               0 / 0         0 / 0
+```
+
+Not tested by V36-V38: the larger fixed denominator, clean/ambiguity
+preservation after live generated-candidate integration, final L3 contextual
+selection, daemon/IBus latency and physical apply authority. Runtime authority
+changed: `false`; generated forms remain `SuggestOnly`.
+
+V39 tested three lossless hot-path changes together: exact equality exits before
+geometry construction, Damerau rows use the shorter sequence as their column
+axis, and the tiny generated-family result set uses linear `Vec` dedup instead
+of allocating a per-call surface `HashMap`. The justification for the last
+change is measured sidecar structure, not an assumed bound: exact family ranges
+have p99 `1` and maximum `3` rules.
+
+The V39 class and directional summaries are byte-identical to V38 on both
+`13 x 10` and `13 x 100`; false authority/singleton remain `0 / 0`. Four
+sequential one-worker `13 x 100` runs measured:
+
+```text
+run                           p50       p99       peak RSS
+1                           2.207     6.092 ms   336,852 KiB
+2                           2.292     7.027 ms   336,648 KiB
+3                           2.244     5.711 ms   337,012 KiB
+4                           2.236     5.819 ms   337,016 KiB
+V38 reference               2.328     5.885 ms   336,692 KiB
+gate                                  <=5.000 ms
+```
+
+V39 consistently improves p50 but does not close p99; its four-run median p99
+is approximately `5.96 ms`. The twenty-worker `13 x 10` probe measured
+`12.976 / 59.952 ms`, also above budget. Verdict:
+`PASS_quality_parity_FAIL_latency`. V39 remains a profiling candidate, not a
+runtime promotion; authority changed: `false`.
+
+An unstripped V39 metrics build then provided the next function-level profile:
+
+```text
+damerau_levenshtein_rows                         19.78%
+Unicode conversion lookup                         9.52%
+compact decoder block cache                       4.81%
+generate_forms_prepared                           4.21%
+bounded Damerau rows                              4.11%
+UTF-8 conversion                                  3.85%
+RU key mapping                                    3.60%
+allocator family                         approximately 15%
+```
+
+V40 tested the apparent Unicode/keyboard opportunity without changing L2
+semantics. The canonical keyboard mapper gained a lowercase RU fast path and a
+reusable encoded key-unit output, removing the intermediate `Vec<KeyEvent>`
+from generated geometry. Local keyboard/compositional/productive/format tests
+passed `36 / 36`, and remote class/directional hashes remained byte-identical
+to V38/V39 with `0 / 0` false authority/singleton.
+
+Four sequential one-worker `13 x 100` release proofs rejected the optimization:
+
+```text
+run                           p50       p99       peak RSS
+1                           2.282     6.054 ms   337,016 KiB
+2                           2.256     6.213 ms   336,968 KiB
+3                           2.236     6.331 ms   336,852 KiB
+4                           2.285     6.228 ms   336,692 KiB
+V39 median                  ~2.240    ~5.956 ms
+gate                                  <=5.000 ms
+```
+
+The twenty-worker V40 micro also regressed to `15.114 / 97.993 ms`. Verdict:
+`REJECT_lowercase_key_units_no_release_tail_gain`. The metrics-profile Unicode
+cost was not the release p99 owner; V40 is removed and runtime authority remains
+unchanged.
+
+V41 then targeted the dominant exact Damerau rows by trimming equal prefix and
+suffix units before DP while preserving the original similarity denominator.
+An exhaustive parity test compared exact and bounded OSA distance against the
+untrimmed heap reference for every pair of ternary strings through length `4`;
+all local compositional/productive/format tests passed. Remote class and
+directional hashes again remained byte-identical with `0 / 0` safety.
+
+Release latency rejected the change:
+
+```text
+run                           p50       p99       peak RSS
+1                           2.247     6.092 ms   337,016 KiB
+2                           2.228     5.834 ms   337,000 KiB
+3                           2.277     6.334 ms   336,868 KiB
+4                           2.286     6.532 ms   336,856 KiB
+V39 median                  ~2.240    ~5.956 ms
+```
+
+Verdict: `REJECT_common_edge_trim_no_release_tail_gain`. V41 is removed;
+runtime authority remains unchanged. The next speed experiment moves to
+bounded parallel lemma chunks, grounded by `crossbeam steal = 3.64%` and the
+per-lemma closure cost in the V39 profile, without reducing any frontier.
+
+Exact V39 receipt directory:
+
+`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_SMALL_DEDUP_V39_2026-08-10/`.
+
+Exact V40 receipt directory:
+
+`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_LOWER_KEY_UNITS_V40_2026-08-10/`.
+
+Exact V41 receipt directory:
+
+`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_COMMON_EDGES_V41_2026-08-10/`.
+
+V42 tested deterministic bounded lemma chunks after V41 was removed. It
+preserved the V39 class/directional hashes and `0 / 0` false
+authority/singleton, but four one-worker `13 x 100` runs measured p99
+`6.602 / 6.343 / 7.735 / 8.179 ms`; the twenty-worker `13 x 10` p99 was
+`70.105 ms`. Verdict:
+`REJECT_bounded_lemma_chunks_no_tail_gain`. V42 does not become the source
+baseline.
+
+The scheduler-level optimization series is now closed. The canonical next
+design is a learned `LemmaParadigmBinding -> ParadigmCenter -> MorphologySlot`
+field with one shared exact character/keyboard geometry traversal over an
+implicit productive form graph. Full design authority, formulas, ownership,
+one-pass crystallization, package requirements, proof gates, rejected routes,
+and the seven-step delivery route are recorded in:
+
+`/home/ubu/projects/lay/docs/l2-productive-paradigm-field-canonical-design.md`.
+
+The paper implementation is complete at specification level. Exact typed
+identities, prefix-trie traversal, path-correct OSA state, evidence objective,
+disjoint calibration, protected grounded/productive lanes, wire format, deltas,
+concurrency ownership, numeric budgets, and proof protocol are recorded in:
+
+`/home/ubu/projects/lay/docs/l2-productive-paradigm-field-paper-implementation.md`.
+
+Paper completeness and original-review closure are recorded in:
+
+`/home/ubu/projects/lay/docs/l2-productive-paradigm-field-paper-review-2026-08-10.md`.
+
+Exact V42 receipt directory:
+
+`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_BOUNDED_LEMMA_CHUNKS_V42_2026-08-10/`.
+
+Exact V26 receipts:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_DECODER_CACHE_V26_WORKERS20_13X10_2026-08-10.json
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_DECODER_CACHE_V26_WORKERS1_13X10_2026-08-10.json
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_DECODER_CACHE_V26_BUILD_2026-08-10.time.txt
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_DIRECT_CACHE_V27_WORKERS20_13X10_2026-08-10.json
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_DIRECT_CACHE_V27_WORKERS1_13X10_2026-08-10.json
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_ASSOCIATIVE_CACHE_V28_WORKERS20_13X10_2026-08-10.json
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_ASSOCIATIVE_CACHE_V28_WORKERS1_13X10_2026-08-10.json
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_PARALLELISM_V29_OUTER20_INNER1_13X10_2026-08-10.json
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_PARALLELISM_V29_OUTER1_INNER1_13X10_2026-08-10.json
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_GEOMETRY_CACHE_V30_WORKERS20_13X10_2026-08-10.json
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_GEOMETRY_CACHE_V30_WORKERS1_13X10_2026-08-10.json
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_WARM_REPEAT_V31_WORKERS20_13X10_2026-08-10.json
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_WARM_REPEAT_V31_WORKERS1_13X10_2026-08-10.json
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_WORKER_CACHE_V32_WORKERS20_13X10_2026-08-10.json
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_WORKER_CACHE_V32_WORKERS1_13X10_2026-08-10.json
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_NORMALIZED_GEOMETRY_V33_WORKERS20_13X10_2026-08-10.json
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_NORMALIZED_GEOMETRY_V33_WORKERS1_13X10_2026-08-10.json
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_NORMALIZED_GEOMETRY_V33_BUILD_2026-08-10.time.txt
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_BOUNDED_EXPANSION_V34_WORKERS20_13X10_2026-08-10.json
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_BOUNDED_EXPANSION_V34_WORKERS1_13X10_2026-08-10.json
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_BOUNDED_EXPANSION_V34_BUILD_2026-08-10.time.txt
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_LEMMA_BOUND_V35_WORKERS20_13X10_2026-08-10.json
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_LEMMA_BOUND_V35_WORKERS1_13X10_2026-08-10.json
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_LEMMA_BOUND_V35_BUILD_2026-08-10.time.txt
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V33_PERF_SELF_2026-08-10.txt
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V33_PERF_WORKERS1_13X100_2026-08-10.json
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V33_PERF_BUILD_2026-08-10.time.txt
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_GEOMETRY_SCRATCH_V36_WORKERS1_13X100_2026-08-10.json
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_GEOMETRY_SCRATCH_V36_WORKERS20_13X10_2026-08-10.json
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_GEOMETRY_SCRATCH_V36_BUILD_2026-08-10.time.txt
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_SLOT_CACHE_V37_WORKERS1_13X10_2026-08-10.json
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_SLOT_CACHE_V37_WORKERS20_13X10_2026-08-10.json
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_SLOT_CACHE_V37_BUILD_2026-08-10.time.txt
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_GLOBAL_SLOT_CACHE_V38_WORKERS1_13X100_2026-08-10.json
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_GLOBAL_SLOT_CACHE_V38_WORKERS20_13X10_2026-08-10.json
+/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_GLOBAL_SLOT_CACHE_V38_BUILD_2026-08-10.time.txt
+```
+
+Next required work remains conjunctive:
+
+1. restore V39 source behavior while preserving V42 receipts;
+2. implement the paper package and prefix-trie traversal in exact parity mode;
+3. fit train-only evidence and disjoint calibration without raw-corpus rescans;
+4. pass strict per-class `SLOT_HELDOUT` and `LEMMA_HELDOUT` gates while
+   preserving zero false authority/singleton and every grounded L1.1 candidate;
+5. pass numeric package/RSS and single/multi-client latency ceilings;
+6. run L3 handoff, verifier replay, and the physical product matrix;
+7. do not promote or restart daemon/IBus before all gates pass.
+
+## 12. V63 Productive Morphology Decision Point
+
+**Статус: V63 собран и измерен, promotion отклонён; следующая версия не
+запущена.**
+
+V63 переиспользовал завершённые raw/sorted/reduced артефакты и не пересобирал
+L1.1 или canonical L2. Полная reinduction заняла `38:31.45`, peak RSS был
+`611,204 KiB`. Получен mmap-пакет:
+
+```text
+bytes       17,309,944
+sha256      5b80513cb33d3b82b4b9829742ecab6e4fc3248694f215d252901b630b122238
+authority   shadow SuggestOnly, без изменения runtime owner
+```
+
+Диагностический proof `13 classes x 100 x 2 cohorts`, `19 workers`:
+
+```text
+cohort          L lemma    S exact    top-1    top-16    readout    empty
+SEEN_EXACT      100.00%     99.77%    35.00%    99.77%     99.77%       0
+LEMMA_HELDOUT    96.08%     92.08%     3.08%    90.38%     92.08%      51
+```
+
+V63 закрыл основной V62 coverage-дефект: `LEMMA_HELDOUT` exact birth вырос с
+`7.77%` до `92.08%`, а empty lattice уменьшился с `1,183` до `51`. Однако
+строгий gate не пройден. Худшая цепочка у suffix truncation:
+`L=93% -> S=76% -> top-16=63%`; максимальный class p99 `144.976 ms` против
+`<=5 ms`.
+
+Safety в измеренной области:
+
+```text
+Winner / Tied / ABSTAIN      0 / 0 / 2,600
+false singleton             0
+integrity errors             0
+unsupported false authority NOT TESTED
+runtime authority changed   false
+```
+
+Открытый proof-дефект: отдельный `B=true paradigm retained` не измеряется;
+`SLOT_HELDOUT`, `MULTI_LABEL`, `UNSUPPORTED`, grounded L1.1 protection,
+L3/L4 transfer, queue-inclusive multi-client latency и physical matrix также
+не пройдены. Поэтому V63 остаётся архитектурной основой, но не продуктовым
+owner.
+
+До обсуждения V63 запрещены имя следующей версии, код, release build,
+reinduction и полный proof. После обсуждения любой следующий эксперимент
+сначала обязан выполнить pre-build gate из раздела 22 paper implementation.
+
+Полные receipts:
+
+`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V63_COLD_BINDING_2026-08-11/`.
+
+Обязательный pre-build review до следующего кода:
+
+`/home/ubu/projects/lay/docs/l2-productive-post-v63-prebuild-review.md`.
+
+## 13. V64 Surface-Basin Decision Point
+
+**Исторический статус точки: V64 собран и измерен; механизм принят, promotion
+отклонён. Последующий результат V65 находится в разделе 14.**
+
+После явного одобрения V64 реализовал coalescing по
+`(lemma_id, target_slot_id, normalized_surface)` до global top-32, не меняя
+`16 / 32`, коэффициенты, authority, SafetyGate или verifier. Полный raw corpus
+и transition induction не запускались: пакет resumed из frozen V63 work-dir за
+`64.00 s`.
+
+```text
+package bytes      17,309,944
+package sha256     9fd8c950398fb8ba47a2c9f2236880239d9f4376b191a691b0d01c47ddd3e438
+determinism        byte-identical repeat
+proof              13 x 100 x 2, workers 19
+probe parity       2,600 / 2,600
+false singleton   0
+integrity errors   0
+runtime authority changed false
+```
+
+Главный результат:
+
+```text
+LEMMA_HELDOUT  1,300 -> H 1,280 -> B 1,219 -> S0 1,219
+                     -> S1 1,219 -> S2 1,219 -> S3 1,219 -> R 1,219
+```
+
+Surface basin исправил измеренный representational crowding: exact birth
+`1,197 -> 1,219`, top-16 `1,175 -> 1,218`, raw top-1 `40 -> 267`, package size
+без роста. После исправления proof identity с `(lemma, paradigm)` на
+`(lemma, POS, paradigm)` остаточный системный owner локализован до compatibility
+birth: `20` случаев вне target-POS `H`; из оставшихся `61` теряются на `H -> B`,
+в том числе `59` из-за отсутствия oracle paradigm в postings оставшихся
+source-slot и `2` из-за exact exposed-form reconstruction. `B -> S0` и вся
+цепочка `S0 -> S1 -> S2 -> S3 -> R` потерь не дают. Старые знаменатели
+`H=1,288`, `B=1,249` и `30` потерь `B -> S0` superseded и не являются
+характеристикой V64.
+
+Promotion запрещён: strict per-class top-1/retention gates и p99 `<=5 ms` не
+пройдены; `SLOT_HELDOUT`, `MULTI_LABEL`, `UNSUPPORTED`, интегрированный
+L1.1/L3/L4/verifier, queue-inclusive и physical product gates не измерены.
+Следующая версия до отдельного paper review и уведомления пользователя не
+назначается.
+
+Полные receipts:
+
+`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V64_SURFACE_BASIN_2026-08-11/`.
+
+Авторитетный corrected receipt:
+
+`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V64_SURFACE_BASIN_2026-08-11/hbs0-pos-diagnostic-13x100-receipt.json`.
+
+Следующий разрешённый shadow-only micro и его причинные gates зафиксированы в:
+
+`/home/ubu/projects/lay/docs/l2-productive-post-v64-anchor-recovery-paper.md`.
+
+## 14. V65 Anchor-Recovery Decision Point
+
+**Статус: V65 собран и полностью измерен; representation bounded, causal
+механизм улучшен, fixed proof не пройден; интеграция запрещена.**
+
+V65 добавил отдельный mmap sidecar `3,514,208 B` с `36,915` обученными
+reverse-anchor paths. Основной пакет остался byte-identical V64:
+`17,309,944 B`, sha256
+`9fd8c950398fb8ba47a2c9f2236880239d9f4376b191a691b0d01c47ddd3e438`.
+Установленный Lay, активные пакеты, daemon и IBus не менялись.
+
+Полный fixed proof `13 x 100 x 2` дал:
+
+```text
+LEMMA_HELDOUT  1,300 -> H 1,281 -> B 1,277 -> S0 1,277
+                     -> S1 1,277 -> S2 1,277 -> S3 1,277 -> R 1,277
+top-16        1,276
+raw top-1       205
+outside H        19
+H -> B            4
+B -> S0           0
+probe parity   2,600 / 2,600
+false singleton 0
+integrity errors 0
+runtime authority changed false
+```
+
+Относительно V64 `B/R` вырос `1,219 -> 1,277`, а `H -> B` уменьшился
+`61 -> 4`. Но эксперимент отклонён: четыре системных промаха остаются, oracle
+`H` сам изменился `1,280 -> 1,281`, raw top-1 регрессировал `267 -> 205`,
+suffix-truncation top-16 равен только `95.0%`, а LEMMA_HELDOUT latency вырос до
+`p50 19.009-28.269 ms`, максимального `p99 255.827 ms` и max `483.606 ms`.
+Полный proof занял `1,951.507 s` против `76.812 s` у V64. Peak proof RSS
+`235,668 KiB`, package budget и false-authority invariants пройдены.
+
+Следующий код до нового paper запрещён. Сначала требуется бумажно закрыть три
+отдельных owner-дефекта:
+
+1. frozen-H proof: базовый hypothesis denominator не должен зависеть от нового
+   recovery lane;
+2. bounded recovery birth: нельзя раскрывать все `(POS, source slot)` paths и
+   повторно проигрывать полные парадигмы на каждом запросе;
+3. rank preservation: новые recovery bindings не могут вытеснять уже
+   удержанный target из top-16/top-1 без независимо измеренного evidence.
+
+V64 остаётся канонической принятой архитектурной точкой. V65 сохраняется как
+`REJECT_not_closed_and_not_latency_bounded`; shadow/L1.1/L2/L3, daemon/IBus и
+live-owner route не подключаются.
+
+Полный paper и receipts:
+
+`/home/ubu/projects/lay/docs/l2-productive-post-v64-anchor-recovery-paper.md`
+
+`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V65_ANCHOR_RECOVERY_2026-08-11/`
+
+## 15. V66 Frozen-H and Bounded-Recovery Decision Point
+
+**Статус: paper завершён и подвергнут критике; разрешены только локальная
+реализация инвариантов и shadow micro `13 x 10 x 2`. V66 ещё не собран.**
+
+V65 отклонён, V64 остаётся канонической точкой. Новый paper разделяет пять
+owner-задач, которые V65 смешивал в одном широком маршруте:
+
+```text
+frozen V64 H manifest
+-> observed-slot intersection до reverse execution
+-> generic syncretic identity bridge
+-> dedup (paradigm, anchor) до exact replay
+-> exposed-slot-only replay для direct и recovery lanes
+-> calibrated rank-preserving readout
+```
+
+Read-only разбор всех `159` index records V65 `.p2r` дал:
+
+```text
+posting fan-out min/p50/p75/p90/p95/p99/max
+                    1/211/271/386/418/543/641
+mean                                      232.170
+posting ranges contiguous                    true
+sum fan-out                               36,915
+```
+
+Это подтверждает системный дефект: V65 раскрывает сотни paths на каждый
+наблюдаемый source до проверки полной slot-совместимости. Новый route обязан
+сначала пересечь независимый structural slot-license index, затем объединить
+direct/recovery/identity birth, выполнить только отфильтрованные reverse
+programs, дедуплицировать `(paradigm_id, recovered_anchor)` и проиграть только
+программы реально открытых slots. Старые compatibility/recovery postings не
+могут быть eligibility universe: оставшаяся oracle paradigm отсутствует именно
+в них, и такой intersection заблокировал бы identity bridge тем же дефектом.
+
+`H` больше не вычисляется экспериментальным runtime. Frozen manifest привязан
+к V64 package sha256
+`9fd8c950398fb8ba47a2c9f2236880239d9f4376b191a691b0d01c47ddd3e438` и
+proof spool sha256
+`6e282474b26bf90dc61ee21c93c9dd7dd727c29a2b02650c513ffdd06746e807`;
+его знаменатель обязан быть ровно `1,280`. Oracle IDs остаются только в proof
+comparator и запрещены в runtime birth/score/readout.
+
+Generic identity bridge рождает anchor без изменения поверхности только из
+структурного `COPY_ALL -> TERMINATE` перехода обученной парадигмы. Он не хранит
+слова и не получает Winner authority. Все открытые формы всё равно должны
+воспроизводиться точно; неидентифицируемые варианты остаются `Tied/ABSTAIN`.
+
+Rank preservation формализован относительно V64. Base-кандидаты сохраняют
+свой порядок; recovered-кандидат может их обойти только с независимо обученным
+и откалиброванным cross-lane certificate. Без него base-order сохраняется, а
+новая форма остаётся дополнительным lattice evidence. Минимальный raw top-1
+gate равен V64 baseline `267`, а не вручную выбранной квоте.
+
+Proof scheduler меняется с contiguous chunks по `137` cases на bounded dynamic
+queue: target-blind cost descending, atomic single-case claims, запись результата
+по исходному ordinal и детерминированный reduce. Это исправляет длинный
+single-worker tail, но не считается улучшением request latency.
+
+Обязательные V66 gates:
+
+```text
+frozen H                    exactly 1,280
+H -> B                      0
+B -> S0                     0
+raw top-1                   >=267
+each class top-16           >95.0%
+false singleton             0
+integrity errors            0
+probe parity                exact
+BaseProjection parity       exact V64
+uncertified demotions       0
+maximum class p99           <=5.000 ms
+runtime authority changed   false
+```
+
+Критический вывод paper: одной оптимизации recovery sidecar недостаточно.
+У V64 maximum class p99 уже `86.001 ms`, поэтому exposed-slot-only execution
+должен заменить complete-trie replay одновременно в direct и recovery paths.
+Это разрешено только при точной semantic parity. Full build, full proof,
+installation, daemon/IBus и live ownership до PASS предыдущего gate запрещены.
+
+Полный paper:
+
+`/home/ubu/projects/lay/docs/l2-productive-post-v65-bounded-recovery-paper.md`
+
+Fan-out receipt:
+
+`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/fanout-profile.json`

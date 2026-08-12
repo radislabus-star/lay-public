@@ -1,0 +1,72 @@
+{
+  "actual_calibration": {
+    "authority_blocked_by_target_loss": true,
+    "candidate_rows": 3714,
+    "fitted_groups": 121,
+    "source_groups": 1348,
+    "target_lost_groups": 1227,
+    "target_retained_groups": 121
+  },
+  "evidence": {
+    "bootstrap_calibration_groups": 1348,
+    "context_occurrence_events": 15942,
+    "direct_contradiction_events": 20,
+    "exact_only_morphology_events": 74,
+    "exact_only_morphology_forms": 74,
+    "excluded_context_occurrence_events": 47,
+    "excluded_direct_contradiction_events": 0,
+    "feedback_events": 0,
+    "phase_profiles": 50750,
+    "proof_events": 2501633,
+    "selected_phase_centers": 0,
+    "training_pairs": 20
+  },
+  "induction": {
+    "bound_lemma_pos_basins": 94151,
+    "exact_allomorph_observations": 5824,
+    "paradigms": 2099,
+    "transferable_observations": 2595033,
+    "transition_observations": 2600857
+  },
+  "kind": "l2_productive_paradigm_field_v1_reinduce_from_reduced",
+  "package": {
+    "bindings": 94151,
+    "bytes": 17309944,
+    "mmap_backed": true,
+    "operations": 270449,
+    "paradigms": 2099,
+    "path": "out/LAY-L2-PRODUCTIVE-PARADIGM-V1-SHADOW-V63.p2m",
+    "programs": 77854,
+    "resident_cache_bytes": 124,
+    "sha256": "5b80513cb33d3b82b4b9829742ecab6e4fc3248694f215d252901b630b122238",
+    "terminals": 72104,
+    "trie_arcs": 80247,
+    "trie_nodes": 82346
+  },
+  "proof_status": "PENDING_fixed_read_only_proof",
+  "reduced": {
+    "imported_identity_verified": true,
+    "train_events": 2600857,
+    "train_forms": 2600857,
+    "train_lemmas": 74852
+  },
+  "reused_complete_stages": [
+    "raw_corpus_pass",
+    "morphology_external_sort",
+    "imported_ownership_reduce",
+    "context_typed_replay",
+    "context_external_sort"
+  ],
+  "runtime_authority_changed": false,
+  "stage_timings_ms": {
+    "actual_candidate_calibration": 25338,
+    "bootstrap_package": 8092,
+    "evidence_reduce_and_fit": 12723,
+    "final_deterministic_package": 8027,
+    "reinduce_transition_paradigm_field": 2248799,
+    "resume_reopen_reduced_morphology": 8168
+  },
+  "total_ms": 2311423,
+  "verdict": "PASS_shadow_suggest_only_package",
+  "workers": 19
+}

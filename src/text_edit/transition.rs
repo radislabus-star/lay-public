@@ -201,6 +201,7 @@ pub struct VisibleFieldState {
     pub(crate) external_state_present: bool,
     pub(crate) external_tail_before_cursor: Option<String>,
     pub(crate) external_selection_active: bool,
+    pub(crate) external_trailing_boundary_elided: bool,
 }
 
 impl VisibleFieldState {
@@ -212,6 +213,7 @@ impl VisibleFieldState {
             external_state_present: false,
             external_tail_before_cursor: None,
             external_selection_active: false,
+            external_trailing_boundary_elided: false,
         }
     }
 
@@ -228,6 +230,21 @@ impl VisibleFieldState {
         self.external_state_present = true;
         self.external_tail_before_cursor = external_tail_before_cursor;
         self.external_selection_active = external_selection_active;
+        self.external_trailing_boundary_elided = false;
+        self
+    }
+
+    /// Records a client snapshot that proves the token but omits the trailing
+    /// committed whitespace still present in the internal visible tail.
+    pub fn with_boundary_elided_external_tail_before_cursor(
+        mut self,
+        external_tail_before_cursor: Option<String>,
+        external_selection_active: bool,
+    ) -> Self {
+        self.external_state_present = true;
+        self.external_tail_before_cursor = external_tail_before_cursor;
+        self.external_selection_active = external_selection_active;
+        self.external_trailing_boundary_elided = true;
         self
     }
 
@@ -426,6 +443,74 @@ mod tests {
             }
             other => panic!("unexpected decision: {other:?}"),
         }
+    }
+
+    #[test]
+    fn ime_auto_undo_preserves_a_client_elided_trailing_boundary() {
+        let state = VisibleFieldState::committed_tail("собака ", Some("/test".to_string()))
+            .with_epoch(41)
+            .with_boundary_elided_external_tail_before_cursor(Some("собака".to_string()), false);
+        let request = LatentTextTransitionCandidate::new(
+            VisibleTailSource::ImeCommittedTail,
+            "собака ".chars().count() as u32,
+            "cj,frf ",
+            TextTransitionIntent::ImeAutoUndo,
+            Some(VisibleTailSnapshot::new(
+                VisibleTailSource::ImeCommittedTail,
+                "собака ",
+                Some("/test".to_string()),
+                41,
+            )),
+        );
+
+        let decision = decide_text_transition(&state, request);
+
+        match decision {
+            TextTransitionDecision::Apply { plan, action } => {
+                assert_eq!(plan.move_left, 1);
+                assert_eq!(plan.backspaces, 6);
+                assert_eq!(plan.insert, "cj,frf");
+                assert_eq!(plan.move_right, 1);
+                assert!(action.allow_apply(), "action={action:?}");
+                assert_eq!(
+                    action.transition().operator(),
+                    Some(TransitionOperator::Undo)
+                );
+                assert!(
+                    crate::text_edit::authorize_backend_edit(
+                        crate::text_edit::TextEditBackend::Ime,
+                        action,
+                    )
+                    .allow_execute
+                );
+            }
+            other => panic!("unexpected decision: {other:?}"),
+        }
+    }
+
+    #[test]
+    fn boundary_elision_never_authorizes_an_automatic_correction() {
+        let state = VisibleFieldState::committed_tail("собака ", Some("/test".to_string()))
+            .with_boundary_elided_external_tail_before_cursor(Some("собака".to_string()), false);
+
+        let decision = decide_text_transition(
+            &state,
+            LatentTextTransitionCandidate::new(
+                VisibleTailSource::ImeCommittedTail,
+                "собака ".chars().count() as u32,
+                "сорока ",
+                TextTransitionIntent::ImeAutocorrect,
+                None,
+            ),
+        );
+
+        assert!(matches!(
+            decision,
+            TextTransitionDecision::Reject {
+                rejection: TextTransitionRejection::StaleSurroundingText { .. },
+                action: None,
+            }
+        ));
     }
 
     #[test]

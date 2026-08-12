@@ -1,0 +1,23 @@
+	Command being timed: "env CARGO_PROFILE_RELEASE_DEBUG=1 CARGO_PROFILE_RELEASE_STRIP=false RUSTFLAGS=-C force-frame-pointers=yes scripts/cargo-guard.sh build --release --bin lay-nanda-wave-train -j20"
+	User time (seconds): 180.19
+	System time (seconds): 4.94
+	Percent of CPU this job got: 101%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 3:02.97
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 2970976
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 691
+	Minor (reclaiming a frame) page faults: 2722566
+	Voluntary context switches: 3488
+	Involuntary context switches: 1085
+	Swaps: 0
+	File system inputs: 26992
+	File system outputs: 1082408
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

@@ -64,6 +64,13 @@ pub(super) struct SurfaceScoringProfile {
     keyboard: Vec<u32>,
 }
 
+#[derive(Default)]
+pub(super) struct SurfaceGeometryWorkspace {
+    characters: Vec<u32>,
+    keyboard: Vec<u32>,
+    key_events: Vec<crate::keyboard::KeyEvent>,
+}
+
 impl SurfaceScoringProfile {
     pub(super) fn normalized(&self) -> &str {
         &self.normalized
@@ -1439,6 +1446,53 @@ pub(super) fn prepared_normalized_similarity_milli(
     character.max(keyboard)
 }
 
+pub(super) fn prepared_similarity_to_normalized_surface_milli(
+    observed: &SurfaceScoringProfile,
+    expected: &str,
+) -> u16 {
+    let mut workspace = SurfaceGeometryWorkspace::default();
+    prepared_similarity_to_normalized_surface_with_workspace_milli(
+        observed,
+        expected,
+        &mut workspace,
+    )
+}
+
+pub(super) fn prepared_similarity_to_normalized_surface_with_workspace_milli(
+    observed: &SurfaceScoringProfile,
+    expected: &str,
+    workspace: &mut SurfaceGeometryWorkspace,
+) -> u16 {
+    if observed.normalized() == expected {
+        return 1_000;
+    }
+    workspace.characters.clear();
+    workspace
+        .characters
+        .extend(expected.chars().map(|ch| ch as u32));
+    workspace.keyboard.clear();
+    if crate::keyboard::text_to_key_events_into(expected, false, &mut workspace.key_events)
+        .is_some()
+    {
+        workspace.keyboard.extend(
+            workspace
+                .key_events
+                .iter()
+                .map(|event| u32::from(event.keycode) | (u32::from(event.shift) << 16)),
+        );
+    }
+    let character = normalized_distance_similarity(&observed.characters, &workspace.characters);
+    if character == 1_000 {
+        return character;
+    }
+    let keyboard = normalized_distance_similarity_at_least(
+        &observed.keyboard,
+        &workspace.keyboard,
+        character.saturating_add(1),
+    );
+    character.max(keyboard)
+}
+
 pub(super) fn prepared_normalized_similarity_at_least_milli(
     observed: &SurfaceScoringProfile,
     expected: &SurfaceScoringProfile,
@@ -1562,7 +1616,7 @@ fn surface_atom_keys_normalized(surface: &str) -> Vec<u64> {
 }
 
 #[allow(clippy::too_many_arguments)]
-fn append_atom_family(
+pub(super) fn append_atom_family(
     units: &[u32],
     start_marker: u32,
     end_marker: u32,
@@ -1607,11 +1661,11 @@ fn append_atom_family(
     }
 }
 
-fn typed_atom_key(channel: u8, domain: u64, units: &[u32]) -> u64 {
+pub(super) fn typed_atom_key(channel: u8, domain: u64, units: &[u32]) -> u64 {
     (u64::from(channel) << 56) | (hash_atom(domain, units) & ATOM_HASH_MASK)
 }
 
-fn atom_weight(atom: u64) -> u8 {
+pub(super) fn atom_weight(atom: u64) -> u8 {
     match (atom >> 56) as u8 {
         ATOM_CHARACTER_BIGRAM | ATOM_KEYBOARD_BIGRAM => 1,
         ATOM_CHARACTER_TRIGRAM
@@ -1732,7 +1786,7 @@ fn simhash(units: &[u32], domain: u64) -> u64 {
         })
 }
 
-fn hash_atom(channel: u64, units: &[u32]) -> u64 {
+pub(super) fn hash_atom(channel: u64, units: &[u32]) -> u64 {
     units
         .iter()
         .fold(crate::stable_hash::mix64_golden(channel), |state, unit| {
@@ -1785,6 +1839,14 @@ fn normalized_distance_similarity_at_least<T: Eq>(
 
 fn damerau_levenshtein<T: Eq>(left: &[T], right: &[T]) -> usize {
     const STACK_ROW_UNITS: usize = 64;
+    if left == right {
+        return 0;
+    }
+    let (left, right) = if left.len() < right.len() {
+        (right, left)
+    } else {
+        (left, right)
+    };
     if right.len() <= STACK_ROW_UNITS {
         let mut previous_previous = [0_usize; STACK_ROW_UNITS + 1];
         let mut previous = [0_usize; STACK_ROW_UNITS + 1];
@@ -1815,6 +1877,14 @@ fn damerau_levenshtein_bounded<T: Eq>(
     maximum_distance: usize,
 ) -> Option<usize> {
     const STACK_ROW_UNITS: usize = 64;
+    if left == right {
+        return Some(0);
+    }
+    let (left, right) = if left.len() < right.len() {
+        (right, left)
+    } else {
+        (left, right)
+    };
     if left.len().abs_diff(right.len()) > maximum_distance {
         return None;
     }
@@ -2018,6 +2088,7 @@ mod tests {
 
     #[test]
     fn prepared_surface_profiles_preserve_geometry_and_atom_scores() {
+        let mut geometry_workspace = SurfaceGeometryWorkspace::default();
         for (observed, expected) in [
             ("ПРИВЕТ!", "привет"),
             ("ghbdtn", "привет"),
@@ -2044,6 +2115,21 @@ mod tests {
             let expected_profile = surface_scoring_profile(expected);
             assert_eq!(
                 prepared_normalized_similarity_milli(&observed_profile, &expected_profile),
+                legacy_character.max(legacy_keyboard)
+            );
+            assert_eq!(
+                prepared_similarity_to_normalized_surface_milli(
+                    &observed_profile,
+                    &normalized_expected,
+                ),
+                legacy_character.max(legacy_keyboard)
+            );
+            assert_eq!(
+                prepared_similarity_to_normalized_surface_with_workspace_milli(
+                    &observed_profile,
+                    &normalized_expected,
+                    &mut geometry_workspace,
+                ),
                 legacy_character.max(legacy_keyboard)
             );
             assert_eq!(

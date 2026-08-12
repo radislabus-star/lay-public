@@ -1,0 +1,23 @@
+	Command being timed: "sudo -n perf record -F 999 -g --call-graph fp -o receipts/v66/perf-clone-free-exact-replay-symbolized.data -- target/release/lay-nanda-wave-train --prove-productive-paradigm-v1 out/LAY-L2-PRODUCTIVE-PARADIGM-V1-SHADOW-V66.p2m --memory input/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin --l2-package /home/e/.local/share/lay/nanda_wave/l2/LAY-L2-RU-FULL-v13.bin --axis-schema data/morphology/productive_v1_ru_axis_schema.json --work-dir work/full-v1-v63-reinduce --heldout-per-class 10 --workers 20 --receipt receipts/v66/profile-clone-free-exact-replay-symbolized-13x10-receipt.json"
+	User time (seconds): 15.85
+	System time (seconds): 0.58
+	Percent of CPU this job got: 122%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:13.42
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 308688
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 40772
+	Voluntary context switches: 633
+	Involuntary context switches: 317
+	Swaps: 0
+	File system inputs: 3384
+	File system outputs: 4376
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

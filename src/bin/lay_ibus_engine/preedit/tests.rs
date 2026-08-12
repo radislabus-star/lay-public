@@ -40,12 +40,36 @@ fn candidate_target_preserves_nonzero_selection_by_surface() {
 fn typed_continuation_releases_auto_target_but_keeps_learning_observation() {
     let mut fast = PreeditFastState::default();
     fast.remember_target(Some("перезагрузка".to_string()));
-    fast.observe_prediction_target(Some("перезагрузка".to_string()));
+    fast.observe_prediction_target("пере", Some("перезагрузка".to_string()));
 
     fast.push('з');
 
     assert_eq!(fast.target_surface(), None);
     assert_eq!(fast.observed_prediction_target(), Some("перезагрузка"));
+}
+
+#[test]
+fn prediction_feedback_distinguishes_confirmation_ending_change_and_censoring() {
+    assert_eq!(
+        observed_prediction_outcome("прек", "прекрасный", "прекрасный", true),
+        ObservedPredictionOutcome::ConfirmedAttested
+    );
+    assert_eq!(
+        observed_prediction_outcome("прек", "прекрасный", "прекрасно", true),
+        ObservedPredictionOutcome::EndingChanged
+    );
+    assert_eq!(
+        observed_prediction_outcome("прек", "прекрасный", "прекратить", true),
+        ObservedPredictionOutcome::DivergedAfterPrefix
+    );
+    assert_eq!(
+        observed_prediction_outcome("прек", "прекрасный", "другое", true),
+        ObservedPredictionOutcome::Censored
+    );
+    assert_eq!(
+        observed_prediction_outcome("прек", "прекрасный", "прекрасный", false),
+        ObservedPredictionOutcome::MatchedUnattested
+    );
 }
 
 #[test]
@@ -183,7 +207,7 @@ fn manually_finished_visible_prediction_records_positive_usage() {
     engine.preedit_candidates = vec!["а".to_string()];
     engine
         .preedit_fast
-        .observe_prediction_target(Some("да".to_string()));
+        .observe_prediction_target("д", Some("да".to_string()));
     engine.push_tail_char('а');
     assert_eq!(
         engine.preedit_fast.observed_prediction_target(),
@@ -838,6 +862,29 @@ fn experimental_short_russian_prefix_gets_lexical_candidates() {
         !engine.preedit_candidates.is_empty(),
         "experimental L2 should not stay silent for contextual prefix 'при'"
     );
+}
+
+#[test]
+fn managed_committed_token_remains_active_until_its_boundary() {
+    let mut engine = LayIbusEngine::new(
+        "/test".to_string(),
+        Arc::new(Mutex::new(Default::default())),
+        true,
+        true,
+        LayConfig {
+            text_backend: "ime".to_string(),
+            nanda_precognition: true,
+            ..LayConfig::default()
+        },
+    );
+
+    for ch in "аб".chars() {
+        engine.push_tail_char(ch);
+    }
+    assert!(engine.live_completion_input_is_active());
+
+    engine.push_tail_char(' ');
+    assert!(!engine.live_completion_input_is_active());
 }
 
 #[test]

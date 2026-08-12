@@ -1,0 +1,80 @@
+{
+  "receipt_id": "L2_PRODUCTIVE_V90_LIVE_OWNER_HANDOFF_2026-08-12",
+  "date": "2026-08-12",
+  "git_base": "8bb6463b390e5abc79196c17ed31ac1d5ea8e377",
+  "verdict": "PASS_local_live_authority_contract",
+  "source_runtime_authority_changed": true,
+  "installed_runtime_authority_changed": false,
+  "canonical_route": "L1.1 bounded lattice -> Productive V90 L2 -> one composite lattice -> common live L3 phrase field -> TransitionDecisionCore -> verifier",
+  "tested": {
+    "ime_feedback_classifier": {
+      "test": "prediction_feedback_distinguishes_confirmation_ending_change_and_censoring",
+      "passed": 1,
+      "failed": 0
+    },
+    "productive_multi_surface_contract": {
+      "test": "multiple_productive_surfaces_defer_slot_selection_to_common_l3",
+      "passed": 1,
+      "failed": 0
+    },
+    "live_authority_chain": {
+      "test": "productive_v90_tie_requires_common_l3_and_verified_transition",
+      "passed": 1,
+      "failed": 0
+    },
+    "changed_suite": {
+      "command": "scripts/check-lay-changed.sh",
+      "verdict": "PASS",
+      "text_mutation_monopoly_passed": 15,
+      "text_mutation_monopoly_failed": 0,
+      "input_gate_passed": 6,
+      "input_gate_failed": 0,
+      "ime_hot_candidate_p99_us": 64,
+      "ime_hot_candidate_max_us": 69
+    },
+    "recent_action_shadow_replay": {
+      "records": 57,
+      "selected_apply": 43,
+      "false_apply_candidates": 0,
+      "missed_good_candidates": 0,
+      "unverified_transitions": 0,
+      "verdict": "PASS-shadow"
+    },
+    "unsafe_edit_scoreboard": {
+      "records": 57,
+      "gate_failures": 0,
+      "unverified_transition": 0,
+      "verdict": "PASS"
+    }
+  },
+  "invariants": [
+    "a grounded L1.1 Winner remains protected",
+    "multiple productive surfaces cannot be settled inside L2",
+    "unresolved productive surfaces remain SuggestOnly",
+    "only a directed common-L3 certificate or exact positive L4 transition may promote SuggestOnly to authority evaluation",
+    "the structural verifier remains mandatory",
+    "absence of Tab is censored feedback, not anti-evidence"
+  ],
+  "diagnostic_cleanup": [
+    "removed unused copied L1.1 seed vector from StandaloneSurfaceFieldReadout",
+    "removed unused and unreported seed_duration from StandaloneSurfaceFieldReadout"
+  ],
+  "not_tested": [
+    "current source worktree against the complete remote V90 fixed proof",
+    "current release binary compatibility with the V90 package fingerprints",
+    "installed daemon and physical IBus with Productive V90 loaded",
+    "live Space-path latency and RSS with the real package",
+    "double-Shift rollback after final installation"
+  ],
+  "source": [
+    "src/nanda_wave/l2_field/bridge.rs",
+    "src/nanda_wave/l2_field/productive_v1/live.rs",
+    "src/typing_transition/decision.rs",
+    "src/typing_transition/decision/tests.rs",
+    "src/bin/lay_ibus_engine/preedit.rs",
+    "src/typing_memory.rs",
+    "src/typing_cpu/runtime.rs",
+    "src/nanda_wave/usage_prior.rs",
+    "docs/l2-l11-canonical-architecture.md"
+  ]
+}

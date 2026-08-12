@@ -77,6 +77,50 @@ pub(crate) fn record_capabilities(caps: u32, surrounding_text_supported: bool) {
     ));
 }
 
+pub(crate) fn record_surrounding_text_snapshot(
+    text_chars: usize,
+    cursor_pos: u32,
+    anchor_pos: u32,
+    auto_undo_retry: &str,
+) {
+    if !enabled() {
+        return;
+    }
+    write_record(format!(
+        r#"{{"kind":"ibus_surrounding_text","text_chars":{text_chars},"cursor_pos":{cursor_pos},"anchor_pos":{anchor_pos},"auto_undo_retry":"{auto_undo_retry}"}}"#
+    ));
+}
+
+pub(crate) fn record_auto_undo_retry(status: &str) {
+    if !enabled() {
+        return;
+    }
+    write_record(format!(
+        r#"{{"kind":"ibus_auto_undo_retry","status":"{status}"}}"#
+    ));
+}
+
+pub(crate) fn record_auto_undo_lifecycle(
+    stage: &str,
+    reason: &str,
+    engine_path: &str,
+    active_path_matches: bool,
+    pending: bool,
+    retry: bool,
+    engine_tail_chars: usize,
+    pending_tail_chars: usize,
+    replacement_chars: usize,
+    snapshot_chars: usize,
+) {
+    if !enabled() {
+        return;
+    }
+    let engine_path = json_string(engine_path);
+    write_record(format!(
+        r#"{{"kind":"ibus_auto_undo_lifecycle","stage":"{stage}","reason":"{reason}","engine_path":{engine_path},"active_path_matches":{active_path_matches},"pending":{pending},"retry":{retry},"engine_tail_chars":{engine_tail_chars},"pending_tail_chars":{pending_tail_chars},"replacement_chars":{replacement_chars},"snapshot_chars":{snapshot_chars}}}"#
+    ));
+}
+
 pub(crate) fn record_ime_commit(decision_us: u64, clear_us: u64, output_us: u64, elapsed_us: u64) {
     if !enabled() {
         return;
@@ -265,6 +309,9 @@ fn debug_enabled_cached() -> bool {
 }
 
 fn trace_path() -> PathBuf {
+    if let Some(path) = std::env::var_os("LAY_IBUS_TRACE_PATH") {
+        return PathBuf::from(path);
+    }
     std::env::var_os("HOME")
         .map(PathBuf::from)
         .unwrap_or_else(|| PathBuf::from("/tmp"))

@@ -280,6 +280,9 @@ impl LayIbusEngine {
         &mut self,
         emitter: &SignalEmitter<'_>,
     ) -> fdo::Result<Option<bool>> {
+        let boundary_elided_snapshot = self.pending_ime_auto_undo_uses_boundary_elided_snapshot();
+        let causal_precondition_snapshot =
+            self.pending_ime_auto_undo_uses_causal_precondition_snapshot();
         let Some(pending) = self.take_pending_ime_auto_undo() else {
             return Ok(None);
         };
@@ -293,16 +296,16 @@ impl LayIbusEngine {
             Some(self.path.clone()),
             self.tail_epoch,
         );
-        let handled = self
-            .replace_committed_tail(
-                emitter,
-                CommittedTailReplaceRequest::ime_auto_undo(
-                    pending.replacement.chars().count() as u32,
-                    pending.original.clone(),
-                )
-                .with_expected_tail(expected_tail),
-            )
-            .await?;
+        let mut request = CommittedTailReplaceRequest::ime_auto_undo(
+            pending.replacement.chars().count() as u32,
+            pending.original.clone(),
+        )
+        .with_expected_tail(expected_tail)
+        .with_boundary_elided_external_snapshot(boundary_elided_snapshot);
+        if causal_precondition_snapshot {
+            request = request.with_causal_precondition_external_snapshot(pending.original.clone());
+        }
+        let handled = self.replace_committed_tail(emitter, request).await?;
         if handled {
             lay::typing_cpu::TypingCpu::record_reverted_system_apply(
                 &accepted_context,

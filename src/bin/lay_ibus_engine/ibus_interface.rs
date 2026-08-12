@@ -211,11 +211,47 @@ impl LayIbusEngine {
     fn cursor_down(&mut self) {}
 
     #[zbus(name = "SetSurroundingText")]
-    fn set_surrounding_text(&mut self, text: Value<'_>, cursor_pos: u32, anchor_pos: u32) {
+    async fn set_surrounding_text(
+        &mut self,
+        #[zbus(signal_emitter)] emitter: SignalEmitter<'_>,
+        text: Value<'_>,
+        cursor_pos: u32,
+        anchor_pos: u32,
+    ) -> fdo::Result<()> {
         self.surrounding_text_supported = true;
         self.surrounding_text_snapshot = ibus_text_value_to_string(&text)
             .map(|text| SurroundingTextSnapshot::new(text, cursor_pos, anchor_pos));
+        let retry_status = self.pending_ime_auto_undo_retry_status();
+        trace::record_surrounding_text_snapshot(
+            self.surrounding_text_snapshot
+                .as_ref()
+                .map_or(0, |snapshot| snapshot.text.chars().count()),
+            cursor_pos,
+            anchor_pos,
+            retry_status,
+        );
+        if should_apply_auto_undo_before_postcondition(retry_status) {
+            let status = if self.undo_last_ime_autocorrect(&emitter).await?.is_some() {
+                "applied_after_causal_precondition_snapshot"
+            } else {
+                "causal_precondition_apply_failed"
+            };
+            trace::record_auto_undo_retry(status);
+        }
         self.observe_visible_postcondition();
+        if matches!(retry_status, "ready" | "ready_boundary_elided") {
+            let status = if self.undo_last_ime_autocorrect(&emitter).await?.is_some() {
+                if retry_status == "ready_boundary_elided" {
+                    "applied_after_boundary_elided_snapshot"
+                } else {
+                    "applied_after_exact_snapshot"
+                }
+            } else {
+                "snapshot_apply_failed"
+            };
+            trace::record_auto_undo_retry(status);
+        }
+        Ok(())
     }
 
     #[zbus(name = "PanelExtensionReceived")]
@@ -279,6 +315,29 @@ impl LayIbusEngine {
     #[zbus(property, name = "ActiveSurroundingText")]
     fn active_surrounding_text(&self) -> bool {
         true
+    }
+}
+
+fn should_apply_auto_undo_before_postcondition(retry_status: &str) -> bool {
+    retry_status == "ready_causal_precondition"
+}
+
+#[cfg(test)]
+mod causal_precondition_tests {
+    use super::should_apply_auto_undo_before_postcondition;
+
+    #[test]
+    fn causal_precondition_undo_precedes_stale_postcondition_quarantine() {
+        assert!(should_apply_auto_undo_before_postcondition(
+            "ready_causal_precondition"
+        ));
+        assert!(!should_apply_auto_undo_before_postcondition("ready"));
+        assert!(!should_apply_auto_undo_before_postcondition(
+            "ready_boundary_elided"
+        ));
+        assert!(!should_apply_auto_undo_before_postcondition(
+            "waiting_exact_snapshot"
+        ));
     }
 }
 

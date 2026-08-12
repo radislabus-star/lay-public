@@ -500,6 +500,22 @@ impl TypingMemoryEvent {
         suggested_text: &str,
         final_text: &str,
     ) -> Option<Self> {
+        Self::edited_ime_with_shared_identity(
+            context_tail,
+            typed_prefix,
+            suggested_text,
+            final_text,
+            false,
+        )
+    }
+
+    pub(crate) fn edited_ime_with_shared_identity(
+        context_tail: &str,
+        typed_prefix: &str,
+        suggested_text: &str,
+        final_text: &str,
+        shared_morphology_identity: bool,
+    ) -> Option<Self> {
         let suggested = single_normalized_word(suggested_text)?;
         let final_word = single_normalized_word(final_text)?;
         if suggested == final_word || !learning_target_is_attested(&final_word) {
@@ -507,8 +523,12 @@ impl TypingMemoryEvent {
         }
 
         let prefix = normalize_memory_word(typed_prefix);
-        if prefix.is_empty() || !suggested.starts_with(&prefix) || !final_word.starts_with(&prefix)
-        {
+        if !completion_edit_geometry_is_linked_with_identity(
+            &prefix,
+            &suggested,
+            &final_word,
+            shared_morphology_identity,
+        ) {
             return None;
         }
         let common_chars = common_prefix_chars(&suggested, &final_word);
@@ -589,6 +609,51 @@ impl TypingMemoryEvent {
             TypingMemoryOperation::from_legacy(operation),
         )
     }
+}
+
+pub(crate) fn completion_edit_geometry_is_linked(
+    typed_prefix: &str,
+    suggested_text: &str,
+    final_text: &str,
+) -> bool {
+    completion_edit_geometry_is_linked_with_identity(
+        typed_prefix,
+        suggested_text,
+        final_text,
+        false,
+    )
+}
+
+pub(crate) fn completion_edit_geometry_is_linked_with_identity(
+    typed_prefix: &str,
+    suggested_text: &str,
+    final_text: &str,
+    shared_morphology_identity: bool,
+) -> bool {
+    const MAX_ENDING_EDIT_CHARS: usize = 5;
+    const MIN_STEM_ADVANTAGE_CHARS: usize = 3;
+
+    let prefix = normalize_memory_word(typed_prefix);
+    let suggested = normalize_memory_word(suggested_text);
+    let final_word = normalize_memory_word(final_text);
+    if prefix.is_empty()
+        || suggested == final_word
+        || !suggested.starts_with(&prefix)
+        || !final_word.starts_with(&prefix)
+    {
+        return false;
+    }
+    let common_chars = common_prefix_chars(&suggested, &final_word);
+    let prefix_chars = prefix.chars().count();
+    let changed_tail_chars = suggested
+        .chars()
+        .count()
+        .saturating_sub(common_chars)
+        .max(final_word.chars().count().saturating_sub(common_chars));
+    common_chars > prefix_chars
+        && (shared_morphology_identity
+            || (changed_tail_chars <= MAX_ENDING_EDIT_CHARS
+                && common_chars >= changed_tail_chars.saturating_add(MIN_STEM_ADVANTAGE_CHARS)))
 }
 
 fn rejected_events(
@@ -1061,6 +1126,31 @@ mod tests {
         assert_eq!(trace.preserved_suffix_chars, 4);
         assert_eq!(trace.deleted_chars, 2);
         assert_eq!(trace.inserted_chars, 1);
+    }
+
+    #[test]
+    fn completion_edit_requires_a_shared_stem_not_only_a_shared_typed_prefix() {
+        assert!(completion_edit_geometry_is_linked(
+            "прек",
+            "прекрасный",
+            "прекрасно"
+        ));
+        assert!(completion_edit_geometry_is_linked(
+            "пос",
+            "посмотреть",
+            "посмотри"
+        ));
+        assert!(!completion_edit_geometry_is_linked(
+            "прек",
+            "прекрасный",
+            "прекратить"
+        ));
+        assert!(completion_edit_geometry_is_linked_with_identity(
+            "к",
+            "котами",
+            "коты",
+            true
+        ));
     }
 
     #[test]

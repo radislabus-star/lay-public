@@ -123,10 +123,39 @@ impl RuntimeL2Package {
         }
     }
 
+    pub(super) fn form_ref_for_surface(&self, surface: &str) -> Option<u32> {
+        match self {
+            Self::Reference(package) => {
+                let mut left = 0_usize;
+                let mut right = package.form_refs.len();
+                while left < right {
+                    let middle = left + (right - left) / 2;
+                    match self.surface(middle)?.as_ref().cmp(surface) {
+                        std::cmp::Ordering::Less => left = middle + 1,
+                        std::cmp::Ordering::Greater => right = middle,
+                        std::cmp::Ordering::Equal => return u32::try_from(middle).ok(),
+                    }
+                }
+                None
+            }
+            Self::Compact(package) => package.form_ref_for_surface(surface),
+        }
+    }
+
     pub(super) fn binding(&self, index: usize) -> Option<MorphBinding> {
         match self {
             Self::Reference(package) => package.morph_bindings.get(index).copied(),
             Self::Compact(package) => package.binding(index),
+        }
+    }
+
+    pub(super) fn binding_for_lemma(&self, index: usize, lemma_id: usize) -> Option<MorphBinding> {
+        match self {
+            Self::Reference(package) => {
+                let binding = package.morph_bindings.get(index).copied()?;
+                (binding.lemma_center_id as usize == lemma_id).then_some(binding)
+            }
+            Self::Compact(package) => package.binding_for_lemma(index, lemma_id),
         }
     }
 

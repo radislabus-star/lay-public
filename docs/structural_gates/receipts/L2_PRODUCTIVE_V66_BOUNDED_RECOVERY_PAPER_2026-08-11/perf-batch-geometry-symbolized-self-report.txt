@@ -1,0 +1,71 @@
+# To display the perf.data header info, please use --header/--header-only options.
+#
+#
+# Total Lost Samples: 0
+#
+# Samples: 5K of event 'cpu_atom/cycles/P'
+# Event count (approx.): 12521390022
+#
+# Overhead  Command          Shared Object         Symbol                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+# ........  ...............  ....................  ................................................................................................................................................................................................................................................................................................................................................................................................................................................................
+#
+    10.25%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RNvMs7_NtNtNtNtCsiTbic97zBM6_3lay10nanda_wave8l2_field13productive_v116packaged_runtimeNtB5_27PackagedProductiveRuntimeV143derive_cold_lemma_bindings_with_diagnostics
+    10.05%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RINvNtNtNtNtCscI6d9CVNmLh_4core5slice4sort8unstable9quicksort9quicksortjNvYjNtNtBa_3cmp10PartialOrd2ltECsiTbic97zBM6_3lay
+     7.97%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RINvMs2_NtNtNtNtCsiTbic97zBM6_3lay10nanda_wave8l2_field13productive_v16formatNtB6_23ProductivePackageViewV16recordNtNtB8_7records15MorphOpRecordV1EBe_
+     7.94%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RINvMs2_NtNtNtNtCsiTbic97zBM6_3lay10nanda_wave8l2_field13productive_v16formatNtB6_23ProductivePackageViewV16recordNtNtB8_7records26MorphProgramHeaderRecordV1EBe_
+     7.90%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RNvNtNtNtNtCsiTbic97zBM6_3lay10nanda_wave8l2_field13productive_v18geometry13batch_simhash
+     6.38%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RNvMs7_NtNtNtNtCsiTbic97zBM6_3lay10nanda_wave8l2_field13productive_v116packaged_runtimeNtB5_27PackagedProductiveRuntimeV116traverse_binding
+     5.01%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RNvMs0_NtNtNtNtCsiTbic97zBM6_3lay10nanda_wave8l2_field13productive_v18geometryNtB5_9OsaLaneV14emit
+     4.22%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RNvNtNtNtNtCsiTbic97zBM6_3lay10nanda_wave8l2_field13productive_v18geometry25append_atom_family_reused
+     3.92%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RNvMs7_NtNtNtNtCsiTbic97zBM6_3lay10nanda_wave8l2_field13productive_v116packaged_runtimeNtB5_27PackagedProductiveRuntimeV129execute_packaged_program_into
+     3.54%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RNvMs7_NtNtNtNtCsiTbic97zBM6_3lay10nanda_wave8l2_field13productive_v116packaged_runtimeNtB5_27PackagedProductiveRuntimeV135paradigm_reconstructs_exposed_forms
+     3.25%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RINvMs2_NtNtNtNtCsiTbic97zBM6_3lay10nanda_wave8l2_field13productive_v16formatNtB6_23ProductivePackageViewV16recordNtNtB8_7records24SlotPhaseProfileRecordV1EBe_
+     2.61%  lay-nanda-wave-  libc.so.6             [.] __memmove_avx_unaligned_erms
+     2.29%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RNvMs_NtNtNtNtCsiTbic97zBM6_3lay10nanda_wave8l2_field13productive_v17recordsNtB4_15MorphOpRecordV18validate
+     2.13%  lay-nanda-wave-  libc.so.6             [.] _int_malloc
+     2.12%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RINvXse_NtCs40k4W9msRzi_5alloc6stringNtB6_6StringINtNtNtNtCscI6d9CVNmLh_4core4iter6traits7collect6ExtendRcE6extendINtNtNtBU_5slice4iter4ItercEECsiTbic97zBM6_3lay
+     2.05%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RNvMsi_NtNtNtCs40k4W9msRzi_5alloc11collections5btree3mapINtB5_8BTreeMapmNtNtB7_7set_val9SetValZSTE6insertCsiTbic97zBM6_3lay
+     1.87%  lay-nanda-wave-  libc.so.6             [.] _int_free
+     0.93%  lay-nanda-wave-  libc.so.6             [.] __memcmp_avx2_movbe
+     0.84%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RNvNtNtNtCscI6d9CVNmLh_4core7unicode12unicode_data11conversions6lookup
+     0.78%  lay-nanda-wave-  libc.so.6             [.] malloc
+     0.67%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RNvNtNtCscI6d9CVNmLh_4core3str8converts9from_utf8
+     0.64%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RNvMs3_NtNtNtNtCsiTbic97zBM6_3lay10nanda_wave8l2_field13productive_v18geometryNtB5_21AtomLaneAccumulatorV114add_typed_atom
+     0.64%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RNvMs2_NtNtNtNtCsiTbic97zBM6_3lay10nanda_wave8l2_field13productive_v16formatNtB5_23ProductivePackageViewV112pool_payload
+     0.58%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RNvMs3_NtNtNtNtCsiTbic97zBM6_3lay10nanda_wave8l2_field13productive_v18geometryNtB5_21AtomLaneAccumulatorV116add_simhash_atom
+     0.58%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RNvXNtNtCscI6d9CVNmLh_4core3str4iterNtB2_5CharsNtNtNtNtB6_4iter6traits8iterator8Iterator5count
+     0.56%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RNvXNtNtCscI6d9CVNmLh_4core4iter8adaptersINtB2_12GenericShuntINtNtB2_3map3MapINtNtNtB6_3ops5range5RangejENCNvMs_NtNtNtNtCsiTbic97zBM6_3lay10nanda_wave8l2_field13productive_v123anchor_recovery_packageNtB1M_27AnchorRecoveryPackageViewV119recover_anchor_into0EINtNtB6_6result6ResultNtNtB6_7convert10InfallibleNtNtCs40k4W9msRzi_5alloc6string6StringEENtNtNtB4_6traits8iterator8Iterator4nextB1U_
+     0.56%  lay-nanda-wave-  libc.so.6             [.] realloc
+     0.51%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RNvMs3_NtNtNtNtCsiTbic97zBM6_3lay10nanda_wave8l2_field13productive_v18geometryNtB5_21AtomLaneAccumulatorV117terminal_evidence
+     0.48%  lay-nanda-wave-  libc.so.6             [.] malloc_consolidate
+     0.39%  lay-nanda-wave-  libc.so.6             [.] cfree@GLIBC_2.2.5
+     0.36%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RINvMs2_NtNtNtNtCsiTbic97zBM6_3lay10nanda_wave8l2_field13productive_v16formatNtB6_23ProductivePackageViewV16recordNtNtB8_7records27DirectionalResidualRecordV1EBe_
+     0.34%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RINvNtNtNtNtCscI6d9CVNmLh_4core5slice4sort6stable9quicksort9quicksortNtNtNtNtNtCsiTbic97zBM6_3lay10nanda_wave8l2_field13productive_v116packaged_runtime26RecoveredAnchorCandidateV1NCINvMNtCs40k4W9msRzi_5alloc5sliceSB15_7sort_byNvMs0_B17_B15_14evidence_orderE0EB1f_
+     0.32%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RNvNtNtCsaItXR7QDBHT_4libm4math3log3log
+     0.32%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RNvMs7_NtNtNtNtCsiTbic97zBM6_3lay10nanda_wave8l2_field13productive_v116packaged_runtimeNtB5_27PackagedProductiveRuntimeV117paradigm_slot_ids
+     0.28%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RINvNtNtNtNtCscI6d9CVNmLh_4core5slice4sort6shared5pivot11median3_recjNvYjNtNtBa_3cmp10PartialOrd2ltECsiTbic97zBM6_3lay
+     0.28%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RNvMs6_NtNtNtNtCsiTbic97zBM6_3lay10nanda_wave8l2_field13productive_v116packaged_runtimeNtB5_26BindingCandidateFrontierV16retain
+     0.28%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RNvMsi_NtNtNtCs40k4W9msRzi_5alloc11collections5btree3mapINtB5_8BTreeMapjNtNtB7_7set_val9SetValZSTE6insertCsiTbic97zBM6_3lay
+     0.27%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RNvNtNtNtCsiTbic97zBM6_3lay8keyboard10text_input7ru_emit20char_to_ru_key_event
+     0.26%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RNvXNtNtCscI6d9CVNmLh_4core4iter8adaptersINtB2_12GenericShuntINtNtB2_3map3MapINtNtNtB6_3ops5range5RangejENCNvMs_NtNtNtNtCsiTbic97zBM6_3lay10nanda_wave8l2_field13productive_v123anchor_recovery_packageNtB1M_27AnchorRecoveryPackageViewV114recovery_paths0EINtNtB6_6result6ResultNtNtB6_7convert10InfallibleNtNtCs40k4W9msRzi_5alloc6string6StringEENtNtNtB4_6traits8iterator8Iterator4nextB1U_
+     0.25%  lay-nanda-wave-  libc.so.6             [.] unlink_chunk.constprop.0
+     0.22%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RNvMs3_NtNtNtNtCsiTbic97zBM6_3lay10nanda_wave8l2_field13productive_v18geometryNtB5_21AtomLaneAccumulatorV117append_typed_unit
+     0.21%  lay-nanda-wave-  libc.so.6             [.] _int_realloc
+     0.21%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RNvNtNtNtNtCsiTbic97zBM6_3lay10nanda_wave8l2_field13productive_v15score22extract_feature_vector
+     0.20%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RNvNtNtNtCsiTbic97zBM6_3lay8keyboard10text_input4runs23text_to_key_events_into
+     0.18%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RNvMs4_NtCs40k4W9msRzi_5alloc7raw_vecNtB5_11RawVecInner11finish_growCsiTbic97zBM6_3lay
+     0.18%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RINvMs2_NtNtNtNtCsiTbic97zBM6_3lay10nanda_wave8l2_field13productive_v16formatNtB6_23ProductivePackageViewV16recordNtNtB8_7records22ParadigmCenterRecordV1EBe_
+     0.18%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RNvMs_NtNtNtNtCsiTbic97zBM6_3lay10nanda_wave8l2_field13productive_v123anchor_recovery_packageNtB4_27AnchorRecoveryPackageViewV17segment
+     0.18%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RNvNtNtNtNtCsiTbic97zBM6_3lay10nanda_wave8l2_field13productive_v116packaged_runtime20retain_surface_basin
+     0.18%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RINvMs2_NtNtNtNtCsiTbic97zBM6_3lay10nanda_wave8l2_field13productive_v16formatNtB6_23ProductivePackageViewV16recordNtNtB8_7records26ProductiveTerminalRecordV1EBe_
+     0.14%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RNvXs1_NtNtNtCscI6d9CVNmLh_4core4iter8adapters7flattenINtB5_7FlatMapINtNtB7_6filter6FilterINtNtNtNtCs40k4W9msRzi_5alloc11collections5btree3map8IntoItermINtNtB1z_3vec3VecNtNtNtNtNtCsiTbic97zBM6_3lay10nanda_wave8l2_field13productive_v116packaged_runtime17RankedCandidateV1EENCNvMs6_B2J_NtB2J_26BindingCandidateFrontierV122into_geometry_selecteds1_0EB2q_NCB4o_s2_0ENtNtNtB9_6traits8iterator8Iterator4nextB2R_
+     0.12%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RNvNtNtCsaItXR7QDBHT_4libm4math5log1p5log1p
+     0.10%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RINvNtNtNtCscI6d9CVNmLh_4core5slice4sort8unstable7ipnsortmNvYmNtNtB8_3cmp10PartialOrd2ltECsiTbic97zBM6_3lay
+     0.10%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RINvMsj_NtCs40k4W9msRzi_5alloc3vecINtB6_3VecmE16extend_desugaredINtNtNtNtCscI6d9CVNmLh_4core4iter8adapters3map3MapNtNtNtB19_3str4iter5CharsNvYmINtNtB19_7convert4FromcE4fromEECsiTbic97zBM6_3lay
+     0.10%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RNvXsI_NtNtNtNtCsiTbic97zBM6_3lay10nanda_wave8l2_field13productive_v18geometryNtB5_21AtomLaneAccumulatorV1NtNtCscI6d9CVNmLh_4core5clone5Clone5clone
+     0.10%  lay-nanda-wave-  lay-nanda-wave-train  [.] _RNvMs7_NtNtNtNtCsiTbic97zBM6_3lay10nanda_wave8l2_field13productive_v116packaged_runtimeNtB5_27PackagedProductiveRuntimeV113feature_input
+
+
+#
+# (Cannot load tips.txt file, please install perf!)
+#
