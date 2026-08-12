@@ -1,0 +1,57 @@
+{
+  "schema": "lay.architecture-experiment-receipt.v1",
+  "task_id": "lay-uinput-stuck-key-recovery-2026-08-12",
+  "verdict": "PASS_RUNTIME",
+  "tested": {
+    "focused_tests": {
+      "passed": 2,
+      "failed": 0,
+      "scope": [
+        "plain and shifted taps close every pressed key before SYN_REPORT",
+        "injected emit failure attempts release-all for every supported virtual key"
+      ]
+    },
+    "remote_daemon_suite": {
+      "patched_passed": 199,
+      "patched_failed": 6,
+      "baseline_failed": 6,
+      "new_failing_test_names": 0
+    },
+    "installed_runtime": {
+      "service": "lay-daemon.service",
+      "service_state": "active/running",
+      "active_engine": "lay-ime-ru",
+      "ibus_pid_before": 3702,
+      "ibus_pid_after": 3702,
+      "ydotool_service": "inactive",
+      "virtual_device": "lay-virtual-keyboard",
+      "journal_warning_or_higher_after_activation": 0
+    }
+  },
+  "measured_facts": {
+    "remote_host": "e@192.168.3.94",
+    "remote_worktree": "/home/e/codex-worktrees/lay-uinput-stuck-key-20260812",
+    "release_build_command": "scripts/cargo-guard.sh build --release --bin lay-daemon",
+    "release_build_exit_status": 0,
+    "release_build_elapsed_seconds": 181.61,
+    "release_build_peak_rss_kib": 2382752,
+    "binary_size_bytes": 8161824,
+    "binary_sha256": "e9e527b3e8c88ffa595be1eff8c8b64f43a82642cccd7c7faad368d9de584b59",
+    "installed_path": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+    "rollback_path": "/home/ubu/.local/lib/lay/bin/lay-daemon.backup-20260812-uinput-stuck-key"
+  },
+  "not_tested": [
+    "forced kernel or uinput write failure in the installed desktop session",
+    "physical reproduction of every supported key in every application",
+    "visual synthetic-text smoke while the user was actively typing"
+  ],
+  "verdict_scope": {
+    "runtime_authority_changed": false,
+    "candidate_generation_changed": false,
+    "correction_admission_changed": false,
+    "backend_selection_changed": false,
+    "authorized_uinput_emission_changed": true,
+    "claim": "every intentional synthetic tap closes all keys in one visible evdev frame; reported emit errors and daemon lifecycle boundaries attempt release-all"
+  },
+  "preflight_receipt": "/home/ubu/projects/lay/docs/structural_gates/receipts/LAY_UINPUT_STUCK_KEY_RECOVERY_PREFLIGHT_2026-08-12.json"
+}

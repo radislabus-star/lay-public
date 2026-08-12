@@ -1,0 +1,171 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-uinput-stuck-key-recovery-2026-08-12",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "key-emit-source",
+      "kind": "file",
+      "path": "../../../src/bin/lay_daemon/text_output/key_emit.rs",
+      "expect": {
+        "size_bytes": 5889,
+        "sha256": "2bc00e30cd9abef092caa1022ddbcb2eba2631780df53a6e264b85e6d6778c21",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "physical-grab-source",
+      "kind": "file",
+      "path": "../../../src/bin/lay_daemon/physical_input_grab.rs",
+      "expect": {
+        "size_bytes": 4992,
+        "sha256": "780445ce566c504cbb4ad063ce625ad7aef2932ae804da51f75c3f98201a9439",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "startup-source",
+      "kind": "file",
+      "path": "../../../src/bin/lay_daemon/startup_runtime.rs",
+      "expect": {
+        "size_bytes": 5238,
+        "sha256": "4d19ebcffb98083f8a11333d242ef847190acc89160e1d3bd02e9b48dccd37ea",
+        "mode": "0664"
+      }
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {
+        "id": "edit-uinput-owner",
+        "kind": "filesystem_edit"
+      },
+      {
+        "id": "run-focused-tests",
+        "kind": "cargo_test"
+      },
+      {
+        "id": "build-release-remotely",
+        "kind": "remote_release_build"
+      },
+      {
+        "id": "activate-fixed-runtime",
+        "kind": "service_activation"
+      }
+    ],
+    "forbidden": [
+      "literal_surface_runtime_branch"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "key-emit-no-surface-hardcode",
+      "path": "../../../src/bin/lay_daemon/text_output/key_emit.rs",
+      "sha256": "2bc00e30cd9abef092caa1022ddbcb2eba2631780df53a6e264b85e6d6778c21",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "literal_surface_runtime_branch",
+          "regex": "(?:surface|word|phrase)\\s*=="
+        }
+      ]
+    }
+  ],
+  "preserved_artifacts": [
+    {
+      "id": "key-emit-baseline",
+      "path": "../../../src/bin/lay_daemon/text_output/key_emit.rs",
+      "policy": "scoped_source_change",
+      "rollback_policy": "restore_only_agent_owned_change",
+      "baseline_check_id": "key-emit-source"
+    },
+    {
+      "id": "physical-grab-baseline",
+      "path": "../../../src/bin/lay_daemon/physical_input_grab.rs",
+      "policy": "scoped_source_change",
+      "rollback_policy": "restore_only_agent_owned_change",
+      "baseline_check_id": "physical-grab-source"
+    },
+    {
+      "id": "startup-baseline",
+      "path": "../../../src/bin/lay_daemon/startup_runtime.rs",
+      "policy": "scoped_source_change",
+      "rollback_policy": "restore_only_agent_owned_change",
+      "baseline_check_id": "startup-source"
+    }
+  ],
+  "state_machine": {
+    "initial_state": "IDLE",
+    "terminal_states": [
+      "VISIBLE_TAP",
+      "EMIT_FAILED_RELEASE_ATTEMPTED"
+    ],
+    "steps": [
+      {
+        "id": "construct-complete-frame",
+        "from": "IDLE",
+        "to": "FRAME_READY",
+        "mutates": false
+      },
+      {
+        "id": "emit-complete-frame",
+        "from": "FRAME_READY",
+        "to": "VISIBLE_TAP",
+        "mutates": true,
+        "failure_state": "EMIT_FAILED_RELEASE_ATTEMPTED",
+        "cleanup": "best_effort_release_every_supported_virtual_key",
+        "preserves": [
+          "key-emit-baseline",
+          "physical-grab-baseline",
+          "startup-baseline"
+        ],
+        "test_id": "emit-failure-releases-all"
+      }
+    ]
+  },
+  "tests": [
+    {
+      "id": "tap-frame-unit",
+      "kind": "unit",
+      "expected": "every unshifted frame is down then up and every shifted frame closes key and Shift in one frame"
+    },
+    {
+      "id": "emit-failure-releases-all",
+      "kind": "fault_injection",
+      "expected": "an emit failure triggers a second best-effort frame containing only key-up events for every supported virtual key"
+    },
+    {
+      "id": "producer-consumer-frame-parity",
+      "kind": "parity",
+      "expected": "the frame produced by Lay is the exact ordered evdev frame consumed by VirtualDevice emit"
+    },
+    {
+      "id": "runtime-service-continuity",
+      "kind": "integration",
+      "expected": "fixed Lay starts without restarting global ibus-daemon and no virtual key remains down after activation"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "no-visible-open-key-frame",
+      "statement": "Lay never intentionally publishes a SYN_REPORT with a synthetic typing key down and no matching key up",
+      "test_id": "tap-frame-unit"
+    },
+    {
+      "id": "error-path-closes-state",
+      "statement": "every reported uinput emission error attempts release-all before control returns to the caller",
+      "test_id": "emit-failure-releases-all"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "lay-evdev-frame-identity",
+      "producer": "Lay key frame constructor",
+      "consumer": "evdev VirtualDevice emit call",
+      "comparison": "exact ordered InputEvent code and value parity",
+      "test_id": "producer-consumer-frame-parity"
+    }
+  ],
+  "runtime_comparisons": []
+}

@@ -24,7 +24,7 @@ use super::{
     active_enter_autocorrect_from_env, active_layout_backend, idle_wait_timeout, log,
     should_skip_buffer_input, switch_to_target_layout, wait_for_keyboard_event_or_timeout,
     DShiftState, DaemonTextContextObserver, DaemonTextObservation, ForceLayoutHotkeyContext,
-    ShiftState, ENTER_AUTOCORRECT_EXPERIMENT_ENV,
+    ShiftState, ENTER_AUTOCORRECT_EXPERIMENT_ENV, SHUTDOWN_REQUESTED,
 };
 
 #[path = "daemon_runtime/focus.rs"]
@@ -77,7 +77,7 @@ pub(super) fn listen_keyboard(
     let is_single_trigger = is_single_trigger_id(&cfg.trigger);
     let mut state = DaemonLoopState::new(&cfg, is_caps_trigger, is_single_trigger);
 
-    loop {
+    while !SHUTDOWN_REQUESTED.load(Ordering::Acquire) {
         let fetched_events = {
             device
                 .fetch_events()
@@ -386,6 +386,7 @@ pub(super) fn listen_keyboard(
             }
         }
     }
+    Ok(())
 }
 
 fn poll_deferred_typing_assist(

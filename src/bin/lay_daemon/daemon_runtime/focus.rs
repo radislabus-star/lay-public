@@ -5,7 +5,7 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use super::super::daemon_state::DaemonLoopState;
 use super::super::{
     log, poll_focused_window_state, poll_focused_window_state_for_key_event,
-    wait_for_keyboard_event_or_timeout, DShiftState,
+    wait_for_keyboard_event_or_timeout, DShiftState, SHUTDOWN_REQUESTED,
 };
 
 pub(in super::super) fn listen_pointer(
@@ -21,7 +21,7 @@ pub(in super::super) fn listen_pointer(
         device.name().unwrap_or("?")
     ));
 
-    loop {
+    while !SHUTDOWN_REQUESTED.load(Ordering::Acquire) {
         let fetched_events = {
             device
                 .fetch_events()
@@ -62,6 +62,7 @@ pub(in super::super) fn listen_pointer(
             }
         }
     }
+    Ok(())
 }
 
 pub(super) fn update_focus_state(state: &mut DaemonLoopState, field_context_epoch: &AtomicU64) {

@@ -1,0 +1,71 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "key-emit-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay/docs/structural_gates/preflights/../../../src/bin/lay_daemon/text_output/key_emit.rs",
+      "sha256": "2bc00e30cd9abef092caa1022ddbcb2eba2631780df53a6e264b85e6d6778c21",
+      "size_bytes": 5889
+    },
+    {
+      "exists": true,
+      "id": "physical-grab-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay/docs/structural_gates/preflights/../../../src/bin/lay_daemon/physical_input_grab.rs",
+      "sha256": "780445ce566c504cbb4ad063ce625ad7aef2932ae804da51f75c3f98201a9439",
+      "size_bytes": 4992
+    },
+    {
+      "exists": true,
+      "id": "startup-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay/docs/structural_gates/preflights/../../../src/bin/lay_daemon/startup_runtime.rs",
+      "sha256": "4d19ebcffb98083f8a11333d242ef847190acc89160e1d3bd02e9b48dccd37ea",
+      "size_bytes": 5238
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 3,
+    "forbidden_side_effect_kinds": [
+      "literal_surface_runtime_branch"
+    ],
+    "identity_contracts": 1,
+    "invariants": 2,
+    "planned_side_effect_kinds": [
+      "cargo_test",
+      "filesystem_edit",
+      "remote_release_build",
+      "service_activation"
+    ],
+    "preserved_artifacts": 3,
+    "runtime_comparisons": 0,
+    "source_checks": 1,
+    "tests": 4
+  },
+  "manifest_sha256": "c7539483131140a72d849e1df4ca61c9a7d569f5ac0ae0885e2c597f639ba707",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "key-emit-no-surface-hardcode",
+      "path": "/home/ubu/projects/lay/docs/structural_gates/preflights/../../../src/bin/lay_daemon/text_output/key_emit.rs",
+      "sha256": "2bc00e30cd9abef092caa1022ddbcb2eba2631780df53a6e264b85e6d6778c21",
+      "size_bytes": 5889
+    }
+  ],
+  "task_id": "lay-uinput-stuck-key-recovery-2026-08-12",
+  "verdict": "READY_TO_IMPLEMENT"
+}

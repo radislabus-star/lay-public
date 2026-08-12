@@ -9,8 +9,8 @@ use std::time::Instant;
 use super::{
     active_enter_autocorrect_from_env, active_layout_backend, call_ime_ping, call_ping,
     find_all_keyboards, find_all_pointers, layout_niri, listen_keyboard, listen_pointer, log,
-    make_virtual_keyboard, startup_sanitize, ENTER_AUTOCORRECT_EXPERIMENT_ENV,
-    TYPING_ASSIST_RUNTIME_READY,
+    make_virtual_keyboard, release_all_virtual_keys, startup_sanitize,
+    ENTER_AUTOCORRECT_EXPERIMENT_ENV, TYPING_ASSIST_RUNTIME_READY,
 };
 
 include!("startup_runtime/warmup.rs");
@@ -110,8 +110,14 @@ fn make_virtual_keyboard_for_runtime(detect_only: bool) -> Option<VirtualDevice>
         return None;
     }
     match make_virtual_keyboard() {
-        Ok(device) => {
-            log("► uinput virtual keyboard создан");
+        Ok(mut device) => {
+            if let Err(error) = release_all_virtual_keys(&mut device) {
+                log(&format!(
+                    "⚠ uinput startup release failed ({error}). Re-typing disabled"
+                ));
+                return None;
+            }
+            log("► uinput virtual keyboard создан и очищен");
             Some(device)
         }
         Err(e) => {
@@ -151,6 +157,17 @@ fn spawn_keyboard_threads(
     }
     for handle in handles {
         let _ = handle.join();
+    }
+    let mut virtual_kbd = match virtual_kbd.lock() {
+        Ok(guard) => guard,
+        Err(poisoned) => poisoned.into_inner(),
+    };
+    if let Some(device) = virtual_kbd.as_mut() {
+        if let Err(error) = release_all_virtual_keys(device) {
+            log(&format!(
+                "⚠ virtual keyboard shutdown release failed: {error}"
+            ));
+        }
     }
     Ok(())
 }

@@ -870,3 +870,59 @@ lay-ibus-engine PID            4002253
 global ibus-daemon PID         3702 -> 3702
 active engine                  lay-ime-ru
 ```
+
+### 2026-08-12 atomic uinput tap and stuck-key recovery: PASS_RUNTIME
+
+The synthetic output owner previously submitted key-down and key-up as separate
+`VirtualDevice::emit` calls. Each call publishes its own `SYN_REPORT`, so an
+error or daemon exit between the calls could leave a compositor-visible key
+pressed and trigger unbounded autorepeat.
+
+The live output contract is now:
+
+```text
+plain tap
+-> [key down, key up]
+-> one VirtualDevice::emit
+-> one SYN_REPORT
+
+shifted tap
+-> [Shift down, key down, key up, Shift up]
+-> one VirtualDevice::emit
+-> one SYN_REPORT
+
+emit error | startup | SIGTERM | SIGINT | graceful shutdown
+-> best-effort key-up frame for every key exposed by lay-virtual-keyboard
+```
+
+Replay, Backspace, Space, arrows, and grabbed-input forwarding use this single
+emission owner. No word, phrase, source ID, or key-specific runtime exception
+was added.
+
+Tested and measured:
+
+- focused frame and fault-injection tests: `2/2 PASS`;
+- patched remote daemon suite: `199 PASS`, `6 FAIL`;
+- unpatched baseline daemon suite: the same six tests failed, with no new
+  failing test name in the patch;
+- remote release build: `3 min 1.61 s`, peak RSS `2,382,752 KiB`, exit `0`;
+- installed binary: `8,161,824 B`, SHA-256
+  `e9e527b3e8c88ffa595be1eff8c8b64f43a82642cccd7c7faad368d9de584b59`;
+- `lay-daemon.service`: active after replacement;
+- global `ibus-daemon` PID remained `3702` and active engine remained
+  `lay-ime-ru`;
+- `ydotool.service`: inactive; installed `lay-virtual-keyboard` present;
+- daemon journal after activation: no warning-or-higher entries.
+
+Not tested:
+
+- forced kernel/uinput write failure against the installed desktop session;
+- physical reproduction of every supported key and every application;
+- visual synthetic-text smoke while the user was actively typing.
+
+Runtime authority changed: `no`. Candidate generation, correction admission,
+and backend selection are unchanged. Only the already-authorized uinput
+mutation is made closed per visible evdev frame, with fail-closed cleanup.
+
+Receipt:
+`/home/ubu/projects/lay/docs/structural_gates/receipts/LAY_UINPUT_STUCK_KEY_RECOVERY_2026-08-12.json`.

@@ -1,8 +1,8 @@
-use evdev::{uinput::VirtualDevice, Device, EventType, InputEvent, KeyCode};
+use evdev::{uinput::VirtualDevice, Device, EventType, KeyCode};
 use lay::keyboard::{is_typing_key, KeyEvent};
 use lay::word_buffer::WordBuffer;
 
-use super::{emit_key_taps_fast, log};
+use super::{emit_key_taps_fast, emit_shifted_key_tap_fast, log};
 
 pub(super) struct PhysicalInputGrab<'a> {
     device: Option<&'a mut Device>,
@@ -154,12 +154,7 @@ fn emit_forwarded_key_tap(
     shift: bool,
 ) -> std::io::Result<()> {
     if shift {
-        dev.emit(&[
-            InputEvent::new(EventType::KEY.0, KeyCode::KEY_LEFTSHIFT.code(), 1),
-            InputEvent::new(EventType::KEY.0, key.code(), 1),
-            InputEvent::new(EventType::KEY.0, key.code(), 0),
-            InputEvent::new(EventType::KEY.0, KeyCode::KEY_LEFTSHIFT.code(), 0),
-        ])
+        emit_shifted_key_tap_fast(dev, key)
     } else {
         emit_key_taps_fast(dev, key, 1)
     }

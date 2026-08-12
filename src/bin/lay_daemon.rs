@@ -13,12 +13,28 @@
 
 use clap::Parser;
 use evdev::Device;
-use std::sync::atomic::AtomicBool;
+use std::sync::atomic::{AtomicBool, Ordering};
 
 const GNOME_NATIVE_REPLACE_EXPERIMENTAL: bool = false;
 const LAYOUT_POLL_INTERVAL_MS: u64 = 250;
 const ENTER_AUTOCORRECT_EXPERIMENT_ENV: &str = "LAY_EXPERIMENTAL_ENTER_AUTOCORRECT";
 static TYPING_ASSIST_RUNTIME_READY: AtomicBool = AtomicBool::new(false);
+static SHUTDOWN_REQUESTED: AtomicBool = AtomicBool::new(false);
+
+extern "C" fn request_shutdown(_signal: libc::c_int) {
+    SHUTDOWN_REQUESTED.store(true, Ordering::Release);
+}
+
+fn install_shutdown_handlers() -> std::io::Result<()> {
+    for signal in [libc::SIGTERM, libc::SIGINT] {
+        let handler = request_shutdown as *const () as libc::sighandler_t;
+        let previous = unsafe { libc::signal(signal, handler) };
+        if previous == libc::SIG_ERR {
+            return Err(std::io::Error::last_os_error());
+        }
+    }
+    Ok(())
+}
 
 // ─── Config ─────────────────────────────────────────────────
 
@@ -159,6 +175,7 @@ fn main() -> std::io::Result<()> {
     lay::hot_field::constrain_runtime_allocator();
     let args = Args::parse();
     set_log_enabled(args.debug_log || args.verbose || args.detect_only);
+    install_shutdown_handlers()?;
     run_daemon(args.detect_only, args.device, args.verbose)
 }
 

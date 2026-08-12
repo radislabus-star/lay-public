@@ -180,8 +180,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_daemon.rs": {
-    "mtime": 1785746171.5278552,
-    "ast_hash": "624d1d797d9661f58927876118331143",
+    "mtime": 1786562772.5274239,
+    "ast_hash": "b4b735ec1ce157be2e8f5affa8e871dc",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/action_log_runtime.rs": {
@@ -300,13 +300,13 @@
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/daemon_runtime.rs": {
-    "mtime": 1784367826.4402645,
-    "ast_hash": "097e518959adb385104cc0bf3dd95cff",
+    "mtime": 1786562621.228576,
+    "ast_hash": "ecbad5c9ae9040f3e2a8083e52259328",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/daemon_runtime/focus.rs": {
-    "mtime": 1784141081.247536,
-    "ast_hash": "46284525e011eae50bd54bee3d292b12",
+    "mtime": 1786562539.0549157,
+    "ast_hash": "d91868b14106a32a763178ce52f22f0c",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/daemon_state.rs": {
@@ -460,14 +460,14 @@
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/physical_input_grab.rs": {
-    "mtime": 1781808983.3564296,
-    "ast_hash": "2e8d87726d56f39f0ad56139b6b37de7",
-    "semantic_hash": "2e8d87726d56f39f0ad56139b6b37de7"
+    "mtime": 1786562476.1725795,
+    "ast_hash": "19420254ce90a92facb19ef9b55ea996",
+    "semantic_hash": ""
   },
   "src/bin/lay_daemon/startup_runtime.rs": {
-    "mtime": 1783090848.9948459,
-    "ast_hash": "c18b2fe702c19c6729f756cc360083e0",
-    "semantic_hash": "c18b2fe702c19c6729f756cc360083e0"
+    "mtime": 1786562772.5274239,
+    "ast_hash": "2ea5a1968de022a4160d19a2df6fb8b0",
+    "semantic_hash": ""
   },
   "src/bin/lay_daemon/startup_runtime/tests/warmup.rs": {
     "mtime": 1785083745.5256648,
@@ -715,19 +715,19 @@
     "semantic_hash": "5999ee2db28cd7cb009ea6e748ace5cd"
   },
   "src/bin/lay_daemon/text_output.rs": {
-    "mtime": 1784143181.739329,
-    "ast_hash": "1aaa68e9077244b0a91b18bc1cb3b0d3",
+    "mtime": 1786562476.1645794,
+    "ast_hash": "c457b52c26d3976acb8353823d28a8d7",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/text_output/device.rs": {
-    "mtime": 1779558991.7289395,
-    "ast_hash": "b9df8d1adbf473d0732dcdfe0737facd",
-    "semantic_hash": "b9df8d1adbf473d0732dcdfe0737facd"
+    "mtime": 1786562476.146579,
+    "ast_hash": "ad020749c7e1b543529f8d4cd966f5d8",
+    "semantic_hash": ""
   },
   "src/bin/lay_daemon/text_output/key_emit.rs": {
-    "mtime": 1780577071.481883,
-    "ast_hash": "a8f60f1a1e8a8c83968730b0b11ee224",
-    "semantic_hash": "a8f60f1a1e8a8c83968730b0b11ee224"
+    "mtime": 1786562621.273577,
+    "ast_hash": "32eb5d94a99a06b09e3798bba77af70b",
+    "semantic_hash": ""
   },
   "src/bin/lay_daemon/text_output/modifiers.rs": {
     "mtime": 1779558991.7299395,
@@ -2770,8 +2770,8 @@
     "semantic_hash": ""
   },
   "docs/text-correction-gate-architecture.md": {
-    "mtime": 1785776659.9044392,
-    "ast_hash": "4b87328da6b711005d1878c5d504487a",
+    "mtime": 1786564434.0386648,
+    "ast_hash": "1e5032d05c604e96b5c5e1f0346da725",
     "semantic_hash": ""
   },
   "docs/text-mutation-monopoly-plan.md": {
@@ -7607,6 +7607,21 @@
   "docs/structural_gates/receipts/IME_UNIFIED_CANDIDATE_FIELD_2026-08-12.json": {
     "mtime": 1786554737.8388972,
     "ast_hash": "e5df50effc5151813a16d2f8fdb5bdd9",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/preflights/LAY_UINPUT_STUCK_KEY_RECOVERY_2026-08-12.json": {
+    "mtime": 1786562274.5278137,
+    "ast_hash": "d28057012b2d1aa8ba2342c4ea754f6c",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_UINPUT_STUCK_KEY_RECOVERY_2026-08-12.json": {
+    "mtime": 1786564434.0386648,
+    "ast_hash": "1b702e35a4be2af95d0cf70373bf18a4",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_UINPUT_STUCK_KEY_RECOVERY_PREFLIGHT_2026-08-12.json": {
+    "mtime": 1786562282.330014,
+    "ast_hash": "847fe369d86c87f3411f07f44e39d1c8",
     "semantic_hash": ""
   }
 }
