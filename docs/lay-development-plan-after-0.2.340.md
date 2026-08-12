@@ -1301,8 +1301,8 @@ Fan-out receipt:
 
 ## 16. Deferred IME Tail Rebirth After Manual Continuation
 
-**Статус: следующая отдельная задача после установки Productive V90; в release
-`1.0.21` не исправлена.**
+**Статус: исправление реализовано и прошло software gate; physical gate новой
+release остаётся открытым до проверки установленного IME.**
 
 Наблюдаемый дефект:
 
@@ -1351,3 +1351,47 @@ Gate задачи:
 - exact completion, Space/autocorrect и double-Shift rollback не регрессируют;
 - исправление проходит агрегатный IME proof, а не список слов по одному;
 - hot printable path сохраняет текущий latency budget.
+
+### 16.1 Measured result, 2026-08-12
+
+Trace одного физического воспроизведения локализовал первый наблюдаемый факт:
+
+```text
+prefix пров     -> 12 candidates -> top suffix ерить -> IBus update
+prefix прове    -> 12 candidates -> top suffix рить  -> IBus update
+```
+
+Следовательно, `прове{}` не был потерей candidate birth: новый bounded readout
+существовал. Дефект находился в lifecycle публикации preedit. Старый код посылал
+`ShowPreeditText` раньше `UpdatePreeditText`; теперь один output owner сначала
+атомарно устанавливает свежий payload через `UpdatePreeditText(..., true)`, а
+затем посылает `ShowPreeditText`. Inactive и composition routes используют один
+helper.
+
+Что протестировано на `e@192.168.3.94`, `20` logical CPU:
+
+- `cargo fmt --check`: PASS;
+- focused fresh-rebirth contract: `1/1` PASS;
+- focused publication-order contract: `1/1` PASS;
+- previous target invalidation contract: `1/1` PASS;
+- полный последовательный `lay-ibus-engine`: `183/183` PASS;
+- Cargo target после gate: `9,191,882,752 / 12,884,901,888` bytes.
+
+Что не тестировалось этим gate:
+
+- физическая видимость нового хвоста после установки release;
+- правильность конкретного morphology top-1 (`проверить` против `проверка`) без
+  достаточного контекста. Кандидатный порядок L2/L3 этой правкой не изменён.
+
+Runtime authority changed: `false`. Изменён только IBus output lifecycle.
+
+Release `1.0.22` собран на удалённой машине за `186.62 s`, установлен и активен.
+Глобальный `ibus-daemon` сохранил PID `3702`; перезапущены только управляемые
+Lay daemon/engine. Productive V90 `.p2m/.p2r` mmap-пакеты остаются загружены
+обоими процессами. Rollback:
+
+`/home/ubu/.local/lib/lay/rollback/1.0.21-pre-preedit-20260812-134744`
+
+Receipt:
+
+`/home/ubu/projects/lay/docs/structural_gates/receipts/IME_PREEDIT_ATOMIC_REBIRTH_2026-08-12.json`

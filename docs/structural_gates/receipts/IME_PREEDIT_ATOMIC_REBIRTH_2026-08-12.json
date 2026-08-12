@@ -1,0 +1,65 @@
+{
+  "receipt_id": "IME_PREEDIT_ATOMIC_REBIRTH_2026-08-12",
+  "date": "2026-08-12",
+  "source_release": "1.0.21",
+  "installed_release": "1.0.22",
+  "verdict": "SOFTWARE_GATE_PASS_PHYSICAL_GATE_PENDING",
+  "runtime_authority_changed": false,
+  "changed_boundary": "IBus preedit output lifecycle",
+  "observed_trace": {
+    "prefix_prov_candidates": 12,
+    "prefix_prov_top_suffix": "ерить",
+    "prefix_prove_candidates": 12,
+    "prefix_prove_top_suffix": "рить",
+    "candidate_birth_lost": false,
+    "first_fault_boundary": "fresh preedit payload publication"
+  },
+  "implementation": {
+    "owner": "LayIbusEngine::publish_preedit_payload",
+    "old_order": "ShowPreeditText -> UpdatePreeditText",
+    "new_order": "UpdatePreeditText(visible=true) -> ShowPreeditText",
+    "inactive_and_composition_share_owner": true,
+    "candidate_ranking_changed": false,
+    "literal_runtime_exception_added": false
+  },
+  "remote_gate": {
+    "host": "e@192.168.3.94",
+    "logical_cpus": 20,
+    "cargo_fmt_pass": true,
+    "focused_candidate_rebirth_passed": 1,
+    "focused_publication_order_passed": 1,
+    "focused_target_invalidation_passed": 1,
+    "full_ime_tests_passed": 183,
+    "full_ime_tests_failed": 0,
+    "test_threads": 1,
+    "cargo_target_bytes": 9191882752,
+    "cargo_target_budget_bytes": 12884901888
+  },
+  "release_build": {
+    "host": "e@192.168.3.94",
+    "logical_cpus": 20,
+    "elapsed_seconds": 186.62,
+    "maximum_resident_kib": 2372324,
+    "swaps": 0,
+    "exit_status": 0,
+    "lay_ibus_engine_sha256": "4678c0dda72448b09663162d44f15e240e9379362cb377a051512122d39cadc5"
+  },
+  "installed_runtime": {
+    "lay_version": "1.0.22",
+    "gnome_extension_version": "1.0.22",
+    "daemon_active": true,
+    "daemon_pid": 1317418,
+    "daemon_rss_kib": 395480,
+    "managed_ibus_engine_pid": 1317456,
+    "managed_ibus_engine_rss_kib": 360856,
+    "global_ibus_daemon_pid_before": 3702,
+    "global_ibus_daemon_pid_after": 3702,
+    "productive_v90_mapped_by_daemon": true,
+    "productive_v90_mapped_by_ibus_engine": true,
+    "rollback": "/home/ubu/.local/lib/lay/rollback/1.0.21-pre-preedit-20260812-134744"
+  },
+  "not_tested": [
+    "physical client rendering after installing the release",
+    "morphology top-1 choice for a particular context"
+  ]
+}

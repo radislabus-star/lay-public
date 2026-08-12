@@ -83,6 +83,63 @@ fn invalidated_target_retargets_to_fresh_top_candidate_without_blank_frame() {
 }
 
 #[test]
+fn manual_continuation_rebuilds_a_non_empty_visible_readout() {
+    lay::nanda_wave::warm_up_l2_for_ime();
+    let mut engine = LayIbusEngine::new(
+        "/test".to_string(),
+        Arc::new(Mutex::new(Default::default())),
+        true,
+        true,
+        LayConfig {
+            text_backend: "ime".to_string(),
+            nanda_precognition: true,
+            correction_safety: "experimental".to_string(),
+            ..LayConfig::default()
+        },
+    );
+
+    for ch in "пров".chars() {
+        engine.push_tail_char(ch);
+    }
+    engine.refresh_precognition_candidates();
+    let previous_target = engine.preedit_fast.target_surface().map(str::to_owned);
+    assert!(previous_target.is_some());
+
+    engine.push_tail_char('е');
+    assert_eq!(engine.preedit_fast.target_surface(), None);
+    engine.refresh_precognition_candidates();
+
+    let suffix = engine.selected_visible_completion_suffix();
+    assert!(
+        !suffix.is_empty(),
+        "fresh candidates={:?}",
+        engine.preedit_candidates
+    );
+    assert!(format!("прове{suffix}").starts_with("прове"));
+    assert!(engine.preedit_fast.target_surface().is_some());
+}
+
+#[test]
+fn preedit_publisher_installs_payload_before_showing_it() {
+    let source = include_str!("../preedit.rs");
+    let publisher = source
+        .split("async fn publish_preedit_payload")
+        .nth(1)
+        .expect("single preedit publisher");
+    let update = publisher
+        .find("Self::update_preedit_text")
+        .expect("payload update");
+    let show = publisher
+        .find("Self::show_preedit_text")
+        .expect("visibility signal");
+
+    assert!(
+        update < show,
+        "preedit payload must exist before it is shown"
+    );
+}
+
+#[test]
 fn whitespace_cancels_pending_inactive_preedit_flush() {
     let mut engine = LayIbusEngine::new(
         "/test".to_string(),

@@ -202,26 +202,8 @@ impl LayIbusEngine {
         };
         self.preedit_suffix = suffix;
         let (preedit_text, cursor_pos) = self.inactive_preedit_payload();
-        trace::record_preedit(
-            "show",
-            true,
-            preedit_text.chars().count(),
-            cursor_pos,
-            Some(&preedit_text),
-        );
-        Self::show_preedit_text(emitter)
+        self.publish_preedit_payload(emitter, preedit_text, cursor_pos)
             .await
-            .map_err(|e| fdo::Error::Failed(e.to_string()))?;
-        Self::update_preedit_text(
-            emitter,
-            make_preedit_ibus_text(preedit_text),
-            cursor_pos,
-            true,
-            PREEDIT_MODE_CLEAR,
-        )
-        .await
-        .map_err(|e| fdo::Error::Failed(e.to_string()))?;
-        Ok(())
     }
 
     pub(crate) async fn clear_preedit(&mut self, emitter: &SignalEmitter<'_>) -> fdo::Result<()> {
@@ -269,8 +251,30 @@ impl LayIbusEngine {
         }
         self.refresh_precognition_candidates();
         let (text, cursor_pos) = self.composition_preedit_payload();
+        self.publish_preedit_payload(emitter, text, cursor_pos)
+            .await
+    }
+
+    async fn publish_preedit_payload(
+        &self,
+        emitter: &SignalEmitter<'_>,
+        text: String,
+        cursor_pos: u32,
+    ) -> fdo::Result<()> {
+        // UpdatePreeditText owns the visible frame. Install the new payload
+        // before ShowPreeditText so a client cannot expose an empty or stale
+        // frame while a previous completion is being replaced.
+        Self::update_preedit_text(
+            emitter,
+            make_preedit_ibus_text(text.clone()),
+            cursor_pos,
+            true,
+            PREEDIT_MODE_CLEAR,
+        )
+        .await
+        .map_err(|e| fdo::Error::Failed(e.to_string()))?;
         trace::record_preedit(
-            "compose",
+            "update",
             true,
             text.chars().count(),
             cursor_pos,
@@ -279,15 +283,7 @@ impl LayIbusEngine {
         Self::show_preedit_text(emitter)
             .await
             .map_err(|e| fdo::Error::Failed(e.to_string()))?;
-        Self::update_preedit_text(
-            emitter,
-            make_preedit_ibus_text(text),
-            cursor_pos,
-            true,
-            PREEDIT_MODE_CLEAR,
-        )
-        .await
-        .map_err(|e| fdo::Error::Failed(e.to_string()))?;
+        trace::record_preedit("show", true, text.chars().count(), cursor_pos, Some(&text));
         Ok(())
     }
 

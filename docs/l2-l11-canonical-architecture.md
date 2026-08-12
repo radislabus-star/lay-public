@@ -1359,6 +1359,57 @@ Exact deployment receipts:
 /home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_LIVE_DEPLOY_FIXED_PROOF_2026-08-12.json
 ```
 
+## 14. 2026-08-12 Atomic IME Readout Publication
+
+The Productive V90 route already rebuilt a non-empty bounded field after every
+printable continuation. A physical trace showed `12` candidates for both
+`пров` and `прове`; therefore this defect did not originate in L1.1, Productive
+L2 candidate birth, or common L3 acquisition.
+
+The first faulty ownership boundary was the IBus output adapter:
+
+```text
+old: ShowPreeditText -> UpdatePreeditText
+new: UpdatePreeditText(visible=true) -> ShowPreeditText
+```
+
+Both inactive committed-tail completion and active composition now publish
+through `LayIbusEngine::publish_preedit_payload`. A fresh candidate cannot be
+exposed as an empty or stale intermediate frame while replacing the previous
+suffix.
+
+Measured gate on `e@192.168.3.94`, `20` logical CPUs:
+
+```text
+focused candidate rebirth                  1 / 1 PASS
+focused publication order                 1 / 1 PASS
+previous target invalidation               1 / 1 PASS
+full sequential lay-ibus-engine          183 / 183 PASS
+cargo fmt check                                  PASS
+Cargo target                     9,191,882,752 B
+Cargo target budget             12,884,901,888 B
+```
+
+Not tested by this software gate:
+
+- physical client rendering after installing the release;
+- whether phrase context should rank a noun surface over an infinitive surface
+  for a particular prefix. Candidate ranking and runtime authority were not
+  changed.
+
+Runtime authority changed: `false`. The single L1.1 -> Productive L2 -> common
+L3 -> DecisionCore route remains intact; only its IBus publication lifecycle
+changed.
+
+Release `1.0.22` is installed. The remote release build completed in `186.62 s`
+with peak RSS `2,372,324 KiB`, zero swaps, and exit status `0`. The global
+`ibus-daemon` retained PID `3702`; only the managed Lay daemon and engine were
+restarted. Both active processes still mmap Productive V90 `.p2m/.p2r`.
+
+Receipt:
+
+`/home/ubu/projects/lay/docs/structural_gates/receipts/IME_PREEDIT_ATOMIC_REBIRTH_2026-08-12.json`
+
 ## 20. 2026-08-10 Productive Geometry And Slot Preparation V33-V38
 
 ### What was tested
