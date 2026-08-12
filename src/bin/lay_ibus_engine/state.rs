@@ -133,6 +133,22 @@ impl CommittedTailReplaceRequest {
         }
     }
 
+    pub(crate) fn ime_candidate_accept(backspaces: u32, text: String) -> Self {
+        Self {
+            source: VisibleTailSource::ImeCommittedTail,
+            backspaces,
+            text,
+            intent: TextTransitionIntent::ImeCandidateAccept,
+            suppress_next_autocorrect: true,
+            expected_tail: None,
+            boundary_elided_external_snapshot: false,
+            causal_precondition_external_snapshot: None,
+            winner_action: None,
+            outcome_feedback: None,
+            layout_postcondition_owner: LayoutPostconditionOwner::Ime,
+        }
+    }
+
     pub(crate) fn daemon_bridge(
         backspaces: u32,
         text: String,

@@ -10,7 +10,7 @@ pub(super) enum TransitionAuthorityKind {
     AutomaticDecision,
     ExplicitUserIntent,
     RecordedUndo,
-    CompletionAcceptance,
+    ImeCandidateAcceptance,
     NativeIntent,
 }
 
@@ -50,18 +50,25 @@ impl TransitionAuthority {
         )
     }
 
-    pub(super) fn completion_acceptance(from_text: &str, to_text: &str) -> Option<Self> {
-        if !completion_projection_is_valid(from_text, to_text) {
+    pub(super) fn ime_candidate_acceptance(from_text: &str, to_text: &str) -> Option<Self> {
+        let (operator, proof) = if completion_projection_is_valid(from_text, to_text) {
+            (TransitionOperator::Completion, TransitionProof::Completion)
+        } else if ime_full_token_replacement_is_valid(from_text, to_text) {
+            (
+                TransitionOperator::ManualReplace,
+                TransitionProof::ManualIntent,
+            )
+        } else {
             return None;
-        }
+        };
         Some(Self::from_transition(
-            TransitionAuthorityKind::CompletionAcceptance,
+            TransitionAuthorityKind::ImeCandidateAcceptance,
             TransitionAudit::proven(
-                TransitionOperator::Completion,
-                TransitionProof::Completion,
+                operator,
+                proof,
                 true,
                 false,
-                1,
+                transition_changed_token_count(from_text, to_text),
             ),
         ))
     }
@@ -140,9 +147,14 @@ impl TransitionAuthorityKind {
             Self::RecordedUndo => {
                 operator == TransitionOperator::Undo && proof == TransitionProof::UndoRecord
             }
-            Self::CompletionAcceptance => {
-                operator == TransitionOperator::Completion && proof == TransitionProof::Completion
-            }
+            Self::ImeCandidateAcceptance => matches!(
+                (operator, proof),
+                (TransitionOperator::Completion, TransitionProof::Completion)
+                    | (
+                        TransitionOperator::ManualReplace,
+                        TransitionProof::ManualIntent
+                    )
+            ),
             Self::NativeIntent => {
                 operator == TransitionOperator::NativeReplace
                     && proof == TransitionProof::NativeIntent
@@ -187,10 +199,23 @@ fn automatic_decision_pair_is_valid(operator: TransitionOperator, proof: Transit
     )
 }
 
-fn completion_projection_is_valid(from_text: &str, to_text: &str) -> bool {
+pub(super) fn completion_projection_is_valid(from_text: &str, to_text: &str) -> bool {
     let from = from_text.trim_end_matches(char::is_whitespace);
     let to = to_text.trim_end_matches(char::is_whitespace);
     !from.is_empty() && to.len() > from.len() && to.starts_with(from)
+}
+
+pub(super) fn ime_full_token_replacement_is_valid(from_text: &str, to_text: &str) -> bool {
+    let from = from_text.trim_end_matches(char::is_whitespace);
+    let to = to_text.trim_end_matches(char::is_whitespace);
+    if from.is_empty() || to.is_empty() || from == to || from.chars().any(char::is_whitespace) {
+        return false;
+    }
+    !to.chars().any(char::is_whitespace)
+        || from
+            .chars()
+            .filter(|ch| !ch.is_whitespace())
+            .eq(to.chars().filter(|ch| !ch.is_whitespace()))
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -262,6 +287,7 @@ impl VisibleFieldState {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum TextTransitionIntent {
     ImeAutocorrect,
+    ImeCandidateAccept,
     ImeAutoUndo,
     ImeManualToggle,
     DaemonBridge,
@@ -271,18 +297,20 @@ impl TextTransitionIntent {
     pub(crate) const fn operator(self) -> TransitionOperator {
         match self {
             Self::ImeAutoUndo => TransitionOperator::Undo,
-            Self::ImeAutocorrect | Self::ImeManualToggle | Self::DaemonBridge => {
-                TransitionOperator::VisibleTail
-            }
+            Self::ImeAutocorrect
+            | Self::ImeCandidateAccept
+            | Self::ImeManualToggle
+            | Self::DaemonBridge => TransitionOperator::VisibleTail,
         }
     }
 
     pub(crate) const fn proof(self) -> TransitionProof {
         match self {
             Self::ImeAutoUndo => TransitionProof::UndoRecord,
-            Self::ImeAutocorrect | Self::ImeManualToggle | Self::DaemonBridge => {
-                TransitionProof::VisibleState
-            }
+            Self::ImeAutocorrect
+            | Self::ImeCandidateAccept
+            | Self::ImeManualToggle
+            | Self::DaemonBridge => TransitionProof::VisibleState,
         }
     }
 }

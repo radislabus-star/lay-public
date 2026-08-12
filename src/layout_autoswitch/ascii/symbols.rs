@@ -11,6 +11,18 @@ pub(crate) fn is_ascii_layout_letter_symbol(ch: char) -> bool {
     )
 }
 
+/// True when every byte is produced by a physical key that represents a
+/// Russian letter in the US layout. Punctuation-shaped keys stay lexical only
+/// when the token also contains an ASCII letter; punctuation by itself remains
+/// a boundary.
+pub(crate) fn is_ascii_layout_letter_surface(surface: &str) -> bool {
+    surface.is_ascii()
+        && surface.chars().any(|ch| ch.is_ascii_alphabetic())
+        && surface
+            .chars()
+            .all(|ch| ch.is_ascii_alphabetic() || is_ascii_layout_letter_symbol(ch))
+}
+
 pub(super) fn is_plain_ascii_layout_token(token: &str) -> bool {
     token.is_ascii()
         && token.chars().any(|ch| ch.is_ascii_alphabetic())

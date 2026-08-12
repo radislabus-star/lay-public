@@ -7,11 +7,24 @@ use super::decision::TransitionDecisionCore;
 use crate::typing_cpu::{ImeCandidateProposal, ImeCandidateSource};
 use std::collections::HashSet;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum LiveCandidateLane {
+    ExactCompletion,
+    CorrectedPrefixReplacement,
+    GeneralReplacement,
+    LayoutReplacement,
+    BoundaryReplacement,
+}
+
 #[derive(Debug, Clone)]
 pub(crate) struct LiveCompletionProposal {
     pub(crate) state_before: u64,
     pub(crate) surface: String,
     pub(crate) suffix: String,
+    /// True when explicit Tab replaces the active token instead of appending.
+    pub(crate) replacement: bool,
+    pub(crate) lane: LiveCandidateLane,
+    pub(crate) morphology_slots: Vec<crate::correction_core::MorphologySlotIdentity>,
     pub(crate) score: f32,
     pub(crate) rank_score: f32,
     /// Unclamped phase-field strength. Ranking keeps this as a tie-break when
@@ -20,8 +33,8 @@ pub(crate) struct LiveCompletionProposal {
     pub(crate) source: &'static str,
     pub(crate) partial_len: usize,
     pub(crate) suffix_len: usize,
-    /// The typed prefix is already an exact lexical state. Extending it needs
-    /// independent context evidence instead of lexical geometry alone.
+    /// The typed prefix is already an exact lexical state. This only settles a
+    /// committed token; an active composition remains an open morphology lane.
     pub(crate) partial_state_known: bool,
     /// True only while the user is still editing this token in preedit. A
     /// committed clean token is a settled state, not an open suffix lane.
@@ -48,6 +61,7 @@ pub(crate) struct LiveCompletionProposal {
 pub(crate) struct SelectedLiveCompletion {
     pub(crate) surface: String,
     pub(crate) suffix: String,
+    pub(crate) replacement: bool,
     pub(crate) score: f32,
     pub(crate) rank_score: f32,
     pub(crate) source: &'static str,
@@ -87,27 +101,31 @@ impl TransitionDecisionCore {
                 && (candidate.suffix.is_empty() || seen_suffixes.insert(candidate.suffix.clone()))
         });
 
-        // Keep the bounded display field diverse: corrected-prefix basins must
-        // not evict every exact L1.1/L2 continuation, while an exact-only lane
-        // must not hide the best typo-tolerant candidate. This is candidate
-        // topology, not a word- or suffix-specific rule.
-        let exact_reserve_limit = limit.saturating_div(3).max(1);
-        let exact_reserve = selected
-            .iter()
-            .filter(|candidate| {
-                !candidate.corrected_prefix_completion && !candidate.suffix.is_empty()
-            })
-            .take(exact_reserve_limit)
-            .cloned()
-            .collect::<Vec<_>>();
-        let corrected_prefix_reserve = selected
-            .iter()
-            .find(|candidate| candidate.corrected_prefix_completion)
-            .cloned();
+        // Operators share one DecisionCore owner, but they do not share an
+        // untyped top-k. Preserve a useful exact-prefix basin and one witness
+        // from every independently born replacement lane. Per-lane caps then
+        // prevent a broad replacement field from consuming the display.
+        let exact_reserve_limit = limit.saturating_div(2).max(1);
+        let exact_reserve = lane_reserve(
+            &selected,
+            LiveCandidateLane::ExactCompletion,
+            exact_reserve_limit,
+        );
+        let layout_reserve = lane_reserve(&selected, LiveCandidateLane::LayoutReplacement, 1);
+        let corrected_reserve = morphology_lane_reserve(
+            &selected,
+            LiveCandidateLane::CorrectedPrefixReplacement,
+            limit,
+        );
+        let boundary_reserve = lane_reserve(&selected, LiveCandidateLane::BoundaryReplacement, 1);
+        let general_reserve = lane_reserve(&selected, LiveCandidateLane::GeneralReplacement, 1);
         let mut bounded = Vec::with_capacity(limit);
         for candidate in exact_reserve
             .into_iter()
-            .chain(corrected_prefix_reserve)
+            .chain(layout_reserve)
+            .chain(boundary_reserve)
+            .chain(general_reserve)
+            .chain(corrected_reserve)
             .chain(selected)
         {
             if bounded
@@ -134,6 +152,7 @@ impl TransitionDecisionCore {
             .map(|candidate| SelectedLiveCompletion {
                 surface: candidate.surface,
                 suffix: candidate.suffix,
+                replacement: candidate.replacement,
                 score: candidate.score,
                 rank_score: candidate.rank_score,
                 source: candidate.source,
@@ -202,13 +221,52 @@ impl TransitionDecisionCore {
     }
 }
 
+fn lane_reserve(
+    candidates: &[LiveCompletionProposal],
+    lane: LiveCandidateLane,
+    limit: usize,
+) -> Vec<LiveCompletionProposal> {
+    candidates
+        .iter()
+        .filter(|candidate| candidate.lane == lane)
+        .take(limit)
+        .cloned()
+        .collect()
+}
+
+fn morphology_lane_reserve(
+    candidates: &[LiveCompletionProposal],
+    lane: LiveCandidateLane,
+    limit: usize,
+) -> Vec<LiveCompletionProposal> {
+    let mut selected = Vec::with_capacity(limit);
+    let mut seen = HashSet::new();
+    for candidate in candidates.iter().filter(|candidate| candidate.lane == lane) {
+        if candidate.morphology_slots.is_empty()
+            || !candidate
+                .morphology_slots
+                .iter()
+                .copied()
+                .any(|identity| !seen.contains(&identity))
+        {
+            continue;
+        }
+        seen.extend(candidate.morphology_slots.iter().copied());
+        selected.push(candidate.clone());
+        if selected.len() == limit {
+            break;
+        }
+    }
+    selected
+}
+
 fn retain_settled_state_continuations(proposals: &mut Vec<LiveCompletionProposal>) {
     let unique_grounded_single_suffix = {
         let mut suffixes = proposals
             .iter()
             .filter(|proposal| {
                 proposal.partial_state_known
-                    && proposal.active_composition
+                    && !proposal.active_composition
                     && proposal.partial_len > 3
                     && !independent_continuation_evidence(proposal)
                     && proposal.suffix_len == 1
@@ -223,8 +281,9 @@ fn retain_settled_state_continuations(proposals: &mut Vec<LiveCompletionProposal
     };
 
     proposals.retain(|proposal| {
-        !proposal.partial_state_known
-            || !proposal.active_composition
+        proposal.replacement
+            || !proposal.partial_state_known
+            || proposal.active_composition
             || proposal.partial_len <= 3
             || independent_continuation_evidence(proposal)
             || (proposal.suffix_len == 1
@@ -261,6 +320,13 @@ mod tests {
             state_before: crate::nanda_wave::phase_field::hash_text("test-state"),
             surface: surface.to_string(),
             suffix: suffix.to_string(),
+            replacement: suffix.is_empty(),
+            lane: if suffix.is_empty() {
+                LiveCandidateLane::GeneralReplacement
+            } else {
+                LiveCandidateLane::ExactCompletion
+            },
+            morphology_slots: Vec::new(),
             score: rank_score.clamp(0.0, 1.0),
             rank_score,
             field_strength: 0,
@@ -336,6 +402,7 @@ mod tests {
                 0.90 - index as f32 * 0.01,
             );
             candidate.corrected_prefix_completion = true;
+            candidate.lane = LiveCandidateLane::CorrectedPrefixReplacement;
             proposals.push(candidate);
         }
         proposals.push(completion("exact-continuation", "continuation", 0.40));
@@ -352,8 +419,10 @@ mod tests {
     fn settled_exact_state_abstains_on_competing_unconfirmed_endings() {
         let mut first = completion("center-a", "а", 0.8);
         first.partial_state_known = true;
+        first.active_composition = false;
         let mut second = completion("center-b", "б", 0.7);
         second.partial_state_known = true;
+        second.active_composition = false;
 
         let selected = TransitionDecisionCore::select_live_completions(vec![first, second], 8);
 
@@ -361,19 +430,21 @@ mod tests {
     }
 
     #[test]
-    fn settled_exact_state_keeps_a_unique_grounded_ending() {
+    fn settled_exact_state_abstains_without_independent_ending_evidence() {
         let mut proposal = completion("center-a", "а", 0.8);
         proposal.partial_state_known = true;
+        proposal.active_composition = false;
 
         let selected = TransitionDecisionCore::select_live_completions(vec![proposal], 8);
 
-        assert_eq!(selected.len(), 1);
+        assert!(selected.is_empty());
     }
 
     #[test]
     fn settled_exact_state_keeps_independently_supported_continuation() {
         let mut proposal = completion("center-a", "ending", 0.8);
         proposal.partial_state_known = true;
+        proposal.active_composition = false;
         proposal.context_birth = true;
         proposal.l3_memory_supported = true;
 

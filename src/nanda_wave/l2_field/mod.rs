@@ -19,8 +19,12 @@ mod runtime;
 mod runtime_storage;
 mod teacher;
 
-pub(crate) use bridge::{canonical_text_candidates, canonical_text_readout, cold_probe_surfaces};
+pub(crate) use bridge::{
+    canonical_ime_candidates, canonical_text_candidates, canonical_text_readout,
+    cold_probe_surfaces,
+};
 pub(crate) use runtime::L2FieldAuthority;
+pub(crate) use runtime::L2FieldAvailability;
 
 pub const CANONICAL_L2_LEMMA_FRONTIER: usize = 256;
 pub const CANONICAL_L2_ACTIVE_LEMMA_LIMIT: usize = 256;
@@ -156,6 +160,9 @@ fn reload_productive_l2_v1_inner(
     *productive_v1_state()
         .write()
         .map_err(|_| "productive V1 runtime lock poisoned")? = Some(runtime.clone());
+    cache::clear();
+    bridge::clear_prepared_field_cache();
+    crate::nanda_wave::candidate_gate::clear_live_completion_cache();
     Ok(runtime)
 }
 
@@ -290,6 +297,31 @@ pub(crate) fn surfaces_share_morphology_identity(left: &str, right: &str) -> boo
         .imported_binding_identities_for_form(right_ref)
         .into_iter()
         .any(|(lemma_id, _)| left_lemmas.contains(&lemma_id))
+}
+
+pub(crate) fn morphology_slot_identities_for_surface(
+    surface: &str,
+) -> Vec<crate::correction_core::MorphologySlotIdentity> {
+    let Ok(field) = installed_l2_field() else {
+        return Vec::new();
+    };
+    let Some(form_ref) = field.form_ref_for_surface(surface) else {
+        return Vec::new();
+    };
+    let mut identities = field
+        .imported_binding_identities_for_form(form_ref)
+        .into_iter()
+        .map(
+            |(lemma_id, feature_mask)| crate::correction_core::MorphologySlotIdentity {
+                domain: crate::correction_core::MorphologySlotIdentityDomain::CanonicalFeature,
+                lemma_id,
+                slot_id: feature_mask,
+            },
+        )
+        .collect::<Vec<_>>();
+    identities.sort_unstable();
+    identities.dedup();
+    identities
 }
 
 pub(crate) fn warm_up_installed_l2_field() {

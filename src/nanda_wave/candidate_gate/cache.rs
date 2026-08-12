@@ -53,6 +53,12 @@ pub(super) fn store(key: LiveCompletionCacheKey, candidates: &[LiveCompletionCan
     }
 }
 
+pub(super) fn clear() {
+    if let Ok(mut cache) = live_completion_cache().lock() {
+        cache.clear();
+    }
+}
+
 fn live_completion_cache() -> &'static Mutex<VecDeque<LiveCompletionCacheEntry>> {
     static CACHE: OnceLock<Mutex<VecDeque<LiveCompletionCacheEntry>>> = OnceLock::new();
     CACHE.get_or_init(|| Mutex::new(VecDeque::new()))

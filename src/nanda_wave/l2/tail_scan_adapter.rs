@@ -14,6 +14,26 @@ use crate::text_case::apply_word_case;
 use crate::text_metrics::damerau_levenshtein;
 use crate::word_reader::{split_word_punctuation, split_ws_segments};
 
+pub(super) fn boundary_split_has_structural_evidence(token: &str) -> bool {
+    if !(4..=18).contains(&token.chars().count()) || !token.chars().all(is_cyrillic_letter) {
+        return false;
+    }
+    let normalized = token.to_lowercase();
+    let chars = normalized.chars().collect::<Vec<_>>();
+    (1..chars.len()).any(|split| {
+        let left = chars[..split].iter().collect::<String>();
+        let right = chars[split..].iter().collect::<String>();
+        let leading_function = left.chars().count() <= 3
+            && (is_ru_one_letter_function_word(&left)
+                || crate::lexicon::is_ru_short_pronoun(&left)
+                || is_common_ru_word(&left))
+            && stable_boundary_right_center(&right);
+        let trailing_function =
+            trailing_short_function_center(&right) && stable_boundary_left_center(&left);
+        leading_function || trailing_function || independent_content_boundary_centers(&left, &right)
+    })
+}
+
 pub(super) fn boundary_split_candidates(
     prefix: &str,
     token: &str,

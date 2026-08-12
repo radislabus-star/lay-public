@@ -1395,3 +1395,53 @@ Lay daemon/engine. Productive V90 `.p2m/.p2r` mmap-пакеты остаются
 Receipt:
 
 `/home/ubu/projects/lay/docs/structural_gates/receipts/IME_PREEDIT_ATOMIC_REBIRTH_2026-08-12.json`
+
+## 17. Unified IME Route Release Gate, 2026-08-12
+
+Status: `RELEASE_1.0.23_INSTALLED_PHYSICAL_GATE_PENDING`.
+
+Completed:
+
+- one live CandidateGate owns completion and replacement display;
+- exact completion, damaged-prefix, layout, Productive V90 morphology,
+  boundary, L3 and L4 evidence enter one typed bounded lattice;
+- replacement is explicit-Tab-only and passes the common edit verifier;
+- active exact forms stay open to morphology ending changes;
+- settled clean forms remain closed to weak extension;
+- morphology-slot identity preserves bounded lattice diversity without
+  granting authority;
+- broad per-key Cyrillic-to-English settlement was removed;
+- boundary evidence now short-circuits after cheap exact-prefix evidence;
+- focused damaged-prefix hot latency is approximately `3.1-3.4 ms`;
+- `остан` unique cache miss improved `303.646 ms -> 9.902 ms`;
+- remote changed-code, authority, mutation monopoly, input and IBus gates pass;
+- full baseline comparison has zero new failure names.
+
+Completed release actions:
+
+1. graphify updated;
+2. version bumped `1.0.22 -> 1.0.23`;
+3. remote release build completed in `204.18 s`, maximum RSS
+   `2,381,764 KiB`;
+4. binaries installed and only Lay-managed processes restarted;
+5. global `ibus-daemon` PID preserved at `3702`;
+6. installed CLI and GNOME runtime report `1.0.23`;
+7. Productive V90 mmap confirmed in daemon and IME engine.
+
+Measured live main-contour RSS is `1,097,204 KiB`: daemon `399,952`, IME
+`386,364`, L1.1 serve `306,504`, L3 online `4,384`.
+
+Remaining physical gate:
+
+1. replacement via explicit `Tab`;
+2. morphology ending rerank after another printable letter;
+3. responsive `Space`;
+4. autocorrect rollback via double `Shift`.
+
+Rollback:
+
+`/home/ubu/.local/lib/lay/rollback/1.0.22-pre-1.0.23-20260812-194801`
+
+Exact receipt:
+
+`/home/ubu/projects/lay/docs/structural_gates/receipts/IME_UNIFIED_CANDIDATE_FIELD_2026-08-12.json`

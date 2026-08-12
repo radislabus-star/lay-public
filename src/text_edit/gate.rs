@@ -191,7 +191,7 @@ pub fn plan_recorded_undo_edit(
     )
 }
 
-pub fn plan_ime_completion_edit(
+pub fn plan_ime_candidate_accept_edit(
     source: &str,
     confidence_milli: i16,
     from_text: impl Into<String>,
@@ -199,10 +199,22 @@ pub fn plan_ime_completion_edit(
 ) -> EditAction {
     let from_text = from_text.into();
     let to_text = to_text.into();
-    let Some(plan) = super::diff_plan::plan_text_replacement(&from_text, &to_text) else {
+    let Some(fallback_plan) = super::diff_plan::plan_text_replacement(&from_text, &to_text) else {
         return EditAction::keep(source, from_text);
     };
-    let authority = TransitionAuthority::completion_acceptance(&from_text, &to_text);
+    let plan = if super::transition::completion_projection_is_valid(&from_text, &to_text) {
+        fallback_plan
+    } else if super::transition::ime_full_token_replacement_is_valid(&from_text, &to_text) {
+        TextReplacement {
+            move_left: 0,
+            backspaces: from_text.chars().count() as u32,
+            insert: to_text.clone(),
+            move_right: 0,
+        }
+    } else {
+        fallback_plan
+    };
+    let authority = TransitionAuthority::ime_candidate_acceptance(&from_text, &to_text);
     let transition = authority
         .as_ref()
         .map(|authority| authority.transition().clone())
@@ -214,8 +226,8 @@ pub fn plan_ime_completion_edit(
             from_text: &from_text,
             to_text: &to_text,
             plan,
-            selected_source_id: Some("ImeCompletionCell32"),
-            selected_error_class: Some("ime-completion"),
+            selected_source_id: Some("ImeCandidateAcceptCell32"),
+            selected_error_class: Some("ime-candidate-accept"),
             transition,
         },
         authority.as_ref(),

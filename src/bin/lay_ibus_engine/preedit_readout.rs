@@ -8,7 +8,7 @@ use lay::typing_cpu::{
 
 impl PreeditFastState {
     fn ascii_candidates(&self, max_suffix_chars: usize, limit: usize) -> Vec<ImeCandidateProposal> {
-        if self.token.is_empty() || !self.token.chars().all(|ch| ch.is_ascii_alphabetic()) {
+        if !self.is_ascii_live_candidate_token() {
             return Vec::new();
         }
         let mut suffixes = Vec::new();
@@ -24,6 +24,17 @@ impl PreeditFastState {
         .into_iter()
         .enumerate()
         {
+            if candidate.replacement {
+                proposals.push(
+                    ImeCandidateProposal::replacement(
+                        candidate.surface,
+                        candidate.score,
+                        ImeCandidateSource::L2Replacement,
+                    )
+                    .with_authority_order(order),
+                );
+                continue;
+            }
             let suffix = candidate.suffix;
             let before = suffixes.len();
             push_unique_ascii_known_suffix(&mut suffixes, &self.token, suffix.clone());
@@ -79,14 +90,19 @@ impl LayIbusEngine {
             TypingCpu::ensure_ime_warmup_started();
             return Vec::new();
         }
-        let Some((prefix, partial)) = split_last_alphabetic_token(tail) else {
+        let Some((prefix, partial)) = self.live_word_readout_input(tail) else {
             return Vec::new();
         };
         let partial = partial.to_lowercase();
         let partial_len = partial.chars().count();
         let min_prefix_chars = PREEDIT_RU_PREFIX_MIN_CHARS;
-        if !(min_prefix_chars..=12).contains(&partial_len)
-            || !partial.chars().all(|ch| matches!(ch, 'а'..='я' | 'ё'))
+        let ru_surface = partial.chars().all(|ch| matches!(ch, 'а'..='я' | 'ё'));
+        let ascii_layout_surface = partial.chars().any(|ch| ch.is_ascii_alphabetic())
+            && partial.chars().all(|ch| {
+                ch.is_ascii_alphabetic() || lay::typing_cpu::is_ascii_layout_letter_symbol(ch)
+            });
+        if !(min_prefix_chars..=18).contains(&partial_len)
+            || !(ru_surface || ascii_layout_surface)
         {
             return Vec::new();
         }
@@ -112,9 +128,9 @@ impl LayIbusEngine {
             // A committed tail needs a distinct verified replacement route.
             // Never let an inactive preedit turn a whole-token candidate into
             // an append-only Tab action.
-            .filter(|(_, candidate)| !self.buffer.is_empty() || !candidate.suffix.is_empty())
+            .filter(|(_, candidate)| !self.buffer.is_empty() || !candidate.replacement)
             .map(|(order, candidate)| {
-                if candidate.suffix.is_empty() {
+                if candidate.replacement {
                     ImeCandidateProposal::replacement(
                         candidate.surface,
                         candidate.score,
@@ -132,6 +148,16 @@ impl LayIbusEngine {
             })
             .take(PREEDIT_RU_WAVE_CANDIDATE_LIMIT)
             .collect()
+    }
+
+    fn live_word_readout_input<'a>(&self, tail: &'a str) -> Option<(&'a str, &'a str)> {
+        if self.preedit_fast.is_ascii_live_candidate_token()
+            && tail.ends_with(self.preedit_fast.token.as_str())
+        {
+            let split = tail.len().saturating_sub(self.preedit_fast.token.len());
+            return Some(tail.split_at(split));
+        }
+        split_last_alphabetic_token(tail)
     }
 
     fn llmwave_phrase_candidates(&self, tail: &str) -> Vec<ImeCandidateProposal> {

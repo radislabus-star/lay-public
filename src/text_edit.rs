@@ -46,7 +46,7 @@ pub use executor::{
 };
 pub(crate) use gate::plan_decision_transition_edit;
 pub use gate::{
-    plan_ime_completion_edit, plan_input_gate_edit, plan_manual_edit, plan_native_edit,
+    plan_ime_candidate_accept_edit, plan_input_gate_edit, plan_manual_edit, plan_native_edit,
     plan_recorded_undo_edit,
 };
 pub use mutation::{TransitionAudit, TransitionOperator, TransitionProof};

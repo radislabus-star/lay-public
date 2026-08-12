@@ -312,7 +312,9 @@ pub fn request_l11_seed_surfaces(
             seeds.truncate(limit);
             Ok(seeds)
         }
-        L1ServiceResponse::Error { .. } => Ok(Vec::new()),
+        L1ServiceResponse::Error { message } => Err(io::Error::other(format!(
+            "L1.1 lattice request failed: {message}"
+        ))),
         other => Err(io::Error::new(
             io::ErrorKind::InvalidData,
             format!("unexpected L1.1 response for restore request: {other:?}"),
@@ -333,7 +335,9 @@ pub fn request_l11_decoded_surfaces(
         Some(timeout),
     )? {
         L1ServiceResponse::Decode { surfaces } => Ok(surfaces),
-        L1ServiceResponse::Error { .. } => Ok(Vec::new()),
+        L1ServiceResponse::Error { message } => Err(io::Error::other(format!(
+            "L1.1 decode request failed: {message}"
+        ))),
         other => Err(io::Error::new(
             io::ErrorKind::InvalidData,
             format!("unexpected L1.1 response for decode request: {other:?}"),

@@ -1,0 +1,118 @@
+{
+  "receipt_id": "IME_UNIFIED_CANDIDATE_FIELD_2026-08-12",
+  "date": "2026-08-12",
+  "source_release": "1.0.22",
+  "target_release": "1.0.23",
+  "verdict": "RELEASE_INSTALLED_SOFTWARE_AND_RUNTIME_GATE_PASS_PHYSICAL_GATE_PENDING",
+  "runtime_authority_changed": true,
+  "authority_scope": {
+    "changed": [
+      "live IME candidate display ownership",
+      "explicit Tab acceptance of a typed full-token replacement"
+    ],
+    "unchanged": [
+      "automatic Space correction authority",
+      "double-Shift rollback authority",
+      "SafetyGate",
+      "structural verifier"
+    ]
+  },
+  "accepted_route": "IBus active token -> one CandidateGate -> typed Completion or Replacement -> L3 -> L4 -> TransitionDecisionCore -> explicit Tab edit plan -> verifier -> IBus mutation",
+  "bounds": {
+    "display_candidates": 12,
+    "material_candidates": 64,
+    "replacement_apply_trigger": "explicit Tab only"
+  },
+  "morphology_identity": {
+    "domains": ["CanonicalFeature", "ProductiveV1"],
+    "fields": ["lemma_id", "slot_id"],
+    "purpose": "bounded lattice diversity",
+    "grants_mutation_authority": false
+  },
+  "remote_host": {
+    "address": "e@192.168.3.94",
+    "logical_cpus": 20,
+    "cargo_wrapper": "scripts/cargo-guard.sh"
+  },
+  "focused_gate": {
+    "candidate_gate": {"passed": 27, "failed": 0},
+    "l2_ime_readout": {"passed": 6, "failed": 0},
+    "lay_ibus_engine": {"passed": 185, "failed": 0},
+    "typing_transition_authority": {"passed": 20, "failed": 0},
+    "text_mutation_monopoly": {"passed": 15, "failed": 0},
+    "input_gate": {"passed": 6, "failed": 0},
+    "transition_replay_false_apply_candidates": 0,
+    "unsafe_edit_gate_failures": 0,
+    "changed_code_gate": "PASS"
+  },
+  "full_library_baseline_compare": {
+    "baseline": {"passed": 1282, "failed": 66, "ignored": 1},
+    "candidate": {"passed": 1287, "failed": 64, "ignored": 1},
+    "new_failure_names": 0,
+    "removed_failure_names": 2,
+    "remaining_failures_scope": "baseline-known package, service, and shared-global-state tests in the remote environment"
+  },
+  "latency": {
+    "damaged_prefix_before_ms": 549.0,
+    "damaged_prefix_hot_ms_range": [3.1, 3.4],
+    "unique_prefix_debug_budget_us": 50000,
+    "unique_prefix_max_us": 35426,
+    "boundary_short_circuit_case_before_us": 303646,
+    "boundary_short_circuit_case_after_us": 9902
+  },
+  "release_build": {
+    "version": "1.0.23",
+    "remote_elapsed_seconds": 204.18,
+    "remote_max_rss_kib": 2381764,
+    "remote_cpu_percent": 399,
+    "target_bytes_after_build": 2097106944,
+    "target_budget_bytes": 12884901888,
+    "lay_ibus_engine_bytes": 6222584,
+    "lay_ibus_engine_sha256": "4d598579bd894c903326482b0333a9107723be183afb0ec9710a3913181d052b"
+  },
+  "installed_runtime": {
+    "installed_version": "1.0.23",
+    "extension_version": "1.0.23",
+    "global_ibus_pid_before": 3702,
+    "global_ibus_pid_after": 3702,
+    "active_engine": "lay-ime-us",
+    "lay_daemon_active": true,
+    "lay_l3_online_active": true,
+    "productive_v90_mapped_by_daemon": true,
+    "productive_v90_mapped_by_ibus_engine": true,
+    "productive_v90_p2m_bytes": 17309944,
+    "productive_v90_p2m_sha256": "9fd8c950398fb8ba47a2c9f2236880239d9f4376b191a691b0d01c47ddd3e438",
+    "productive_v90_p2r_bytes": 2123112,
+    "productive_v90_p2r_sha256": "44a20f7aaf7578a960477fbfb1d30c9828b9d71f037e3ad1b2d57bc7fa5568c4",
+    "measured_rss_kib": {
+      "lay_daemon": 399952,
+      "lay_ibus_engine": 386364,
+      "lay_l11_serve": 306504,
+      "lay_l3_online": 4384,
+      "sum": 1097204
+    },
+    "rollback": "/home/ubu/.local/lib/lay/rollback/1.0.22-pre-1.0.23-20260812-194801"
+  },
+  "post_deploy_residual": {
+    "input_gate_operator_contract": {"passed": 2, "failed": 0},
+    "input_gate_space_contract": {"passed": 1, "failed": 2},
+    "failed_tests": [
+      "space_autocorrect_keeps_existing_public_gate_contract",
+      "daemon_space_and_enter_decoders_share_input_gate_replacement_contract"
+    ],
+    "scope": "baseline-known installed-package/shared-state failures already present in the 64-failure candidate baseline; no literal-case repair was admitted"
+  },
+  "systemic_fixes": [
+    "removed broad Cyrillic-to-English settlement from every Cyrillic key",
+    "typed candidate lanes prevent unlike operators from sharing an untyped top-k",
+    "morphology slot identity preserves corrected-prefix diversity",
+    "boundary evidence runs only after the cheap exact-completion count",
+    "active exact forms and settled committed forms use distinct contracts"
+  ],
+  "not_tested": [
+    "physical Tab replacement after release installation",
+    "physical double-Shift rollback after release installation",
+    "physical morphology-ending rerank after release installation",
+    "morphology top-1 correctness for arbitrary sentence contexts"
+  ]
+}

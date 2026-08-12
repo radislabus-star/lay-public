@@ -1410,6 +1410,196 @@ Receipt:
 
 `/home/ubu/projects/lay/docs/structural_gates/receipts/IME_PREEDIT_ATOMIC_REBIRTH_2026-08-12.json`
 
+## 17. Unified Live IME Candidate Field, 2026-08-12
+
+### 17.1 Accepted route
+
+The live IME no longer runs completion and correction as two untyped ranking
+routes. The accepted route is:
+
+```text
+IBus active token
+-> one CandidateGate
+   -> exact-prefix lexical birth
+   -> one-edit damaged-prefix birth
+   -> exact layout projection
+   -> layout plus lexical repair
+   -> Productive V90 morphology surfaces
+   -> bounded boundary evidence
+   -> L3 context birth and score
+   -> L4 signed evidence
+-> one TransitionDecisionCore display readout
+   -> Completion(suffix)
+   -> Replacement(full surface, display only)
+-> explicit Tab
+-> verified ImeCandidateAccept edit plan
+-> IBus mutation
+```
+
+`Space` autocorrect remains a separate typed operation over the same correction
+and verifier core. A displayed replacement has no automatic mutation authority.
+
+### 17.2 Typed lattice contract
+
+The shared field carries explicit lanes:
+
+```text
+ExactCompletion
+CorrectedPrefixReplacement
+LayoutReplacement
+BoundaryReplacement
+GeneralReplacement
+```
+
+The display limit remains `12`. Material is bounded to `64`. Lane reserves
+preserve operator diversity before final ranking, but do not grant apply
+authority. Corrected-prefix diversity is preserved by:
+
+```text
+MorphologySlotIdentity {
+    domain: CanonicalFeature | ProductiveV1,
+    lemma_id,
+    slot_id,
+}
+```
+
+The identity crosses the Productive/canonical morphology, L2 candidate, live
+proposal and DecisionCore boundaries. It is topology metadata only: it cannot
+mint a Winner or bypass the verifier.
+
+### 17.3 Active and settled states
+
+An exact lexical surface does not close an active IME trajectory. While the
+user is still editing the token, grounded morphology continuations may change
+the ending. After a word boundary, the clean committed token is settled and a
+weak lexical extension is suppressed. Failure to press `Tab` is censored
+feedback, not negative evidence.
+
+### 17.4 Explicit replacement contract
+
+A completion appends a suffix. A replacement is rendered as a full typed
+surface and may be applied only by explicit `Tab`. `ImeCandidateAccept` builds
+an edit plan from the current visible token, validates the full-token or
+surface-preserving boundary transition, and then passes through the common
+text-edit gate. Left-context rewrites remain forbidden.
+
+### 17.5 Systemic latency fixes
+
+Two general hot-path defects were removed:
+
+1. Cyrillic input no longer runs broad Cyrillic-to-English settlement on every
+   key unless an exact layout projection is independently known.
+2. Boundary evidence is evaluated only after the cheap exact-completion count.
+   With two or more grounded prefix continuations, the expensive split scan is
+   not executed.
+
+The second fix reduced the isolated unique `остан` cache miss from
+`303,646 us` to `9,902 us`. The six-prefix isolated debug gate measured:
+
+```text
+пол    35,426 us
+цел    17,864 us
+рас    24,742 us
+оста   16,997 us
+дост   20,356 us
+остан   9,902 us
+max    35,426 us <= 50,000 us debug gate
+```
+
+The focused damaged-prefix route measured approximately `3.1-3.4 ms` hot,
+compared with approximately `549 ms` before removing the duplicate heavy
+settlement route.
+
+### 17.6 Proof and baseline comparison
+
+All Cargo work was run on `e@192.168.3.94` through
+`scripts/cargo-guard.sh`.
+
+```text
+CandidateGate                            27 / 27 PASS
+L2 IME readout                            6 / 6 PASS
+lay-ibus-engine                         185 / 185 PASS
+typing transition authority             20 / 20 PASS
+text mutation monopoly                  15 / 15 PASS
+input gate                                6 / 6 PASS
+changed-code gate                              PASS
+transition replay false applies                  0
+unsafe edit gate failures                        0
+```
+
+The full library suite was compared with an untouched `1.0.22` worktree under
+the same remote environment:
+
+```text
+baseline 1.0.22     1,282 pass / 66 fail / 1 ignored
+unified candidate  1,287 pass / 64 fail / 1 ignored
+new failure names                                  0
+removed failure names                              2
+```
+
+The remaining `64` failures are baseline-known package/service/global-state
+tests in this environment. They are not claimed as passing and are not hidden
+by the focused gate.
+
+### 17.7 Verdict scope
+
+Runtime authority changed for live IME candidate display and explicit Tab
+acceptance. Runtime authority did not change for automatic `Space` correction,
+double-Shift rollback, `SafetyGate`, or verifier admission.
+
+Not tested before installation:
+
+- physical rendering and Tab behavior in a real client;
+- physical double-Shift rollback after the new binary is installed;
+- morphology top-1 correctness for arbitrary sentence contexts.
+
+### 17.8 Installed release result
+
+Release `1.0.23` was built on `e@192.168.3.94` and installed on 2026-08-12.
+
+```text
+remote release elapsed          204.18 s
+remote release max RSS       2,381,764 KiB
+remote release average CPU          399%
+remote Cargo target         2,097,106,944 / 12,884,901,888 B
+lay-ibus-engine SHA-256     4d598579bd894c903326482b0333a9107...
+```
+
+The final LTO/codegen stage is not parallel across all 20 logical CPUs; the
+build still stayed within the Cargo disk and memory budgets.
+
+Installed CLI, extension metadata, and the loaded GNOME extension all report
+`1.0.23`. Global `ibus-daemon` PID remained `3702`; only Lay-managed processes
+were restarted. Both `lay-daemon` and `lay-ibus-engine` mmap the accepted
+Productive V90 `.p2m/.p2r` packages.
+
+Measured main-contour RSS immediately after startup:
+
+```text
+lay-daemon          399,952 KiB
+lay-ibus-engine     386,364 KiB
+lay-l1.1-serve      306,504 KiB
+lay-l3-online         4,384 KiB
+total             1,097,204 KiB
+```
+
+Post-deploy focused gates passed for IBus (`185/185`), authority (`20/20`),
+mutation monopoly (`15/15`), and InputGate operator (`2/2`). The
+installed-package/shared-state Space contract retains two baseline-known
+failures under `known_current_word_surface_drift`; they remain within the
+already reported 64-failure baseline remainder and were not repaired by
+literal fixtures.
+
+Software and runtime promotion are complete. Physical `Tab`, morphology
+rerank, responsive `Space`, and double-Shift rollback remain user-observed
+gates. Rollback:
+
+`/home/ubu/.local/lib/lay/rollback/1.0.22-pre-1.0.23-20260812-194801`
+
+Receipt:
+
+`/home/ubu/projects/lay/docs/structural_gates/receipts/IME_UNIFIED_CANDIDATE_FIELD_2026-08-12.json`
+
 ## 20. 2026-08-10 Productive Geometry And Slot Preparation V33-V38
 
 ### What was tested

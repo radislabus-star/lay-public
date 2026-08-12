@@ -34,6 +34,7 @@ pub(crate) const CANONICAL_L2_PRODUCTIVE_SOURCE_ID: &str = "CanonicalL2Productiv
 pub(crate) struct CanonicalL2FieldReadout {
     pub(crate) candidates: Vec<UnifiedCorrectionCandidate>,
     pub(crate) authority: L2FieldAuthority,
+    pub(crate) availability: L2FieldAvailability,
 }
 
 impl CanonicalL2FieldReadout {
@@ -44,7 +45,53 @@ impl CanonicalL2FieldReadout {
         Self {
             candidates,
             authority,
+            availability: L2FieldAvailability::Ready,
         }
+    }
+
+    pub(crate) fn abstain(availability: L2FieldAvailability) -> Self {
+        Self {
+            candidates: Vec::new(),
+            authority: L2FieldAuthority::Abstain,
+            availability,
+        }
+    }
+
+    pub(crate) fn unavailable(availability: L2FieldAvailability) -> Self {
+        debug_assert!(availability.is_transient());
+        Self {
+            candidates: Vec::new(),
+            authority: L2FieldAuthority::Unavailable,
+            availability,
+        }
+    }
+
+    pub(crate) fn is_cacheable(&self) -> bool {
+        !self.availability.is_transient()
+    }
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub(crate) enum L2FieldAvailability {
+    Ready,
+    UnsupportedInput,
+    EmptyL11Lattice,
+    #[default]
+    L11ServiceUnavailable,
+    CanonicalPackageUnavailable,
+    ProductivePackageUnavailable,
+    ProductiveReadoutError,
+}
+
+impl L2FieldAvailability {
+    pub(crate) const fn is_transient(self) -> bool {
+        matches!(
+            self,
+            Self::L11ServiceUnavailable
+                | Self::CanonicalPackageUnavailable
+                | Self::ProductivePackageUnavailable
+                | Self::ProductiveReadoutError
+        )
     }
 }
 

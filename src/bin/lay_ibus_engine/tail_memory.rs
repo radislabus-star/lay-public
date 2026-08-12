@@ -452,6 +452,9 @@ impl LayIbusEngine {
     }
 
     pub(super) fn selected_visible_completion_suffix(&self) -> String {
+        if self.selected_precognition_replacement().is_some() {
+            return String::new();
+        }
         visible_completion_suffix(self.selected_precognition_suffix())
     }
 

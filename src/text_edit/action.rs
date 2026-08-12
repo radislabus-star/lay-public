@@ -284,7 +284,7 @@ fn classify_planned_replacement(safety: &EditPlanSafetyReport) -> EditActionKind
 mod tests {
     use super::{EditAction, EditActionKind, PlannedReplacementInput};
     use crate::text_edit::{
-        plan_committed_tail_full_token_replacement, plan_ime_completion_edit,
+        plan_committed_tail_full_token_replacement, plan_ime_candidate_accept_edit,
         plan_text_replacement, TransitionAudit, TransitionOperator, TransitionProof,
     };
 
@@ -342,8 +342,8 @@ mod tests {
 
     #[test]
     fn ime_accept_candidate_is_a_planned_edit_action() {
-        let action = plan_ime_completion_edit(
-            "ibus-active-composition-completion",
+        let action = plan_ime_candidate_accept_edit(
+            "ibus-active-composition-candidate-accept",
             900,
             "пров",
             "проверка ",
@@ -361,14 +361,58 @@ mod tests {
         assert_eq!(action.transition.verified(), Some(true));
         assert_eq!(
             action.selected_source_id.as_deref(),
-            Some("ImeCompletionCell32")
+            Some("ImeCandidateAcceptCell32")
         );
     }
 
     #[test]
+    fn ime_accept_candidate_allows_an_explicit_full_token_replacement() {
+        let action = plan_ime_candidate_accept_edit(
+            "ibus-active-composition-candidate-accept",
+            900,
+            "провв",
+            "проверка ",
+        );
+
+        assert_eq!(action.kind, EditActionKind::AcceptImeCandidate);
+        assert!(action.allow_apply());
+        assert_eq!(
+            action.transition.operator(),
+            Some(TransitionOperator::ManualReplace)
+        );
+        assert_eq!(
+            action.transition.proof(),
+            Some(TransitionProof::ManualIntent)
+        );
+        assert_eq!(
+            action.plan,
+            Some(crate::text_edit::TextReplacement {
+                move_left: 0,
+                backspaces: 5,
+                insert: "проверка ".to_string(),
+                move_right: 0,
+            })
+        );
+    }
+
+    #[test]
+    fn ime_accept_candidate_allows_surface_preserving_boundary_split() {
+        let action = plan_ime_candidate_accept_edit(
+            "ibus-active-composition-candidate-accept",
+            900,
+            "Еленапросит",
+            "Елена просит ",
+        );
+
+        assert_eq!(action.kind, EditActionKind::AcceptImeCandidate);
+        assert!(action.allow_apply());
+        assert!(action.boundary_changed());
+    }
+
+    #[test]
     fn ime_accept_candidate_cannot_rewrite_left_context() {
-        let action = plan_ime_completion_edit(
-            "ibus-active-composition-completion",
+        let action = plan_ime_candidate_accept_edit(
+            "ibus-active-composition-candidate-accept",
             900,
             "так можно проверить скры",
             "так можно проверять нкрытое сос",

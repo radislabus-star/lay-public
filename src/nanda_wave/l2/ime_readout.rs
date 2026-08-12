@@ -12,7 +12,10 @@ const LEXICAL_READOUT_CACHE_CAPACITY: usize = 128;
 // competition. Four candidates per requested display slot leave enough
 // competitors for interference while avoiding a 192-node DAFSA walk per key.
 const IME_L2_MATERIAL_FACTOR: usize = 4;
-const TYPO_TOLERANT_PREFIX_MIN_CHARS: usize = 7;
+const TYPO_TOLERANT_PREFIX_MIN_CHARS: usize = 3;
+const THIN_EXACT_PREFIX_FIELD: usize = 12;
+const TYPO_TOLERANT_MATERIAL_FACTOR: usize = 6;
+const TYPO_TOLERANT_MATERIAL_CAP: usize = 512;
 type CachedLexicalCandidates = Arc<Vec<super::super::lexical_phase::LexicalPhaseCandidate>>;
 type LexicalReadoutCache = VecDeque<(String, usize, LexicalReadoutMode, CachedLexicalCandidates)>;
 
@@ -20,14 +23,13 @@ static LEXICAL_READOUT_CACHE: OnceLock<Mutex<LexicalReadoutCache>> = OnceLock::n
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum LexicalReadoutMode {
-    CompletionOnly,
     FullIme,
     Correction,
 }
 
 impl LexicalReadoutMode {
     const fn includes_completion(self) -> bool {
-        matches!(self, Self::CompletionOnly | Self::FullIme)
+        matches!(self, Self::FullIme)
     }
 }
 
@@ -37,19 +39,6 @@ pub(super) fn ime_l2_word_candidates_impl(
     limit: usize,
 ) -> Vec<L2ImeWordCandidate> {
     l2_word_candidates_impl(context_prefix, token, limit, LexicalReadoutMode::FullIme)
-}
-
-pub(super) fn ime_l2_completion_candidates_impl(
-    context_prefix: &str,
-    token: &str,
-    limit: usize,
-) -> Vec<L2ImeWordCandidate> {
-    l2_word_candidates_impl(
-        context_prefix,
-        token,
-        limit,
-        LexicalReadoutMode::CompletionOnly,
-    )
 }
 
 pub(super) fn correction_l2_word_candidates_impl(
@@ -92,8 +81,11 @@ fn l2_word_candidates_impl(
         .cloned();
     let mut candidates = lexical
         .map(|candidate| {
+            let morphology_slots =
+                super::super::l2_field::morphology_slot_identities_for_surface(&candidate.word);
             let candidate_len = candidate.word.chars().count();
-            let corrected_prefix = mode == LexicalReadoutMode::CompletionOnly
+            let corrected_prefix = mode != LexicalReadoutMode::Correction
+                && candidate.reconstructed
                 && candidate_len > token_len
                 && !candidate.word.starts_with(&normalized);
             let kind =
@@ -120,6 +112,7 @@ fn l2_word_candidates_impl(
                 usage_prior: prior.word_prior,
                 context_prior: prior.context_prior,
                 accepted_count: prior.accepted_count,
+                morphology_slots,
             }
         })
         .collect::<Vec<_>>();
@@ -149,28 +142,29 @@ fn cached_lexical_candidates(
         return candidates;
     }
 
-    let mut candidates = match mode {
-        LexicalReadoutMode::CompletionOnly => Vec::new(),
-        LexicalReadoutMode::FullIme | LexicalReadoutMode::Correction => {
-            let mut candidates = memory.adjacent_transposition_candidates(normalized);
-            candidates.extend(memory.surface_candidates(normalized, material_limit));
-            candidates
-        }
-    };
+    let mut candidates = memory.adjacent_transposition_candidates(normalized);
+    candidates.extend(memory.surface_candidates(normalized, material_limit));
     if mode.includes_completion() {
-        candidates.extend(memory.completion_candidates(
+        let exact_completions = memory.completion_candidates(
             normalized,
             material_limit,
             material_limit.saturating_mul(6),
-        ));
+        );
+        let exact_prefix_count = exact_completions
+            .iter()
+            .filter(|candidate| candidate.word.starts_with(normalized))
+            .count();
+        candidates.extend(exact_completions);
         if normalized.chars().count() >= TYPO_TOLERANT_PREFIX_MIN_CHARS
             && normalized.chars().all(is_cyrillic_letter)
+            && exact_prefix_count < material_limit.min(THIN_EXACT_PREFIX_FIELD)
         {
-            candidates.extend(typo_tolerant_completion_candidates(
-                memory,
-                normalized,
-                material_limit,
-            ));
+            let fuzzy = projected_fuzzy_lexical_candidates(cache, normalized, material_limit, mode)
+                .map(|candidates| candidates.as_ref().clone())
+                .unwrap_or_else(|| {
+                    typo_tolerant_completion_candidates(memory, normalized, material_limit)
+                });
+            candidates.extend(fuzzy);
         }
     }
     candidates.sort_by(|left, right| {
@@ -180,7 +174,29 @@ fn cached_lexical_candidates(
             .then_with(|| left.rank.cmp(&right.rank))
             .then_with(|| left.word.cmp(&right.word))
     });
-    candidates.dedup_by(|left, right| left.word == right.word);
+    candidates.dedup_by(|left, right| {
+        if left.word != right.word {
+            return false;
+        }
+        // A surface may be born both by the broad motif field and by the
+        // explicit one-edit prefix traversal. Preserve the latter witness so
+        // operator-conditioned reserves see the real birth topology.
+        left.reconstructed |= right.reconstructed;
+        left.prefix_match &= right.prefix_match;
+        true
+    });
+    if std::env::var_os("LAY_L2_FIELD_TRACE").is_some() {
+        eprintln!(
+            "live_ime_lexical_trace token_chars={} reconstructed={:?}",
+            normalized.chars().count(),
+            candidates
+                .iter()
+                .filter(|candidate| candidate.reconstructed)
+                .take(64)
+                .map(|candidate| (&candidate.word, candidate.score, candidate.rank))
+                .collect::<Vec<_>>()
+        );
+    }
     let candidates = Arc::new(candidates);
 
     store_lexical_candidates(
@@ -198,13 +214,64 @@ fn typo_tolerant_completion_candidates(
     damaged_prefix: &str,
     material_limit: usize,
 ) -> Vec<super::super::lexical_phase::LexicalPhaseCandidate> {
+    let traversal_limit = material_limit
+        .saturating_mul(TYPO_TOLERANT_MATERIAL_FACTOR)
+        .min(TYPO_TOLERANT_MATERIAL_CAP)
+        .max(material_limit);
     memory
-        .one_edit_prefix_completion_candidates(damaged_prefix, material_limit, material_limit)
+        .one_edit_prefix_completion_candidates(damaged_prefix, traversal_limit, traversal_limit)
         .into_iter()
         // This lane is only for an unfinished token. Same-size and shorter
         // typo repairs stay on the Space/autocorrect route.
         .filter(|candidate| candidate.word.chars().count() > damaged_prefix.chars().count())
         .collect()
+}
+
+fn projected_fuzzy_lexical_candidates(
+    cache: &Mutex<LexicalReadoutCache>,
+    normalized: &str,
+    material_limit: usize,
+    mode: LexicalReadoutMode,
+) -> Option<CachedLexicalCandidates> {
+    let projected = cache.lock().ok().and_then(|cache| {
+        cache
+            .iter()
+            .filter(|(surface, limit, cached_mode, _)| {
+                *limit == material_limit
+                    && *cached_mode == mode
+                    && normalized.starts_with(surface)
+                    && normalized.len() > surface.len()
+            })
+            .max_by_key(|(surface, _, _, _)| surface.len())
+            .map(|(_, _, _, candidates)| {
+                candidates
+                    .iter()
+                    .filter(|candidate| {
+                        !candidate.word.starts_with(normalized)
+                            && candidate.word.chars().count() > normalized.chars().count()
+                            && prefix_is_one_edit_from_surface(normalized, &candidate.word)
+                    })
+                    .cloned()
+                    .collect::<Vec<_>>()
+            })
+    })?;
+    (!projected.is_empty()).then(|| Arc::new(projected))
+}
+
+fn prefix_is_one_edit_from_surface(prefix: &str, surface: &str) -> bool {
+    let prefix_len = prefix.chars().count();
+    let surface_chars = surface.chars().collect::<Vec<_>>();
+    [
+        prefix_len.saturating_sub(1),
+        prefix_len,
+        prefix_len.saturating_add(1),
+    ]
+    .into_iter()
+    .filter(|candidate_len| *candidate_len >= 2 && *candidate_len <= surface_chars.len())
+    .any(|candidate_len| {
+        let surface_prefix = surface_chars[..candidate_len].iter().collect::<String>();
+        damerau_levenshtein(prefix, &surface_prefix) == 1
+    })
 }
 
 pub(super) fn warm_up_lexical_readout_cache(prefixes: &[String], material_limit: usize) {
@@ -213,12 +280,8 @@ pub(super) fn warm_up_lexical_readout_cache(prefixes: &[String], material_limit:
         if !is_supported_lexical_surface(prefix) {
             continue;
         }
-        let _ = cached_lexical_candidates(
-            memory,
-            prefix,
-            material_limit,
-            LexicalReadoutMode::CompletionOnly,
-        );
+        let _ =
+            cached_lexical_candidates(memory, prefix, material_limit, LexicalReadoutMode::FullIme);
     }
 }
 
@@ -404,7 +467,7 @@ fn sort_and_truncate_ime_l2_candidates(
     // corrected-prefix basin may reorder the field, but it must not evict the
     // entire exact-prefix lane before L3/L4 can compare their evidence.
     let exact_reserve_limit = limit.saturating_div(3).max(1);
-    let corrected_reserve_limit = limit.saturating_div(4).max(1);
+    let corrected_reserve_limit = limit.saturating_div(2).max(1);
     let exact_reserve = candidates
         .iter()
         .filter(|candidate| {
@@ -414,12 +477,13 @@ fn sort_and_truncate_ime_l2_candidates(
         .take(exact_reserve_limit)
         .cloned()
         .collect::<Vec<_>>();
-    let corrected_reserve = candidates
+    let corrected_ranked = candidates
         .iter()
         .filter(|candidate| candidate.source == L2ImeWordCandidateSource::CorrectedPrefixPhase)
-        .take(corrected_reserve_limit)
         .cloned()
         .collect::<Vec<_>>();
+    let corrected_reserve =
+        diverse_corrected_prefix_reserve(input, &corrected_ranked, corrected_reserve_limit);
     let ranked = std::mem::take(candidates);
     let mut bounded = Vec::with_capacity(limit);
     for candidate in exact_reserve
@@ -456,6 +520,82 @@ fn sort_and_truncate_ime_l2_candidates(
             .then_with(|| left.surface.cmp(&right.surface))
     });
     *candidates = bounded;
+}
+
+fn diverse_corrected_prefix_reserve(
+    input: &str,
+    candidates: &[L2ImeWordCandidate],
+    limit: usize,
+) -> Vec<L2ImeWordCandidate> {
+    let mut selected = Vec::with_capacity(limit);
+    let mut seen_slots = HashSet::new();
+    for candidate in candidates {
+        let novel = candidate
+            .morphology_slots
+            .iter()
+            .copied()
+            .any(|identity| !seen_slots.contains(&identity));
+        if !novel {
+            continue;
+        }
+        seen_slots.extend(candidate.morphology_slots.iter().copied());
+        selected.push(candidate.clone());
+        if selected.len() == limit {
+            return selected;
+        }
+    }
+
+    // Unbound lexical surfaces still need bounded diversity. This fallback is
+    // topology-only and is never used when the package exposes a typed slot.
+    let mut seen_endings = HashSet::new();
+    for candidate in candidates {
+        if !candidate.morphology_slots.is_empty()
+            || selected
+                .iter()
+                .any(|current| current.surface == candidate.surface)
+        {
+            continue;
+        }
+        let Some(ending) = one_edit_prefix_ending(input, &candidate.surface) else {
+            continue;
+        };
+        if seen_endings.insert(ending) {
+            selected.push(candidate.clone());
+            if selected.len() == limit {
+                return selected;
+            }
+        }
+    }
+    for candidate in candidates {
+        if selected
+            .iter()
+            .any(|current| current.surface == candidate.surface)
+        {
+            continue;
+        }
+        selected.push(candidate.clone());
+        if selected.len() == limit {
+            break;
+        }
+    }
+    selected
+}
+
+fn one_edit_prefix_ending(input: &str, surface: &str) -> Option<String> {
+    let input_len = input.chars().count();
+    let surface_chars = surface.chars().collect::<Vec<_>>();
+    [
+        input_len.saturating_sub(1),
+        input_len,
+        input_len.saturating_add(1),
+    ]
+    .into_iter()
+    .filter(|prefix_len| *prefix_len >= 2 && *prefix_len <= surface_chars.len())
+    .find_map(|prefix_len| {
+        let prefix = surface_chars[..prefix_len].iter().collect::<String>();
+        (damerau_levenshtein(input, &prefix) == 1)
+            .then(|| surface_chars[prefix_len..].iter().collect::<String>())
+    })
 }
 
 fn l2_ime_word_candidate_operator_priority(input: &str, candidate: &L2ImeWordCandidate) -> u8 {
@@ -517,6 +657,7 @@ mod tests {
             usage_prior: 0.0,
             context_prior: 0.0,
             accepted_count: 0,
+            morphology_slots: Vec::new(),
         }
     }
 
@@ -607,7 +748,7 @@ mod tests {
             &cache,
             "оста",
             3,
-            LexicalReadoutMode::CompletionOnly,
+            LexicalReadoutMode::FullIme,
             Arc::new(vec![
                 candidate("остановка"),
                 candidate("остановить"),
@@ -616,17 +757,14 @@ mod tests {
         );
 
         let projected =
-            projected_lexical_candidates(&cache, "остан", 3, LexicalReadoutMode::CompletionOnly)
+            projected_lexical_candidates(&cache, "остан", 3, LexicalReadoutMode::FullIme)
                 .expect("dense continuation must reuse the already born lattice");
         assert!(projected.iter().all(|item| item.word.starts_with("остан")));
 
-        assert!(projected_lexical_candidates(
-            &cache,
-            "остановк",
-            3,
-            LexicalReadoutMode::CompletionOnly
-        )
-        .is_none());
+        assert!(
+            projected_lexical_candidates(&cache, "остановк", 3, LexicalReadoutMode::FullIme)
+                .is_none()
+        );
     }
 
     #[test]

@@ -40,8 +40,8 @@ pub fn autocorrect_edit_safety(
     let inserted_contains_space = inserted_text.chars().any(char::is_whitespace);
     let deleted_core_contains_space = core_contains_space(&deleted_text);
     let inserted_core_contains_space = core_contains_space(&inserted_text);
-    let insertion_splits_word =
-        inserted_contains_space && insertion_point_is_inside_word(&original_chars, delete_start);
+    let insertion_splits_word = inserted_contains_space
+        && insertion_connects_preserved_word_sides(&original_chars, delete_start, cursor);
     let word_count_changed =
         original.split_whitespace().count() != replacement.split_whitespace().count();
     let boundary_changed = word_count_changed
@@ -270,6 +270,12 @@ fn insertion_point_is_inside_word(chars: &[char], idx: usize) -> bool {
     }
     let left = chars.get(idx.saturating_sub(1)).copied();
     let right = chars.get(idx).copied();
+    left.is_some_and(|ch| !ch.is_whitespace()) && right.is_some_and(|ch| !ch.is_whitespace())
+}
+
+fn insertion_connects_preserved_word_sides(chars: &[char], start: usize, end: usize) -> bool {
+    let left = start.checked_sub(1).and_then(|idx| chars.get(idx)).copied();
+    let right = chars.get(end).copied();
     left.is_some_and(|ch| !ch.is_whitespace()) && right.is_some_and(|ch| !ch.is_whitespace())
 }
 

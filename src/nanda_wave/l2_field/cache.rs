@@ -28,6 +28,11 @@ pub(super) fn get(original: &str) -> Option<CanonicalL2FieldReadout> {
 }
 
 pub(super) fn store(original: &str, readout: &CanonicalL2FieldReadout) {
+    // Infrastructure failures are retryable observations, not lexical state.
+    // Caching one would silence this surface until process restart.
+    if !readout.is_cacheable() {
+        return;
+    }
     let Ok(mut cache) = canonical_l2_readout_cache().lock() else {
         return;
     };

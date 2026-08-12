@@ -534,7 +534,7 @@ fn typed_authority_mints_have_only_named_runtime_callers() {
             &["src/bin/lay_daemon/auto_undo_runtime.rs"][..],
         ),
         (
-            "plan_ime_completion_edit(",
+            "plan_ime_candidate_accept_edit(",
             &[
                 "src/bin/lay_ibus_engine/committed_tail.rs",
                 "src/bin/lay_ibus_engine/composition_commit.rs",

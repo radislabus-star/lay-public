@@ -12,6 +12,10 @@ pub enum ImeCandidateSource {
     L3Context,
 }
 
+pub fn is_ascii_layout_letter_symbol(ch: char) -> bool {
+    crate::layout_autoswitch::is_ascii_layout_letter_symbol(ch)
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct ImeCandidateProposal {
     /// Text appended after the active token for a completion proposal.

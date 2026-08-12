@@ -1,5 +1,6 @@
 use super::action::DecisionTransitionEditInput;
 use super::committed_tail::plan_committed_tail_full_token_replacement;
+use super::gate::plan_ime_candidate_accept_edit;
 use super::gate::{plan_decision_transition_edit, plan_recorded_undo_edit};
 use super::mutation::TransitionAudit;
 use super::transition::{
@@ -119,6 +120,13 @@ pub(crate) fn verify_visible_text_transition(
     // intent, never an automatic correction decision.
     let action = if candidate.intent == super::transition::TextTransitionIntent::ImeAutoUndo {
         plan_recorded_undo_edit(&original_text, &candidate.insert_text, plan.clone(), 1)
+    } else if candidate.intent == super::transition::TextTransitionIntent::ImeCandidateAccept {
+        plan_ime_candidate_accept_edit(
+            "ibus-committed-tail-candidate-accept",
+            1000,
+            original_text.clone(),
+            candidate.insert_text.clone(),
+        )
     } else {
         plan_decision_transition_edit(
             DecisionTransitionEditInput {
@@ -142,6 +150,20 @@ pub(crate) fn verify_visible_text_transition(
             action: Some(action),
         };
     }
+
+    let plan = if candidate.intent == super::transition::TextTransitionIntent::ImeCandidateAccept {
+        let Some(verified_plan) = action.plan().cloned() else {
+            return TextTransitionDecision::Reject {
+                rejection: TextTransitionRejection::UnsafeEdit {
+                    reason: "ime_candidate_accept_plan_missing",
+                },
+                action: Some(action),
+            };
+        };
+        verified_plan
+    } else {
+        plan
+    };
 
     TextTransitionDecision::Apply { plan, action }
 }

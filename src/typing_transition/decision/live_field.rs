@@ -89,6 +89,14 @@ fn live_admission_reason(candidate_visible: bool, suffix_visible: bool) -> &'sta
 }
 
 fn live_candidate_field_has_authority(candidate: &LiveCompletionProposal) -> bool {
+    if candidate.replacement {
+        return candidate.l2_center_grounded
+            && (candidate.structural >= 0.20
+                || candidate.common
+                || candidate.hot
+                || candidate.accepted >= 1
+                || candidate.l3_memory_supported);
+    }
     let grounded_active_extension = candidate.active_composition
         && candidate.allow_short_lexical
         && !candidate.suffix.is_empty()
@@ -163,6 +171,13 @@ mod tests {
             state_before: crate::nanda_wave::phase_field::hash_text("live-field-test"),
             surface: "проверка".to_string(),
             suffix: suffix.to_string(),
+            replacement: suffix.is_empty(),
+            lane: if suffix.is_empty() {
+                crate::typing_transition::live_candidate::LiveCandidateLane::GeneralReplacement
+            } else {
+                crate::typing_transition::live_candidate::LiveCandidateLane::ExactCompletion
+            },
+            morphology_slots: Vec::new(),
             score: 0.72,
             rank_score: 0.72,
             field_strength: 100,

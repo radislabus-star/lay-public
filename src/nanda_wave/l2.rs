@@ -72,6 +72,14 @@ pub enum L2ImeWordCandidateKind {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum L2ImeWordCandidateSource {
     LexicalPhase,
+    /// A grounded surface projected from the canonical L1.1 -> Productive V90
+    /// field. This is candidate evidence, not a second IME ranking owner.
+    CanonicalField,
+    /// Exact keyboard-layout projection. It must compete before a projection
+    /// that also requires lexical typo repair.
+    ExactLayoutPhase,
+    /// Keyboard-layout projection followed by lexical settling.
+    LayoutThenTypoPhase,
     /// A longer lexical center reached through one Damerau edit of the active
     /// prefix. It is display-only and requires explicit IME acceptance.
     CorrectedPrefixPhase,
@@ -81,6 +89,18 @@ pub enum L2ImeWordCandidateSource {
     /// A two-center boundary candidate born by the same L1/L2 field as the
     /// full correction route.  It stays a display-only replacement in IME.
     BoundaryPhase,
+}
+
+impl L2ImeWordCandidateSource {
+    pub(crate) const fn is_lexically_grounded(self) -> bool {
+        matches!(
+            self,
+            Self::LexicalPhase
+                | Self::CanonicalField
+                | Self::ExactLayoutPhase
+                | Self::LayoutThenTypoPhase
+        )
+    }
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -95,6 +115,7 @@ pub struct L2ImeWordCandidate {
     pub usage_prior: f32,
     pub context_prior: f32,
     pub accepted_count: u32,
+    pub(crate) morphology_slots: Vec<crate::correction_core::MorphologySlotIdentity>,
 }
 
 pub fn ime_l2_word_candidates(
@@ -103,14 +124,6 @@ pub fn ime_l2_word_candidates(
     limit: usize,
 ) -> Vec<L2ImeWordCandidate> {
     ime_readout::ime_l2_word_candidates_impl(context_prefix, token, limit)
-}
-
-pub(crate) fn ime_l2_completion_candidates(
-    context_prefix: &str,
-    token: &str,
-    limit: usize,
-) -> Vec<L2ImeWordCandidate> {
-    ime_readout::ime_l2_completion_candidates_impl(context_prefix, token, limit)
 }
 
 /// Supplies compact BoundaryCell32 proposals to the live IME lattice.
@@ -156,6 +169,7 @@ pub fn ime_l2_boundary_candidates(
             usage_prior: 0.0,
             context_prior: 0.0,
             accepted_count: 0,
+            morphology_slots: Vec::new(),
         })
         .collect::<Vec<_>>();
     let split_ready = std::time::Instant::now();
@@ -178,6 +192,10 @@ pub fn ime_l2_boundary_candidates(
         );
     }
     candidates
+}
+
+pub(crate) fn ime_l2_boundary_evidence(token: &str) -> bool {
+    tail_scan_adapter::boundary_split_has_structural_evidence(token)
 }
 
 pub fn correction_l2_word_candidates(

@@ -11,9 +11,9 @@ use rayon::prelude::*;
 
 use super::runtime::{
     CanonicalL2FieldReadout, CompositionalFormBirth, CompositionalLemmaBirth, L2FieldAuthority,
-    L2LexicalSeed, L2LexicalSeedOrigin, L2LocalVerdict, ProductiveL2FormBirth, StandaloneL2Field,
-    StandaloneL2Readout, CANONICAL_L2_PRODUCTIVE_SOURCE_ID, CANONICAL_L2_READOUT_SOURCE_ID,
-    CANONICAL_L2_SURFACE_SOURCE_ID,
+    L2FieldAvailability, L2LexicalSeed, L2LexicalSeedOrigin, L2LocalVerdict, ProductiveL2FormBirth,
+    StandaloneL2Field, StandaloneL2Readout, CANONICAL_L2_PRODUCTIVE_SOURCE_ID,
+    CANONICAL_L2_READOUT_SOURCE_ID, CANONICAL_L2_SURFACE_SOURCE_ID,
 };
 
 const LIVE_L11_LATTICE_LIMIT: usize = 32;
@@ -46,6 +46,119 @@ pub(crate) fn canonical_text_readout(original: &str) -> CanonicalL2FieldReadout 
     }
     super::cache::store(original, &readout);
     readout
+}
+
+/// Projects the one canonical L1.1 -> Productive V90 field into the live IME
+/// lattice. The shared candidate gate remains the only ranking owner and Tab
+/// remains the only mutation authority for whole-token replacements.
+pub(crate) fn canonical_ime_candidates(
+    context_prefix: &str,
+    token: &str,
+    limit: usize,
+) -> (
+    L2FieldAvailability,
+    Vec<crate::nanda_wave::l2::L2ImeWordCandidate>,
+) {
+    if limit == 0 {
+        return (L2FieldAvailability::UnsupportedInput, Vec::new());
+    }
+    let original = if context_prefix.is_empty() {
+        token.to_string()
+    } else {
+        format!("{context_prefix}{token}")
+    };
+    let readout = canonical_owned_text_candidates(&original);
+    let availability = readout.availability;
+    if availability != L2FieldAvailability::Ready {
+        return (availability, Vec::new());
+    }
+
+    let normalized = token.to_lowercase();
+    let usage = super::super::usage_prior::cached_usage_prior_snapshot();
+    let context = super::super::llmwave::tokenize(context_prefix);
+    let prepared_usage = usage.prepare_hot_context(&context);
+    let authoritative_surface = match &readout.authority {
+        L2FieldAuthority::Winner { surface } => Some(surface.to_lowercase()),
+        _ => None,
+    };
+    let mut candidates = readout
+        .candidates
+        .into_iter()
+        .filter_map(|candidate| {
+            let (_, surface) = split_last_alphabetic_token(&candidate.replacement)?;
+            if surface.eq_ignore_ascii_case(&normalized) || surface.chars().any(char::is_whitespace)
+            {
+                return None;
+            }
+            let source = match candidate.origin {
+                CandidateOrigin::Layout => {
+                    crate::nanda_wave::l2::L2ImeWordCandidateSource::ExactLayoutPhase
+                }
+                CandidateOrigin::LayoutThenTypo => {
+                    crate::nanda_wave::l2::L2ImeWordCandidateSource::LayoutThenTypoPhase
+                }
+                _ => crate::nanda_wave::l2::L2ImeWordCandidateSource::CanonicalField,
+            };
+            let prior = usage.candidate_prior_prepared(&prepared_usage, surface);
+            let morphology_slots = candidate
+                .morphology_slot_evidence
+                .iter()
+                .map(|evidence| crate::correction_core::MorphologySlotIdentity {
+                    domain: crate::correction_core::MorphologySlotIdentityDomain::ProductiveV1,
+                    lemma_id: evidence.lemma_id,
+                    slot_id: evidence.target_feature_mask,
+                })
+                .collect::<Vec<_>>();
+            let seed = crate::nanda_wave::L11SeedSurface {
+                terminal_id: None,
+                surface: surface.to_string(),
+                authority: authoritative_surface
+                    .as_deref()
+                    .is_some_and(|winner| winner.eq_ignore_ascii_case(surface)),
+                score_milli: canonical_ime_score_milli(&candidate),
+            };
+            let mut projected = l11_seed_only_candidate(&normalized, &seed);
+            projected.source = source;
+            projected.usage_prior = prior.word_prior;
+            projected.context_prior = prior.context_prior;
+            projected.accepted_count = prior.accepted_count;
+            projected.morphology_slots = morphology_slots;
+            Some(projected)
+        })
+        .collect::<Vec<_>>();
+    candidates.sort_by(|left, right| {
+        canonical_ime_source_priority(right.source)
+            .cmp(&canonical_ime_source_priority(left.source))
+            .then_with(|| right.score.cmp(&left.score))
+            .then_with(|| left.surface.cmp(&right.surface))
+    });
+    candidates.dedup_by(|left, right| left.surface.eq_ignore_ascii_case(&right.surface));
+    candidates.truncate(limit);
+    (availability, candidates)
+}
+
+fn canonical_ime_score_milli(candidate: &UnifiedCorrectionCandidate) -> u32 {
+    let gate = match candidate.gate.action {
+        CandidateGateAction::Eligible => 1_000,
+        CandidateGateAction::SuggestOnly => 760,
+        CandidateGateAction::KeepOriginal | CandidateGateAction::Veto => 0,
+    };
+    let source = match candidate.origin {
+        CandidateOrigin::Layout => 320,
+        CandidateOrigin::LayoutThenTypo => 160,
+        CandidateOrigin::L2Surface => 240,
+        _ => 80,
+    };
+    gate + source
+}
+
+fn canonical_ime_source_priority(source: crate::nanda_wave::l2::L2ImeWordCandidateSource) -> u8 {
+    match source {
+        crate::nanda_wave::l2::L2ImeWordCandidateSource::ExactLayoutPhase => 3,
+        crate::nanda_wave::l2::L2ImeWordCandidateSource::CanonicalField => 2,
+        crate::nanda_wave::l2::L2ImeWordCandidateSource::LayoutThenTypoPhase => 1,
+        _ => 0,
+    }
 }
 
 fn boundary_text_candidates(original: &str) -> Vec<UnifiedCorrectionCandidate> {
@@ -158,7 +271,7 @@ fn short_layout_candidates(original: &str) -> Vec<UnifiedCorrectionCandidate> {
 fn canonical_owned_text_candidates(original: &str) -> CanonicalL2FieldReadout {
     let started = std::time::Instant::now();
     let Some((_, token)) = split_last_alphabetic_token(original) else {
-        return CanonicalL2FieldReadout::default();
+        return CanonicalL2FieldReadout::abstain(L2FieldAvailability::UnsupportedInput);
     };
     let normalized_token = token.to_lowercase();
     if normalized_token.chars().count() < 2
@@ -166,30 +279,41 @@ fn canonical_owned_text_candidates(original: &str) -> CanonicalL2FieldReadout {
             .chars()
             .all(crate::keyboard::is_cyrillic_letter)
     {
-        return CanonicalL2FieldReadout::default();
+        return CanonicalL2FieldReadout::abstain(L2FieldAvailability::UnsupportedInput);
     }
     let seed_started = std::time::Instant::now();
-    let l11_seeds = live_l11_seed_surfaces(token, LIVE_L11_LATTICE_LIMIT);
+    let l11_seeds = match live_l11_seed_surfaces(token, LIVE_L11_LATTICE_LIMIT) {
+        Ok(seeds) => seeds,
+        Err(_) => {
+            return CanonicalL2FieldReadout::unavailable(L2FieldAvailability::L11ServiceUnavailable)
+        }
+    };
     let seed_duration = seed_started.elapsed();
     if l11_seeds.is_empty() {
-        return CanonicalL2FieldReadout::default();
+        return CanonicalL2FieldReadout::abstain(L2FieldAvailability::EmptyL11Lattice);
     }
     // Productive V90 consumes the bounded L1.1 lattice directly. The canonical
     // package remains a read-only identity index; its historical candidate
     // generation and local verdict are not executed on the live route.
-    let readout = match (
-        super::installed_l2_field(),
-        super::installed_productive_l2_v1(),
-    ) {
-        (Ok(canonical_index), Ok(runtime)) => super::productive_v1::live_productive_v1_readout(
-            original,
-            token,
-            canonical_index,
-            &runtime,
-            &l11_seeds,
-        )
-        .unwrap_or_default(),
-        _ => CanonicalL2FieldReadout::default(),
+    let readout = match super::installed_l2_field() {
+        Err(_) => {
+            CanonicalL2FieldReadout::unavailable(L2FieldAvailability::CanonicalPackageUnavailable)
+        }
+        Ok(canonical_index) => match super::installed_productive_l2_v1() {
+            Err(_) => CanonicalL2FieldReadout::unavailable(
+                L2FieldAvailability::ProductivePackageUnavailable,
+            ),
+            Ok(runtime) => super::productive_v1::live_productive_v1_readout(
+                original,
+                token,
+                canonical_index,
+                &runtime,
+                &l11_seeds,
+            )
+            .unwrap_or_else(|_| {
+                CanonicalL2FieldReadout::unavailable(L2FieldAvailability::ProductiveReadoutError)
+            }),
+        },
     };
     if std::env::var_os("LAY_L2_FIELD_TRACE").is_some() {
         let finished = std::time::Instant::now();
@@ -211,22 +335,24 @@ fn canonical_owned_text_candidates(original: &str) -> CanonicalL2FieldReadout {
 fn live_l11_seed_surfaces(
     token: &str,
     material_limit: usize,
-) -> Vec<crate::nanda_wave::L11SeedSurface> {
+) -> std::io::Result<Vec<crate::nanda_wave::L11SeedSurface>> {
     let socket_path = crate::nanda_wave::default_l11_socket_path();
     if !socket_path.exists() {
-        return Vec::new();
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::NotFound,
+            "L1.1 service socket is unavailable",
+        ));
     }
-    crate::nanda_wave::request_l11_seed_surfaces(
+    Ok(crate::nanda_wave::request_l11_seed_surfaces(
         &socket_path,
         token,
         material_limit.max(1),
         l11_service_timeout(),
-    )
-    .unwrap_or_default()
+    )?
     .into_iter()
     .filter(|seed| !seed.surface.chars().any(char::is_whitespace))
     .take(material_limit)
-    .collect()
+    .collect())
 }
 
 pub(super) fn query_live_canonical_l2(
@@ -716,6 +842,11 @@ fn append_productive_surface_candidates(
                 0.0
             },
             accepted_count: 0,
+            morphology_slots: vec![crate::correction_core::MorphologySlotIdentity {
+                domain: crate::correction_core::MorphologySlotIdentityDomain::CanonicalFeature,
+                lemma_id: birth.lemma_id,
+                slot_id: birth.target_feature_mask,
+            }],
         });
         projection.added_surfaces.insert(surface);
     }
@@ -901,6 +1032,7 @@ fn l11_seed_only_candidate(
         usage_prior: 0.0,
         context_prior: 0.0,
         accepted_count: u32::from(seed.authority),
+        morphology_slots: super::morphology_slot_identities_for_surface(&seed.surface),
     }
 }
 
@@ -1069,6 +1201,7 @@ fn apply_standalone_l2_field(
                 usage_prior: 0.0,
                 context_prior: 0.0,
                 accepted_count: 0,
+                morphology_slots: super::morphology_slot_identities_for_surface(&surface),
             });
         }
     }
@@ -1116,6 +1249,7 @@ fn apply_standalone_l2_field(
                 usage_prior: 0.0,
                 context_prior: 0.0,
                 accepted_count: 0,
+                morphology_slots: super::morphology_slot_identities_for_surface(&surface),
             });
         }
     }
@@ -1189,6 +1323,20 @@ fn apply_standalone_l2_field(
             usage_prior: 0.0,
             context_prior: (local.slot_phase_milli.max(0) as f32 / 1_000.0).min(1.0),
             accepted_count: u32::from(local.local_score > 0),
+            morphology_slots: local
+                .lemma_ids
+                .iter()
+                .copied()
+                .zip(local.feature_masks.iter().copied())
+                .map(
+                    |(lemma_id, slot_id)| crate::correction_core::MorphologySlotIdentity {
+                        domain:
+                            crate::correction_core::MorphologySlotIdentityDomain::CanonicalFeature,
+                        lemma_id,
+                        slot_id,
+                    },
+                )
+                .collect(),
         });
     }
     let mut retained_surfaces = input_surface_reserve;
@@ -1561,6 +1709,7 @@ mod tests {
             usage_prior: 0.0,
             context_prior: 0.0,
             accepted_count: 0,
+            morphology_slots: Vec::new(),
         }
     }
 

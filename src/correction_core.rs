@@ -131,6 +131,22 @@ pub struct UnifiedCorrectionCandidate {
     pub(crate) morphology_slot_evidence: Vec<MorphologySlotEvidence>,
 }
 
+/// Stable identity used only to preserve morphology diversity in bounded
+/// candidate lattices. The domain is explicit because canonical morphology
+/// feature masks and Productive V90 slot IDs are different number spaces.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub(crate) struct MorphologySlotIdentity {
+    pub(crate) domain: MorphologySlotIdentityDomain,
+    pub(crate) lemma_id: u32,
+    pub(crate) slot_id: u32,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub(crate) enum MorphologySlotIdentityDomain {
+    CanonicalFeature,
+    ProductiveV1,
+}
+
 /// Typed L2 evidence for choosing a morphology slot inside one lemma basin.
 ///
 /// This metadata may affect candidate order, but it never grants mutation

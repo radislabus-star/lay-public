@@ -86,8 +86,8 @@ impl LayIbusEngine {
         } else {
             accepted_word.clone()
         };
-        let action = lay::text_edit::plan_ime_completion_edit(
-            "ibus-active-composition-completion",
+        let action = lay::text_edit::plan_ime_candidate_accept_edit(
+            "ibus-active-composition-candidate-accept",
             900,
             self.buffer.clone(),
             accepted_text.clone(),
@@ -310,8 +310,8 @@ mod active_composition_route_contract {
     fn completion_accept_uses_edit_action_contract() {
         let source = include_str!("composition_commit.rs");
         assert!(
-            source.contains("plan_ime_completion_edit("),
-            "Tab/IME completion accept must enter the typed IME completion plan"
+            source.contains("plan_ime_candidate_accept_edit("),
+            "Tab/IME candidate accept must enter the shared typed edit plan"
         );
         assert!(
             source.contains("ActiveCompositionAuthority::VerifiedEdit(Box::new(authorized_edit))")

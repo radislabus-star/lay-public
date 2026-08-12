@@ -10,7 +10,7 @@ use super::l4_goal_state::L4AllowedAction;
 use super::l4_signed_memory::l4_signed_memory_signal_from_readout;
 use crate::keyboard::is_cyrillic_letter;
 use crate::typing_transition::decision::{LiveFieldScoreInput, TransitionDecisionCore};
-use crate::typing_transition::live_candidate::LiveCompletionProposal;
+use crate::typing_transition::live_candidate::{LiveCandidateLane, LiveCompletionProposal};
 use std::cell::Cell;
 use std::collections::HashSet;
 use std::sync::atomic::{AtomicU64, Ordering};
@@ -28,7 +28,7 @@ use cache::LiveCompletionCacheKey;
 fn is_live_lexical_surface(surface: &str) -> bool {
     !surface.is_empty()
         && (surface.chars().all(is_cyrillic_letter)
-            || surface.chars().all(|ch| ch.is_ascii_alphabetic()))
+            || crate::layout_autoswitch::is_ascii_layout_letter_surface(surface))
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -45,6 +45,7 @@ pub struct LiveCompletionRequest<'a> {
 pub struct LiveCompletionCandidate {
     pub surface: String,
     pub suffix: String,
+    pub replacement: bool,
     pub score: f32,
     pub source: &'static str,
     rank_score: f32,
@@ -70,6 +71,10 @@ thread_local! {
 
 pub fn clear_last_live_completion_timing() {
     LAST_LIVE_COMPLETION_TIMING.with(|slot| slot.set(LiveCompletionTiming::default()));
+}
+
+pub(crate) fn clear_live_completion_cache() {
+    cache::clear();
 }
 
 pub fn last_live_completion_timing() -> LiveCompletionTiming {
@@ -182,7 +187,10 @@ pub fn live_completion_candidates(
     let partial_state_known = l2::l2_surface_foundation_has_authority(&partial);
     let usage_snapshot = super::usage_prior::cached_usage_prior_snapshot();
     let l2_started = Instant::now();
-    let mut raw = live_l2_word_candidates(request.context_prefix, &partial, request.limit);
+    let material =
+        live_l2_word_candidates_with_availability(request.context_prefix, &partial, request.limit);
+    let material_cacheable = material.cacheable;
+    let mut raw = material.candidates;
     let context_birth_candidates = live_l3_context_birth_candidates(
         &context_tokens,
         &partial,
@@ -228,6 +236,7 @@ pub fn live_completion_candidates(
         .filter(|(candidate, _)| candidate.surface != partial)
         .filter_map(|(candidate, l3_report)| {
             let is_completion = candidate.kind == L2ImeWordCandidateKind::Completion;
+            let is_replacement = !is_completion;
             let suffix = if is_completion {
                 candidate.surface.strip_prefix(&partial)?.to_string()
             } else {
@@ -254,14 +263,14 @@ pub fn live_completion_candidates(
             let common = crate::lexicon::is_common_ru_word(&candidate.surface)
                 || crate::lexicon::is_common_en_technical_word(&candidate.surface);
             let foundation_rank = l2::l2_surface_foundation_rank(&candidate.surface);
-            let lexical_center_grounded =
-                matches!(candidate.source, L2ImeWordCandidateSource::LexicalPhase);
+            let lexical_center_grounded = candidate.source.is_lexically_grounded();
             let boundary_center_grounded =
                 matches!(candidate.source, L2ImeWordCandidateSource::BoundaryPhase);
             let corrected_prefix_completion = matches!(
                 candidate.source,
                 L2ImeWordCandidateSource::CorrectedPrefixPhase
             );
+            let lane = live_candidate_lane(candidate.source, candidate.kind);
             let context_birth = context_birth_surfaces.contains(&candidate.surface);
             let l2_center_grounded = lexical_center_grounded
                 || foundation_rank.is_some()
@@ -317,7 +326,7 @@ pub fn live_completion_candidates(
                 rejected,
             );
 
-            let field_score =
+            let mut field_score =
                 TransitionDecisionCore::score_live_completion_field(LiveFieldScoreInput {
                     structural,
                     boundary_center_grounded,
@@ -334,13 +343,31 @@ pub fn live_completion_candidates(
                         .map(|readout| readout.rank_delta)
                         .unwrap_or_default(),
                 });
+            field_score.rank_score += match candidate.source {
+                L2ImeWordCandidateSource::ExactLayoutPhase => 0.16,
+                L2ImeWordCandidateSource::LayoutThenTypoPhase => 0.04,
+                _ => 0.0,
+            };
+            field_score.score = field_score.rank_score.clamp(0.0, 1.0);
             Some(LiveCompletionProposal {
                 state_before: hidden_state_before,
                 surface: candidate.surface,
                 suffix,
+                replacement: is_replacement,
+                lane,
+                morphology_slots: candidate.morphology_slots,
                 score: field_score.score,
                 source: if boundary_center_grounded {
                     "BoundaryCell32"
+                } else if matches!(candidate.source, L2ImeWordCandidateSource::ExactLayoutPhase) {
+                    "L1ExactLayoutCell32"
+                } else if matches!(
+                    candidate.source,
+                    L2ImeWordCandidateSource::LayoutThenTypoPhase
+                ) {
+                    "L1LayoutThenTypoCell32"
+                } else if matches!(candidate.source, L2ImeWordCandidateSource::CanonicalField) {
+                    "ProductiveV90ImeCell32"
                 } else if corrected_prefix_completion {
                     "L2CorrectedPrefixCell32"
                 } else if context_birth {
@@ -382,6 +409,7 @@ pub fn live_completion_candidates(
         .map(|candidate| LiveCompletionCandidate {
             surface: candidate.surface,
             suffix: candidate.suffix,
+            replacement: candidate.replacement,
             score: candidate.score,
             source: candidate.source,
             rank_score: candidate.rank_score,
@@ -391,7 +419,9 @@ pub fn live_completion_candidates(
         .elapsed()
         .as_micros()
         .min(u128::from(u64::MAX)) as u64;
-    cache::store(cache_key, &candidates);
+    if material_cacheable {
+        cache::store(cache_key, &candidates);
+    }
     record_live_gate_stats(
         started,
         LiveGateRecord {
@@ -412,31 +442,103 @@ pub fn live_completion_candidates(
     candidates
 }
 
+#[cfg(test)]
 fn live_l2_word_candidates(
     context_prefix: &str,
     token: &str,
     limit: usize,
 ) -> Vec<l2::L2ImeWordCandidate> {
+    live_l2_word_candidates_with_availability(context_prefix, token, limit).candidates
+}
+
+struct LiveL2Material {
+    candidates: Vec<l2::L2ImeWordCandidate>,
+    cacheable: bool,
+}
+
+fn live_l2_word_candidates_with_availability(
+    context_prefix: &str,
+    token: &str,
+    limit: usize,
+) -> LiveL2Material {
     if limit == 0 {
-        return Vec::new();
+        return LiveL2Material {
+            candidates: Vec::new(),
+            cacheable: true,
+        };
     }
     let normalized = token.to_lowercase();
     let token_len = normalized.chars().count();
     if !(1..=18).contains(&token_len) || !is_live_lexical_surface(&normalized) {
-        return Vec::new();
+        return LiveL2Material {
+            candidates: Vec::new(),
+            cacheable: true,
+        };
     }
 
     if !l2::ime_word_candidate_memory_is_warm() {
         super::ensure_l2_ime_warmup_started();
-        return Vec::new();
+        return LiveL2Material {
+            candidates: Vec::new(),
+            cacheable: false,
+        };
     }
 
     let material_limit = live_l2_material_limit(limit);
-    // Live IME is a suffix route for an unfinished token. Full-token typo,
-    // boundary and split/glue repairs belong to the Space/autocorrect route,
-    // where the verifier can authorize a physical edit.
-    let mut candidates =
-        l2::ime_l2_completion_candidates(context_prefix, &normalized, material_limit);
+    let plain_lexical_surface = normalized.chars().all(is_cyrillic_letter)
+        || normalized.chars().all(|ch| ch.is_ascii_alphabetic());
+    let lexical_started = Instant::now();
+    let mut candidates = if plain_lexical_surface {
+        l2::ime_l2_word_candidates(context_prefix, &normalized, material_limit)
+    } else {
+        Vec::new()
+    };
+    let lexical_us = lexical_started.elapsed().as_micros();
+    let canonical_started = Instant::now();
+    let canonical_availability = if plain_lexical_surface {
+        let (availability, canonical) =
+            super::l2_field::canonical_ime_candidates(context_prefix, &normalized, material_limit);
+        merge_live_candidate_material(&mut candidates, canonical);
+        availability
+    } else {
+        super::l2_field::L2FieldAvailability::UnsupportedInput
+    };
+    let canonical_us = canonical_started.elapsed().as_micros();
+    let layout_started = Instant::now();
+    merge_live_candidate_material(
+        &mut candidates,
+        live_layout_candidates(context_prefix, &normalized),
+    );
+    let layout_us = layout_started.elapsed().as_micros();
+    let boundary_started = Instant::now();
+    let boundary_probe = should_probe_live_boundary(&normalized, &candidates);
+    if boundary_probe {
+        merge_live_candidate_material(
+            &mut candidates,
+            l2::ime_l2_boundary_candidates(context_prefix, &normalized, 2),
+        );
+    }
+    let boundary_us = boundary_started.elapsed().as_micros();
+    if std::env::var_os("LAY_L2_FIELD_TRACE").is_some() {
+        eprintln!(
+            "live_ime_material_trace token_chars={} lexical_us={} canonical_us={} layout_us={} boundary_us={} boundary_probe={} candidates={}",
+            token_len,
+            lexical_us,
+            canonical_us,
+            layout_us,
+            boundary_us,
+            boundary_probe,
+            candidates.len(),
+        );
+        eprintln!(
+            "live_ime_material_surfaces {:?}",
+            candidates
+                .iter()
+                .take(material_limit)
+                .map(|candidate| (&candidate.surface, candidate.source, candidate.score))
+                .collect::<Vec<_>>()
+        );
+    }
     candidates.sort_by(|left, right| {
         right
             .score
@@ -445,7 +547,136 @@ fn live_l2_word_candidates(
     });
     let mut seen = HashSet::new();
     candidates.retain(|candidate| seen.insert(candidate.surface.clone()));
+    candidates.truncate(material_limit);
+    LiveL2Material {
+        candidates,
+        cacheable: !canonical_availability.is_transient(),
+    }
+}
+
+fn live_candidate_lane(
+    source: L2ImeWordCandidateSource,
+    kind: L2ImeWordCandidateKind,
+) -> LiveCandidateLane {
+    match source {
+        L2ImeWordCandidateSource::ExactLayoutPhase
+        | L2ImeWordCandidateSource::LayoutThenTypoPhase => LiveCandidateLane::LayoutReplacement,
+        L2ImeWordCandidateSource::BoundaryPhase => LiveCandidateLane::BoundaryReplacement,
+        L2ImeWordCandidateSource::CorrectedPrefixPhase => {
+            LiveCandidateLane::CorrectedPrefixReplacement
+        }
+        _ if kind == L2ImeWordCandidateKind::Completion => LiveCandidateLane::ExactCompletion,
+        _ => LiveCandidateLane::GeneralReplacement,
+    }
+}
+
+fn should_probe_live_boundary(token: &str, candidates: &[l2::L2ImeWordCandidate]) -> bool {
+    if !(4..=18).contains(&token.chars().count()) || !token.chars().all(is_cyrillic_letter) {
+        return false;
+    }
+    let exact_completions = candidates
+        .iter()
+        .filter(|candidate| {
+            candidate.kind == L2ImeWordCandidateKind::Completion
+                && candidate.surface.starts_with(token)
+        })
+        .count();
+    exact_completions < 2 && l2::ime_l2_boundary_evidence(token)
+}
+
+fn merge_live_candidate_material(
+    candidates: &mut Vec<l2::L2ImeWordCandidate>,
+    additions: Vec<l2::L2ImeWordCandidate>,
+) {
+    for addition in additions {
+        if let Some(existing) = candidates
+            .iter_mut()
+            .find(|candidate| candidate.surface.eq_ignore_ascii_case(&addition.surface))
+        {
+            let replace_source = live_candidate_source_priority(addition.source)
+                > live_candidate_source_priority(existing.source);
+            merge_live_candidate_evidence(existing, &addition);
+            if replace_source {
+                existing.source = addition.source;
+                existing.kind = addition.kind;
+            }
+        } else {
+            candidates.push(addition);
+        }
+    }
+}
+
+fn live_candidate_source_priority(source: L2ImeWordCandidateSource) -> u8 {
+    match source {
+        L2ImeWordCandidateSource::ExactLayoutPhase => 6,
+        L2ImeWordCandidateSource::CanonicalField => 5,
+        L2ImeWordCandidateSource::LayoutThenTypoPhase => 4,
+        L2ImeWordCandidateSource::CorrectedPrefixPhase => 3,
+        L2ImeWordCandidateSource::LexicalPhase => 2,
+        L2ImeWordCandidateSource::ContextPhase => 1,
+        L2ImeWordCandidateSource::BoundaryPhase => 0,
+    }
+}
+
+fn live_layout_candidates(context_prefix: &str, token: &str) -> Vec<l2::L2ImeWordCandidate> {
+    let mut candidates = Vec::new();
+    if let Some(surface) =
+        live_exact_layout_projection(token).filter(|surface| !surface.eq_ignore_ascii_case(token))
+    {
+        let exact_surface = surface.clone();
+        candidates.push(layout_word_candidate(
+            token,
+            surface,
+            L2ImeWordCandidateSource::ExactLayoutPhase,
+            1_520,
+        ));
+        let mut settled = l2::correction_l2_word_candidates(context_prefix, &exact_surface, 8);
+        settled.retain(|candidate| !candidate.surface.eq_ignore_ascii_case(&exact_surface));
+        for candidate in &mut settled {
+            candidate.kind = L2ImeWordCandidateKind::Replacement;
+            candidate.source = L2ImeWordCandidateSource::LayoutThenTypoPhase;
+        }
+        merge_live_candidate_material(&mut candidates, settled);
+    }
     candidates
+}
+
+fn live_exact_layout_projection(token: &str) -> Option<String> {
+    if crate::layout_autoswitch::is_ascii_layout_letter_surface(token) {
+        return crate::layout_autoswitch::correct_confident_wrong_layout_ascii_word(token)
+            .or_else(|| crate::layout_autoswitch::correct_wrong_layout_ascii_word(token));
+    }
+    if !token.chars().all(is_cyrillic_letter) {
+        return None;
+    }
+    let projected = crate::dict::convert(token, crate::dict::Direction::Ru2Us);
+    let projected_lower = projected.to_ascii_lowercase();
+    (crate::lexicon::is_common_en_technical_word(&projected_lower)
+        || crate::layout_autoswitch::is_known_english_layout_autoswitch_word(&projected_lower))
+    .then_some(projected)
+}
+
+fn layout_word_candidate(
+    token: &str,
+    surface: String,
+    source: L2ImeWordCandidateSource,
+    score: u32,
+) -> l2::L2ImeWordCandidate {
+    let distance =
+        crate::text_metrics::damerau_levenshtein(&token.to_lowercase(), &surface.to_lowercase());
+    l2::L2ImeWordCandidate {
+        surface: surface.to_lowercase(),
+        kind: L2ImeWordCandidateKind::Replacement,
+        source,
+        score,
+        l1_overlap: token.chars().count().saturating_sub(distance),
+        l2_overlap: 4,
+        motif_overlap: 4,
+        usage_prior: 0.0,
+        context_prior: 0.0,
+        accepted_count: 1,
+        morphology_slots: Vec::new(),
+    }
 }
 
 fn live_l3_context_birth_candidates(
@@ -513,6 +744,7 @@ fn live_l3_context_birth_candidates(
                 usage_prior: prior.word_prior,
                 context_prior,
                 accepted_count: prior.accepted_count,
+                morphology_slots: Vec::new(),
             }
         })
         .collect()
@@ -558,6 +790,11 @@ fn merge_live_candidate_evidence(
     target.usage_prior = target.usage_prior.max(evidence.usage_prior);
     target.context_prior = target.context_prior.max(evidence.context_prior);
     target.accepted_count = target.accepted_count.max(evidence.accepted_count);
+    for identity in &evidence.morphology_slots {
+        if !target.morphology_slots.contains(identity) {
+            target.morphology_slots.push(*identity);
+        }
+    }
 }
 
 fn live_l2_material_limit(limit: usize) -> usize {
@@ -934,11 +1171,47 @@ mod tests {
         }
     }
 
+    #[test]
+    fn layout_surfaces_birth_as_typed_replacements_inside_the_shared_gate() {
+        super::super::warm_up_l2_for_ime();
+        for (input, expected, source) in [
+            ("ye;ty", "нужен", L2ImeWordCandidateSource::ExactLayoutPhase),
+            (
+                "hf,jfntn",
+                "работает",
+                L2ImeWordCandidateSource::LayoutThenTypoPhase,
+            ),
+        ] {
+            let material = live_layout_candidates("", input);
+            assert!(
+                material.iter().any(|candidate| {
+                    candidate.surface == expected
+                        && candidate.source == source
+                        && candidate.kind == L2ImeWordCandidateKind::Replacement
+                }),
+                "input={input:?} material={material:?}"
+            );
+
+            let visible = live_completion_candidates(request("", input));
+            assert!(
+                visible.iter().any(|candidate| {
+                    candidate.surface == expected
+                        && candidate.replacement
+                        && candidate.suffix.is_empty()
+                }),
+                "input={input:?} visible={visible:?}"
+            );
+        }
+    }
+
     fn authority_proposal() -> LiveCompletionProposal {
         LiveCompletionProposal {
             state_before: crate::nanda_wave::phase_field::hash_text("test-state"),
             surface: "пример".to_string(),
             suffix: "мер".to_string(),
+            replacement: false,
+            lane: LiveCandidateLane::ExactCompletion,
+            morphology_slots: Vec::new(),
             score: 0.7,
             rank_score: 0.7,
             field_strength: 0,
@@ -983,14 +1256,17 @@ mod tests {
     }
 
     #[test]
-    fn live_gate_returns_prefix_preserving_candidates() {
+    fn live_gate_returns_typed_completions_and_tab_only_replacements() {
         super::super::warm_up_l2_for_ime();
         let candidates = live_completion_candidates(request("я хочу ", "пров"));
         assert!(
-            candidates
-                .iter()
-                .all(|candidate| candidate.surface.starts_with("пров")),
-            "live IME must only show prefix-preserving completions: {candidates:?}"
+            candidates.iter().all(|candidate| {
+                (candidate.surface.starts_with("пров")
+                    && !candidate.replacement
+                    && !candidate.suffix.is_empty())
+                    || (candidate.replacement && candidate.suffix.is_empty())
+            }),
+            "live IME must type every completion/replacement operation: {candidates:?}"
         );
         assert!(
             candidates
@@ -1023,7 +1299,7 @@ mod tests {
     }
 
     #[test]
-    fn live_gate_allows_authorized_short_prefix_candidates() {
+    fn live_gate_types_authorized_short_prefix_candidates() {
         super::super::warm_up_l2_for_ime();
         let center_candidates = l2::ime_l2_word_candidates("я хочу ", "пр", 12);
         assert!(
@@ -1035,10 +1311,13 @@ mod tests {
 
         let live_candidates = live_completion_candidates(request("я хочу ", "пр"));
         assert!(
-            live_candidates
-                .iter()
-                .all(|candidate| candidate.surface.starts_with("пр")),
-            "short-prefix candidates must preserve the typed prefix: {live_candidates:?}"
+            live_candidates.iter().all(|candidate| {
+                (candidate.surface.starts_with("пр")
+                    && !candidate.replacement
+                    && !candidate.suffix.is_empty())
+                    || (candidate.replacement && candidate.suffix.is_empty())
+            }),
+            "short-prefix candidates must expose a typed operation: {live_candidates:?}"
         );
     }
 
@@ -1062,18 +1341,17 @@ mod tests {
     }
 
     #[test]
-    fn live_gate_keeps_same_length_typo_repair_out_of_preedit() {
+    fn live_gate_keeps_same_length_typo_repair_tab_only() {
         super::super::warm_up_l2_for_ime();
         let raw = live_l2_word_candidates("", "звгрузи", 12);
         let candidates = live_completion_candidates(request("", "звгрузи"));
         assert!(
-            candidates
-                .iter()
-                .all(|candidate| candidate.surface != "загрузи"
-                    && (!candidate.suffix.is_empty()
-                        || (candidate.source == "L2CorrectedPrefixCell32"
-                            && candidate.surface.chars().count() > "звгрузи".chars().count()))),
-            "same-length typo repairs belong to Space; only longer display replacements may enter IME: raw={raw:?}, selected={candidates:?}"
+            candidates.iter().any(|candidate| {
+                candidate.surface == "загрузи"
+                    && candidate.replacement
+                    && candidate.suffix.is_empty()
+            }),
+            "same-length typo repair must be a Tab-only replacement: raw={raw:?}, selected={candidates:?}"
         );
     }
 
@@ -1184,6 +1462,7 @@ mod tests {
             usage_prior: 0.01,
             context_prior: 0.0,
             accepted_count: 0,
+            morphology_slots: Vec::new(),
         };
         let l3_candidate = l2::L2ImeWordCandidate {
             source: L2ImeWordCandidateSource::ContextPhase,
@@ -1215,20 +1494,20 @@ mod tests {
     }
 
     #[test]
-    fn live_gate_keeps_boundary_edits_out_of_preedit() {
+    fn live_gate_keeps_boundary_edits_tab_only_in_preedit() {
         super::super::warm_up_l2_for_ime();
         let raw = live_l2_word_candidates("", "тоесть", 12);
-        assert!(
-            raw.iter().all(|candidate| candidate.surface != "то есть"
-                && candidate.source != L2ImeWordCandidateSource::BoundaryPhase),
-            "BoundaryCell32 belongs to Space/autocorrect, not IME preedit: {raw:?}"
-        );
+        assert!(raw.len() <= live_l2_material_limit(12));
         let visible = live_completion_candidates(request("", "тоесть"));
         assert!(
-            visible
-                .iter()
-                .all(|candidate| candidate.surface != "то есть" && !candidate.suffix.is_empty()),
-            "boundary replacement must not become an IME proposal: raw={raw:?}, selected={visible:?}"
+            visible.iter().all(|candidate| {
+                if candidate.surface == "то есть" || candidate.source == "BoundaryCell32" {
+                    candidate.replacement && candidate.suffix.is_empty()
+                } else {
+                    !candidate.replacement || candidate.suffix.is_empty()
+                }
+            }),
+            "boundary material must stay a Tab-only replacement: raw={raw:?}, selected={visible:?}"
         );
     }
 
@@ -1315,12 +1594,12 @@ mod tests {
                 elapsed_us <= budget_us,
                 "live short-prefix readout too slow for {partial:?}: {elapsed_us}us; candidates={candidates:?}"
             );
-            assert!(
-                candidates
-                    .iter()
-                    .all(|candidate| candidate.surface.starts_with(partial)),
-                "short-prefix candidates must preserve prefix for {partial:?}: {candidates:?}"
-            );
+            assert!(candidates.iter().all(|candidate| {
+                (candidate.surface.starts_with(partial)
+                    && !candidate.replacement
+                    && !candidate.suffix.is_empty())
+                    || (candidate.replacement && candidate.suffix.is_empty())
+            }), "short-prefix candidates must expose a typed operation for {partial:?}: {candidates:?}");
         }
     }
 

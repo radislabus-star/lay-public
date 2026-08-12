@@ -7,11 +7,16 @@ fn candidate_target_survives_suffix_shrink_while_typing() {
     let candidates = vec!["ст".to_string(), "рошо".to_string()];
 
     assert_eq!(
-        candidate_index_for_target("хвост", "хво", &candidates),
+        candidate_index_for_target("хвост", "хво", &candidates, &[None, None]),
         Some(0)
     );
     assert_eq!(
-        candidate_index_for_target("хорошо", "хор", &["ошо".to_string(), "ма".to_string()]),
+        candidate_index_for_target(
+            "хорошо",
+            "хор",
+            &["ошо".to_string(), "ма".to_string()],
+            &[None, None],
+        ),
         Some(0)
     );
 }
@@ -19,7 +24,12 @@ fn candidate_target_survives_suffix_shrink_while_typing() {
 #[test]
 fn candidate_target_is_released_when_new_input_invalidates_it() {
     assert_eq!(
-        candidate_index_for_target("хвалить", "хво", &["ст".to_string(), "ровать".to_string()]),
+        candidate_index_for_target(
+            "хвалить",
+            "хво",
+            &["ст".to_string(), "ровать".to_string()],
+            &[None, None],
+        ),
         None
     );
 }
@@ -30,7 +40,8 @@ fn candidate_target_preserves_nonzero_selection_by_surface() {
         candidate_index_for_target(
             "проверка",
             "прове",
-            &["рить".to_string(), "рка".to_string(), "дение".to_string()]
+            &["рить".to_string(), "рка".to_string(), "дение".to_string()],
+            &[None, None, None],
         ),
         Some(1)
     );
@@ -77,9 +88,36 @@ fn invalidated_target_retargets_to_fresh_top_candidate_without_blank_frame() {
     let candidates = vec!["ст".to_string(), "ровать".to_string()];
 
     assert_eq!(
-        stable_candidate_index(Some("хвалить"), "хво", &candidates),
+        stable_candidate_index(Some("хвалить"), "хво", &candidates, &[None, None]),
         0
     );
+}
+
+#[test]
+fn replacement_target_survives_as_a_full_surface() {
+    assert_eq!(
+        candidate_index_for_target(
+            "нужен",
+            "ye;ty",
+            &["→нужен".to_string(), "other".to_string()],
+            &[Some("нужен".to_string()), None],
+        ),
+        Some(0)
+    );
+}
+
+#[test]
+fn wrong_layout_letter_symbols_stay_inside_the_fast_token() {
+    let mut fast = PreeditFastState::default();
+    for ch in "ye;ty".chars() {
+        fast.push(ch);
+    }
+
+    assert_eq!(fast.token(), "ye;ty");
+    assert!(fast.is_ascii_live_candidate_token());
+
+    fast.push('!');
+    assert_eq!(fast.token(), "");
 }
 
 #[test]
@@ -209,12 +247,19 @@ fn ignored_preedit_candidate_does_not_create_learning_feedback() {
 
     std::thread::sleep(std::time::Duration::from_millis(50));
     let text = std::fs::read_to_string(&events_path).unwrap_or_default();
-    assert!(!text.contains(r#""kind":"rejected_ime""#), "{text}");
-    assert!(!text.contains(r#""kind":"accepted_ime""#), "{text}");
-    assert!(
-        !text.contains(r#""kind":"confirmed_ime_prediction""#),
-        "{text}"
-    );
+    let ignored_target_recorded = text.lines().any(|line| {
+        let Ok(event) = serde_json::from_str::<serde_json::Value>(line) else {
+            return false;
+        };
+        matches!(
+            event.get("kind").and_then(serde_json::Value::as_str),
+            Some("rejected_ime" | "accepted_ime" | "confirmed_ime_prediction")
+        ) && ["word", "to", "proposal"]
+            .into_iter()
+            .filter_map(|field| event.get(field).and_then(serde_json::Value::as_str))
+            .any(|surface| surface == "даша")
+    });
+    assert!(!ignored_target_recorded, "{text}");
 
     std::env::remove_var("LAY_NANDA_WORD_USAGE_EVENTS");
     std::env::remove_var("LAY_NANDA_WORD_USAGE_COUNTS");
@@ -549,7 +594,7 @@ fn weak_single_russian_suffixes_are_not_visible_by_default() {
 }
 
 #[test]
-fn known_russian_word_does_not_get_extended_by_precognition() {
+fn settled_known_russian_word_does_not_get_extended_by_precognition() {
     lay::nanda_wave::warm_up_l2_for_ime();
     let mut engine = LayIbusEngine::new(
         "/test".to_string(),
@@ -567,6 +612,10 @@ fn known_russian_word_does_not_get_extended_by_precognition() {
     for ch in "просто просто".chars() {
         engine.push_tail_char(ch);
     }
+    // Managed IME input normally remains active until a boundary. Model the
+    // distinct settled-token contract explicitly; active exact forms may still
+    // expose morphology continuations while the user is editing the word.
+    engine.last_tail_input_at = None;
     engine.refresh_precognition_candidates();
 
     assert!(

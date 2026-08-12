@@ -100,7 +100,9 @@ impl PreeditFastState {
     }
 
     pub(crate) fn push(&mut self, ch: char) {
-        if ch.is_whitespace() || ch.is_ascii_punctuation() {
+        if ch.is_whitespace()
+            || ch.is_ascii_punctuation() && !self.ascii_layout_symbol_continues_token(ch)
+        {
             self.reset();
             return;
         }
@@ -148,6 +150,23 @@ impl PreeditFastState {
 
     fn clear_target(&mut self) {
         self.target_surface = None;
+    }
+
+    fn ascii_layout_symbol_continues_token(&self, ch: char) -> bool {
+        !self.token.is_empty()
+            && lay::typing_cpu::is_ascii_layout_letter_symbol(ch)
+            && self.token.chars().all(|current| {
+                current.is_ascii_alphabetic()
+                    || lay::typing_cpu::is_ascii_layout_letter_symbol(current)
+            })
+    }
+
+    fn is_ascii_live_candidate_token(&self) -> bool {
+        !self.token.is_empty()
+            && self.token.chars().any(|ch| ch.is_ascii_alphabetic())
+            && self.token.chars().all(|ch| {
+                ch.is_ascii_alphabetic() || lay::typing_cpu::is_ascii_layout_letter_symbol(ch)
+            })
     }
 
     pub(crate) fn clear_candidate_tracking(&mut self) {
@@ -341,9 +360,7 @@ impl LayIbusEngine {
     }
 
     pub(super) fn refresh_precognition_candidates(&mut self) {
-        let partial = split_last_alphabetic_token(self.tail_buffer.trim_end())
-            .map(|(_, token)| token.to_lowercase())
-            .unwrap_or_default();
+        let partial = self.live_candidate_partial();
         let proposals = self.precognition_candidates();
         self.preedit_replacement_targets = proposals
             .iter()
@@ -351,12 +368,16 @@ impl LayIbusEngine {
             .collect();
         self.preedit_candidates = proposals
             .into_iter()
-            .map(|proposal| proposal.display_text().to_string())
+            .map(|proposal| match proposal.replacement {
+                Some(replacement) => format!("→{replacement}"),
+                None => proposal.suffix,
+            })
             .collect();
         self.preedit_candidate_index = stable_candidate_index(
             self.preedit_fast.target_surface(),
             &partial,
             &self.preedit_candidates,
+            &self.preedit_replacement_targets,
         );
         self.remember_selected_target(&partial);
     }
@@ -374,9 +395,7 @@ impl LayIbusEngine {
         let len = len as isize;
         self.preedit_candidate_index =
             (self.preedit_candidate_index as isize + step).rem_euclid(len) as usize;
-        let partial = split_last_alphabetic_token(self.tail_buffer.trim_end())
-            .map(|(_, token)| token.to_lowercase())
-            .unwrap_or_default();
+        let partial = self.live_candidate_partial();
         self.remember_selected_target(&partial);
         true
     }
@@ -395,6 +414,15 @@ impl LayIbusEngine {
         self.preedit_fast.remember_target(target);
     }
 
+    fn live_candidate_partial(&self) -> String {
+        if self.preedit_fast.is_ascii_live_candidate_token() {
+            return self.preedit_fast.token.to_lowercase();
+        }
+        split_last_alphabetic_token(self.tail_buffer.trim_end())
+            .map(|(_, token)| token.to_lowercase())
+            .unwrap_or_default()
+    }
+
     fn precognition_candidates(&self) -> Vec<ImeCandidateProposal> {
         if !self.precognition_preedit_enabled() {
             return Vec::new();
@@ -409,6 +437,7 @@ impl LayIbusEngine {
                 .chars()
                 .last()
                 .is_some_and(is_hard_precognition_boundary)
+            && !self.preedit_fast.is_ascii_live_candidate_token()
         {
             return Vec::new();
         }
@@ -489,7 +518,9 @@ impl LayIbusEngine {
     }
 
     pub(super) fn push_tail_char(&mut self, ch: char) {
-        let is_boundary = ch.is_whitespace() || is_hard_precognition_boundary(ch);
+        let is_boundary = ch.is_whitespace()
+            || is_hard_precognition_boundary(ch)
+                && !self.preedit_fast.ascii_layout_symbol_continues_token(ch);
         let tail_before_boundary = is_boundary.then(|| self.tail_buffer.clone());
         // Whitespace resets the fast preedit state. Preserve the prediction
         // first so the boundary can turn it into supervised feedback.
@@ -605,7 +636,15 @@ fn candidate_index_for_target(
     previous_target: &str,
     partial: &str,
     candidates: &[String],
+    replacements: &[Option<String>],
 ) -> Option<usize> {
+    if let Some(index) = replacements.iter().position(|replacement| {
+        replacement
+            .as_deref()
+            .is_some_and(|replacement| replacement == previous_target)
+    }) {
+        return Some(index);
+    }
     let expected_suffix = previous_target.strip_prefix(partial)?;
     candidates
         .iter()
@@ -616,9 +655,10 @@ fn stable_candidate_index(
     previous_target: Option<&str>,
     partial: &str,
     candidates: &[String],
+    replacements: &[Option<String>],
 ) -> usize {
     previous_target
-        .and_then(|target| candidate_index_for_target(target, partial, candidates))
+        .and_then(|target| candidate_index_for_target(target, partial, candidates, replacements))
         .unwrap_or(0)
 }
 

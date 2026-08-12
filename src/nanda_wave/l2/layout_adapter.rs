@@ -5,6 +5,7 @@ use super::{candidate_support, l1_energy};
 use crate::candidate_contract::CandidateOrigin;
 use crate::dict::{convert, detect_direction};
 use crate::keyboard::is_cyrillic_letter;
+use crate::layout_autoswitch::is_ascii_layout_letter_surface;
 use crate::lexicon::{
     is_common_en_guard_prefix, is_common_en_technical_word, is_ru_live_protected_word,
     is_user_protected_word, visual_b_after_ascii_replacement, visual_b_default_replacement,
@@ -269,7 +270,7 @@ fn layout_converted_token(
     // target, while random keyboard noise has no terminal center and remains
     // blocked by the caller's first-token guard.
     let converted_lower = converted.to_lowercase();
-    if token.chars().all(|ch| ch.is_ascii_alphabetic())
+    if is_ascii_layout_letter_surface(token)
         && token.chars().count() >= 3
         && converted.chars().all(is_cyrillic_letter)
         && surface_motif_memory().contains_surface(&converted_lower)
@@ -284,7 +285,7 @@ fn layout_converted_token(
     // Keyboard projection is only a surface proposal. A target becomes a
     // strong L1/L2 signal when its compact phase readout settles; broad
     // reference morphology alone cannot promote an accidental projection.
-    let exact_projection_has_center = token.chars().all(|ch| ch.is_ascii_alphabetic())
+    let exact_projection_has_center = is_ascii_layout_letter_surface(token)
         && converted.chars().all(is_cyrillic_letter)
         && crate::hot_field::HotFieldSnapshot::current()
             .layout_projection_has_phase_authority(&converted_center_form);
@@ -347,7 +348,7 @@ fn language_allows_layout(token: &str, converted: &str, learned_transition: bool
     if learned_transition {
         return true;
     }
-    let switched_script = (token.chars().all(|ch| ch.is_ascii_alphabetic())
+    let switched_script = (is_ascii_layout_letter_surface(token)
         && converted.chars().all(is_cyrillic_letter))
         || (token.chars().all(is_cyrillic_letter)
             && converted.chars().all(|ch| ch.is_ascii_alphabetic()));

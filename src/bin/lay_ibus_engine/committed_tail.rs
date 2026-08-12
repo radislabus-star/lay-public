@@ -172,6 +172,14 @@ impl LayIbusEngine {
         if self.tail_buffer.trim().is_empty() {
             return Ok(false);
         }
+        if let Some(replacement) = self
+            .selected_precognition_replacement()
+            .map(ToOwned::to_owned)
+        {
+            return self
+                .accept_stuck_tail_replacement(emitter, replacement, with_space)
+                .await;
+        }
         let mut committed_suffix = self.selected_visible_completion_suffix();
         if committed_suffix.is_empty() {
             return Ok(false);
@@ -194,7 +202,7 @@ impl LayIbusEngine {
             committed_suffix.push(' ');
             accepted_text.push(' ');
         }
-        let action = lay::text_edit::plan_ime_completion_edit(
+        let action = lay::text_edit::plan_ime_candidate_accept_edit(
             "ibus-committed-tail-completion",
             900,
             tail_token,
@@ -239,6 +247,54 @@ impl LayIbusEngine {
         );
         self.sync_tail_after_stuck_completion(&committed_suffix);
         Ok(true)
+    }
+
+    async fn accept_stuck_tail_replacement(
+        &mut self,
+        emitter: &SignalEmitter<'_>,
+        replacement: String,
+        with_space: bool,
+    ) -> fdo::Result<bool> {
+        let tail_token = self.last_tail_token_text();
+        if tail_token.is_empty() || replacement.eq_ignore_ascii_case(&tail_token) {
+            return Ok(false);
+        }
+        let accepted_text = if with_space {
+            format!("{replacement} ")
+        } else {
+            replacement.clone()
+        };
+        let expected_tail = VisibleTailSnapshot::new(
+            VisibleTailSource::ImeCommittedTail,
+            tail_token.clone(),
+            Some(self.path.clone()),
+            self.tail_epoch,
+        );
+        let handled = self
+            .replace_committed_tail(
+                emitter,
+                CommittedTailReplaceRequest::ime_candidate_accept(
+                    tail_token.chars().count() as u32,
+                    accepted_text.clone(),
+                )
+                .with_expected_tail(expected_tail),
+            )
+            .await?;
+        if handled {
+            let context_tail = self
+                .tail_buffer
+                .strip_suffix(&accepted_text)
+                .unwrap_or_default()
+                .trim_end()
+                .to_string();
+            self.arm_pending_ime_completion_learning(
+                context_tail,
+                tail_token,
+                replacement,
+                with_space,
+            );
+        }
+        Ok(handled)
     }
 
     fn sync_tail_after_stuck_completion(&mut self, text: &str) {
