@@ -1298,3 +1298,56 @@ installation, daemon/IBus и live ownership до PASS предыдущего gat
 Fan-out receipt:
 
 `/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/fanout-profile.json`
+
+## 16. Deferred IME Tail Rebirth After Manual Continuation
+
+**Статус: следующая отдельная задача после установки Productive V90; в release
+`1.0.21` не исправлена.**
+
+Наблюдаемый дефект:
+
+```text
+раб{отает}
+-> пользователь вводит `о`, а не принимает подсказку через Tab
+-> новый prefix: рабо
+-> старый target "работает" ошибочно удерживает хвост {тает}
+```
+
+Требуемый общий контракт:
+
+```text
+visible completion target T0 for prefix P0
+-> printable input without Tab
+-> T0 is not accepted
+-> record censored feedback for T0, never negative learning evidence
+-> build the complete candidate field again for the new prefix P1
+-> rerank morphology and context alternatives
+-> publish a fresh suffix or clear the suffix
+```
+
+Совпадение введённой буквы с первой буквой старого хвоста не является
+подтверждением всего старого target. Подтверждением остаётся явный `Tab` либо
+допечатывание полной поверхности. Fixture `раб{отает} -> рабо{тают}` доказывает
+инвариант, но слова и окончания запрещено переносить в runtime-условия.
+
+Перед исправлением нужно найти первый слой потери по маршруту:
+
+```text
+printable IBus event
+-> PreeditFastState visible target lifecycle
+-> prediction feedback classification
+-> candidate rebirth for the new prefix
+-> Productive V90 morphology lattice
+-> shared L3 rerank
+-> visible suffix publication
+```
+
+Gate задачи:
+
+- старый target не закрепляется только из-за совпавшей следующей буквы;
+- новый prefix всегда получает новый bounded readout;
+- morphology alternatives могут сменить окончание;
+- отсутствие `Tab` остаётся censored, а не anti-evidence;
+- exact completion, Space/autocorrect и double-Shift rollback не регрессируют;
+- исправление проходит агрегатный IME proof, а не список слов по одному;
+- hot printable path сохраняет текущий latency budget.
