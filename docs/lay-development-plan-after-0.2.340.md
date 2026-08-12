@@ -1398,7 +1398,7 @@ Receipt:
 
 ## 17. Unified IME Route Release Gate, 2026-08-12
 
-Status: `RELEASE_1.0.23_INSTALLED_PHYSICAL_GATE_PENDING`.
+Status: `RELEASE_1.0.23_INSTALLED_PHYSICAL_SMOKE_PASS`.
 
 Completed:
 
@@ -1437,6 +1437,10 @@ Remaining physical gate:
 2. morphology ending rerank after another printable letter;
 3. responsive `Space`;
 4. autocorrect rollback via double `Shift`.
+
+Broad physical smoke is `PASS`: after installation the user reported that real
+typing works very well overall. The four scenarios above remain detailed
+per-contract observations, not blockers for the published `1.0.23` release.
 
 Rollback:
 

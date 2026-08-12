@@ -1596,6 +1596,14 @@ gates. Rollback:
 
 `/home/ubu/.local/lib/lay/rollback/1.0.22-pre-1.0.23-20260812-194801`
 
+### 17.9 Physical smoke result
+
+After installing `1.0.23`, the user reported that real typing works very well
+overall. This closes the broad installed-runtime physical smoke gate as
+`PASS`. The report did not enumerate explicit `Tab`, double-Shift, morphology
+rerank, or `Space` latency scenarios separately, so those detailed gates remain
+unrecorded rather than being inferred from the broad positive result.
+
 Receipt:
 
 `/home/ubu/projects/lay/docs/structural_gates/receipts/IME_UNIFIED_CANDIDATE_FIELD_2026-08-12.json`

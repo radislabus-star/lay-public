@@ -3,7 +3,7 @@
   "date": "2026-08-12",
   "source_release": "1.0.22",
   "target_release": "1.0.23",
-  "verdict": "RELEASE_INSTALLED_SOFTWARE_AND_RUNTIME_GATE_PASS_PHYSICAL_GATE_PENDING",
+  "verdict": "RELEASE_INSTALLED_PHYSICAL_SMOKE_PASS_DETAILED_SCENARIO_GATES_UNRECORDED",
   "runtime_authority_changed": true,
   "authority_scope": {
     "changed": [
@@ -101,6 +101,13 @@
       "daemon_space_and_enter_decoders_share_input_gate_replacement_contract"
     ],
     "scope": "baseline-known installed-package/shared-state failures already present in the 64-failure candidate baseline; no literal-case repair was admitted"
+  },
+  "physical_smoke": {
+    "status": "PASS",
+    "observer": "user",
+    "runtime_version": "1.0.23",
+    "observation": "real typing works very well overall",
+    "scope": "broad installed-runtime smoke; individual Tab, double-Shift, morphology-rerank, and Space latency scenarios were not reported separately"
   },
   "systemic_fixes": [
     "removed broad Cyrillic-to-English settlement from every Cyrillic key",

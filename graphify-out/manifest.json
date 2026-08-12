@@ -4695,8 +4695,8 @@
     "semantic_hash": ""
   },
   "docs/l2-l11-canonical-architecture.md": {
-    "mtime": 1786553712.5648956,
-    "ast_hash": "b94682d336f6ee0c1e1425709dff0f24",
+    "mtime": 1786554737.8448973,
+    "ast_hash": "f37da0aa87c729b2554e97584bea1b5f",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2_field/bridge.rs": {
@@ -5070,8 +5070,8 @@
     "semantic_hash": ""
   },
   "docs/lay-development-plan-after-0.2.340.md": {
-    "mtime": 1786553727.8320963,
-    "ast_hash": "0c4d7b305e9f80106cef283b416f67e2",
+    "mtime": 1786554737.8468974,
+    "ast_hash": "0a6bf8898cec8f634de27dcbd4407ceb",
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/PUBLIC_INSTALL_CANONICAL_L2_V13_2026-08-01.json": {
@@ -7605,8 +7605,8 @@
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/IME_UNIFIED_CANDIDATE_FIELD_2026-08-12.json": {
-    "mtime": 1786553693.8186488,
-    "ast_hash": "e9e6f052e453881f8b3f2fa1e1182aba",
+    "mtime": 1786554737.8388972,
+    "ast_hash": "e5df50effc5151813a16d2f8fdb5bdd9",
     "semantic_hash": ""
   }
 }
