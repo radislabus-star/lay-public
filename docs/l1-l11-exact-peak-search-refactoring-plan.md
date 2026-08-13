@@ -1319,7 +1319,7 @@ separate gates.
 
 ## 13. Current Verdict And Next Action
 
-Current verdict: `PHASE_2B_MOVE_ONLY_PARITY_PASS`; implementation preflight
+Current verdict: `PHASE_2C_MOVE_ONLY_PARITY_PASS`; implementation preflight
 verdict remains `READY_TO_IMPLEMENT` with `safe_to_implement = true` and no
 blockers.
 
@@ -1442,7 +1442,35 @@ remain zero.
 /home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_2B_2026-08-13/phase-2b.json
 ```
 
-The next action is Phase 2C: move relation store, V8 access, posting cache, and
-reverse cache without changing behavior or authority. No package
-crystallization, daemon restart, owner flip, or scoring change is justified in
-Phase 2.
+Phase 2C is complete. Relation storage, V8 posting access, borrowed/shared
+coupling views, and reverse-cache ownership moved into `runtime/relations.rs`.
+The scoring-side `refresh_frontier_activations` remains in `runtime.rs`, so the
+cut does not mix storage access with frontier behavior. `runtime.rs` fell from
+`4,095` to `3,857` lines; the full runtime tree is `4,640` lines, cumulative
+growth `1.64%` from Phase 0 and below the `5%` budget.
+
+The accepted source preserves the original iterator placement: eager forward
+views use `iter`, while batched reverse reconstruction uses `par_iter` inside
+the existing runtime pool. Manual diff review rejected one intermediate state
+that accidentally swapped this placement even though its semantic fingerprint
+matched. None of that rejected run's latency evidence is used for acceptance.
+
+On the corrected source, all six frozen route hashes, semantic SHA, projection
+SHA, candidate SHA, and candidate order match exactly. Three sequential p99
+measurements were `13.214`, `13.036`, and `15.223 ms`; no Phase 2 regression is
+present, while the future `<=5 ms` gate remains unmet and unclaimed.
+
+Tested: the Phase 2C relation boundary, exact iteration placement, all frozen
+semantic routes, candidate order, three-run latency on corrected source, and
+changed-file checks. Not tested: Phase 2D-2H, dense oracle, typed edit graph,
+posting bounds, exact-search quality, package redesign, or deployment. Runtime
+authority, installed package, daemon, and IBus remain unchanged;
+crystallization runs remain zero.
+
+```text
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_2C_2026-08-13/phase-2c.json
+```
+
+The next action is Phase 2D: move `L1RestorationHost` and the composite overlay
+route without changing behavior or authority. No package crystallization,
+daemon restart, owner flip, or scoring change is justified in Phase 2.
