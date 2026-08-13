@@ -1,0 +1,121 @@
+{
+  "schema": "lay.l11.peak-search-move-only-cut-receipt.v1",
+  "receipt": "L1_L11_PEAK_SEARCH_PHASE_2A_2026-08-13",
+  "date": "2026-08-13",
+  "phase": "2A",
+  "verdict": "PASS_MOVE_ONLY_PARITY",
+  "cut": {
+    "owner": "diagnostics and environment/config readers",
+    "source_before": "src/nanda_wave/lexical_grokking/runtime.rs",
+    "sources_after": [
+      "src/nanda_wave/lexical_grokking/runtime.rs",
+      "src/nanda_wave/lexical_grokking/runtime/config.rs",
+      "src/nanda_wave/lexical_grokking/runtime/diagnostics.rs"
+    ],
+    "runtime_rs_lines_before": 4565,
+    "runtime_rs_lines_after": 4217,
+    "config_lines_after": 91,
+    "diagnostics_lines_after": 306,
+    "total_lines_after": 4614,
+    "total_line_growth_percent": 1.07,
+    "public_exports_changed": 0,
+    "new_per_query_allocations": 0,
+    "algorithm_changed": false,
+    "readout_owner_changed": false
+  },
+  "source_sha256": {
+    "src/nanda_wave/lexical_grokking/runtime.rs": "2a70507ef927248d23902b7b09a2f1248000dec9251590c79db1dc1a78594dff",
+    "src/nanda_wave/lexical_grokking/runtime/config.rs": "23385403ec425a5592ab9cc4937dfa1e1935e1467d1e0cb9bcf037e02295ed04",
+    "src/nanda_wave/lexical_grokking/runtime/diagnostics.rs": "a8d8a7d3904a0c5a06e4d40ea9cd804c2c145f2c22bec8cc64062937654f708a"
+  },
+  "immutable_inputs": {
+    "package_path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin",
+    "package_bytes": 190139182,
+    "package_sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+    "corpus_sha256": "abb9d71495acc27b7619b24621568ea72263f9bd40201aab9fffa1188fbff8f6",
+    "heldout_cases": 260000,
+    "heldout_sha256": "ba0a07ee7b784742c4aef08956c6e48dc9836da10d01dc50d516dc946b00c501",
+    "latency_cases": 520,
+    "latency_surfaces_sha256": "c501f9623299e5f1047b4706095e5a25a1168d65a2d3112c051e611f458615fb"
+  },
+  "behavior_parity": {
+    "replay_cases": 616,
+    "readout_modes": 8,
+    "semantic_sha256": "c6159bf499146c21a96723435ac4112496eca10bf8c1dd961964d789333267d7",
+    "projection_file_sha256": "85cf72483cf68c2f93e262569571cf1169b9feb90b8a1767536133afaef7b036",
+    "candidate_sha256": "2d99e87b685625d0791c857aecbfce022e6353d58aa5bc359c9d490b1a7c4a96",
+    "permutation_failures": 0,
+    "route_sha256": {
+      "readout_modes": "0984fc3ec6b0866d02c50c34b83c2966300acd39dbceacb67003843e42d92665",
+      "query": "730dce95ef34fad52ccc1cec814bb43a03ad5a86b82ce6c72d3422f1fcaef2d5",
+      "restore": "b2d42c23ab20a149195c929af4cf7ec15dfb7a14fe02582895cc061ae7241ab1",
+      "host_lattice": "8be14b9322a99471b314a3b7d520da437c13ca4bcc0ba7470fd4876462a9c2ea",
+      "service_lattice": "ba1f873cce3ca5c1b39e0f7fac24a49ca9606de37278610a16ef4492cd678a5f",
+      "restoration_permutation": "452c9c014d5537e773908a458711e1f47f9c9f5057641039632a2e27a29a43aa"
+    },
+    "receipt_path": "/home/ubu/.cache/lay/l1-peak-search-phase-2a-2026-08-13/behavior.receipt.json",
+    "projection_path": "/home/ubu/.cache/lay/l1-peak-search-phase-2a-2026-08-13/behavior.projection.json",
+    "wall_seconds": 48.99,
+    "peak_rss_kib": 1080880
+  },
+  "latency": {
+    "baseline_p99_us": [22217, 21136],
+    "phase_2a_p99_us": [15861, 18442, 19923],
+    "phase_2a_peak_rss_kib": [423512, 422556, 424156],
+    "maximum_regression_percent_against_best_baseline": -5.74,
+    "gate": "PASS_NO_REGRESSION_ABOVE_5_PERCENT",
+    "note": "All three Phase 2A p99 values are below the best pinned baseline p99; this is parity evidence, not a claim that the future <=5 ms gate passes."
+  },
+  "checks": [
+    {
+      "command": "scripts/check-lay-changed.sh",
+      "result": "PASS"
+    },
+    {
+      "command": "scripts/cargo-guard.sh test runtime::config::tests --lib",
+      "result": "1 passed; 0 failed"
+    },
+    {
+      "command": "scripts/cargo-guard.sh test behavior_fingerprint::tests --lib",
+      "result": "2 passed; 0 failed"
+    },
+    {
+      "command": "git diff --check",
+      "result": "PASS"
+    },
+    {
+      "command": "scripts/cargo-guard.sh --status",
+      "result": "target bytes 2593742848; budget bytes 12884901888; PASS"
+    }
+  ],
+  "tested": [
+    "move-only extraction of runtime diagnostics",
+    "move-only extraction of environment/default readers",
+    "all six frozen behavior routes over 616 cases",
+    "all eight existing ReadoutMode variants",
+    "candidate order permutation invariance",
+    "three sequential diverse latency runs",
+    "unchanged package and fixed input hashes",
+    "changed-file build and route contract checks"
+  ],
+  "not_tested": [
+    "remaining Phase 2B through 2H cuts",
+    "dense oracle",
+    "typed edit traversal",
+    "posting bound soundness or feasibility",
+    "exact peak-search quality",
+    "new package representation",
+    "live deployment"
+  ],
+  "claim_boundary": {
+    "phase_2a_move_only_parity_proven": true,
+    "phase_2_complete": false,
+    "exact_peak_search_correctness_proven": false,
+    "runtime_authority_changed": false,
+    "installed_runtime_changed": false,
+    "installed_package_changed": false,
+    "daemon_or_ibus_restarted": false,
+    "crystallization_runs": 0
+  },
+  "next_action": "Phase 2B: move internal evidence and result types without changing behavior or authority."
+}

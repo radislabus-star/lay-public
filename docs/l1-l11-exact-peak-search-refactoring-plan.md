@@ -1319,8 +1319,9 @@ separate gates.
 
 ## 13. Current Verdict And Next Action
 
-Current verdict: `BASELINE_LOCKED`; implementation preflight verdict:
-`READY_TO_IMPLEMENT` with `safe_to_implement = true` and no blockers.
+Current verdict: `PHASE_2A_MOVE_ONLY_PARITY_PASS`; implementation preflight
+verdict remains `READY_TO_IMPLEMENT` with `safe_to_implement = true` and no
+blockers.
 
 Phase 0 is complete. The immutable source, reader, package, corpus, heldout,
 latency, and semantic projection inputs are pinned. The installed reader was
@@ -1382,7 +1383,40 @@ runtime residency.
 /home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_BEHAVIOR_2026-08-13/behavior-fingerprint.json
 ```
 
-The next action is Phase 2A: move diagnostics and runtime configuration readers
-without changing scores, constants, call order, allocation strategy, schemas,
-or authority. No package crystallization, daemon restart, owner flip, or scoring
-change is justified in Phase 2.
+Phase 2A is complete. Diagnostics and runtime configuration readers moved from
+`runtime.rs` into named owners without changing the public API, allocation
+strategy, `LexicalGrokkingMemory::readout`, package bytes, or runtime authority.
+The runtime facade fell from `4,565` to `4,217` lines; the two extracted modules
+contain `397` lines, and total source growth is `1.07%`, below the Phase 2 `5%`
+budget.
+
+The frozen 616-case fingerprint is byte-identical to Phase 1. All six route
+SHA-256 values, the semantic SHA-256
+`c6159bf499146c21a96723435ac4112496eca10bf8c1dd961964d789333267d7`,
+the projection SHA-256
+`85cf72483cf68c2f93e262569571cf1169b9feb90b8a1767536133afaef7b036`,
+and the candidate SHA-256
+`2d99e87b685625d0791c857aecbfce022e6353d58aa5bc359c9d490b1a7c4a96`
+match exactly. Candidate permutation failures remain zero.
+
+Three sequential diverse latency runs measured p99 `15.861`, `18.442`, and
+`19.923 ms`, all below the pinned baseline range `21.136-22.217 ms`. This proves
+that the move-only cut did not cause the allowed `5%` regression; it does not
+prove the future `<=5 ms` promotion gate. The package remains `190,139,182 B`
+with SHA-256
+`47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9`.
+
+Tested: the Phase 2A move boundary, all frozen semantic routes, candidate order,
+three-run latency, changed-file checks, lexical fingerprint tests, package and
+fixed-input identity. Not tested: Phase 2B-2H, dense oracle, typed edit graph,
+posting bounds, exact-search quality, package redesign, or deployment. Runtime
+authority, installed package, daemon, and IBus remain unchanged; crystallization
+runs remain zero.
+
+```text
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_2A_2026-08-13/phase-2a.json
+```
+
+The next action is Phase 2B: move internal evidence and result types without
+changing behavior or authority. No package crystallization, daemon restart,
+owner flip, or scoring change is justified in Phase 2.
