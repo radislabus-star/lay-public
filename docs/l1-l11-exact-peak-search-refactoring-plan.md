@@ -1319,7 +1319,7 @@ separate gates.
 
 ## 13. Current Verdict And Next Action
 
-Current verdict: `PHASE_2F_MOVE_ONLY_PARITY_PASS`; implementation preflight
+Current verdict: `PHASE_2G_MOVE_ONLY_PARITY_PASS`; implementation preflight
 verdict remains `READY_TO_IMPLEMENT` with `safe_to_implement = true` and no
 blockers.
 
@@ -1599,5 +1599,55 @@ crystallization runs remain zero.
 /home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_2F_2026-08-13/phase-2f.json
 ```
 
-The next action is Phase 2G: move settlement, interference, finalization, and
-the classifier bridge without changing behavior or authority.
+Phase 2G is complete. Candidate settlement, phase evidence, restoration
+geometry, ambiguity observations, structural/pairwise/sequence/geometry/
+position interference, finalization, and the restoration classifier bridge
+moved into `runtime/settlement.rs`. Each moved symbol exists exactly once.
+Call order, score constants, allocation behavior, package representation,
+public exports, readout ownership, and runtime authority are unchanged.
+
+`runtime.rs` fell from `2,343` to `1,051` lines; `settlement.rs` contains
+`1,324` lines. The complete runtime tree is `4,714` lines, cumulative growth
+`3.26%` from the `4,565`-line Phase 0 monolith and below the `5%` budget.
+`settlement.rs` is slightly above the approximate `1,200`-line guide because
+settlement, interference, finalization, and the classifier bridge are one named
+ownership boundary. Splitting interference into another owner would weaken
+that boundary without reducing runtime behavior or dependency complexity.
+
+The remote exact fingerprint reproduced all `616` cases, all eight readout
+modes, semantic SHA, projection SHA, all six route SHA values, candidate order,
+and zero permutation failures. Focused lexical tests passed `109/109`; route
+contracts passed `20/20` and `15/15`; `cargo check --lib --bins` and
+`scripts/check-lay-changed.sh` passed. Three sequential fixed-520 runs measured
+p99 `11.520`, `9.864`, and `11.061 ms`, all with the frozen candidate SHA.
+Peak RSS was `417,284-418,232 KiB`. This passes the move-only no-regression
+gate but does not satisfy or claim the future `<=5 ms` promotion target.
+
+All Cargo, proof, and benchmark work ran on `e@192.168.3.94` with
+`CARGO_BUILD_JOBS=20`, `RAYON_NUM_THREADS=20`, and 20 test threads. The release
+build took `183.48 s`, peaked at `2,398,456 KiB`, and averaged `100%` CPU
+because the pinned release profile uses one final codegen unit. No CPU-heavy
+project work ran locally.
+
+One intermediate lexical-test result is rejected: immediately after the move,
+four inline parent-module tests could no longer resolve
+`truncate_with_reconstruction_tail`. The helper was exposed only to its parent
+runtime module and imported only under `cfg(test)`. The accepted `109/109`
+result and every behavior/latency/route gate ran after that repair on the final
+source SHA values.
+
+Tested: the Phase 2G owner boundary, uniqueness of moved symbols, all frozen
+semantic routes, candidate order, focused lexical and route-contract tests,
+all lib/bin compile routes, three-run latency, package/input identity, changed
+checks, and Cargo disk budget. Not tested: Phase 2H, dense oracle, typed edit
+graph, posting-bound soundness, exact-search quality, package redesign, or
+deployment. Runtime authority, installed package, daemon, and IBus remain
+unchanged; training and crystallization runs remain zero.
+
+```text
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_2G_2026-08-14/phase-2g.json
+```
+
+The next action is Phase 2H: move the inline runtime tests into
+`runtime/tests.rs` without changing behavior or authority, then repeat the
+complete Phase 2 parity gate.
