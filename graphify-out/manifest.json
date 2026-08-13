@@ -3755,8 +3755,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/runtime.rs": {
-    "mtime": 1786651949.3522942,
-    "ast_hash": "f48c965185d613c3aa245c968a9c6aec",
+    "mtime": 1786654879.8713398,
+    "ast_hash": "75c4301be1ea6e2b2de81997a6250286",
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/tests.rs": {
@@ -7545,8 +7545,8 @@
     "semantic_hash": ""
   },
   "docs/l1-l11-exact-peak-search-refactoring-plan.md": {
-    "mtime": 1786652738.423702,
-    "ast_hash": "162735ac353d2f67743d0ac6491dbc4b",
+    "mtime": 1786654740.2993023,
+    "ast_hash": "f50a40e26f3a4e1e9be61b57eda2ccb3",
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_2A_2026-08-13/phase-2a.json": {
@@ -7602,6 +7602,16 @@
   "src/nanda_wave/lexical_grokking/runtime/geometry.rs": {
     "mtime": 1786652057.20157,
     "ast_hash": "6a19a0d4f55509b9a18c5f1ee084f19e",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_2F_2026-08-13/phase-2f.json": {
+    "mtime": 1786655129.214099,
+    "ast_hash": "859760117d63e59f21d9dec0ce66cd2a",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/lexical_grokking/runtime/legacy.rs": {
+    "mtime": 1786654879.8723397,
+    "ast_hash": "80f034991e3acb3f0e7cbea733a2d827",
     "semantic_hash": ""
   }
 }

@@ -1,0 +1,181 @@
+{
+  "schema": "lay.l11.peak-search-move-only-cut-receipt.v1",
+  "receipt": "L1_L11_PEAK_SEARCH_PHASE_2F_2026-08-13",
+  "date": "2026-08-13",
+  "phase": "2F",
+  "verdict": "PASS_MOVE_ONLY_PARITY",
+  "cut": {
+    "owner": "legacy prepare, exact discovery, operator reserve, and frontier activation",
+    "source_before": "src/nanda_wave/lexical_grokking/runtime.rs",
+    "source_after": "src/nanda_wave/lexical_grokking/runtime/legacy.rs",
+    "runtime_rs_lines_before": 3126,
+    "runtime_rs_lines_after": 2343,
+    "legacy_lines_after": 792,
+    "total_runtime_tree_lines_after": 4682,
+    "cumulative_growth_from_phase_0_percent": 2.56,
+    "moved_functions": [
+      "select_birth_atoms and thread-local forward scratch",
+      "prepare_readout and exact singleton discovery",
+      "exact terminal and character-anchor lookup",
+      "operator, reconstruction, and geometry reserve assembly",
+      "terminal activation and frontier activation refresh",
+      "surface resolution and operator-lattice expansion predicate"
+    ],
+    "explicitly_not_moved": [
+      "settle_candidate and settle_candidate_with_reverse",
+      "phase, pairwise, sequence, geometry, and position interference",
+      "candidate finalization and classifier bridge",
+      "inline runtime tests"
+    ],
+    "public_exports_changed": 0,
+    "new_per_query_allocations": 0,
+    "algorithm_changed": false,
+    "call_order_changed": false,
+    "readout_owner_changed": false,
+    "duplicate_moved_symbols": 0
+  },
+  "source_sha256": {
+    "src/nanda_wave/lexical_grokking/runtime.rs": "598e21f880b76523a3d114e528fe1344a099fdd00f7583c6dd2c13f02fbfe8d8",
+    "src/nanda_wave/lexical_grokking/runtime/legacy.rs": "33ff6013d07bcb3f94fd1ead4e490973ac20112211431638c9801d06e2528eda"
+  },
+  "immutable_inputs": {
+    "package_bytes": 190139182,
+    "package_sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+    "corpus_sha256": "abb9d71495acc27b7619b24621568ea72263f9bd40201aab9fffa1188fbff8f6",
+    "heldout_cases": 260000,
+    "heldout_sha256": "ba0a07ee7b784742c4aef08956c6e48dc9836da10d01dc50d516dc946b00c501",
+    "latency_cases": 520,
+    "latency_surfaces_sha256": "c501f9623299e5f1047b4706095e5a25a1168d65a2d3112c051e611f458615fb"
+  },
+  "behavior_parity": {
+    "replay_cases": 616,
+    "readout_modes": 8,
+    "semantic_sha256": "c6159bf499146c21a96723435ac4112496eca10bf8c1dd961964d789333267d7",
+    "projection_file_sha256": "85cf72483cf68c2f93e262569571cf1169b9feb90b8a1767536133afaef7b036",
+    "candidate_sha256": "2d99e87b685625d0791c857aecbfce022e6353d58aa5bc359c9d490b1a7c4a96",
+    "permutation_failures": 0,
+    "route_sha256": {
+      "readout_modes": "0984fc3ec6b0866d02c50c34b83c2966300acd39dbceacb67003843e42d92665",
+      "query": "730dce95ef34fad52ccc1cec814bb43a03ad5a86b82ce6c72d3422f1fcaef2d5",
+      "restore": "b2d42c23ab20a149195c929af4cf7ec15dfb7a14fe02582895cc061ae7241ab1",
+      "host_lattice": "8be14b9322a99471b314a3b7d520da437c13ca4bcc0ba7470fd4876462a9c2ea",
+      "service_lattice": "ba1f873cce3ca5c1b39e0f7fac24a49ca9606de37278610a16ef4492cd678a5f",
+      "restoration_permutation": "452c9c014d5537e773908a458711e1f47f9c9f5057641039632a2e27a29a43aa"
+    },
+    "receipt_path": "/home/ubu/.cache/lay/l1-peak-search-phase-2f-2026-08-13/behavior.receipt.json",
+    "projection_path": "/home/ubu/.cache/lay/l1-peak-search-phase-2f-2026-08-13/behavior.projection.json",
+    "wall_seconds": 29.62,
+    "peak_rss_kib": 1091532,
+    "average_cpu_percent": 159
+  },
+  "remote_execution": {
+    "host": "e@192.168.3.94",
+    "source_root": "/home/e/build/lay-l1-exact-phase2d",
+    "evidence_root": "/home/e/build/lay-l1-exact-phase2d-evidence",
+    "logical_cpus": 20,
+    "cargo_build_jobs": 20,
+    "rayon_threads": 20,
+    "test_threads": 20,
+    "rust_toolchain": "1.97.1",
+    "rustfmt_toolchain": "1.97.0",
+    "release_binary_sha256": "62e148e1ba87b1f58530ba6609d5dfdef09915247bd8afe409fdd1bcca77d93f",
+    "build_wall_seconds": 180.27,
+    "build_peak_rss_kib": 2397396,
+    "build_average_cpu_percent": 99,
+    "path_parity": "bwrap exposed immutable remote inputs at their original /home/ubu paths",
+    "cpu_note": "Cargo, Rayon, and tests were configured for all 20 logical CPUs; the final release codegen unit remains single-unit by the pinned release profile"
+  },
+  "graphify": {
+    "command": "remote graphify update .",
+    "workers": 20,
+    "wall_seconds": 13.16,
+    "peak_rss_kib": 317168,
+    "nodes": 14884,
+    "edges": 27395,
+    "communities": 2872,
+    "source_root_only": true
+  },
+  "latency": {
+    "baseline_p99_us": [22217, 21136],
+    "phase_2f_p99_us": [9922, 11236, 13397],
+    "phase_2f_readout_p99_us": [10344, 9334, 11526],
+    "phase_2f_peak_rss_kib": [418148, 418668, 417560],
+    "phase_2f_average_cpu_percent": [174, 174, 177],
+    "candidate_sha256_exact_runs": 3,
+    "gate": "PASS_NO_REGRESSION_ABOVE_5_PERCENT",
+    "note": "All three p99 values remain below the best pinned baseline p99. This does not prove the future <=5 ms promotion target."
+  },
+  "checks": [
+    {
+      "command": "remote cargo +1.97.0 fmt --check",
+      "result": "PASS"
+    },
+    {
+      "command": "remote scripts/cargo-guard.sh test lexical_grokking --lib -- --test-threads=20",
+      "result": "109 passed; 0 failed; 1251 filtered out"
+    },
+    {
+      "command": "remote scripts/cargo-guard.sh test --test typing_transition_authority_contract -- --test-threads=20",
+      "result": "20 passed; 0 failed"
+    },
+    {
+      "command": "remote scripts/cargo-guard.sh test --test text_mutation_monopoly_contract -- --test-threads=20",
+      "result": "15 passed; 0 failed"
+    },
+    {
+      "command": "remote scripts/cargo-guard.sh check --lib --bins",
+      "result": "PASS"
+    },
+    {
+      "command": "remote scripts/check-lay-changed.sh",
+      "result": "PASS in 93.98 s; peak RSS 2051452 KiB; average CPU 276%"
+    },
+    {
+      "command": "git diff --check",
+      "result": "PASS"
+    },
+    {
+      "command": "remote scripts/cargo-guard.sh --status",
+      "result": "target bytes 1859182592; budget bytes 12884901888; PASS"
+    }
+  ],
+  "rejected_evidence": [
+    {
+      "failure": "the first Phase 2F cut-1 sync copied runtime.rs into runtime/runtime.rs instead of replacing the parent runtime.rs",
+      "effect": "the reported 109/109 run compiled the old parent runtime and is invalid evidence",
+      "repair": "remove the nested file, sync both exact destinations separately, compare SHA-256, and rerun all accepted gates"
+    }
+  ],
+  "tested": [
+    "move-only extraction of legacy prepare, discovery, reserve, and frontier ownership",
+    "exact uniqueness of all moved symbols and retention of settlement in runtime.rs",
+    "all frozen semantic routes over 616 cases and eight readout modes",
+    "candidate order permutation invariance",
+    "focused lexical tests on final source bytes",
+    "transition authority and text mutation monopoly contracts",
+    "all library and binary compile routes",
+    "three sequential remote diverse latency runs",
+    "package and fixed-input byte identity"
+  ],
+  "not_tested": [
+    "remaining Phase 2G and 2H cuts",
+    "dense oracle",
+    "typed edit traversal",
+    "posting bound soundness or feasibility",
+    "exact peak-search quality",
+    "new package representation",
+    "live deployment"
+  ],
+  "claim_boundary": {
+    "phase_2a_through_2f_move_only_parity_proven": true,
+    "phase_2_complete": false,
+    "exact_peak_search_correctness_proven": false,
+    "runtime_authority_changed": false,
+    "installed_runtime_changed": false,
+    "installed_package_changed": false,
+    "daemon_or_ibus_restarted": false,
+    "training_runs": 0,
+    "crystallization_runs": 0
+  },
+  "next_action": "Phase 2G: move settlement, interference, finalization, and classifier bridge without changing behavior or authority."
+}

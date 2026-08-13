@@ -1319,7 +1319,7 @@ separate gates.
 
 ## 13. Current Verdict And Next Action
 
-Current verdict: `PHASE_2C_MOVE_ONLY_PARITY_PASS`; implementation preflight
+Current verdict: `PHASE_2F_MOVE_ONLY_PARITY_PASS`; implementation preflight
 verdict remains `READY_TO_IMPLEMENT` with `safe_to_implement = true` and no
 blockers.
 
@@ -1555,5 +1555,49 @@ crystallization runs remain zero.
 /home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_2E_2026-08-13/phase-2e.json
 ```
 
-The next action is Phase 2F: move legacy prepare, discovery, and frontier logic
-without changing behavior or authority.
+Phase 2F is complete. Legacy atom selection, thread-local forward scratch,
+readout preparation, exact singleton discovery, exact-anchor lookup, operator
+and geometry reserves, surface resolution, terminal activation, and frontier
+refresh moved into `runtime/legacy.rs`. Settlement, interference, finalization,
+the classifier bridge, and inline tests remain in `runtime.rs` for Phases 2G
+and 2H. Every moved symbol exists exactly once; runtime authority, call order,
+allocation behavior, package representation, and public exports are unchanged.
+
+`runtime.rs` fell from `3,126` to `2,343` lines; `legacy.rs` contains `792`
+lines. The complete runtime tree is `4,682` lines, cumulative growth `2.56%`
+from the Phase 0 monolith and below the `5%` budget.
+
+The remote exact fingerprint reproduced all `616` cases, all eight readout
+modes, semantic SHA, projection SHA, all six route SHA values, candidate order,
+and zero permutation failures. Focused lexical tests passed `109/109`; route
+contracts passed `20/20` and `15/15`; `cargo check --lib --bins` passed. Three
+sequential fixed-520 runs measured p99 `9.922`, `11.236`, and `13.397 ms`, all
+with the frozen candidate SHA. Peak RSS was `417,560-418,668 KiB`. This passes
+the move-only no-regression gate but does not claim the future `<=5 ms` target.
+
+All Cargo, proof, and benchmark work ran on `e@192.168.3.94` with
+`CARGO_BUILD_JOBS=20`, `RAYON_NUM_THREADS=20`, and 20 test threads. The final
+release codegen unit averaged `99%` CPU because the accepted release profile
+pins `codegen-units=1`; that profile was not changed. No CPU-heavy project work
+ran locally.
+
+One early cut-1 result is explicitly rejected: a mistaken sync wrote the new
+parent source as `runtime/runtime.rs`, so the remote compiler used the old
+`runtime.rs`. The nested file was deleted, both exact destination SHA-256
+values were verified, and every accepted Phase 2F gate was rerun on the correct
+source. The rejected `109/109` result is not evidence for this phase.
+
+Tested: the Phase 2F owner boundary, symbol uniqueness, all frozen semantic
+routes, candidate order, focused lexical and route-contract tests, all lib/bin
+compile routes, three-run latency, package/input identity, and Cargo disk
+budget. Not tested: Phases 2G-2H, dense oracle, typed edit graph, posting-bound
+soundness, exact-search quality, package redesign, or deployment. Runtime
+authority, installed package, daemon, and IBus remain unchanged; training and
+crystallization runs remain zero.
+
+```text
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_2F_2026-08-13/phase-2f.json
+```
+
+The next action is Phase 2G: move settlement, interference, finalization, and
+the classifier bridge without changing behavior or authority.
