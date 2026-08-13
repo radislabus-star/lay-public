@@ -1,0 +1,102 @@
+{
+  "schema": "lay.ime-target-bound-replacement-evidence-proof.v1",
+  "date": "2026-08-13",
+  "verdict": "PASS",
+  "scope": "source_and_software",
+  "contract": {
+    "candidate_material": "broad bounded L2 lattice remains available for competition",
+    "lane_authority": "grouping_only",
+    "lexical_reconstructed_flag": "search provenance only, never target authority",
+    "visible_replacement_requires": [
+      "grounded_l2_center",
+      "target_bound_operator_evidence_or_state_specific_positive_l4_transition"
+    ],
+    "direct_one_edit_authority": "unique nearest verified target only",
+    "exact_layout_competition": "exact layout suppresses same-script lexical arrows but not internal candidates",
+    "plain_l3_similarity": "ranking_only",
+    "text_mutation": "unchanged existing Tab plus verifier route"
+  },
+  "implementation": {
+    "producer_evidence_type": "nanda_wave::l2::L2ImeTargetEvidence",
+    "display_evidence_type": "typing_transition::live_candidate::ReplacementTargetEvidence",
+    "material_owner": "nanda_wave::candidate_gate",
+    "display_authority_owner": "typing_transition::decision::live_field",
+    "merge_contract": "evidence merges independently from source and score",
+    "candidate_routes_added": 0,
+    "literal_runtime_cases": 0,
+    "autocorrect_authority_changed": false,
+    "verifier_authority_changed": false,
+    "text_mutation_owner_changed": false
+  },
+  "proof": {
+    "target_bound_integration_matrix": {
+      "passed": 6,
+      "failed": 0
+    },
+    "sequential_candidate_gate": {
+      "passed": 29,
+      "failed": 0
+    },
+    "focused_ibus_replacement_readout": {
+      "passed": 2,
+      "failed": 0
+    },
+    "typing_transition_authority_contract": {
+      "passed": 20,
+      "failed": 0
+    },
+    "changed_code_gate": "PASS",
+    "transition_replay": "PASS-shadow",
+    "unsafe_verified_transition_escapes": 0,
+    "warmed_ibus_candidate_display": {
+      "samples": 140,
+      "p50_us": 42,
+      "p90_us": 57,
+      "p99_us": 70,
+      "max_us": 73
+    }
+  },
+  "retained_valid_replacements": [
+    "ytn -> нет",
+    "hf,jfntn -> работает",
+    "рабоает -> работает",
+    "относитться -> относиться"
+  ],
+  "suppressed_unrelated_arrows": [
+    "ytn -/-> yt, yen, yon",
+    "какое -/-> какаем",
+    "новая -/-> ножовая",
+    "точнее -/-> течение",
+    "относится -/-> доноситься"
+  ],
+  "tested": [
+    "producer to consumer evidence parity",
+    "exact layout target retention and lexical competitor suppression",
+    "Russian single-edit and repeated-letter target retention",
+    "clean Russian settled-state preservation",
+    "damaged-prefix family retention across lexical to canonical merge",
+    "candidate and IBus display admission",
+    "double-Shift authority contract preservation",
+    "warmed display latency"
+  ],
+  "not_tested": [
+    "full L1 heldout restoration quality",
+    "package quality or size",
+    "release build",
+    "installation",
+    "physical application input",
+    "post-install double-Shift rollback"
+  ],
+  "runtime": {
+    "source_display_policy_changed": true,
+    "installed_runtime_changed": false,
+    "installed_version_before_release": "1.0.25",
+    "planned_release": "1.0.26"
+  },
+  "preflight": {
+    "packet": "docs/structural_gates/preflights/LAY_IME_TARGET_BOUND_REPLACEMENT_EVIDENCE_2026-08-13.json",
+    "first_receipt": "docs/structural_gates/receipts/LAY_IME_TARGET_BOUND_REPLACEMENT_EVIDENCE_PREFLIGHT_2026-08-13.json",
+    "accepted_receipt": "docs/structural_gates/receipts/LAY_IME_TARGET_BOUND_REPLACEMENT_EVIDENCE_PREFLIGHT_V2_2026-08-13.json",
+    "accepted_verdict": "READY_TO_IMPLEMENT"
+  }
+}

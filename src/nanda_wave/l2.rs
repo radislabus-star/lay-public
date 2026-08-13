@@ -91,6 +91,23 @@ pub enum L2ImeWordCandidateSource {
     BoundaryPhase,
 }
 
+/// Evidence that binds a live replacement candidate to the observed token.
+///
+/// A lexical or morphology center may enter the internal lattice without this
+/// evidence. Only an operator that actually reconstructed this target may
+/// later grant full-token display authority.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord)]
+pub(crate) enum L2ImeTargetEvidence {
+    #[default]
+    None,
+    LexicalReconstruction,
+    ContextBoundEdit,
+    CanonicalWinner,
+    LayoutRepair,
+    ExactLayout,
+    Boundary,
+}
+
 impl L2ImeWordCandidateSource {
     pub(crate) const fn is_lexically_grounded(self) -> bool {
         matches!(
@@ -115,6 +132,7 @@ pub struct L2ImeWordCandidate {
     pub usage_prior: f32,
     pub context_prior: f32,
     pub accepted_count: u32,
+    pub(crate) target_evidence: L2ImeTargetEvidence,
     pub(crate) morphology_slots: Vec<crate::correction_core::MorphologySlotIdentity>,
 }
 
@@ -169,6 +187,7 @@ pub fn ime_l2_boundary_candidates(
             usage_prior: 0.0,
             context_prior: 0.0,
             accepted_count: 0,
+            target_evidence: L2ImeTargetEvidence::Boundary,
             morphology_slots: Vec::new(),
         })
         .collect::<Vec<_>>();
@@ -196,6 +215,10 @@ pub fn ime_l2_boundary_candidates(
 
 pub(crate) fn ime_l2_boundary_evidence(token: &str) -> bool {
     tail_scan_adapter::boundary_split_has_structural_evidence(token)
+}
+
+pub(crate) fn ime_l2_boundary_target_evidence(token: &str, surface: &str) -> bool {
+    tail_scan_adapter::boundary_split_target_has_structural_evidence(token, surface)
 }
 
 pub fn correction_l2_word_candidates(

@@ -20,18 +20,18 @@
     "semantic_hash": "236e46a80b6d2865de3d1816fb645158"
   },
   "extension/lay@radislabus-star.github.io/lay-impl.js": {
-    "mtime": 1786341195.755445,
+    "mtime": 1786596357.284212,
     "ast_hash": "4b795e86b2cf94e522b648b448bb5e87",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1786552791.6554654,
-    "ast_hash": "9744ca5058e12d1f38a59bfb374effad",
+    "mtime": 1786596357.257754,
+    "ast_hash": "fadfc005367be900749d9f15eaac5455",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
-    "mtime": 1786552791.6564653,
-    "ast_hash": "9ea60970eae771379cc15ee29181d8fb",
+    "mtime": 1786596357.2901173,
+    "ast_hash": "178df12239e8b0ee33568027fbbb70d5",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/recent_actions_menu.js": {
@@ -40,13 +40,13 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/settings.js": {
-    "mtime": 1786552791.6564653,
-    "ast_hash": "6ffeb95d4944126f78741cde954acd67",
+    "mtime": 1786596357.2899427,
+    "ast_hash": "4c23dc2077a38f93d2cfeda40f49ebab",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1786552791.6564653,
-    "ast_hash": "5b1c7263a694a8c2174501ac55b1cd4c",
+    "mtime": 1786596357.2898102,
+    "ast_hash": "ef3f370d64774e6f135bb64a2402d5ad",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -930,8 +930,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/preedit.rs": {
-    "mtime": 1786545300.5729132,
-    "ast_hash": "4221d85079155028e9663d9c49384c40",
+    "mtime": 1786577884.3127255,
+    "ast_hash": "4c896ca38847d80c0d330470afa5cf95",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/protocol.rs": {
@@ -1380,8 +1380,8 @@
     "semantic_hash": ""
   },
   "src/layout_autoswitch/ascii/word.rs": {
-    "mtime": 1784319672.4159453,
-    "ast_hash": "842e311e35d34caa47a5a61fc0551329",
+    "mtime": 1786574998.7211847,
+    "ast_hash": "2678b044c8de51d603eb83ad12392f6d",
     "semantic_hash": ""
   },
   "src/layout_autoswitch/cyrillic.rs": {
@@ -1485,8 +1485,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/candidate_gate.rs": {
-    "mtime": 1786551836.424853,
-    "ast_hash": "5b506778554243e33d775b60ccfc5884",
+    "mtime": 1786595469.441698,
+    "ast_hash": "41d3548db223469a0c7999deffdcc03c",
     "semantic_hash": ""
   },
   "src/nanda_wave/cell32.rs": {
@@ -1525,8 +1525,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/l2.rs": {
-    "mtime": 1786550169.8077135,
-    "ast_hash": "15728e1d1cca5f617e46bee00103cb5f",
+    "mtime": 1786592319.557473,
+    "ast_hash": "529c2a66e0c96f364aabd843666d198d",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2_candidate_phase.rs": {
@@ -2375,8 +2375,8 @@
     "semantic_hash": ""
   },
   "tests/live_candidate_gate_metrics.rs": {
-    "mtime": 1784411082.2570608,
-    "ast_hash": "6b0acb41787c73faaaf5815334188e6c",
+    "mtime": 1786595184.9780667,
+    "ast_hash": "76e27a47d47638a58a834d6869ff4b0f",
     "semantic_hash": ""
   },
   "tests/protected_words_runtime.rs": {
@@ -2515,8 +2515,8 @@
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1786552791.6544652,
-    "ast_hash": "5f468f8750856a1e3e38919bea3fc731",
+    "mtime": 1786596357.2923012,
+    "ast_hash": "3876a2639a9ba5ca3898a90cea7abc26",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -2690,8 +2690,8 @@
     "semantic_hash": ""
   },
   "docs/l1-l4-intelligence-route.md": {
-    "mtime": 1784667124.9239576,
-    "ast_hash": "66a86ba79b556804fe4096a3c9f71166",
+    "mtime": 1786597328.6960986,
+    "ast_hash": "10e749b1cf14927cb112963c048cdb79",
     "semantic_hash": ""
   },
   "docs/llmwave-production-contour.md": {
@@ -3095,8 +3095,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/preedit_readout.rs": {
-    "mtime": 1786545198.6915889,
-    "ast_hash": "7b2a6a08286684178169bf23ebf43682",
+    "mtime": 1786574369.9186845,
+    "ast_hash": "dd0f6d0850c75b7ebe513a0c27e29e22",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2/surface.rs": {
@@ -3235,7 +3235,7 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_phase/runtime.rs": {
-    "mtime": 1786324238.5311034,
+    "mtime": 1786593439.7488353,
     "ast_hash": "18cb52acf7cc3e9bc5f0d299dceb9e3e",
     "semantic_hash": ""
   },
@@ -3285,13 +3285,13 @@
     "semantic_hash": ""
   },
   "src/typing_transition/live_candidate.rs": {
-    "mtime": 1786550466.670393,
-    "ast_hash": "9a3a25449ab8c049a6b08d537558c8ab",
+    "mtime": 1786592489.497601,
+    "ast_hash": "b05d9c814529708048a0807f94e35224",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/preedit/tests.rs": {
-    "mtime": 1786552087.1075826,
-    "ast_hash": "ff90f79d9a32ae6cc1a85a25a4df484c",
+    "mtime": 1786578986.4598782,
+    "ast_hash": "d8f0044d206efc6e3167cbe450b0e8ea",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2/grammar_adapter.rs": {
@@ -3300,8 +3300,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/l2/ime_readout.rs": {
-    "mtime": 1786550509.0098124,
-    "ast_hash": "b2f2d54e2b5154547e3ddc3b104e26d6",
+    "mtime": 1786594862.2337332,
+    "ast_hash": "40a8d4e26e5bc7ebd07fe7dd556165ec",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2/layout_adapter.rs": {
@@ -3310,8 +3310,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/l2/tail_scan_adapter.rs": {
-    "mtime": 1786550509.0348125,
-    "ast_hash": "bf4ab100c39bb4985c3d16c92d98a90a",
+    "mtime": 1786584298.3539338,
+    "ast_hash": "ef4dfb6cf94f995616bf7f19a511915e",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2/taught_adapter.rs": {
@@ -3320,8 +3320,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/l2/tests.rs": {
-    "mtime": 1786273427.409575,
-    "ast_hash": "075d28ce9f4ca3eca989ab707c4166df",
+    "mtime": 1786585057.6617851,
+    "ast_hash": "fd31df5abeb20b3b0c0aa1308dd92aa3",
     "semantic_hash": ""
   },
   "src/typing_transition/decision/admission.rs": {
@@ -3670,8 +3670,8 @@
     "semantic_hash": ""
   },
   "src/typing_transition/decision/live_field.rs": {
-    "mtime": 1786550466.6733932,
-    "ast_hash": "7ed4552bf7dddeb224afdc766e3cdcda",
+    "mtime": 1786592489.497601,
+    "ast_hash": "f0bb44b547210f26f6c725547fab65b4",
     "semantic_hash": ""
   },
   "docs/lay-self-teacher-l3-plan.md": {
@@ -4700,8 +4700,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/l2_field/bridge.rs": {
-    "mtime": 1786551564.3395898,
-    "ast_hash": "00168a44475609d30871510fe600a41d",
+    "mtime": 1786592450.8171172,
+    "ast_hash": "c000ead01081635621ae7a4ca9b92fa0",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2_field/format.rs": {
@@ -4710,8 +4710,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/l2_field/mod.rs": {
-    "mtime": 1786550509.1918142,
-    "ast_hash": "d4ef733d2ce52e2fe23b75d67c622ec5",
+    "mtime": 1786593987.5876918,
+    "ast_hash": "e215cf46cdc5ba8bbca782f1684f157f",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2_field/proof.rs": {
@@ -7622,6 +7622,181 @@
   "docs/structural_gates/receipts/LAY_UINPUT_STUCK_KEY_RECOVERY_PREFLIGHT_2026-08-12.json": {
     "mtime": 1786562282.330014,
     "ast_hash": "847fe369d86c87f3411f07f44e39d1c8",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/preflights/LAY_IME_CODE_ROUTE_CURRENT_2026-08-12.json": {
+    "mtime": 1786570685.700526,
+    "ast_hash": "3e266c56782535a9e1e3ddd2ab549658",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/preflights/LAY_IME_CODE_ROUTE_TARGET_2026-08-12.json": {
+    "mtime": 1786570685.7015262,
+    "ast_hash": "4cc29dc0dbf8959fe48a96d82bac9821",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/preflights/LAY_IME_REPLACEMENT_EVIDENCE_GATE_2026-08-12.json": {
+    "mtime": 1786566756.7280357,
+    "ast_hash": "a7452abc4f31c53a4201f46ecbd80947",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/preflights/LAY_IME_SINGLE_CANDIDATE_ROUTE_IMPLEMENTATION_2026-08-12.json": {
+    "mtime": 1786573791.6268697,
+    "ast_hash": "e2f145c9d9f83dc18ad0211470081d5e",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_IME_CODE_ROUTE_CURRENT_2026-08-12.json": {
+    "mtime": 1786571128.2023242,
+    "ast_hash": "9a8f787d2c400e63a356e60d96b26711",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_IME_CODE_ROUTE_TARGET_2026-08-12.json": {
+    "mtime": 1786571128.424327,
+    "ast_hash": "1917544be4a03b13a22091de9d61fe9a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_IME_REPLACEMENT_EVIDENCE_GATE_PREFLIGHT_2026-08-12.json": {
+    "mtime": 1786566764.4778173,
+    "ast_hash": "79ef068d0a78f9de9668b32fbe4da3e8",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_IME_SINGLE_CANDIDATE_ROUTE_PREFLIGHT_2026-08-12.json": {
+    "mtime": 1786573797.1511686,
+    "ast_hash": "7c5690a8fbce1455798524051e6bc997",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/preflights/LAY_IME_SINGLE_CANDIDATE_ROUTE_2026-08-12.md": {
+    "mtime": 1786567618.4477837,
+    "ast_hash": "512cd6ded742d3ef395334e29c1ab7cf",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/preflights/LAY_IME_SINGLE_CANDIDATE_ROUTE_SPECTRAL_BUDGET_2026-08-12.md": {
+    "mtime": 1786571173.9029083,
+    "ast_hash": "f118cf6a6e0e5240d5e7d088d286739f",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/preflights/LAY_IME_SINGLE_CANDIDATE_ROUTE_OBSERVED_2026-08-13.json": {
+    "mtime": 1786575452.507306,
+    "ast_hash": "e23c75a656ca3e1d8259d3be00a6a717",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_IME_SINGLE_CANDIDATE_ROUTE_OBSERVED_2026-08-13.json": {
+    "mtime": 1786575479.5316248,
+    "ast_hash": "1850fcf59095cb2e8d4cc08a547fb527",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/preflights/LAY_IME_DECLINED_TARGET_2026-08-13.json": {
+    "mtime": 1786577317.4385946,
+    "ast_hash": "68b3801b7199cf02caa288959a8a02de",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_IME_DECLINED_TARGET_PREFLIGHT_2026-08-13.json": {
+    "mtime": 1786577301.5328996,
+    "ast_hash": "3f9eadda7d513dc09acfdf8e1edf7116",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_IME_DECLINED_TARGET_PREFLIGHT_V2_2026-08-13.json": {
+    "mtime": 1786577325.5627172,
+    "ast_hash": "0d1cbd435ca6a6b02c6f9fc20fbfb74b",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_IME_DECLINED_TARGET_SOFTWARE_PROOF_2026-08-13.json": {
+    "mtime": 1786577816.320773,
+    "ast_hash": "5138628fbff077e39ef9b8ab06cd8714",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/preflights/LAY_RELEASE_1_0_24_INSTALL_2026-08-13.json": {
+    "mtime": 1786580834.528729,
+    "ast_hash": "1022e531dd1f26a813ca47dcfa8dfd07",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_RELEASE_1_0_24_INSTALLED_2026-08-13.json": {
+    "mtime": 1786581823.6692283,
+    "ast_hash": "b8f29481a35ce45a430667f9c8b1cd81",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_RELEASE_1_0_24_INSTALL_PREFLIGHT_2026-08-13.json": {
+    "mtime": 1786580757.8031242,
+    "ast_hash": "ab24b3d6a7e4e6a0af2de3402e4f3d08",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_RELEASE_1_0_24_INSTALL_PREFLIGHT_V2_2026-08-13.json": {
+    "mtime": 1786580821.9591,
+    "ast_hash": "455ffd3b5d4ff0a41dd6527bcd629921",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_RELEASE_1_0_24_INSTALL_PREFLIGHT_V3_2026-08-13.json": {
+    "mtime": 1786580845.1659958,
+    "ast_hash": "dc743ed0e36d158abb8b24d41888ab8c",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/preflights/LAY_IME_RU_REPLACEMENT_AUTHORITY_2026-08-13.json": {
+    "mtime": 1786582646.970544,
+    "ast_hash": "cee2f655d5833a5239e8c9cd227eb6e0",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_IME_RU_REPLACEMENT_AUTHORITY_PREFLIGHT_2026-08-13.json": {
+    "mtime": 1786582617.433142,
+    "ast_hash": "d343fc1094a3f9f2d99f95c9e7072fe1",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_IME_RU_REPLACEMENT_AUTHORITY_PREFLIGHT_V2_2026-08-13.json": {
+    "mtime": 1786582659.4574425,
+    "ast_hash": "03d56cd130524ec74c40925c6932309d",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_IME_RU_REPLACEMENT_AUTHORITY_SOFTWARE_PROOF_2026-08-13.json": {
+    "mtime": 1786589754.8289912,
+    "ast_hash": "3bbe3e7c404d835ae34423d558f61483",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/preflights/LAY_IME_TARGET_BOUND_REPLACEMENT_EVIDENCE_2026-08-13.json": {
+    "mtime": 1786592125.1430306,
+    "ast_hash": "92cd8e35bb110ce96c5bc18e6056bbba",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/preflights/LAY_RELEASE_1_0_25_INSTALL_2026-08-13.json": {
+    "mtime": 1786589994.797782,
+    "ast_hash": "f8d5c88ddd078cf83ae149aebfd7a5a9",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/preflights/LAY_RELEASE_1_0_26_INSTALL_2026-08-13.json": {
+    "mtime": 1786596321.0431323,
+    "ast_hash": "fc94955bdf44cb815d21bc44ffff964c",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_IME_TARGET_BOUND_REPLACEMENT_EVIDENCE_PREFLIGHT_2026-08-13.json": {
+    "mtime": 1786592106.5105507,
+    "ast_hash": "ef04847fa98191c6c3e91f47f5adf717",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_IME_TARGET_BOUND_REPLACEMENT_EVIDENCE_PREFLIGHT_V2_2026-08-13.json": {
+    "mtime": 1786592135.371111,
+    "ast_hash": "69269ce9db2da16fa3bacde92e813a22",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_IME_TARGET_BOUND_REPLACEMENT_EVIDENCE_SOFTWARE_PROOF_2026-08-13.json": {
+    "mtime": 1786596285.8607073,
+    "ast_hash": "b2463e69b931c3255283ff94eaec74cf",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_RELEASE_1_0_25_INSTALL_PREFLIGHT_2026-08-13.json": {
+    "mtime": 1786590003.9694178,
+    "ast_hash": "c82bb93abc797a054a2ae2180e354737",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_RELEASE_1_0_26_INSTALL_PREFLIGHT_2026-08-13.json": {
+    "mtime": 1786596298.4211674,
+    "ast_hash": "32767671fbe82d7de8a3d88c62c547a8",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_RELEASE_1_0_26_INSTALL_PREFLIGHT_V2_2026-08-13.json": {
+    "mtime": 1786596331.276378,
+    "ast_hash": "97af1939edad4ae1af38e495f0e53fff",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_RELEASE_1_0_26_INSTALLED_2026-08-13.json": {
+    "mtime": 1786597328.6960986,
+    "ast_hash": "4b8ae1755e184ad65db9f876538331bf",
     "semantic_hash": ""
   }
 }

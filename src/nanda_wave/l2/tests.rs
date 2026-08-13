@@ -454,6 +454,24 @@ fn boundary_cell_births_two_independent_content_centers() {
 }
 
 #[test]
+fn ime_boundary_authority_is_bound_to_the_selected_split_target() {
+    for (token, target) in [
+        ("Еленапросит", "Елена просит"),
+        ("документыдля", "документы для"),
+        ("тоесть", "то есть"),
+    ] {
+        assert!(
+            ime_l2_boundary_target_evidence(token, target),
+            "missing target-specific boundary evidence: {token:?} -> {target:?}"
+        );
+    }
+    assert!(
+        !ime_l2_boundary_target_evidence("относитться", "относит ться"),
+        "a decoder motif fragment must not become an independent word center"
+    );
+}
+
+#[test]
 fn boundary_cell_splits_leading_short_pronoun_from_stable_center() {
     let original = "мнесбросили ";
     let l1 = run_l1(original);

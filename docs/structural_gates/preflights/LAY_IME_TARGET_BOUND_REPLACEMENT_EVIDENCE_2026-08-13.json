@@ -1,0 +1,203 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-ime-target-bound-replacement-evidence-2026-08-13",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "l2-candidate-contract",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2.rs",
+      "expect": {
+        "size_bytes": 18177,
+        "sha256": "51605902658b835b7d6f1b630862ac80879bec7f6e6bdbce8cb0a95e798675cc",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "l2-ime-readout",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2/ime_readout.rs",
+      "expect": {
+        "size_bytes": 27994,
+        "sha256": "b134a5ce80405ed5d700e59da756e7df94d278ebb493a8db5f765c1d0942a201",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "candidate-gate",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/candidate_gate.rs",
+      "expect": {
+        "size_bytes": 78769,
+        "sha256": "05683de91bf2c9d0cec34bb346afd5763140fee1ea4056e47670a5d9c90cf00e",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "live-field-admission",
+      "kind": "file",
+      "path": "../../../src/typing_transition/decision/live_field.rs",
+      "expect": {
+        "size_bytes": 14378,
+        "sha256": "d2a0fb1aa45a838980505bc0654710d0225407f591d083a69be769c09613e19f",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "installed-ime-1-0-25",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "expect": {
+        "size_bytes": 6249720,
+        "sha256": "d0817b88120bdba005d10e40d41bf33a75da7e4c8878e134d73f553d764041ea",
+        "mode": "0755"
+      }
+    }
+  ],
+  "source_checks": [
+    {
+      "id": "no-literal-runtime-cases",
+      "path": "../../../src/nanda_wave/candidate_gate.rs",
+      "sha256": "05683de91bf2c9d0cec34bb346afd5763140fee1ea4056e47670a5d9c90cf00e",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "literal_surface_runtime_branch",
+          "regex": "(?:partial|surface|candidate\\.surface)\\s*==\\s*\\\"(?:новая|точнее|появлт|предлает|какое|относит)"
+        },
+        {
+          "effect": "global_ibus_restart",
+          "regex": "(?:restart|kill|pkill).{0,40}ibus-daemon"
+        }
+      ]
+    },
+    {
+      "id": "single-render-owner-preserved",
+      "path": "../../../src/bin/lay_ibus_engine/preedit_readout.rs",
+      "sha256": "17c20467dd8fee3f6be7a06249c5fc0dbd5a4c7b8ea3faddb6321ab4f4a343e2",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "second_word_field_request",
+          "regex": "live_completion_candidates[\\s\\S]{0,2000}live_completion_candidates"
+        }
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {
+        "id": "type-target-bound-birth-evidence",
+        "kind": "filesystem_edit"
+      },
+      {
+        "id": "bind-arrow-admission-to-evidence",
+        "kind": "filesystem_edit"
+      },
+      {
+        "id": "run-systemic-replacement-proof",
+        "kind": "cargo_test"
+      },
+      {
+        "id": "install-only-after-pass",
+        "kind": "service_activation"
+      }
+    ],
+    "forbidden": [
+      "literal_surface_runtime_branch",
+      "second_word_field_request",
+      "global_ibus_restart"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "installed-ime-baseline",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "policy": "leave_unchanged_until_software_gate_passes",
+      "rollback_policy": "restore_1_0_25_binary",
+      "baseline_check_id": "installed-ime-1-0-25"
+    }
+  ],
+  "state_machine": {
+    "initial_state": "LIVE_1_0_25_HAS_UNBOUND_RU_REPLACEMENTS",
+    "terminal_states": [
+      "SOFTWARE_PROOF_PASS_RUNTIME_UNCHANGED",
+      "PROOF_FAILED_RUNTIME_UNCHANGED"
+    ],
+    "steps": [
+      {
+        "id": "type-and-bind-evidence",
+        "from": "LIVE_1_0_25_HAS_UNBOUND_RU_REPLACEMENTS",
+        "to": "SOURCE_FIXED_RUNTIME_UNCHANGED",
+        "mutates": true,
+        "failure_state": "PROOF_FAILED_RUNTIME_UNCHANGED",
+        "cleanup": "do not install and retain live 1.0.25",
+        "preserves": [
+          "installed-ime-baseline"
+        ],
+        "test_id": "proof-failure-preserves-runtime"
+      },
+      {
+        "id": "run-systemic-proof",
+        "from": "SOURCE_FIXED_RUNTIME_UNCHANGED",
+        "to": "SOFTWARE_PROOF_PASS_RUNTIME_UNCHANGED",
+        "mutates": false,
+        "failure_state": "PROOF_FAILED_RUNTIME_UNCHANGED",
+        "cleanup": "do not install and retain live 1.0.25",
+        "preserves": [
+          "installed-ime-baseline"
+        ],
+        "test_id": "replacement-authority-matrix"
+      }
+    ]
+  },
+  "tests": [
+    {
+      "id": "producer-consumer-evidence-parity",
+      "kind": "parity",
+      "expected": "generic n-gram neighbors carry no target authority; lexical reconstruction, canonical winner, context-bound edit, layout and boundary births preserve their typed evidence"
+    },
+    {
+      "id": "replacement-authority-matrix",
+      "kind": "integration",
+      "expected": "valid layout and damaged-word repairs remain visible while clean RU states and unrelated same-script neighbors cannot publish an arrow"
+    },
+    {
+      "id": "clean-state-context-override",
+      "kind": "unit",
+      "expected": "a settled clean RU state changes only with target-specific transition history or independently measured context evidence"
+    },
+    {
+      "id": "proof-failure-preserves-runtime",
+      "kind": "fault_injection",
+      "expected": "any failed proof leaves installed lay-ibus-engine 1.0.25 and global ibus-daemon unchanged"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "candidate-existence-is-not-target-proof",
+      "statement": "membership in a bounded n-gram or morphology lattice cannot authorize a full-token replacement",
+      "test_id": "producer-consumer-evidence-parity"
+    },
+    {
+      "id": "bounded-uniqueness-is-not-global-uniqueness",
+      "statement": "being the only nearest candidate left after top-k truncation cannot authorize a full-token replacement",
+      "test_id": "replacement-authority-matrix"
+    },
+    {
+      "id": "clean-state-preservation",
+      "statement": "an exact settled Cyrillic input remains the visible state unless a target-bound transition has independent contradictory evidence",
+      "test_id": "clean-state-context-override"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "l2-birth-to-arrow-authority",
+      "producer": "L2 candidate birth operator",
+      "consumer": "TransitionDecisionCore replacement admission",
+      "comparison": "surface plus target-bound birth evidence plus replacement operator",
+      "test_id": "producer-consumer-evidence-parity"
+    }
+  ],
+  "runtime_comparisons": []
+}

@@ -1,0 +1,200 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-ime-single-candidate-route-implementation-2026-08-12",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "preedit-orchestrator-source",
+      "kind": "file",
+      "path": "../../../src/bin/lay_ibus_engine/preedit.rs",
+      "expect": {
+        "size_bytes": 25359,
+        "sha256": "99c5cee2e00f6f7c0d2afba935a1d8a6b51c979066bcc100dd088ae1dea27a3b",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "preedit-readout-source",
+      "kind": "file",
+      "path": "../../../src/bin/lay_ibus_engine/preedit_readout.rs",
+      "expect": {
+        "size_bytes": 8814,
+        "sha256": "e668de4b008710549198f904dad0d4b3910613b8e2bbac476b33cbe398ca41a6",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "preedit-tests-source",
+      "kind": "file",
+      "path": "../../../src/bin/lay_ibus_engine/preedit/tests.rs",
+      "expect": {
+        "size_bytes": 59359,
+        "sha256": "172d7e33292e403514f33ab1c385b10681473afecbe9586ee0b2597f211cf8bb",
+        "mode": "0664"
+      }
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      { "id": "edit-ime-candidate-orchestrator", "kind": "filesystem_edit" },
+      { "id": "edit-ime-word-adapter", "kind": "filesystem_edit" },
+      { "id": "migrate-ime-route-tests", "kind": "filesystem_edit" },
+      { "id": "run-focused-proof", "kind": "cargo_test" },
+      { "id": "build-engine-remotely", "kind": "remote_release_build" },
+      { "id": "activate-managed-engine", "kind": "service_activation" }
+    ],
+    "forbidden": [
+      "second_live_completion_query_per_refresh",
+      "merge_phrase_forecast_into_word_authority",
+      "remove_arrow_replacement_rendering",
+      "weaken_tab_authorization",
+      "global_ibus_restart",
+      "literal_surface_runtime_branch"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "preedit-route-source-preserved",
+      "path": "../../../src/bin/lay_ibus_engine/preedit.rs",
+      "sha256": "99c5cee2e00f6f7c0d2afba935a1d8a6b51c979066bcc100dd088ae1dea27a3b",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "second_live_completion_query_per_refresh",
+          "regex": "word_candidate_proposals\\([^)]*\\)[\\s\\S]{0,1200}word_candidate_proposals\\("
+        },
+        {
+          "effect": "merge_phrase_forecast_into_word_authority",
+          "regex": "semantic_phrase_candidates\\(\\)[\\s\\S]{0,400}(?:authorize_backend_edit|commit_authorized|ImeCandidateProposal::replacement)"
+        },
+        {
+          "effect": "remove_arrow_replacement_rendering",
+          "regex": "Some\\(replacement\\)\\s*=>\\s*replacement(?:\\.clone\\(\\))?[,}]"
+        }
+      ]
+    },
+    {
+      "id": "tab-authority-source-preserved",
+      "path": "../../../src/bin/lay_ibus_engine/composition_commit.rs",
+      "sha256": "f2237d1208b807675356cd8138f3cb2702a14c33e0bab3db35dc33fb05afb4cc",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "weaken_tab_authorization",
+          "regex": "accepted_text[\\s\\S]{0,300}Self::commit_text\\("
+        },
+        { "effect": "global_ibus_restart", "regex": "(?:restart|kill|pkill).{0,40}ibus-daemon" },
+        { "effect": "literal_surface_runtime_branch", "regex": "(?:\\\"ytn\\\"|\\\"yt\\\")" }
+      ]
+    }
+  ],
+  "preserved_artifacts": [
+    {
+      "id": "preedit-orchestrator-baseline",
+      "path": "../../../src/bin/lay_ibus_engine/preedit.rs",
+      "policy": "scoped_source_change",
+      "rollback_policy": "restore_only_agent_owned_change",
+      "baseline_check_id": "preedit-orchestrator-source"
+    },
+    {
+      "id": "preedit-readout-baseline",
+      "path": "../../../src/bin/lay_ibus_engine/preedit_readout.rs",
+      "policy": "scoped_source_change",
+      "rollback_policy": "restore_only_agent_owned_change",
+      "baseline_check_id": "preedit-readout-source"
+    },
+    {
+      "id": "preedit-tests-baseline",
+      "path": "../../../src/bin/lay_ibus_engine/preedit/tests.rs",
+      "policy": "scoped_source_change",
+      "rollback_policy": "restore_only_agent_owned_change",
+      "baseline_check_id": "preedit-tests-source"
+    }
+  ],
+  "state_machine": {
+    "initial_state": "BASELINE_CAPTURED",
+    "terminal_states": ["FOCUSED_PROOF_PASS", "EDIT_OR_PROOF_FAILED"],
+    "steps": [
+      {
+        "id": "replace-duplicate-word-routes",
+        "from": "BASELINE_CAPTURED",
+        "to": "FOCUSED_PROOF_PASS",
+        "mutates": true,
+        "failure_state": "EDIT_OR_PROOF_FAILED",
+        "cleanup": "do_not_install_and_keep_current_engine_running",
+        "preserves": [
+          "preedit-orchestrator-baseline",
+          "preedit-readout-baseline",
+          "preedit-tests-baseline"
+        ],
+        "test_id": "proof-failure-prevents-install"
+      }
+    ]
+  },
+  "tests": [
+    {
+      "id": "single-word-field-call",
+      "kind": "parity",
+      "expected": "each preedit refresh makes at most one TypingCpu live completion request for the active word"
+    },
+    {
+      "id": "phrase-word-separation",
+      "kind": "parity",
+      "expected": "phrase forecast remains suffix-only and cannot become word-field authority"
+    },
+    {
+      "id": "display-contract-parity",
+      "kind": "unit",
+      "expected": "suffixes remain bracket candidates and full-token proposals retain the arrow marker"
+    },
+    {
+      "id": "tab-authority-parity",
+      "kind": "parity",
+      "expected": "Tab still builds and authorizes an IME backend edit before text mutation"
+    },
+    {
+      "id": "proof-failure-prevents-install",
+      "kind": "fault_injection",
+      "expected": "a failing proof leaves the installed engine and global ibus-daemon unchanged"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "one-word-field-owner",
+      "statement": "one active token creates one word-field request per preedit refresh",
+      "test_id": "single-word-field-call"
+    },
+    {
+      "id": "phrase-is-not-word-authority",
+      "statement": "phrase forecasting remains an independent suffix producer and does not mutate or authorize a word replacement",
+      "test_id": "phrase-word-separation"
+    },
+    {
+      "id": "display-contract-stable",
+      "statement": "the rewrite preserves bracket suffix and arrow replacement rendering",
+      "test_id": "display-contract-parity"
+    },
+    {
+      "id": "apply-authority-stable",
+      "statement": "only explicit acceptance followed by backend authorization may mutate text",
+      "test_id": "tab-authority-parity"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "word-field-to-ime-proposal",
+      "producer": "TypingCpu live completion readout",
+      "consumer": "Lay IBus word candidate adapter",
+      "comparison": "surface suffix replacement score and authority order preserve the one admitted field readout",
+      "test_id": "single-word-field-call"
+    },
+    {
+      "id": "ime-proposal-to-tab-edit",
+      "producer": "Lay IBus selected visible proposal",
+      "consumer": "IME backend AuthorizedEdit",
+      "comparison": "selected surface is unchanged between display proposal and authorized edit",
+      "test_id": "tab-authority-parity"
+    }
+  ],
+  "runtime_comparisons": []
+}

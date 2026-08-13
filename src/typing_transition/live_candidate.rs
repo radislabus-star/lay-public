@@ -10,10 +10,30 @@ use std::collections::HashSet;
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum LiveCandidateLane {
     ExactCompletion,
+    LexicalRepairReplacement,
     CorrectedPrefixReplacement,
     GeneralReplacement,
     LayoutReplacement,
     BoundaryReplacement,
+}
+
+/// Target-specific proof for a full-token IME replacement.
+///
+/// A lane only groups candidates for bounded readout. It must never grant
+/// display authority to every surface produced by that operator.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum ReplacementTargetEvidence {
+    None,
+    ExactLayoutProjection,
+    VerifiedLexicalEdit,
+    ContextBoundLexicalEdit,
+    VerifiedBoundary,
+}
+
+impl ReplacementTargetEvidence {
+    pub(crate) const fn authorizes(self) -> bool {
+        !matches!(self, Self::None)
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -24,6 +44,7 @@ pub(crate) struct LiveCompletionProposal {
     /// True when explicit Tab replaces the active token instead of appending.
     pub(crate) replacement: bool,
     pub(crate) lane: LiveCandidateLane,
+    pub(crate) replacement_target_evidence: ReplacementTargetEvidence,
     pub(crate) morphology_slots: Vec<crate::correction_core::MorphologySlotIdentity>,
     pub(crate) score: f32,
     pub(crate) rank_score: f32,
@@ -112,6 +133,8 @@ impl TransitionDecisionCore {
             exact_reserve_limit,
         );
         let layout_reserve = lane_reserve(&selected, LiveCandidateLane::LayoutReplacement, 1);
+        let lexical_repair_reserve =
+            lane_reserve(&selected, LiveCandidateLane::LexicalRepairReplacement, 1);
         let corrected_reserve = morphology_lane_reserve(
             &selected,
             LiveCandidateLane::CorrectedPrefixReplacement,
@@ -123,6 +146,7 @@ impl TransitionDecisionCore {
         for candidate in exact_reserve
             .into_iter()
             .chain(layout_reserve)
+            .chain(lexical_repair_reserve)
             .chain(boundary_reserve)
             .chain(general_reserve)
             .chain(corrected_reserve)
@@ -326,6 +350,7 @@ mod tests {
             } else {
                 LiveCandidateLane::ExactCompletion
             },
+            replacement_target_evidence: ReplacementTargetEvidence::None,
             morphology_slots: Vec::new(),
             score: rank_score.clamp(0.0, 1.0),
             rank_score,

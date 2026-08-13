@@ -34,6 +34,40 @@ pub(super) fn boundary_split_has_structural_evidence(token: &str) -> bool {
     })
 }
 
+pub(super) fn boundary_split_target_has_structural_evidence(token: &str, surface: &str) -> bool {
+    if !(4..=18).contains(&token.chars().count()) || !token.chars().all(is_cyrillic_letter) {
+        return false;
+    }
+    let normalized = token.to_lowercase();
+    let normalized_surface = surface.to_lowercase();
+    let mut parts = normalized_surface.split(' ');
+    let (Some(left), Some(right), None) = (parts.next(), parts.next(), parts.next()) else {
+        return false;
+    };
+    if left.is_empty()
+        || right.is_empty()
+        || format!("{left}{right}") != normalized
+        || !left.chars().all(is_cyrillic_letter)
+        || !right.chars().all(is_cyrillic_letter)
+    {
+        return false;
+    }
+
+    let left_function = is_ru_one_letter_function_word(left)
+        || crate::lexicon::is_ru_short_pronoun(left)
+        || crate::phrase_lexicon::is_short_russian_function_word(left);
+    let right_function = trailing_short_function_center(right);
+    (left_function && independent_boundary_center(right))
+        || (right_function && independent_boundary_center(left))
+        || (independent_boundary_center(left) && independent_boundary_center(right))
+}
+
+fn independent_boundary_center(word: &str) -> bool {
+    is_common_ru_word(word)
+        || crate::lexicon::is_l2_surface_hot_ru_word(word)
+        || crate::russian_lexicon::is_reference_backed_russian_form(word)
+}
+
 pub(super) fn boundary_split_candidates(
     prefix: &str,
     token: &str,

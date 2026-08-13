@@ -90,12 +90,20 @@ fn live_admission_reason(candidate_visible: bool, suffix_visible: bool) -> &'sta
 
 fn live_candidate_field_has_authority(candidate: &LiveCompletionProposal) -> bool {
     if candidate.replacement {
-        return candidate.l2_center_grounded
-            && (candidate.structural >= 0.20
-                || candidate.common
-                || candidate.hot
-                || candidate.accepted >= 1
-                || candidate.l3_memory_supported);
+        if !candidate.l2_center_grounded {
+            return false;
+        }
+        let independent_transition_evidence = candidate.l4_transition_state_specific
+            && candidate.l4_transition_attract_count > candidate.l4_transition_repel_count;
+        if candidate.partial_state_known
+            && candidate.replacement_target_evidence
+                == crate::typing_transition::live_candidate::ReplacementTargetEvidence::VerifiedLexicalEdit
+            && !independent_transition_evidence
+        {
+            return false;
+        }
+        return candidate.replacement_target_evidence.authorizes()
+            || independent_transition_evidence;
     }
     let grounded_active_extension = candidate.active_composition
         && candidate.allow_short_lexical
@@ -177,6 +185,8 @@ mod tests {
             } else {
                 crate::typing_transition::live_candidate::LiveCandidateLane::ExactCompletion
             },
+            replacement_target_evidence:
+                crate::typing_transition::live_candidate::ReplacementTargetEvidence::None,
             morphology_slots: Vec::new(),
             score: 0.72,
             rank_score: 0.72,
@@ -211,6 +221,46 @@ mod tests {
 
         assert!(admission.visible(), "{admission:?}");
         assert_eq!(admission.reason, "field_visible");
+    }
+
+    #[test]
+    fn lexical_similarity_alone_cannot_publish_a_full_token_replacement() {
+        let mut candidate = proposal(3, "");
+        candidate.replacement = true;
+        candidate.lane =
+            crate::typing_transition::live_candidate::LiveCandidateLane::GeneralReplacement;
+        candidate.structural = 0.99;
+        candidate.score = 0.99;
+        candidate.rank_score = 0.99;
+
+        let admission = TransitionDecisionCore::admit_live_completion(&candidate);
+
+        assert!(!admission.candidate_visible, "admission={admission:?}");
+    }
+
+    #[test]
+    fn target_proof_or_independent_support_keeps_replacements_visible() {
+        let mut proved = proposal(3, "");
+        proved.replacement = true;
+        proved.lane =
+            crate::typing_transition::live_candidate::LiveCandidateLane::LayoutReplacement;
+        proved.replacement_target_evidence = crate::typing_transition::live_candidate::ReplacementTargetEvidence::ExactLayoutProjection;
+        assert!(
+            TransitionDecisionCore::admit_live_completion(&proved).visible(),
+            "target-specific proof must preserve the arrow candidate route"
+        );
+
+        let mut supported = proved;
+        supported.lane =
+            crate::typing_transition::live_candidate::LiveCandidateLane::GeneralReplacement;
+        supported.replacement_target_evidence =
+            crate::typing_transition::live_candidate::ReplacementTargetEvidence::None;
+        supported.l4_transition_state_specific = true;
+        supported.l4_transition_attract_count = 2;
+        assert!(
+            TransitionDecisionCore::admit_live_completion(&supported).visible(),
+            "state-specific transition evidence must preserve learned repairs"
+        );
     }
 
     #[test]

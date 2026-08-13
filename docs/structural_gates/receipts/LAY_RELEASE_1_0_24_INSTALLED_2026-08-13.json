@@ -1,0 +1,140 @@
+{
+  "schema": "lay.release-install-receipt.v1",
+  "release": "1.0.24",
+  "captured_at": "2026-08-13T03:42:32+03:00",
+  "verdict": "LIVE_SOFTWARE_GATE_PASS_PHYSICAL_TYPING_PENDING",
+  "source": {
+    "repository": "/home/ubu/projects/lay",
+    "commit": "773fae2b9f6f223f63283b610b779d506e94a95f",
+    "version": "1.0.24",
+    "working_tree_changes_included": true
+  },
+  "proof_before_build": {
+    "real_refresh_suppression": "1/1 PASS",
+    "target_specific_state_and_feedback": "2/2 PASS",
+    "space_autocorrect_double_shift": "19/19 PASS",
+    "authority_contracts": "20/20 PASS",
+    "focus_reset": "9/9 PASS",
+    "check_lay_changed": "PASS",
+    "hot_candidate_generation_p99_us": 61,
+    "hot_candidate_generation_max_us": 80,
+    "receipt": "/home/ubu/projects/lay/docs/structural_gates/receipts/LAY_IME_DECLINED_TARGET_SOFTWARE_PROOF_2026-08-13.json"
+  },
+  "build": {
+    "host": "e@192.168.3.94",
+    "isolated_source_root": "/home/e/builds/lay-release-1.0.24-20260813-033012-git",
+    "dirty_remote_worktree_modified": false,
+    "cargo_jobs": 20,
+    "wall_seconds": 185.01,
+    "user_cpu_seconds": 517.91,
+    "system_cpu_seconds": 14.62,
+    "average_cpu_percent": 287,
+    "peak_rss_kib": 2381200,
+    "swaps": 0,
+    "exit_status": 0,
+    "cargo_target_bytes": 9470091264,
+    "cargo_target_budget_bytes": 12884901888
+  },
+  "staging": "/home/ubu/.local/lib/lay/staging/1.0.24-20260813-033905",
+  "rollback": "/home/ubu/.local/lib/lay/rollback/1.0.23-pre-1.0.24-20260813-033957",
+  "binaries": [
+    {
+      "built": "lay",
+      "installed": "lay",
+      "bytes": 6146008,
+      "sha256": "bdffbeac8fcc8193f5b8fa902654fa9cf06bb05330f0303ead493c5c96f97e3b",
+      "parity": "PASS"
+    },
+    {
+      "built": "lay-daemon",
+      "installed": "lay-daemon",
+      "bytes": 8171168,
+      "sha256": "c5b7a8b45c6aaa3d4605283974d1f4437a3f94a3e09215018dd9131646ca6852",
+      "parity": "PASS"
+    },
+    {
+      "built": "lay-ibus-engine",
+      "installed": "lay-ibus-engine",
+      "bytes": 6229240,
+      "sha256": "a45146a98f341119e2492d2bab9d3ccc1cbba64496ce73bcbcec1b5f724ca574",
+      "parity": "PASS"
+    },
+    {
+      "built": "lay-l11-restore",
+      "installed": "lay-l1.1-restore",
+      "bytes": 1821400,
+      "sha256": "86b100ad49859303a464594c92dbd18be2d5a5730760510e3341acd954bec040",
+      "parity": "PASS"
+    },
+    {
+      "built": "lay-l11-serve",
+      "installed": "lay-l1.1-serve",
+      "bytes": 1973416,
+      "sha256": "faf489cb3a8b635093730d96e6397d20590cbe5b900d56c802d3cb20f62e80b2",
+      "parity": "PASS"
+    },
+    {
+      "built": "lay-memory-report",
+      "installed": "lay-memory-report",
+      "bytes": 643112,
+      "sha256": "d01a6c4ac6f0f801a028d80a2a66c7edd4e8c5a07eb1e385ec19bd9507cb95f2",
+      "parity": "PASS"
+    },
+    {
+      "built": "lay-nanda-wave-eval",
+      "installed": "lay-nanda-wave-eval",
+      "bytes": 6585064,
+      "sha256": "bce88bfca702c067f352bb69e7567689ee7938af85c0677ae19b1da2c97e47aa",
+      "parity": "PASS"
+    },
+    {
+      "built": "lay-nanda-wave-train",
+      "installed": "lay-nanda-wave-train",
+      "bytes": 10457448,
+      "sha256": "f8e6e4924d8be1bebf09d734202d2dd8bb6dc237d91915c7ef9e8fda695e4cb5",
+      "parity": "PASS"
+    },
+    {
+      "built": "lay-ngram-corpus",
+      "installed": "lay-ngram-corpus",
+      "bytes": 787360,
+      "sha256": "5fff97423fe271cfcf6ce3902d6328f6b847daf17bc9b131955bdbd92e6eb35f",
+      "parity": "PASS"
+    },
+    {
+      "built": "lay-test-input",
+      "installed": "lay-test-input",
+      "bytes": 1782280,
+      "sha256": "c3ee0fd7e939d633185731ef86c49d2d1cefdd49bd78e32d98930e02b76dd20a",
+      "parity": "PASS"
+    }
+  ],
+  "runtime": {
+    "source_version": "1.0.24",
+    "installed_cli_version": "1.0.24",
+    "path_cli_version": "1.0.24",
+    "source_extension_version": "1.0.24",
+    "installed_extension_version": "1.0.24",
+    "loaded_extension_version": "1.0.24",
+    "global_ibus_pid_before": 3702,
+    "global_ibus_pid_after": 3702,
+    "lay_daemon_pid": 3018650,
+    "lay_ibus_engine_pid": 3018683,
+    "managed_engine_count": 1,
+    "active_engine": "lay-ime-ru",
+    "dbus_ping": "pong from lay-extension",
+    "live_daemon_sha_parity": "PASS",
+    "live_ibus_engine_sha_parity": "PASS"
+  },
+  "journal": {
+    "transient_during_managed_engine_replacement": "Set global engine failed: connection interrupted",
+    "final_runtime_healthy": true,
+    "global_ibus_restarted": false
+  },
+  "not_tested": [
+    "physical declined-target typing behavior after installation",
+    "physical Tab acceptance after installation",
+    "physical double-Shift rollback after installation"
+  ],
+  "physical_check": "Type through a visible completion such as от{носиться}; the exact declined target must disappear after the next typed letter while another candidate may appear."
+}

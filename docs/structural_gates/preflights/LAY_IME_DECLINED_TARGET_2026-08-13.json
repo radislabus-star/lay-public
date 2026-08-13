@@ -1,0 +1,194 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-ime-declined-target-2026-08-13",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "preedit-source",
+      "kind": "file",
+      "path": "../../../src/bin/lay_ibus_engine/preedit.rs",
+      "expect": {
+        "size_bytes": 24792,
+        "sha256": "dc1e56232f312e1258f7894dfc72eeccd9d73674d53982b43f0c50739b2a3705",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "preedit-tests-source",
+      "kind": "file",
+      "path": "../../../src/bin/lay_ibus_engine/preedit/tests.rs",
+      "expect": {
+        "size_bytes": 59952,
+        "sha256": "9e6f048b14c773f958a1b6d7594945d0932b9dfba0483cb6069a8a328d2ee988",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "architecture-document",
+      "kind": "file",
+      "path": "../../l1-l4-intelligence-route.md",
+      "expect": {
+        "size_bytes": 20253,
+        "sha256": "bac40ea1dc77689081e857065fd7806d089215bf4636bdf76349d602e199e3cb",
+        "mode": "0664"
+      }
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      { "id": "edit-preedit-readout-state", "kind": "filesystem_edit" },
+      { "id": "edit-systemic-tests", "kind": "filesystem_edit" },
+      { "id": "update-architecture-evidence", "kind": "filesystem_edit" },
+      { "id": "run-focused-proof", "kind": "cargo_test" },
+      { "id": "update-code-graph", "kind": "graph_update" }
+    ],
+    "forbidden": [
+      "literal_surface_runtime_branch",
+      "second_candidate_route",
+      "negative_learning_from_missing_tab",
+      "weaken_tab_or_verifier_authority",
+      "install_runtime",
+      "restart_ibus"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "preedit-source-preserved",
+      "path": "../../../src/bin/lay_ibus_engine/preedit.rs",
+      "sha256": "dc1e56232f312e1258f7894dfc72eeccd9d73674d53982b43f0c50739b2a3705",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "literal_surface_runtime_branch",
+          "regex": "(?:\\\"проверка\\\"|\\\"работает\\\")"
+        },
+        {
+          "effect": "second_candidate_route",
+          "regex": "live_completion_candidates\\("
+        },
+        {
+          "effect": "weaken_tab_or_verifier_authority",
+          "regex": "(?:commit_text|authorize_backend_edit)\\("
+        },
+        {
+          "effect": "negative_learning_from_missing_tab",
+          "regex": "record_(?:rejected|negative)[a-zA-Z0-9_]*prediction\\("
+        },
+        {
+          "effect": "install_runtime",
+          "regex": "(?:std::process::Command|systemctl|install_release)"
+        },
+        {
+          "effect": "restart_ibus",
+          "regex": "(?:restart|kill|pkill).{0,40}ibus-daemon"
+        }
+      ]
+    }
+  ],
+  "preserved_artifacts": [
+    {
+      "id": "preedit-baseline",
+      "path": "../../../src/bin/lay_ibus_engine/preedit.rs",
+      "policy": "scoped_source_change",
+      "rollback_policy": "restore_only_agent_owned_change",
+      "baseline_check_id": "preedit-source"
+    },
+    {
+      "id": "tests-baseline",
+      "path": "../../../src/bin/lay_ibus_engine/preedit/tests.rs",
+      "policy": "scoped_source_change",
+      "rollback_policy": "restore_only_agent_owned_change",
+      "baseline_check_id": "preedit-tests-source"
+    },
+    {
+      "id": "architecture-baseline",
+      "path": "../../l1-l4-intelligence-route.md",
+      "policy": "append_scoped_experiment_result",
+      "rollback_policy": "restore_only_agent_owned_change",
+      "baseline_check_id": "architecture-document"
+    }
+  ],
+  "state_machine": {
+    "initial_state": "BASELINE_CAPTURED",
+    "terminal_states": ["PROOF_PASS", "EDIT_OR_PROOF_FAILED"],
+    "steps": [
+      {
+        "id": "suppress-declined-target",
+        "from": "BASELINE_CAPTURED",
+        "to": "PROOF_PASS",
+        "mutates": true,
+        "failure_state": "EDIT_OR_PROOF_FAILED",
+        "cleanup": "do_not_install_or_restart_runtime_and_keep_current_engine_running",
+        "preserves": ["preedit-baseline", "tests-baseline", "architecture-baseline"],
+        "test_id": "proof-failure-prevents-runtime-change"
+      }
+    ]
+  },
+  "tests": [
+    {
+      "id": "same-target-suppressed-after-continuation",
+      "kind": "parity",
+      "expected": "typing another grapheme instead of Tab suppresses the previously shown full target for the current token"
+    },
+    {
+      "id": "alternative-target-retained",
+      "kind": "unit",
+      "expected": "suppressing one declined target does not suppress a different candidate surface"
+    },
+    {
+      "id": "feedback-remains-censored",
+      "kind": "parity",
+      "expected": "the first visible prediction remains available for boundary feedback and missing Tab does not become negative evidence"
+    },
+    {
+      "id": "tab-authority-unchanged",
+      "kind": "parity",
+      "expected": "candidate filtering cannot mutate text and explicit Tab still uses the existing verifier route"
+    },
+    {
+      "id": "proof-failure-prevents-runtime-change",
+      "kind": "fault_injection",
+      "expected": "a failed source proof leaves the installed engine and global ibus-daemon unchanged"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "manual-continuation-declines-target",
+      "statement": "a full target shown for an earlier prefix cannot immediately reappear after the user continues typing instead of pressing Tab",
+      "test_id": "same-target-suppressed-after-continuation"
+    },
+    {
+      "id": "decline-is-target-specific",
+      "statement": "decline suppression is exact-surface scoped and leaves alternative surfaces eligible",
+      "test_id": "alternative-target-retained"
+    },
+    {
+      "id": "observation-is-not-authority",
+      "statement": "the retained observation supports censored boundary feedback but cannot restore a declined display target",
+      "test_id": "feedback-remains-censored"
+    },
+    {
+      "id": "mutation-authority-stable",
+      "statement": "display suppression neither authorizes nor performs an edit",
+      "test_id": "tab-authority-unchanged"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "proposal-full-surface-identity",
+      "producer": "shared IME candidate proposal",
+      "consumer": "preedit decline filter",
+      "comparison": "replacement surface or partial plus suffix is compared as the exact normalized full target",
+      "test_id": "same-target-suppressed-after-continuation"
+    },
+    {
+      "id": "observation-feedback-identity",
+      "producer": "first visible prediction observation",
+      "consumer": "word-boundary feedback classifier",
+      "comparison": "typed prefix and target surface remain unchanged until the current token boundary",
+      "test_id": "feedback-remains-censored"
+    }
+  ],
+  "runtime_comparisons": []
+}

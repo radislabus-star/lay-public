@@ -1,0 +1,273 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "observed_source",
+  "source_root": "../../..",
+  "nodes": [
+    {
+      "id": "preedit_refresh",
+      "role": "orchestrator",
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/preedit.rs",
+        "line": 425,
+        "contains": "fn precognition_candidates"
+      }
+    },
+    {
+      "id": "phrase_producer",
+      "role": "producer",
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/preedit_readout.rs",
+        "line": 14,
+        "contains": "fn semantic_phrase_candidates"
+      }
+    },
+    {
+      "id": "word_adapter",
+      "role": "producer",
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/preedit_readout.rs",
+        "line": 33,
+        "contains": "fn word_candidate_proposals"
+      }
+    },
+    {
+      "id": "word_field",
+      "role": "evidence_owner",
+      "evidence": {
+        "path": "src/nanda_wave/candidate_gate.rs",
+        "line": 126,
+        "contains": "pub fn live_completion_candidates"
+      }
+    },
+    {
+      "id": "candidate_readout",
+      "role": "candidate_rank_owner",
+      "evidence": {
+        "path": "src/nanda_wave/candidate_gate.rs",
+        "line": 412,
+        "contains": "TransitionDecisionCore::select_live_completions"
+      }
+    },
+    {
+      "id": "display_readout",
+      "role": "display_rank_owner",
+      "evidence": {
+        "path": "src/typing_transition/live_candidate.rs",
+        "line": 167,
+        "contains": "fn select_ime_readout"
+      }
+    },
+    {
+      "id": "preedit_renderer",
+      "role": "render_owner",
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/preedit.rs",
+        "line": 361,
+        "contains": "fn refresh_precognition_candidates"
+      }
+    },
+    {
+      "id": "tab_authorizer",
+      "role": "authorization_owner",
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/composition_commit.rs",
+        "line": 101,
+        "contains": "authorize_backend_edit"
+      }
+    },
+    {
+      "id": "ibus_mutator",
+      "role": "mutation_owner",
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/composition_commit.rs",
+        "line": 240,
+        "contains": "Self::commit_text"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "exec-refresh-phrase",
+      "from": "preedit_refresh",
+      "relation": "calls",
+      "to": "phrase_producer",
+      "events": ["ime_refresh_ascii_token"],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/preedit.rs",
+        "line": 450,
+        "contains": "semantic_phrase_candidates"
+      }
+    },
+    {
+      "id": "exec-refresh-word",
+      "from": "preedit_refresh",
+      "relation": "calls",
+      "to": "word_adapter",
+      "events": ["ime_refresh_ascii_token"],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/preedit.rs",
+        "line": 455,
+        "contains": "word_candidate_proposals"
+      }
+    },
+    {
+      "id": "exec-word-field",
+      "from": "word_adapter",
+      "relation": "delegates",
+      "to": "word_field",
+      "events": ["ime_refresh_ascii_token"],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/preedit_readout.rs",
+        "line": 59,
+        "contains": "TypingCpu::live_completion_candidates"
+      }
+    },
+    {
+      "id": "data-phrase-display",
+      "from": "phrase_producer",
+      "relation": "produces_for",
+      "to": "display_readout",
+      "events": ["ime_refresh_ascii_token"],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/preedit.rs",
+        "line": 460,
+        "contains": "proposals.extend(semantic_candidates)"
+      }
+    },
+    {
+      "id": "data-word-field",
+      "from": "word_adapter",
+      "relation": "produces_for",
+      "to": "word_field",
+      "events": ["ime_refresh_ascii_token"],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/preedit_readout.rs",
+        "line": 59,
+        "contains": "TypingCpu::live_completion_candidates"
+      }
+    },
+    {
+      "id": "data-field-candidate",
+      "from": "word_field",
+      "relation": "passes_to",
+      "to": "candidate_readout",
+      "events": ["ime_refresh_ascii_token"],
+      "evidence": {
+        "path": "src/nanda_wave/candidate_gate.rs",
+        "line": 412,
+        "contains": "TransitionDecisionCore::select_live_completions"
+      }
+    },
+    {
+      "id": "data-candidate-display",
+      "from": "candidate_readout",
+      "relation": "passes_to",
+      "to": "display_readout",
+      "events": ["ime_refresh_ascii_token"],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/preedit.rs",
+        "line": 463,
+        "contains": "select_ime_candidate_proposals"
+      }
+    },
+    {
+      "id": "data-display-render",
+      "from": "display_readout",
+      "relation": "passes_to",
+      "to": "preedit_renderer",
+      "events": ["ime_refresh_ascii_token"],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/preedit.rs",
+        "line": 368,
+        "contains": "self.preedit_candidates = proposals"
+      }
+    },
+    {
+      "id": "data-render-authorizer",
+      "from": "preedit_renderer",
+      "relation": "passes_to",
+      "to": "tab_authorizer",
+      "events": ["tab_accept"],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/composition_commit.rs",
+        "line": 75,
+        "contains": "selected_precognition_replacement"
+      }
+    },
+    {
+      "id": "authority-authorizer-mutator",
+      "from": "tab_authorizer",
+      "relation": "authorizes",
+      "to": "ibus_mutator",
+      "events": ["tab_accept"],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/composition_commit.rs",
+        "line": 101,
+        "contains": "authorize_backend_edit"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "id": "phrase-execution",
+      "event": "ime_refresh_ascii_token",
+      "kind": "execution",
+      "entry": "preedit_refresh",
+      "terminal": "phrase_producer",
+      "required_roles": ["orchestrator", "producer"],
+      "path_cardinality": [
+        {"from": "preedit_refresh", "to": "phrase_producer", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "word-field-execution",
+      "event": "ime_refresh_ascii_token",
+      "kind": "execution",
+      "entry": "preedit_refresh",
+      "terminal": "word_field",
+      "required_roles": ["orchestrator", "producer", "evidence_owner"],
+      "path_cardinality": [
+        {"from": "preedit_refresh", "to": "word_field", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "word-field-authority",
+      "event": "ime_refresh_ascii_token",
+      "kind": "authority",
+      "entry": "word_adapter",
+      "terminal": "preedit_renderer",
+      "required_roles": [
+        "producer",
+        "evidence_owner",
+        "candidate_rank_owner",
+        "display_rank_owner",
+        "render_owner"
+      ]
+    },
+    {
+      "id": "phrase-display-authority",
+      "event": "ime_refresh_ascii_token",
+      "kind": "authority",
+      "entry": "phrase_producer",
+      "terminal": "preedit_renderer",
+      "required_roles": ["producer", "display_rank_owner", "render_owner"]
+    },
+    {
+      "id": "explicit-tab-authority",
+      "event": "tab_accept",
+      "kind": "authority",
+      "entry": "preedit_renderer",
+      "terminal": "ibus_mutator",
+      "required_roles": ["render_owner", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [
+        {
+          "from": "preedit_renderer",
+          "to": "ibus_mutator",
+          "via": ["tab_authorizer"],
+          "min": 1,
+          "max": 1
+        }
+      ]
+    }
+  ]
+}

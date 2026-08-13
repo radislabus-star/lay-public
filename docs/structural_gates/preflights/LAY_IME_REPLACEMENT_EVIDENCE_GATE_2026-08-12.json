@@ -1,0 +1,182 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-ime-replacement-evidence-gate-2026-08-12",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "candidate-gate-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/candidate_gate.rs",
+      "expect": {
+        "size_bytes": 65656,
+        "sha256": "f0ab21f47331383507ebc7b7cd2029664291326a4f6374011874e023577e8b09",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "live-field-source",
+      "kind": "file",
+      "path": "../../../src/typing_transition/decision/live_field.rs",
+      "expect": {
+        "size_bytes": 12389,
+        "sha256": "c02433fa99ff8f1b945bfec1defa88f72da2c2198aa75916f938942ef44bbe43",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "preedit-render-source",
+      "kind": "file",
+      "path": "../../../src/bin/lay_ibus_engine/preedit.rs",
+      "expect": {
+        "size_bytes": 25359,
+        "sha256": "99c5cee2e00f6f7c0d2afba935a1d8a6b51c979066bcc100dd088ae1dea27a3b",
+        "mode": "0664"
+      }
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {
+        "id": "edit-shared-replacement-admission",
+        "kind": "filesystem_edit"
+      },
+      {
+        "id": "run-focused-proof",
+        "kind": "cargo_test"
+      },
+      {
+        "id": "build-engine-remotely",
+        "kind": "remote_release_build"
+      },
+      {
+        "id": "activate-managed-engine",
+        "kind": "service_activation"
+      }
+    ],
+    "forbidden": [
+      "literal_surface_runtime_branch",
+      "remove_arrow_replacement_rendering",
+      "global_ibus_restart"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "candidate-gate-no-literal-case",
+      "path": "../../../src/nanda_wave/candidate_gate.rs",
+      "sha256": "f0ab21f47331383507ebc7b7cd2029664291326a4f6374011874e023577e8b09",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "literal_surface_runtime_branch",
+          "regex": "(?:\\\"ytn\\\"|\\\"yt\\\")"
+        },
+        {
+          "effect": "global_ibus_restart",
+          "regex": "(?:restart|kill|pkill).{0,40}ibus-daemon"
+        }
+      ]
+    },
+    {
+      "id": "arrow-render-owner-preserved",
+      "path": "../../../src/bin/lay_ibus_engine/preedit.rs",
+      "sha256": "99c5cee2e00f6f7c0d2afba935a1d8a6b51c979066bcc100dd088ae1dea27a3b",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "remove_arrow_replacement_rendering",
+          "regex": "Some\\(replacement\\) => replacement"
+        }
+      ]
+    }
+  ],
+  "preserved_artifacts": [
+    {
+      "id": "candidate-gate-baseline",
+      "path": "../../../src/nanda_wave/candidate_gate.rs",
+      "policy": "scoped_source_change",
+      "rollback_policy": "restore_only_agent_owned_change",
+      "baseline_check_id": "candidate-gate-source"
+    },
+    {
+      "id": "live-field-baseline",
+      "path": "../../../src/typing_transition/decision/live_field.rs",
+      "policy": "scoped_source_change",
+      "rollback_policy": "restore_only_agent_owned_change",
+      "baseline_check_id": "live-field-source"
+    },
+    {
+      "id": "preedit-render-baseline",
+      "path": "../../../src/bin/lay_ibus_engine/preedit.rs",
+      "policy": "read_only",
+      "rollback_policy": "leave_unchanged",
+      "baseline_check_id": "preedit-render-source"
+    }
+  ],
+  "state_machine": {
+    "initial_state": "BASELINE_CAPTURED",
+    "terminal_states": [
+      "FOCUSED_PROOF_PASS",
+      "EDIT_OR_PROOF_FAILED"
+    ],
+    "steps": [
+      {
+        "id": "apply-systemic-admission-gate",
+        "from": "BASELINE_CAPTURED",
+        "to": "FOCUSED_PROOF_PASS",
+        "mutates": true,
+        "failure_state": "EDIT_OR_PROOF_FAILED",
+        "cleanup": "do_not_deploy_and_preserve_measured_baseline",
+        "preserves": [
+          "candidate-gate-baseline",
+          "live-field-baseline",
+          "preedit-render-baseline"
+        ],
+        "test_id": "proof-failure-prevents-deploy"
+      }
+    ]
+  },
+  "tests": [
+    {
+      "id": "replacement-evidence-matrix",
+      "kind": "unit",
+      "expected": "an untyped lexical-neighbor replacement is hidden while exact layout and independently grounded lexical replacements remain visible"
+    },
+    {
+      "id": "arrow-render-parity",
+      "kind": "parity",
+      "expected": "accepted full-token replacements still render with the existing arrow marker"
+    },
+    {
+      "id": "prefix-completion-preservation",
+      "kind": "unit",
+      "expected": "ordinary RU and EN prefix-extension candidates remain visible"
+    },
+    {
+      "id": "proof-failure-prevents-deploy",
+      "kind": "fault_injection",
+      "expected": "a failing focused proof leaves the installed engine unchanged"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "typed-proof-before-full-token-display",
+      "statement": "a full-token IME replacement requires an independently typed operation or independent usage or context evidence; lexical proximity alone is insufficient",
+      "test_id": "replacement-evidence-matrix"
+    },
+    {
+      "id": "arrow-ux-preserved",
+      "statement": "an admitted full-token replacement remains visually distinct from a suffix completion through the existing arrow marker",
+      "test_id": "arrow-render-parity"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "candidate-admission-to-preedit-render",
+      "producer": "TransitionDecisionCore live replacement admission",
+      "consumer": "Lay IBus preedit arrow renderer",
+      "comparison": "only admitted typed replacement proposals reach the unchanged arrow renderer",
+      "test_id": "arrow-render-parity"
+    }
+  ],
+  "runtime_comparisons": []
+}

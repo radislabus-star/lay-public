@@ -1,0 +1,81 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "candidate-gate-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay/docs/structural_gates/preflights/../../../src/nanda_wave/candidate_gate.rs",
+      "sha256": "f0ab21f47331383507ebc7b7cd2029664291326a4f6374011874e023577e8b09",
+      "size_bytes": 65656
+    },
+    {
+      "exists": true,
+      "id": "live-field-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay/docs/structural_gates/preflights/../../../src/typing_transition/decision/live_field.rs",
+      "sha256": "c02433fa99ff8f1b945bfec1defa88f72da2c2198aa75916f938942ef44bbe43",
+      "size_bytes": 12389
+    },
+    {
+      "exists": true,
+      "id": "preedit-render-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/preedit.rs",
+      "sha256": "99c5cee2e00f6f7c0d2afba935a1d8a6b51c979066bcc100dd088ae1dea27a3b",
+      "size_bytes": 25359
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 3,
+    "forbidden_side_effect_kinds": [
+      "global_ibus_restart",
+      "literal_surface_runtime_branch",
+      "remove_arrow_replacement_rendering"
+    ],
+    "identity_contracts": 1,
+    "invariants": 2,
+    "planned_side_effect_kinds": [
+      "cargo_test",
+      "filesystem_edit",
+      "remote_release_build",
+      "service_activation"
+    ],
+    "preserved_artifacts": 3,
+    "runtime_comparisons": 0,
+    "source_checks": 2,
+    "tests": 4
+  },
+  "manifest_sha256": "36da67a27a866d7d7646eaf387438b7c23c96be5f00205373a72caa271920ec8",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "candidate-gate-no-literal-case",
+      "path": "/home/ubu/projects/lay/docs/structural_gates/preflights/../../../src/nanda_wave/candidate_gate.rs",
+      "sha256": "f0ab21f47331383507ebc7b7cd2029664291326a4f6374011874e023577e8b09",
+      "size_bytes": 65656
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "arrow-render-owner-preserved",
+      "path": "/home/ubu/projects/lay/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/preedit.rs",
+      "sha256": "99c5cee2e00f6f7c0d2afba935a1d8a6b51c979066bcc100dd088ae1dea27a3b",
+      "size_bytes": 25359
+    }
+  ],
+  "task_id": "lay-ime-replacement-evidence-gate-2026-08-12",
+  "verdict": "READY_TO_IMPLEMENT"
+}

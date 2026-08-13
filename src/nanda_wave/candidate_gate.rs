@@ -10,7 +10,9 @@ use super::l4_goal_state::L4AllowedAction;
 use super::l4_signed_memory::l4_signed_memory_signal_from_readout;
 use crate::keyboard::is_cyrillic_letter;
 use crate::typing_transition::decision::{LiveFieldScoreInput, TransitionDecisionCore};
-use crate::typing_transition::live_candidate::{LiveCandidateLane, LiveCompletionProposal};
+use crate::typing_transition::live_candidate::{
+    LiveCandidateLane, LiveCompletionProposal, ReplacementTargetEvidence,
+};
 use std::cell::Cell;
 use std::collections::HashSet;
 use std::sync::atomic::{AtomicU64, Ordering};
@@ -20,6 +22,7 @@ use std::time::Instant;
 const LIVE_L2_MATERIAL_FACTOR: usize = 2;
 const LIVE_L2_MATERIAL_CAP: usize = 64;
 const LIVE_L3_CONTEXT_BIRTH_LIMIT: usize = 4;
+const MIN_EXACT_PREFIX_COMPETITORS: usize = 3;
 
 mod cache;
 
@@ -181,10 +184,10 @@ pub fn live_completion_candidates(
     }
 
     let context_tokens = super::llmwave::tokenize(request.context_prefix);
-    // Decoder presence proves that a surface can be reconstructed; it does not
-    // make every one of the 1.875M exact forms a settled live-input state. Only
-    // the active lexical foundation may close a productive prefix basin.
-    let partial_state_known = l2::l2_surface_foundation_has_authority(&partial);
+    // Exact compact form reconstruction settles the observed token. Candidate
+    // plausibility alone does not: only an exact form readout protects the input
+    // from an unrelated morphology or n-gram replacement.
+    let partial_state_known = live_exact_form_state_is_known(&partial);
     let usage_snapshot = super::usage_prior::cached_usage_prior_snapshot();
     let l2_started = Instant::now();
     let material =
@@ -214,6 +217,7 @@ pub fn live_completion_candidates(
     let l2_material_us = l2_started.elapsed().as_micros().min(u128::from(u64::MAX)) as u64;
 
     let raw_count = raw.len();
+    let unique_layout_repair_target = unique_verified_layout_repair_target(&partial, &raw);
     let l3_started = Instant::now();
     let context_batch = live_context_batch_readout(&context_tokens, &raw);
     let l3_context_us = l3_started.elapsed().as_micros().min(u128::from(u64::MAX)) as u64;
@@ -270,7 +274,20 @@ pub fn live_completion_candidates(
                 candidate.source,
                 L2ImeWordCandidateSource::CorrectedPrefixPhase
             );
-            let lane = live_candidate_lane(candidate.source, candidate.kind);
+            let lane = live_candidate_lane(
+                &partial,
+                &candidate.surface,
+                candidate.source,
+                candidate.kind,
+            );
+            let replacement_target_evidence = replacement_target_evidence(
+                &partial,
+                &candidate.surface,
+                candidate.source,
+                candidate.kind,
+                candidate.target_evidence,
+                unique_layout_repair_target.as_deref(),
+            );
             let context_birth = context_birth_surfaces.contains(&candidate.surface);
             let l2_center_grounded = lexical_center_grounded
                 || foundation_rank.is_some()
@@ -293,9 +310,13 @@ pub fn live_completion_candidates(
                 context_usage,
                 l3_memory_warm,
             );
-            let l3_memory_supported = context_birth
-                || (!context_tokens.is_empty()
-                    && l3_readout.is_some_and(|readout| readout.memory_supported));
+            let l3_transition_related = !is_replacement
+                || replacement_target_evidence.authorizes()
+                || contextual_replacement_is_input_related(&partial, &candidate.surface);
+            let l3_memory_supported = l3_transition_related
+                && (context_birth
+                    || (!context_tokens.is_empty()
+                        && l3_readout.is_some_and(|readout| readout.memory_supported)));
             if let Some(readout) = l3_readout {
                 l3_evaluated = l3_evaluated.saturating_add(1);
                 if readout.suppressed {
@@ -355,6 +376,7 @@ pub fn live_completion_candidates(
                 suffix,
                 replacement: is_replacement,
                 lane,
+                replacement_target_evidence,
                 morphology_slots: candidate.morphology_slots,
                 score: field_score.score,
                 source: if boundary_center_grounded {
@@ -489,17 +511,32 @@ fn live_l2_word_candidates_with_availability(
         || normalized.chars().all(|ch| ch.is_ascii_alphabetic());
     let lexical_started = Instant::now();
     let mut candidates = if plain_lexical_surface {
-        l2::ime_l2_word_candidates(context_prefix, &normalized, material_limit)
+        l2::ime_l2_word_candidates(context_prefix, &normalized, limit)
     } else {
         Vec::new()
     };
+    let canonical_needed =
+        plain_lexical_surface && live_canonical_morphology_needed(&normalized, &candidates, limit);
+    if canonical_needed && material_limit > limit {
+        candidates = l2::ime_l2_word_candidates(context_prefix, &normalized, material_limit);
+    }
+    merge_live_candidate_material(
+        &mut candidates,
+        live_single_deletion_repair_candidates(&normalized),
+    );
+    // Bind lexical operator evidence before canonical material can replace the
+    // presentation source for the same surface. Evidence is merged separately
+    // and therefore survives source/rank ownership changes.
+    bind_verified_lexical_repair_evidence(&normalized, &mut candidates);
     let lexical_us = lexical_started.elapsed().as_micros();
     let canonical_started = Instant::now();
-    let canonical_availability = if plain_lexical_surface {
+    let canonical_availability = if canonical_needed {
         let (availability, canonical) =
             super::l2_field::canonical_ime_candidates(context_prefix, &normalized, material_limit);
         merge_live_candidate_material(&mut candidates, canonical);
         availability
+    } else if plain_lexical_surface {
+        super::l2_field::L2FieldAvailability::Ready
     } else {
         super::l2_field::L2FieldAvailability::UnsupportedInput
     };
@@ -521,10 +558,11 @@ fn live_l2_word_candidates_with_availability(
     let boundary_us = boundary_started.elapsed().as_micros();
     if std::env::var_os("LAY_L2_FIELD_TRACE").is_some() {
         eprintln!(
-            "live_ime_material_trace token_chars={} lexical_us={} canonical_us={} layout_us={} boundary_us={} boundary_probe={} candidates={}",
+            "live_ime_material_trace token_chars={} lexical_us={} canonical_us={} canonical_needed={} layout_us={} boundary_us={} boundary_probe={} candidates={}",
             token_len,
             lexical_us,
             canonical_us,
+            canonical_needed,
             layout_us,
             boundary_us,
             boundary_probe,
@@ -547,14 +585,149 @@ fn live_l2_word_candidates_with_availability(
     });
     let mut seen = HashSet::new();
     candidates.retain(|candidate| seen.insert(candidate.surface.clone()));
-    candidates.truncate(material_limit);
+    candidates = bound_live_l2_material(candidates, material_limit);
     LiveL2Material {
         candidates,
         cacheable: !canonical_availability.is_transient(),
     }
 }
 
+fn live_single_deletion_repair_candidates(token: &str) -> Vec<l2::L2ImeWordCandidate> {
+    let input = token.chars().collect::<Vec<_>>();
+    if !(4..=18).contains(&input.len()) || !input.iter().all(|ch| is_cyrillic_letter(*ch)) {
+        return Vec::new();
+    }
+    let mut seen = HashSet::new();
+    let mut candidates = Vec::new();
+    if let Some(surface) = crate::ru_typo::correct_repeated_letter(token) {
+        seen.insert(surface.to_lowercase());
+        candidates.push(live_single_deletion_repair_candidate(
+            token,
+            surface.to_lowercase(),
+            l2::L2ImeTargetEvidence::LexicalReconstruction,
+        ));
+    }
+    for deletion_index in 0..input.len() {
+        let surface = input
+            .iter()
+            .enumerate()
+            .filter_map(|(index, ch)| (index != deletion_index).then_some(*ch))
+            .collect::<String>();
+        if !seen.insert(surface.clone()) || !live_exact_form_state_is_known(&surface) {
+            continue;
+        }
+        candidates.push(live_single_deletion_repair_candidate(
+            token,
+            surface,
+            l2::L2ImeTargetEvidence::None,
+        ));
+    }
+    candidates
+}
+
+fn live_single_deletion_repair_candidate(
+    token: &str,
+    surface: String,
+    target_evidence: l2::L2ImeTargetEvidence,
+) -> l2::L2ImeWordCandidate {
+    let phase = l2::l2_surface_phase_readout(&surface);
+    l2::L2ImeWordCandidate {
+        surface: surface.clone(),
+        kind: L2ImeWordCandidateKind::Replacement,
+        source: L2ImeWordCandidateSource::LexicalPhase,
+        score: 1_180u32.saturating_add(phase.coherence_milli()),
+        l1_overlap: token.chars().count().saturating_sub(1),
+        l2_overlap: phase.covered_l1_refs,
+        motif_overlap: phase.motif_refs,
+        usage_prior: 0.0,
+        context_prior: 0.0,
+        accepted_count: 0,
+        target_evidence,
+        morphology_slots: super::l2_field::morphology_slot_identities_for_surface(&surface),
+    }
+}
+
+fn bind_verified_lexical_repair_evidence(
+    observed: &str,
+    candidates: &mut [l2::L2ImeWordCandidate],
+) {
+    let exact_layout_has_authority =
+        live_exact_layout_projection(observed).is_some_and(|surface| {
+            crate::hot_field::HotFieldSnapshot::current()
+                .form_readout(&surface)
+                .has_structural_center()
+        });
+    let unique_direct_target = (!exact_layout_has_authority)
+        .then(|| {
+            unique_nearest_verified_target(
+                observed,
+                candidates
+                    .iter()
+                    .filter(|candidate| {
+                        matches!(
+                            candidate.source,
+                            L2ImeWordCandidateSource::LexicalPhase
+                                | L2ImeWordCandidateSource::CorrectedPrefixPhase
+                        ) && candidate.kind != L2ImeWordCandidateKind::Completion
+                            && crate::text_metrics::damerau_levenshtein(
+                                observed,
+                                &candidate.surface,
+                            ) == 1
+                    })
+                    .map(|candidate| candidate.surface.to_lowercase()),
+            )
+        })
+        .flatten();
+    for candidate in candidates {
+        if !matches!(
+            candidate.source,
+            L2ImeWordCandidateSource::LexicalPhase | L2ImeWordCandidateSource::CorrectedPrefixPhase
+        ) || candidate.kind == L2ImeWordCandidateKind::Completion
+        {
+            continue;
+        }
+        let unique_direct = unique_direct_target
+            .as_deref()
+            .is_some_and(|target| target.eq_ignore_ascii_case(&candidate.surface));
+        if unique_direct
+            || verified_corrected_prefix_replacement_target(observed, &candidate.surface)
+        {
+            candidate.target_evidence = l2::L2ImeTargetEvidence::LexicalReconstruction;
+        }
+    }
+}
+
+fn live_exact_form_state_is_known(surface: &str) -> bool {
+    crate::hot_field::HotFieldSnapshot::current()
+        .input_surface_readout(surface)
+        .is_known()
+        || super::l2_field::canonical_form_contains_surface(surface)
+        || !super::l2_field::morphology_slot_identities_for_surface(surface).is_empty()
+        || crate::russian_lexicon::is_reference_backed_russian_form(surface)
+}
+
+fn live_canonical_morphology_needed(
+    token: &str,
+    lexical: &[l2::L2ImeWordCandidate],
+    display_limit: usize,
+) -> bool {
+    let exact_prefix_reserve = display_limit
+        .saturating_div(2)
+        .clamp(1, MIN_EXACT_PREFIX_COMPETITORS);
+    lexical
+        .iter()
+        .filter(|candidate| {
+            candidate.kind == L2ImeWordCandidateKind::Completion
+                && candidate.surface.starts_with(token)
+        })
+        .take(exact_prefix_reserve)
+        .count()
+        < exact_prefix_reserve
+}
+
 fn live_candidate_lane(
+    partial: &str,
+    surface: &str,
     source: L2ImeWordCandidateSource,
     kind: L2ImeWordCandidateKind,
 ) -> LiveCandidateLane {
@@ -566,8 +739,244 @@ fn live_candidate_lane(
             LiveCandidateLane::CorrectedPrefixReplacement
         }
         _ if kind == L2ImeWordCandidateKind::Completion => LiveCandidateLane::ExactCompletion,
+        _ if crate::text_metrics::typed_damage_geometry_priority(partial, surface) > 0 => {
+            LiveCandidateLane::LexicalRepairReplacement
+        }
         _ => LiveCandidateLane::GeneralReplacement,
     }
+}
+
+fn replacement_target_evidence(
+    partial: &str,
+    surface: &str,
+    source: L2ImeWordCandidateSource,
+    kind: L2ImeWordCandidateKind,
+    target_evidence: l2::L2ImeTargetEvidence,
+    unique_layout_repair_target: Option<&str>,
+) -> ReplacementTargetEvidence {
+    if kind == L2ImeWordCandidateKind::Completion {
+        return ReplacementTargetEvidence::None;
+    }
+    match source {
+        L2ImeWordCandidateSource::ExactLayoutPhase => (target_evidence
+            == l2::L2ImeTargetEvidence::ExactLayout
+            && unique_layout_repair_target.is_none()
+            && crate::hot_field::HotFieldSnapshot::current()
+                .form_readout(surface)
+                .has_structural_center())
+        .then_some(ReplacementTargetEvidence::ExactLayoutProjection)
+        .unwrap_or(ReplacementTargetEvidence::None),
+        L2ImeWordCandidateSource::BoundaryPhase => {
+            if target_evidence == l2::L2ImeTargetEvidence::Boundary
+                && l2::ime_l2_boundary_target_evidence(partial, surface)
+            {
+                ReplacementTargetEvidence::VerifiedBoundary
+            } else {
+                ReplacementTargetEvidence::None
+            }
+        }
+        L2ImeWordCandidateSource::LayoutThenTypoPhase => (target_evidence
+            == l2::L2ImeTargetEvidence::LayoutRepair
+            && unique_layout_repair_target
+                .is_some_and(|target| target.eq_ignore_ascii_case(surface)))
+        .then_some(ReplacementTargetEvidence::VerifiedLexicalEdit)
+        .unwrap_or(ReplacementTargetEvidence::None),
+        L2ImeWordCandidateSource::LexicalPhase
+        | L2ImeWordCandidateSource::CanonicalField
+        | L2ImeWordCandidateSource::CorrectedPrefixPhase
+        | L2ImeWordCandidateSource::ContextPhase => {
+            let direct_one_edit = crate::text_metrics::damerau_levenshtein(partial, surface) == 1
+                && verified_lexical_replacement_relation(partial, surface);
+            let corrected_prefix = verified_corrected_prefix_replacement_target(partial, surface);
+            let bound = match target_evidence {
+                l2::L2ImeTargetEvidence::LexicalReconstruction => {
+                    direct_one_edit || corrected_prefix
+                }
+                l2::L2ImeTargetEvidence::ContextBoundEdit => {
+                    verified_lexical_replacement_relation(partial, surface) || corrected_prefix
+                }
+                l2::L2ImeTargetEvidence::CanonicalWinner => {
+                    verified_lexical_replacement_relation(partial, surface) || corrected_prefix
+                }
+                _ => false,
+            };
+            if !bound {
+                ReplacementTargetEvidence::None
+            } else if target_evidence == l2::L2ImeTargetEvidence::ContextBoundEdit {
+                ReplacementTargetEvidence::ContextBoundLexicalEdit
+            } else {
+                ReplacementTargetEvidence::VerifiedLexicalEdit
+            }
+        }
+    }
+}
+
+fn unique_verified_layout_repair_target(
+    partial: &str,
+    candidates: &[l2::L2ImeWordCandidate],
+) -> Option<String> {
+    let projected = live_exact_layout_projection(partial)?;
+    if crate::hot_field::HotFieldSnapshot::current()
+        .layout_projection_has_phase_authority(&projected)
+    {
+        return None;
+    }
+    unique_nearest_verified_target(
+        &projected,
+        candidates
+            .iter()
+            .filter(|candidate| candidate.source == L2ImeWordCandidateSource::LayoutThenTypoPhase)
+            .map(|candidate| candidate.surface.to_lowercase()),
+    )
+}
+
+fn verified_corrected_prefix_replacement_target(partial: &str, surface: &str) -> bool {
+    if !partial.chars().all(is_cyrillic_letter)
+        || !surface.chars().all(is_cyrillic_letter)
+        || surface.chars().count() <= partial.chars().count()
+        || !crate::hot_field::HotFieldSnapshot::current()
+            .form_readout(surface)
+            .has_structural_center()
+    {
+        return false;
+    }
+    let partial_len = partial.chars().count();
+    let surface_chars = surface.chars().collect::<Vec<_>>();
+    [
+        partial_len.saturating_sub(1),
+        partial_len,
+        partial_len.saturating_add(1),
+    ]
+    .into_iter()
+    .filter(|prefix_len| *prefix_len >= 2 && *prefix_len < surface_chars.len())
+    .any(|prefix_len| {
+        let target_prefix = surface_chars[..prefix_len].iter().collect::<String>();
+        matches!(
+            verified_lexical_edit_class(partial, &target_prefix),
+            Some(
+                crate::correction_core::TypingErrorClass::MissingLetter
+                    | crate::correction_core::TypingErrorClass::ExtraLetter
+                    | crate::correction_core::TypingErrorClass::RepeatedLetter
+                    | crate::correction_core::TypingErrorClass::AdjacentTransposition
+            )
+        )
+    })
+}
+
+fn unique_nearest_verified_target(
+    observed: &str,
+    candidates: impl Iterator<Item = String>,
+) -> Option<String> {
+    let mut targets = candidates
+        .filter(|candidate| verified_lexical_replacement_relation(observed, candidate))
+        .map(|candidate| {
+            (
+                crate::text_metrics::damerau_levenshtein(observed, &candidate),
+                candidate,
+            )
+        })
+        .collect::<Vec<_>>();
+    targets.sort();
+    targets.dedup();
+    let minimum_distance = targets.first()?.0;
+    let mut nearest = targets
+        .into_iter()
+        .take_while(|(distance, _)| *distance == minimum_distance);
+    let (_, target) = nearest.next()?;
+    if nearest.next().is_some() {
+        return None;
+    }
+    Some(target)
+}
+
+fn verified_lexical_replacement_relation(partial: &str, surface: &str) -> bool {
+    if partial.is_empty()
+        || surface.is_empty()
+        || partial.chars().any(char::is_whitespace)
+        || surface.chars().any(char::is_whitespace)
+    {
+        return false;
+    }
+    let target = crate::hot_field::HotFieldSnapshot::current().form_readout(surface);
+    if !target.has_structural_center() {
+        return false;
+    }
+    verified_lexical_edit_class(partial, surface).is_some()
+}
+
+fn contextual_replacement_is_input_related(partial: &str, surface: &str) -> bool {
+    verified_lexical_edit_class(partial, surface).is_some()
+        || verified_corrected_prefix_replacement_target(partial, surface)
+        || super::l2_field::surfaces_share_morphology_identity(partial, surface)
+}
+
+fn verified_lexical_edit_class(
+    partial: &str,
+    surface: &str,
+) -> Option<crate::correction_core::TypingErrorClass> {
+    use crate::correction_core::TypingErrorClass;
+
+    let origin = crate::candidate_contract::CandidateOrigin::L2Surface;
+    let error_class = crate::typing_transition::action::classify_token_transition(
+        partial,
+        surface,
+        origin,
+        TypingErrorClass::Unknown,
+    );
+    if !matches!(
+        error_class,
+        TypingErrorClass::MissingLetter
+            | TypingErrorClass::SparseInternalMultiOmission
+            | TypingErrorClass::ExtraLetter
+            | TypingErrorClass::RepeatedLetter
+            | TypingErrorClass::AdjacentTransposition
+            | TypingErrorClass::LetterSubstitution
+    ) {
+        return None;
+    }
+    crate::typing_transition::action::verify_action_operator(partial, surface, error_class, origin)
+        .verifier_passed
+        .then_some(error_class)
+}
+
+fn bound_live_l2_material(
+    ranked: Vec<l2::L2ImeWordCandidate>,
+    limit: usize,
+) -> Vec<l2::L2ImeWordCandidate> {
+    if ranked.len() <= limit {
+        return ranked;
+    }
+    let mut bounded = Vec::with_capacity(limit);
+    for source in [
+        L2ImeWordCandidateSource::ExactLayoutPhase,
+        L2ImeWordCandidateSource::BoundaryPhase,
+        L2ImeWordCandidateSource::CorrectedPrefixPhase,
+        L2ImeWordCandidateSource::LayoutThenTypoPhase,
+        L2ImeWordCandidateSource::CanonicalField,
+    ] {
+        if let Some(candidate) = ranked.iter().find(|candidate| candidate.source == source) {
+            bounded.push(candidate.clone());
+        }
+    }
+    for candidate in ranked {
+        if bounded
+            .iter()
+            .any(|current| current.surface.eq_ignore_ascii_case(&candidate.surface))
+        {
+            continue;
+        }
+        bounded.push(candidate);
+        if bounded.len() == limit {
+            break;
+        }
+    }
+    bounded.sort_by(|left, right| {
+        right
+            .score
+            .cmp(&left.score)
+            .then_with(|| left.surface.cmp(&right.surface))
+    });
+    bounded
 }
 
 fn should_probe_live_boundary(token: &str, candidates: &[l2::L2ImeWordCandidate]) -> bool {
@@ -635,6 +1044,7 @@ fn live_layout_candidates(context_prefix: &str, token: &str) -> Vec<l2::L2ImeWor
         for candidate in &mut settled {
             candidate.kind = L2ImeWordCandidateKind::Replacement;
             candidate.source = L2ImeWordCandidateSource::LayoutThenTypoPhase;
+            candidate.target_evidence = l2::L2ImeTargetEvidence::LayoutRepair;
         }
         merge_live_candidate_material(&mut candidates, settled);
     }
@@ -675,6 +1085,11 @@ fn layout_word_candidate(
         usage_prior: 0.0,
         context_prior: 0.0,
         accepted_count: 1,
+        target_evidence: if source == L2ImeWordCandidateSource::ExactLayoutPhase {
+            l2::L2ImeTargetEvidence::ExactLayout
+        } else {
+            l2::L2ImeTargetEvidence::LayoutRepair
+        },
         morphology_slots: Vec::new(),
     }
 }
@@ -744,6 +1159,11 @@ fn live_l3_context_birth_candidates(
                 usage_prior: prior.word_prior,
                 context_prior,
                 accepted_count: prior.accepted_count,
+                target_evidence: if kind == L2ImeWordCandidateKind::Replacement {
+                    l2::L2ImeTargetEvidence::ContextBoundEdit
+                } else {
+                    l2::L2ImeTargetEvidence::None
+                },
                 morphology_slots: Vec::new(),
             }
         })
@@ -790,6 +1210,7 @@ fn merge_live_candidate_evidence(
     target.usage_prior = target.usage_prior.max(evidence.usage_prior);
     target.context_prior = target.context_prior.max(evidence.context_prior);
     target.accepted_count = target.accepted_count.max(evidence.accepted_count);
+    target.target_evidence = target.target_evidence.max(evidence.target_evidence);
     for identity in &evidence.morphology_slots {
         if !target.morphology_slots.contains(identity) {
             target.morphology_slots.push(*identity);
@@ -1204,6 +1625,33 @@ mod tests {
         }
     }
 
+    #[test]
+    fn ascii_lexical_neighbor_cannot_outrank_exact_layout_replacement() {
+        super::super::warm_up_l2_for_ime();
+        let candidates = live_completion_candidates(request("", "ytn"));
+
+        assert!(
+            candidates.iter().any(|candidate| {
+                candidate.surface == "нет"
+                    && candidate.replacement
+                    && candidate.source == "L1ExactLayoutCell32"
+            }),
+            "exact layout projection must remain visible: {candidates:?}"
+        );
+        assert_eq!(
+            candidates.first().map(|candidate| candidate.surface.as_str()),
+            Some("нет"),
+            "exact layout projection must outrank layout-plus-typo and lexical neighbors: {candidates:?}"
+        );
+        assert!(
+            candidates
+                .iter()
+                .filter(|candidate| candidate.replacement)
+                .all(|candidate| candidate.source != "L2LiveCandidateGate32"),
+            "plain lexical proximity must not publish a full-token arrow candidate: {candidates:?}"
+        );
+    }
+
     fn authority_proposal() -> LiveCompletionProposal {
         LiveCompletionProposal {
             state_before: crate::nanda_wave::phase_field::hash_text("test-state"),
@@ -1211,6 +1659,7 @@ mod tests {
             suffix: "мер".to_string(),
             replacement: false,
             lane: LiveCandidateLane::ExactCompletion,
+            replacement_target_evidence: ReplacementTargetEvidence::None,
             morphology_slots: Vec::new(),
             score: 0.7,
             rank_score: 0.7,
@@ -1393,10 +1842,16 @@ mod tests {
         assert!(
             candidates.iter().any(|candidate| {
                 candidate.surface.starts_with("предсказ")
-                    && candidate.source == "L2CorrectedPrefixCell32"
+                    && candidate.replacement
                     && candidate.suffix.is_empty()
             }),
             "the one-edit L2 field must pass the predicted family to L3: {candidates:?}"
+        );
+        assert!(
+            candidates
+                .iter()
+                .all(|candidate| candidate.surface != "предмет"),
+            "context may rank a lexical neighbor but cannot authorize an unrelated replacement: {candidates:?}"
         );
     }
 
@@ -1462,6 +1917,7 @@ mod tests {
             usage_prior: 0.01,
             context_prior: 0.0,
             accepted_count: 0,
+            target_evidence: l2::L2ImeTargetEvidence::None,
             morphology_slots: Vec::new(),
         };
         let l3_candidate = l2::L2ImeWordCandidate {
@@ -1491,6 +1947,38 @@ mod tests {
         assert_eq!(context_birth_specificity_prior(2), 0.020);
         assert_eq!(context_birth_specificity_prior(5), 0.080);
         assert_eq!(context_birth_specificity_prior(12), 0.080);
+    }
+
+    #[test]
+    fn complete_exact_prefix_reserve_skips_redundant_morphology_readout() {
+        let completion = |surface: String| l2::L2ImeWordCandidate {
+            surface,
+            kind: L2ImeWordCandidateKind::Completion,
+            source: L2ImeWordCandidateSource::LexicalPhase,
+            score: 1_000,
+            l1_overlap: 3,
+            l2_overlap: 3,
+            motif_overlap: 2,
+            usage_prior: 0.0,
+            context_prior: 0.0,
+            accepted_count: 0,
+            target_evidence: l2::L2ImeTargetEvidence::None,
+            morphology_slots: Vec::new(),
+        };
+        let exact = (0..MIN_EXACT_PREFIX_COMPETITORS)
+            .map(|index| completion(format!("prefix{index}")))
+            .collect::<Vec<_>>();
+
+        assert!(!live_canonical_morphology_needed("prefix", &exact, 12));
+        assert!(live_canonical_morphology_needed(
+            "prefix",
+            &exact[..MIN_EXACT_PREFIX_COMPETITORS - 1],
+            12
+        ));
+
+        let mut damaged = exact;
+        damaged[0].kind = L2ImeWordCandidateKind::Replacement;
+        assert!(live_canonical_morphology_needed("prefix", &damaged, 12));
     }
 
     #[test]

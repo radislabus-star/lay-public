@@ -1,0 +1,230 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-ime-ru-replacement-authority-2026-08-13",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "candidate-gate-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/candidate_gate.rs",
+      "expect": {
+        "size_bytes": 68233,
+        "sha256": "b38c8f962b61b3a3140b0a168d21e07b30fb9b26dbb79cdc2d6a56c29adb9194",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "live-field-source",
+      "kind": "file",
+      "path": "../../../src/typing_transition/decision/live_field.rs",
+      "expect": {
+        "size_bytes": 14381,
+        "sha256": "46892c31e625b500c52f54cc2a0b22db8248bf587877ff574a6152a8697319f9",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "boundary-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2/tail_scan_adapter.rs",
+      "expect": {
+        "size_bytes": 25569,
+        "sha256": "f4fbcd25fcd10214c0023e4bba96b3ee69b0d2e70342ba821b2af0a79360fe78",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "integration-proof",
+      "kind": "file",
+      "path": "../../../tests/live_candidate_gate_metrics.rs",
+      "expect": {
+        "size_bytes": 2700,
+        "sha256": "497f23843f0a237a2db0643462e6fb28058bbef185059fb88e1ebd5827535e39",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "installed-ime",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "expect": {
+        "size_bytes": 6229240,
+        "sha256": "a45146a98f341119e2492d2bab9d3ccc1cbba64496ce73bcbcec1b5f724ca574",
+        "mode": "0755"
+      }
+    }
+  ],
+  "source_checks": [
+    {
+      "id": "candidate-gate-no-literal-case",
+      "path": "../../../src/nanda_wave/candidate_gate.rs",
+      "sha256": "b38c8f962b61b3a3140b0a168d21e07b30fb9b26dbb79cdc2d6a56c29adb9194",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "literal_surface_runtime_branch",
+          "regex": "(?:partial|surface|candidate\\.surface)\\s*==\\s*\\\"(?:относит|относи ться|работает|ytn)"
+        },
+        {
+          "effect": "global_ibus_restart",
+          "regex": "(?:restart|kill|pkill).{0,40}ibus-daemon"
+        }
+      ]
+    },
+    {
+      "id": "boundary-no-literal-case",
+      "path": "../../../src/nanda_wave/l2/tail_scan_adapter.rs",
+      "sha256": "f4fbcd25fcd10214c0023e4bba96b3ee69b0d2e70342ba821b2af0a79360fe78",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "literal_surface_runtime_branch",
+          "regex": "(?:\\\"относит|\\\"относи ться|\\\"работает|\\\"ytn)"
+        }
+      ]
+    },
+    {
+      "id": "arrow-render-owner-preserved",
+      "path": "../../../src/bin/lay_ibus_engine/preedit.rs",
+      "sha256": "518928c41f11f81538cce126e30c44773a493072fe6e4c201bf523f1269fa993",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "remove_arrow_replacement_rendering",
+          "regex": "Some\\(replacement\\)\\s*=>\\s*replacement(?:\\.clone\\(\\))?[,}]"
+        }
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {
+        "id": "repair-replacement-authority",
+        "kind": "filesystem_edit"
+      },
+      {
+        "id": "repair-integration-proof",
+        "kind": "filesystem_edit"
+      },
+      {
+        "id": "run-fixed-matrix",
+        "kind": "cargo_test"
+      },
+      {
+        "id": "build-and-activate-if-pass",
+        "kind": "service_activation"
+      }
+    ],
+    "forbidden": [
+      "literal_surface_runtime_branch",
+      "remove_arrow_replacement_rendering",
+      "global_ibus_restart"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "candidate-gate-baseline",
+      "path": "../../../src/nanda_wave/candidate_gate.rs",
+      "policy": "scoped_authority_change",
+      "rollback_policy": "restore_only_agent_owned_change",
+      "baseline_check_id": "candidate-gate-source"
+    },
+    {
+      "id": "live-field-baseline",
+      "path": "../../../src/typing_transition/decision/live_field.rs",
+      "policy": "scoped_authority_change",
+      "rollback_policy": "restore_only_agent_owned_change",
+      "baseline_check_id": "live-field-source"
+    },
+    {
+      "id": "boundary-baseline",
+      "path": "../../../src/nanda_wave/l2/tail_scan_adapter.rs",
+      "policy": "scoped_evidence_change",
+      "rollback_policy": "restore_only_agent_owned_change",
+      "baseline_check_id": "boundary-source"
+    },
+    {
+      "id": "installed-ime-baseline",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "policy": "leave_unchanged_until_full_proof",
+      "rollback_policy": "restore_1_0_24_binary",
+      "baseline_check_id": "installed-ime"
+    }
+  ],
+  "state_machine": {
+    "initial_state": "LIVE_1_0_24_NOISY_REPLACEMENTS",
+    "terminal_states": [
+      "SOFTWARE_PROOF_PASS",
+      "EDIT_OR_PROOF_FAILED_RUNTIME_UNCHANGED"
+    ],
+    "steps": [
+      {
+        "id": "edit-shared-authority",
+        "from": "LIVE_1_0_24_NOISY_REPLACEMENTS",
+        "to": "SOURCE_FIXED_RUNTIME_UNCHANGED",
+        "mutates": true,
+        "failure_state": "EDIT_OR_PROOF_FAILED_RUNTIME_UNCHANGED",
+        "cleanup": "do not install and retain live 1.0.24",
+        "preserves": [
+          "installed-ime-baseline"
+        ],
+        "test_id": "proof-failure-preserves-runtime"
+      },
+      {
+        "id": "run-matrix-and-regressions",
+        "from": "SOURCE_FIXED_RUNTIME_UNCHANGED",
+        "to": "SOFTWARE_PROOF_PASS",
+        "mutates": false,
+        "failure_state": "EDIT_OR_PROOF_FAILED_RUNTIME_UNCHANGED",
+        "cleanup": "do not install and retain live 1.0.24",
+        "preserves": [
+          "installed-ime-baseline"
+        ],
+        "test_id": "replacement-authority-matrix"
+      }
+    ]
+  },
+  "tests": [
+    {
+      "id": "replacement-authority-matrix",
+      "kind": "integration",
+      "expected": "exact layout and independently attested one-edit repair remain visible; weak lexical neighbors and ungrounded boundary splits remain hidden"
+    },
+    {
+      "id": "operator-is-not-authority",
+      "kind": "unit",
+      "expected": "operation lane alone cannot authorize a same-script full-token replacement"
+    },
+    {
+      "id": "single-word-route-parity",
+      "kind": "parity",
+      "expected": "IME still makes one TypingCpu word-field request per refresh and arrow rendering remains unchanged"
+    },
+    {
+      "id": "proof-failure-preserves-runtime",
+      "kind": "fault_injection",
+      "expected": "any failed proof leaves installed lay-ibus-engine 1.0.24 and global ibus-daemon unchanged"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "operation-does-not-imply-truth",
+      "statement": "layout, boundary and lexical-repair lanes describe an edit operator but do not by themselves prove the proposed target",
+      "test_id": "operator-is-not-authority"
+    },
+    {
+      "id": "useful-arrow-preserved",
+      "statement": "a full-token arrow remains available for exact layout projection and independently attested one-edit repair",
+      "test_id": "replacement-authority-matrix"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "shared-field-to-ime-readout",
+      "producer": "TransitionDecisionCore selected live completion",
+      "consumer": "IME arrow or suffix proposal",
+      "comparison": "surface, replacement flag and rank order parity",
+      "test_id": "single-word-route-parity"
+    }
+  ],
+  "runtime_comparisons": []
+}

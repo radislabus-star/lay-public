@@ -19,7 +19,6 @@ use super::trace;
 
 const PREEDIT_TAIL_LIMIT: usize = 160;
 const PREEDIT_TOKEN_LIMIT: usize = 32;
-const PREEDIT_ASCII_CANDIDATE_LIMIT: usize = 12;
 const PREEDIT_RU_WAVE_CANDIDATE_LIMIT: usize = 12;
 const PREEDIT_RU_PREFIX_MIN_CHARS: usize = 1;
 #[cfg(test)]
@@ -89,6 +88,7 @@ fn observed_prediction_outcome(
 pub(crate) struct PreeditFastState {
     token: String,
     target_surface: Option<String>,
+    declined_target_surfaces: Vec<String>,
     observed_prediction: Option<ObservedPrediction>,
 }
 
@@ -96,6 +96,7 @@ impl PreeditFastState {
     pub(crate) fn reset(&mut self) {
         self.token.clear();
         self.target_surface = None;
+        self.declined_target_surfaces.clear();
         self.observed_prediction = None;
     }
 
@@ -106,11 +107,21 @@ impl PreeditFastState {
             self.reset();
             return;
         }
-        // A typed grapheme is an explicit continuation choice. Recompute the
-        // visible completion from the new prefix instead of pinning an earlier
-        // automatic target such as "перезагрузка" across the whole word.
-        // Keep the first visible prediction for boundary feedback only.
-        self.target_surface = None;
+        // Printable input instead of Tab declines the currently visible full
+        // target for this token. Keep the first prediction separately because
+        // boundary feedback treats absence of Tab as censored evidence.
+        if let Some(target) = self.target_surface.take() {
+            if !self
+                .declined_target_surfaces
+                .iter()
+                .any(|declined| declined == &target)
+            {
+                if self.declined_target_surfaces.len() >= PREEDIT_TOKEN_LIMIT {
+                    self.declined_target_surfaces.remove(0);
+                }
+                self.declined_target_surfaces.push(target);
+            }
+        }
         self.token.push(ch);
         trim_tail_buffer_to(&mut self.token, PREEDIT_TOKEN_LIMIT);
     }
@@ -148,6 +159,23 @@ impl PreeditFastState {
             .map(|prediction| prediction.target_surface.as_str())
     }
 
+    fn proposal_repeats_declined_target(
+        &self,
+        partial: &str,
+        proposal: &ImeCandidateProposal,
+    ) -> bool {
+        self.declined_target_surfaces.iter().any(|target| {
+            proposal
+                .replacement
+                .as_deref()
+                .is_some_and(|replacement| replacement == target)
+                || proposal.replacement.is_none()
+                    && target
+                        .strip_prefix(partial)
+                        .is_some_and(|suffix| suffix == proposal.suffix)
+        })
+    }
+
     fn clear_target(&mut self) {
         self.target_surface = None;
     }
@@ -171,6 +199,7 @@ impl PreeditFastState {
 
     pub(crate) fn clear_candidate_tracking(&mut self) {
         self.target_surface = None;
+        self.declined_target_surfaces.clear();
         self.observed_prediction = None;
     }
 
@@ -451,27 +480,21 @@ impl LayIbusEngine {
         let semantic_candidates = self.semantic_phrase_candidates();
         let semantic_us = elapsed_us(semantic_started);
 
-        let ru_started = timing_enabled.then(Instant::now);
-        // Capture this adapter's own shared-field receipt before the ASCII
-        // branch performs another live query on the same thread.
+        let word_started = timing_enabled.then(Instant::now);
         lay::typing_cpu::TypingCpu::clear_last_live_completion_timing();
-        let ru_l2_candidates = self.ru_l2_word_attractor_candidates();
-        let ru_us = elapsed_us(ru_started);
-        let ru_timing = lay::typing_cpu::TypingCpu::last_live_completion_timing();
+        let word_candidates = self.word_candidate_proposals();
+        let word_us = elapsed_us(word_started);
+        let word_timing = lay::typing_cpu::TypingCpu::last_live_completion_timing();
 
-        let ascii_started = timing_enabled.then(Instant::now);
-        let ascii_candidates = self.preedit_fast.ascii_candidates(
-            self.precognition_max_suffix_chars(),
-            PREEDIT_ASCII_CANDIDATE_LIMIT,
-        );
-        let ascii_us = elapsed_us(ascii_started);
-
-        let mut proposals = Vec::with_capacity(
-            semantic_candidates.len() + ru_l2_candidates.len() + ascii_candidates.len(),
-        );
+        let mut proposals = Vec::with_capacity(semantic_candidates.len() + word_candidates.len());
         proposals.extend(semantic_candidates);
-        proposals.extend(ru_l2_candidates);
-        proposals.extend(ascii_candidates);
+        proposals.extend(word_candidates);
+        let partial = self.live_candidate_partial();
+        proposals.retain(|proposal| {
+            !self
+                .preedit_fast
+                .proposal_repeats_declined_target(&partial, proposal)
+        });
         let candidate_limit = proposals.len();
         let candidates = select_ime_candidate_proposals(ImeCandidateReadoutRequest {
             proposals: &proposals,
@@ -482,13 +505,13 @@ impl LayIbusEngine {
             let token = split_last_alphabetic_token(tail.trim_end()).map(|(_, token)| token);
             trace::record_precognition_timing(
                 started.elapsed().as_micros() as u64,
-                ascii_us,
-                ru_us,
+                0,
+                word_us,
                 semantic_us,
-                ru_timing.cache_hit,
-                ru_timing.l2_material_us,
-                ru_timing.l3_context_us,
-                ru_timing.decision_us,
+                word_timing.cache_hit,
+                word_timing.l2_material_us,
+                word_timing.l3_context_us,
+                word_timing.decision_us,
                 candidates.len(),
                 token,
                 candidates.first().map(|candidate| candidate.display_text()),

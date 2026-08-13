@@ -1,0 +1,100 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "source-version",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay/docs/structural_gates/preflights/../../../Cargo.toml",
+      "sha256": "539dcb13edf55fd69d33a957e7eaf5632a4828f133a5c31383f23400816fc8fc",
+      "size_bytes": 2399
+    },
+    {
+      "exists": true,
+      "id": "installed-cli",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay",
+      "sha256": "bdffbeac8fcc8193f5b8fa902654fa9cf06bb05330f0303ead493c5c96f97e3b",
+      "size_bytes": 6146008
+    },
+    {
+      "exists": true,
+      "id": "installed-daemon",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+      "sha256": "c5b7a8b45c6aaa3d4605283974d1f4437a3f94a3e09215018dd9131646ca6852",
+      "size_bytes": 8171168
+    },
+    {
+      "exists": true,
+      "id": "installed-ime",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "sha256": "a45146a98f341119e2492d2bab9d3ccc1cbba64496ce73bcbcec1b5f724ca574",
+      "size_bytes": 6229240
+    },
+    {
+      "exists": true,
+      "id": "installed-extension-metadata",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/home/ubu/.local/share/gnome-shell/extensions/lay@radislabus-star.github.io/metadata.json",
+      "sha256": "5ab53ceff1783036be4726426cb9df84a0591cbc90ea13614e104ce834206af0",
+      "size_bytes": 420
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 5,
+    "forbidden_side_effect_kinds": [
+      "destroy_user_worktree_changes",
+      "edit_remote_dirty_worktree",
+      "partial_file_install",
+      "restart_global_ibus_daemon"
+    ],
+    "identity_contracts": 2,
+    "invariants": 3,
+    "planned_side_effect_kinds": [
+      "filesystem_install",
+      "remote_release_build",
+      "rollback_snapshot",
+      "service_activation"
+    ],
+    "preserved_artifacts": 3,
+    "runtime_comparisons": 1,
+    "source_checks": 2,
+    "tests": 5
+  },
+  "manifest_sha256": "ca8ba11f54dd088003823553d0f90f90de4e258fbee9a61051a94441f3c26ab5",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "atomic-release-installer-preserved",
+      "path": "/home/ubu/projects/lay/docs/structural_gates/preflights/../../../scripts/install-release-binaries.sh",
+      "sha256": "259850478a99bb32b1aaffa863ff72138f018b7ce1231611a05fad706d7ffd02",
+      "size_bytes": 2333
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "managed-runtime-controller-preserved",
+      "path": "/home/ubu/projects/lay/docs/structural_gates/preflights/../../../scripts/lay-runtime-control.sh",
+      "sha256": "1a7bb4ad55ed463961c275e6c8a49bd3090ad2d207e485d4e19ccd6bb6321d0f",
+      "size_bytes": 4788
+    }
+  ],
+  "task_id": "lay-release-1-0-25-install-2026-08-13",
+  "verdict": "READY_TO_IMPLEMENT"
+}

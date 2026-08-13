@@ -1,0 +1,84 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "preedit-orchestrator-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/preedit.rs",
+      "sha256": "99c5cee2e00f6f7c0d2afba935a1d8a6b51c979066bcc100dd088ae1dea27a3b",
+      "size_bytes": 25359
+    },
+    {
+      "exists": true,
+      "id": "preedit-readout-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/preedit_readout.rs",
+      "sha256": "e668de4b008710549198f904dad0d4b3910613b8e2bbac476b33cbe398ca41a6",
+      "size_bytes": 8814
+    },
+    {
+      "exists": true,
+      "id": "preedit-tests-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/preedit/tests.rs",
+      "sha256": "172d7e33292e403514f33ab1c385b10681473afecbe9586ee0b2597f211cf8bb",
+      "size_bytes": 59359
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 3,
+    "forbidden_side_effect_kinds": [
+      "global_ibus_restart",
+      "literal_surface_runtime_branch",
+      "merge_phrase_forecast_into_word_authority",
+      "remove_arrow_replacement_rendering",
+      "second_live_completion_query_per_refresh",
+      "weaken_tab_authorization"
+    ],
+    "identity_contracts": 2,
+    "invariants": 4,
+    "planned_side_effect_kinds": [
+      "cargo_test",
+      "filesystem_edit",
+      "remote_release_build",
+      "service_activation"
+    ],
+    "preserved_artifacts": 3,
+    "runtime_comparisons": 0,
+    "source_checks": 2,
+    "tests": 5
+  },
+  "manifest_sha256": "c9e35274c26650e2f30fb0ad5d5814534f1a6448a3327e1e0245b1b33ebbbd20",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "preedit-route-source-preserved",
+      "path": "/home/ubu/projects/lay/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/preedit.rs",
+      "sha256": "99c5cee2e00f6f7c0d2afba935a1d8a6b51c979066bcc100dd088ae1dea27a3b",
+      "size_bytes": 25359
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "tab-authority-source-preserved",
+      "path": "/home/ubu/projects/lay/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/composition_commit.rs",
+      "sha256": "f2237d1208b807675356cd8138f3cb2702a14c33e0bab3db35dc33fb05afb4cc",
+      "size_bytes": 11716
+    }
+  ],
+  "task_id": "lay-ime-single-candidate-route-implementation-2026-08-12",
+  "verdict": "READY_TO_IMPLEMENT"
+}

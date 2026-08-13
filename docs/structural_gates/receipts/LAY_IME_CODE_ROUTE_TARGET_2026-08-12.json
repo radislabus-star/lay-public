@@ -1,0 +1,268 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "PASS",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": true,
+  "contract": "docs/structural_gates/preflights/LAY_IME_CODE_ROUTE_TARGET_2026-08-12.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "source_root": null,
+  "node_count": 9,
+  "edge_count": 10,
+  "routes": [
+    {
+      "id": "phrase-execution",
+      "event": "ime_refresh_ascii_token",
+      "kind": "execution",
+      "entry": "preedit_refresh",
+      "via": [],
+      "terminal": "phrase_producer",
+      "path_count": 1,
+      "paths": [
+        [
+          "preedit_refresh",
+          "phrase_producer"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "phrase_producer"
+        ],
+        "orchestrator": [
+          "preedit_refresh"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "preedit_refresh",
+          "to": "phrase_producer",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "preedit_refresh",
+              "phrase_producer"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "word-field-execution",
+      "event": "ime_refresh_ascii_token",
+      "kind": "execution",
+      "entry": "preedit_refresh",
+      "via": [],
+      "terminal": "word_field",
+      "path_count": 1,
+      "paths": [
+        [
+          "preedit_refresh",
+          "word_adapter",
+          "word_field"
+        ]
+      ],
+      "role_owners": {
+        "orchestrator": [
+          "preedit_refresh"
+        ],
+        "producer": [
+          "word_adapter"
+        ],
+        "evidence_owner": [
+          "word_field"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "preedit_refresh",
+          "to": "word_field",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "preedit_refresh",
+              "word_adapter",
+              "word_field"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "word-field-authority",
+      "event": "ime_refresh_ascii_token",
+      "kind": "authority",
+      "entry": "word_adapter",
+      "via": [],
+      "terminal": "preedit_renderer",
+      "path_count": 1,
+      "paths": [
+        [
+          "word_adapter",
+          "word_field",
+          "candidate_readout",
+          "display_readout",
+          "preedit_renderer"
+        ]
+      ],
+      "role_owners": {
+        "candidate_rank_owner": [
+          "candidate_readout"
+        ],
+        "display_rank_owner": [
+          "display_readout"
+        ],
+        "render_owner": [
+          "preedit_renderer"
+        ],
+        "producer": [
+          "word_adapter"
+        ],
+        "evidence_owner": [
+          "word_field"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "phrase-display-authority",
+      "event": "ime_refresh_ascii_token",
+      "kind": "authority",
+      "entry": "phrase_producer",
+      "via": [],
+      "terminal": "preedit_renderer",
+      "path_count": 1,
+      "paths": [
+        [
+          "phrase_producer",
+          "display_readout",
+          "preedit_renderer"
+        ]
+      ],
+      "role_owners": {
+        "display_rank_owner": [
+          "display_readout"
+        ],
+        "producer": [
+          "phrase_producer"
+        ],
+        "render_owner": [
+          "preedit_renderer"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "explicit-tab-authority",
+      "event": "tab_accept",
+      "kind": "authority",
+      "entry": "preedit_renderer",
+      "via": [],
+      "terminal": "ibus_mutator",
+      "path_count": 1,
+      "paths": [
+        [
+          "preedit_renderer",
+          "tab_authorizer",
+          "ibus_mutator"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "ibus_mutator"
+        ],
+        "render_owner": [
+          "preedit_renderer"
+        ],
+        "authorization_owner": [
+          "tab_authorizer"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "preedit_renderer",
+          "to": "ibus_mutator",
+          "via": [
+            "tab_authorizer"
+          ],
+          "graph": "authority",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "preedit_renderer",
+              "tab_authorizer",
+              "ibus_mutator"
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {
+    "ime_refresh_ascii_token": {
+      "authorization_owner": [],
+      "candidate_rank_owner": [
+        "candidate_readout"
+      ],
+      "render_owner": [
+        "preedit_renderer"
+      ],
+      "evidence_owner": [
+        "word_field"
+      ],
+      "mutation_owner": [],
+      "display_rank_owner": [
+        "display_readout"
+      ]
+    },
+    "tab_accept": {
+      "authorization_owner": [
+        "tab_authorizer"
+      ],
+      "candidate_rank_owner": [],
+      "render_owner": [
+        "preedit_renderer"
+      ],
+      "evidence_owner": [],
+      "mutation_owner": [
+        "ibus_mutator"
+      ],
+      "display_rank_owner": []
+    }
+  },
+  "source_evidence": {
+    "expected": 0,
+    "verified": 0,
+    "complete": true
+  },
+  "issues": [],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": false,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

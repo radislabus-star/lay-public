@@ -63,6 +63,96 @@ strengthen, suppress, or reject a candidate in both routes, but they never
 write text directly.  IME producers provide material; `TransitionDecisionCore`
 owns visible-candidate admission.
 
+### IME single word-field cutover (2026-08-13)
+
+Tested: the production-configured IBus candidate route after removing the
+second ASCII word query.
+
+Measured facts:
+
+```text
+semantic_phrase_candidates()                         separate suffix producer
+precognition_candidates() -> word_candidate_proposals()                    1
+word_candidate_proposals() -> TypingCpu::live_completion_candidates()      1
+candidate readout -> display readout                                      1
+production FieldSnapshotOnly ytn -> →нет                               PASS
+RU shared-authority prefix                                                PASS
+EN exi -> exit completion                                                 PASS
+runtime source change                                                    -65 lines
+```
+
+The short layout gate now accepts an exact keyboard projection only when the
+existing compact hot field grants phase authority. It does not load the full
+runtime dictionary and adds no literal surface branch. Phrase forecasting,
+arrow rendering, Tab authorization, verifier ownership, and physical mutation
+ownership did not change.
+
+Not tested: no binary was installed, no IBus process was restarted, and no
+physical application input was exercised in this experiment. Runtime authority
+therefore remains unchanged pending the normal release/deployment gate.
+
+Verdict scope: source-backed route structure plus focused production-configured
+binary parity. This is not a broad candidate-quality or live-input proof.
+
+Receipt:
+
+```text
+docs/structural_gates/receipts/LAY_IME_SINGLE_CANDIDATE_ROUTE_OBSERVED_2026-08-13.json
+```
+
+### Declined IME target suppression (2026-08-13)
+
+Tested: manual continuation after a visible completion in the unified IBus
+candidate route.
+
+The accepted interaction contract is:
+
+```text
+prefix P0 -> visible full target T0
+printable grapheme instead of Tab -> new prefix P1
+-> T0 is declined for the remainder of the current token
+-> exact T0 proposals are removed before display readout
+-> another full surface may still become visible
+-> the first observation remains available for censored boundary feedback
+```
+
+The decline key is the normalized full surface. For a completion it is
+`current partial + suffix`; for a replacement it is the replacement surface.
+No literal word, suffix, source ID, or morphology-slot exception participates
+in runtime behavior. The state is bounded by the 32-character active token and
+is cleared at its boundary.
+
+Measured facts:
+
+```text
+real refresh rejects the previous full target                     1/1 PASS
+target-specific helper and retained feedback                      2/2 PASS
+IME candidate lifecycle focused set                               3/3 PASS
+Space, autocorrect and double-Shift contracts                    19/19 PASS
+typing-transition authority contracts                            20/20 PASS
+focus/reset contracts                                              9/9 PASS
+changed-code gate                                                      PASS
+hot candidate generation p99 / max                           61 / 80 us
+literal target branches in runtime                                      0
+```
+
+What was not tested: no release binary was built or installed, no IBus process
+was restarted, and no physical application input was exercised. Candidate
+birth and L2/L3 ranking were not changed and this result is not a broad
+candidate-quality proof.
+
+Verdict scope: source and software proof for exact-surface suppression after a
+manual continuation. Display readout behavior changes in the source; Tab,
+verifier, text-mutation ownership, and installed runtime authority do not.
+
+Receipts:
+
+```text
+docs/structural_gates/receipts/LAY_IME_DECLINED_TARGET_PREFLIGHT_2026-08-13.json
+docs/structural_gates/receipts/LAY_IME_DECLINED_TARGET_PREFLIGHT_V2_2026-08-13.json
+docs/structural_gates/receipts/LAY_IME_DECLINED_TARGET_SOFTWARE_PROOF_2026-08-13.json
+```
+
 ## L3 Self Teacher Route
 
 L3 learns context only through an offline teacher/proof loop:
@@ -293,19 +383,22 @@ Autocorrect:
   -> AuthorizedEdit -> backend output
 ```
 
-IME must never display a full-token typo, layout, split, or glue replacement
-as a suffix completion. In particular, `тоесть -> то есть` is a
-`BoundaryCell32` autocorrect transition at Space, not an IME candidate and not
-a Tab action.
+IME must never disguise a full-token typo, layout, split, or glue replacement
+as a suffix completion. A full-token proposal may be displayed separately as
+`typed->candidate`, but only when the shared field supplies a typed operator
+(layout, boundary, measured damage geometry, or corrected-prefix morphology)
+or independent context/transition evidence. Candidate popularity and lexical
+or n-gram proximity alone have no display authority.
 
-Tab accepts only a suffix that extends the current token. Full-token
-replacement belongs exclusively to the shared correction pipeline and may be
-executed only after its typed transition proof and verifier succeed.
+Tab may accept either a suffix that extends the current token or a visibly
+distinct full-token proposal. A full-token replacement still belongs to the
+shared correction pipeline and may be executed only after its typed transition
+proof and verifier succeed.
 
 Implementation ownership:
 
 ```text
-live IME readout -> L2 completion-only route
+live IME readout -> L2 completion + evidence-gated display-only replacement
 Space correction -> full L2 replacement / layout / boundary lattice
 ```
 
@@ -745,4 +838,210 @@ After Space, stale IME suffix closes.
 Candidate Quality Report explains every apply/suggest decision.
 Old direct mutation paths are deleted.
 Tray/runtime/version stay synchronized.
+```
+
+## Release 1.0.24: Single Word-Candidate Route
+
+Status: `LIVE_SOFTWARE_GATE_PASS_PHYSICAL_TYPING_PENDING`.
+
+Release `1.0.24` closes the source/runtime drift that existed after the IME
+candidate-route implementation. The release contains:
+
+```text
+semantic phrase producer
+-> one word_candidate_proposals()
+-> one TypingCpu::live_completion_candidates()
+-> one candidate readout
+-> one display readout
+-> existing Tab/verifier authority
+```
+
+It also makes a typed continuation decline only the currently visible full
+target until the token boundary. The first prediction remains censored
+feedback; absence of Tab does not become negative learning evidence.
+
+Measured software proof before the release build:
+
+```text
+real refresh suppression                 1/1 PASS
+target-specific state and feedback       2/2 PASS
+Space/autocorrect/double-Shift          19/19 PASS
+authority contracts                    20/20 PASS
+focus/reset                              9/9 PASS
+scripts/check-lay-changed.sh                 PASS
+hot candidate generation p99              61 us
+hot candidate generation max              80 us
+```
+
+Release build and installation facts:
+
+```text
+source commit                 773fae2b9f6f223f63283b610b779d506e94a95f
+remote build host             e@192.168.3.94
+remote source root            /home/e/builds/lay-release-1.0.24-20260813-033012-git
+Cargo jobs                    20
+release wall time             185.01 s
+release CPU time              532.53 s
+average release CPU           287%
+release peak RSS              2,381,200 KiB
+release swap                  0
+remote Cargo target           9,470,091,264 B / 12,884,901,888 B
+release binary parity         10/10 PASS
+installed version             1.0.24
+loaded extension              1.0.24
+live daemon SHA parity        PASS
+live IBus engine SHA parity   PASS
+global ibus-daemon PID        3702 -> 3702
+active engine                 lay-ime-ru
+DBus Ping                     pong from lay-extension
+```
+
+Rollback snapshot:
+
+```text
+/home/ubu/.local/lib/lay/rollback/1.0.23-pre-1.0.24-20260813-033957
+```
+
+The transient `Set global engine failed: connection interrupted` journal entry
+occurred while the managed engine process was replaced. Final runtime checks
+show exactly one managed engine, `lay-ime-ru`, and a healthy DBus bridge. Global
+`ibus-daemon` was not restarted.
+
+Physical confirmation of the declined-target behavior remains outside this
+software receipt. The user should verify that after `от{носиться}` or another
+visible completion, typing the next letter instead of Tab removes that exact
+target and permits a fresh candidate.
+
+Exact release receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/LAY_RELEASE_1_0_24_INSTALLED_2026-08-13.json
+```
+
+## Release 1.0.26: Target-Bound Replacement Authority
+
+Status: `LIVE_SOFTWARE_GATE_PASS_PHYSICAL_TYPING_PENDING`.
+
+The visible full-token IME replacement route no longer treats an operator lane
+or a strong unrelated L3 center as proof for the selected target. Candidate
+generation remains broad, but display authority is now target-bound:
+
+```text
+L2 candidate material
+-> LiveCandidateLane                     grouping only
+-> L2ImeTargetEvidence                   producer provenance
+-> ReplacementTargetEvidence
+   +-- ExactLayoutProjection
+   +-- VerifiedLexicalEdit
+   +-- VerifiedBoundary
+   `-- None
+-> L3/L4 contextual evidence             rank or independent support
+-> one TransitionDecisionCore admission
+-> display-only typed->candidate arrow
+-> existing Tab/verifier mutation route
+```
+
+A replacement is visible only when the selected surface has a grounded L2
+center and either target-specific transition evidence or independently learned
+L3/L4 transition support related to the current input. Raw n-gram proximity,
+candidate-source identity, lane membership, and unrelated context energy cannot
+publish a `typed->candidate` arrow.
+
+Broad lexical search is explicitly not target evidence. A lexical repair is
+bound before canonical material is merged, and the typed evidence survives a
+later source/rank replacement. A direct one-edit replacement is publishable only
+when it is the unique nearest verified target. If an exact layout projection has
+authority, same-script lexical neighbors remain internal lattice material and
+cannot publish competing arrows.
+
+Boundary evidence is also bound to the exact selected split. Both split parts
+must be independent centers; decoder fragments cannot inherit the authority of
+another valid split of the same token.
+
+The readout keeps the latency contour bounded:
+
+```text
+rich exact-prefix field
+-> skip mutation search
+-> skip Productive V90
+
+thin or damaged field
+-> expanded bounded lexical material
+-> Productive V90 only when still needed
+```
+
+Measured source/software proof:
+
+```text
+target replacement matrix                         4/4 PASS
+target-bound integration matrix                    6/6 PASS
+sequential candidate-gate suite                 29/29 PASS
+focused IBus replacement/readout                  2/2 PASS
+typing-transition authority contracts           20/20 PASS
+scripts/check-lay-changed.sh                          PASS
+unsafe verified-transition escapes                   0
+warmed IBus candidate display p50 / p99 / max   42 / 70 / 73 us
+```
+
+The accepted matrix preserves:
+
+```text
+ytn          -> нет             exact layout projection
+             -/-> yt/yen/yon     no lexical arrow beside exact layout
+hf,jfntn     -> работает        layout then verified lexical edit
+рабоает      -> работает        verified RU lexical edit
+относитться  -> относиться      verified RU repeated-letter edit
+
+какое       -/-> какаем         settled clean state
+новая       -/-> ножовая        settled clean state
+точнее      -/-> течение        settled clean state
+относится   -/-> доноситься     settled clean state
+```
+
+For an incomplete damaged form, multiple surfaces may remain inside the related
+morphology lattice, but unrelated lexical or morphology neighbors no longer
+become visible replacements.
+
+Release build and installation facts:
+
+```text
+remote build host             e@192.168.3.94
+remote source root            /home/e/builds/lay-release-1.0.26-20260813-target-bound
+Cargo jobs                    20
+release wall time             203.47 s
+release CPU time              795.12 s
+average release CPU           390%
+release peak RSS              2,386,280 KiB
+release swap                  0
+remote Cargo target           597,484,345 B / 12,884,901,888 B
+release binary parity         10/10 PASS
+installed version             1.0.26
+loaded extension              1.0.26
+live daemon SHA parity        PASS
+live IBus engine SHA parity   PASS
+global ibus-daemon PID        3702 -> 3702
+active engine                 lay-ime-us
+managed processes             1 daemon + 1 IBus engine
+```
+
+Rollback snapshot:
+
+```text
+/home/ubu/.local/lib/lay/rollback/1.0.25-pre-1.0.26-20260813-075855
+```
+
+Tested: source route, target evidence, candidate admission, fixed replacement
+matrix, sequential candidate gate, focused IBus rendering, changed-code gate,
+warmed latency, isolated release build, byte-identical installation, managed
+runtime activation, version parity, and process continuity. Not tested in this
+experiment: full L1 heldout restoration, package quality or size, physical
+application typing, or post-install double-Shift rollback. Runtime authority is
+now on installed `1.0.26`; physical behavior remains an explicit user smoke
+check rather than a software claim.
+
+Exact software receipt:
+
+```text
+/home/ubu/projects/lay/docs/structural_gates/receipts/LAY_IME_TARGET_BOUND_REPLACEMENT_EVIDENCE_SOFTWARE_PROOF_2026-08-13.json
+/home/ubu/projects/lay/docs/structural_gates/receipts/LAY_RELEASE_1_0_26_INSTALLED_2026-08-13.json
 ```

@@ -842,6 +842,7 @@ fn append_productive_surface_candidates(
                 0.0
             },
             accepted_count: 0,
+            target_evidence: crate::nanda_wave::l2::L2ImeTargetEvidence::None,
             morphology_slots: vec![crate::correction_core::MorphologySlotIdentity {
                 domain: crate::correction_core::MorphologySlotIdentityDomain::CanonicalFeature,
                 lemma_id: birth.lemma_id,
@@ -1032,6 +1033,11 @@ fn l11_seed_only_candidate(
         usage_prior: 0.0,
         context_prior: 0.0,
         accepted_count: u32::from(seed.authority),
+        target_evidence: if seed.authority {
+            crate::nanda_wave::l2::L2ImeTargetEvidence::CanonicalWinner
+        } else {
+            crate::nanda_wave::l2::L2ImeTargetEvidence::None
+        },
         morphology_slots: super::morphology_slot_identities_for_surface(&seed.surface),
     }
 }
@@ -1201,6 +1207,7 @@ fn apply_standalone_l2_field(
                 usage_prior: 0.0,
                 context_prior: 0.0,
                 accepted_count: 0,
+                target_evidence: crate::nanda_wave::l2::L2ImeTargetEvidence::None,
                 morphology_slots: super::morphology_slot_identities_for_surface(&surface),
             });
         }
@@ -1249,6 +1256,7 @@ fn apply_standalone_l2_field(
                 usage_prior: 0.0,
                 context_prior: 0.0,
                 accepted_count: 0,
+                target_evidence: crate::nanda_wave::l2::L2ImeTargetEvidence::None,
                 morphology_slots: super::morphology_slot_identities_for_surface(&surface),
             });
         }
@@ -1323,6 +1331,7 @@ fn apply_standalone_l2_field(
             usage_prior: 0.0,
             context_prior: (local.slot_phase_milli.max(0) as f32 / 1_000.0).min(1.0),
             accepted_count: u32::from(local.local_score > 0),
+            target_evidence: crate::nanda_wave::l2::L2ImeTargetEvidence::None,
             morphology_slots: local
                 .lemma_ids
                 .iter()
@@ -1709,6 +1718,7 @@ mod tests {
             usage_prior: 0.0,
             context_prior: 0.0,
             accepted_count: 0,
+            target_evidence: crate::nanda_wave::l2::L2ImeTargetEvidence::None,
             morphology_slots: Vec::new(),
         }
     }

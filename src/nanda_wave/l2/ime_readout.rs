@@ -112,6 +112,11 @@ fn l2_word_candidates_impl(
                 usage_prior: prior.word_prior,
                 context_prior: prior.context_prior,
                 accepted_count: prior.accepted_count,
+                // Reconstruction is a property of the broad lexical search,
+                // not proof that this exact target repairs the observed token.
+                // The shared live gate binds target evidence after it verifies
+                // the concrete edit operator and target center.
+                target_evidence: Default::default(),
                 morphology_slots,
             }
         })
@@ -142,8 +147,7 @@ fn cached_lexical_candidates(
         return candidates;
     }
 
-    let mut candidates = memory.adjacent_transposition_candidates(normalized);
-    candidates.extend(memory.surface_candidates(normalized, material_limit));
+    let mut candidates = Vec::new();
     if mode.includes_completion() {
         let exact_completions = memory.completion_candidates(
             normalized,
@@ -155,9 +159,15 @@ fn cached_lexical_candidates(
             .filter(|candidate| candidate.word.starts_with(normalized))
             .count();
         candidates.extend(exact_completions);
-        if normalized.chars().count() >= TYPO_TOLERANT_PREFIX_MIN_CHARS
+        let exact_prefix_field_is_thin =
+            exact_prefix_count < material_limit.min(THIN_EXACT_PREFIX_FIELD);
+        if exact_prefix_field_is_thin {
+            candidates.extend(memory.adjacent_transposition_candidates(normalized));
+            candidates.extend(memory.surface_candidates(normalized, material_limit));
+        }
+        if exact_prefix_field_is_thin
+            && normalized.chars().count() >= TYPO_TOLERANT_PREFIX_MIN_CHARS
             && normalized.chars().all(is_cyrillic_letter)
-            && exact_prefix_count < material_limit.min(THIN_EXACT_PREFIX_FIELD)
         {
             let fuzzy = projected_fuzzy_lexical_candidates(cache, normalized, material_limit, mode)
                 .map(|candidates| candidates.as_ref().clone())
@@ -166,6 +176,9 @@ fn cached_lexical_candidates(
                 });
             candidates.extend(fuzzy);
         }
+    } else {
+        candidates.extend(memory.adjacent_transposition_candidates(normalized));
+        candidates.extend(memory.surface_candidates(normalized, material_limit));
     }
     candidates.sort_by(|left, right| {
         right
@@ -657,6 +670,7 @@ mod tests {
             usage_prior: 0.0,
             context_prior: 0.0,
             accepted_count: 0,
+            target_evidence: Default::default(),
             morphology_slots: Vec::new(),
         }
     }

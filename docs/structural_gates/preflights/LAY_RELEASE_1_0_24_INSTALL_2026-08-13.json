@@ -1,0 +1,297 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-release-1-0-24-install-2026-08-13",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "source-version",
+      "kind": "file",
+      "path": "../../../Cargo.toml",
+      "expect": {
+        "size_bytes": 2399,
+        "sha256": "e72dd3320a1505643fe74ca4c3ceee491eab879281826f0833e657e7d97ec919",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "installed-cli",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay",
+      "expect": {
+        "size_bytes": 6146008,
+        "sha256": "0629daa5627db9a9ec7ea87f841070309e3a7066d2c896ccaea13d977e70b8fd",
+        "mode": "0755"
+      }
+    },
+    {
+      "id": "installed-daemon",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+      "expect": {
+        "size_bytes": 8161824,
+        "sha256": "e9e527b3e8c88ffa595be1eff8c8b64f43a82642cccd7c7faad368d9de584b59",
+        "mode": "0755"
+      }
+    },
+    {
+      "id": "installed-ime",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "expect": {
+        "size_bytes": 6222584,
+        "sha256": "4d598579bd894c903326482b0333a9107723be183afb0ec9710a3913181d052b",
+        "mode": "0755"
+      }
+    },
+    {
+      "id": "installed-extension-metadata",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/gnome-shell/extensions/lay@radislabus-star.github.io/metadata.json",
+      "expect": {
+        "size_bytes": 420,
+        "sha256": "bb5f1031259448f80c1a5f08c41346e9280872bcccd87ef8ae8e350544099256",
+        "mode": "0644"
+      }
+    }
+  ],
+  "source_checks": [
+    {
+      "id": "atomic-release-installer-preserved",
+      "path": "../../../scripts/install-release-binaries.sh",
+      "sha256": "259850478a99bb32b1aaffa863ff72138f018b7ce1231611a05fad706d7ffd02",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "restart_global_ibus_daemon",
+          "regex": "(?:restart|kill|pkill).{0,40}ibus-daemon"
+        },
+        {
+          "effect": "partial_release_install",
+          "regex": "install -m 0755 \\\"\\$source\\\" \\\"\\$destination\\\""
+        },
+        {
+          "effect": "destroy_user_worktree_changes",
+          "regex": "git (?:reset --hard|checkout --)|rm -rf \\\"?\\$ROOT"
+        },
+        {
+          "effect": "edit_remote_dirty_worktree",
+          "regex": "(?:ssh|rsync).{0,120}/home/e/projects/lay"
+        }
+      ]
+    },
+    {
+      "id": "managed-runtime-controller-preserved",
+      "path": "../../../scripts/lay-runtime-control.sh",
+      "sha256": "1a7bb4ad55ed463961c275e6c8a49bd3090ad2d207e485d4e19ccd6bb6321d0f",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "restart_global_ibus_daemon",
+          "regex": "(?:restart|kill|pkill).{0,40}ibus-daemon"
+        }
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {
+        "id": "sync-version-surfaces",
+        "kind": "filesystem_edit"
+      },
+      {
+        "id": "isolated-remote-build",
+        "kind": "remote_release_build"
+      },
+      {
+        "id": "snapshot-installed-runtime",
+        "kind": "rollback_snapshot"
+      },
+      {
+        "id": "atomic-install-release",
+        "kind": "filesystem_install"
+      },
+      {
+        "id": "restart-managed-lay-runtime",
+        "kind": "service_activation"
+      }
+    ],
+    "forbidden": [
+      "restart_global_ibus_daemon",
+      "edit_remote_dirty_worktree",
+      "partial_release_install",
+      "destroy_user_worktree_changes"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "source-version-baseline",
+      "path": "../../../Cargo.toml",
+      "policy": "scoped_version_change",
+      "rollback_policy": "restore_only_release_version_change",
+      "baseline_check_id": "source-version"
+    },
+    {
+      "id": "installed-runtime-baseline",
+      "path": "/home/ubu/.local/lib/lay/bin",
+      "policy": "snapshot_before_install",
+      "rollback_policy": "restore_complete_1_0_23_runtime",
+      "baseline_check_id": "installed-cli"
+    },
+    {
+      "id": "installed-extension-baseline",
+      "path": "/home/ubu/.local/share/gnome-shell/extensions/lay@radislabus-star.github.io",
+      "policy": "snapshot_before_install",
+      "rollback_policy": "restore_complete_1_0_23_extension",
+      "baseline_check_id": "installed-extension-metadata"
+    }
+  ],
+  "state_machine": {
+    "initial_state": "SOURCE_1_0_23_RUNTIME_1_0_23",
+    "terminal_states": [
+      "LIVE_1_0_24_VERIFIED",
+      "ROLLED_BACK_1_0_23",
+      "BUILD_FAILED_RUNTIME_UNCHANGED"
+    ],
+    "steps": [
+      {
+        "id": "version-source",
+        "from": "SOURCE_1_0_23_RUNTIME_1_0_23",
+        "to": "SOURCE_1_0_24_RUNTIME_1_0_23",
+        "mutates": true,
+        "failure_state": "BUILD_FAILED_RUNTIME_UNCHANGED",
+        "cleanup": "retain explicit source diff and leave runtime untouched",
+        "preserves": [
+          "installed-runtime-baseline",
+          "installed-extension-baseline"
+        ],
+        "test_id": "version-edit-failure-leaves-runtime"
+      },
+      {
+        "id": "build-isolated-release",
+        "from": "SOURCE_1_0_24_RUNTIME_1_0_23",
+        "to": "RELEASE_1_0_24_BUILT",
+        "mutates": false,
+        "failure_state": "BUILD_FAILED_RUNTIME_UNCHANGED",
+        "cleanup": "remove isolated remote source tree",
+        "preserves": [
+          "installed-runtime-baseline",
+          "installed-extension-baseline"
+        ],
+        "test_id": "built-binary-version"
+      },
+      {
+        "id": "snapshot-and-install",
+        "from": "RELEASE_1_0_24_BUILT",
+        "to": "RELEASE_1_0_24_INSTALLED",
+        "mutates": true,
+        "failure_state": "ROLLED_BACK_1_0_23",
+        "cleanup": "restore complete binary and extension snapshots",
+        "preserves": [
+          "installed-runtime-baseline",
+          "installed-extension-baseline"
+        ],
+        "test_id": "rollback-completeness"
+      },
+      {
+        "id": "activate-managed-runtime",
+        "from": "RELEASE_1_0_24_INSTALLED",
+        "to": "LIVE_1_0_24_VERIFIED",
+        "mutates": true,
+        "failure_state": "ROLLED_BACK_1_0_23",
+        "cleanup": "select xkb, restore snapshot, restart only managed Lay processes, reactivate preferred Lay engine",
+        "preserves": [
+          "installed-runtime-baseline",
+          "installed-extension-baseline"
+        ],
+        "test_id": "rollback-completeness"
+      }
+    ]
+  },
+  "tests": [
+    {
+      "id": "version-surface-parity",
+      "kind": "parity",
+      "expected": "Cargo, lockfile, version document and all GNOME extension surfaces report exactly 1.0.24"
+    },
+    {
+      "id": "built-binary-version",
+      "kind": "integration",
+      "expected": "isolated remote release CLI reports lay 1.0.24 and every required release binary exists"
+    },
+    {
+      "id": "built-installed-sha-parity",
+      "kind": "parity",
+      "expected": "SHA-256 of every installed release binary equals its isolated remote build artifact"
+    },
+    {
+      "id": "runtime-continuity",
+      "kind": "integration",
+      "expected": "global ibus-daemon PID is unchanged, daemon is active, exactly one managed engine is active, active engine is lay-ime-ru and DBus Ping returns pong"
+    },
+    {
+      "id": "rollback-completeness",
+      "kind": "fault_injection",
+      "expected": "installation or activation failure restores every snapped 1.0.23 binary and extension file before managed runtime reactivation"
+    },
+    {
+      "id": "version-edit-failure-leaves-runtime",
+      "kind": "fault_injection",
+      "expected": "a partial version-surface edit leaves the complete installed 1.0.23 runtime untouched"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "one-version-live",
+      "statement": "source version, installed binary version and GNOME extension version are equal after release completion",
+      "test_id": "version-surface-parity"
+    },
+    {
+      "id": "global-ibus-survives",
+      "statement": "release activation never restarts or terminates the global ibus-daemon",
+      "test_id": "runtime-continuity"
+    },
+    {
+      "id": "build-install-byte-identity",
+      "statement": "the verified release bytes are exactly the bytes installed into the live runtime",
+      "test_id": "built-installed-sha-parity"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "remote-build-to-local-install",
+      "producer": "isolated remote target/release binary set",
+      "consumer": "/home/ubu/.local/lib/lay/bin binary set",
+      "comparison": "per-file SHA-256 byte identity",
+      "test_id": "built-installed-sha-parity"
+    },
+    {
+      "id": "source-runtime-version",
+      "producer": "Cargo.toml package version",
+      "consumer": "installed lay --version and GNOME metadata version-name",
+      "comparison": "exact semantic version string equality",
+      "test_id": "version-surface-parity"
+    }
+  ],
+  "runtime_comparisons": [
+    {
+      "id": "global-ibus-pid",
+      "source": "pgrep -x ibus-daemon plus managed Lay runtime status",
+      "comparison": "exact_stable_projection",
+      "stable_fields": [
+        "global_ibus_pid",
+        "active_engine",
+        "dbus_ping"
+      ],
+      "expected_to_change_fields": [
+        "lay_daemon_pid",
+        "managed_lay_ibus_engine_pid"
+      ],
+      "observed_not_compared_fields": [
+        "process_start_time",
+        "process_rss"
+      ],
+      "reason": "prove managed Lay activation did not restart global IBus or lose the active Lay engine",
+      "test_id": "runtime-continuity"
+    }
+  ]
+}

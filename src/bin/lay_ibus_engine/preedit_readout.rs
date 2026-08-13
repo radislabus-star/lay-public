@@ -2,59 +2,8 @@
 // L2/L3 memory, but does not rank candidates, mutate text, or emit IBus signals.
 
 use lay::typing_cpu::{
-    push_unique_ascii_known_suffix, should_query_llmwave_phrase_suffix, ImeCandidateSource,
-    LiveCompletionRequest, TypingCpu,
+    should_query_llmwave_phrase_suffix, ImeCandidateSource, LiveCompletionRequest, TypingCpu,
 };
-
-impl PreeditFastState {
-    fn ascii_candidates(&self, max_suffix_chars: usize, limit: usize) -> Vec<ImeCandidateProposal> {
-        if !self.is_ascii_live_candidate_token() {
-            return Vec::new();
-        }
-        let mut suffixes = Vec::new();
-        let mut proposals = Vec::new();
-        for (order, candidate) in TypingCpu::live_completion_candidates(LiveCompletionRequest {
-            context_prefix: "",
-            partial: &self.token,
-            max_suffix_chars,
-            active_composition: true,
-            allow_short_lexical: true,
-            limit,
-        })
-        .into_iter()
-        .enumerate()
-        {
-            if candidate.replacement {
-                proposals.push(
-                    ImeCandidateProposal::replacement(
-                        candidate.surface,
-                        candidate.score,
-                        ImeCandidateSource::L2Replacement,
-                    )
-                    .with_authority_order(order),
-                );
-                continue;
-            }
-            let suffix = candidate.suffix;
-            let before = suffixes.len();
-            push_unique_ascii_known_suffix(&mut suffixes, &self.token, suffix.clone());
-            if suffixes.len() > before {
-                proposals.push(
-                    ImeCandidateProposal::new(
-                        suffix,
-                        candidate.score,
-                        ImeCandidateSource::L2Completion,
-                    )
-                    .with_authority_order(order),
-                );
-            }
-            if proposals.len() >= limit {
-                break;
-            }
-        }
-        proposals
-    }
-}
 
 impl LayIbusEngine {
     fn live_completion_input_is_active(&self) -> bool {
@@ -81,7 +30,7 @@ impl LayIbusEngine {
         suffixes
     }
 
-    fn ru_l2_word_attractor_candidates(&self) -> Vec<ImeCandidateProposal> {
+    fn word_candidate_proposals(&self) -> Vec<ImeCandidateProposal> {
         if self.config.active_correction_safety() == lay::config::CorrectionSafety::Strict {
             return Vec::new();
         }
@@ -118,17 +67,13 @@ impl LayIbusEngine {
             // Candidate authority belongs to the shared L2/L3/L4 gate.
             // IME only renders its approved result, including in a phrase.
             allow_short_lexical: true,
-            limit: PREEDIT_RU_WAVE_CANDIDATE_LIMIT * 2,
+            limit: PREEDIT_RU_WAVE_CANDIDATE_LIMIT,
         });
         // The shared candidate gate owns ranking. IBus projects typed suffix or
         // full-token replacement proposals without gaining mutation authority.
         whole_word_candidates
             .into_iter()
             .enumerate()
-            // A committed tail needs a distinct verified replacement route.
-            // Never let an inactive preedit turn a whole-token candidate into
-            // an append-only Tab action.
-            .filter(|(_, candidate)| !self.buffer.is_empty() || !candidate.replacement)
             .map(|(order, candidate)| {
                 if candidate.replacement {
                     ImeCandidateProposal::replacement(
@@ -146,7 +91,6 @@ impl LayIbusEngine {
                     .with_authority_order(order)
                 }
             })
-            .take(PREEDIT_RU_WAVE_CANDIDATE_LIMIT)
             .collect()
     }
 
@@ -212,12 +156,14 @@ mod preedit_readout_contract {
     fn preedit_rendering_does_not_own_l2_l3_material_acquisition() {
         let render = include_str!("preedit.rs");
         let readout = include_str!("preedit_readout.rs");
+        let field_call = concat!("TypingCpu::live_", "completion_candidates(");
 
         assert!(
             !render.contains("live_completion_candidates(")
-                && readout.contains("live_completion_candidates(")
+                && readout.matches(field_call).count() == 1
+                && render.matches("word_candidate_proposals()").count() == 1
                 && readout.contains("llmwave_phrase_candidates("),
-            "preedit rendering must not own L2/L3 material acquisition"
+            "one preedit refresh must have one word-field request"
         );
     }
 }

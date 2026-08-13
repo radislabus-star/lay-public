@@ -3,7 +3,7 @@ use lay::config::LayConfig;
 use std::sync::{Arc, Mutex};
 
 #[test]
-fn candidate_target_survives_suffix_shrink_while_typing() {
+fn candidate_index_recovers_the_same_surface_from_a_shorter_suffix() {
     let candidates = vec!["ст".to_string(), "рошо".to_string()];
 
     assert_eq!(
@@ -60,6 +60,32 @@ fn typed_continuation_releases_auto_target_but_keeps_learning_observation() {
 }
 
 #[test]
+fn typed_continuation_suppresses_only_the_declined_full_target() {
+    let mut fast = PreeditFastState::default();
+    for ch in "про".chars() {
+        fast.push(ch);
+    }
+    fast.remember_target(Some("проверка".to_string()));
+    fast.observe_prediction_target("про", Some("проверка".to_string()));
+
+    fast.push('в');
+
+    let declined = ImeCandidateProposal::new(
+        "ерка",
+        0.9,
+        lay::typing_cpu::ImeCandidateSource::L2Completion,
+    );
+    let alternative = ImeCandidateProposal::new(
+        "ерить",
+        0.8,
+        lay::typing_cpu::ImeCandidateSource::L2Completion,
+    );
+    assert!(fast.proposal_repeats_declined_target("пров", &declined));
+    assert!(!fast.proposal_repeats_declined_target("пров", &alternative));
+    assert_eq!(fast.observed_prediction_target(), Some("проверка"));
+}
+
+#[test]
 fn prediction_feedback_distinguishes_confirmation_ending_change_and_censoring() {
     assert_eq!(
         observed_prediction_outcome("прек", "прекрасный", "прекрасный", true),
@@ -95,15 +121,33 @@ fn invalidated_target_retargets_to_fresh_top_candidate_without_blank_frame() {
 
 #[test]
 fn replacement_target_survives_as_a_full_surface() {
-    assert_eq!(
-        candidate_index_for_target(
-            "нужен",
-            "ye;ty",
-            &["→нужен".to_string(), "other".to_string()],
-            &[Some("нужен".to_string()), None],
-        ),
-        Some(0)
+    lay::nanda_wave::warm_up_l2_for_ime();
+    let mut engine = LayIbusEngine::new(
+        "/test".to_string(),
+        Arc::new(Mutex::new(Default::default())),
+        true,
+        true,
+        LayConfig {
+            text_backend: "ime".to_string(),
+            nanda_precognition: true,
+            correction_safety: "experimental".to_string(),
+            ..LayConfig::default()
+        },
     );
+    for ch in "ytn".chars() {
+        engine.push_tail_char(ch);
+    }
+
+    engine.refresh_precognition_candidates();
+
+    assert_eq!(
+        engine.preedit_candidates.first().map(String::as_str),
+        Some("→нет"),
+        "candidates={:?} replacements={:?}",
+        engine.preedit_candidates,
+        engine.preedit_replacement_targets
+    );
+    assert_eq!(engine.selected_precognition_replacement(), Some("нет"));
 }
 
 #[test]
@@ -121,7 +165,7 @@ fn wrong_layout_letter_symbols_stay_inside_the_fast_token() {
 }
 
 #[test]
-fn manual_continuation_rebuilds_a_non_empty_visible_readout() {
+fn manual_continuation_rebuilds_without_the_declined_full_target() {
     lay::nanda_wave::warm_up_l2_for_ime();
     let mut engine = LayIbusEngine::new(
         "/test".to_string(),
@@ -136,25 +180,49 @@ fn manual_continuation_rebuilds_a_non_empty_visible_readout() {
         },
     );
 
-    for ch in "пров".chars() {
+    let initial_partial = "пров";
+    for ch in initial_partial.chars() {
         engine.push_tail_char(ch);
     }
     engine.refresh_precognition_candidates();
     let previous_target = engine.preedit_fast.target_surface().map(str::to_owned);
-    assert!(previous_target.is_some());
+    let previous_target = previous_target.expect("initial completion target");
+    let continuation = previous_target
+        .strip_prefix(initial_partial)
+        .and_then(|suffix| suffix.chars().next())
+        .expect("completion must extend the typed prefix");
 
-    engine.push_tail_char('е');
+    engine.push_tail_char(continuation);
     assert_eq!(engine.preedit_fast.target_surface(), None);
     engine.refresh_precognition_candidates();
 
+    let partial = format!("{initial_partial}{continuation}");
+    let refreshed_targets = engine
+        .preedit_candidates
+        .iter()
+        .zip(&engine.preedit_replacement_targets)
+        .map(|(suffix, replacement)| {
+            replacement
+                .clone()
+                .unwrap_or_else(|| format!("{partial}{suffix}"))
+        })
+        .collect::<Vec<_>>();
     let suffix = engine.selected_visible_completion_suffix();
     assert!(
         !suffix.is_empty(),
         "fresh candidates={:?}",
         engine.preedit_candidates
     );
-    assert!(format!("прове{suffix}").starts_with("прове"));
+    assert!(format!("{partial}{suffix}").starts_with(&partial));
+    assert!(
+        !refreshed_targets.contains(&previous_target),
+        "declined target={previous_target} refreshed targets={refreshed_targets:?}"
+    );
     assert!(engine.preedit_fast.target_surface().is_some());
+    assert_ne!(
+        engine.preedit_fast.target_surface(),
+        Some(previous_target.as_str())
+    );
 }
 
 #[test]
@@ -755,12 +823,22 @@ fn cold_english_wave_memory_does_not_block_precognition() {
 #[test]
 fn ascii_known_word_completion_allows_single_letter_suffix() {
     lay::nanda_wave::warm_up_l2_for_ime();
-    let mut fast = PreeditFastState::default();
+    let mut engine = LayIbusEngine::new(
+        "/test".to_string(),
+        Arc::new(Mutex::new(Default::default())),
+        true,
+        true,
+        LayConfig {
+            nanda_precognition: true,
+            correction_safety: "experimental".to_string(),
+            ..LayConfig::default()
+        },
+    );
     for ch in "exi".chars() {
-        fast.push(ch);
+        engine.push_tail_char(ch);
     }
 
-    let candidates = fast.ascii_candidates(16, 8);
+    let candidates = engine.word_candidate_proposals();
 
     assert_eq!(
         candidates
@@ -1834,21 +1912,13 @@ fn measured_precognition_stages(engine: &LayIbusEngine) -> Vec<(&'static str, u1
     let semantic = engine.semantic_phrase_candidates();
     let semantic_us = semantic_started.elapsed().as_micros();
 
-    let ru_started = Instant::now();
-    let ru = engine.ru_l2_word_attractor_candidates();
-    let ru_us = ru_started.elapsed().as_micros();
-
-    let ascii_started = Instant::now();
-    let ascii = engine.preedit_fast.ascii_candidates(
-        engine.precognition_max_suffix_chars(),
-        PREEDIT_ASCII_CANDIDATE_LIMIT,
-    );
-    let ascii_us = ascii_started.elapsed().as_micros();
+    let word_started = Instant::now();
+    let word = engine.word_candidate_proposals();
+    let word_us = word_started.elapsed().as_micros();
 
     vec![
         ("semantic", semantic_us, semantic.len()),
-        ("ru", ru_us, ru.len()),
-        ("ascii", ascii_us, ascii.len()),
+        ("word", word_us, word.len()),
     ]
 }
 

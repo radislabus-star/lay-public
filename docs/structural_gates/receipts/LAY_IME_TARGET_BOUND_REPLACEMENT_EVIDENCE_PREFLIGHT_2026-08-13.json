@@ -1,0 +1,104 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "l2-candidate-contract",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay/docs/structural_gates/preflights/../../../src/nanda_wave/l2.rs",
+      "sha256": "51605902658b835b7d6f1b630862ac80879bec7f6e6bdbce8cb0a95e798675cc",
+      "size_bytes": 18177
+    },
+    {
+      "exists": true,
+      "id": "l2-ime-readout",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay/docs/structural_gates/preflights/../../../src/nanda_wave/l2/ime_readout.rs",
+      "sha256": "b134a5ce80405ed5d700e59da756e7df94d278ebb493a8db5f765c1d0942a201",
+      "size_bytes": 27994
+    },
+    {
+      "exists": true,
+      "id": "candidate-gate",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay/docs/structural_gates/preflights/../../../src/nanda_wave/candidate_gate.rs",
+      "sha256": "05683de91bf2c9d0cec34bb346afd5763140fee1ea4056e47670a5d9c90cf00e",
+      "size_bytes": 78769
+    },
+    {
+      "exists": true,
+      "id": "live-field-admission",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay/docs/structural_gates/preflights/../../../src/typing_transition/decision/live_field.rs",
+      "sha256": "d2a0fb1aa45a838980505bc0654710d0225407f591d083a69be769c09613e19f",
+      "size_bytes": 14378
+    },
+    {
+      "exists": true,
+      "id": "installed-ime-1-0-25",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "sha256": "d0817b88120bdba005d10e40d41bf33a75da7e4c8878e134d73f553d764041ea",
+      "size_bytes": 6249720
+    }
+  ],
+  "blockers": [
+    {
+      "code": "fault_injection_missing",
+      "field": "state_machine.steps[0].test_id",
+      "message": "mutating failure requires a fault_injection test"
+    }
+  ],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 5,
+    "forbidden_side_effect_kinds": [
+      "global_ibus_restart",
+      "literal_surface_runtime_branch",
+      "second_word_field_request"
+    ],
+    "identity_contracts": 1,
+    "invariants": 3,
+    "planned_side_effect_kinds": [
+      "cargo_test",
+      "filesystem_edit",
+      "service_activation"
+    ],
+    "preserved_artifacts": 1,
+    "runtime_comparisons": 0,
+    "source_checks": 2,
+    "tests": 4
+  },
+  "manifest_sha256": "ebba60a2bf7d879dc2200851e702625da57fff0f83c2e3b1bdbcf738bb3b715b",
+  "safe_to_implement": false,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "no-literal-runtime-cases",
+      "path": "/home/ubu/projects/lay/docs/structural_gates/preflights/../../../src/nanda_wave/candidate_gate.rs",
+      "sha256": "05683de91bf2c9d0cec34bb346afd5763140fee1ea4056e47670a5d9c90cf00e",
+      "size_bytes": 78769
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "single-render-owner-preserved",
+      "path": "/home/ubu/projects/lay/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/preedit_readout.rs",
+      "sha256": "17c20467dd8fee3f6be7a06249c5fc0dbd5a4c7b8ea3faddb6321ab4f4a343e2",
+      "size_bytes": 6884
+    }
+  ],
+  "task_id": "lay-ime-target-bound-replacement-evidence-2026-08-13",
+  "verdict": "BLOCKED_BEFORE_CODE"
+}

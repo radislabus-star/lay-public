@@ -115,5 +115,7 @@ fn allow_short_layout_word(original: &str, converted_lower: &str) -> bool {
         .filter(|ch| ch.is_ascii_alphabetic())
         .count()
         <= 3
-        && russian_tiny_dictionary().contains(converted_lower)
+        && (russian_tiny_dictionary().contains(converted_lower)
+            || crate::hot_field::HotFieldSnapshot::current()
+                .layout_projection_has_phase_authority(converted_lower))
 }

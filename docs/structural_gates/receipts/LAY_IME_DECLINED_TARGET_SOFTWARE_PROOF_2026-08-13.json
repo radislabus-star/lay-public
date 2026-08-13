@@ -1,0 +1,56 @@
+{
+  "schema": "lay.ime-declined-target-proof.v1",
+  "date": "2026-08-13",
+  "verdict": "PASS",
+  "scope": "source_and_software",
+  "contract": {
+    "visible_target": "T0",
+    "decline_event": "printable grapheme instead of Tab",
+    "suppression_scope": "exact normalized full surface for the current token",
+    "alternative_surfaces_remain_eligible": true,
+    "boundary_feedback": "first observation retained as censored evidence",
+    "literal_runtime_cases": 0
+  },
+  "implementation": {
+    "state_owner": "PreeditFastState",
+    "filter_owner": "LayIbusEngine::precognition_candidates",
+    "candidate_routes_added": 0,
+    "ranking_owner_changed": false,
+    "tab_authority_changed": false,
+    "verifier_authority_changed": false,
+    "text_mutation_owner_changed": false
+  },
+  "proof": {
+    "focused_real_refresh": { "passed": 1, "failed": 0 },
+    "focused_state_and_feedback": { "passed": 2, "failed": 0 },
+    "candidate_lifecycle": { "passed": 3, "failed": 0 },
+    "space_autocorrect_double_shift": { "passed": 19, "failed": 0 },
+    "typing_transition_authority": { "passed": 20, "failed": 0 },
+    "focus_reset": { "passed": 9, "failed": 0 },
+    "changed_code_gate": "PASS",
+    "hot_candidate_generation": {
+      "samples": 140,
+      "p50_us": 36,
+      "p90_us": 54,
+      "p99_us": 61,
+      "max_us": 80
+    }
+  },
+  "not_tested": [
+    "release build",
+    "installation",
+    "IBus restart",
+    "physical application input",
+    "broad candidate quality"
+  ],
+  "runtime": {
+    "source_display_policy_changed": true,
+    "installed_runtime_changed": false
+  },
+  "preflight": {
+    "first_receipt": "docs/structural_gates/receipts/LAY_IME_DECLINED_TARGET_PREFLIGHT_2026-08-13.json",
+    "first_verdict": "BLOCKED_BEFORE_CODE",
+    "accepted_receipt": "docs/structural_gates/receipts/LAY_IME_DECLINED_TARGET_PREFLIGHT_V2_2026-08-13.json",
+    "accepted_verdict": "READY_TO_IMPLEMENT"
+  }
+}

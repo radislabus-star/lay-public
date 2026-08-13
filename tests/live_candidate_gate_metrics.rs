@@ -12,6 +12,7 @@ fn live_candidate_gate_metrics_are_status_only() {
         context_prefix: "на улице опять идет",
         partial: "до",
         max_suffix_chars: 8,
+        active_composition: true,
         allow_short_lexical: true,
         limit: 4,
     });
@@ -59,6 +60,7 @@ fn live_l2_surfaces_current_token_repair_before_space() {
         context_prefix: "код",
         partial: "рабоает",
         max_suffix_chars: 16,
+        active_composition: true,
         allow_short_lexical: true,
         limit: 12,
     });
@@ -76,4 +78,107 @@ fn live_l2_surfaces_current_token_repair_before_space() {
         Some("работает"),
         "the strongest L2 center must remain the default visible replacement: {candidates:?}"
     );
+}
+
+fn live_candidates(partial: &str) -> Vec<lay::typing_cpu::LiveCompletionCandidate> {
+    TypingCpu::live_completion_candidates(LiveCompletionRequest {
+        context_prefix: "",
+        partial,
+        max_suffix_chars: 16,
+        active_composition: true,
+        allow_short_lexical: true,
+        limit: 12,
+    })
+}
+
+#[test]
+fn full_token_replacement_requires_target_evidence_not_only_an_operator_lane() {
+    TypingCpu::warm_l2_for_ime();
+
+    let layout = live_candidates("ytn");
+    let one_edit = live_candidates("рабоает");
+    let repeated_letter = live_candidates("относитться");
+    let weak_corrected_prefix = live_candidates("относитт");
+
+    eprintln!("layout={layout:?}");
+    eprintln!("one_edit={one_edit:?}");
+    eprintln!("repeated_letter={repeated_letter:?}");
+    eprintln!("weak_corrected_prefix={weak_corrected_prefix:?}");
+
+    assert!(layout.iter().any(|candidate| {
+        candidate.replacement
+            && candidate.surface == "нет"
+            && candidate.source == "L1ExactLayoutCell32"
+    }));
+    assert!(
+        layout
+            .iter()
+            .filter(|candidate| candidate.replacement)
+            .all(|candidate| candidate.surface == "нет"),
+        "exact layout authority must not leak same-script lexical arrows: {layout:?}"
+    );
+    assert!(one_edit
+        .iter()
+        .any(|candidate| { candidate.replacement && candidate.surface == "работает" }));
+    assert!(repeated_letter
+        .iter()
+        .any(|candidate| { candidate.replacement && candidate.surface == "относиться" }));
+    assert!(repeated_letter
+        .iter()
+        .all(|candidate| candidate.surface != "относи ться"));
+    assert!(weak_corrected_prefix.iter().all(|candidate| {
+        !candidate.replacement
+            || (candidate.surface.starts_with("относ") && !candidate.surface.starts_with("относим"))
+    }));
+}
+
+#[test]
+fn known_russian_states_do_not_publish_unrelated_full_token_replacements() {
+    TypingCpu::warm_l2_for_ime();
+
+    for partial in ["какое", "новая", "точнее", "относится"] {
+        let candidates = live_candidates(partial);
+        assert!(
+            candidates.iter().all(|candidate| !candidate.replacement),
+            "known state {partial:?} published a replacement arrow: {candidates:?}"
+        );
+    }
+}
+
+#[test]
+fn damaged_russian_states_only_publish_operator_bound_replacements() {
+    TypingCpu::warm_l2_for_ime();
+
+    for partial in ["появлт", "предлает"] {
+        let candidates = live_candidates(partial);
+        assert!(
+            candidates
+                .iter()
+                .filter(|candidate| candidate.replacement)
+                .all(|candidate| replacement_is_bound_to_observed_prefix(
+                    partial,
+                    &candidate.surface
+                )),
+            "damaged state {partial:?} published an unrelated replacement arrow: {candidates:?}"
+        );
+    }
+}
+
+fn replacement_is_bound_to_observed_prefix(observed: &str, target: &str) -> bool {
+    if lay::text_metrics::damerau_levenshtein(observed, target) == 1 {
+        return true;
+    }
+    let observed_len = observed.chars().count();
+    let target_chars = target.chars().collect::<Vec<_>>();
+    [
+        observed_len.saturating_sub(1),
+        observed_len,
+        observed_len.saturating_add(1),
+    ]
+    .into_iter()
+    .filter(|prefix_len| *prefix_len >= 2 && *prefix_len < target_chars.len())
+    .any(|prefix_len| {
+        let target_prefix = target_chars[..prefix_len].iter().collect::<String>();
+        lay::text_metrics::damerau_levenshtein(observed, &target_prefix) == 1
+    })
 }

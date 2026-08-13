@@ -324,6 +324,13 @@ pub(crate) fn morphology_slot_identities_for_surface(
     identities
 }
 
+pub(crate) fn canonical_form_contains_surface(surface: &str) -> bool {
+    installed_l2_field()
+        .ok()
+        .and_then(|field| field.form_ref_for_surface(surface))
+        .is_some()
+}
+
 pub(crate) fn warm_up_installed_l2_field() {
     // Loading and indexing the standalone package can take hundreds of
     // milliseconds. Keep that first touch on the existing background IME

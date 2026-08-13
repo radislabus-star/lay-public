@@ -1,0 +1,84 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "preedit_refresh", "role": "orchestrator"},
+    {"id": "phrase_producer", "role": "producer"},
+    {"id": "word_adapter", "role": "producer"},
+    {"id": "word_field", "role": "evidence_owner"},
+    {"id": "candidate_readout", "role": "candidate_rank_owner"},
+    {"id": "display_readout", "role": "display_rank_owner"},
+    {"id": "preedit_renderer", "role": "render_owner"},
+    {"id": "tab_authorizer", "role": "authorization_owner"},
+    {"id": "ibus_mutator", "role": "mutation_owner"}
+  ],
+  "edges": [
+    {"id": "exec-refresh-phrase", "from": "preedit_refresh", "relation": "calls", "to": "phrase_producer", "events": ["ime_refresh_ascii_token"]},
+    {"id": "exec-refresh-word", "from": "preedit_refresh", "relation": "calls", "to": "word_adapter", "events": ["ime_refresh_ascii_token"]},
+    {"id": "exec-word-field", "from": "word_adapter", "relation": "delegates", "to": "word_field", "events": ["ime_refresh_ascii_token"]},
+    {"id": "data-phrase-display", "from": "phrase_producer", "relation": "produces_for", "to": "display_readout", "events": ["ime_refresh_ascii_token"]},
+    {"id": "data-word-field", "from": "word_adapter", "relation": "produces_for", "to": "word_field", "events": ["ime_refresh_ascii_token"]},
+    {"id": "data-field-candidate", "from": "word_field", "relation": "passes_to", "to": "candidate_readout", "events": ["ime_refresh_ascii_token"]},
+    {"id": "data-candidate-display", "from": "candidate_readout", "relation": "passes_to", "to": "display_readout", "events": ["ime_refresh_ascii_token"]},
+    {"id": "data-display-render", "from": "display_readout", "relation": "passes_to", "to": "preedit_renderer", "events": ["ime_refresh_ascii_token"]},
+    {"id": "data-render-authorizer", "from": "preedit_renderer", "relation": "passes_to", "to": "tab_authorizer", "events": ["tab_accept"]},
+    {"id": "authority-authorizer-mutator", "from": "tab_authorizer", "relation": "authorizes", "to": "ibus_mutator", "events": ["tab_accept"]}
+  ],
+  "routes": [
+    {
+      "id": "phrase-execution",
+      "event": "ime_refresh_ascii_token",
+      "kind": "execution",
+      "entry": "preedit_refresh",
+      "terminal": "phrase_producer",
+      "required_roles": ["orchestrator", "producer"],
+      "path_cardinality": [
+        {"from": "preedit_refresh", "to": "phrase_producer", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "word-field-execution",
+      "event": "ime_refresh_ascii_token",
+      "kind": "execution",
+      "entry": "preedit_refresh",
+      "terminal": "word_field",
+      "required_roles": ["orchestrator", "producer", "evidence_owner"],
+      "path_cardinality": [
+        {"from": "preedit_refresh", "to": "word_field", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "word-field-authority",
+      "event": "ime_refresh_ascii_token",
+      "kind": "authority",
+      "entry": "word_adapter",
+      "terminal": "preedit_renderer",
+      "required_roles": [
+        "producer",
+        "evidence_owner",
+        "candidate_rank_owner",
+        "display_rank_owner",
+        "render_owner"
+      ]
+    },
+    {
+      "id": "phrase-display-authority",
+      "event": "ime_refresh_ascii_token",
+      "kind": "authority",
+      "entry": "phrase_producer",
+      "terminal": "preedit_renderer",
+      "required_roles": ["producer", "display_rank_owner", "render_owner"]
+    },
+    {
+      "id": "explicit-tab-authority",
+      "event": "tab_accept",
+      "kind": "authority",
+      "entry": "preedit_renderer",
+      "terminal": "ibus_mutator",
+      "required_roles": ["render_owner", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [
+        {"from": "preedit_renderer", "to": "ibus_mutator", "via": ["tab_authorizer"], "min": 1, "max": 1}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "preedit-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/preedit.rs",
+      "sha256": "dc1e56232f312e1258f7894dfc72eeccd9d73674d53982b43f0c50739b2a3705",
+      "size_bytes": 24792
+    },
+    {
+      "exists": true,
+      "id": "preedit-tests-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/preedit/tests.rs",
+      "sha256": "9e6f048b14c773f958a1b6d7594945d0932b9dfba0483cb6069a8a328d2ee988",
+      "size_bytes": 59952
+    },
+    {
+      "exists": true,
+      "id": "architecture-document",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay/docs/structural_gates/preflights/../../l1-l4-intelligence-route.md",
+      "sha256": "bac40ea1dc77689081e857065fd7806d089215bf4636bdf76349d602e199e3cb",
+      "size_bytes": 20253
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 3,
+    "forbidden_side_effect_kinds": [
+      "install_runtime",
+      "literal_surface_runtime_branch",
+      "negative_learning_from_missing_tab",
+      "restart_ibus",
+      "second_candidate_route",
+      "weaken_tab_or_verifier_authority"
+    ],
+    "identity_contracts": 2,
+    "invariants": 4,
+    "planned_side_effect_kinds": [
+      "cargo_test",
+      "filesystem_edit",
+      "graph_update"
+    ],
+    "preserved_artifacts": 3,
+    "runtime_comparisons": 0,
+    "source_checks": 1,
+    "tests": 5
+  },
+  "manifest_sha256": "a5898e6100baf5563748720adf8857db7e892f1f43cd2337d8092b48ba9ab4c8",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "preedit-source-preserved",
+      "path": "/home/ubu/projects/lay/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/preedit.rs",
+      "sha256": "dc1e56232f312e1258f7894dfc72eeccd9d73674d53982b43f0c50739b2a3705",
+      "size_bytes": 24792
+    }
+  ],
+  "task_id": "lay-ime-declined-target-2026-08-13",
+  "verdict": "READY_TO_IMPLEMENT"
+}

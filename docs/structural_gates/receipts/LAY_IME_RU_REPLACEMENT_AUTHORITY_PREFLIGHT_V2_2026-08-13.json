@@ -1,0 +1,106 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "candidate-gate-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay/docs/structural_gates/preflights/../../../src/nanda_wave/candidate_gate.rs",
+      "sha256": "b38c8f962b61b3a3140b0a168d21e07b30fb9b26dbb79cdc2d6a56c29adb9194",
+      "size_bytes": 68233
+    },
+    {
+      "exists": true,
+      "id": "live-field-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay/docs/structural_gates/preflights/../../../src/typing_transition/decision/live_field.rs",
+      "sha256": "46892c31e625b500c52f54cc2a0b22db8248bf587877ff574a6152a8697319f9",
+      "size_bytes": 14381
+    },
+    {
+      "exists": true,
+      "id": "boundary-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay/docs/structural_gates/preflights/../../../src/nanda_wave/l2/tail_scan_adapter.rs",
+      "sha256": "f4fbcd25fcd10214c0023e4bba96b3ee69b0d2e70342ba821b2af0a79360fe78",
+      "size_bytes": 25569
+    },
+    {
+      "exists": true,
+      "id": "integration-proof",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay/docs/structural_gates/preflights/../../../tests/live_candidate_gate_metrics.rs",
+      "sha256": "497f23843f0a237a2db0643462e6fb28058bbef185059fb88e1ebd5827535e39",
+      "size_bytes": 2700
+    },
+    {
+      "exists": true,
+      "id": "installed-ime",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "sha256": "a45146a98f341119e2492d2bab9d3ccc1cbba64496ce73bcbcec1b5f724ca574",
+      "size_bytes": 6229240
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 5,
+    "forbidden_side_effect_kinds": [
+      "global_ibus_restart",
+      "literal_surface_runtime_branch",
+      "remove_arrow_replacement_rendering"
+    ],
+    "identity_contracts": 1,
+    "invariants": 2,
+    "planned_side_effect_kinds": [
+      "cargo_test",
+      "filesystem_edit",
+      "service_activation"
+    ],
+    "preserved_artifacts": 4,
+    "runtime_comparisons": 0,
+    "source_checks": 3,
+    "tests": 4
+  },
+  "manifest_sha256": "6c79d32bdabdf97043eaf3e3ee826b63f1583822e1878b9e9f7ffcc692473b75",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "candidate-gate-no-literal-case",
+      "path": "/home/ubu/projects/lay/docs/structural_gates/preflights/../../../src/nanda_wave/candidate_gate.rs",
+      "sha256": "b38c8f962b61b3a3140b0a168d21e07b30fb9b26dbb79cdc2d6a56c29adb9194",
+      "size_bytes": 68233
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "boundary-no-literal-case",
+      "path": "/home/ubu/projects/lay/docs/structural_gates/preflights/../../../src/nanda_wave/l2/tail_scan_adapter.rs",
+      "sha256": "f4fbcd25fcd10214c0023e4bba96b3ee69b0d2e70342ba821b2af0a79360fe78",
+      "size_bytes": 25569
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "arrow-render-owner-preserved",
+      "path": "/home/ubu/projects/lay/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/preedit.rs",
+      "sha256": "518928c41f11f81538cce126e30c44773a493072fe6e4c201bf523f1269fa993",
+      "size_bytes": 26041
+    }
+  ],
+  "task_id": "lay-ime-ru-replacement-authority-2026-08-13",
+  "verdict": "READY_TO_IMPLEMENT"
+}
