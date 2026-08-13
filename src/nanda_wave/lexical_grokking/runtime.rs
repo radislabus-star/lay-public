@@ -10,6 +10,7 @@ use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 
 mod config;
+mod contract;
 mod diagnostics;
 
 use config::{
@@ -19,6 +20,11 @@ use config::{
 };
 #[cfg(test)]
 use config::{DEFAULT_BIRTH_ATOMS_PER_CHANNEL, DEFAULT_BIRTH_POSTING_BUDGET};
+pub(super) use contract::{AmbiguityObservation, GrokkingCandidate, ReadoutMode};
+use contract::{
+    AnchorSequence, BirthAtom, CachePlanOrder, FirstTouchWarmProfile, ForwardActivation,
+    ForwardScratch, ObservedAtom, PreparedReadout,
+};
 pub(super) use diagnostics::candidate_json;
 use diagnostics::percent_usize;
 use diagnostics::restoration_candidate_json;
@@ -63,124 +69,8 @@ pub(super) const RECONSTRUCTION_MODE_SINGLE_SUBSTITUTION: u8 = 32;
 pub(super) const RECONSTRUCTION_MODE_DOUBLE_SUBSTITUTION: u8 = 64;
 pub(super) const RECONSTRUCTION_MODE_NON_ADJACENT_TRANSPOSITION: u8 = 128;
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub(super) enum ReadoutMode {
-    Full,
-    WithoutAnti,
-    WithoutPhase,
-    WithoutSequence,
-    WithoutSequenceCertificate,
-    LegacySequence,
-    WithoutPairwise,
-    WithoutPosition,
-}
-
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
-pub(super) struct GrokkingCandidate {
-    pub(super) terminal_id: u32,
-    pub(super) atom_hits: u16,
-    pub(super) surface_hits: u16,
-    pub(super) keyboard_hits: u16,
-    pub(super) structural_milli: u16,
-    pub(super) position_milli: u16,
-    pub(super) legacy_sequence_milli: u16,
-    pub(super) sequence_milli: u16,
-    pub(super) forward_milli: u16,
-    pub(super) backward_milli: u16,
-    pub(super) positive_milli: u16,
-    pub(super) positive_subcenter_milli: u16,
-    pub(super) anti_milli: u16,
-    pub(super) anti_subcenter_milli: u16,
-    pub(super) hard_negative_milli: u16,
-    pub(super) ambiguity_milli: u16,
-    pub(super) ambiguity_threshold_milli: u16,
-    pub(super) ambiguity_linked: bool,
-    pub(super) ambiguity_shell: bool,
-    pub(super) reconstruction_only: bool,
-    pub(super) pairwise_loss_milli: u16,
-    pub(super) crystallization_wins: u8,
-    pub(super) crystallization_required: u8,
-    pub(super) crystallization_margin_milli: u16,
-    pub(super) crystallization_complete: bool,
-    pub(super) crystallization_known_edges: u16,
-    pub(super) crystallization_unknown_edges: u16,
-    pub(super) crystallization_tied_edges: u16,
-    pub(super) crystallization_conflicts: u16,
-    pub(super) crystallization_cycles: u16,
-    pub(super) length_milli: u16,
-    pub(super) geometry_distance: u8,
-    pub(super) reconstruction_modes: u8,
-    pub(super) settled_energy: i32,
-    pub(super) legacy_settled_energy: i32,
-    pub(super) length_relation: i8,
-    pub(super) settling_iterations: u8,
-    pub(super) exact_reconstruction: bool,
-}
-
-#[derive(Clone, Copy, Debug)]
-pub(super) struct AmbiguityObservation {
-    pub(super) center_index: usize,
-    pub(super) owner: u32,
-    pub(super) competitor: u32,
-    pub(super) coherence_milli: u16,
-    pub(super) structurally_applicable: bool,
-}
-
-#[derive(Clone, Copy, Debug, Default)]
-struct ForwardActivation {
-    mass: u64,
-    hits: u16,
-    surface_hits: u16,
-    keyboard_hits: u16,
-}
-
-#[derive(Default)]
-struct ForwardScratch {
-    activations: Vec<ForwardActivation>,
-    activation_epochs: Vec<u32>,
-    epoch: u32,
-    touched: Vec<u32>,
-}
-
-struct PreparedReadout {
-    observed: BTreeMap<u32, ObservedAtom>,
-    character_sequence: AnchorSequence,
-    observed_char_count: u8,
-    surface_re: [i32; WAVE_DIMENSION],
-    surface_im: [i32; WAVE_DIMENSION],
-    max_forward: u64,
-    frontier: Vec<(u32, ForwardActivation)>,
-    frontier_reverse: Option<Vec<Arc<[WaveCoupling]>>>,
-    geometry_reserve_ids: BTreeSet<u32>,
-    reconstruction_only_ids: BTreeSet<u32>,
-}
-
 thread_local! {
     static FORWARD_SCRATCH: RefCell<ForwardScratch> = RefCell::new(ForwardScratch::default());
-}
-
-#[derive(Clone, Copy, Debug)]
-struct ObservedAtom {
-    position: u8,
-    weight: u8,
-    channel: AtomChannel,
-}
-
-type BirthAtom = (usize, u32, ObservedAtom);
-
-#[derive(Clone, Copy)]
-enum CachePlanOrder {
-    Support,
-    Degree,
-    ObservedUses,
-}
-
-struct FirstTouchWarmProfile {
-    atom_ids: Vec<u32>,
-    sampled_words: usize,
-    damage_surfaces: usize,
-    observed_atoms: usize,
-    protected_budget_bytes: usize,
 }
 
 fn select_birth_atoms(
@@ -215,18 +105,6 @@ fn select_birth_atoms(
         selected.push(atom);
     }
     selected
-}
-
-#[derive(Clone, Copy, Debug, Default)]
-struct AnchorSequence {
-    atoms: [u32; MAX_ANCHOR_SEQUENCE],
-    len: u8,
-}
-
-impl AnchorSequence {
-    fn as_slice(&self) -> &[u32] {
-        &self.atoms[..usize::from(self.len)]
-    }
 }
 
 pub(super) struct LexicalGrokkingMemory {

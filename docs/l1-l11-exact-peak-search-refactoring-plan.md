@@ -1319,7 +1319,7 @@ separate gates.
 
 ## 13. Current Verdict And Next Action
 
-Current verdict: `PHASE_2A_MOVE_ONLY_PARITY_PASS`; implementation preflight
+Current verdict: `PHASE_2B_MOVE_ONLY_PARITY_PASS`; implementation preflight
 verdict remains `READY_TO_IMPLEMENT` with `safe_to_implement = true` and no
 blockers.
 
@@ -1417,6 +1417,32 @@ runs remain zero.
 /home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_2A_2026-08-13/phase-2a.json
 ```
 
-The next action is Phase 2B: move internal evidence and result types without
-changing behavior or authority. No package crystallization, daemon restart,
-owner flip, or scoring change is justified in Phase 2.
+Phase 2B is complete. Eleven internal evidence/result types moved into
+`runtime/contract.rs`; the runtime algorithm, `readout` call graph, external
+exports, and allocation behavior did not change. `runtime.rs` fell from `4,217`
+to `4,095` lines. The complete runtime tree is `4,627` lines, cumulative growth
+`1.36%` from the `4,565`-line Phase 0 monolith and below the Phase 2 `5%` budget.
+
+The frozen semantic and route hashes match Phase 1 and Phase 2A exactly over all
+616 cases and eight modes; candidate permutation failures remain zero. Three
+sequential p99 measurements were `16.360`, `15.475`, and `17.758 ms`, with the
+same candidate SHA-256 in every run and no regression against the pinned
+baseline. Two intermediate compile-only failures exposed Rust child-module
+visibility narrowing; restoring the previous `lexical_grokking` visibility
+closed them before any fingerprint or runtime execution.
+
+Tested: the Phase 2B type boundary, previous visibility contract, all frozen
+semantic routes, candidate order, three-run latency, and changed-file checks.
+Not tested: Phase 2C-2H, dense oracle, typed edit graph, posting bounds,
+exact-search quality, package redesign, or deployment. Runtime authority,
+installed package, daemon, and IBus remain unchanged; crystallization runs
+remain zero.
+
+```text
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_2B_2026-08-13/phase-2b.json
+```
+
+The next action is Phase 2C: move relation store, V8 access, posting cache, and
+reverse cache without changing behavior or authority. No package
+crystallization, daemon restart, owner flip, or scoring change is justified in
+Phase 2.
