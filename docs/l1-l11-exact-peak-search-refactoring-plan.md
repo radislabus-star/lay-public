@@ -1319,7 +1319,7 @@ separate gates.
 
 ## 13. Current Verdict And Next Action
 
-Current verdict: `PHASE_2G_MOVE_ONLY_PARITY_PASS`; implementation preflight
+Current verdict: `PHASE_2_COMPLETE_MOVE_ONLY_PARITY_PASS`; implementation preflight
 verdict remains `READY_TO_IMPLEMENT` with `safe_to_implement = true` and no
 blockers.
 
@@ -1651,3 +1651,47 @@ unchanged; training and crystallization runs remain zero.
 The next action is Phase 2H: move the inline runtime tests into
 `runtime/tests.rs` without changing behavior or authority, then repeat the
 complete Phase 2 parity gate.
+
+Phase 2H is complete, which closes the complete Phase 2 move-only split. The
+inline `cfg(test)` module moved from `runtime.rs` into `runtime/tests.rs`. The
+`484` moved test lines reproduced their pre-move SHA-256 exactly; no test body,
+fixture, assertion, name, runtime symbol, visibility, or production call path
+changed. The release binary also remained byte-identical to Phase 2G.
+
+`runtime.rs` fell from `1,051` to `566` lines; `runtime/tests.rs` contains
+`484` lines. The complete runtime tree is `4,713` lines, cumulative growth
+`3.24%` from the `4,565`-line Phase 0 monolith and below the `5%` budget. The
+facade now contains package loading, public orchestration, warm/profile entry
+points, and surface-index construction; proof fixtures no longer occupy the
+runtime facade body.
+
+The remote exact fingerprint reproduced all `616` cases, all eight readout
+modes, semantic SHA, projection SHA, all six route SHA values, candidate order,
+and zero permutation failures. Focused lexical tests passed `109/109`; route
+contracts passed `20/20` and `15/15`; `cargo check --lib --bins` and
+`scripts/check-lay-changed.sh` passed. Three sequential fixed-520 runs measured
+p99 `10.131`, `10.199`, and `9.709 ms`, all with the frozen candidate SHA.
+Peak RSS was `417,584-418,564 KiB`. This closes the Phase 2 no-regression gate;
+it does not satisfy or claim the future `<=5 ms` promotion target.
+
+All Cargo, proof, and benchmark work ran on `e@192.168.3.94` with
+`CARGO_BUILD_JOBS=20`, `RAYON_NUM_THREADS=20`, and 20 test threads. The release
+build took `178.63 s`, peaked at `2,398,432 KiB`, and produced the exact Phase
+2G binary SHA-256. No CPU-heavy project work ran locally.
+
+Tested: exact test-byte preservation, the complete Phase 2 module boundary,
+the production binary SHA, all frozen semantic routes, candidate order,
+focused lexical and route-contract tests, all lib/bin compile routes,
+three-run latency, package/input identity, changed checks, and Cargo disk
+budget. Not tested: the Phase 3 owner contract, dense oracle, typed edit graph,
+posting-bound soundness, exact-search quality, package redesign, or deployment.
+Runtime authority, installed package, daemon, and IBus remain unchanged;
+training and crystallization runs remain zero.
+
+```text
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_2H_2026-08-14/phase-2h.json
+```
+
+The next action is Phase 3: introduce one internal `L1PeakSearch` owner
+contract and wrap the unchanged legacy route behind it. Phase 3 may begin only
+as a separate commit and must retain all Phase 2 fingerprints exactly.

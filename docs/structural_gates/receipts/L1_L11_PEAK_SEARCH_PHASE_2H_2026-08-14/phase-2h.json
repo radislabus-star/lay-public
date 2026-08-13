@@ -1,0 +1,165 @@
+{
+  "schema": "lay.l11.peak-search-move-only-cut-receipt.v1",
+  "receipt": "L1_L11_PEAK_SEARCH_PHASE_2H_2026-08-14",
+  "date": "2026-08-14",
+  "phase": "2H",
+  "verdict": "PASS_MOVE_ONLY_PARITY_PHASE_2_COMPLETE",
+  "cut": {
+    "owner": "runtime proof fixtures and inline tests",
+    "source_before": "src/nanda_wave/lexical_grokking/runtime.rs inline cfg(test) module",
+    "source_after": "src/nanda_wave/lexical_grokking/runtime/tests.rs",
+    "runtime_rs_lines_before": 1051,
+    "runtime_rs_lines_after": 566,
+    "tests_lines_after": 484,
+    "total_runtime_tree_lines_after": 4713,
+    "cumulative_growth_from_phase_0_percent": 3.24,
+    "moved_test_body_sha256": "a7176e2056c04a855f98861c2d67e524e79ebdfe9d2404cc00705117142b0ce2",
+    "test_body_byte_parity": true,
+    "production_binary_byte_parity_with_phase_2g": true,
+    "public_exports_changed": 0,
+    "new_per_query_allocations": 0,
+    "algorithm_changed": false,
+    "call_order_changed": false,
+    "readout_owner_changed": false
+  },
+  "source_sha256": {
+    "src/nanda_wave/lexical_grokking/runtime.rs": "dc30b26a04e66b629dac89570c6fa02ceed6ba6fc9fe2c23c2f98f5c1accae18",
+    "src/nanda_wave/lexical_grokking/runtime/tests.rs": "a7176e2056c04a855f98861c2d67e524e79ebdfe9d2404cc00705117142b0ce2"
+  },
+  "immutable_inputs": {
+    "package_bytes": 190139182,
+    "package_sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+    "corpus_sha256": "abb9d71495acc27b7619b24621568ea72263f9bd40201aab9fffa1188fbff8f6",
+    "heldout_cases": 260000,
+    "heldout_sha256": "ba0a07ee7b784742c4aef08956c6e48dc9836da10d01dc50d516dc946b00c501",
+    "latency_cases": 520,
+    "latency_surfaces_sha256": "c501f9623299e5f1047b4706095e5a25a1168d65a2d3112c051e611f458615fb"
+  },
+  "behavior_parity": {
+    "replay_cases": 616,
+    "readout_modes": 8,
+    "semantic_sha256": "c6159bf499146c21a96723435ac4112496eca10bf8c1dd961964d789333267d7",
+    "projection_file_sha256": "85cf72483cf68c2f93e262569571cf1169b9feb90b8a1767536133afaef7b036",
+    "candidate_sha256": "2d99e87b685625d0791c857aecbfce022e6353d58aa5bc359c9d490b1a7c4a96",
+    "permutation_failures": 0,
+    "route_sha256": {
+      "readout_modes": "0984fc3ec6b0866d02c50c34b83c2966300acd39dbceacb67003843e42d92665",
+      "query": "730dce95ef34fad52ccc1cec814bb43a03ad5a86b82ce6c72d3422f1fcaef2d5",
+      "restore": "b2d42c23ab20a149195c929af4cf7ec15dfb7a14fe02582895cc061ae7241ab1",
+      "host_lattice": "8be14b9322a99471b314a3b7d520da437c13ca4bcc0ba7470fd4876462a9c2ea",
+      "service_lattice": "ba1f873cce3ca5c1b39e0f7fac24a49ca9606de37278610a16ef4492cd678a5f",
+      "restoration_permutation": "452c9c014d5537e773908a458711e1f47f9c9f5057641039632a2e27a29a43aa"
+    },
+    "receipt_path": "/home/ubu/.cache/lay/l1-peak-search-phase-2h-2026-08-14/behavior.receipt.json",
+    "projection_path": "/home/ubu/.cache/lay/l1-peak-search-phase-2h-2026-08-14/behavior.projection.json",
+    "wall_seconds": 29.72,
+    "peak_rss_kib": 1090524,
+    "average_cpu_percent": 158
+  },
+  "remote_execution": {
+    "host": "e@192.168.3.94",
+    "source_root": "/home/e/build/lay-l1-exact-phase2d",
+    "evidence_root": "/home/e/build/lay-l1-exact-phase2d-evidence",
+    "logical_cpus": 20,
+    "cargo_build_jobs": 20,
+    "rayon_threads": 20,
+    "test_threads": 20,
+    "rust_toolchain": "1.97.1",
+    "rustfmt_toolchain": "1.97.0",
+    "release_binary_sha256": "86a556dfb0ea35c712af50126e59f4779395ffb2d0efbe990d79221d16d8ac91",
+    "phase_2g_release_binary_sha256": "86a556dfb0ea35c712af50126e59f4779395ffb2d0efbe990d79221d16d8ac91",
+    "build_wall_seconds": 178.63,
+    "build_peak_rss_kib": 2398432,
+    "build_average_cpu_percent": 100,
+    "path_parity": "bwrap exposed immutable remote inputs at their original /home/ubu paths"
+  },
+  "graphify": {
+    "command": "remote graphify update .",
+    "workers": 20,
+    "wall_seconds": 12.17,
+    "peak_rss_kib": 341316,
+    "average_cpu_percent": 98,
+    "nodes": 14890,
+    "edges": 27394,
+    "communities": 2882,
+    "source_root_only": true
+  },
+  "latency": {
+    "baseline_p99_us": [22217, 21136],
+    "phase_2g_p99_us": [11520, 9864, 11061],
+    "phase_2h_p99_us": [10131, 10199, 9709],
+    "phase_2h_readout_p99_us": [10541, 10326, 9821],
+    "phase_2h_peak_rss_kib": [418564, 417584, 418428],
+    "phase_2h_average_cpu_percent": [174, 173, 176],
+    "candidate_sha256_exact_runs": 3,
+    "gate": "PASS_NO_REGRESSION_ABOVE_5_PERCENT",
+    "note": "All three p99 values remain below the best pinned baseline p99. This closes move-only Phase 2 and does not prove the future <=5 ms promotion target."
+  },
+  "checks": [
+    {
+      "command": "remote cargo +1.97.0 fmt --check",
+      "result": "PASS in 1.68 s"
+    },
+    {
+      "command": "remote scripts/cargo-guard.sh test lexical_grokking --lib -- --test-threads=20",
+      "result": "109 passed; 0 failed; 1251 filtered out"
+    },
+    {
+      "command": "remote scripts/cargo-guard.sh test --test typing_transition_authority_contract -- --test-threads=20",
+      "result": "20 passed; 0 failed"
+    },
+    {
+      "command": "remote scripts/cargo-guard.sh test --test text_mutation_monopoly_contract -- --test-threads=20",
+      "result": "15 passed; 0 failed"
+    },
+    {
+      "command": "remote scripts/cargo-guard.sh check --lib --bins",
+      "result": "PASS"
+    },
+    {
+      "command": "remote scripts/check-lay-changed.sh",
+      "result": "PASS in 21.39 s; peak RSS 2338664 KiB; average CPU 168%"
+    },
+    {
+      "command": "git diff --check",
+      "result": "PASS"
+    },
+    {
+      "command": "remote scripts/cargo-guard.sh --status",
+      "result": "target bytes 3268960256; budget bytes 12884901888; PASS"
+    }
+  ],
+  "tested": [
+    "exact preservation of all moved inline test bytes",
+    "complete Phase 2 module ownership split",
+    "production release binary identity with Phase 2G",
+    "all frozen semantic routes over 616 cases and eight readout modes",
+    "candidate order permutation invariance",
+    "focused lexical tests on final source bytes",
+    "transition authority and text mutation monopoly contracts",
+    "all library and binary compile routes",
+    "three sequential remote diverse latency runs",
+    "package and fixed-input byte identity"
+  ],
+  "not_tested": [
+    "Phase 3 single internal owner contract",
+    "dense oracle",
+    "typed edit traversal",
+    "posting bound soundness or feasibility",
+    "exact peak-search quality",
+    "new package representation",
+    "live deployment"
+  ],
+  "claim_boundary": {
+    "phase_2a_through_2h_move_only_parity_proven": true,
+    "phase_2_complete": true,
+    "exact_peak_search_correctness_proven": false,
+    "runtime_authority_changed": false,
+    "installed_runtime_changed": false,
+    "installed_package_changed": false,
+    "daemon_or_ibus_restarted": false,
+    "training_runs": 0,
+    "crystallization_runs": 0
+  },
+  "next_action": "Phase 3: introduce one internal L1PeakSearch owner contract and wrap the unchanged legacy route behind it while preserving all Phase 2 fingerprints exactly."
+}
