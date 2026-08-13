@@ -1,0 +1,108 @@
+{
+  "schema": "lay.l11.peak-search-behavior-receipt.v1",
+  "receipt": "L1_L11_PEAK_SEARCH_BEHAVIOR_2026-08-13",
+  "date": "2026-08-13",
+  "phase": 1,
+  "verdict": "PASS_BEHAVIOR_FROZEN",
+  "claim_boundary": {
+    "observable_legacy_behavior_frozen": true,
+    "move_only_refactor_parity_proven": false,
+    "exact_peak_search_correctness_proven": false,
+    "runtime_authority_changed": false,
+    "installed_runtime_changed": false,
+    "installed_package_changed": false,
+    "daemon_or_ibus_restarted": false
+  },
+  "implementation": {
+    "module": "src/nanda_wave/lexical_grokking/behavior_fingerprint.rs",
+    "module_sha256": "2f8a9ddd379a8ebf2b44d2825e382a092e9dc4c681dd7d089c8b78b27c624f08",
+    "command_flag": "--fingerprint-l1-behavior",
+    "proof_only": true,
+    "production_entrypoint_calls": 0,
+    "candidate_order_is_semantic": true,
+    "row_framing": "u64_le_byte_length_then_canonical_compact_json"
+  },
+  "inputs": {
+    "package_sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+    "corpus_sha256": "abb9d71495acc27b7619b24621568ea72263f9bd40201aab9fffa1188fbff8f6",
+    "heldout_sha256": "ba0a07ee7b784742c4aef08956c6e48dc9836da10d01dc50d516dc946b00c501",
+    "latency_surfaces_sha256": "c501f9623299e5f1047b4706095e5a25a1168d65a2d3112c051e611f458615fb",
+    "limit": 64
+  },
+  "coverage": {
+    "cases": 616,
+    "fixed_damaged_cases": 520,
+    "clean_ru_cases": 32,
+    "clean_en_cases": 32,
+    "heldout_surface_collision_cases": 32,
+    "readout_modes": 8,
+    "routes": [
+      "readout_modes",
+      "query",
+      "restore",
+      "host_lattice",
+      "service_lattice",
+      "restoration_permutation"
+    ],
+    "observed_restore_verdicts": {
+      "winner": 20,
+      "tied": 98,
+      "tied_overflow": 13,
+      "abstain": 485
+    }
+  },
+  "accepted_runs": {
+    "run_1_projection": "/home/ubu/.cache/lay/l1-peak-search-baseline-2026-08-13/behavior-fingerprint/stream-1.projection.json",
+    "run_1_receipt": "/home/ubu/.cache/lay/l1-peak-search-baseline-2026-08-13/behavior-fingerprint/stream-1.receipt.json",
+    "run_2_projection": "/home/ubu/.cache/lay/l1-peak-search-baseline-2026-08-13/behavior-fingerprint/stream-2.projection.json",
+    "run_2_receipt": "/home/ubu/.cache/lay/l1-peak-search-baseline-2026-08-13/behavior-fingerprint/stream-2.receipt.json",
+    "projection_file_sha256": "85cf72483cf68c2f93e262569571cf1169b9feb90b8a1767536133afaef7b036",
+    "semantic_sha256": "c6159bf499146c21a96723435ac4112496eca10bf8c1dd961964d789333267d7",
+    "old_candidate_projection_sha256": "2d99e87b685625d0791c857aecbfce022e6353d58aa5bc359c9d490b1a7c4a96",
+    "run_1_wall_seconds": 50.91,
+    "run_2_wall_seconds": 50.91,
+    "run_1_peak_rss_kib": 1077756,
+    "run_2_peak_rss_kib": 1074120,
+    "permutation_failures": 0,
+    "byte_identical_projection": true
+  },
+  "route_sha256": {
+    "readout_modes": "0984fc3ec6b0866d02c50c34b83c2966300acd39dbceacb67003843e42d92665",
+    "query": "730dce95ef34fad52ccc1cec814bb43a03ad5a86b82ce6c72d3422f1fcaef2d5",
+    "restore": "b2d42c23ab20a149195c929af4cf7ec15dfb7a14fe02582895cc061ae7241ab1",
+    "host_lattice": "8be14b9322a99471b314a3b7d520da437c13ca4bcc0ba7470fd4876462a9c2ea",
+    "service_lattice": "ba1f873cce3ca5c1b39e0f7fac24a49ca9606de37278610a16ef4492cd678a5f",
+    "restoration_permutation": "452c9c014d5537e773908a458711e1f47f9c9f5057641039632a2e27a29a43aa"
+  },
+  "rejected_experiment": {
+    "design": "materialize every full route row in one pretty JSON projection",
+    "semantic_verdict": "PASS_BEHAVIOR_FROZEN",
+    "receipt_path": "/home/ubu/.cache/lay/l1-peak-search-baseline-2026-08-13/behavior-fingerprint/run-1.receipt.json",
+    "projection_sha256": "88a1895159f95cfa9f7ad9509dec9e985663f07d64b7a05ed87ada2bb8bcf91a",
+    "projection_bytes": 646980277,
+    "wall_seconds": 61.26,
+    "peak_rss_kib": 5688412,
+    "verdict": "REJECT_PROOF_HARNESS_RESOURCE_BLOWUP",
+    "cleanup": "delete only the rejected 646,980,277-byte projection; retain this receipt and the compact command receipt"
+  },
+  "tested": [
+    "all semantic GrokkingCandidate fields and candidate order for every existing ReadoutMode",
+    "query projection",
+    "restoration verdict, authority, evidence, and candidates",
+    "host lattice projection",
+    "service lattice projection",
+    "stable host stats",
+    "stable benchmark projection and old candidate SHA-256",
+    "candidate permutation followed by canonical total-order restoration",
+    "two independent fresh-process fingerprint runs"
+  ],
+  "not_tested": [
+    "move-only runtime split",
+    "dense oracle",
+    "typed edit graph",
+    "posting bounds",
+    "exact peak search",
+    "new package format",
+    "live deployment"
+  ]
+}

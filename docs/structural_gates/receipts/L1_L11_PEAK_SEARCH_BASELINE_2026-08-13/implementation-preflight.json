@@ -1,0 +1,510 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-l11-exact-typed-peak-search-2026-08-13",
+  "authority_bearing": true,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "runtime-source",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/runtime.rs",
+      "expect": {
+        "size_bytes": 171868,
+        "sha256": "21af65a2b3c123426d4c71e27c3721830b5978d4f580fa70095e287e226e234c",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "proof-source",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/proof.rs",
+      "expect": {
+        "size_bytes": 131541,
+        "sha256": "1b81728e0f423724cc0ea0fac04ac1fae402feca5cc482e217f7815481b7bf3e",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "v8-source",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/v8.rs",
+      "expect": {
+        "size_bytes": 40868,
+        "sha256": "cb722f5dfb7c7d80ccc1ee298ee898e2220f178f50ef19f27bdf7feba564605a",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "service-source",
+      "kind": "file",
+      "path": "../../../../src/bin/lay_l1_1_serve.rs",
+      "expect": {
+        "size_bytes": 20805,
+        "sha256": "b401786b945ef44411c283389295c86affde82972536bcfd172296549f0026f4",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "installed-reader",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-l1.1-serve",
+      "expect": {
+        "size_bytes": 1965944,
+        "sha256": "e93d0743baa063b395da57e2acc329ed5f4458cf2b8f0c833288aac9bb3317b6",
+        "mode": "0755"
+      }
+    },
+    {
+      "id": "installed-daemon",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+      "expect": {
+        "size_bytes": 8210072,
+        "sha256": "ca9a574b4d6019b98d91b76ac38246943d5792661d8e0a13c93f81291f4a38c0",
+        "mode": "0755"
+      }
+    },
+    {
+      "id": "installed-ibus",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "expect": {
+        "size_bytes": 6257264,
+        "sha256": "227cd51849bb85371d4f0f4f20410d81eac4f84b822984fd7d260d0a9856b562",
+        "mode": "0755"
+      }
+    },
+    {
+      "id": "installed-package",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin",
+      "expect": {
+        "size_bytes": 190139182,
+        "sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+        "prefix_hex": "4c41594c31563800",
+        "mode": "0644"
+      }
+    },
+    {
+      "id": "installed-manifest",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.installed.json",
+      "expect": {
+        "size_bytes": 505,
+        "sha256": "6b48dd23694edc0a5c9c63509119a4684b90d2dbde776f0abf61fb8ec82744e6",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "combined-corpus",
+      "kind": "file",
+      "path": "/home/ubu/.cache/lay/l1-peak-search-baseline-2026-08-13/corpus-852582.txt",
+      "expect": {
+        "size_bytes": 14262280,
+        "sha256": "abb9d71495acc27b7619b24621568ea72263f9bd40201aab9fffa1188fbff8f6",
+        "mode": "0644"
+      }
+    },
+    {
+      "id": "fixed-heldout",
+      "kind": "file",
+      "path": "/home/ubu/.cache/lay/l1-peak-search-baseline-2026-08-13/heldout-13x20000.txt",
+      "expect": {
+        "size_bytes": 4603023,
+        "sha256": "ba0a07ee7b784742c4aef08956c6e48dc9836da10d01dc50d516dc946b00c501",
+        "mode": "0644"
+      }
+    },
+    {
+      "id": "fixed-latency-surfaces",
+      "kind": "file",
+      "path": "/home/ubu/.cache/lay/l1-peak-search-baseline-2026-08-13/latency-13x40.txt",
+      "expect": {
+        "size_bytes": 11569,
+        "sha256": "c501f9623299e5f1047b4706095e5a25a1168d65a2d3112c051e611f458615fb",
+        "mode": "0644"
+      }
+    },
+    {
+      "id": "full-proof-projection",
+      "kind": "file",
+      "path": "/home/ubu/.cache/lay/l1-peak-search-baseline-2026-08-13/full-proof.semantic.json",
+      "expect": {
+        "size_bytes": 61460,
+        "sha256": "f11cd463ce7ed0bb8ff2eec989d1294776d00d54d2f7b8b40cd35cdacd8eb9fa",
+        "mode": "0644"
+      }
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "edit-isolated-source", "kind": "filesystem_edit"},
+      {"id": "write-proof-receipts", "kind": "filesystem_write"},
+      {"id": "run-scoped-cargo-gates", "kind": "test_execution"},
+      {"id": "read-live-health", "kind": "runtime_snapshot", "comparison_id": "live-health-projection"},
+      {"id": "derive-proof-indexes", "kind": "proof_artifact_write"},
+      {"id": "atomic-final-deployment", "kind": "runtime_deployment"}
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "literal_case_specific_runtime_branch",
+      "second_live_authority_owner",
+      "heldout_target_runtime_leak",
+      "runtime_oracle_dependency",
+      "safety_or_verifier_weakening",
+      "preproof_runtime_restart",
+      "preproof_installed_package_mutation",
+      "uncertified_winner_authority",
+      "hidden_legacy_fallback",
+      "corpus_crystallization_before_phase13"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "runtime-route-vetoes",
+      "path": "../../../../src/nanda_wave/lexical_grokking/runtime.rs",
+      "sha256": "21af65a2b3c123426d4c71e27c3721830b5978d4f580fa70095e287e226e234c",
+      "forbidden_effect_patterns": [
+        {"effect": "literal_case_specific_runtime_branch", "regex": "(?:surface|word|token)\\s*==\\s*\\\""},
+        {"effect": "second_live_authority_owner", "regex": "(?:ExactTypedPeakSearch|LegacyBirthSearch).{0,200}(?:fanout|shadow_worker|second_owner)"},
+        {"effect": "heldout_target_runtime_leak", "regex": "(?:heldout_target|proof_target|expected_target)"},
+        {"effect": "runtime_oracle_dependency", "regex": "(?:dense_oracle|peak_oracle)"},
+        {"effect": "safety_or_verifier_weakening", "regex": "(?:SafetyGate|verifier).{0,100}(?:disable|bypass|skip|weaken)"},
+        {"effect": "uncertified_winner_authority", "regex": "(?:Winner|winner).{0,120}(?:Uncertified|Unresolved)"},
+        {"effect": "hidden_legacy_fallback", "regex": "ExactTypedPeakSearch.{0,200}LegacyBirthSearch"},
+        {"effect": "corpus_crystallization_before_phase13", "regex": "crystallize_l1_lexical_grokking"}
+      ]
+    },
+    {
+      "id": "proof-route-vetoes",
+      "path": "../../../../src/nanda_wave/lexical_grokking/proof.rs",
+      "sha256": "1b81728e0f423724cc0ea0fac04ac1fae402feca5cc482e217f7815481b7bf3e",
+      "forbidden_effect_patterns": [
+        {"effect": "generated_traffic", "regex": "(?:TcpStream|UdpSocket|ureq::|reqwest::|curl\\b)"},
+        {"effect": "synthetic_fixture", "regex": "include_(?:str|bytes)!\\([^)]*(?:fixture|heldout)"},
+        {"effect": "preproof_runtime_restart", "regex": "(?:systemctl|restart|kill|pkill).{0,80}(?:lay-daemon|ibus)"}
+      ]
+    },
+    {
+      "id": "v8-route-vetoes",
+      "path": "../../../../src/nanda_wave/lexical_grokking/v8.rs",
+      "sha256": "cb722f5dfb7c7d80ccc1ee298ee898e2220f178f50ef19f27bdf7feba564605a",
+      "forbidden_effect_patterns": [
+        {"effect": "preproof_installed_package_mutation", "regex": "(?:write|rename|remove_file|copy).{0,120}/home/ubu/\\.local/share/lay"}
+      ]
+    },
+    {
+      "id": "service-route-vetoes",
+      "path": "../../../../src/bin/lay_l1_1_serve.rs",
+      "sha256": "b401786b945ef44411c283389295c86affde82972536bcfd172296549f0026f4",
+      "forbidden_effect_patterns": [
+        {"effect": "preproof_runtime_restart", "regex": "(?:systemctl|restart|kill|pkill).{0,80}(?:lay-daemon|ibus)"}
+      ]
+    }
+  ],
+  "preserved_artifacts": [
+    {
+      "id": "installed-reader-pair",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-l1.1-serve",
+      "policy": "byte_identical_until_phase14_then_atomic_replace",
+      "rollback_policy": "restore pinned reader SHA-256 and prove health",
+      "baseline_check_id": "installed-reader"
+    },
+    {
+      "id": "installed-daemon",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+      "policy": "byte_identical",
+      "rollback_policy": "must remain byte-identical",
+      "baseline_check_id": "installed-daemon"
+    },
+    {
+      "id": "installed-ibus",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "policy": "byte_identical",
+      "rollback_policy": "must remain byte-identical",
+      "baseline_check_id": "installed-ibus"
+    },
+    {
+      "id": "installed-package-pair",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin",
+      "policy": "byte_identical_until_phase14_then_atomic_replace_if_required",
+      "rollback_policy": "restore pinned package and installed manifest atomically",
+      "baseline_check_id": "installed-package"
+    },
+    {
+      "id": "installed-manifest",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.installed.json",
+      "policy": "byte_identical_until_phase14",
+      "rollback_policy": "restore pinned manifest with prior package pair",
+      "baseline_check_id": "installed-manifest"
+    },
+    {
+      "id": "combined-corpus",
+      "path": "/home/ubu/.cache/lay/l1-peak-search-baseline-2026-08-13/corpus-852582.txt",
+      "policy": "immutable_proof_input",
+      "rollback_policy": "must remain byte-identical",
+      "baseline_check_id": "combined-corpus"
+    },
+    {
+      "id": "fixed-heldout",
+      "path": "/home/ubu/.cache/lay/l1-peak-search-baseline-2026-08-13/heldout-13x20000.txt",
+      "policy": "immutable_proof_input",
+      "rollback_policy": "must remain byte-identical",
+      "baseline_check_id": "fixed-heldout"
+    },
+    {
+      "id": "fixed-latency-surfaces",
+      "path": "/home/ubu/.cache/lay/l1-peak-search-baseline-2026-08-13/latency-13x40.txt",
+      "policy": "immutable_proof_input",
+      "rollback_policy": "must remain byte-identical",
+      "baseline_check_id": "fixed-latency-surfaces"
+    },
+    {
+      "id": "full-proof-projection",
+      "path": "/home/ubu/.cache/lay/l1-peak-search-baseline-2026-08-13/full-proof.semantic.json",
+      "policy": "immutable_semantic_baseline",
+      "rollback_policy": "must remain byte-identical",
+      "baseline_check_id": "full-proof-projection"
+    }
+  ],
+  "state_machine": {
+    "initial_state": "BASELINE_LOCKED",
+    "terminal_states": [
+      "LIVE_OWNER",
+      "IMPLEMENTATION_FAILED",
+      "ARTIFACT_FAILED",
+      "DEPLOY_FAILED"
+    ],
+    "steps": [
+      {
+        "id": "implement-and-prove-offline",
+        "from": "BASELINE_LOCKED",
+        "to": "SHADOW_PROVEN",
+        "mutates": true,
+        "failure_state": "IMPLEMENTATION_FAILED",
+        "cleanup": "retain failed receipts; revert only agent-owned isolated-worktree patch; do not install, restart, or change package bytes",
+        "preserves": [
+          "installed-reader-pair",
+          "installed-daemon",
+          "installed-ibus",
+          "installed-package-pair",
+          "installed-manifest",
+          "combined-corpus",
+          "fixed-heldout",
+          "fixed-latency-surfaces",
+          "full-proof-projection"
+        ],
+        "test_id": "offline-failure-isolation"
+      },
+      {
+        "id": "derive-or-repack-artifact",
+        "from": "SHADOW_PROVEN",
+        "to": "ARTIFACT_PROVEN",
+        "mutates": true,
+        "failure_state": "ARTIFACT_FAILED",
+        "cleanup": "delete only failed candidate artifact; retain receipts; leave installed binary, package, and manifest byte-identical",
+        "preserves": [
+          "installed-reader-pair",
+          "installed-daemon",
+          "installed-ibus",
+          "installed-package-pair",
+          "installed-manifest",
+          "combined-corpus",
+          "fixed-heldout",
+          "fixed-latency-surfaces",
+          "full-proof-projection"
+        ],
+        "test_id": "artifact-failure-isolation"
+      },
+      {
+        "id": "atomic-owner-deployment",
+        "from": "ARTIFACT_PROVEN",
+        "to": "LIVE_OWNER",
+        "mutates": true,
+        "failure_state": "DEPLOY_FAILED",
+        "cleanup": "atomically restore pinned prior reader/package/manifest pair, restart only lay-daemon child route, and prove IBus keyboard health",
+        "preserves": [
+          "installed-daemon",
+          "installed-ibus",
+          "combined-corpus",
+          "fixed-heldout",
+          "fixed-latency-surfaces",
+          "full-proof-projection"
+        ],
+        "test_id": "deployment-rollback"
+      }
+    ]
+  },
+  "invariants": [
+    {
+      "id": "legacy-move-parity",
+      "statement": "every move-only cut preserves the complete semantic candidate projection, order, verdict, and safety effects",
+      "test_id": "legacy-behavior-parity"
+    },
+    {
+      "id": "single-live-owner",
+      "statement": "one readout invokes one selected L1PeakSearch and one nonlinear settlement authority route",
+      "test_id": "single-owner-route"
+    },
+    {
+      "id": "oracle-independent",
+      "statement": "dense oracle is proof-only and heldout targets cannot influence query search, closure, settlement, or certificates",
+      "test_id": "oracle-target-independence"
+    },
+    {
+      "id": "certified-authority",
+      "statement": "Winner authority requires a complete certificate; unresolved search fails closed without hidden legacy fallback",
+      "test_id": "certificate-failure-injection"
+    },
+    {
+      "id": "conjunctive-promotion",
+      "statement": "all per-class quality, clean, safety, oracle, package, RSS, and latency gates pass simultaneously before deployment",
+      "test_id": "full-fixed-promotion-gate"
+    },
+    {
+      "id": "proof-inputs-immutable",
+      "statement": "combined and split-language corpora, heldout denominator, latency surfaces, and baseline proof projection remain byte-identical",
+      "test_id": "proof-input-parity"
+    },
+    {
+      "id": "rollback-restores-keyboard",
+      "statement": "a failed deployment restores the exact prior artifact pair and leaves keyboard input healthy without a second in-process owner",
+      "test_id": "deployment-rollback"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "reader-source-identity",
+      "producer": "HEAD 15dc9588 lay-l11-serve release build",
+      "consumer": "installed lay-l1.1-serve bytes",
+      "comparison": "SHA-256 and ELF BuildID byte identity",
+      "test_id": "reader-reproducibility"
+    },
+    {
+      "id": "denominator-generator-identity",
+      "producer": "fixed corruption generator over corpus terminal IDs",
+      "consumer": "combined and split-language heldout files",
+      "comparison": "line count plus SHA-256 byte identity",
+      "test_id": "proof-input-parity"
+    },
+    {
+      "id": "peak-search-wordcenter-identity",
+      "producer": "L1PeakSearch competitive closure WordCenterId",
+      "consumer": "nonlinear settlement, decoder, and completeness certificate",
+      "comparison": "WordCenterId and candidate projection parity with dense oracle",
+      "test_id": "exact-oracle-parity"
+    },
+    {
+      "id": "deployment-artifact-identity",
+      "producer": "proved release binary and optional proved package",
+      "consumer": "installed reader/package/manifest pair",
+      "comparison": "SHA-256 byte identity before service restart",
+      "test_id": "deployment-artifact-parity"
+    }
+  ],
+  "runtime_comparisons": [
+    {
+      "id": "live-health-projection",
+      "source": "lay-l1.1-serve health and stats over /run/user/1000/lay-l11.sock",
+      "comparison": "exact_stable_projection",
+      "reason": "health identity must remain stable while request count, uptime, process IDs, and residency are dynamic",
+      "stable_fields": [
+        "status",
+        "package_path",
+        "package_bytes",
+        "terminal_count",
+        "manifest_generation",
+        "atom_count",
+        "forward_relations",
+        "reverse_relations",
+        "exact_surface_count",
+        "character_anchor_count",
+        "delta_count",
+        "tombstone_count"
+      ],
+      "expected_to_change_fields": [
+        "package_path_after_phase14_if_new_format_is_proved",
+        "package_bytes_after_phase14_if_new_format_is_proved",
+        "manifest_generation_after_phase14_if_manifest_changes"
+      ],
+      "observed_not_compared_fields": [
+        "requests_served",
+        "uptime_ms",
+        "pid",
+        "rss",
+        "pss",
+        "swap"
+      ],
+      "test_id": "live-health-parity"
+    }
+  ],
+  "tests": [
+    {
+      "id": "offline-failure-isolation",
+      "kind": "fault_injection",
+      "expected": "terminal IMPLEMENTATION_FAILED retains receipts and leaves every installed artifact and immutable proof input byte-identical"
+    },
+    {
+      "id": "artifact-failure-isolation",
+      "kind": "fault_injection",
+      "expected": "terminal ARTIFACT_FAILED removes only failed candidate artifact and leaves installed runtime unchanged"
+    },
+    {
+      "id": "deployment-rollback",
+      "kind": "fault_injection",
+      "expected": "terminal DEPLOY_FAILED restores exact prior reader/package/manifest SHA-256 values and proves keyboard health"
+    },
+    {
+      "id": "legacy-behavior-parity",
+      "kind": "parity",
+      "expected": "two repeated stable projections equal baseline candidate SHA-256 and full proof semantic SHA-256 after every move-only cut"
+    },
+    {
+      "id": "single-owner-route",
+      "kind": "integration",
+      "expected": "exactly one execution path reaches one evidence accumulator, one settlement owner, and one restoration authority owner per readout"
+    },
+    {
+      "id": "oracle-target-independence",
+      "kind": "parity",
+      "expected": "adding or removing proof-only target labels changes no oracle search, closure, settlement, certificate, or result bytes"
+    },
+    {
+      "id": "certificate-failure-injection",
+      "kind": "fault_injection",
+      "expected": "every understated bound, missing edge/dependency, equality loss, or fingerprint corruption prevents certified Winner authority"
+    },
+    {
+      "id": "full-fixed-promotion-gate",
+      "kind": "integration",
+      "expected": "13 of 13 classes exceed 95 percent unique top-1, all lattice coverages meet 99 percent, clean meets 99.9 percent, false authority and singleton are zero, oracle parity is exact, package <=195 MiB, and hot p99 <=5 ms"
+    },
+    {
+      "id": "proof-input-parity",
+      "kind": "parity",
+      "expected": "corpus, combined and split heldout, latency surfaces, and baseline proof projections retain exact counts and SHA-256 values"
+    },
+    {
+      "id": "reader-reproducibility",
+      "kind": "parity",
+      "expected": "clean HEAD release build reproduces installed reader SHA-256 and ELF BuildID"
+    },
+    {
+      "id": "deployment-artifact-parity",
+      "kind": "parity",
+      "expected": "proved release binary and optional proved package and manifest retain exact SHA-256 values while staged and immediately before the single service restart"
+    },
+    {
+      "id": "exact-oracle-parity",
+      "kind": "parity",
+      "expected": "optimized certified search and dense oracle emit identical competitive closure, dependency state, candidates, verdict, and certificate-bound result"
+    },
+    {
+      "id": "live-health-parity",
+      "kind": "integration",
+      "expected": "declared stable health projection is exact while dynamic request, uptime, PID, and residency fields remain excluded"
+    }
+  ]
+}

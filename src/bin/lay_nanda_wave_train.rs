@@ -743,6 +743,36 @@ fn main() -> io::Result<()> {
         );
         return Ok(());
     }
+    if let Some(package) = arg_path(&args, "--fingerprint-l1-behavior") {
+        let surfaces = arg_path(&args, "--surfaces")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--surfaces is required"))?;
+        let corpus = arg_path(&args, "--corpus")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--corpus is required"))?;
+        let heldout = arg_path(&args, "--heldout")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--heldout is required"))?;
+        let output = arg_path(&args, "--out")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--out is required"))?;
+        let report = lay::nanda_wave::fingerprint_l1_behavior(
+            &package,
+            &surfaces,
+            &corpus,
+            &heldout,
+            &output,
+            arg_usize(&args, "--limit").unwrap_or(64),
+            arg_usize(&args, "--clean-per-language").unwrap_or(32),
+            arg_usize(&args, "--collision-samples").unwrap_or(32),
+        )?;
+        if let Some(receipt) = arg_path(&args, "--receipt") {
+            let mut bytes = serde_json::to_vec_pretty(&report).map_err(io::Error::other)?;
+            bytes.push(b'\n');
+            lay::private_file::write_private_bytes(&receipt, &bytes)?;
+        }
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
     if let Some(corpus) = arg_path(&args, "--export-l1-latency-surfaces") {
         let output = arg_path(&args, "--out")
             .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--out is required"))?;

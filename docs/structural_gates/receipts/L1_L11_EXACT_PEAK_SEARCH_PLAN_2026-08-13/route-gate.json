@@ -1,0 +1,283 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "PASS",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": true,
+  "contract": "docs/structural_gates/receipts/L1_L11_EXACT_PEAK_SEARCH_PLAN_2026-08-13/route-design.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "source_root": null,
+  "node_count": 9,
+  "edge_count": 11,
+  "routes": [
+    {
+      "id": "exact-readout-execution",
+      "event": "exact_readout",
+      "kind": "execution",
+      "entry": "readout_entry",
+      "via": [],
+      "terminal": "wordcenter_accumulator",
+      "path_count": 2,
+      "paths": [
+        [
+          "readout_entry",
+          "l1_peak_search",
+          "posting_nodes",
+          "wordcenter_accumulator"
+        ],
+        [
+          "readout_entry",
+          "l1_peak_search",
+          "typed_edit_nodes",
+          "wordcenter_accumulator"
+        ]
+      ],
+      "role_owners": {
+        "orchestrator": [
+          "l1_peak_search"
+        ],
+        "producer": [
+          "posting_nodes",
+          "typed_edit_nodes"
+        ],
+        "interface": [
+          "readout_entry"
+        ],
+        "evidence_owner": [
+          "wordcenter_accumulator"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "readout_entry",
+          "to": "l1_peak_search",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "readout_entry",
+              "l1_peak_search"
+            ]
+          ]
+        },
+        {
+          "from": "l1_peak_search",
+          "to": "wordcenter_accumulator",
+          "via": [],
+          "graph": "execution",
+          "count": 2,
+          "minimum_count": 2,
+          "min": 2,
+          "max": 2,
+          "paths": [
+            [
+              "l1_peak_search",
+              "posting_nodes",
+              "wordcenter_accumulator"
+            ],
+            [
+              "l1_peak_search",
+              "typed_edit_nodes",
+              "wordcenter_accumulator"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "exact-readout-posting-authority",
+      "event": "exact_readout",
+      "kind": "authority",
+      "entry": "posting_nodes",
+      "via": [],
+      "terminal": "restoration_authority",
+      "path_count": 1,
+      "paths": [
+        [
+          "posting_nodes",
+          "wordcenter_accumulator",
+          "nonlinear_settlement",
+          "restoration_authority"
+        ]
+      ],
+      "role_owners": {
+        "candidate_rank_owner": [
+          "nonlinear_settlement"
+        ],
+        "producer": [
+          "posting_nodes"
+        ],
+        "authorization_owner": [
+          "restoration_authority"
+        ],
+        "evidence_owner": [
+          "wordcenter_accumulator"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "wordcenter_accumulator",
+          "to": "restoration_authority",
+          "via": [
+            "nonlinear_settlement"
+          ],
+          "graph": "authority",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "wordcenter_accumulator",
+              "nonlinear_settlement",
+              "restoration_authority"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "exact-readout-edit-authority",
+      "event": "exact_readout",
+      "kind": "authority",
+      "entry": "typed_edit_nodes",
+      "via": [],
+      "terminal": "restoration_authority",
+      "path_count": 1,
+      "paths": [
+        [
+          "typed_edit_nodes",
+          "wordcenter_accumulator",
+          "nonlinear_settlement",
+          "restoration_authority"
+        ]
+      ],
+      "role_owners": {
+        "candidate_rank_owner": [
+          "nonlinear_settlement"
+        ],
+        "authorization_owner": [
+          "restoration_authority"
+        ],
+        "producer": [
+          "typed_edit_nodes"
+        ],
+        "evidence_owner": [
+          "wordcenter_accumulator"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "wordcenter_accumulator",
+          "to": "restoration_authority",
+          "via": [
+            "nonlinear_settlement"
+          ],
+          "graph": "authority",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "wordcenter_accumulator",
+              "nonlinear_settlement",
+              "restoration_authority"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "exact-readout-observation",
+      "event": "exact_readout",
+      "kind": "observation",
+      "entry": "l1_peak_search",
+      "via": [],
+      "terminal": "search_diagnostics",
+      "path_count": 1,
+      "paths": [
+        [
+          "l1_peak_search",
+          "search_diagnostics"
+        ]
+      ],
+      "role_owners": {
+        "orchestrator": [
+          "l1_peak_search"
+        ],
+        "observer": [
+          "search_diagnostics"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "oracle-proof",
+      "event": "oracle_compare",
+      "kind": "proof",
+      "entry": "nonlinear_settlement",
+      "via": [],
+      "terminal": "dense_oracle_parity",
+      "path_count": 1,
+      "paths": [
+        [
+          "nonlinear_settlement",
+          "dense_oracle_parity"
+        ]
+      ],
+      "role_owners": {
+        "proof_owner": [
+          "dense_oracle_parity"
+        ],
+        "candidate_rank_owner": [
+          "nonlinear_settlement"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {
+    "exact_readout": {
+      "authorization_owner": [
+        "restoration_authority"
+      ],
+      "render_owner": [],
+      "display_rank_owner": [],
+      "evidence_owner": [
+        "wordcenter_accumulator"
+      ],
+      "candidate_rank_owner": [
+        "nonlinear_settlement"
+      ],
+      "mutation_owner": []
+    }
+  },
+  "source_evidence": {
+    "expected": 0,
+    "verified": 0,
+    "complete": true
+  },
+  "issues": [],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": false,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

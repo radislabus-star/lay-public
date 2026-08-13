@@ -289,7 +289,7 @@ fn benchmark_host_once(host: &L1RestorationHost, surface: &str, limit: usize) ->
     }
 }
 
-fn candidate_json(
+pub(super) fn candidate_json(
     memory: &LexicalGrokkingMemory,
     candidate: GrokkingCandidate,
 ) -> serde_json::Value {

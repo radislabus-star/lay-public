@@ -5,6 +5,7 @@
 
 mod anti_postings;
 mod atoms;
+mod behavior_fingerprint;
 mod compaction;
 mod compiler;
 mod composite;
@@ -25,6 +26,7 @@ mod training_corpus;
 mod v8;
 mod wave_basis;
 
+pub use behavior_fingerprint::fingerprint_l1_behavior;
 pub use compaction::compact_depth0_package;
 pub use composite::initialize_manifest as initialize_l11_composite_manifest;
 pub use composite::{admit_delta as admit_l11_delta, admit_tombstone as admit_l11_tombstone};
