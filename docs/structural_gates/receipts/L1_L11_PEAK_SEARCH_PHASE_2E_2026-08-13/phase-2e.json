@@ -1,0 +1,180 @@
+{
+  "schema": "lay.l11.peak-search-move-only-cut-receipt.v1",
+  "receipt": "L1_L11_PEAK_SEARCH_PHASE_2E_2026-08-13",
+  "date": "2026-08-13",
+  "phase": "2E",
+  "verdict": "PASS_MOVE_ONLY_PARITY",
+  "cut": {
+    "owner": "pure edit geometry and operator-recognition kernels",
+    "source_before": "src/nanda_wave/lexical_grokking/runtime.rs",
+    "source_after": "src/nanda_wave/lexical_grokking/runtime/geometry.rs",
+    "runtime_rs_lines_before": 3349,
+    "runtime_rs_lines_after": 3126,
+    "geometry_lines_after": 248,
+    "total_runtime_tree_lines_after": 4673,
+    "cumulative_growth_from_phase_0_percent": 2.37,
+    "moved_kernels": [
+      "Damerau distance with the unchanged stack and heap paths",
+      "missing-letter reconstruction mode recognition",
+      "surface substitution and transposition mode recognition",
+      "ordered-subsequence and deletion-transposition traversal",
+      "ambiguity geometry link predicate"
+    ],
+    "explicitly_not_moved": [
+      "geometry reserve ranking",
+      "operator candidate birth",
+      "candidate certificate interference",
+      "settlement and finalization"
+    ],
+    "public_exports_changed": 0,
+    "new_per_query_allocations": 0,
+    "algorithm_changed": false,
+    "call_order_changed": false,
+    "readout_owner_changed": false
+  },
+  "source_sha256": {
+    "src/nanda_wave/lexical_grokking/runtime.rs": "09a2f53b535d58232d097f1bdcb09d8a704690c478432821d79032ef7455f01b",
+    "src/nanda_wave/lexical_grokking/runtime/geometry.rs": "26fbee2c911520def34c7759488199ae801d803bfdb0cf55943fc829d4de2041"
+  },
+  "immutable_inputs": {
+    "package_bytes": 190139182,
+    "package_sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+    "corpus_sha256": "abb9d71495acc27b7619b24621568ea72263f9bd40201aab9fffa1188fbff8f6",
+    "heldout_cases": 260000,
+    "heldout_sha256": "ba0a07ee7b784742c4aef08956c6e48dc9836da10d01dc50d516dc946b00c501",
+    "latency_cases": 520,
+    "latency_surfaces_sha256": "c501f9623299e5f1047b4706095e5a25a1168d65a2d3112c051e611f458615fb"
+  },
+  "behavior_parity": {
+    "replay_cases": 616,
+    "readout_modes": 8,
+    "semantic_sha256": "c6159bf499146c21a96723435ac4112496eca10bf8c1dd961964d789333267d7",
+    "projection_file_sha256": "85cf72483cf68c2f93e262569571cf1169b9feb90b8a1767536133afaef7b036",
+    "candidate_sha256": "2d99e87b685625d0791c857aecbfce022e6353d58aa5bc359c9d490b1a7c4a96",
+    "permutation_failures": 0,
+    "route_sha256": {
+      "readout_modes": "0984fc3ec6b0866d02c50c34b83c2966300acd39dbceacb67003843e42d92665",
+      "query": "730dce95ef34fad52ccc1cec814bb43a03ad5a86b82ce6c72d3422f1fcaef2d5",
+      "restore": "b2d42c23ab20a149195c929af4cf7ec15dfb7a14fe02582895cc061ae7241ab1",
+      "host_lattice": "8be14b9322a99471b314a3b7d520da437c13ca4bcc0ba7470fd4876462a9c2ea",
+      "service_lattice": "ba1f873cce3ca5c1b39e0f7fac24a49ca9606de37278610a16ef4492cd678a5f",
+      "restoration_permutation": "452c9c014d5537e773908a458711e1f47f9c9f5057641039632a2e27a29a43aa"
+    },
+    "receipt_path": "/home/ubu/.cache/lay/l1-peak-search-phase-2e-2026-08-13/behavior.receipt.json",
+    "projection_path": "/home/ubu/.cache/lay/l1-peak-search-phase-2e-2026-08-13/behavior.projection.json",
+    "wall_seconds": 32.56,
+    "peak_rss_kib": 1066492,
+    "average_cpu_percent": 155
+  },
+  "remote_execution": {
+    "host": "e@192.168.3.94",
+    "source_root": "/home/e/build/lay-l1-exact-phase2d",
+    "evidence_root": "/home/e/build/lay-l1-exact-phase2d-evidence",
+    "logical_cpus": 20,
+    "cargo_build_jobs": 20,
+    "rayon_threads": 20,
+    "rust_toolchain": "1.97.1",
+    "release_binary_sha256": "f790b7b44ab62bdd593a0fcfe9650479a078a6354f257e364b7ebc72d4446ee2",
+    "build_wall_seconds": 182.67,
+    "build_peak_rss_kib": 2398692,
+    "build_average_cpu_percent": 100,
+    "path_parity": "bwrap exposed immutable remote inputs at their original /home/ubu paths so path-bearing JSON remained byte-comparable"
+  },
+  "latency": {
+    "baseline_p99_us": [
+      22217,
+      21136
+    ],
+    "phase_2e_p99_us": [
+      10005,
+      10975,
+      10272
+    ],
+    "phase_2e_peak_rss_kib": [
+      417612,
+      418640,
+      417648
+    ],
+    "phase_2e_average_cpu_percent": [
+      179,
+      175,
+      174
+    ],
+    "candidate_sha256_exact_runs": 3,
+    "gate": "PASS_NO_REGRESSION_ABOVE_5_PERCENT",
+    "note": "All three p99 values remain below the best pinned baseline p99. This does not prove the future <=5 ms promotion target."
+  },
+  "checks": [
+    {
+      "command": "remote cargo +1.97.0 fmt --check",
+      "result": "PASS"
+    },
+    {
+      "command": "remote scripts/cargo-guard.sh test lexical_grokking --lib -- --test-threads=20",
+      "result": "109 passed; 0 failed; 1251 filtered out"
+    },
+    {
+      "command": "remote scripts/cargo-guard.sh test --test typing_transition_authority_contract",
+      "result": "20 passed; 0 failed"
+    },
+    {
+      "command": "remote scripts/cargo-guard.sh test --test text_mutation_monopoly_contract",
+      "result": "15 passed; 0 failed"
+    },
+    {
+      "command": "remote scripts/cargo-guard.sh check --lib --bins",
+      "result": "PASS"
+    },
+    {
+      "command": "git diff --check",
+      "result": "PASS"
+    },
+    {
+      "command": "remote scripts/cargo-guard.sh --status",
+      "result": "target bytes 1859117056; budget bytes 12884901888; PASS"
+    }
+  ],
+  "pre_execution_failures": [
+    {
+      "failure": "rustfmt component absent from remote 1.97.1 toolchain",
+      "effect": "format check stopped before compilation",
+      "repair": "use installed rustfmt from toolchain 1.97.0 while retaining rustc 1.97.1 for builds"
+    },
+    {
+      "failure": "initial moved source required three rustfmt-only line wraps",
+      "effect": "format check stopped before compilation",
+      "repair": "apply the exact rustfmt diff and rerun all gates"
+    }
+  ],
+  "tested": [
+    "move-only extraction of pure edit-geometry kernels",
+    "all frozen semantic routes over 616 cases and eight readout modes",
+    "candidate order permutation invariance",
+    "focused lexical tests",
+    "transition authority and text mutation monopoly contracts",
+    "all library and binary compile routes",
+    "three sequential remote diverse latency runs",
+    "package and fixed-input byte identity"
+  ],
+  "not_tested": [
+    "remaining Phase 2F through 2H cuts",
+    "dense oracle",
+    "typed edit traversal",
+    "posting bound soundness or feasibility",
+    "exact peak-search quality",
+    "new package representation",
+    "live deployment"
+  ],
+  "claim_boundary": {
+    "phase_2a_through_2e_move_only_parity_proven": true,
+    "phase_2_complete": false,
+    "exact_peak_search_correctness_proven": false,
+    "runtime_authority_changed": false,
+    "installed_runtime_changed": false,
+    "installed_package_changed": false,
+    "daemon_or_ibus_restarted": false,
+    "training_runs": 0,
+    "crystallization_runs": 0
+  },
+  "next_action": "Phase 2F: move legacy prepare, discovery, and frontier logic without changing behavior or authority."
+}

@@ -1511,3 +1511,49 @@ remain zero.
 The next action is Phase 2E: move pure geometry and operator kernels without
 changing behavior or authority. No package crystallization, daemon restart,
 owner flip, or scoring change is justified in Phase 2.
+
+Phase 2E is complete. The pure edit-geometry kernels moved into
+`runtime/geometry.rs`: Damerau distance, reconstruction-mode recognition,
+surface substitution/transposition recognition, ordered-subsequence traversal,
+deletion-transposition traversal, and the ambiguity geometry-link predicate.
+Operator birth, geometry reserve ranking, candidate certificate interference,
+settlement, and finalization deliberately remain in `runtime.rs`; moving them
+here would have mixed the Phase 2E mathematical boundary with the Phase 2F
+frontier and Phase 2G settlement owners.
+
+`runtime.rs` fell from `3,349` to `3,126` lines; `geometry.rs` contains `248`
+lines. The complete runtime tree is `4,673` lines, cumulative growth `2.37%`
+from the Phase 0 monolith and below the Phase 2 `5%` budget. No public export,
+constant value, branch order, allocation path, caller, or runtime owner changed.
+
+The remote exact fingerprint reproduced all `616` cases, all eight readout
+modes, semantic SHA, projection SHA, all six route SHA values, candidate order,
+and zero permutation failures. Focused lexical tests passed `109/109`; route
+contracts passed `20/20` and `15/15`; `cargo check --lib --bins` passed. Three
+sequential fixed-520 runs measured p99 `10.005`, `10.975`, and `10.272 ms`, all
+with the frozen candidate SHA. Peak RSS was `417,612-418,640 KiB`. This passes
+the move-only no-regression gate but does not claim the future `<=5 ms` target.
+
+All Cargo and proof work ran on `e@192.168.3.94` with
+`CARGO_BUILD_JOBS=20` and `RAYON_NUM_THREADS=20`. A temporary `bwrap` mount
+namespace exposed the immutable inputs at their original `/home/ubu/...` paths,
+so path-bearing fingerprint JSON remained byte-comparable without creating
+persistent remote aliases. Two format checks stopped before compilation: the
+remote `1.97.1` toolchain lacked rustfmt, and the initial moved source needed
+three rustfmt-only line wraps. The accepted gates ran after those formatting
+issues were resolved; neither failed run executed runtime behavior.
+
+Tested: the Phase 2E geometry boundary, all frozen semantic routes, candidate
+order, focused lexical and route-contract tests, all lib/bin compile routes,
+three-run remote latency, package/input identity, and Cargo disk budget. Not
+tested: Phase 2F-2H, dense oracle, typed edit graph, posting-bound soundness,
+exact-search quality, package redesign, or deployment. Runtime authority,
+installed package, daemon, and IBus remain unchanged; training and
+crystallization runs remain zero.
+
+```text
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_2E_2026-08-13/phase-2e.json
+```
+
+The next action is Phase 2F: move legacy prepare, discovery, and frontier logic
+without changing behavior or authority.
