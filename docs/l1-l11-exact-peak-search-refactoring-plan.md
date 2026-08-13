@@ -1471,6 +1471,43 @@ crystallization runs remain zero.
 /home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_2C_2026-08-13/phase-2c.json
 ```
 
-The next action is Phase 2D: move `L1RestorationHost` and the composite overlay
-route without changing behavior or authority. No package crystallization,
-daemon restart, owner flip, or scoring change is justified in Phase 2.
+Phase 2D is complete. `L1RestorationHost`, composite overlay loading, terminal
+ID translation, tombstones, exact-surface lookup, and host lattice assembly
+moved into `runtime/host.rs`. The extraction preserves the public host exports,
+the existing readout owner, allocation behavior, and package representation.
+`runtime.rs` fell from `3,857` to `3,349` lines; `host.rs` contains `516` lines.
+The complete runtime tree is `4,648` lines, cumulative growth `1.82%` from the
+Phase 0 monolith and below the Phase 2 `5%` budget.
+
+The frozen 616-case fingerprint, all six route SHA-256 values, semantic SHA,
+projection SHA, candidate SHA, and candidate permutation result match Phase 1
+exactly. The focused remote lexical gate passed `109/109` tests. Three
+sequential fixed-520 runs on `e@192.168.3.94` measured p99 `10.070`, `10.009`,
+and `9.572 ms`; every run preserved candidate SHA-256
+`2d99e87b685625d0791c857aecbfce022e6353d58aa5bc359c9d490b1a7c4a96`.
+Peak RSS was `418,128-418,452 KiB`. These measurements pass the move-only
+no-regression gate; they do not satisfy or claim the future `<=5 ms` promotion
+target.
+
+The remote build and proof were configured with `CARGO_BUILD_JOBS=20` and
+`RAYON_NUM_THREADS=20`. The accepted release profile still measured `99%`
+average CPU during final compilation because it intentionally uses
+`codegen-units=1`; changing that profile would invalidate latency comparability.
+The focused test run measured `669%` average CPU. No training or package
+crystallization ran locally or remotely.
+
+Tested: the Phase 2D host/composite boundary, all frozen semantic routes,
+candidate order, focused lexical tests, three-run remote latency, package and
+fixed-input identity, changed-file checks, and Cargo disk budget. Not tested:
+Phase 2E-2H, dense oracle, typed edit graph, posting-bound soundness,
+exact-search quality, package redesign, or deployment. Runtime authority,
+installed package, daemon, and IBus remain unchanged; crystallization runs
+remain zero.
+
+```text
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_2D_2026-08-13/phase-2d.json
+```
+
+The next action is Phase 2E: move pure geometry and operator kernels without
+changing behavior or authority. No package crystallization, daemon restart,
+owner flip, or scoring change is justified in Phase 2.

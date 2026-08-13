@@ -1,0 +1,143 @@
+{
+  "schema": "lay.l11.peak-search-move-only-cut-receipt.v1",
+  "receipt": "L1_L11_PEAK_SEARCH_PHASE_2D_2026-08-13",
+  "date": "2026-08-13",
+  "phase": "2D",
+  "verdict": "PASS_MOVE_ONLY_PARITY",
+  "cut": {
+    "owner": "L1RestorationHost, composite overlays, tombstones, and host lattice route",
+    "source_before": "src/nanda_wave/lexical_grokking/runtime.rs",
+    "source_after": "src/nanda_wave/lexical_grokking/runtime/host.rs",
+    "runtime_rs_lines_before": 3857,
+    "runtime_rs_lines_after": 3349,
+    "host_lines_after": 516,
+    "total_runtime_tree_lines_after": 4648,
+    "cumulative_growth_from_phase_0_percent": 1.82,
+    "public_exports_changed": 0,
+    "new_per_query_allocations": 0,
+    "algorithm_changed": false,
+    "readout_owner_changed": false
+  },
+  "source_sha256": {
+    "src/nanda_wave/lexical_grokking/runtime.rs": "3e801031b1e4c8d40eab3d0b4daf694e8e1c0ea6f1d5594bfa4221cd8318e843",
+    "src/nanda_wave/lexical_grokking/runtime/host.rs": "ea8752b8fd65a3307b366eaee44fba988175686766b627c097c1a8941dfe5223"
+  },
+  "immutable_inputs": {
+    "package_path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin",
+    "remote_package_path": "/home/e/build/lay-l1-exact-phase2d/input/package.v8.bin",
+    "package_bytes": 190139182,
+    "package_sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+    "corpus_sha256": "abb9d71495acc27b7619b24621568ea72263f9bd40201aab9fffa1188fbff8f6",
+    "heldout_cases": 260000,
+    "heldout_sha256": "ba0a07ee7b784742c4aef08956c6e48dc9836da10d01dc50d516dc946b00c501",
+    "latency_cases": 520,
+    "latency_surfaces_sha256": "c501f9623299e5f1047b4706095e5a25a1168d65a2d3112c051e611f458615fb"
+  },
+  "behavior_parity": {
+    "replay_cases": 616,
+    "readout_modes": 8,
+    "semantic_sha256": "c6159bf499146c21a96723435ac4112496eca10bf8c1dd961964d789333267d7",
+    "projection_file_sha256": "85cf72483cf68c2f93e262569571cf1169b9feb90b8a1767536133afaef7b036",
+    "candidate_sha256": "2d99e87b685625d0791c857aecbfce022e6353d58aa5bc359c9d490b1a7c4a96",
+    "permutation_failures": 0,
+    "route_sha256": {
+      "readout_modes": "0984fc3ec6b0866d02c50c34b83c2966300acd39dbceacb67003843e42d92665",
+      "query": "730dce95ef34fad52ccc1cec814bb43a03ad5a86b82ce6c72d3422f1fcaef2d5",
+      "restore": "b2d42c23ab20a149195c929af4cf7ec15dfb7a14fe02582895cc061ae7241ab1",
+      "host_lattice": "8be14b9322a99471b314a3b7d520da437c13ca4bcc0ba7470fd4876462a9c2ea",
+      "service_lattice": "ba1f873cce3ca5c1b39e0f7fac24a49ca9606de37278610a16ef4492cd678a5f",
+      "restoration_permutation": "452c9c014d5537e773908a458711e1f47f9c9f5057641039632a2e27a29a43aa"
+    },
+    "receipt_path": "/home/ubu/.cache/lay/l1-peak-search-phase-2d-2026-08-13/behavior.receipt.json",
+    "projection_path": "/home/ubu/.cache/lay/l1-peak-search-phase-2d-2026-08-13/behavior.projection.json",
+    "wall_seconds": 51.94,
+    "peak_rss_kib": 1080136
+  },
+  "remote_execution": {
+    "host": "e@192.168.3.94",
+    "root": "/home/e/build/lay-l1-exact-phase2d",
+    "logical_cpus": 20,
+    "cargo_build_jobs": 20,
+    "rayon_threads": 20,
+    "rust_toolchain": "1.97.1",
+    "release_binary_sha256": "6c57ed7a4f851633eb7ab56a0b3e0d5c9d0a11c4826401e3f63be8ec824e5ea0",
+    "build_wall_seconds": 180.21,
+    "build_peak_rss_kib": 2395144,
+    "build_average_cpu_percent": 99,
+    "note": "The final release rustc unit uses codegen-units=1, so its measured CPU does not consume all configured Cargo jobs. The configuration was not changed because latency must be measured on the accepted release profile."
+  },
+  "latency": {
+    "baseline_p99_us": [
+      22217,
+      21136
+    ],
+    "phase_2d_p99_us": [
+      10070,
+      10009,
+      9572
+    ],
+    "phase_2d_peak_rss_kib": [
+      418128,
+      418000,
+      418452
+    ],
+    "phase_2d_average_cpu_percent": [
+      183,
+      174,
+      180
+    ],
+    "candidate_sha256_exact_runs": 3,
+    "gate": "PASS_NO_REGRESSION_ABOVE_5_PERCENT",
+    "note": "All three remote p99 values are below the best pinned baseline p99. This move-only gate does not prove the future <=5 ms promotion target."
+  },
+  "checks": [
+    {
+      "command": "scripts/check-lay-changed.sh",
+      "result": "PASS"
+    },
+    {
+      "command": "remote scripts/cargo-guard.sh test lexical_grokking --lib -- --test-threads=20",
+      "result": "109 passed; 0 failed; 1251 filtered out"
+    },
+    {
+      "command": "git diff --check",
+      "result": "PASS"
+    },
+    {
+      "command": "remote scripts/cargo-guard.sh --status",
+      "result": "target bytes 1308450816; budget bytes 12884901888; PASS"
+    }
+  ],
+  "tested": [
+    "move-only extraction of L1RestorationHost and composite overlay ownership",
+    "base and overlay terminal ID translation",
+    "tombstone filtering and exact-surface lookup",
+    "host lattice route over all frozen behavior cases",
+    "all six frozen behavior routes over 616 cases",
+    "all eight existing ReadoutMode variants",
+    "candidate order permutation invariance",
+    "three sequential remote diverse latency runs",
+    "remote lexical_grokking focused tests",
+    "changed-file build and route contract checks"
+  ],
+  "not_tested": [
+    "remaining Phase 2E through 2H cuts",
+    "dense oracle",
+    "typed edit traversal",
+    "posting bound soundness or feasibility",
+    "exact peak-search quality",
+    "new package representation",
+    "live deployment"
+  ],
+  "claim_boundary": {
+    "phase_2a_through_2d_move_only_parity_proven": true,
+    "phase_2_complete": false,
+    "exact_peak_search_correctness_proven": false,
+    "runtime_authority_changed": false,
+    "installed_runtime_changed": false,
+    "installed_package_changed": false,
+    "daemon_or_ibus_restarted": false,
+    "crystallization_runs": 0
+  },
+  "next_action": "Phase 2E: move pure geometry and operator kernels without changing behavior or authority."
+}
