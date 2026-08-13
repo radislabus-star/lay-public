@@ -4,140 +4,237 @@ const ROOT: &str = env!("CARGO_MANIFEST_DIR");
 const EXTENSION: &str = "extension/lay@radislabus-star.github.io";
 
 #[test]
-fn tray_has_one_input_mode_owner_for_live_suggestions() {
-    let tray = read("lay-impl.js");
-    assert!(tray.contains("Режим ввода:"), "tray must expose input mode");
-    assert!(
-        tray.contains("this._cfg.text_backend = id;")
-            && tray.contains("this._cfg.nanda_precognition = id !== 'uinput';")
-            && tray.contains("applyInputChannel(id);"),
-        "tray input mode must synchronize text_backend, nanda_precognition, and runtime channel"
-    );
-
-    for file in ["settings.js", "prefs.js"] {
-        let source = read(file);
-        assert!(
-            source.contains("Режим ввода")
-                && source.contains("if (key === 'text_backend')")
-                && source.contains("nanda_precognition = id !== 'uinput'")
-                && source.contains("applyInputChannel(id)"),
-            "{file} must keep input mode as the preferences owner for live suggestions"
-        );
-    }
-}
-
-#[test]
-fn tray_inventory_is_compact_and_each_action_has_an_owner() {
-    let tray = read("lay-impl.js");
+fn gnome_tray_is_a_compact_daily_surface() {
+    let tray = read_extension("lay-impl.js");
     for label in [
+        "Раскладка: --",
+        "Lay включён",
         "Режим ввода:",
         "Помощь при наборе",
         "Автозамена",
-        "Следовать языку исправления",
         "Настройки",
         "Диагностика",
+        "Открыть журнал",
+    ] {
+        assert!(tray.contains(label), "missing daily tray action: {label}");
+    }
+    assert!(read_extension("recent_actions_menu.js").contains("Последние действия"));
+
+    for stale in [
         "Проверить обновления",
+        "Перезапустить службы",
+        "Журнал отладки действий",
+        "NANDA ячейки",
+        "Автокоррекция NANDA",
         "О Lay",
     ] {
-        assert!(tray.contains(label), "missing tray action: {label}");
+        assert!(!tray.contains(stale), "stale tray action remains: {stale}");
     }
+}
 
-    for route in [
-        "applyInputChannel(id);",
-        "restartDaemon();",
+#[test]
+fn tray_actions_have_real_runtime_owners() {
+    let tray = read_extension("lay-impl.js");
+    for owner in [
+        "activateLayoutId(target)",
         "startDaemon();",
         "stopDaemon();",
-        "startUpdate();",
+        "this._cfg.text_backend = id;",
+        "this._cfg.nanda_precognition = id !== 'uinput';",
+        "applyInputChannel(id);",
+        "saveConfig(this._cfg);",
+        "restartDaemon();",
         "openPreferences()",
-        "openUri(APP_URL)",
+        "openDiagnosticsLog()",
+        "createRecentActionsMenu(this)",
+    ] {
+        assert!(tray.contains(owner), "tray action has no owner: {owner}");
+    }
+}
+
+#[test]
+fn one_shared_settings_view_owns_both_entrypoints() {
+    let standalone = read_extension("settings.js");
+    let preferences = read_extension("prefs.js");
+    let shared = read_extension("settings_view.js");
+
+    for entrypoint in [&standalone, &preferences] {
+        assert!(entrypoint.contains("from './settings_view.js'"));
+        assert!(entrypoint.contains("createSettingsPage()"));
+        assert!(!entrypoint.contains("saveConfig("));
+        assert!(!entrypoint.contains("Adw.SwitchRow"));
+    }
+    assert!(shared.contains("export function createSettingsPage()"));
+    assert!(shared.contains("export class LaySettingsView"));
+}
+
+#[test]
+fn settings_expose_only_user_owned_controls() {
+    let settings = read_extension("settings_view.js");
+    for label in [
+        "Режим ввода",
+        "Помощь при наборе",
+        "Автозамена",
+        "Осторожность",
+        "Следовать языку исправления",
+        "Запоминать ручные правки",
+        "Показывать хвост в скобках",
+        "Исправить последнее слово",
+        "Отдельные клавиши RU / EN",
+        "Среда переключения раскладки",
+        "Подробный журнал действий",
+        "Состояние служб",
+        "Журнал Lay",
     ] {
         assert!(
-            tray.contains(route),
-            "tray action has no runtime owner: {route}"
+            settings.contains(label),
+            "missing accepted setting: {label}"
+        );
+    }
+
+    for stale in [
+        "Вес L2 кандидатов",
+        "Вес L3 фразы",
+        "NANDA ячейки",
+        "Тап",
+        "Окно Shift",
+        "Multi-tap максимум",
+        "Несколько нажатий триггера",
+        "Исправлять перед Enter",
+        "Раскладка по окну",
+        "Автокоррекция NANDA",
+    ] {
+        assert!(
+            !settings.contains(stale),
+            "internal setting remains visible: {stale}"
         );
     }
 }
 
 #[test]
-fn settings_restart_the_complete_runtime_for_ime_owned_controls() {
-    for file in ["settings.js", "prefs.js"] {
-        let source = read(file);
-        let restart = nearby(&source, "function restartDaemon()", 620);
-        assert!(restart.contains("/.local/bin/lay-runtime-control"));
-        assert!(restart.contains("'restart'"));
-        assert!(!restart.contains("'systemctl'"));
-
-        for control in [
-            "'Следовать языку исправления', 'auto_switch_layout', true",
-            "'Вес L2 кандидатов', 'nanda_l2_weight_percent', true",
-            "'Вес L3 фразы', 'nanda_l3_weight_percent', true",
-            "'Подсказки в [скобках]', 'ime_bracket_candidates', true",
+fn model_authority_knobs_stay_out_of_user_ui() {
+    let settings = read_extension("settings_view.js");
+    let tray = read_extension("lay-impl.js");
+    let kde = read("scripts/lay-kde-tray.py");
+    for source in [&settings, &tray, &kde] {
+        for key in [
+            "nanda_l2_weight_percent",
+            "nanda_l3_weight_percent",
+            "nanda_autocorrect",
+            "llmwave_shadow",
+            "llmwave_apply",
+            "nanda_l2_phase_shadow",
+            "nanda_l2_phase_apply",
+            "nanda_l3_phase_shadow",
         ] {
-            assert!(source.contains(control), "{file} stale control: {control}");
+            assert!(
+                !source.contains(key),
+                "model authority leaked into UI: {key}"
+            );
         }
     }
 }
 
 #[test]
+fn config_writer_preserves_unexposed_runtime_keys() {
+    let support = read_extension("tray_support.js");
+    let save = nearby(&support, "export function saveConfig(cfg) {", 600);
+    assert!(save.contains("{...readConfigObject(), ...cfg}"));
+    assert!(save.contains("JSON.stringify(merged"));
+    assert!(!save.contains("Object.keys(DEFAULTS)"));
+}
+
+#[test]
+fn input_mode_has_one_channel_contract_everywhere() {
+    let tray = read_extension("lay-impl.js");
+    let settings = read_extension("settings_view.js");
+    let kde = read("scripts/lay-kde-tray.py");
+
+    assert!(tray.contains("this._cfg.nanda_precognition = id !== 'uinput';"));
+    assert!(tray.contains("applyInputChannel(id);"));
+    assert!(settings.contains("this.cfg.nanda_precognition = id === 'ime';"));
+    assert!(settings.contains("applyInputChannel(channel);"));
+    assert!(kde.contains("cfg[\"nanda_precognition\"] = value == \"ime\""));
+    assert!(kde.contains("runtime_control(\"channel\", value)"));
+
+    for source in [&tray, &settings, &kde] {
+        assert!(!source.contains("IME, эксперимент"));
+        assert!(!source.contains("(\"auto\", \"Авто\")"));
+    }
+}
+
+#[test]
+fn diagnostics_are_observational_and_enablement_has_one_explicit_owner() {
+    let tray = read_extension("lay-impl.js");
+    let settings = read_extension("settings_view.js");
+    let kde = read("scripts/lay-kde-tray.py");
+    for source in [&tray, &settings, &kde] {
+        assert!(source.contains("Открыть журнал") || source.contains("Журнал Lay"));
+        assert!(!source.contains("Перезапустить демон"));
+        assert!(!source.contains("Перезапустить службы"));
+        assert!(!source.contains("Демон включён"));
+    }
+    assert_eq!(
+        tray.lines()
+            .filter(|line| line.trim() == "startDaemon();")
+            .count(),
+        1
+    );
+    assert_eq!(
+        tray.lines()
+            .filter(|line| line.trim() == "stopDaemon();")
+            .count(),
+        1
+    );
+    assert!(kde.contains("runtime_control(\"start\" if enabled else \"stop\")"));
+}
+
+#[test]
+fn disabled_lay_cannot_be_reactivated_by_input_source_sync() {
+    let tray = read_extension("lay-impl.js");
+    let source_change = nearby(&tray, "current-source-changed", 320);
+    assert!(source_change.contains("this._daemonActive === true"));
+    assert!(source_change.contains("this._cfg.text_backend === 'ime'"));
+    assert!(source_change.contains("syncIbusEngineForCurrentLayout()"));
+
+    let enabled = nearby(&tray, "_enabledSwitchItem() {", 750);
+    assert!(enabled.contains("this._daemonActive = state;"));
+    assert!(enabled.contains("startDaemon();"));
+    assert!(enabled.contains("stopDaemon();"));
+}
+
+#[test]
+fn stale_service_status_cannot_override_a_new_enablement_choice() {
+    let tray = read_extension("lay-impl.js");
+    let enabled = nearby(&tray, "_enabledSwitchItem() {", 800);
+    assert!(enabled.contains("this._statusGeneration ="));
+
+    let refresh = nearby(&tray, "_refreshStatus() {", 850);
+    assert!(refresh.contains("const generation ="));
+    assert!(refresh.contains("generation !== this._statusGeneration"));
+    assert!(refresh.contains("return;"));
+}
+
+#[test]
+fn debug_journal_switch_keeps_trace_flags_together() {
+    let settings = read_extension("settings_view.js");
+    let debug = nearby(&settings, "_debugLogRow() {", 650);
+    assert!(debug.contains("debug_action_log"));
+    assert!(debug.contains("nanda_trace"));
+    assert!(debug.contains("nanda_trace_text"));
+    assert!(!debug.contains("nanda_precognition"));
+}
+
+#[test]
 fn duplicate_force_layout_hotkeys_are_normalized_before_save() {
-    for file in ["tray_support.js", "settings.js", "prefs.js"] {
-        let source = read(file);
-        assert!(source.contains("forceEnKey === forceRuKey"));
-        assert!(source.contains("force_en_key: forceEnKey"));
-    }
+    let support = read_extension("tray_support.js");
+    assert!(support.contains("cfg.force_en_key === cfg.force_ru_key"));
+    assert!(support.contains("cfg.force_en_key ="));
 }
 
 #[test]
-fn nanda_button_opens_live_status_instead_of_static_help() {
-    for (file, marker, chars) in [
-        ("settings.js", "showNandaWindow() {", 2500),
-        ("prefs.js", "_showNandaWindow() {", 2500),
-    ] {
-        let source = read(file);
-        let window = nearby(&source, marker, chars);
-        assert!(window.contains("loadNandaWaveStatus()"));
-        assert!(window.contains("nandaStatusLine(status)"));
-        assert!(window.contains("nandaWavePanel(status)"));
-        assert!(window.contains("nandaPassportPanel(status)"));
-        assert!(!window.contains("Как использовать"));
-    }
-}
-
-#[test]
-fn window_layout_policy_refreshes_config_on_focus_change() {
-    let tray = read("lay-impl.js");
-    let focus = nearby(&tray, "_onFocusWindowChanged() {", 180);
-    assert!(focus.contains("normalizeConfig(loadConfig())"));
-    assert!(focus.contains("_schedulePtahApply"));
-}
-
-#[test]
-fn duplicate_auto_input_mode_is_legacy_only() {
-    for (file, marker, chars) in [
-        ("lay-impl.js", "_inputModeMenu() {", 260),
-        ("settings.js", "text_backend: [", 75),
-        ("prefs.js", "const BACKEND_OPTIONS = [", 120),
-    ] {
-        let source = read(file);
-        let backend_options = nearby(&source, marker, chars);
-        assert!(
-            !backend_options.contains("['auto'"),
-            "{file} must not expose the duplicate auto text backend"
-        );
-    }
-
-    for file in ["tray_support.js", "settings.js", "prefs.js"] {
-        let source = read(file);
-        assert!(
-            source.contains("cfg?.text_backend === 'auto' ? 'ime'"),
-            "{file} must migrate the legacy auto value to IME"
-        );
-    }
-}
-
-#[test]
-fn opening_tray_refreshes_config_and_visible_selection_state() {
-    let tray = read("lay-impl.js");
+fn opening_tray_refreshes_config_and_visible_state() {
+    let tray = read_extension("lay-impl.js");
     let open = nearby(&tray, "open-state-changed", 430);
     assert!(open.contains("loadConfig()"));
     assert!(open.contains("_refreshSelections()"));
@@ -150,149 +247,55 @@ fn opening_tray_refreshes_config_and_visible_selection_state() {
 }
 
 #[test]
-fn diagnostics_owns_service_logging_and_recent_actions() {
-    let tray = read("lay-impl.js");
-    let diagnostics = nearby(&tray, "_diagnosticsMenu() {", 900);
-    assert!(diagnostics.contains("_daemonSwitchItem()"));
-    assert!(diagnostics.contains("restartDaemon()"));
-    assert!(diagnostics.contains("_debugLogSwitchItem()"));
-    assert!(diagnostics.contains("_recentActionsMenu()"));
-
-    let recent = read("recent_actions_menu.js");
-    assert!(recent.contains("clearRecentActions()"));
-    assert!(recent.contains("refreshRecentActions(indicator)"));
-    assert!(recent.contains("indicator._notify"));
-    assert!(
-        !recent.contains("_refreshStats"),
-        "recent actions must not depend on the removed about/stats surface"
-    );
-}
-
-#[test]
-fn tray_does_not_show_internal_research_counters_or_blink() {
-    let tray = read("lay-impl.js");
-    for stale in [
-        "LLM ${",
-        "promoted_rules",
-        "_aboutStatsText",
-        "_aboutConfigText",
-        "_startStatusBlink",
-    ] {
-        assert!(!tray.contains(stale), "stale tray surface remains: {stale}");
-    }
-}
-
-#[test]
-fn tray_external_actions_have_installable_targets() {
-    let support = read("tray_support.js");
-    assert!(support.contains("/.local/bin/lay-runtime-control"));
-    assert!(support.contains("PROJECT_DIR + '/update.sh'"));
-    assert!(support.contains("settings.js"));
-
-    for path in [
-        "update.sh",
-        "scripts/lay-runtime-control.sh",
-        "extension/lay@radislabus-star.github.io/settings.js",
-    ] {
-        assert!(
-            Path::new(ROOT).join(path).is_file(),
-            "tray target is missing: {path}"
-        );
-    }
-}
-
-#[test]
-fn runtime_restart_preserves_the_visible_layout() {
-    let runtime = std::fs::read_to_string(Path::new(ROOT).join("scripts/lay-runtime-control.sh"))
-        .expect("runtime control source");
+fn runtime_restart_preserves_visible_layout_and_global_ibus() {
+    let runtime = read("scripts/lay-runtime-control.sh");
     let start = nearby(&runtime, "start_ime() {", 500);
     assert!(start.contains("preferred_lay_ime"));
     assert!(start.contains("select_lay_ime \"$preferred\""));
     assert!(start.contains("select_lay_ime \"$fallback\""));
+    assert!(!runtime.contains("ibus restart"));
 }
 
 #[test]
-fn version_refresh_reloads_model_services_without_restarting_ibus() {
-    let bump = std::fs::read_to_string(Path::new(ROOT).join("scripts/bump-lay-version.sh"))
-        .expect("version bump script");
-    let promotion =
-        std::fs::read_to_string(Path::new(ROOT).join("scripts/l3-self-teacher-promotion-gate.sh"))
-            .expect("L3 promotion script");
-    let reload =
-        std::fs::read_to_string(Path::new(ROOT).join("scripts/reload-lay-model-services.sh"))
-            .expect("model-service reload script");
+fn changing_input_mode_cannot_reenable_a_disabled_runtime() {
+    let runtime = read("scripts/lay-runtime-control.sh");
+    let channel = nearby(&runtime, "channel)", 330);
+    assert!(channel.contains("systemctl --user is-active --quiet lay-daemon.service"));
+    assert!(channel.contains("apply_channel"));
+    assert!(channel.contains("stop_ime"));
 
-    for source in [&bump, &promotion] {
-        assert!(source.contains("reload-lay-model-services.sh"));
-        assert!(!source.contains("pkill -x lay-ibus-engine"));
-        assert!(!source.contains("ibus restart"));
-    }
-    assert!(reload.contains("ibus_pids_before="));
-    assert!(reload.contains("ibus_pids_after="));
-    assert!(reload.contains("systemctl --user restart lay-daemon.service"));
-    assert!(!reload.contains("pkill"));
-    assert!(!reload.contains("ibus restart"));
+    let restart = nearby(&runtime, "restart)", 330);
+    assert!(restart.contains("systemctl --user is-active --quiet lay-daemon.service"));
+    assert!(restart.contains("systemctl --user restart lay-daemon.service"));
+    assert!(restart.contains("stop_ime"));
 }
 
 #[test]
-fn debug_log_switch_is_not_a_hidden_precognition_toggle() {
-    let tray = read("lay-impl.js");
-    let tray_debug = nearby(&tray, "_debugLogSwitchItem() {", 520);
-    assert!(tray_debug.contains("debug_action_log"));
-    assert!(tray_debug.contains("nanda_trace"));
-    assert!(tray_debug.contains("nanda_trace_text"));
-    assert!(
-        !tray_debug.contains("nanda_precognition"),
-        "tray debug switch must not toggle live suggestions"
-    );
-
-    for (file, marker) in [
-        ("settings.js", "debugLogsRow(label)"),
-        ("prefs.js", "_debugLogsRow(label)"),
-    ] {
-        let source = read(file);
-        let debug = nearby(&source, marker, 520);
-        assert!(debug.contains("debug_action_log"));
-        assert!(debug.contains("nanda_trace"));
-        assert!(debug.contains("nanda_trace_text"));
-        assert!(
-            !debug.contains("nanda_precognition"),
-            "{file} debug switch must not toggle live suggestions"
-        );
-    }
+fn kde_tray_has_a_real_ru_en_layout_action() {
+    let kde = read("scripts/lay-kde-tray.py");
+    assert!(kde.contains("Переключить раскладку RU / EN"));
+    assert!(kde.contains("def switch_kde_layout()"));
+    assert!(kde.contains("/Layouts\", \"getLayout"));
+    assert!(kde.contains("/Layouts\", \"setLayout"));
 }
 
 #[test]
-fn stale_gray_suggestion_ui_stays_deleted() {
-    for file in ["lay-impl.js", "settings.js", "prefs.js", "tray_support.js"] {
-        let source = read(file);
-        assert!(
-            !source.contains("Серые подсказки")
-                && !source.contains("серые подсказки")
-                && !source.contains("gray suggestions")
-                && !source.contains("grey suggestions"),
-            "{file} must not revive the old separate gray-suggestions switch"
-        );
-    }
+fn settings_desktop_entry_and_tray_use_the_same_standalone_entrypoint() {
+    let desktop = read("extension/lay-settings.desktop");
+    let support = read_extension("tray_support.js");
+    assert!(desktop.contains("settings.js"));
+    assert!(support.contains("settings.js"));
+    assert!(Path::new(ROOT)
+        .join("extension/lay@radislabus-star.github.io/settings_view.js")
+        .is_file());
 }
 
-#[test]
-fn debug_log_label_is_action_journal_everywhere() {
-    for file in ["lay-impl.js", "settings.js", "prefs.js"] {
-        let source = read(file);
-        assert!(
-            source.contains("Журнал отладки действий"),
-            "{file} must use the explicit action debug journal label"
-        );
-        assert!(
-            !source.contains("Журнал отладки lay"),
-            "{file} must not use the old broad debug-log label"
-        );
-    }
+fn read_extension(file: &str) -> String {
+    read(&format!("{EXTENSION}/{file}"))
 }
 
 fn read(file: &str) -> String {
-    std::fs::read_to_string(Path::new(ROOT).join(EXTENSION).join(file)).expect("extension source")
+    std::fs::read_to_string(Path::new(ROOT).join(file)).expect("project source")
 }
 
 fn nearby(source: &str, marker: &str, chars: usize) -> String {

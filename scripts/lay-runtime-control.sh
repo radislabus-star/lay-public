@@ -163,11 +163,19 @@ case "${1:-status}" in
         stop_ime
         ;;
     restart)
-        systemctl --user restart lay-daemon.service
-        apply_channel "$(text_backend)"
+        if systemctl --user is-active --quiet lay-daemon.service; then
+            systemctl --user restart lay-daemon.service
+            apply_channel "$(text_backend)"
+        else
+            stop_ime
+        fi
         ;;
     channel)
-        apply_channel "${2:-$(text_backend)}"
+        if systemctl --user is-active --quiet lay-daemon.service; then
+            apply_channel "${2:-$(text_backend)}"
+        else
+            stop_ime
+        fi
         ;;
     status)
         printf 'daemon='

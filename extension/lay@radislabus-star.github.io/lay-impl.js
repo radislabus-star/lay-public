@@ -17,7 +17,6 @@ import {
     LayDaemonService,
     activateLayoutId,
     currentLayoutKind,
-    focusedWindowInfo,
     syncIbusEngineForCurrentLayout,
 } from './dbus_service.js';
 import {
@@ -30,8 +29,6 @@ import {
 
 import {
     APP_ICON_NAME,
-    APP_LICENSE,
-    APP_URL,
     APP_VERSION,
     COMPACT_SUBTITLE_STYLE,
     MENU_WIDTH,
@@ -39,14 +36,12 @@ import {
     actionKindLabel,
     loadConfig,
     normalizeConfig,
-    normalizePtahRules,
     openPreferences,
-    openUri,
+    openDiagnosticsLog,
     applyInputChannel,
     restartDaemon,
     saveConfig,
     startDaemon,
-    startUpdate,
     stopDaemon,
 } from './tray_support.js';
 
@@ -103,13 +98,11 @@ class LayIndicator extends PanelMenu.Button {
 
         this._mgr = getInputSourceManager();
         this._srcId = this._mgr.connect('current-source-changed', () => {
-            syncIbusEngineForCurrentLayout();
+            if (this._daemonActive === true && this._cfg.text_backend === 'ime')
+                syncIbusEngineForCurrentLayout();
             this._refreshLayout();
         });
-        this._focusId = global.display.connect('notify::focus-window', () => this._onFocusWindowChanged());
-        syncIbusEngineForCurrentLayout();
         this._refreshLayout();
-        this._schedulePtahApply(80);
     }
 
     _buildMenu() {
@@ -122,16 +115,14 @@ class LayIndicator extends PanelMenu.Button {
         this.menu.addMenuItem(this._statusItem);
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
+        this.menu.addMenuItem(this._layoutSwitchItem());
+        this.menu.addMenuItem(this._enabledSwitchItem());
         this.menu.addMenuItem(this._inputModeMenu());
         this.menu.addMenuItem(this._quickSwitchItem('Помощь при наборе', 'typing_assist', true));
         this.menu.addMenuItem(this._quickSwitchItem('Автозамена', 'auto_replace', true));
-        this.menu.addMenuItem(this._quickSwitchItem('Следовать языку исправления', 'auto_switch_layout', true));
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         this.menu.addMenuItem(this._preferencesItem());
         this.menu.addMenuItem(this._diagnosticsMenu());
-        this.menu.addMenuItem(this._updateItem());
-        this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-        this.menu.addMenuItem(this._aboutMenu());
 
         this._refreshSelections();
         this._refreshStatus();
@@ -173,6 +164,37 @@ class LayIndicator extends PanelMenu.Button {
 
     _recentActionsMenu() {
         return createRecentActionsMenu(this);
+    }
+
+    _layoutSwitchItem() {
+        const item = new PopupMenu.PopupImageMenuItem('Раскладка: --', 'input-keyboard-symbolic');
+        item.connect('activate', () => {
+            const target = currentLayoutKind() === 'ru' ? 'us' : 'ru';
+            if (activateLayoutId(target))
+                this._refreshLayout();
+        });
+        this._layoutSwitch = item;
+        return item;
+    }
+
+    _enabledSwitchItem() {
+        const item = persistentSwitchItem('Lay включён', false);
+        item.connect('toggled', (_item, state) => {
+            if (this._updatingEnabledSwitch)
+                return;
+            this._statusGeneration = (this._statusGeneration ?? 0) + 1;
+            this._daemonActive = state;
+            if (state) {
+                startDaemon();
+                if (this._cfg.text_backend === 'ime')
+                    syncIbusEngineForCurrentLayout();
+            } else {
+                stopDaemon();
+            }
+            this._scheduleStatusRefreshes();
+        });
+        this._enabledSwitch = item;
+        return item;
     }
 
     _inputModeMenu() {
@@ -217,21 +239,6 @@ class LayIndicator extends PanelMenu.Button {
         return item;
     }
 
-    _debugLogSwitchItem() {
-        const item = persistentSwitchItem('Журнал отладки действий', !!this._cfg.debug_action_log);
-        item.connect('toggled', (_item, state) => {
-            if (this._updatingConfigSwitches)
-                return;
-            this._cfg.debug_action_log = state;
-            this._cfg.nanda_trace = state;
-            this._cfg.nanda_trace_text = state;
-            saveConfig(this._cfg);
-            this._refreshSelections();
-        });
-        this._configSwitches.set('debug_action_log', item);
-        return item;
-    }
-
     _populateRecentActionsMenu(item) {
         populateRecentActionsMenu(this, item);
     }
@@ -245,107 +252,33 @@ class LayIndicator extends PanelMenu.Button {
         item.reactive = false;
         item.can_focus = false;
         item.style = 'padding:3px 8px;';
-        item.add_child(new St.Label({
+        const label = new St.Label({
             text,
             style: COMPACT_SUBTITLE_STYLE,
-        }));
-        return item;
-    }
-
-    _findPtahRule(info) {
-        for (const rule of normalizePtahRules(this._cfg.ptah_alexs_rules)) {
-            if (this._samePtahIdentity(rule, info))
-                return rule;
-            if (rule.kind === 'app_id' && rule.value === info.appId)
-                return rule;
-            if (rule.kind === 'wm_class' && rule.value === info.wmClass)
-                return rule;
-            if (rule.kind === 'wm_class_instance' && rule.value === info.wmClassInstance)
-                return rule;
-        }
-        return null;
-    }
-
-    _samePtahIdentity(rule, info) {
-        return rule.kind === info.kind && rule.value.toLowerCase() === info.value.toLowerCase();
-    }
-
-    _onFocusWindowChanged() {
-        this._cfg = normalizeConfig(loadConfig());
-        this._schedulePtahApply(50);
-    }
-
-    _schedulePtahApply(delayMs = 50) {
-        if (this._ptahApplyId)
-            GLib.Source.remove(this._ptahApplyId);
-        this._ptahApplyId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, delayMs, () => {
-            this._ptahApplyId = 0;
-            this._applyPtahAlexsPolicy();
-            return false;
         });
-    }
-
-    _applyPtahAlexsPolicy() {
-        if (!this._cfg.ptah_alexs_mode)
-            return;
-        const info = focusedWindowInfo();
-        if (!info)
-            return;
-        const rule = this._findPtahRule(info);
-        if (!rule || rule.layout === 'keep')
-            return;
-        if (currentLayoutKind() === rule.layout)
-            return;
-        if (activateLayoutId(rule.layout))
-            this._refreshLayout();
-    }
-
-    _daemonSwitchItem() {
-        const item = persistentSwitchItem('Демон', false);
-        item.connect('toggled', (_item, state) => {
-            if (this._updatingDaemonSwitch)
-                return;
-            this._toggleDaemonService(state);
-        });
-        this._daemonSwitch = item;
+        item.add_child(label);
+        item._layLabel = label;
         return item;
     }
 
     _diagnosticsMenu() {
         const item = new PopupMenu.PopupSubMenuMenuItem('Диагностика', false);
-        item.menu.addMenuItem(this._daemonSwitchItem());
-
-        const restart = new PopupMenu.PopupImageMenuItem('Перезапустить службы', 'view-refresh-symbolic');
-        restart.connect('activate', () => {
-            restartDaemon();
-            this._setDaemonBusy('перезапуск...');
-            this._scheduleStatusRefreshes();
+        this._diagnosticsStatusItem = this._mutedTextRow('проверка служб...');
+        item.menu.addMenuItem(this._diagnosticsStatusItem);
+        const logs = new PopupMenu.PopupImageMenuItem('Открыть журнал', 'utilities-terminal-symbolic');
+        logs.connect('activate', () => {
+            if (!openDiagnosticsLog())
+                this._notify('Журнал не открыт', 'Не найден терминал для journalctl', true);
         });
-        item.menu.addMenuItem(restart);
-        item.menu.addMenuItem(this._debugLogSwitchItem());
+        item.menu.addMenuItem(logs);
         item.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         item.menu.addMenuItem(this._recentActionsMenu());
-        return item;
-    }
-
-    _updateItem() {
-        const item = new PopupMenu.PopupImageMenuItem('Проверить обновления', 'software-update-available-symbolic');
-        item.connect('activate', () => this._runUpdate());
         return item;
     }
 
     _preferencesItem() {
         const item = new PopupMenu.PopupImageMenuItem('Настройки', 'emblem-system-symbolic');
         item.connect('activate', () => openPreferences());
-        return item;
-    }
-
-    _aboutMenu() {
-        const item = new PopupMenu.PopupSubMenuMenuItem(`О Lay ${APP_VERSION}`, false);
-        item.menu.addMenuItem(this._mutedTextRow(`Лицензия: ${APP_LICENSE}`));
-        const link = new PopupMenu.PopupImageMenuItem('Открыть GitHub', 'web-browser-symbolic');
-        link.connect('activate', () => openUri(APP_URL));
-        item.menu.addMenuItem(link);
         return item;
     }
 
@@ -360,24 +293,6 @@ class LayIndicator extends PanelMenu.Button {
         for (const [key, item] of this._configSwitches ?? [])
             item.setToggleState(!!this._cfg[key]);
         this._updatingConfigSwitches = false;
-    }
-
-    _toggleDaemonService(shouldStart = null) {
-        if (shouldStart === null)
-            shouldStart = this._daemonActive === false;
-        if (shouldStart) {
-            startDaemon();
-            this._setDaemonBusy('запуск...');
-        } else {
-            stopDaemon();
-            this._setDaemonBusy('остановка...');
-        }
-        this._scheduleStatusRefreshes();
-    }
-
-    _runUpdate() {
-        const [ok, message] = startUpdate();
-        this._notify(ok ? 'Проверка обновлений запущена' : 'Проверка не запущена', message, !ok);
     }
 
     _notify(title, message, isError = false) {
@@ -412,15 +327,21 @@ class LayIndicator extends PanelMenu.Button {
         try {
             const isRu = currentLayoutKind() === 'ru';
             this._label.text = isRu ? 'RU' : 'EN';
+            if (this._layoutSwitch?.label)
+                this._layoutSwitch.label.text = `Раскладка: ${isRu ? 'RU' : 'EN'} → ${isRu ? 'EN' : 'RU'}`;
         } catch(e) { this._label.text = '--'; }
     }
 
     _refreshStatus() {
+        const generation = (this._statusGeneration ?? 0) + 1;
+        this._statusGeneration = generation;
         try {
             const p = Gio.Subprocess.new(
                 ['/usr/bin/systemctl', '--user', 'is-active', '--quiet', 'lay-daemon.service'],
                 Gio.SubprocessFlags.NONE);
             p.wait_check_async(null, (proc, res) => {
+                if (generation !== this._statusGeneration)
+                    return;
                 try {
                     this._applyDaemonStatus(proc.wait_check_finish(res));
                 } catch(e) {
@@ -434,25 +355,16 @@ class LayIndicator extends PanelMenu.Button {
         this._daemonActive = active;
         if (this._statusLabel)
             this._statusLabel.text = active ? 'демон работает' : 'демон остановлен';
+        if (this._diagnosticsStatusItem?._layLabel)
+            this._diagnosticsStatusItem._layLabel.text = active ? 'Службы: работают' : 'Службы: daemon остановлен';
+        if (this._enabledSwitch?.setToggleState) {
+            this._updatingEnabledSwitch = true;
+            this._enabledSwitch.setToggleState(active);
+            this._updatingEnabledSwitch = false;
+        }
+        if (active && this._cfg.text_backend === 'ime')
+            syncIbusEngineForCurrentLayout();
         this._setDaemonStatus(active);
-        this._refreshDaemonAction(active);
-    }
-
-    _setDaemonBusy(text) {
-        if (this._statusLabel)
-            this._statusLabel.text = text;
-        if (this._statusDot) {
-            this._statusDot.opacity = 255;
-            this._statusDot.style = 'font-size:90%; color:#f6c343;';
-        }
-    }
-
-    _refreshDaemonAction(active) {
-        if (this._daemonSwitch?.setToggleState) {
-            this._updatingDaemonSwitch = true;
-            this._daemonSwitch.setToggleState(active);
-            this._updatingDaemonSwitch = false;
-        }
     }
 
     _scheduleStatusRefreshes() {
@@ -488,12 +400,7 @@ class LayIndicator extends PanelMenu.Button {
 
     destroy() {
         this._clearStatusRefreshes();
-        if (this._ptahApplyId) {
-            GLib.Source.remove(this._ptahApplyId);
-            this._ptahApplyId = 0;
-        }
         if (this._srcId) { this._mgr.disconnect(this._srcId); this._srcId = 0; }
-        if (this._focusId) { global.display.disconnect(this._focusId); this._focusId = 0; }
         super.destroy();
     }
 });

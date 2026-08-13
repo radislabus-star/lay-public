@@ -744,8 +744,8 @@ checkpoint: 0.2.160
    evidence: manual replay and native replay bypasses now pass through EditAction with typed manual backend routes and replay transition proof; contract test blocks direct replay bypass
 
 17. tray cleanup:
-   status: PASS-basic
-   evidence: tray_ui_contract keeps live suggestions under input mode, keeps debug log as action-journal only, and blocks revival of the old separate gray-suggestions switch
+   status: PASS-1.0.27
+   evidence: docs/lay-menu-settings-architecture.md owns the accepted inventory; settings.js and prefs.js are thin entrypoints over one settings_view.js; tray_ui_contract blocks model-authority knobs, duplicate settings implementations, stale research controls, and diagnostic service restarts
 ```
 
 ## Commit Route

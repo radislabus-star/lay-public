@@ -1,0 +1,45 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "live-config-baseline",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/.config/lay/config.json",
+      "sha256": "0b080219015f3567125b75420319df0156243686445188bc44584b57849d531b",
+      "size_bytes": 2978
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 1,
+    "forbidden_side_effect_kinds": [
+      "change_candidate_authority",
+      "change_text_mutation_route",
+      "restart_global_ibus_daemon",
+      "rewrite_live_user_config"
+    ],
+    "identity_contracts": 2,
+    "invariants": 3,
+    "planned_side_effect_kinds": [
+      "filesystem_write",
+      "runtime_reload"
+    ],
+    "preserved_artifacts": 1,
+    "runtime_comparisons": 1,
+    "source_checks": 0,
+    "tests": 8
+  },
+  "manifest_sha256": "340051c35a25ac852b398e0cddbc4eab56ac6a50fdb635028b69e1acabd97061",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [],
+  "task_id": "lay-menu-settings-1.0.27",
+  "verdict": "READY_TO_IMPLEMENT"
+}

@@ -1,0 +1,61 @@
+{
+  "schema": "lay.menu-settings.post-install.v1",
+  "version": "1.0.27",
+  "source_head_before_commit": "7de377ab9e7583a282cb70ffdb61952d08e070a5",
+  "checks": {
+    "preflight": "READY_TO_IMPLEMENT",
+    "changed_check": "PASS",
+    "tray_ui_contract": {
+      "passed": 17,
+      "failed": 0
+    },
+    "js_syntax": "PASS",
+    "python_syntax": "PASS",
+    "standalone_settings_source": "OPENED",
+    "standalone_settings_installed": "OPENED",
+    "graphify": {
+      "status": "UPDATED",
+      "nodes": 14770,
+      "edges": 39447,
+      "communities": 604
+    }
+  },
+  "ui_size": {
+    "before_lines": 3440,
+    "after_lines": 1334,
+    "removed_lines": 2106,
+    "reduction_percent": 61.2
+  },
+  "runtime": {
+    "extension_version": "1.0.27",
+    "lay_version": "1.0.27",
+    "daemon_version": "1.0.27",
+    "ime_version": "1.0.27",
+    "daemon_active": true,
+    "ime_processes": 1,
+    "active_layout": "lay-ime-ru",
+    "active_ibus_engine": "lay-ime-ru",
+    "extension_ping": "pong from lay-extension",
+    "new_error_log_entries": 0,
+    "enablement_cycle": {
+      "off_daemon": "inactive",
+      "off_ime_processes": 0,
+      "off_engine": "xkb:ru::rus",
+      "on_daemon": "active",
+      "on_ime_processes": 1,
+      "on_engine": "lay-ime-ru",
+      "disabled_channel_change_kept_ime_processes": 0,
+      "disabled_channel_change_kept_engine": "xkb:ru::rus",
+      "disabled_restart_kept_daemon": "inactive",
+      "disabled_restart_kept_ime_processes": 0
+    }
+  },
+  "preservation": {
+    "ibus_daemon_pid_before": 3702,
+    "ibus_daemon_pid_after": 3702,
+    "config_sha256_before": "0b080219015f3567125b75420319df0156243686445188bc44584b57849d531b",
+    "config_sha256_after": "0b080219015f3567125b75420319df0156243686445188bc44584b57849d531b",
+    "installed_extension_source_parity": true
+  },
+  "verdict": "PASS"
+}

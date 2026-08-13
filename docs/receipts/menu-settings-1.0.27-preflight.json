@@ -1,0 +1,180 @@
+{
+  "authority_bearing": true,
+  "baseline_checks": [
+    {
+      "expect": {
+        "mode": "0664",
+        "prefix_hex": "7b0a2020",
+        "size_bytes": 2978
+      },
+      "id": "live-config-baseline",
+      "kind": "file",
+      "path": "/home/ubu/.config/lay/config.json"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "comparison": "both entrypoints instantiate the same exported settings view",
+      "consumer": "settings.js and prefs.js",
+      "id": "single-settings-view",
+      "producer": "settings_view.js",
+      "test_id": "settings-entrypoint-parity"
+    },
+    {
+      "comparison": "every visible control maps to one config or runtime owner",
+      "consumer": "GNOME and KDE menu surfaces",
+      "id": "visible-control-owner",
+      "producer": "tray_support.js config and lay-runtime-control",
+      "test_id": "tray-control-inventory"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "live-config-preserved",
+      "statement": "UI installation does not rewrite or delete the live user config",
+      "test_id": "live-config-byte-parity"
+    },
+    {
+      "id": "ibus-preserved",
+      "statement": "installation and extension reload preserve the global ibus-daemon process",
+      "test_id": "ibus-pid-parity"
+    },
+    {
+      "id": "runtime-authority-unchanged",
+      "statement": "menu cleanup changes configuration presentation only and does not change L1-L3 candidate or edit authority",
+      "test_id": "focused-ui-contracts"
+    }
+  ],
+  "preserved_artifacts": [
+    {
+      "baseline_check_id": "live-config-baseline",
+      "cursor_policy": "freeze_entire_artifact",
+      "id": "live-user-config",
+      "path": "/home/ubu/.config/lay/config.json",
+      "policy": "byte_identical",
+      "rollback_policy": "restore no data because UI deployment must never modify this file"
+    }
+  ],
+  "reuses_existing_implementation": false,
+  "runtime_comparisons": [
+    {
+      "comparison": "exact_stable_projection",
+      "id": "runtime-process-survival",
+      "observed_not_compared_fields": [
+        "lay extension temporary module path"
+      ],
+      "expected_to_change_fields": [
+        "extension reported version"
+      ],
+      "stable_fields": [
+        "ibus-daemon pid",
+        "active IME engine kind",
+        "live config sha256"
+      ],
+      "reason": "extension module paths and version change while keyboard infrastructure and user data must remain stable",
+      "source": "pgrep, ibus engine, sha256sum, and extension DBus Version",
+      "test_id": "runtime-projection-parity"
+    }
+  ],
+  "schema": "nanda.implementation-preflight.v1",
+  "scientific_future_sensitive": false,
+  "side_effects": {
+    "forbidden": [
+      "rewrite_live_user_config",
+      "restart_global_ibus_daemon",
+      "change_candidate_authority",
+      "change_text_mutation_route"
+    ],
+    "planned": [
+      {
+        "id": "rewrite-ui-sources",
+        "kind": "filesystem_write"
+      },
+      {
+        "id": "install-extension-files",
+        "kind": "filesystem_write"
+      },
+      {
+        "id": "reload-lay-extension",
+        "kind": "runtime_reload"
+      }
+    ]
+  },
+  "state_machine": {
+    "initial_state": "BASELINED",
+    "steps": [
+      {
+        "cleanup": "discard incomplete source edit before deployment",
+        "failure_state": "SOURCE_FAILED",
+        "from": "BASELINED",
+        "id": "edit-and-check",
+        "mutates": true,
+        "preserves": [
+          "live-user-config"
+        ],
+        "test_id": "source-edit-fault",
+        "to": "CHECKED"
+      },
+      {
+        "cleanup": "restore previously installed extension files and reload only Lay extension",
+        "failure_state": "DEPLOY_FAILED",
+        "from": "CHECKED",
+        "id": "install-and-reload",
+        "mutates": true,
+        "preserves": [
+          "live-user-config"
+        ],
+        "test_id": "deploy-fault",
+        "to": "PASS"
+      }
+    ],
+    "terminal_states": [
+      "PASS",
+      "SOURCE_FAILED",
+      "DEPLOY_FAILED"
+    ]
+  },
+  "task_id": "lay-menu-settings-1.0.27",
+  "tests": [
+    {
+      "expected": "settings.js and prefs.js import and instantiate settings_view.js",
+      "id": "settings-entrypoint-parity",
+      "kind": "parity"
+    },
+    {
+      "expected": "GNOME and KDE expose only the accepted compact inventory",
+      "id": "tray-control-inventory",
+      "kind": "parity"
+    },
+    {
+      "expected": "live config sha256 remains unchanged through installation",
+      "id": "live-config-byte-parity",
+      "kind": "parity"
+    },
+    {
+      "expected": "focused JS syntax, Python syntax, and tray UI contracts pass",
+      "id": "focused-ui-contracts",
+      "kind": "parity"
+    },
+    {
+      "expected": "global ibus-daemon pid remains unchanged after extension reload",
+      "id": "ibus-pid-parity",
+      "kind": "parity"
+    },
+    {
+      "expected": "an incomplete source edit never reaches installation",
+      "id": "source-edit-fault",
+      "kind": "fault_injection"
+    },
+    {
+      "expected": "a failed extension copy restores the installed extension backup without touching global IBus",
+      "id": "deploy-fault",
+      "kind": "fault_injection"
+    },
+    {
+      "expected": "IBus pid, active IME engine kind, and live config sha256 remain stable while extension version changes",
+      "id": "runtime-projection-parity",
+      "kind": "parity"
+    }
+  ]
+}
