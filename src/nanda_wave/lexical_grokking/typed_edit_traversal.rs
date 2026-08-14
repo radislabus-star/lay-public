@@ -331,6 +331,14 @@ struct TraversalResult {
     metrics: TraversalMetrics,
 }
 
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub(super) struct Phase7dTerminalEvidence {
+    pub(super) terminal_ids: Vec<u32>,
+    pub(super) states_expanded: u64,
+    pub(super) queue_peak: usize,
+    pub(super) terminal_events: u64,
+}
+
 struct L1TypedEditTraversal<'a> {
     index: &'a ForwardDecoderIndex,
     decoder_nodes: &'a [DecoderNode],
@@ -486,12 +494,10 @@ impl<'a> L1TypedEditTraversal<'a> {
                         decoder_node: child.node_id,
                         input_position: state.input_position + 1,
                         target_depth: state.target_depth + 1,
-                        program: OperatorProgram::Lexical(
-                            LexicalEditState::DoubleSubstitution {
-                                first,
-                                second: state.target_depth,
-                            },
-                        ),
+                        program: OperatorProgram::Lexical(LexicalEditState::DoubleSubstitution {
+                            first,
+                            second: state.target_depth,
+                        }),
                     },
                     seen,
                     next,
@@ -510,12 +516,10 @@ impl<'a> L1TypedEditTraversal<'a> {
                         decoder_node: child.node_id,
                         input_position: state.input_position,
                         target_depth: state.target_depth + 1,
-                        program: OperatorProgram::Lexical(
-                            LexicalEditState::SparseMultiOmission {
-                                first,
-                                second: state.target_depth,
-                            },
-                        ),
+                        program: OperatorProgram::Lexical(LexicalEditState::SparseMultiOmission {
+                            first,
+                            second: state.target_depth,
+                        }),
                     },
                     seen,
                     next,
@@ -934,16 +938,14 @@ impl<'a> L1TypedEditTraversal<'a> {
                     len: 2,
                 });
             }
-            OperatorProgram::Lexical(LexicalEditState::DoubleSubstitution {
-                first,
-                second,
-            }) if scope.admits_phase7d() => {
+            OperatorProgram::Lexical(LexicalEditState::DoubleSubstitution { first, second })
+                if scope.admits_phase7d() =>
+            {
                 certificates.insert(TypedCertificate::DoubleSubstitution { first, second });
             }
-            OperatorProgram::Lexical(LexicalEditState::SparseMultiOmission {
-                first,
-                second,
-            }) if scope.admits_phase7d() => {
+            OperatorProgram::Lexical(LexicalEditState::SparseMultiOmission { first, second })
+                if scope.admits_phase7d() =>
+            {
                 certificates.insert(TypedCertificate::SparseMultiOmission { first, second });
             }
             OperatorProgram::Lexical(LexicalEditState::OmissionTransposition {
@@ -975,6 +977,25 @@ impl<'a> L1TypedEditTraversal<'a> {
             }
         }
     }
+}
+
+pub(super) fn phase7d_terminal_evidence(
+    index: &ForwardDecoderIndex,
+    decoder_nodes: &[DecoderNode],
+    surface: &str,
+) -> Result<Phase7dTerminalEvidence, String> {
+    let query = L1TypedQueryField::encode(surface)?;
+    let result = L1TypedEditTraversal {
+        index,
+        decoder_nodes,
+    }
+    .traverse(&query, TraversalScope::Phase7D, TraversalSchedule::Forward);
+    Ok(Phase7dTerminalEvidence {
+        terminal_ids: result.terminals.into_keys().collect(),
+        states_expanded: result.metrics.states_expanded,
+        queue_peak: result.metrics.queue_peak,
+        terminal_events: result.metrics.wordcenter_terminal_events,
+    })
 }
 
 fn reorder_states(states: &mut [TraversalState], schedule: TraversalSchedule) {

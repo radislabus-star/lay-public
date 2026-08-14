@@ -1000,6 +1000,25 @@ fn main() -> io::Result<()> {
         );
         return Ok(());
     }
+    #[cfg(feature = "lexical-compiler")]
+    if let Some(corpus) = arg_path(&args, "--prove-l1-posting-bounds") {
+        let package = arg_path(&args, "--memory")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--memory is required"))?;
+        let report = lay::nanda_wave::prove_l1_posting_bounds(
+            &corpus,
+            &package,
+            arg_usize(&args, "--max-words").unwrap_or(0),
+            arg_usize(&args, "--heldout-per-class").unwrap_or(20_000),
+            arg_usize(&args, "--posting-group-relations").unwrap_or(0),
+            arg_usize(&args, "--requested-k").unwrap_or(128),
+            arg_usize(&args, "--terminal-shards").unwrap_or(16),
+        )?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
     if let Some(corpus) = arg_path(&args, "--prove-l1-lexical-grokking-scale-package") {
         let package = arg_path(&args, "--memory")
             .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--memory is required"))?;
@@ -1534,6 +1553,15 @@ fn main() -> io::Result<()> {
         train_llmwave_corpus(&corpus, &out)?;
         return Ok(());
     }
+    if let Some(flag) = args
+        .iter()
+        .find(|arg| arg.starts_with("--prove-l1-") || arg.starts_with("--analyze-l1-"))
+    {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            format!("unknown L1 proof command: {flag}"),
+        ));
+    }
     let dataset = arg_path(&args, "--dataset").unwrap_or_else(|| PathBuf::from(DEFAULT_DATASET));
     let out =
         arg_path(&args, "--out").unwrap_or_else(lay::nanda_wave::learned::default_memory_path);
@@ -1594,6 +1622,7 @@ fn print_usage() {
            --l4-cross-scene-status PATH\n\
            --compile-l4-cross-scene --input EVENTS.jsonl [--corrections CORRECTIONS.jsonl] --out PACKAGE.bin\n\
            --prove-l4-cross-scene --russian-words RU --english-words EN --out PACKAGE.bin\n\
+           --prove-l1-posting-bounds CORPUS --memory L1.v8.bin [--heldout-per-class N] [--posting-group-relations N] [--requested-k N] [--terminal-shards N]\n\
            --reload-l3-context-composite\n\
            --version"
     );

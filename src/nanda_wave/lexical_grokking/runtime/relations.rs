@@ -39,6 +39,33 @@ pub(super) struct ReverseCache {
 }
 
 impl LexicalGrokkingMemory {
+    #[cfg(any(test, feature = "lexical-compiler"))]
+    pub(in crate::nanda_wave::lexical_grokking) fn complete_forward_couplings(
+        &self,
+        atom_id: u32,
+    ) -> Result<Arc<[WaveCoupling]>, String> {
+        match &self.relations {
+            RelationStore::Eager => {
+                let record = self
+                    .package
+                    .atoms
+                    .get(atom_id as usize)
+                    .ok_or_else(|| format!("missing atom record {atom_id}"))?;
+                let start = record.coupling_start as usize;
+                let end = start
+                    .checked_add(record.coupling_count as usize)
+                    .ok_or_else(|| format!("forward posting range overflows for atom {atom_id}"))?;
+                let relations = self
+                    .package
+                    .forward_couplings
+                    .get(start..end)
+                    .ok_or_else(|| format!("invalid forward posting range for atom {atom_id}"))?;
+                Ok(Arc::from(relations))
+            }
+            RelationStore::LazyV8(artifact) => artifact.posting(atom_id),
+        }
+    }
+
     pub(super) fn forward_coupling_views(&self, atom_ids: &[u32]) -> Vec<CouplingView<'_>> {
         match &self.relations {
             RelationStore::Eager => atom_ids

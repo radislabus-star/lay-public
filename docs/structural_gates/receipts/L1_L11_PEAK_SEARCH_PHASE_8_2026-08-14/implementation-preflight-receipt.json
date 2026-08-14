@@ -1,0 +1,148 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "phase8-paper",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8_2026-08-14/../../../l1-l11-posting-bound-phase8.md",
+      "sha256": "e5944a890d5e609a2a8cdb0d2f7af02d99c10a303caca7410de6139b37f13fc1",
+      "size_bytes": 8904
+    },
+    {
+      "exists": true,
+      "id": "posting-codec",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8_2026-08-14/../../../../src/nanda_wave/lexical_grokking/posting_codec.rs",
+      "sha256": "1a5b94e5df2c562d91abb2eb75e3137343ce6517b4a90991e7370860e01374db",
+      "size_bytes": 11396
+    },
+    {
+      "exists": true,
+      "id": "v8-reader",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8_2026-08-14/../../../../src/nanda_wave/lexical_grokking/v8.rs",
+      "sha256": "cb722f5dfb7c7d80ccc1ee298ee898e2220f178f50ef19f27bdf7feba564605a",
+      "size_bytes": 40868
+    },
+    {
+      "exists": true,
+      "id": "dense-oracle",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8_2026-08-14/../../../../src/nanda_wave/lexical_grokking/peak_oracle.rs",
+      "sha256": "5b324500a21a9ffedb0e5c69b8b7677dbb53cfd4fab9a014d1cc83bcd6bbfb2e",
+      "size_bytes": 22058
+    },
+    {
+      "exists": true,
+      "id": "relation-store",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8_2026-08-14/../../../../src/nanda_wave/lexical_grokking/runtime/relations.rs",
+      "sha256": "9b24b741b6418253379b93ff427ea01c6bc1bed7e58c78ae61c0436d2e4ed0dd",
+      "size_bytes": 9478
+    },
+    {
+      "exists": true,
+      "id": "typed-traversal",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8_2026-08-14/../../../../src/nanda_wave/lexical_grokking/typed_edit_traversal.rs",
+      "sha256": "f587356c982469a13ac1047693c8404437c5364da8fabec5ed134d0ae39e89ec",
+      "size_bytes": 77858
+    },
+    {
+      "exists": true,
+      "id": "phase7d-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8_2026-08-14/../L1_L11_PEAK_SEARCH_PHASE_7D_2026-08-14/phase-7d.json",
+      "sha256": "76a9e77e4a33479d424746b45975f79e4a5ae440d1f505f408e5eca347418c4e",
+      "size_bytes": 8725
+    },
+    {
+      "exists": true,
+      "id": "installed-package",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin",
+      "sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+      "size_bytes": 190139182
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 8,
+    "forbidden_side_effect_kinds": [
+      "corpus_crystallization",
+      "early_atom_selection",
+      "equality_pruning",
+      "generated_candidate_string",
+      "generated_traffic",
+      "heldout_target_search_input",
+      "hidden_legacy_fallback",
+      "installed_package_mutation",
+      "package_format_change",
+      "posting_budget_truncation",
+      "production_posting_search_reachability",
+      "queue_truncation",
+      "runtime_authority_change",
+      "runtime_case_rule",
+      "runtime_restart",
+      "score_or_settlement_change",
+      "second_candidate_owner",
+      "synthetic_fixture"
+    ],
+    "identity_contracts": 3,
+    "invariants": 8,
+    "planned_side_effect_kinds": [
+      "filesystem_edit",
+      "filesystem_write",
+      "test_execution"
+    ],
+    "preserved_artifacts": 2,
+    "runtime_comparisons": 0,
+    "source_checks": 3,
+    "tests": 9
+  },
+  "manifest_sha256": "f547540c4c837c5487af48529ecb67e1bbb570804fa45e6baca860113c30b19d",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "runtime-vetoes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8_2026-08-14/../../../../src/nanda_wave/lexical_grokking/runtime.rs",
+      "sha256": "5d0d1a38ab0613da1ed753b6e266029f9c8f0912ba4ac0f31dc4ec0b2a528e70",
+      "size_bytes": 21823
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "v8-and-format-vetoes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8_2026-08-14/../../../../src/nanda_wave/lexical_grokking/v8.rs",
+      "sha256": "cb722f5dfb7c7d80ccc1ee298ee898e2220f178f50ef19f27bdf7feba564605a",
+      "size_bytes": 40868
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "proof-cli-vetoes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8_2026-08-14/../../../../src/bin/lay_nanda_wave_train.rs",
+      "sha256": "9aa6c77b468731955b34022589881ff1d33d08b4aca045ea00fe0addd98bd11d",
+      "size_bytes": 89745
+    }
+  ],
+  "task_id": "lay-l11-exact-peak-search-phase8-2026-08-14",
+  "verdict": "READY_TO_IMPLEMENT"
+}

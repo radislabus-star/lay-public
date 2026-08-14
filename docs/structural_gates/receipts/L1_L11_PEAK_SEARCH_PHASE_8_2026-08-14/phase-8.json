@@ -1,0 +1,170 @@
+{
+  "schema": "lay.l11.posting-bound-phase8-receipt.v1",
+  "receipt": "L1_L11_PEAK_SEARCH_PHASE_8_2026-08-14",
+  "date": "2026-08-14",
+  "phase": "8",
+  "verdict": "SOUNDNESS_PASS_FEASIBILITY_FAIL_INDEX_REJECTED",
+  "immutable_inputs": {
+    "corpus_centers": 852582,
+    "package_bytes": 190139182,
+    "package_sha256_before": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+    "package_sha256_after": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+    "atoms": 218763,
+    "forward_relations": 110928005,
+    "requested_k": 128,
+    "package_format_changed": false
+  },
+  "structural_gates": {
+    "route_gate": "PASS",
+    "implementation_preflight": "READY_TO_IMPLEMENT",
+    "execution_paths": 1,
+    "proof_paths": 1,
+    "observation_paths": 1,
+    "authority_paths": 0
+  },
+  "descriptor_proof": {
+    "position_buckets": 16,
+    "group_sizes_tested": [32, 128, 256, 512],
+    "forward_relations_verified": 110928005,
+    "upper_bound_violations": 0,
+    "duplicate_terminal_acceptances": 0,
+    "package_bytes_changed": false
+  },
+  "rejected_interval_search": {
+    "closure_misses": 0,
+    "tie_boundary_losses": 0,
+    "centers_evaluated_per_query_min": 300000,
+    "centers_evaluated_per_query_max": 852582,
+    "latency_ms_min": 83,
+    "latency_ms_max": 1141,
+    "implementation_retained": false,
+    "theorem_oracle_and_receipts_retained": true
+  },
+  "wand_ablations": [
+    {"revision": "initial_query_bound_scan", "maximum_latency_us": 163332, "verdict": "REJECT"},
+    {"revision": "build_time_bound_verification", "maximum_latency_us": 152282, "verdict": "REJECT"},
+    {"revision": "cached_cursor_terminal", "maximum_latency_us": 133560, "verdict": "REJECT"},
+    {"revision": "insertion_order_repair", "maximum_latency_us": 167457, "verdict": "REJECT_REGRESSION"},
+    {"revision": "changed_prefix_merge", "maximum_latency_us": 119673, "verdict": "RETAIN_MECHANISM"},
+    {"revision": "galloping_seek", "maximum_latency_us": 34792, "verdict": "RETAIN_MECHANISM"},
+    {"revision": "rare_posting_warm_seed", "maximum_latency_us": 38373, "verdict": "REJECT_REGRESSION"},
+    {"revision": "sixteen_shards_global", "maximum_latency_us": 15607, "verdict": "BEST_BASIC_WAND"},
+    {"revision": "sixteen_shards_local_512", "maximum_latency_us": 14692, "verdict": "REJECT_BYTE_LATENCY_TRADE"}
+  ],
+  "terminal_shard_sweep": [
+    {"shards": 1, "maximum_latency_us": 33503, "scheduler_iterations": 237754, "posting_seeks": 7087185},
+    {"shards": 2, "maximum_latency_us": 26884, "scheduler_iterations": 309499, "posting_seeks": 8179037},
+    {"shards": 4, "maximum_latency_us": 21783, "scheduler_iterations": 606304, "posting_seeks": 11377047},
+    {"shards": 8, "maximum_latency_us": 16329, "scheduler_iterations": 803319, "posting_seeks": 13089832},
+    {"shards": 16, "maximum_latency_us": 14287, "scheduler_iterations": 1114694, "posting_seeks": 14902819},
+    {"shards": 32, "maximum_latency_us": 15619, "scheduler_iterations": 1562431, "posting_seeks": 16716432}
+  ],
+  "directory_projection": {
+    "relations_per_descriptor": 512,
+    "directory_bytes": 9969702,
+    "package_plus_directory_bytes": 200108884,
+    "package_limit_bytes": 204472320,
+    "fits_package_limit": true,
+    "selected": false
+  },
+  "rejected_typed_seed": {
+    "seeded_cases": 1,
+    "cases": 13,
+    "scheduler_iterations": 1058125,
+    "posting_seeks": 14731341,
+    "decoded_relations": 6054211,
+    "maximum_complete_latency_us": 17244,
+    "retained_in_final_code": false,
+    "artifact_sha256": "a12643bbfe3f129b8a5a43fcf6b293ff819aa26c54a6b48c38f71b42dada2117"
+  },
+  "final_typed_union": {
+    "cases": 13,
+    "closure_parity_cases": 13,
+    "upper_bound_violations": 0,
+    "tie_boundary_losses": 0,
+    "typed_terminal_losses": 0,
+    "merged_target_losses": 0,
+    "typed_union_schedule_parity": true,
+    "posting_only_terminal_ids": 1574,
+    "typed_only_terminal_ids": 175,
+    "dual_source_terminal_ids": 113,
+    "merged_terminal_ids": 1862,
+    "raw_proof_verdict": "FAIL",
+    "raw_correctness_verdict": "PASS",
+    "raw_feasibility_verdict": "FAIL",
+    "maximum_typed_traversal_us": 2299,
+    "maximum_wand_us": 14655,
+    "maximum_complete_latency_us": 16310,
+    "scheduler_iterations": 1114694,
+    "posting_seeks": 14902819,
+    "decoded_relations": 6298185,
+    "index_build_ms": 1409,
+    "decoder_index_build_ms": 70,
+    "wall_ms": 9171,
+    "artifact_sha256": "387cc6caa75b82195fff496721f14b80c7c5a49af6f262464214f17a8b625986"
+  },
+  "gates": {
+    "soundness_tested_scope": "PASS",
+    "latency_limit_us": 5000,
+    "latency_feasibility": "FAIL",
+    "package_limit": "PASS",
+    "promotion_to_phase9": "BLOCKED",
+    "runtime_authority_changed": false,
+    "local_installed_runtime_changed": false,
+    "daemon_or_ibus_restarted": false
+  },
+  "resources": {
+    "remote_host": "e@192.168.3.94",
+    "requested_workers": 16,
+    "rust_toolchain": "1.97.0",
+    "proof_user_seconds": 76.99,
+    "proof_system_seconds": 0.68,
+    "proof_cpu_percent": 841,
+    "proof_elapsed_seconds": 9.23,
+    "proof_peak_rss_kib": 1030276,
+    "cargo_target_bytes": 4686970880,
+    "cargo_target_budget_bytes": 12884901888
+  },
+  "evidence": {
+    "remote_root": "/home/e/build/lay-l1-exact-phase2d-evidence/phase8-2026-08-14",
+    "local_cache_root": "/home/ubu/.cache/lay/l1-peak-search-phase8-2026-08-14",
+    "final_proof": "wand-final-v3-s16-13x1.json",
+    "final_proof_time": "wand-final-v3-s16-13x1.time.txt",
+    "final_proof_time_sha256": "80e858e91ebf304b75b643d29b9eaa7a3a5768410de46b936eb2aece05aef743",
+    "global_sixteen_shard_sha256": "2f6d88fb33efba5898f8ba6f5bab6b5dc09d90fbe626e4c16b7f4c6fbed9a75b",
+    "local_512_sha256": "e2d2df1bce4e8dfacac62ce0b223b88e5412316928bf6fa95465dca79e55c3d0"
+  },
+  "source_sha256": {
+    "src/bin/lay_nanda_wave_train.rs": "a30eb82aa510ec92f0ae9905358dd10bb293ad547ecfbbecf7c75b6f821cebbe",
+    "src/nanda_wave/lexical_grokking/mod.rs": "d554a07149e56089c78d0751d6e6b3dc7e58abd6cd37357806851fc79d4d0743",
+    "src/nanda_wave/lexical_grokking/runtime/relations.rs": "6d249c07c30abec6af8eb8be08253d5f0e981cb96bf12c9da2f1dea3fdde397d",
+    "src/nanda_wave/lexical_grokking/typed_edit_traversal.rs": "2aaa264659f9a43fb818cc527f569f54bcbd47ae225878b323807c92c05842ff",
+    "src/nanda_wave/lexical_grokking/posting_bounds.rs": "56eb7499f4b5fcf28d1c0b63f577b76ae7356581d8010b0c922876260da854b8",
+    "src/nanda_wave/mod.rs": "ad86971a7c14dc0ea04eeff41e4e297512c0c1492db208597e8545b7ad8fc33d",
+    "docs/l1-l11-posting-bound-phase8.md": "8c42e29b6a52a6d5911e50751f60c6dd83ed873f7fd2caf582dd6f325a153bff"
+  },
+  "checks": [
+    {"command": "remote focused posting_bounds tests", "result": "6 passed; 0 failed"},
+    {"command": "remote full-package descriptor verification", "result": "110928005 relations; 0 violations"},
+    {"command": "remote final typed-union 13 x 1 proof", "result": "PASS correctness; FAIL <=5 ms feasibility"},
+    {"command": "remote scripts/check-lay-changed.sh", "result": "PASS; authority 20/20, mutation monopoly 15/15, lib and bins check PASS"},
+    {"command": "package SHA-256 before and after", "result": "identical"},
+    {"command": "remote Cargo target budget", "result": "4686970880 <= 12884901888"}
+  ],
+  "tested": [
+    "tiny descriptor upper-bound soundness",
+    "tiny exact WAND dense-closure and equality parity",
+    "complete V8 descriptor envelope verification",
+    "full-package 13-class single-case architecture screen",
+    "typed and posting evidence source-mask union schedule parity",
+    "bounded terminal-shard and descriptor ablations"
+  ],
+  "not_tested": [
+    "13 x 20000 WAND proof",
+    "final nonlinear settlement parity",
+    "production daemon latency or RSS",
+    "package-format round trip with a new directory",
+    "shadow or live runtime authority"
+  ],
+  "next_action": "Design a separately preflighted feasibility architecture that structurally removes WAND seek and scheduler work; do not promote this executor to Phase 9."
+}

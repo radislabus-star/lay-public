@@ -1,0 +1,204 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-l11-exact-peak-search-phase8-2026-08-14",
+  "authority_bearing": false,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "phase8-paper",
+      "kind": "file",
+      "path": "../../../l1-l11-posting-bound-phase8.md",
+      "expect": {"size_bytes": 8904, "sha256": "e5944a890d5e609a2a8cdb0d2f7af02d99c10a303caca7410de6139b37f13fc1", "mode": "0664"}
+    },
+    {
+      "id": "posting-codec",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/posting_codec.rs",
+      "expect": {"size_bytes": 11396, "sha256": "1a5b94e5df2c562d91abb2eb75e3137343ce6517b4a90991e7370860e01374db", "mode": "0664"}
+    },
+    {
+      "id": "v8-reader",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/v8.rs",
+      "expect": {"size_bytes": 40868, "sha256": "cb722f5dfb7c7d80ccc1ee298ee898e2220f178f50ef19f27bdf7feba564605a", "mode": "0664"}
+    },
+    {
+      "id": "dense-oracle",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/peak_oracle.rs",
+      "expect": {"size_bytes": 22058, "sha256": "5b324500a21a9ffedb0e5c69b8b7677dbb53cfd4fab9a014d1cc83bcd6bbfb2e", "mode": "0664"}
+    },
+    {
+      "id": "relation-store",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/runtime/relations.rs",
+      "expect": {"size_bytes": 9478, "sha256": "9b24b741b6418253379b93ff427ea01c6bc1bed7e58c78ae61c0436d2e4ed0dd", "mode": "0664"}
+    },
+    {
+      "id": "typed-traversal",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/typed_edit_traversal.rs",
+      "expect": {"size_bytes": 77858, "sha256": "f587356c982469a13ac1047693c8404437c5364da8fabec5ed134d0ae39e89ec", "mode": "0664"}
+    },
+    {
+      "id": "phase7d-receipt",
+      "kind": "file",
+      "path": "../L1_L11_PEAK_SEARCH_PHASE_7D_2026-08-14/phase-7d.json",
+      "expect": {"size_bytes": 8725, "sha256": "76a9e77e4a33479d424746b45975f79e4a5ae440d1f505f408e5eca347418c4e", "mode": "0664"}
+    },
+    {
+      "id": "installed-package",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin",
+      "expect": {"size_bytes": 190139182, "sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9", "prefix_hex": "4c41594c31563800", "mode": "0644"}
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "add-proof-only-posting-bound-module", "kind": "filesystem_edit"},
+      {"id": "add-explicit-phase8-proof-command", "kind": "filesystem_edit"},
+      {"id": "write-phase8-receipts", "kind": "filesystem_write"},
+      {"id": "run-tiny-and-fixed-posting-proofs", "kind": "test_execution"}
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "runtime_authority_change",
+      "production_posting_search_reachability",
+      "heldout_target_search_input",
+      "generated_candidate_string",
+      "queue_truncation",
+      "posting_budget_truncation",
+      "early_atom_selection",
+      "equality_pruning",
+      "second_candidate_owner",
+      "runtime_case_rule",
+      "hidden_legacy_fallback",
+      "score_or_settlement_change",
+      "package_format_change",
+      "corpus_crystallization",
+      "runtime_restart",
+      "installed_package_mutation"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "runtime-vetoes",
+      "path": "../../../../src/nanda_wave/lexical_grokking/runtime.rs",
+      "sha256": "5d0d1a38ab0613da1ed753b6e266029f9c8f0912ba4ac0f31dc4ec0b2a528e70",
+      "forbidden_effect_patterns": [
+        {"effect": "production_posting_search_reachability", "regex": "(?:L1PostingBoundSearch|posting_bound_search|prove_l1_posting_bounds)"},
+        {"effect": "runtime_authority_change", "regex": "(?:(?:posting_bound_search|L1PostingBoundSearch).{0,120}(?:authorize|live_owner|runtime_owner)|(?:authorize|live_owner|runtime_owner).{0,120}(?:posting_bound_search|L1PostingBoundSearch))"},
+        {"effect": "early_atom_selection", "regex": "(?:(?:posting_bound_search|L1PostingBoundSearch).{0,160}select_birth_atoms|select_birth_atoms.{0,160}(?:posting_bound_search|L1PostingBoundSearch))"},
+        {"effect": "posting_budget_truncation", "regex": "(?:(?:posting_bound_search|L1PostingBoundSearch).{0,160}(?:birth_posting_budget|posting_budget)|(?:birth_posting_budget|posting_budget).{0,160}(?:posting_bound_search|L1PostingBoundSearch))"},
+        {"effect": "queue_truncation", "regex": "(?:(?:posting_bound_search|L1PostingBoundSearch).{0,160}(?:truncate|take\\s*\\()|(?:truncate|take\\s*\\().{0,160}(?:posting_bound_search|L1PostingBoundSearch))"},
+        {"effect": "equality_pruning", "regex": "(?:(?:posting_bound_search|L1PostingBoundSearch).{0,160}(?:upper_bound\\s*<=|upper\\s*<=)|(?:upper_bound\\s*<=|upper\\s*<=).{0,160}(?:posting_bound_search|L1PostingBoundSearch))"},
+        {"effect": "generated_candidate_string", "regex": "(?:(?:posting_bound_search|L1PostingBoundSearch).{0,160}(?:candidate_surface|generated_surface|format!)|(?:candidate_surface|generated_surface|format!).{0,160}(?:posting_bound_search|L1PostingBoundSearch))"},
+        {"effect": "heldout_target_search_input", "regex": "(?:(?:posting_bound_search|L1PostingBoundSearch).{0,160}(?:heldout_target|expected_target)|(?:heldout_target|expected_target).{0,160}(?:posting_bound_search|L1PostingBoundSearch))"},
+        {"effect": "second_candidate_owner", "regex": "(?:AlternativePostingBoundSearch|SecondPostingSearch|fallback_posting_search)"},
+        {"effect": "synthetic_fixture", "regex": "(?:(?:posting_bound_search|L1PostingBoundSearch).{0,160}(?:write|append).{0,80}(?:fixture|heldout)|(?:write|append).{0,80}(?:fixture|heldout).{0,160}(?:posting_bound_search|L1PostingBoundSearch))"},
+        {"effect": "score_or_settlement_change", "regex": "(?:score_override|coefficient_override|settlement_override)"},
+        {"effect": "hidden_legacy_fallback", "regex": "(?:fallback_to_legacy|hidden_fallback)"},
+        {"effect": "runtime_restart", "regex": "(?:systemctl|restart|kill|pkill).{0,80}(?:lay-daemon|ibus)"}
+      ]
+    },
+    {
+      "id": "v8-and-format-vetoes",
+      "path": "../../../../src/nanda_wave/lexical_grokking/v8.rs",
+      "sha256": "cb722f5dfb7c7d80ccc1ee298ee898e2220f178f50ef19f27bdf7feba564605a",
+      "forbidden_effect_patterns": [
+        {"effect": "package_format_change", "regex": "(?:VERSION|MAGIC|HEADER_BYTES)\\s*="},
+        {"effect": "installed_package_mutation", "regex": "(?:write|rename|remove_file|copy).{0,120}/home/ubu/\\.local/share/lay"},
+        {"effect": "corpus_crystallization", "regex": "crystallize_l1_lexical_grokking"}
+      ]
+    },
+    {
+      "id": "proof-cli-vetoes",
+      "path": "../../../../src/bin/lay_nanda_wave_train.rs",
+      "sha256": "9aa6c77b468731955b34022589881ff1d33d08b4aca045ea00fe0addd98bd11d",
+      "forbidden_effect_patterns": [
+        {"effect": "generated_traffic", "regex": "(?:TcpStream|UdpSocket|ureq::|reqwest::)"},
+        {"effect": "runtime_case_rule", "regex": "(?:source_id|test_name|heldout_target)"},
+        {"effect": "installed_package_mutation", "regex": "(?:write|rename|remove_file|copy).{0,120}/home/ubu/\\.local/share/lay"}
+      ]
+    }
+  ],
+  "state_machine": {
+    "initial_state": "PHASE7D_PROVEN",
+    "terminal_states": ["PHASE8_POSTING_SEARCH_PROVEN", "PHASE8_INDEX_REJECTED"],
+    "steps": [
+      {
+        "id": "implement-and-prove-phase8-posting-bounds",
+        "from": "PHASE7D_PROVEN",
+        "to": "PHASE8_POSTING_SEARCH_PROVEN",
+        "mutates": true,
+        "failure_state": "PHASE8_INDEX_REJECTED",
+        "cleanup": "retain failed receipts, revert only the separate Phase 8 patch, and leave Phase 7D evidence, installed runtime, and package untouched",
+        "preserves": ["phase7d-evidence", "installed-package-bytes"],
+        "test_id": "phase8-rollback-isolation"
+      }
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "phase7d-evidence",
+      "path": "../L1_L11_PEAK_SEARCH_PHASE_7D_2026-08-14/phase-7d.json",
+      "policy": "byte_identical",
+      "rollback_policy": "must remain byte-identical",
+      "baseline_check_id": "phase7d-receipt"
+    },
+    {
+      "id": "installed-package-bytes",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin",
+      "policy": "byte_identical",
+      "rollback_policy": "must remain byte-identical",
+      "baseline_check_id": "installed-package"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "posting-envelope-identity",
+      "producer": "query-conditioned 16-position posting descriptor envelope",
+      "consumer": "exact maximum contribution enumerated from every relation in the covered group",
+      "comparison": "predicted maximum is never smaller; exact first last and relation count match",
+      "test_id": "descriptor-exhaustive-soundness"
+    },
+    {
+      "id": "posting-closure-identity",
+      "producer": "proof-only interval branch-and-bound with equality expansion",
+      "consumer": "independent dense complete-posting activation accumulator",
+      "comparison": "exact terminal activation mass and top-K equality closure",
+      "test_id": "posting-closure-parity"
+    },
+    {
+      "id": "typed-union-identity",
+      "producer": "posting events and Phase 7 typed terminal events in all deterministic schedules",
+      "consumer": "one terminal evidence map keyed by WordCenterId",
+      "comparison": "byte-identical merged evidence and complete source masks",
+      "test_id": "typed-posting-schedule-parity"
+    }
+  ],
+  "runtime_comparisons": [],
+  "invariants": [
+    {"id": "one-search-owner", "statement": "one proof-only posting search owns completion and adapters only emit evidence", "test_id": "phase8-production-unreachable"},
+    {"id": "target-free-search", "statement": "heldout target class surface and expected answer are not bound or search inputs", "test_id": "target-search-separation"},
+    {"id": "complete-observed-postings", "statement": "all resolved non-anchor query atoms and all their V8 relations are available to the proof search", "test_id": "posting-closure-parity"},
+    {"id": "sum-of-max-soundness", "statement": "every interval activation upper is the sum of per-query-atom contribution maxima over that interval", "test_id": "descriptor-exhaustive-soundness"},
+    {"id": "equality-expands", "statement": "a node whose upper equals the retained K-th exact mass cannot be pruned", "test_id": "tie-boundary-parity"},
+    {"id": "no-work-truncation", "statement": "queue relation atom and center work has no capacity cutoff in the proof path", "test_id": "adversarial-work-boundary"},
+    {"id": "typed-events-survive", "statement": "a grounded Phase 7 typed terminal cannot be erased by posting rank or a missing posting", "test_id": "typed-posting-schedule-parity"},
+    {"id": "package-byte-preservation", "statement": "Phase 8 reads the V8 package and never writes package bytes", "test_id": "package-byte-parity"}
+  ],
+  "tests": [
+    {"id": "phase8-rollback-isolation", "kind": "fault_injection", "expected": "a rejected Phase 8 index leaves Phase 7D evidence and installed package byte-identical"},
+    {"id": "phase8-production-unreachable", "kind": "integration", "expected": "normal runtime service daemon and LegacyBirthSearch contain no Phase 8 import call switch or fallback"},
+    {"id": "target-search-separation", "kind": "integration", "expected": "labels are joined only after the deterministic search result is complete"},
+    {"id": "descriptor-exhaustive-soundness", "kind": "parity", "expected": "all tiny descriptor ranges and selected V8 groups have zero contribution upper-bound violations"},
+    {"id": "posting-closure-parity", "kind": "parity", "expected": "optimized activation masses and K-th equality closure equal the dense complete-posting accumulator"},
+    {"id": "tie-boundary-parity", "kind": "parity", "expected": "every terminal tied at the K-th activation mass remains in the closure"},
+    {"id": "adversarial-work-boundary", "kind": "fault_injection", "expected": "oversized queues and zero-mass equality resolve exactly or report infeasible without truncation"},
+    {"id": "typed-posting-schedule-parity", "kind": "parity", "expected": "posting-first typed-first reverse and deterministic permuted schedules produce byte-identical terminal evidence"},
+    {"id": "package-byte-parity", "kind": "parity", "expected": "package SHA-256 is unchanged before and after proof"}
+  ]
+}

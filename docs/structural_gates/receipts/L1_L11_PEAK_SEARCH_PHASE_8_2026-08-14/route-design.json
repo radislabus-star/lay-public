@@ -1,0 +1,58 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "phase8_proof_cli", "role": "interface"},
+    {"id": "immutable_v8_postings", "role": "evidence_owner"},
+    {"id": "posting_descriptor_adapter", "role": "evidence_owner"},
+    {"id": "posting_bound_search", "role": "orchestrator"},
+    {"id": "typed_edit_traversal", "role": "evidence_owner"},
+    {"id": "terminal_evidence_union", "role": "evidence_owner"},
+    {"id": "dense_posting_accumulator", "role": "proof_owner"},
+    {"id": "bound_and_closure_parity", "role": "proof_owner"},
+    {"id": "phase8_metrics", "role": "observer"},
+    {"id": "phase8_receipt", "role": "observer"}
+  ],
+  "edges": [
+    {"id": "exec-cli-search", "from": "phase8_proof_cli", "relation": "calls", "to": "posting_bound_search", "events": ["phase8_posting_proof"]},
+    {"id": "exec-v8-adapter", "from": "immutable_v8_postings", "relation": "delegates", "to": "posting_descriptor_adapter", "events": ["phase8_posting_proof"]},
+    {"id": "exec-adapter-search", "from": "posting_descriptor_adapter", "relation": "delegates", "to": "posting_bound_search", "events": ["phase8_posting_proof"]},
+    {"id": "exec-typed-search", "from": "typed_edit_traversal", "relation": "delegates", "to": "posting_bound_search", "events": ["phase8_posting_proof"]},
+    {"id": "exec-search-union", "from": "posting_bound_search", "relation": "delegates", "to": "terminal_evidence_union", "events": ["phase8_posting_proof"]},
+    {"id": "proof-v8-dense", "from": "immutable_v8_postings", "relation": "proves", "to": "dense_posting_accumulator", "events": ["phase8_posting_proof"]},
+    {"id": "proof-union-parity", "from": "terminal_evidence_union", "relation": "proves", "to": "bound_and_closure_parity", "events": ["phase8_posting_proof"]},
+    {"id": "proof-dense-parity", "from": "dense_posting_accumulator", "relation": "proves", "to": "bound_and_closure_parity", "events": ["phase8_posting_proof"]},
+    {"id": "observe-parity-metrics", "from": "bound_and_closure_parity", "relation": "observes", "to": "phase8_metrics", "events": ["phase8_posting_proof"]},
+    {"id": "observe-metrics-receipt", "from": "phase8_metrics", "relation": "observes", "to": "phase8_receipt", "events": ["phase8_posting_proof"]}
+  ],
+  "routes": [
+    {
+      "id": "phase8-execution",
+      "event": "phase8_posting_proof",
+      "kind": "execution",
+      "entry": "phase8_proof_cli",
+      "terminal": "terminal_evidence_union",
+      "required_roles": ["interface", "orchestrator", "evidence_owner"],
+      "path_cardinality": [
+        {"from": "phase8_proof_cli", "to": "posting_bound_search", "min": 1, "max": 1},
+        {"from": "posting_bound_search", "to": "terminal_evidence_union", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "phase8-proof",
+      "event": "phase8_posting_proof",
+      "kind": "proof",
+      "entry": "terminal_evidence_union",
+      "terminal": "bound_and_closure_parity",
+      "required_roles": ["evidence_owner", "proof_owner"]
+    },
+    {
+      "id": "phase8-observation",
+      "event": "phase8_posting_proof",
+      "kind": "observation",
+      "entry": "bound_and_closure_parity",
+      "terminal": "phase8_receipt",
+      "required_roles": ["proof_owner", "observer"]
+    }
+  ]
+}

@@ -20,6 +20,8 @@ mod pairwise;
 #[cfg(any(test, feature = "lexical-compiler"))]
 mod peak_oracle;
 mod peak_search;
+#[cfg(any(test, feature = "lexical-compiler"))]
+mod posting_bounds;
 mod posting_codec;
 mod posting_spool;
 mod proof;
@@ -42,6 +44,8 @@ pub use corruption::ScaleTrainingSurfacePolicy;
 pub(crate) use corruption::{split_damages, DamageExample};
 #[cfg(feature = "lexical-compiler")]
 pub use forward_decoder_index::prove_l1_forward_decoder_index;
+#[cfg(feature = "lexical-compiler")]
+pub use posting_bounds::prove_l1_posting_bounds;
 pub use posting_codec::analyze_package as analyze_l1_forward_compression;
 pub use proof::{
     crystallize_l1_lexical_grokking, crystallize_l1_lexical_grokking_with_rss_budget,
