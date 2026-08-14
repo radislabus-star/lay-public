@@ -1,6 +1,6 @@
 # L1.1 Exact Typed Peak Search: Detailed Refactoring Plan
 
-Status: paper design, implementation is not admitted yet  
+Status: Phases 0-5 complete; Phase 6 is the next admitted boundary
 Date: 2026-08-13  
 Scope: `src/nanda_wave/lexical_grokking/` only, plus proof tooling and owned documentation
 
@@ -1813,6 +1813,64 @@ crystallization runs remain zero.
 /home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_4_2026-08-14/phase-4.json
 ```
 
-The next action is Phase 5: build the deterministic language/length/frequency/
-position/class/ambiguity matrix and assign every failure to its first shared
-loss boundary without adding runtime rules.
+Phase 5 is complete. The deterministic proof matrix covers exactly `260,000`
+fixed heldout cases: `13` damage classes with `20,000` cases each. It records
+language, length, frequency, edit position, ordered position pair, damage
+class, objective ambiguity, and exactly one first-loss boundary for every
+case. All independent axis sums and the first-loss sum equal `260,000`;
+unsupported cases are zero. The matrix contains both languages (`181,235` RU
+and `78,765` EN), all three frequency buckets, all five position buckets,
+`1,444` populated requested strata, and `14,156` explicitly empty strata.
+
+The old semantic proof projection is byte-identical to the Phase 0 baseline:
+SHA-256 `f11cd463ce7ed0bb8ff2eec989d1294776d00d54d2f7b8b40cd35cdacd8eb9fa`.
+The matrix therefore adds diagnostics without changing candidate order,
+quality, safety, or authority. The strict quality contract remains unchanged:
+all `13/13` classes exceed `95%` unique top-1, the minimum is sparse
+multi-omission at `96.694332%`, minimum lattice coverage is `99.535%`, clean
+preservation is `100%`, and false certainty, false authority, and false
+singleton remain zero.
+
+The exclusive first-loss decomposition is:
+
+```text
+contract satisfied                  48,272
+independent frontier eligibility        23
+nonlinear settlement rank            6,387
+restoration authority              205,318
+query/posting/typed/dependency loss       0
+total                              260,000
+```
+
+This does not say that `205,318` words are restored incorrectly. It says the
+frozen L1.1 restoration classifier intentionally does not issue singleton
+authority for those cases. The exact-peak-search work must first eliminate the
+`23` pre-settlement frontier losses and then prove rank/closure parity; it must
+not weaken authority or safety to turn abstentions into winners.
+
+The full run used the immutable V8 package and fixed corpus/heldout bytes. It
+completed on the remote 20-logical-CPU host in `21:46.85`, averaged `512%`
+CPU, and peaked at `1,255,684 KiB` RSS. The low effective parallelism is a
+proof-tool effect: first-loss posting availability repeatedly reconstructs V8
+reverse evidence through one shared cache. Production runtime latency was not
+changed or re-characterized by this diagnostic run. Later matrix reruns may
+replace that check with an equivalent proof-only atom-ID intersection after a
+separate parity gate.
+
+Tested: exact fixed denominator, every independent matrix axis, exclusive
+first-loss accounting, both languages, all fixed classes, unsupported-case
+rejection, semantic projection parity, focused lexical and authority
+contracts, all compile routes, installed package identity, and Cargo disk
+budget. Not tested: the Phase 6 forward decoder index, typed edit traversal,
+posting-bound soundness, optimized exact-search latency, package redesign, or
+deployment. Runtime authority, installed package, daemon, and IBus remain
+unchanged; training and crystallization runs remain zero.
+
+```text
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_5_2026-08-14/phase-5.json
+/home/ubu/.cache/lay/l1-peak-search-phase5-2026-08-14/full-13x20000.json
+```
+
+The next action is Phase 6: build the proof-only forward lexical index from
+decoder parent links and primary centers, prove complete UTF-8 round-trip and
+topology invariants, and keep it absent from normal runtime.

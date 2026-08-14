@@ -21,6 +21,7 @@ mod peak_search;
 mod posting_codec;
 mod posting_spool;
 mod proof;
+mod proof_matrix;
 pub(super) mod restoration;
 mod runtime;
 mod service;

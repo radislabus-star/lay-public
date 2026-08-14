@@ -17,6 +17,7 @@ use super::corruption::{
     ScaleTrainingSurfacePolicy,
 };
 use super::format;
+use super::proof_matrix::{FrequencyProfile, ProofMatrix};
 use super::restoration::{AbstainReason, RestorationReadout};
 use super::runtime::{L1RestorationHost, LexicalGrokkingMemory, ReadoutMode};
 use super::training_budget::{checkpoint, TrainingBudgetGuard};
@@ -401,6 +402,7 @@ pub struct L1LexicalGrokkingProof {
     reconstruction_diagnostics: Vec<ReconstructionDiagnostic>,
     ambiguity_authority_diagnostics: Vec<AmbiguityAuthorityDiagnostic>,
     false_certainty_diagnostics: Vec<FalseCertaintyDiagnostic>,
+    proof_matrix: ProofMatrix,
     package: String,
 }
 
@@ -1318,7 +1320,9 @@ fn prove_l1_lexical_grokking_with_policy(
         latency_audit_ms
     );
     let heldout_evaluation_started = Instant::now();
-    let evaluation = evaluate_parallel(&memory, &heldout, &ambiguity);
+    let frequency_profile = FrequencyProfile::from_words(&words);
+    let mut evaluation = evaluate_parallel(&memory, &heldout, &ambiguity, &frequency_profile);
+    evaluation.proof_matrix.finalize(&frequency_profile);
     let heldout_evaluation_ms = heldout_evaluation_started.elapsed().as_millis();
     eprintln!(
         "l11_proof stage=heldout_evaluation_complete elapsed_ms={} stage_elapsed_ms={} cases={}",
@@ -1574,6 +1578,7 @@ fn prove_l1_lexical_grokking_with_policy(
         reconstruction_diagnostics: evaluation.reconstruction_diagnostics,
         ambiguity_authority_diagnostics: evaluation.ambiguity_authority_diagnostics,
         false_certainty_diagnostics: evaluation.false_certainty_diagnostics,
+        proof_matrix: evaluation.proof_matrix,
         package: output_path.display().to_string(),
     };
     serde_json::to_value(proof).map_err(io::Error::other)
@@ -1819,12 +1824,14 @@ struct Evaluation {
     reconstruction_diagnostics: Vec<ReconstructionDiagnostic>,
     ambiguity_authority_diagnostics: Vec<AmbiguityAuthorityDiagnostic>,
     false_certainty_diagnostics: Vec<FalseCertaintyDiagnostic>,
+    proof_matrix: ProofMatrix,
 }
 
 fn evaluate_parallel(
     memory: &LexicalGrokkingMemory,
     heldout: &[(u32, DamageExample)],
     ambiguity: &HashMap<String, BTreeSet<u32>>,
+    frequency_profile: &FrequencyProfile,
 ) -> Evaluation {
     let worker_count = proof_worker_count(heldout.len());
     let progress = ProofProgress::new("heldout", heldout.len());
@@ -1841,6 +1848,7 @@ fn evaluate_parallel(
                         memory,
                         heldout.iter().skip(worker).step_by(worker_count),
                         ambiguity,
+                        frequency_profile,
                         progress,
                     )
                 })
@@ -2228,6 +2236,7 @@ fn evaluate_cases<'a>(
     memory: &LexicalGrokkingMemory,
     heldout: impl IntoIterator<Item = &'a (u32, DamageExample)>,
     ambiguity: &HashMap<String, BTreeSet<u32>>,
+    frequency_profile: &FrequencyProfile,
     progress: &ProofProgress<'_>,
 ) -> Evaluation {
     let mut evaluation = Evaluation::default();
@@ -2375,6 +2384,16 @@ fn evaluate_cases<'a>(
             *target,
             &targets,
             authority_mutates_surface,
+        );
+        evaluation.proof_matrix.record(
+            memory,
+            frequency_profile,
+            example,
+            *target,
+            &targets,
+            &candidates,
+            &restoration_candidates,
+            &restoration,
         );
         class.cases += 1;
         class.top1 += usize::from(top1);
@@ -2682,6 +2701,7 @@ fn merge_evaluation(target: &mut Evaluation, source: Evaluation) {
     target
         .false_certainty_diagnostics
         .extend(source.false_certainty_diagnostics);
+    target.proof_matrix.merge(source.proof_matrix);
     for (name, source_class) in source.metrics.classes {
         let class = target.metrics.classes.entry(name).or_default();
         class.cases += source_class.cases;
