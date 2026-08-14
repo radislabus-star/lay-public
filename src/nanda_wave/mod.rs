@@ -63,8 +63,6 @@ pub use l2_field::{
     CANONICAL_L2_LEMMA_FRONTIER, CANONICAL_L2_PRODUCTIVE_FORM_LIMIT,
     CANONICAL_L2_PRODUCTIVE_LEMMA_LIMIT,
 };
-#[cfg(feature = "lexical-compiler")]
-pub use lexical_grokking::prove_l1_forward_decoder_index;
 pub use lexical_grokking::{
     admit_l11_delta, admit_l11_tombstone, analyze_l1_forward_compression,
     authoritative_restore_surface, benchmark_l1_diverse_restoration, benchmark_l1_lexical_grokking,
@@ -83,6 +81,8 @@ pub use lexical_grokking::{
     L1RestorationHostStats, L1ServiceHealth, L1ServiceRequest, L1ServiceResponse, L1ServiceStats,
     ScaleTrainingSurfacePolicy,
 };
+#[cfg(feature = "lexical-compiler")]
+pub use lexical_grokking::{prove_l1_forward_decoder_index, prove_l1_typed_edit_phase7a};
 pub use mode::{Mode8, ModeRole, CELL32_BYTES, MODES_PER_CELL32};
 pub use morphology_phase::{
     run_embedded_russian_morphology_proof, run_russian_morphology_proof_path,

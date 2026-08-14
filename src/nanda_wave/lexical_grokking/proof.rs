@@ -2033,7 +2033,7 @@ fn evaluate_parallel(
     evaluation
 }
 
-fn proof_worker_count(case_count: usize) -> usize {
+pub(super) fn proof_worker_count(case_count: usize) -> usize {
     std::env::var("LAY_L11_PROOF_WORKERS")
         .ok()
         .and_then(|value| value.parse::<usize>().ok())
@@ -3002,7 +3002,7 @@ fn corpus_words(text: &str, max_words: usize) -> Vec<String> {
     words.into_iter().collect()
 }
 
-fn corpus_words_from_lines(text: &str, max_words: usize) -> Vec<String> {
+pub(super) fn corpus_words_from_lines(text: &str, max_words: usize) -> Vec<String> {
     let mut seen = HashSet::new();
     let mut words = Vec::new();
     for line in text.lines() {
@@ -3033,6 +3033,52 @@ fn scale_sample_hash(word: &str, example: &DamageExample) -> u64 {
         state = mix64_golden(state ^ u64::from(byte));
     }
     state
+}
+
+#[cfg(any(test, feature = "lexical-compiler"))]
+pub(super) struct FixedHeldoutCase {
+    pub(super) class: &'static str,
+    pub(super) terminal_id: u32,
+    pub(super) surface: String,
+}
+
+#[cfg(any(test, feature = "lexical-compiler"))]
+pub(super) fn prepare_fixed_heldout_cases(
+    words: &[String],
+    heldout_per_class: usize,
+    terminal_offset: usize,
+) -> io::Result<Vec<FixedHeldoutCase>> {
+    if heldout_per_class == 0 {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "fixed heldout budget must be positive",
+        ));
+    }
+    let policy = ScaleProofPolicy {
+        heldout_per_class,
+        training_surfaces_per_word: 0,
+        training_surface_policy: ScaleTrainingSurfacePolicy::LegacyAlphabetical,
+        maximum_rss_mib: DEFAULT_TRAINING_RSS_MIB,
+    };
+    let (reservoir, _) = prepare_scale_heldout(words, policy, terminal_offset)?;
+    let mut cases = reservoir
+        .into_iter()
+        .flat_map(|(class, heap)| {
+            heap.into_iter()
+                .map(move |(_, terminal_id, surface)| FixedHeldoutCase {
+                    class,
+                    terminal_id,
+                    surface,
+                })
+        })
+        .collect::<Vec<_>>();
+    cases.sort_unstable_by(|left, right| {
+        left.class
+            .cmp(right.class)
+            .then_with(|| left.terminal_id.cmp(&right.terminal_id))
+            .then_with(|| left.surface.cmp(&right.surface))
+    });
+    Ok(cases)
 }
 
 pub(super) fn populate_sampled_ambiguity(

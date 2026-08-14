@@ -1050,8 +1050,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_nanda_wave_train.rs": {
-    "mtime": 1786674045.4501257,
-    "ast_hash": "20298f0c076572ac434170fef6108f93",
+    "mtime": 1786675606.014857,
+    "ast_hash": "47b8d2c8e864fedcb5a6ce51c9f59ce3",
     "semantic_hash": ""
   },
   "src/bin/lay_ngram_corpus.rs": {
@@ -1575,8 +1575,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/mod.rs": {
-    "mtime": 1786674075.5534592,
-    "ast_hash": "00402eb10f1b60e76e309fbc534c96c8",
+    "mtime": 1786675623.558061,
+    "ast_hash": "a357333b17f7e94e5f4016e2de398177",
     "semantic_hash": ""
   },
   "src/nanda_wave/mode.rs": {
@@ -3740,8 +3740,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/mod.rs": {
-    "mtime": 1786674045.4451256,
-    "ast_hash": "8eae9cd84cd10365dab56d262db69e09",
+    "mtime": 1786675623.3280582,
+    "ast_hash": "2a24ae7b5fce5875e66a44c989f43690",
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/model.rs": {
@@ -3750,8 +3750,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/proof.rs": {
-    "mtime": 1786670002.1346114,
-    "ast_hash": "f841eb86f322d5f661419a633e4d270e",
+    "mtime": 1786675606.008857,
+    "ast_hash": "8a870ca1990dddefa184bb196f12091f",
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/runtime.rs": {
@@ -7545,8 +7545,8 @@
     "semantic_hash": ""
   },
   "docs/l1-l11-exact-peak-search-refactoring-plan.md": {
-    "mtime": 1786674459.4080384,
-    "ast_hash": "acce6762309b171667363c35ac327621",
+    "mtime": 1786676116.0768652,
+    "ast_hash": "2d14a958dcfa287873f5d1781411122c",
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_2A_2026-08-13/phase-2a.json": {
@@ -7800,8 +7800,43 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/forward_decoder_index.rs": {
-    "mtime": 1786674075.3934593,
-    "ast_hash": "c3587ad390551fd77287f84787198eae",
+    "mtime": 1786675606.006857,
+    "ast_hash": "7599b95f0743a7cc08bfa1cdc2e8e24e",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_7A_2026-08-14/implementation-preflight-receipt.json": {
+    "mtime": 1786675205.8095453,
+    "ast_hash": "635e36a168ab8f453daf0f1fc3fd5459",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_7A_2026-08-14/implementation-preflight.json": {
+    "mtime": 1786675115.8283048,
+    "ast_hash": "6dc68e73aedd35cfa9f36c12de5e3ad1",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_7A_2026-08-14/phase-7a.json": {
+    "mtime": 1786676155.801338,
+    "ast_hash": "01a026362cf9717422385fa3f4085689",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_7A_2026-08-14/route-design.json": {
+    "mtime": 1786674938.6224082,
+    "ast_hash": "09c9e4ff0b90c8d4b092c0f344aa4cc2",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_7A_2026-08-14/route-gate.json": {
+    "mtime": 1786674954.652576,
+    "ast_hash": "186caa1734c0821a933ac776c8195ed2",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/lexical_grokking/typed_edit_traversal.rs": {
+    "mtime": 1786675684.6597733,
+    "ast_hash": "693cd30e390c62a466fd00b379363136",
+    "semantic_hash": ""
+  },
+  "docs/l1-l11-typed-edit-product-phase7.md": {
+    "mtime": 1786676116.0758653,
+    "ast_hash": "115cb8b3245b78856f0eeb7a73906a50",
     "semantic_hash": ""
   }
 }

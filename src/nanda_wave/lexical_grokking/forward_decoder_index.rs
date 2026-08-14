@@ -17,13 +17,13 @@ use super::model::{DecoderNode, LexicalGrokkingPackage};
 use super::runtime::LexicalGrokkingMemory;
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
-struct ForwardChild {
-    symbol: u32,
-    node_id: u32,
+pub(super) struct ForwardChild {
+    pub(super) symbol: u32,
+    pub(super) node_id: u32,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-struct ForwardDecoderIndex {
+pub(super) struct ForwardDecoderIndex {
     child_offsets: Vec<u32>,
     children: Vec<ForwardChild>,
     terminal_offsets: Vec<u32>,
@@ -41,7 +41,7 @@ struct RoundtripStats {
 }
 
 impl ForwardDecoderIndex {
-    fn build(package: &LexicalGrokkingPackage) -> Result<Self, String> {
+    pub(super) fn build(package: &LexicalGrokkingPackage) -> Result<Self, String> {
         validate_parent_topology(&package.decoder_nodes)?;
 
         let node_count = package.decoder_nodes.len();
@@ -120,7 +120,7 @@ impl ForwardDecoderIndex {
         })
     }
 
-    fn child(&self, parent: u32, symbol: u32) -> Option<u32> {
+    pub(super) fn child(&self, parent: u32, symbol: u32) -> Option<u32> {
         let parent = parent as usize;
         let start = *self.child_offsets.get(parent)? as usize;
         let end = *self.child_offsets.get(parent + 1)? as usize;
@@ -131,6 +131,19 @@ impl ForwardDecoderIndex {
             .map(|index| children[index].node_id)
     }
 
+    pub(super) fn children(&self, parent: u32) -> &[ForwardChild] {
+        let parent = parent as usize;
+        let Some(&start) = self.child_offsets.get(parent) else {
+            return &[];
+        };
+        let Some(&end) = self.child_offsets.get(parent + 1) else {
+            return &[];
+        };
+        self.children
+            .get(start as usize..end as usize)
+            .unwrap_or_default()
+    }
+
     fn traverse(&self, surface: &str) -> Option<u32> {
         let mut node = 0_u32;
         for symbol in surface.chars().map(|character| character as u32) {
@@ -139,7 +152,7 @@ impl ForwardDecoderIndex {
         Some(node)
     }
 
-    fn terminals(&self, node: u32) -> &[u32] {
+    pub(super) fn terminals(&self, node: u32) -> &[u32] {
         let node = node as usize;
         let Some(&start) = self.terminal_offsets.get(node) else {
             return &[];
@@ -223,7 +236,7 @@ impl ForwardDecoderIndex {
             .unwrap_or_default()
     }
 
-    fn fingerprint(&self) -> String {
+    pub(super) fn fingerprint(&self) -> String {
         let mut hasher = Sha256::new();
         hash_u32_slice(&mut hasher, &self.child_offsets);
         for child in &self.children {
@@ -364,7 +377,7 @@ fn hash_u32_slice(hasher: &mut Sha256, values: &[u32]) {
     }
 }
 
-fn file_sha256(path: &Path) -> io::Result<String> {
+pub(super) fn file_sha256(path: &Path) -> io::Result<String> {
     let mut file = File::open(path)?;
     let mut hasher = Sha256::new();
     let mut buffer = [0_u8; 1024 * 1024];

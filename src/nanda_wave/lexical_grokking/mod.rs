@@ -29,6 +29,8 @@ mod runtime;
 mod service;
 mod training_budget;
 mod training_corpus;
+#[cfg(any(test, feature = "lexical-compiler"))]
+mod typed_edit_traversal;
 mod v8;
 mod wave_basis;
 
@@ -63,6 +65,8 @@ pub use service::{
     L11SeedSurface, L11ServiceEnsureReport, L1ServiceHealth, L1ServiceRequest, L1ServiceResponse,
     L1ServiceStats,
 };
+#[cfg(feature = "lexical-compiler")]
+pub use typed_edit_traversal::prove_l1_typed_edit_phase7a;
 pub use v8::{build_lazy_v8_package, build_lazy_v8_package_with_shard_size};
 
 #[cfg(test)]

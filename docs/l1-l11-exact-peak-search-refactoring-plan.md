@@ -1949,7 +1949,31 @@ Training and crystallization runs remain zero.
 /home/ubu/.cache/lay/l1-peak-search-phase6-2026-08-14/forward-index.json
 ```
 
-The next action is Phase 7A: define the identity, punctuation, prefix, and
-suffix typed edit-product states and dominance relation on paper, then compare
-their complete terminal set and certificates against the dense oracle before
-adding the remaining operator families.
+### Phase 7A accepted result - 2026-08-14
+
+Phase 7A is complete and remains proof-only. One `L1TypedEditTraversal` now
+traverses the Phase 6 decoder index with exact identity and one-target-insertion
+states, canonicalizing completed insertions to prefix or suffix certificates.
+Punctuation suffix evidence is emitted from independently preserved raw
+boundary metadata; punctuation remains present in the reserved raw/layout lane.
+
+The independent tiny oracle and forward/reverse/permuted scheduling gate passed
+`5/5`. On the unchanged full package, clean identity passed
+`852,582/852,582`; prefix, suffix, and punctuation each passed target retention,
+certificate recall, and scheduling parity `20,000/20,000`. The full `60,000`
+case run took `9.14 s`, averaged `1,027%` CPU, and peaked at `591,208 KiB` RSS.
+Package bytes and runtime authority remain unchanged. Focused lexical regression
+is now `134/134`; authority `20/20` and mutation `15/15` remain PASS.
+
+Measured evidence and scope boundaries are recorded at:
+
+```text
+/home/ubu/projects/lay-l1-exact-peak-search/docs/l1-l11-typed-edit-product-phase7.md
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_7A_2026-08-14/phase-7a.json
+/home/ubu/.cache/lay/l1-peak-search-phase7a-2026-08-14/full-3x20000.json
+```
+
+The next action is Phase 7B: extend the same owner with interior target
+insertion, input deletion, generic one-symbol substitution, and all-symbol exact
+layout projection. It must retain the accepted 7A families and pass complete
+tiny terminal/certificate parity before the fixed seven-family gate.
