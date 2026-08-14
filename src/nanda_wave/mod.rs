@@ -63,6 +63,8 @@ pub use l2_field::{
     CANONICAL_L2_LEMMA_FRONTIER, CANONICAL_L2_PRODUCTIVE_FORM_LIMIT,
     CANONICAL_L2_PRODUCTIVE_LEMMA_LIMIT,
 };
+#[cfg(feature = "lexical-compiler")]
+pub use lexical_grokking::prove_l1_forward_decoder_index;
 pub use lexical_grokking::{
     admit_l11_delta, admit_l11_tombstone, analyze_l1_forward_compression,
     authoritative_restore_surface, benchmark_l1_diverse_restoration, benchmark_l1_lexical_grokking,

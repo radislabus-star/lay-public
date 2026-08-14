@@ -1,0 +1,53 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "proof_query", "role": "interface"},
+    {"id": "package_loader", "role": "orchestrator"},
+    {"id": "decoder_node_evidence", "role": "evidence_owner"},
+    {"id": "primary_center_evidence", "role": "evidence_owner"},
+    {"id": "forward_index_builder", "role": "orchestrator"},
+    {"id": "topology_validator", "role": "proof_owner"},
+    {"id": "roundtrip_validator", "role": "proof_owner"},
+    {"id": "index_receipt", "role": "observer"}
+  ],
+  "edges": [
+    {"id": "exec-query-load", "from": "proof_query", "relation": "calls", "to": "package_loader", "events": ["forward_index_proof"]},
+    {"id": "exec-load-build", "from": "package_loader", "relation": "delegates", "to": "forward_index_builder", "events": ["forward_index_proof"]},
+    {"id": "evidence-decoder-topology", "from": "decoder_node_evidence", "relation": "proves", "to": "topology_validator", "events": ["forward_index_proof"]},
+    {"id": "evidence-centers-roundtrip", "from": "primary_center_evidence", "relation": "proves", "to": "roundtrip_validator", "events": ["forward_index_proof"]},
+    {"id": "proof-build-topology", "from": "forward_index_builder", "relation": "proves", "to": "topology_validator", "events": ["forward_index_proof"]},
+    {"id": "proof-topology-roundtrip", "from": "topology_validator", "relation": "proves", "to": "roundtrip_validator", "events": ["forward_index_proof"]},
+    {"id": "observe-roundtrip-receipt", "from": "roundtrip_validator", "relation": "observes", "to": "index_receipt", "events": ["forward_index_proof"]}
+  ],
+  "routes": [
+    {
+      "id": "forward-index-execution",
+      "event": "forward_index_proof",
+      "kind": "execution",
+      "entry": "proof_query",
+      "terminal": "forward_index_builder",
+      "required_roles": ["interface", "orchestrator"],
+      "path_cardinality": [
+        {"from": "proof_query", "to": "package_loader", "min": 1, "max": 1},
+        {"from": "package_loader", "to": "forward_index_builder", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "forward-index-proof",
+      "event": "forward_index_proof",
+      "kind": "proof",
+      "entry": "forward_index_builder",
+      "terminal": "roundtrip_validator",
+      "required_roles": ["orchestrator", "proof_owner"]
+    },
+    {
+      "id": "forward-index-observation",
+      "event": "forward_index_proof",
+      "kind": "observation",
+      "entry": "roundtrip_validator",
+      "terminal": "index_receipt",
+      "required_roles": ["proof_owner", "observer"]
+    }
+  ]
+}

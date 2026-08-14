@@ -12,6 +12,8 @@ mod composite;
 mod corruption;
 mod crystal;
 mod format;
+#[cfg(any(test, feature = "lexical-compiler"))]
+mod forward_decoder_index;
 mod model;
 mod ngram_graph;
 mod pairwise;
@@ -36,6 +38,8 @@ pub use composite::initialize_manifest as initialize_l11_composite_manifest;
 pub use composite::{admit_delta as admit_l11_delta, admit_tombstone as admit_l11_tombstone};
 pub use corruption::ScaleTrainingSurfacePolicy;
 pub(crate) use corruption::{split_damages, DamageExample};
+#[cfg(feature = "lexical-compiler")]
+pub use forward_decoder_index::prove_l1_forward_decoder_index;
 pub use posting_codec::analyze_package as analyze_l1_forward_compression;
 pub use proof::{
     crystallize_l1_lexical_grokking, crystallize_l1_lexical_grokking_with_rss_budget,

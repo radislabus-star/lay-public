@@ -1,6 +1,6 @@
 # L1.1 Exact Typed Peak Search: Detailed Refactoring Plan
 
-Status: Phases 0-5 complete; Phase 6 is the next admitted boundary
+Status: Phases 0-6 complete; Phase 7 is the next admitted boundary
 Date: 2026-08-13  
 Scope: `src/nanda_wave/lexical_grokking/` only, plus proof tooling and owned documentation
 
@@ -1871,6 +1871,85 @@ unchanged; training and crystallization runs remain zero.
 /home/ubu/.cache/lay/l1-peak-search-phase5-2026-08-14/full-13x20000.json
 ```
 
-The next action is Phase 6: build the proof-only forward lexical index from
-decoder parent links and primary centers, prove complete UTF-8 round-trip and
-topology invariants, and keep it absent from normal runtime.
+Phase 6 is complete. `forward_decoder_index.rs` derives one transient CSR
+forward view from the package's immutable decoder parent links:
+
+```text
+DecoderNode(parent, symbol)
+-> child counts
+-> prefix-sum child offsets
+-> children sorted by (symbol, child node ID)
+-> unique transition-symbol validation
+
+package.centers only
+-> terminal counts keyed by DecoderNodeId
+-> prefix-sum terminal offsets
+-> explicit sorted WordCenterId lists
+```
+
+The full V8 package contains `1,584,307` decoder nodes, `1,584,306` forward
+edges, and `852,582` primary WordCenter terminals. Every terminal decoded to a
+UTF-8 surface, traversed forward to the identical decoder node, and appeared
+in that node's terminal list: `852,582/852,582`. Parent bounds, unique root,
+acyclicity, Unicode symbols, child sorting, and unique transition symbols all
+passed. Maximum fan-out is `59`; maximum surface length is `31` characters.
+The accepted corpus has zero terminal-collision nodes, while a focused fixture
+proves that multiple WordCenterIds at one decoder node are represented
+explicitly rather than overwritten.
+
+The index builder reads only `package.decoder_nodes` and `package.centers`.
+Fault injection placed invalid `decoder_terminal` values in relation banks;
+the index remained valid and contained only the primary center. Invalid root,
+out-of-range parent, parent cycle, self-parent, and duplicate child symbol are
+rejected before admission.
+
+The derived index occupies `28,759,240` bytes (`27.43 MiB`). On the remote
+package proof, package load took `758 ms`, index build plus complete validation
+took `270 ms`, fresh-process wall time was `1.32 s`, and process peak RSS was
+`187,400 KiB`. Incremental RSS after package load was `29,569,024` bytes. A
+second run measured `763 ms` load and the same `270 ms` build; the stable
+report projection and index fingerprint were byte-identical. These are
+proof-tool measurements, not production startup or hot-path latency.
+
+The package SHA-256 remained
+`47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9`
+before and after both runs. The module is compiled only under
+`cfg(any(test, feature = "lexical-compiler"))`; the proof CLI exists only with
+`lexical-compiler`. Normal runtime, service, daemon, and `peak_search` do not
+import, load, or call the index. Runtime authority, scoring, package format,
+installed package, daemon, and IBus are unchanged.
+
+The first route design was rejected because evidence `proves` edges terminated
+at an orchestrator instead of a proof owner. The corrected route has one
+execution path, one proof path, one observation path, and zero authority
+routes. The first implementation preflight was also retained as
+`BLOCKED_BEFORE_CODE` because five declared vetoes lacked static tripwires.
+After those tripwires were added, preflight returned `READY_TO_IMPLEMENT` with
+zero blockers. No code was written before that result.
+
+Remote gates passed: focused decoder-index tests `7/7`, focused lexical tests
+`129/129`, transition authority `20/20`, mutation monopoly `15/15`, default
+and `lexical-compiler` lib/bin compile routes, `scripts/check-lay-changed.sh`,
+format/diff checks, package-byte parity, and the `12 GiB` Cargo target budget.
+The first remote Cargo attempt is rejected tool evidence: non-login SSH selected
+system Cargo `1.75.0`, which cannot parse lockfile v4. The accepted gates used
+the pinned `$HOME/.cargo/bin/cargo 1.97.1`; no lockfile or source workaround
+was made.
+
+Tested: decoder topology, transition determinism, primary-terminal isolation,
+complete real-package UTF-8 round-trip, explicit terminal collisions,
+deterministic index bytes, resource use, package identity, production-source
+isolation, and normal regression contracts. Not tested: Phase 7 typed edit
+traversal, terminal-set/certificate parity by damage family, posting bounds,
+optimized exact-search quality/latency, package redesign, or deployment.
+Training and crystallization runs remain zero.
+
+```text
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_6_2026-08-14/phase-6.json
+/home/ubu/.cache/lay/l1-peak-search-phase6-2026-08-14/forward-index.json
+```
+
+The next action is Phase 7A: define the identity, punctuation, prefix, and
+suffix typed edit-product states and dominance relation on paper, then compare
+their complete terminal set and certificates against the dense oracle before
+adding the remaining operator families.

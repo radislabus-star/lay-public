@@ -927,6 +927,15 @@ fn main() -> io::Result<()> {
         );
         return Ok(());
     }
+    #[cfg(feature = "lexical-compiler")]
+    if let Some(package) = arg_path(&args, "--prove-l1-forward-decoder-index") {
+        let report = lay::nanda_wave::prove_l1_forward_decoder_index(&package)?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
     if let Some(corpus) = arg_path(&args, "--prove-l1-lexical-grokking-scale-package") {
         let package = arg_path(&args, "--memory")
             .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--memory is required"))?;

@@ -1,0 +1,149 @@
+{
+  "schema": "lay.l11.forward-decoder-index-receipt.v1",
+  "receipt": "L1_L11_PEAK_SEARCH_PHASE_6_2026-08-14",
+  "date": "2026-08-14",
+  "phase": 6,
+  "verdict": "PASS_PROOF_ONLY_FORWARD_DECODER_INDEX",
+  "implementation": {
+    "module": "src/nanda_wave/lexical_grokking/forward_decoder_index.rs",
+    "module_lines": 523,
+    "compile_gate": "cfg(any(test, feature = \"lexical-compiler\"))",
+    "proof_command": "--prove-l1-forward-decoder-index PACKAGE",
+    "proof_command_requires_feature": "lexical-compiler",
+    "primary_centers_only": true,
+    "relation_center_banks_read": false,
+    "runtime_authority_changed": false,
+    "package_format_changed": false
+  },
+  "full_package_proof": {
+    "decoder_nodes": 1584307,
+    "forward_edges": 1584306,
+    "primary_terminals": 852582,
+    "roundtripped_terminals": 852582,
+    "parent_bounds_valid": true,
+    "acyclic": true,
+    "transition_symbols_unique": true,
+    "children_sorted_by_symbol_then_node_id": true,
+    "terminal_collision_nodes": 0,
+    "maximum_terminals_per_node": 1,
+    "maximum_children_per_node": 59,
+    "maximum_surface_chars": 31,
+    "decoded_utf8_bytes": 13409698,
+    "index_resident_bytes": 28759240,
+    "index_fingerprint_sha256": "6141fc0f7795b3e388edcc7061485854a0ed2c8f1426ba8a80d2f278cf360e6e",
+    "stable_report_projection_sha256": "6157b24bcff6898717bc9900091b0029bacde5da56bf5fb6943bc144922ca04c",
+    "two_run_static_parity": true
+  },
+  "performance": {
+    "memory_load_ms_run1": 758,
+    "memory_load_ms_run2": 763,
+    "index_build_and_validation_ms_run1": 270,
+    "index_build_and_validation_ms_run2": 270,
+    "index_incremental_rss_bytes_run1": 29569024,
+    "index_incremental_rss_bytes_run2": 29634560,
+    "fresh_process_wall_seconds_run1": 1.32,
+    "fresh_process_peak_rss_kib_run1": 187400,
+    "measurement_scope": "proof tool only; not production startup or hot latency"
+  },
+  "paper_gates": {
+    "rejected_route_receipt": "route-gate-veto.json",
+    "rejected_route_verdict": "VETO",
+    "accepted_route_receipt": "route-gate-pass.json",
+    "accepted_route_verdict": "PASS",
+    "accepted_execution_routes": 1,
+    "accepted_proof_routes": 1,
+    "accepted_observation_routes": 1,
+    "accepted_authority_routes": 0,
+    "rejected_preflight_receipt": "implementation-preflight-blocked-v1.json",
+    "rejected_preflight_verdict": "BLOCKED_BEFORE_CODE",
+    "accepted_preflight_receipt": "implementation-preflight-pass.json",
+    "accepted_preflight_verdict": "READY_TO_IMPLEMENT",
+    "accepted_preflight_blockers": 0
+  },
+  "immutable_inputs": {
+    "package_bytes": 190139182,
+    "package_sha256_before": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+    "package_sha256_after": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+    "package_unchanged": true,
+    "phase5_receipt_sha256": "766e097eee27049d9d25faa05873ed4ff24b605205d17829581b4321fbb1d96d",
+    "phase5_receipt_unchanged": true
+  },
+  "source_sha256": {
+    "src/nanda_wave/lexical_grokking/forward_decoder_index.rs": "679f0a0e11a95aebb171170e7ff65cea5f16072f5365293dd0c7c052a2317a08",
+    "src/nanda_wave/lexical_grokking/mod.rs": "e59ccdb16556f786ba1ea35cf47246e215b1cae6df39036e6fdd2b8b3443b06c",
+    "src/nanda_wave/mod.rs": "ee1226e1fdffb22677b27a961918db4c9b45e4635ca7b6221ebc8cae9f1a815b",
+    "src/bin/lay_nanda_wave_train.rs": "2ea2998b45393a086207ddcab5914e30b7b6ded7e63f29f2a94b4062e2edebef"
+  },
+  "artifacts": {
+    "remote_run1": "/home/e/build/lay-l1-exact-phase2d-evidence/phase6/forward-index.json",
+    "remote_run1_sha256": "cb10a8393716f73608e4611f3e79dc8fcf02b1721f096921292a90aa423755f0",
+    "remote_run2": "/home/e/build/lay-l1-exact-phase2d-evidence/phase6/forward-index-run2.json",
+    "remote_run2_sha256": "af7677c54d7f9471919782a134059696309de4ee3324659accfdfd91c318d99b",
+    "local_cache": "/home/ubu/.cache/lay/l1-peak-search-phase6-2026-08-14/forward-index.json"
+  },
+  "remote_execution": {
+    "host": "e@192.168.3.94",
+    "source_root": "/home/e/build/lay-l1-exact-phase2d",
+    "evidence_root": "/home/e/build/lay-l1-exact-phase2d-evidence/phase6",
+    "logical_cpus": 20,
+    "cargo_build_jobs": 20,
+    "rayon_threads": 20,
+    "accepted_cargo": "1.97.1"
+  },
+  "graphify": {
+    "command": "remote GRAPHIFY_WORKERS=20 graphify update .",
+    "wall_seconds": 13.22,
+    "peak_rss_kib": 342272,
+    "average_cpu_percent": 93,
+    "nodes": 15019,
+    "edges": 28073,
+    "communities": 2836
+  },
+  "checks": [
+    {"command": "remote full V8 forward-index proof twice", "result": "PASS; exact stable report and index fingerprint parity"},
+    {"command": "remote external forward_decoder_index focused tests", "result": "7 passed; 0 failed; full-package test included"},
+    {"command": "remote scripts/cargo-guard.sh test lexical_grokking --lib", "result": "129 passed; 0 failed; 5.23 s"},
+    {"command": "remote scripts/cargo-guard.sh test --test typing_transition_authority_contract", "result": "20 passed; 0 failed"},
+    {"command": "remote scripts/cargo-guard.sh test --test text_mutation_monopoly_contract", "result": "15 passed; 0 failed"},
+    {"command": "remote scripts/cargo-guard.sh check --lib --bins", "result": "PASS"},
+    {"command": "remote scripts/cargo-guard.sh check --lib --bins --features lexical-compiler", "result": "PASS"},
+    {"command": "remote scripts/check-lay-changed.sh", "result": "PASS; unsafe edit scoreboard PASS"},
+    {"command": "remote cargo fmt --all -- --check and git diff --check", "result": "PASS"},
+    {"command": "remote scripts/cargo-guard.sh --status", "result": "target 3988746240 bytes / 12884901888 bytes; PASS"}
+  ],
+  "rejected_attempts": [
+    {"id": "evidence-proves-orchestrator-route", "result": "REJECTED", "reason": "proves edges terminated at the index builder instead of proof owners"},
+    {"id": "preflight-missing-tripwires-v1", "result": "REJECTED", "reason": "five declared forbidden effects lacked reused-source static scans"},
+    {"id": "system-cargo-1.75", "result": "REJECTED_BEFORE_COMPILE", "reason": "non-login SSH selected Cargo 1.75.0, which cannot parse lockfile v4; accepted runs used pinned Cargo 1.97.1"}
+  ],
+  "tested": [
+    "root parent bounds acyclicity and Unicode symbol validity",
+    "deterministic unique forward transitions",
+    "primary-center-only terminal lists and explicit terminal collisions",
+    "all 852582 primary terminals round-trip to identical node IDs and UTF-8 surfaces",
+    "two-run deterministic index and stable report bytes",
+    "full-package build time index bytes and RSS",
+    "package identity and production-source isolation",
+    "focused lexical and authority regressions"
+  ],
+  "not_tested": [
+    "Phase 7 typed edit traversal and dominance",
+    "terminal-set and certificate parity by damage family",
+    "Phase 8 posting bounds",
+    "optimized exact-search quality or production latency",
+    "package redesign",
+    "live deployment"
+  ],
+  "claim_boundary": {
+    "proof_forward_index_proven": true,
+    "typed_traversal_proven": false,
+    "optimized_exact_search_proven": false,
+    "runtime_authority_changed": false,
+    "installed_runtime_changed": false,
+    "installed_package_changed": false,
+    "daemon_or_ibus_restarted": false,
+    "training_runs": 0,
+    "crystallization_runs": 0
+  },
+  "next_action": "Phase 7A: define and prove identity punctuation prefix and suffix typed edit-product traversal against the dense oracle."
+}
