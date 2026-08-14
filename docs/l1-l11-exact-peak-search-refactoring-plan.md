@@ -1752,3 +1752,67 @@ tracked graph outputs were returned to the local worktree.
 The next action is Phase 4: implement the dense proof-only oracle and prove it
 on exhaustively enumerable tiny packages. It must remain unreachable from
 daemon and service production entrypoints.
+
+Phase 4 is complete. `peak_oracle.rs` is compiled only under
+`cfg(any(test, feature = "lexical-compiler"))`; normal runtime, service, and
+`peak_search` sources contain no oracle import, switch, call, fallback, or
+authority edge. The proof route resolves the query once, computes activation
+for every `WordCenterId`, calls the existing settlement, geometry,
+interference, and restoration-classifier kernels, and enumerates every
+non-empty competitive subset. It does not duplicate score formulas or accept a
+target/expected surface as input.
+
+The accepted tiny package contains five centers. The oracle enumerated all
+`31` non-empty subsets and all `16` subsets containing each center. For every
+center, reported lower and upper final scalar values matched the independently
+replayed minimum and maximum over those subsets. Requested `K=128` correctly
+reported `effective_K=5`. Forward, reverse, and deterministic permuted center
+iteration produced byte-identical JSON and result fingerprints. External
+heldout labels cannot enter the API and did not change report bytes.
+
+Phase 4 deliberately uses a conservative complete typed set `D(Q)` containing
+all tiny-package centers. Therefore `S(Q)` is complete but not yet sharp. This
+proves the reference semantics required to judge later traversal and pruning;
+it does not prove a production-search speedup, a posting bound, fixed-heldout
+quality, or the `<=5 ms` promotion target. Sharp typed reachability belongs to
+Phase 7 and sharp posting bounds belong to Phase 8.
+
+The first paper route was rejected because proof nodes were placed in an
+authority graph. Its `VETO` receipt is preserved. The corrected route has one
+execution path ending at frozen settlement, a separate proof path, a separate
+observation path, and no authority route. The first implementation preflight
+was also preserved as `BLOCKED_BEFORE_CODE`: its test kind was not an admitted
+parity kind. The corrected preregistration returned `READY_TO_IMPLEMENT` with
+zero blockers before source code was changed.
+
+Remote gates on `e@192.168.3.94` passed: tiny oracle `5/5`, all focused lexical
+tests `114/114`, transition authority `20/20`, mutation monopoly `15/15`, all
+library/binary compile routes, and `scripts/check-lay-changed.sh`. The focused
+lexical run completed in `5.35 s`, averaged `1657%` CPU, and peaked at
+`98,212 KiB`; changed-file checks completed in `20.99 s`, peaked at
+`2,336,504 KiB`, and reported no unsafe edits. Cargo target usage was
+`3,338,248,192` bytes under the `12 GiB` guard budget. No heavy Cargo, proof,
+or graph work ran locally.
+
+The `lexical-compiler` feature compile gate passed separately, proving that the
+proof-only oracle is available in its declared compiler build and absent from
+default production builds. The incremental graph update ran remotely with 20
+workers in `12.58 s`: `14,937` nodes, `27,527` edges, and `2,860`
+communities.
+
+Tested: exhaustive center/subset enumeration on a five-center package, exact
+subset extrema, target-free API, iteration-order byte parity, proof-only source
+reachability, focused lexical and authority contracts, all compile routes,
+installed-package identity, and Cargo disk budget. Not tested: the Phase 5
+class/position matrix, forward lexical index, typed edit reachability, posting
+bounds, exact-search quality/latency, package redesign, or deployment. Runtime
+authority, installed package, daemon, and IBus remain unchanged; training and
+crystallization runs remain zero.
+
+```text
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_4_2026-08-14/phase-4.json
+```
+
+The next action is Phase 5: build the deterministic language/length/frequency/
+position/class/ambiguity matrix and assign every failure to its first shared
+loss boundary without adding runtime rules.

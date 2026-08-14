@@ -1,0 +1,52 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "proof_query", "role": "interface"},
+    {"id": "dense_oracle", "role": "orchestrator"},
+    {"id": "all_center_evidence", "role": "evidence_owner"},
+    {"id": "exact_bounds_closure", "role": "proof_owner"},
+    {"id": "frozen_settlement", "role": "candidate_rank_owner"},
+    {"id": "restoration_classifier", "role": "proof_owner"},
+    {"id": "oracle_receipt", "role": "observer"}
+  ],
+  "edges": [
+    {"id": "exec-query-oracle", "from": "proof_query", "relation": "calls", "to": "dense_oracle", "events": ["tiny_dense_proof"]},
+    {"id": "exec-oracle-evidence", "from": "dense_oracle", "relation": "delegates", "to": "all_center_evidence", "events": ["tiny_dense_proof"]},
+    {"id": "exec-evidence-settlement", "from": "all_center_evidence", "relation": "delegates", "to": "frozen_settlement", "events": ["tiny_dense_proof"]},
+    {"id": "observe-classifier-receipt", "from": "restoration_classifier", "relation": "observes", "to": "oracle_receipt", "events": ["tiny_dense_proof"]},
+    {"id": "proof-settlement-bounds", "from": "frozen_settlement", "relation": "proves", "to": "exact_bounds_closure", "events": ["tiny_dense_proof"]},
+    {"id": "proof-bounds-classifier", "from": "exact_bounds_closure", "relation": "proves", "to": "restoration_classifier", "events": ["tiny_dense_proof"]}
+  ],
+  "routes": [
+    {
+      "id": "tiny-dense-proof-execution",
+      "event": "tiny_dense_proof",
+      "kind": "execution",
+      "entry": "proof_query",
+      "terminal": "frozen_settlement",
+      "required_roles": ["interface", "orchestrator", "evidence_owner", "candidate_rank_owner"],
+      "path_cardinality": [
+        {"from": "proof_query", "to": "dense_oracle", "min": 1, "max": 1},
+        {"from": "dense_oracle", "to": "all_center_evidence", "min": 1, "max": 1},
+        {"from": "all_center_evidence", "to": "frozen_settlement", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "tiny-dense-proof-proof",
+      "event": "tiny_dense_proof",
+      "kind": "proof",
+      "entry": "frozen_settlement",
+      "terminal": "restoration_classifier",
+      "required_roles": ["candidate_rank_owner", "proof_owner"]
+    },
+    {
+      "id": "tiny-dense-proof-observation",
+      "event": "tiny_dense_proof",
+      "kind": "observation",
+      "entry": "restoration_classifier",
+      "terminal": "oracle_receipt",
+      "required_roles": ["proof_owner", "observer"]
+    }
+  ]
+}

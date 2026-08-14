@@ -70,11 +70,11 @@ pub(in crate::nanda_wave::lexical_grokking) struct AmbiguityObservation {
 }
 
 #[derive(Clone, Copy, Debug, Default)]
-pub(super) struct ForwardActivation {
-    pub(super) mass: u64,
-    pub(super) hits: u16,
-    pub(super) surface_hits: u16,
-    pub(super) keyboard_hits: u16,
+pub(in crate::nanda_wave::lexical_grokking) struct ForwardActivation {
+    pub(in crate::nanda_wave::lexical_grokking) mass: u64,
+    pub(in crate::nanda_wave::lexical_grokking) hits: u16,
+    pub(in crate::nanda_wave::lexical_grokking) surface_hits: u16,
+    pub(in crate::nanda_wave::lexical_grokking) keyboard_hits: u16,
 }
 
 #[derive(Default)]
@@ -99,10 +99,10 @@ pub(in crate::nanda_wave::lexical_grokking) struct PreparedReadout {
 }
 
 #[derive(Clone, Copy, Debug)]
-pub(super) struct ObservedAtom {
-    pub(super) position: u8,
-    pub(super) weight: u8,
-    pub(super) channel: AtomChannel,
+pub(in crate::nanda_wave::lexical_grokking) struct ObservedAtom {
+    pub(in crate::nanda_wave::lexical_grokking) position: u8,
+    pub(in crate::nanda_wave::lexical_grokking) weight: u8,
+    pub(in crate::nanda_wave::lexical_grokking) channel: AtomChannel,
 }
 
 pub(super) type BirthAtom = (usize, u32, ObservedAtom);
@@ -123,13 +123,13 @@ pub(super) struct FirstTouchWarmProfile {
 }
 
 #[derive(Clone, Copy, Debug, Default)]
-pub(super) struct AnchorSequence {
-    pub(super) atoms: [u32; MAX_ANCHOR_SEQUENCE],
-    pub(super) len: u8,
+pub(in crate::nanda_wave::lexical_grokking) struct AnchorSequence {
+    pub(in crate::nanda_wave::lexical_grokking) atoms: [u32; MAX_ANCHOR_SEQUENCE],
+    pub(in crate::nanda_wave::lexical_grokking) len: u8,
 }
 
 impl AnchorSequence {
-    pub(super) fn as_slice(&self) -> &[u32] {
+    pub(in crate::nanda_wave::lexical_grokking) fn as_slice(&self) -> &[u32] {
         &self.atoms[..usize::from(self.len)]
     }
 }

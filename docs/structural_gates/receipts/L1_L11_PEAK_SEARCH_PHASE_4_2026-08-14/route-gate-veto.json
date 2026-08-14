@@ -1,0 +1,274 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "VETO",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": false,
+  "contract": "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_4_2026-08-14/route-design.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "source_root": null,
+  "node_count": 7,
+  "edge_count": 10,
+  "routes": [
+    {
+      "id": "tiny-dense-proof-execution",
+      "event": "tiny_dense_proof",
+      "kind": "execution",
+      "entry": "proof_query",
+      "via": [],
+      "terminal": "restoration_classifier",
+      "path_count": 1,
+      "paths": [
+        [
+          "proof_query",
+          "dense_oracle",
+          "all_center_evidence",
+          "exact_bounds_closure",
+          "frozen_settlement",
+          "restoration_classifier"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "all_center_evidence"
+        ],
+        "orchestrator": [
+          "dense_oracle"
+        ],
+        "proof_owner": [
+          "exact_bounds_closure",
+          "restoration_classifier"
+        ],
+        "candidate_rank_owner": [
+          "frozen_settlement"
+        ],
+        "interface": [
+          "proof_query"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "proof_query",
+          "to": "dense_oracle",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "proof_query",
+              "dense_oracle"
+            ]
+          ]
+        },
+        {
+          "from": "dense_oracle",
+          "to": "all_center_evidence",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "dense_oracle",
+              "all_center_evidence"
+            ]
+          ]
+        },
+        {
+          "from": "all_center_evidence",
+          "to": "exact_bounds_closure",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "all_center_evidence",
+              "exact_bounds_closure"
+            ]
+          ]
+        },
+        {
+          "from": "exact_bounds_closure",
+          "to": "frozen_settlement",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "exact_bounds_closure",
+              "frozen_settlement"
+            ]
+          ]
+        },
+        {
+          "from": "frozen_settlement",
+          "to": "restoration_classifier",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "frozen_settlement",
+              "restoration_classifier"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tiny-dense-proof-authority",
+      "event": "tiny_dense_proof",
+      "kind": "authority",
+      "entry": "proof_query",
+      "via": [],
+      "terminal": "frozen_settlement",
+      "path_count": 1,
+      "paths": [
+        [
+          "proof_query",
+          "all_center_evidence",
+          "exact_bounds_closure",
+          "frozen_settlement"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "all_center_evidence"
+        ],
+        "proof_owner": [
+          "exact_bounds_closure"
+        ],
+        "candidate_rank_owner": [
+          "frozen_settlement"
+        ],
+        "interface": [
+          "proof_query"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "tiny-dense-proof-proof",
+      "event": "tiny_dense_proof",
+      "kind": "proof",
+      "entry": "frozen_settlement",
+      "via": [],
+      "terminal": "restoration_classifier",
+      "path_count": 1,
+      "paths": [
+        [
+          "frozen_settlement",
+          "restoration_classifier"
+        ]
+      ],
+      "role_owners": {
+        "candidate_rank_owner": [
+          "frozen_settlement"
+        ],
+        "proof_owner": [
+          "restoration_classifier"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "tiny-dense-proof-observation",
+      "event": "tiny_dense_proof",
+      "kind": "observation",
+      "entry": "restoration_classifier",
+      "via": [],
+      "terminal": "oracle_receipt",
+      "path_count": 1,
+      "paths": [
+        [
+          "restoration_classifier",
+          "oracle_receipt"
+        ]
+      ],
+      "role_owners": {
+        "observer": [
+          "oracle_receipt"
+        ],
+        "proof_owner": [
+          "restoration_classifier"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {
+    "tiny_dense_proof": {
+      "candidate_rank_owner": [
+        "frozen_settlement"
+      ],
+      "render_owner": [],
+      "display_rank_owner": [],
+      "mutation_owner": [],
+      "authorization_owner": [],
+      "evidence_owner": [
+        "all_center_evidence"
+      ]
+    }
+  },
+  "source_evidence": {
+    "expected": 0,
+    "verified": 0,
+    "complete": true
+  },
+  "issues": [
+    {
+      "code": "producer_relation_role_mismatch",
+      "message": "produces_for must originate at a producer",
+      "edge": "authority-query-evidence",
+      "source": "proof_query",
+      "source_role": "interface"
+    },
+    {
+      "code": "authority_stage_reversal",
+      "message": "logical authority flow moves backward; control calls must use calls/delegates",
+      "edge": "authority-bounds-settlement",
+      "source": "exact_bounds_closure",
+      "target": "frozen_settlement",
+      "source_role": "proof_owner",
+      "target_role": "candidate_rank_owner"
+    },
+    {
+      "code": "authority_route_observer_contamination",
+      "message": "observer and proof nodes cannot participate in live authority flow",
+      "route": "tiny-dense-proof-authority",
+      "nodes": [
+        "exact_bounds_closure"
+      ]
+    }
+  ],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": false,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

@@ -1,0 +1,165 @@
+{
+  "schema": "lay.l11.dense-peak-oracle-receipt.v1",
+  "receipt": "L1_L11_PEAK_SEARCH_PHASE_4_2026-08-14",
+  "date": "2026-08-14",
+  "phase": 4,
+  "verdict": "PASS_TINY_EXHAUSTIVE_PROOF_ONLY_ORACLE",
+  "implementation": {
+    "module": "src/nanda_wave/lexical_grokking/peak_oracle.rs",
+    "module_lines": 632,
+    "compile_gate": "cfg(any(test, feature = \"lexical-compiler\"))",
+    "maximum_exhaustive_centers": 12,
+    "target_or_expected_input": false,
+    "reuses_existing_settlement_kernels": true,
+    "duplicated_scoring_formulas": false,
+    "production_route_changed": false,
+    "runtime_authority_changed": false,
+    "package_format_changed": false
+  },
+  "tiny_exhaustive_proof": {
+    "terminal_count": 5,
+    "non_empty_subsets": 31,
+    "subsets_containing_each_center": 16,
+    "requested_k": 128,
+    "effective_k": 5,
+    "all_centers_enumerated": true,
+    "all_containing_subsets_enumerated": true,
+    "lower_upper_equal_observed_subset_extrema": true,
+    "forward_reverse_permuted_bytes_equal": true,
+    "target_removal_bytes_equal": true,
+    "conservative_typed_set_d": "all tiny-package WordCenterIds",
+    "sharp_typed_closure_proven": false
+  },
+  "paper_gates": {
+    "rejected_route_receipt": "route-gate-veto.json",
+    "rejected_route_verdict": "VETO",
+    "accepted_route_receipt": "route-gate-pass.json",
+    "accepted_route_verdict": "PASS",
+    "accepted_execution_paths": 1,
+    "authority_routes": 0,
+    "rejected_preflight_receipt": "implementation-preflight-blocked-v1.json",
+    "rejected_preflight_verdict": "BLOCKED_BEFORE_CODE",
+    "accepted_preflight_receipt": "implementation-preflight-pass.json",
+    "accepted_preflight_verdict": "READY_TO_IMPLEMENT",
+    "accepted_preflight_blockers": 0
+  },
+  "immutable_inputs": {
+    "package_bytes": 190139182,
+    "package_sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+    "phase3_receipt_sha256": "fd7fd32bb6012a9d07dfbeb6c78c2688154b6fa4791149447070003503b525e0",
+    "phase3_receipt_unchanged": true
+  },
+  "source_sha256": {
+    "src/nanda_wave/lexical_grokking/mod.rs": "329113bf86c028da49a062a39257a5b8c8e7b2f4ec5abd835ea4f769831b05d7",
+    "src/nanda_wave/lexical_grokking/peak_oracle.rs": "5b324500a21a9ffedb0e5c69b8b7677dbb53cfd4fab9a014d1cc83bcd6bbfb2e",
+    "src/nanda_wave/lexical_grokking/runtime.rs": "5d0d1a38ab0613da1ed753b6e266029f9c8f0912ba4ac0f31dc4ec0b2a528e70",
+    "src/nanda_wave/lexical_grokking/runtime/contract.rs": "c72689b93cea694bd79f4d0323085aa99be5e9fb025765a1b120ace3db4df754",
+    "src/nanda_wave/lexical_grokking/runtime/legacy.rs": "d1cbf8834050aa29051c7c49f254b1c56b537d509c8b15f6ee7ff668b9d9b2c3",
+    "src/nanda_wave/lexical_grokking/runtime/settlement.rs": "ae8e297e35f51475fc02e840b73b1db55962a76864483cf4b0ed5aa1cd879054"
+  },
+  "remote_execution": {
+    "host": "e@192.168.3.94",
+    "source_root": "/home/e/build/lay-l1-exact-phase2d",
+    "evidence_root": "/home/e/build/lay-l1-exact-phase2d-evidence/phase4",
+    "logical_cpus": 20,
+    "cargo_build_jobs": 20,
+    "rayon_threads": 20,
+    "rust_toolchain": "1.97.1",
+    "rustfmt_toolchain": "1.97.0"
+  },
+  "graphify": {
+    "command": "remote GRAPHIFY_WORKERS=20 graphify update .",
+    "wall_seconds": 12.58,
+    "peak_rss_kib": 319060,
+    "average_cpu_percent": 96,
+    "nodes": 14937,
+    "edges": 27527,
+    "communities": 2860
+  },
+  "checks": [
+    {
+      "command": "remote scripts/cargo-guard.sh test --lib peak_oracle -- --nocapture",
+      "result": "5 passed; 0 failed"
+    },
+    {
+      "command": "remote scripts/cargo-guard.sh test lexical_grokking --lib -- --test-threads=20",
+      "result": "114 passed; 0 failed; 5.35 s wall; 1657% average CPU; 98212 KiB peak RSS"
+    },
+    {
+      "command": "remote scripts/cargo-guard.sh test --test typing_transition_authority_contract -- --test-threads=20",
+      "result": "20 passed; 0 failed"
+    },
+    {
+      "command": "remote scripts/cargo-guard.sh test --test text_mutation_monopoly_contract -- --test-threads=20",
+      "result": "15 passed; 0 failed"
+    },
+    {
+      "command": "remote scripts/cargo-guard.sh check --lib --bins",
+      "result": "PASS"
+    },
+    {
+      "command": "remote scripts/cargo-guard.sh check --lib --features lexical-compiler",
+      "result": "PASS in 7.82 s"
+    },
+    {
+      "command": "remote scripts/check-lay-changed.sh",
+      "result": "PASS in 20.99 s; 170% average CPU; 2336504 KiB peak RSS; unsafe edit scoreboard PASS"
+    },
+    {
+      "command": "remote cargo fmt --all -- --check and git diff --check",
+      "result": "PASS"
+    },
+    {
+      "command": "remote scripts/cargo-guard.sh --status",
+      "result": "target bytes 3338248192; budget bytes 12884901888; PASS"
+    }
+  ],
+  "rejected_attempts": [
+    {
+      "id": "mixed-proof-authority-paper-route",
+      "result": "REJECTED",
+      "reason": "proof nodes were incorrectly placed in an authority graph"
+    },
+    {
+      "id": "preflight-test-kind-v1",
+      "result": "REJECTED",
+      "reason": "tiny exhaustive test used a non-admitted proof kind instead of parity"
+    },
+    {
+      "id": "private-runtime-imports",
+      "result": "REJECTED_BEFORE_TEST",
+      "reason": "the first remote compile found sibling-module privacy on existing evidence types; visibility was widened only inside lexical_grokking and all gates were rerun"
+    }
+  ],
+  "tested": [
+    "all centers and all non-empty competitive subsets on a five-center package",
+    "exact lower and upper final scalar extrema over all subsets containing each center",
+    "forward, reverse, and deterministic permuted center iteration byte parity",
+    "target-free oracle API and output",
+    "proof-only source reachability",
+    "focused lexical, transition authority, mutation monopoly, and changed-file contracts",
+    "installed package and Phase 3 receipt identity"
+  ],
+  "not_tested": [
+    "Phase 5 class and position matrix",
+    "proof-only forward lexical index",
+    "typed edit traversal reachability",
+    "posting-bound soundness or feasibility",
+    "fixed 13-class exact-search quality",
+    "five-millisecond production latency",
+    "package redesign",
+    "live deployment"
+  ],
+  "claim_boundary": {
+    "tiny_exhaustive_oracle_proven": true,
+    "optimized_exact_search_proven": false,
+    "fixed_heldout_quality_proven": false,
+    "runtime_authority_changed": false,
+    "installed_runtime_changed": false,
+    "installed_package_changed": false,
+    "daemon_or_ibus_restarted": false,
+    "training_runs": 0,
+    "crystallization_runs": 0
+  },
+  "next_action": "Phase 5: construct the deterministic positional and class matrix and group losses by their first shared mechanism."
+}

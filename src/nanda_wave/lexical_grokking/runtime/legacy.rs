@@ -402,7 +402,10 @@ impl LexicalGrokkingMemory {
         candidates.into_iter().next()
     }
 
-    pub(super) fn resolve_surface(&self, surface: &str) -> Vec<(u32, ObservedAtom)> {
+    pub(in crate::nanda_wave::lexical_grokking) fn resolve_surface(
+        &self,
+        surface: &str,
+    ) -> Vec<(u32, ObservedAtom)> {
         encode_wave_surface(surface)
             .into_iter()
             .filter_map(|atom| {
@@ -720,7 +723,7 @@ impl LexicalGrokkingMemory {
         self.record_exact_terminals_for_chars(chars, rank, candidates);
     }
 
-    pub(super) fn activation_for_terminal(
+    pub(in crate::nanda_wave::lexical_grokking) fn activation_for_terminal(
         &self,
         terminal_id: u32,
         observed: &BTreeMap<u32, ObservedAtom>,

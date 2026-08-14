@@ -18,6 +18,7 @@ mod settlement;
 use legacy::select_birth_atoms;
 #[cfg(test)]
 use legacy::should_expand_operator_lattice;
+pub(in crate::nanda_wave::lexical_grokking) use settlement::observed_sequence;
 #[cfg(test)]
 use settlement::truncate_with_reconstruction_tail;
 #[allow(unused_imports)]
@@ -27,8 +28,7 @@ pub(super) use settlement::{
     sequence_coherence_milli,
 };
 use settlement::{
-    is_anchor_channel, is_keyboard_channel, observed_sequence, position_coherence,
-    reconstruction_mode_rank,
+    is_anchor_channel, is_keyboard_channel, position_coherence, reconstruction_mode_rank,
 };
 
 use config::{
@@ -38,10 +38,10 @@ use config::{
 #[cfg(test)]
 use config::{DEFAULT_BIRTH_ATOMS_PER_CHANNEL, DEFAULT_BIRTH_POSTING_BUDGET};
 pub(super) use contract::{AmbiguityObservation, GrokkingCandidate, ReadoutMode};
-use contract::{
-    AnchorSequence, BirthAtom, CachePlanOrder, FirstTouchWarmProfile, ForwardActivation,
-    ObservedAtom, PreparedReadout,
+pub(in crate::nanda_wave::lexical_grokking) use contract::{
+    AnchorSequence, ForwardActivation, ObservedAtom,
 };
+use contract::{BirthAtom, CachePlanOrder, FirstTouchWarmProfile, PreparedReadout};
 pub(super) use diagnostics::candidate_json;
 use diagnostics::percent_usize;
 pub use diagnostics::{

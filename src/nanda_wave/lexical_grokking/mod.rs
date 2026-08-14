@@ -15,6 +15,8 @@ mod format;
 mod model;
 mod ngram_graph;
 mod pairwise;
+#[cfg(any(test, feature = "lexical-compiler"))]
+mod peak_oracle;
 mod peak_search;
 mod posting_codec;
 mod posting_spool;

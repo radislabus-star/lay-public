@@ -132,7 +132,7 @@ impl LexicalGrokkingMemory {
         }
     }
 
-    pub(super) fn finalize_candidates(
+    pub(in crate::nanda_wave::lexical_grokking) fn finalize_candidates(
         &self,
         surface: &str,
         limit: usize,
@@ -550,7 +550,7 @@ impl LexicalGrokkingMemory {
     }
 
     #[allow(clippy::too_many_arguments)]
-    pub(super) fn settle_candidate(
+    pub(in crate::nanda_wave::lexical_grokking) fn settle_candidate(
         &self,
         terminal_id: u32,
         activation: ForwardActivation,
@@ -1169,7 +1169,7 @@ pub(super) fn is_anchor_channel(channel: AtomChannel) -> bool {
     channel == AtomChannel::CharacterAnchor
 }
 
-pub(super) fn observed_sequence(
+pub(in crate::nanda_wave::lexical_grokking) fn observed_sequence(
     observed: &[(u32, ObservedAtom)],
     channel: AtomChannel,
 ) -> AnchorSequence {
