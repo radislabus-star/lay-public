@@ -85,7 +85,7 @@ pub(super) struct ForwardScratch {
     pub(super) touched: Vec<u32>,
 }
 
-pub(super) struct PreparedReadout {
+pub(in crate::nanda_wave::lexical_grokking) struct PreparedReadout {
     pub(super) observed: BTreeMap<u32, ObservedAtom>,
     pub(super) character_sequence: AnchorSequence,
     pub(super) observed_char_count: u8,

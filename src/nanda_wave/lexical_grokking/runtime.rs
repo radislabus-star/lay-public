@@ -74,6 +74,9 @@ use super::model::{
     LexicalGrokkingPackage, WaveCoupling, CENTER_PHASE_FLAG_PHYSICAL_KEY_GEOMETRY,
     COUPLING_FLAG_CHARACTER_ANCHOR,
 };
+use super::peak_search::{
+    L1PeakSearch, L1QueryField, LegacyBirthSearch, PeakSearchResult, ReadoutRequest,
+};
 use super::v8::{self, V8Artifact};
 use super::wave_basis::{
     complex_coherence_milli, expand_atom, expand_word, pair_residual_atoms, positioned_atom_code,
@@ -177,18 +180,15 @@ impl LexicalGrokkingMemory {
         limit: usize,
         mode: ReadoutMode,
     ) -> Vec<GrokkingCandidate> {
-        if limit == 0 {
-            return Vec::new();
-        }
-        if limit == 1 && mode == ReadoutMode::Full {
-            if let Some(candidate) = self.exact_singleton_readout(surface) {
-                return vec![candidate];
-            }
-        }
-        let Some(prepared) = self.prepare_readout(surface, limit) else {
-            return Vec::new();
-        };
-        self.finish_readout(surface, limit, mode, &prepared)
+        let PeakSearchResult {
+            candidates,
+            completeness: _,
+        } = LegacyBirthSearch.search(
+            self,
+            L1QueryField::new(surface),
+            ReadoutRequest::new(limit, mode),
+        );
+        candidates
     }
 
     pub(super) fn warm_first_touch(&self) -> io::Result<serde_json::Value> {

@@ -1,0 +1,116 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "runtime-facade",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_3_2026-08-14/../../../../src/nanda_wave/lexical_grokking/runtime.rs",
+      "sha256": "dc30b26a04e66b629dac89570c6fa02ceed6ba6fc9fe2c23c2f98f5c1accae18",
+      "size_bytes": 21776
+    },
+    {
+      "exists": true,
+      "id": "legacy-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_3_2026-08-14/../../../../src/nanda_wave/lexical_grokking/runtime/legacy.rs",
+      "sha256": "33ff6013d07bcb3f94fd1ead4e490973ac20112211431638c9801d06e2528eda",
+      "size_bytes": 32064
+    },
+    {
+      "exists": true,
+      "id": "settlement-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_3_2026-08-14/../../../../src/nanda_wave/lexical_grokking/runtime/settlement.rs",
+      "sha256": "7888e5e7cb07ae0450f0eadddb7c8432d3cc8778f62f958e62d8c1ae781b9fce",
+      "size_bytes": 50215
+    },
+    {
+      "exists": true,
+      "id": "runtime-contract",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_3_2026-08-14/../../../../src/nanda_wave/lexical_grokking/runtime/contract.rs",
+      "sha256": "10608d06c2dfe57a9f4943b65be24374800383dfb5697ba7f1dcd8cf687f3296",
+      "size_bytes": 5644
+    },
+    {
+      "exists": true,
+      "id": "phase2-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_3_2026-08-14/../L1_L11_PEAK_SEARCH_PHASE_2H_2026-08-14/phase-2h.json",
+      "sha256": "cd0c7bb35057c193d54d51cf82896447477bae6707dc0c6bd6b68461534d1131",
+      "size_bytes": 7043
+    },
+    {
+      "exists": true,
+      "id": "installed-package",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin",
+      "sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+      "size_bytes": 190139182
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 6,
+    "forbidden_side_effect_kinds": [
+      "algorithm_or_score_change",
+      "duplicate_normalization",
+      "generated_traffic",
+      "heldout_target_runtime_leak",
+      "hidden_legacy_fallback",
+      "new_per_query_allocation",
+      "parallel_shadow_route",
+      "preproof_installed_package_mutation",
+      "preproof_runtime_restart",
+      "runtime_oracle_dependency",
+      "second_live_authority_owner",
+      "synthetic_fixture"
+    ],
+    "identity_contracts": 1,
+    "invariants": 3,
+    "planned_side_effect_kinds": [
+      "filesystem_edit",
+      "filesystem_write",
+      "test_execution"
+    ],
+    "preserved_artifacts": 2,
+    "runtime_comparisons": 0,
+    "source_checks": 2,
+    "tests": 3
+  },
+  "manifest_sha256": "549f2466397c04f0937e17b42bc1b5ddfb0db06c46386cd0aab55e1edf10a50a",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "runtime-route-vetoes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_3_2026-08-14/../../../../src/nanda_wave/lexical_grokking/runtime.rs",
+      "sha256": "dc30b26a04e66b629dac89570c6fa02ceed6ba6fc9fe2c23c2f98f5c1accae18",
+      "size_bytes": 21776
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "legacy-route-vetoes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_3_2026-08-14/../../../../src/nanda_wave/lexical_grokking/runtime/legacy.rs",
+      "sha256": "33ff6013d07bcb3f94fd1ead4e490973ac20112211431638c9801d06e2528eda",
+      "size_bytes": 32064
+    }
+  ],
+  "task_id": "lay-l11-exact-peak-search-phase3-v2-2026-08-14",
+  "verdict": "READY_TO_IMPLEMENT"
+}

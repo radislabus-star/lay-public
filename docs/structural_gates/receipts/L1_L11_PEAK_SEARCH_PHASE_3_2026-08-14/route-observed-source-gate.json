@@ -1,0 +1,391 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "PASS",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": true,
+  "contract": "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_3_2026-08-14/route-observed-source.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "observed_source",
+  "source_root": "/home/ubu/projects/lay-l1-exact-peak-search",
+  "node_count": 6,
+  "edge_count": 12,
+  "routes": [
+    {
+      "id": "empty-readout-execution",
+      "event": "empty_readout",
+      "kind": "execution",
+      "entry": "readout_entry",
+      "via": [],
+      "terminal": "empty_readout",
+      "path_count": 1,
+      "paths": [
+        [
+          "readout_entry",
+          "l1_peak_search",
+          "legacy_birth_search",
+          "empty_readout"
+        ]
+      ],
+      "role_owners": {
+        "candidate_rank_owner": [
+          "empty_readout"
+        ],
+        "orchestrator": [
+          "l1_peak_search"
+        ],
+        "evidence_owner": [
+          "legacy_birth_search"
+        ],
+        "interface": [
+          "readout_entry"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "readout_entry",
+          "to": "l1_peak_search",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "readout_entry",
+              "l1_peak_search"
+            ]
+          ]
+        },
+        {
+          "from": "l1_peak_search",
+          "to": "legacy_birth_search",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "l1_peak_search",
+              "legacy_birth_search"
+            ]
+          ]
+        },
+        {
+          "from": "legacy_birth_search",
+          "to": "empty_readout",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "legacy_birth_search",
+              "empty_readout"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "empty-readout-authority",
+      "event": "empty_readout",
+      "kind": "authority",
+      "entry": "legacy_birth_search",
+      "via": [],
+      "terminal": "empty_readout",
+      "path_count": 1,
+      "paths": [
+        [
+          "legacy_birth_search",
+          "empty_readout"
+        ]
+      ],
+      "role_owners": {
+        "candidate_rank_owner": [
+          "empty_readout"
+        ],
+        "evidence_owner": [
+          "legacy_birth_search"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "exact-singleton-execution",
+      "event": "exact_singleton_readout",
+      "kind": "execution",
+      "entry": "readout_entry",
+      "via": [],
+      "terminal": "exact_singleton",
+      "path_count": 1,
+      "paths": [
+        [
+          "readout_entry",
+          "l1_peak_search",
+          "legacy_birth_search",
+          "exact_singleton"
+        ]
+      ],
+      "role_owners": {
+        "candidate_rank_owner": [
+          "exact_singleton"
+        ],
+        "orchestrator": [
+          "l1_peak_search"
+        ],
+        "evidence_owner": [
+          "legacy_birth_search"
+        ],
+        "interface": [
+          "readout_entry"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "readout_entry",
+          "to": "l1_peak_search",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "readout_entry",
+              "l1_peak_search"
+            ]
+          ]
+        },
+        {
+          "from": "l1_peak_search",
+          "to": "legacy_birth_search",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "l1_peak_search",
+              "legacy_birth_search"
+            ]
+          ]
+        },
+        {
+          "from": "legacy_birth_search",
+          "to": "exact_singleton",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "legacy_birth_search",
+              "exact_singleton"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "exact-singleton-authority",
+      "event": "exact_singleton_readout",
+      "kind": "authority",
+      "entry": "legacy_birth_search",
+      "via": [],
+      "terminal": "exact_singleton",
+      "path_count": 1,
+      "paths": [
+        [
+          "legacy_birth_search",
+          "exact_singleton"
+        ]
+      ],
+      "role_owners": {
+        "candidate_rank_owner": [
+          "exact_singleton"
+        ],
+        "evidence_owner": [
+          "legacy_birth_search"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "lattice-readout-execution",
+      "event": "lattice_readout",
+      "kind": "execution",
+      "entry": "readout_entry",
+      "via": [],
+      "terminal": "nonlinear_settlement",
+      "path_count": 1,
+      "paths": [
+        [
+          "readout_entry",
+          "l1_peak_search",
+          "legacy_birth_search",
+          "nonlinear_settlement"
+        ]
+      ],
+      "role_owners": {
+        "orchestrator": [
+          "l1_peak_search"
+        ],
+        "evidence_owner": [
+          "legacy_birth_search"
+        ],
+        "candidate_rank_owner": [
+          "nonlinear_settlement"
+        ],
+        "interface": [
+          "readout_entry"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "readout_entry",
+          "to": "l1_peak_search",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "readout_entry",
+              "l1_peak_search"
+            ]
+          ]
+        },
+        {
+          "from": "l1_peak_search",
+          "to": "legacy_birth_search",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "l1_peak_search",
+              "legacy_birth_search"
+            ]
+          ]
+        },
+        {
+          "from": "legacy_birth_search",
+          "to": "nonlinear_settlement",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "legacy_birth_search",
+              "nonlinear_settlement"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lattice-readout-authority",
+      "event": "lattice_readout",
+      "kind": "authority",
+      "entry": "legacy_birth_search",
+      "via": [],
+      "terminal": "nonlinear_settlement",
+      "path_count": 1,
+      "paths": [
+        [
+          "legacy_birth_search",
+          "nonlinear_settlement"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "legacy_birth_search"
+        ],
+        "candidate_rank_owner": [
+          "nonlinear_settlement"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {
+    "empty_readout": {
+      "render_owner": [],
+      "candidate_rank_owner": [
+        "empty_readout"
+      ],
+      "mutation_owner": [],
+      "display_rank_owner": [],
+      "authorization_owner": [],
+      "evidence_owner": [
+        "legacy_birth_search"
+      ]
+    },
+    "exact_singleton_readout": {
+      "render_owner": [],
+      "candidate_rank_owner": [
+        "exact_singleton"
+      ],
+      "mutation_owner": [],
+      "display_rank_owner": [],
+      "authorization_owner": [],
+      "evidence_owner": [
+        "legacy_birth_search"
+      ]
+    },
+    "lattice_readout": {
+      "render_owner": [],
+      "candidate_rank_owner": [
+        "nonlinear_settlement"
+      ],
+      "mutation_owner": [],
+      "display_rank_owner": [],
+      "authorization_owner": [],
+      "evidence_owner": [
+        "legacy_birth_search"
+      ]
+    }
+  },
+  "source_evidence": {
+    "expected": 18,
+    "verified": 18,
+    "complete": true
+  },
+  "issues": [],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": true,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

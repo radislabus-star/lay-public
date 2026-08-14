@@ -1,0 +1,272 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "observed_source",
+  "source_root": ".",
+  "nodes": [
+    {
+      "id": "readout_entry",
+      "role": "interface",
+      "evidence": {
+        "path": "src/nanda_wave/lexical_grokking/runtime.rs",
+        "line": 177,
+        "contains": "pub(super) fn readout("
+      }
+    },
+    {
+      "id": "l1_peak_search",
+      "role": "orchestrator",
+      "evidence": {
+        "path": "src/nanda_wave/lexical_grokking/peak_search/mod.rs",
+        "line": 47,
+        "contains": "pub(super) trait L1PeakSearch"
+      }
+    },
+    {
+      "id": "legacy_birth_search",
+      "role": "evidence_owner",
+      "evidence": {
+        "path": "src/nanda_wave/lexical_grokking/peak_search/mod.rs",
+        "line": 58,
+        "contains": "impl L1PeakSearch for LegacyBirthSearch"
+      }
+    },
+    {
+      "id": "empty_readout",
+      "role": "candidate_rank_owner",
+      "evidence": {
+        "path": "src/nanda_wave/lexical_grokking/peak_search/mod.rs",
+        "line": 65,
+        "contains": "if request.limit == 0"
+      }
+    },
+    {
+      "id": "exact_singleton",
+      "role": "candidate_rank_owner",
+      "evidence": {
+        "path": "src/nanda_wave/lexical_grokking/peak_search/mod.rs",
+        "line": 69,
+        "contains": "field.exact_singleton_readout(query.surface)"
+      }
+    },
+    {
+      "id": "nonlinear_settlement",
+      "role": "candidate_rank_owner",
+      "evidence": {
+        "path": "src/nanda_wave/lexical_grokking/peak_search/mod.rs",
+        "line": 77,
+        "contains": "field.finish_readout(query.surface, request.limit, request.mode, &prepared)"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "exec-empty-entry-owner",
+      "from": "readout_entry",
+      "relation": "calls",
+      "to": "l1_peak_search",
+      "events": ["empty_readout"],
+      "evidence": {
+        "path": "src/nanda_wave/lexical_grokking/runtime.rs",
+        "line": 186,
+        "contains": "LegacyBirthSearch.search("
+      }
+    },
+    {
+      "id": "exec-empty-owner-legacy",
+      "from": "l1_peak_search",
+      "relation": "delegates",
+      "to": "legacy_birth_search",
+      "events": ["empty_readout"],
+      "evidence": {
+        "path": "src/nanda_wave/lexical_grokking/peak_search/mod.rs",
+        "line": 58,
+        "contains": "impl L1PeakSearch for LegacyBirthSearch"
+      }
+    },
+    {
+      "id": "exec-empty-legacy-result",
+      "from": "legacy_birth_search",
+      "relation": "delegates",
+      "to": "empty_readout",
+      "events": ["empty_readout"],
+      "evidence": {
+        "path": "src/nanda_wave/lexical_grokking/peak_search/mod.rs",
+        "line": 66,
+        "contains": "PeakSearchResult::new(Vec::new(), SearchCompleteness::NotRequested)"
+      }
+    },
+    {
+      "id": "authority-empty-result",
+      "from": "legacy_birth_search",
+      "relation": "passes_to",
+      "to": "empty_readout",
+      "events": ["empty_readout"],
+      "evidence": {
+        "path": "src/nanda_wave/lexical_grokking/peak_search/mod.rs",
+        "line": 66,
+        "contains": "PeakSearchResult::new(Vec::new(), SearchCompleteness::NotRequested)"
+      }
+    },
+    {
+      "id": "exec-singleton-entry-owner",
+      "from": "readout_entry",
+      "relation": "calls",
+      "to": "l1_peak_search",
+      "events": ["exact_singleton_readout"],
+      "evidence": {
+        "path": "src/nanda_wave/lexical_grokking/runtime.rs",
+        "line": 186,
+        "contains": "LegacyBirthSearch.search("
+      }
+    },
+    {
+      "id": "exec-singleton-owner-legacy",
+      "from": "l1_peak_search",
+      "relation": "delegates",
+      "to": "legacy_birth_search",
+      "events": ["exact_singleton_readout"],
+      "evidence": {
+        "path": "src/nanda_wave/lexical_grokking/peak_search/mod.rs",
+        "line": 58,
+        "contains": "impl L1PeakSearch for LegacyBirthSearch"
+      }
+    },
+    {
+      "id": "exec-singleton-legacy-result",
+      "from": "legacy_birth_search",
+      "relation": "delegates",
+      "to": "exact_singleton",
+      "events": ["exact_singleton_readout"],
+      "evidence": {
+        "path": "src/nanda_wave/lexical_grokking/peak_search/mod.rs",
+        "line": 69,
+        "contains": "field.exact_singleton_readout(query.surface)"
+      }
+    },
+    {
+      "id": "authority-singleton-result",
+      "from": "legacy_birth_search",
+      "relation": "passes_to",
+      "to": "exact_singleton",
+      "events": ["exact_singleton_readout"],
+      "evidence": {
+        "path": "src/nanda_wave/lexical_grokking/peak_search/mod.rs",
+        "line": 70,
+        "contains": "PeakSearchResult::new(vec![candidate], SearchCompleteness::ExactSingleton)"
+      }
+    },
+    {
+      "id": "exec-lattice-entry-owner",
+      "from": "readout_entry",
+      "relation": "calls",
+      "to": "l1_peak_search",
+      "events": ["lattice_readout"],
+      "evidence": {
+        "path": "src/nanda_wave/lexical_grokking/runtime.rs",
+        "line": 186,
+        "contains": "LegacyBirthSearch.search("
+      }
+    },
+    {
+      "id": "exec-lattice-owner-legacy",
+      "from": "l1_peak_search",
+      "relation": "delegates",
+      "to": "legacy_birth_search",
+      "events": ["lattice_readout"],
+      "evidence": {
+        "path": "src/nanda_wave/lexical_grokking/peak_search/mod.rs",
+        "line": 58,
+        "contains": "impl L1PeakSearch for LegacyBirthSearch"
+      }
+    },
+    {
+      "id": "exec-lattice-legacy-settlement",
+      "from": "legacy_birth_search",
+      "relation": "delegates",
+      "to": "nonlinear_settlement",
+      "events": ["lattice_readout"],
+      "evidence": {
+        "path": "src/nanda_wave/lexical_grokking/peak_search/mod.rs",
+        "line": 77,
+        "contains": "field.finish_readout(query.surface, request.limit, request.mode, &prepared)"
+      }
+    },
+    {
+      "id": "authority-lattice-settlement",
+      "from": "legacy_birth_search",
+      "relation": "passes_to",
+      "to": "nonlinear_settlement",
+      "events": ["lattice_readout"],
+      "evidence": {
+        "path": "src/nanda_wave/lexical_grokking/peak_search/mod.rs",
+        "line": 77,
+        "contains": "field.finish_readout(query.surface, request.limit, request.mode, &prepared)"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "id": "empty-readout-execution",
+      "event": "empty_readout",
+      "kind": "execution",
+      "entry": "readout_entry",
+      "terminal": "empty_readout",
+      "required_roles": ["interface", "orchestrator", "evidence_owner", "candidate_rank_owner"],
+      "path_cardinality": [
+        {"from": "readout_entry", "to": "l1_peak_search", "min": 1, "max": 1},
+        {"from": "l1_peak_search", "to": "legacy_birth_search", "min": 1, "max": 1},
+        {"from": "legacy_birth_search", "to": "empty_readout", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "empty-readout-authority",
+      "event": "empty_readout",
+      "kind": "authority",
+      "entry": "legacy_birth_search",
+      "terminal": "empty_readout",
+      "required_roles": ["evidence_owner", "candidate_rank_owner"]
+    },
+    {
+      "id": "exact-singleton-execution",
+      "event": "exact_singleton_readout",
+      "kind": "execution",
+      "entry": "readout_entry",
+      "terminal": "exact_singleton",
+      "required_roles": ["interface", "orchestrator", "evidence_owner", "candidate_rank_owner"],
+      "path_cardinality": [
+        {"from": "readout_entry", "to": "l1_peak_search", "min": 1, "max": 1},
+        {"from": "l1_peak_search", "to": "legacy_birth_search", "min": 1, "max": 1},
+        {"from": "legacy_birth_search", "to": "exact_singleton", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "exact-singleton-authority",
+      "event": "exact_singleton_readout",
+      "kind": "authority",
+      "entry": "legacy_birth_search",
+      "terminal": "exact_singleton",
+      "required_roles": ["evidence_owner", "candidate_rank_owner"]
+    },
+    {
+      "id": "lattice-readout-execution",
+      "event": "lattice_readout",
+      "kind": "execution",
+      "entry": "readout_entry",
+      "terminal": "nonlinear_settlement",
+      "required_roles": ["interface", "orchestrator", "evidence_owner", "candidate_rank_owner"],
+      "path_cardinality": [
+        {"from": "readout_entry", "to": "l1_peak_search", "min": 1, "max": 1},
+        {"from": "l1_peak_search", "to": "legacy_birth_search", "min": 1, "max": 1},
+        {"from": "legacy_birth_search", "to": "nonlinear_settlement", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "lattice-readout-authority",
+      "event": "lattice_readout",
+      "kind": "authority",
+      "entry": "legacy_birth_search",
+      "terminal": "nonlinear_settlement",
+      "required_roles": ["evidence_owner", "candidate_rank_owner"]
+    }
+  ]
+}

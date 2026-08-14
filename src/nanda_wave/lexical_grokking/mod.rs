@@ -15,6 +15,7 @@ mod format;
 mod model;
 mod ngram_graph;
 mod pairwise;
+mod peak_search;
 mod posting_codec;
 mod posting_spool;
 mod proof;

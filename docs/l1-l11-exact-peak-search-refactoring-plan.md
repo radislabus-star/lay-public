@@ -1695,3 +1695,60 @@ training and crystallization runs remain zero.
 The next action is Phase 3: introduce one internal `L1PeakSearch` owner
 contract and wrap the unchanged legacy route behind it. Phase 3 may begin only
 as a separate commit and must retain all Phase 2 fingerprints exactly.
+
+Phase 3 is complete. Production `LexicalGrokkingMemory::readout` now delegates
+exactly once through the internal `L1PeakSearch` contract to
+`LegacyBirthSearch`. That owner preserves the three existing outcomes: empty,
+exact singleton, or the bounded legacy lattice followed by the existing
+nonlinear settlement. There is no fan-out, shadow execution, fallback, second
+winner, scoring change, normalization change, or new query allocation.
+The complete runtime/search tree is `4,801` lines, `5.17%` above the Phase 0
+monolith. The `5%` limit applied to the move-only Phase 2, which closed at
+`3.24%`; Phase 3 is the first separately admitted owner-contract growth.
+
+The observed-source route gate passed with `6` nodes, `12` edges, and `6`
+event/kind routes. The fused `readout_modes` function remains a proof-only
+eight-mode fingerprint optimization; it does not participate in daemon or
+service production authority and is explicitly outside the production owner
+cardinality claim.
+
+The `616`-case fingerprint, all eight readout modes, semantic SHA, projection
+SHA, all six route SHA values, candidate order, and zero permutation failures
+match Phase 2 exactly. Focused lexical tests passed `109/109`; authority and
+mutation contracts passed `20/20` and `15/15`; all lib/bin compile routes and
+`scripts/check-lay-changed.sh` passed. Three uncontaminated latency runs
+measured p99 `10.093`, `9.778`, and `9.412 ms`; readout p99 was `10.888`,
+`10.332`, and `10.462 ms`. Peak RSS was `417,744-418,236 KiB`. This proves
+Phase 3 no-regression, not the future `<=5 ms` promotion target.
+
+Binary identity was resolved rather than waived. A clean Phase 2 rebuild at a
+different absolute path produced a different ELF, while an isolated rebuild
+that exposed the same source bytes at the original compiler-visible path
+reproduced SHA-256 `86a556df...` exactly. Phase 3 produces SHA-256
+`0bbe9a30...` and is `192` bytes larger because the declared owner interface
+changes executable and unwind sections. Therefore whole-ELF equality is a
+valid reproducibility check for unchanged source, but not a behavior-parity
+condition after adding executable code. Preflight v3 was created prospectively
+from a restored Phase 2 source state, passed with zero blockers, and the Phase
+3 patch was then reapplied byte-for-byte with SHA-256 `388fd5c2...`. Rejected
+preflight revisions and failed namespace/toolchain attempts remain preserved.
+
+Tested: production route cardinality, exact frozen behavior, candidate order,
+focused lexical and authority gates, all compile routes, three-run latency,
+Phase 2 binary reproducibility, package identity, and Cargo disk budget. Not
+tested: dense oracle semantics, typed edit traversal, posting bounds, exact
+search quality, package redesign, or deployment. Runtime authority, installed
+package, daemon, and IBus remain unchanged; training and crystallization runs
+remain zero.
+
+The incremental source graph was updated remotely with `20` workers in
+`12.36 s`: `14,905` nodes, `27,436` edges, and `2,877` communities. Only the
+tracked graph outputs were returned to the local worktree.
+
+```text
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_3_2026-08-14/phase-3.json
+```
+
+The next action is Phase 4: implement the dense proof-only oracle and prove it
+on exhaustively enumerable tiny packages. It must remain unreachable from
+daemon and service production entrypoints.

@@ -36,7 +36,7 @@ impl LexicalGrokkingMemory {
             .collect()
     }
 
-    pub(super) fn finish_readout(
+    pub(in crate::nanda_wave::lexical_grokking) fn finish_readout(
         &self,
         surface: &str,
         limit: usize,

@@ -1,0 +1,232 @@
+{
+  "schema": "lay.l11.peak-search-owner-contract-receipt.v1",
+  "receipt": "L1_L11_PEAK_SEARCH_PHASE_3_2026-08-14",
+  "date": "2026-08-14",
+  "phase": 3,
+  "verdict": "PASS_SINGLE_INTERNAL_OWNER_WITH_PHASE2_BEHAVIOR_PARITY",
+  "implementation": {
+    "production_route": "LexicalGrokkingMemory::readout -> exactly one LegacyBirthSearch.search -> empty | exact singleton | bounded lattice -> existing settlement",
+    "new_types": [
+      "L1QueryField",
+      "ReadoutRequest",
+      "SearchCompleteness",
+      "PeakSearchResult",
+      "L1PeakSearch",
+      "LegacyBirthSearch"
+    ],
+    "new_module": "src/nanda_wave/lexical_grokking/peak_search/mod.rs",
+    "new_module_lines": 81,
+    "total_runtime_tree_lines": 4801,
+    "cumulative_growth_from_phase_0_percent": 5.17,
+    "phase2_move_only_five_percent_budget_applicable": false,
+    "budget_scope": "Phase 2 closed at 3.24%; Phase 3 is the first separately admitted owner-contract growth",
+    "code_patch_sha256": "388fd5c225b5c752830281115269a9973a2a00c75463076f4579926f4eda1f84",
+    "algorithm_changed": false,
+    "score_or_constant_changed": false,
+    "normalization_changed": false,
+    "new_per_query_allocation": false,
+    "fallback_or_fanout_added": false,
+    "external_api_changed": false
+  },
+  "source_sha256": {
+    "src/nanda_wave/lexical_grokking/mod.rs": "c7281b9005fe393f486d1c76c5696ccaa8d6e979bf813b090a075905d0f087ea",
+    "src/nanda_wave/lexical_grokking/runtime.rs": "8410e4b62c6672c1a1eba88f6ffab9ef8478774d3925ab8127f7ab78aa3f65b8",
+    "src/nanda_wave/lexical_grokking/runtime/contract.rs": "1e8495651fc0fc9e9d44f660ee5203cffe5d0edb56f851346af294f2043dce0a",
+    "src/nanda_wave/lexical_grokking/runtime/legacy.rs": "8aa6d4380621fcf4bd4988a61b6021a74370ff6d644bc1f5c56ae0171adacaa6",
+    "src/nanda_wave/lexical_grokking/runtime/settlement.rs": "4beafb4e23be38b638be627e488bb20d0c28c2246e941d4619e6d8242b12dd5c",
+    "src/nanda_wave/lexical_grokking/peak_search/mod.rs": "037ee18a2c30202ba01bc4e001c46e1dc60cfdbb23e4ab3a495beca5d373e944"
+  },
+  "immutable_inputs": {
+    "package_bytes": 190139182,
+    "package_sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+    "corpus_sha256": "abb9d71495acc27b7619b24621568ea72263f9bd40201aab9fffa1188fbff8f6",
+    "heldout_cases": 260000,
+    "heldout_sha256": "ba0a07ee7b784742c4aef08956c6e48dc9836da10d01dc50d516dc946b00c501",
+    "latency_cases": 520,
+    "latency_surfaces_sha256": "c501f9623299e5f1047b4706095e5a25a1168d65a2d3112c051e611f458615fb"
+  },
+  "route_gate": {
+    "design_verdict": "PASS",
+    "observed_source_verdict": "PASS",
+    "observed_nodes": 6,
+    "observed_edges": 12,
+    "observed_routes": 6,
+    "issues": 0,
+    "warnings": 0,
+    "production_search_calls_per_readout": 1,
+    "production_authority_owners": 1,
+    "proof_only_boundary": "runtime/settlement.rs::readout_modes is a fused eight-mode behavior-fingerprint path; it is not called by daemon/service production authority"
+  },
+  "implementation_preflight": {
+    "v1_verdict": "BLOCKED_BEFORE_CODE",
+    "v1_blockers": 6,
+    "v1_retained_as_rejected_evidence": true,
+    "v2_verdict": "READY_TO_IMPLEMENT",
+    "v2_post_implementation_issue": "its exact Phase 2 whole-ELF identity expectation was incompatible with the declared addition of executable owner code",
+    "v3_verdict": "READY_TO_IMPLEMENT",
+    "v3_safe_to_implement": true,
+    "v3_blockers": 0,
+    "v3_manifest_sha256": "b9ecef1b10581f1f9a9bc0a066e08f1f8a66047db5dded37858e74580da92e42",
+    "phase2_source_restored_before_v3": true,
+    "phase3_patch_reapplied_byte_identically_after_v3": true
+  },
+  "binary_identity": {
+    "phase2_original_sha256": "86a556dfb0ea35c712af50126e59f4779395ffb2d0efbe990d79221d16d8ac91",
+    "phase2_rebuild_original_path_sha256": "86a556dfb0ea35c712af50126e59f4779395ffb2d0efbe990d79221d16d8ac91",
+    "phase2_reproducible": true,
+    "phase3_sha256": "0bbe9a307da9740333e7cfb0561d7313ce288a98491d22bfa4b0d828be1d2c73",
+    "phase2_bytes": 10554024,
+    "phase3_bytes": 10554216,
+    "phase3_size_delta_bytes": 192,
+    "whole_elf_equality_required": false,
+    "reason": "the declared owner interface changes executable and unwind sections; exact semantic and route identity are the behavior contract",
+    "investigation_receipt": "binary-identity-investigation.json"
+  },
+  "behavior_parity": {
+    "replay_cases": 616,
+    "readout_modes": 8,
+    "semantic_sha256": "c6159bf499146c21a96723435ac4112496eca10bf8c1dd961964d789333267d7",
+    "projection_file_sha256": "85cf72483cf68c2f93e262569571cf1169b9feb90b8a1767536133afaef7b036",
+    "candidate_sha256": "2d99e87b685625d0791c857aecbfce022e6353d58aa5bc359c9d490b1a7c4a96",
+    "permutation_failures": 0,
+    "route_sha256": {
+      "readout_modes": "0984fc3ec6b0866d02c50c34b83c2966300acd39dbceacb67003843e42d92665",
+      "query": "730dce95ef34fad52ccc1cec814bb43a03ad5a86b82ce6c72d3422f1fcaef2d5",
+      "restore": "b2d42c23ab20a149195c929af4cf7ec15dfb7a14fe02582895cc061ae7241ab1",
+      "host_lattice": "8be14b9322a99471b314a3b7d520da437c13ca4bcc0ba7470fd4876462a9c2ea",
+      "service_lattice": "ba1f873cce3ca5c1b39e0f7fac24a49ca9606de37278610a16ef4492cd678a5f",
+      "restoration_permutation": "452c9c014d5537e773908a458711e1f47f9c9f5057641039632a2e27a29a43aa"
+    },
+    "wall_seconds": 29.97,
+    "peak_rss_kib": 1073348,
+    "average_cpu_percent": 158
+  },
+  "latency": {
+    "accepted_clean_p99_us": [10093, 9778, 9412],
+    "accepted_clean_readout_p99_us": [10888, 10332, 10462],
+    "accepted_clean_peak_rss_kib": [418236, 417940, 417744],
+    "accepted_clean_average_cpu_percent": [175, 176, 176],
+    "candidate_sha256_exact_runs": 3,
+    "rejected_contaminated_p99_us": [10770, 10603, 10805],
+    "rejected_reason": "a foreign Rust build was running concurrently",
+    "gate": "PASS_PHASE3_NO_REGRESSION",
+    "future_promotion_target_us": 5000,
+    "future_promotion_target_met": false
+  },
+  "remote_execution": {
+    "host": "e@192.168.3.94",
+    "source_root": "/home/e/build/lay-l1-exact-phase2d",
+    "evidence_root": "/home/e/build/lay-l1-exact-phase2d-evidence",
+    "logical_cpus": 20,
+    "cargo_build_jobs": 20,
+    "rayon_threads": 20,
+    "test_threads": 20,
+    "rust_toolchain": "1.97.1",
+    "rustfmt_toolchain": "1.97.0",
+    "release_build_wall_seconds": 177.89,
+    "release_build_peak_rss_kib": 2402032,
+    "release_build_average_cpu_percent": 101
+  },
+  "graphify": {
+    "command": "remote GRAPHIFY_WORKERS=20 graphify update .",
+    "wall_seconds": 12.36,
+    "peak_rss_kib": 340712,
+    "average_cpu_percent": 96,
+    "nodes": 14905,
+    "edges": 27436,
+    "communities": 2877,
+    "source_root_only": true
+  },
+  "checks": [
+    {
+      "command": "remote cargo +1.97.0 fmt --check",
+      "result": "PASS in 1.67 s"
+    },
+    {
+      "command": "remote scripts/cargo-guard.sh test lexical_grokking --lib -- --test-threads=20",
+      "result": "109 passed; 0 failed; test body 5.25 s; wall 23.23 s; average CPU 509%"
+    },
+    {
+      "command": "remote scripts/cargo-guard.sh test --test typing_transition_authority_contract -- --test-threads=20",
+      "result": "20 passed; 0 failed"
+    },
+    {
+      "command": "remote scripts/cargo-guard.sh test --test text_mutation_monopoly_contract -- --test-threads=20",
+      "result": "15 passed; 0 failed"
+    },
+    {
+      "command": "remote scripts/cargo-guard.sh check --lib --bins",
+      "result": "PASS"
+    },
+    {
+      "command": "remote scripts/check-lay-changed.sh with Rust 1.97.1 PATH",
+      "result": "PASS in 29.76 s; peak RSS 2276848 KiB; average CPU 158%; transition replay PASS-shadow; unsafe edit gate PASS"
+    },
+    {
+      "command": "git diff --check",
+      "result": "PASS"
+    },
+    {
+      "command": "remote scripts/cargo-guard.sh --status",
+      "result": "target bytes 3337732096; budget bytes 12884901888; PASS"
+    }
+  ],
+  "rejected_attempts": [
+    {
+      "id": "private-prepared-readout",
+      "result": "REJECTED",
+      "reason": "PreparedReadout visibility did not reach the sibling peak_search module"
+    },
+    {
+      "id": "rustfmt-only-intermediate",
+      "result": "REJECTED",
+      "reason": "formatting had not yet reached final source bytes"
+    },
+    {
+      "id": "remote-system-cargo",
+      "result": "REJECTED",
+      "reason": "non-login SSH selected Cargo 1.75.0, which cannot parse lockfile v4; no tests ran"
+    },
+    {
+      "id": "binary-rebuild-sandbox-v1-v3",
+      "result": "REJECTED",
+      "reason": "namespace device, toolchain, or TMPDIR setup failed before an accepted rebuild"
+    },
+    {
+      "id": "contaminated-latency",
+      "result": "REJECTED",
+      "reason": "foreign Rust compilation overlapped the benchmark"
+    }
+  ],
+  "tested": [
+    "one production L1PeakSearch call and one authority owner per readout event",
+    "all frozen semantic routes over 616 cases and eight modes",
+    "candidate ordering and permutation invariance",
+    "focused lexical tests on final source bytes",
+    "transition authority and text mutation monopoly contracts",
+    "all library and binary compile routes",
+    "three clean remote latency runs",
+    "Phase 2 release reproducibility at the original compiler-visible source path",
+    "package and fixed-input byte identity"
+  ],
+  "not_tested": [
+    "Phase 4 dense oracle",
+    "typed edit traversal",
+    "posting-bound soundness or feasibility",
+    "exact peak-search quality",
+    "new package representation",
+    "live deployment"
+  ],
+  "claim_boundary": {
+    "phase3_internal_owner_contract_proven": true,
+    "legacy_behavior_parity_proven": true,
+    "exact_peak_search_correctness_proven": false,
+    "runtime_authority_changed": false,
+    "installed_runtime_changed": false,
+    "installed_package_changed": false,
+    "daemon_or_ibus_restarted": false,
+    "training_runs": 0,
+    "crystallization_runs": 0
+  },
+  "next_action": "Phase 4: add the proof-only dense oracle without changing production authority, package bytes, training state, or installed runtime."
+}

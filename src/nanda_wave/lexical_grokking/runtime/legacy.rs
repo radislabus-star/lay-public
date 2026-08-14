@@ -46,7 +46,11 @@ pub(super) fn should_expand_operator_lattice(exact_terminal_count: usize, limit:
 }
 
 impl LexicalGrokkingMemory {
-    pub(super) fn prepare_readout(&self, surface: &str, limit: usize) -> Option<PreparedReadout> {
+    pub(in crate::nanda_wave::lexical_grokking) fn prepare_readout(
+        &self,
+        surface: &str,
+        limit: usize,
+    ) -> Option<PreparedReadout> {
         let trace_started = Instant::now();
         let observed = self.resolve_surface(surface);
         if observed.is_empty() {
@@ -320,7 +324,10 @@ impl LexicalGrokkingMemory {
         })
     }
 
-    pub(super) fn exact_singleton_readout(&self, surface: &str) -> Option<GrokkingCandidate> {
+    pub(in crate::nanda_wave::lexical_grokking) fn exact_singleton_readout(
+        &self,
+        surface: &str,
+    ) -> Option<GrokkingCandidate> {
         let terminal_id = self.exact_terminal_for_surface(surface)?;
         let observed = self.resolve_surface(surface);
         let character_sequence = observed_sequence(&observed, AtomChannel::CharacterAnchor);

@@ -1,0 +1,73 @@
+{
+  "schema": "lay.l11.phase3.binary-identity-investigation.v1",
+  "date": "2026-08-14",
+  "verdict": "WHOLE_ELF_IDENTITY_REJECTED_AS_PHASE3_BEHAVIOR_GATE",
+  "phase_2_original": {
+    "source_path": "/home/e/build/lay-l1-exact-phase2d",
+    "binary_sha256": "86a556dfb0ea35c712af50126e59f4779395ffb2d0efbe990d79221d16d8ac91",
+    "bytes": 10554024
+  },
+  "phase_2_rebuild_different_path": {
+    "source_path": "/home/e/build/lay-l1-exact-phase2h-rebuild",
+    "binary_sha256": "968e0d05f23012572f3297446533676f781d4a3a586f7b68ff4d687b059a92ed",
+    "conclusion": "whole ELF identity is path-sensitive"
+  },
+  "phase_2_rebuild_original_path": {
+    "physical_source_path": "/home/e/build/lay-l1-exact-phase2h-rebuild",
+    "compiler_visible_source_path": "/home/e/build/lay-l1-exact-phase2d",
+    "binary_sha256": "86a556dfb0ea35c712af50126e59f4779395ffb2d0efbe990d79221d16d8ac91",
+    "bytes": 10554024,
+    "wall_seconds": 196.70,
+    "peak_rss_kib": 2399856,
+    "average_cpu_percent": 226,
+    "conclusion": "Phase 2 release bytes are reproducible when source identity and absolute path are reproduced"
+  },
+  "phase_3": {
+    "source_path": "/home/e/build/lay-l1-exact-phase2d",
+    "binary_sha256": "0bbe9a307da9740333e7cfb0561d7313ce288a98491d22bfa4b0d828be1d2c73",
+    "bytes": 10554216,
+    "semantic_sha256": "c6159bf499146c21a96723435ac4112496eca10bf8c1dd961964d789333267d7",
+    "projection_sha256": "85cf72483cf68c2f93e262569571cf1169b9feb90b8a1767536133afaef7b036",
+    "candidate_sha256": "2d99e87b685625d0791c857aecbfce022e6353d58aa5bc359c9d490b1a7c4a96",
+    "permutation_failures": 0
+  },
+  "section_comparison": {
+    ".data_equal": true,
+    ".text_equal": false,
+    ".rodata_equal": false,
+    ".eh_frame_equal": false,
+    ".gcc_except_table_equal": false,
+    "conclusion": "the added owner interface changes executable code and unwind metadata, so exact whole-ELF equality would forbid the declared source change rather than test its behavior"
+  },
+  "accepted_identity_contract": {
+    "source_change_must_match_declared_patch": true,
+    "phase_2_rebuild_must_remain_reproducible": true,
+    "semantic_projection_candidate_and_route_hashes_must_match_exactly": true,
+    "candidate_permutation_failures_must_be_zero": true,
+    "whole_elf_sha_must_be_recorded": true,
+    "whole_elf_sha_must_equal_phase_2": false,
+    "latency_no_regression_gate_must_pass": true
+  },
+  "rejected_attempts": [
+    {
+      "id": "bwrap-v1",
+      "result": "REJECTED",
+      "reason": "/dev/null was not a device inside the namespace"
+    },
+    {
+      "id": "bwrap-v2",
+      "result": "REJECTED",
+      "reason": "login shell selected Cargo 1.75.0, which cannot parse lockfile v4"
+    },
+    {
+      "id": "bwrap-v3",
+      "result": "REJECTED",
+      "reason": "linker temporary directory was read-only"
+    },
+    {
+      "id": "bwrap-v4",
+      "result": "ACCEPTED",
+      "reason": "same compiler-visible source path, explicit Rust 1.97.1 PATH, writable isolated TMPDIR, exact Phase 2 SHA reproduced"
+    }
+  ]
+}
