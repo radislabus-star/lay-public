@@ -1,0 +1,213 @@
+{
+  "schema": "lay.l11.typed-edit-phase-receipt.v1",
+  "receipt": "L1_L11_PEAK_SEARCH_PHASE_7D_2026-08-14",
+  "date": "2026-08-14",
+  "phase": "7D",
+  "verdict": "PASS_EXACT_COMPLETE_THIRTEEN_CLASS_TYPED_TRAVERSAL",
+  "implementation": {
+    "owner": "L1TypedEditTraversal",
+    "module": "src/nanda_wave/lexical_grokking/typed_edit_traversal.rs",
+    "module_lines": 2072,
+    "new_certificate_families": [
+      "double_substitution",
+      "sparse_multi_omission",
+      "omission_transposition"
+    ],
+    "total_fixed_classes": 13,
+    "traversal_scopes": ["phase7a", "phase7b", "phase7c", "phase7d"],
+    "deduplication": "exact_structural_state_equality",
+    "generated_candidate_strings": 0,
+    "queue_truncations": 0,
+    "runtime_case_rules": 0,
+    "production_route_changed": false,
+    "runtime_authority_changed": false,
+    "package_format_changed": false
+  },
+  "structural_gates": {
+    "route_design": "PASS",
+    "execution_paths": 1,
+    "proof_paths": 1,
+    "observation_paths": 1,
+    "authority_paths": 0,
+    "implementation_preflight": "READY_TO_IMPLEMENT",
+    "preflight_manifest_sha256": "fb4be0627e9d97c2824cf5df28f30d4a58f4752edf820502507bb4136dbcd785"
+  },
+  "tiny_oracle": {
+    "tests": 14,
+    "passed": 14,
+    "alphabet_symbols": 3,
+    "maximum_query_length": 7,
+    "terminal_map_parity": true,
+    "certificate_set_parity": true,
+    "forward_reverse_permuted_bytes_equal": true,
+    "double_substitution_witness": "accbb -> abcab",
+    "sparse_multi_omission_witness": "acb -> abcab",
+    "omission_transposition_witness": "bacb -> abcab"
+  },
+  "fixed_full_gate": {
+    "primary_centers": 852582,
+    "dictionary_roundtripped": 852582,
+    "clean_identity_cases": 852582,
+    "clean_identity_retained": 852582,
+    "classes": 13,
+    "cases_per_class": 20000,
+    "cases": 260000,
+    "target_retained": 260000,
+    "certificate_retained": 260000,
+    "schedule_parity": 260000,
+    "heldout_sha256": "5f04136224b8412c25962a03f6b651d262204a8f3add087c27bff43ead47fedd",
+    "artifact_sha256": "0bf963ad0b67c054c92658cbcf1859a8c6dc034b204bb83e4797507b1b3c8ec0",
+    "remote_path": "/home/e/build/lay-l1-exact-phase2d-evidence/phase7d-2026-08-14/phase7d.json",
+    "local_cache_path": "/home/ubu/.cache/lay/l1-peak-search-phase7d-2026-08-14/phase7d.json"
+  },
+  "new_class_results": {
+    "double_substitution": {
+      "cases": 20000,
+      "target_retained": 20000,
+      "certificate_retained": 20000,
+      "schedule_parity": 20000,
+      "states_p99": 11893,
+      "states_max": 13735,
+      "queue_p99": 4056,
+      "queue_max": 4254,
+      "terminal_events_p99": 72,
+      "terminal_events_max": 340
+    },
+    "sparse_multi_omission": {
+      "cases": 20000,
+      "target_retained": 20000,
+      "certificate_retained": 20000,
+      "schedule_parity": 20000,
+      "states_p99": 12229,
+      "states_max": 14533,
+      "queue_p99": 4069,
+      "queue_max": 4195,
+      "terminal_events_p99": 314,
+      "terminal_events_max": 772
+    },
+    "omission_transposition": {
+      "cases": 20000,
+      "target_retained": 20000,
+      "certificate_retained": 20000,
+      "schedule_parity": 20000,
+      "states_p99": 11974,
+      "states_max": 14420,
+      "queue_p99": 4079,
+      "queue_max": 4254,
+      "terminal_events_p99": 728,
+      "terminal_events_max": 1524
+    }
+  },
+  "prior_scope_regressions": {
+    "phase7a": {
+      "cases": 60000,
+      "wall_ms": 13443,
+      "artifact_sha256": "4de2432d028cea6b2c52ee1a55d2c0d8195e2a656a151e517e4d967e56bdcc5d"
+    },
+    "phase7b": {
+      "cases": 140000,
+      "wall_ms": 21085,
+      "artifact_sha256": "3d8b29aab06f416d88b006f81c6be44ad8ecbdcd845af6da5b43037a1d59f78b"
+    },
+    "phase7c": {
+      "cases": 200000,
+      "wall_ms": 32115,
+      "artifact_sha256": "94b819b99d89a55f741c481089a95512612e94a05fb87dceb5fbc4a09b702e68"
+    },
+    "all_clean_identity_retained": 852582,
+    "all_target_certificate_schedule_parity": true,
+    "package_bytes_unchanged": true
+  },
+  "work_counters": {
+    "maximum_states_expanded": 14669,
+    "maximum_queue_peak": 4256,
+    "maximum_terminal_events": 2495
+  },
+  "resources": {
+    "wall_seconds": 406.519,
+    "clean_seconds": 202.344,
+    "heldout_seconds": 201.343,
+    "average_cpu_percent": 1464,
+    "peak_rss_kib": 602632,
+    "workers": 20,
+    "cargo_target_bytes": 4063424512,
+    "cargo_target_budget_bytes": 12884901888
+  },
+  "immutable_inputs": {
+    "package_sha256_before": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+    "package_sha256_after": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+    "forward_index_fingerprint_sha256": "6141fc0f7795b3e388edcc7061485854a0ed2c8f1426ba8a80d2f278cf360e6e"
+  },
+  "source_sha256": {
+    "src/nanda_wave/lexical_grokking/typed_edit_traversal.rs": "f587356c982469a13ac1047693c8404437c5364da8fabec5ed134d0ae39e89ec",
+    "src/nanda_wave/lexical_grokking/forward_decoder_index.rs": "754ce19ad880ef869bdad6f961c10de504966d5bf4d4c54d92f5bf01f7e9cffb",
+    "src/nanda_wave/lexical_grokking/proof.rs": "77527fe80d268cd7f620586305164fd1c51f65305bfb13faa799121d49bbe148",
+    "src/nanda_wave/lexical_grokking/mod.rs": "75ecd230b1ac59d3140bdbe1807b1c9e57c960e04a56c48ce459d723ae1b2588",
+    "src/nanda_wave/mod.rs": "9269c9db7fffc07badc3f715fa1c00521a17d6978ad488b4c7bc8f4fd7300ad6",
+    "src/bin/lay_nanda_wave_train.rs": "9aa6c77b468731955b34022589881ff1d33d08b4aca045ea00fe0addd98bd11d",
+    "src/dict.rs": "615e7b04d6823fb158bef72963ce6b04fcaa5323723769e904e4e75d680fbaf4",
+    "src/dict_tests.rs": "fc2847e2f509939a1f8b62a96250334c662370dfd0469ab04680f0e2c9391da0"
+  },
+  "checks": [
+    {"command": "remote focused typed_edit_traversal tests", "result": "14 passed; 0 failed"},
+    {"command": "remote fixed Phase 7D 13 x 20000 proof", "result": "PASS; 260000/260000 target, certificate, and schedule parity"},
+    {"command": "remote exact Phase 7A through Phase 7C scoped regressions", "result": "PASS; package unchanged"},
+    {"command": "remote lexical_grokking tests", "result": "143 passed; 0 failed"},
+    {"command": "remote typing_transition_authority_contract", "result": "20 passed; 0 failed"},
+    {"command": "remote text_mutation_monopoly_contract", "result": "15 passed; 0 failed"},
+    {"command": "remote scripts/check-lay-changed.sh", "result": "PASS"},
+    {"command": "remote Cargo target budget", "result": "3.78 GiB <= 12 GiB"}
+  ],
+  "rejected_attempts": [
+    {
+      "scope": "first remote metrics invocation",
+      "failure": "binary was built without lexical-compiler, so the unknown proof flag fell through to the legacy default training route",
+      "proof_executed": false,
+      "local_installed_runtime_changed": false,
+      "remote_developer_artifacts_overwritten": [
+        {
+          "path": "/home/e/.local/share/lay/nanda_wave/learned_memory.cell32",
+          "bytes_after": 32768,
+          "sha256_after": "12c091fdf02a5b7df5085c1971c19eee8a4318055a186c1b0fd7dfcc169bdea7",
+          "baseline_available": false
+        },
+        {
+          "path": "/home/e/.local/share/lay/nanda_wave/l2_candidate_phase.nwpc",
+          "bytes_after": 324076,
+          "sha256_after": "a93c88258892e7b00e453760fa3eaecf00f952e02905d416b3ab889e7baffa83",
+          "baseline_available": false
+        }
+      ],
+      "repair": "rebuilt metrics binary with lexical-compiler and required the phase7d flag string before the accepted proof",
+      "rollback": "not attempted because no before-hash or authoritative remote backup was available"
+    }
+  ],
+  "tested": [
+    "complete Phase 7A through Phase 7D tiny-oracle terminal and certificate parity",
+    "all thirteen fixed damage classes",
+    "forward reverse and permuted scheduling parity",
+    "complete clean dictionary and identity round-trip",
+    "package byte identity and prior-scope non-regression",
+    "normal authority mutation and changed-tree contracts"
+  ],
+  "not_tested": [
+    "posting-bound soundness or feasibility",
+    "shared WordCenter accumulator parity",
+    "exact nonlinear settlement integration",
+    "optimized production latency",
+    "package representation or deployment"
+  ],
+  "claim_boundary": {
+    "all_phase7_operators_complete": true,
+    "optimized_exact_search_proven": false,
+    "runtime_authority_changed": false,
+    "local_installed_runtime_changed": false,
+    "local_installed_package_changed": false,
+    "daemon_or_ibus_restarted": false,
+    "remote_developer_artifacts_changed_by_rejected_attempt": true,
+    "training_runs": 1,
+    "accepted_training_runs": 0,
+    "crystallization_runs": 0
+  },
+  "next_action": "Phase 8: prove sound complete posting-block bounds over the unchanged V8 package before any production integration."
+}

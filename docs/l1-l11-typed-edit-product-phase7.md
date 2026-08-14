@@ -1,6 +1,6 @@
 # L1.1 Phase 7: Typed Edit-Product Traversal Paper
 
-Status: Phases 7A-7C implemented and proven; Phase 7D pending
+Status: Phase 7 complete; all 13 fixed damage classes proven
 Date: 2026-08-14
 Owner: proof-only `L1TypedEditTraversal` under `L1PeakSearch`
 
@@ -603,4 +603,66 @@ Training and crystallization runs remain zero.
 ```text
 /home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_7C_2026-08-14/phase-7c.json
 /home/ubu/.cache/lay/l1-peak-search-phase7c-2026-08-14/phase7c.json
+```
+
+## 17. Phase 7D Measured Result
+
+Phase 7D completes the proof-only typed edit product. The same
+`L1TypedEditTraversal` now carries partial and completed states for exactly two
+substitutions, exactly two target omissions, and the product of one target
+omission with one adjacent transposition. Partial states cannot emit terminal
+events. Omission/transposition may occur in either traversal order, but the
+completed certificate stores canonical target coordinates.
+
+The independent direct oracle derives the same relations by mismatch positions,
+two-position removal, and swap-then-remove sequence comparison. Exhaustive
+tiny-package terminal/certificate parity and forward/reverse/permuted schedule
+parity passed `14/14` across all `a/b/c` queries through length `7`.
+
+The unchanged V8 package passed the final Phase 7 gate:
+
+| Dimension | Measured |
+|---|---:|
+| clean dictionary round-trip | `852,582 / 852,582` |
+| clean identity retention | `852,582 / 852,582` |
+| classes | `13` |
+| cases per class | `20,000` |
+| target retention | `260,000 / 260,000` |
+| typed certificate retention | `260,000 / 260,000` |
+| schedule parity | `260,000 / 260,000` |
+| proof wall time | `406.519 s` |
+| average CPU | `1,464%` |
+| peak RSS | `602,632 KiB` |
+| generated target strings | `0` |
+| queue truncations | `0` |
+| package hash changed | `no` |
+
+New-class expanded-state p99 was `11,893` for double substitution, `12,229`
+for sparse multi-omission, and `11,974` for omission/transposition. Their queue
+p99 was `4,056`, `4,069`, and `4,079`. These deliberately exhaustive counters
+show why Phase 8 must add sound posting bounds before production use; they are
+not accepted hot-path latency.
+
+Independent scoped regressions remained PASS: 7A `60,000/60,000`, 7B
+`140,000/140,000`, and 7C `200,000/200,000`, each with complete clean identity,
+target/certificate/schedule parity, and unchanged package bytes. Lexical tests
+passed `143/143`, authority `20/20`, mutation monopoly `15/15`, changed-tree and
+Cargo budget gates passed.
+
+One rejected invocation is retained as negative evidence. The first remote
+metrics binary lacked `lexical-compiler`; the unknown proof flag entered the
+legacy default training route and overwrote two developer artifacts under
+`/home/e/.local/share/lay/nanda_wave/`. No proof ran, and the local installed
+Lay/package/daemon/IBus were untouched. Because no remote before-hashes existed,
+the files were not blindly rolled back. The accepted run rebuilt with the
+feature and required the Phase 7D command string before execution.
+
+Tested: complete 13-class typed reachability and certificate identity. Not
+tested: posting bounds, accumulator integration, nonlinear settlement parity,
+production latency, package representation, or deployment. Runtime authority
+remains unchanged. Phase 8 is the next admitted boundary.
+
+```text
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_7D_2026-08-14/phase-7d.json
+/home/ubu/.cache/lay/l1-peak-search-phase7d-2026-08-14/phase7d.json
 ```

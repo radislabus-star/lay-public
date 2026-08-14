@@ -1,0 +1,188 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-l11-exact-peak-search-phase7d-2026-08-14",
+  "authority_bearing": false,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "phase7-paper",
+      "kind": "file",
+      "path": "../../../l1-l11-typed-edit-product-phase7.md",
+      "expect": {"size_bytes": 22532, "sha256": "d314db345c85fb251028e08e2cfc3fd460b09db353c147c8df6fd39ebc5d6c8c", "mode": "0664"}
+    },
+    {
+      "id": "phase7c-traversal",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/typed_edit_traversal.rs",
+      "expect": {"size_bytes": 60000, "sha256": "e90650418b4559fc8b8e7e9db6eb3ebe5cd94d7b5128bd0434fa46eece88ce59", "mode": "0664"}
+    },
+    {
+      "id": "forward-decoder-index",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/forward_decoder_index.rs",
+      "expect": {"size_bytes": 19862, "sha256": "754ce19ad880ef869bdad6f961c10de504966d5bf4d4c54d92f5bf01f7e9cffb", "mode": "0664"}
+    },
+    {
+      "id": "proof-owner",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/proof.rs",
+      "expect": {"size_bytes": 133796, "sha256": "77527fe80d268cd7f620586305164fd1c51f65305bfb13faa799121d49bbe148", "mode": "0664"}
+    },
+    {
+      "id": "heldout-generator",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/corruption.rs",
+      "expect": {"size_bytes": 15550, "sha256": "692158b56ecb069471772291fe4ce403773eed1d9adb650792d057763afe37d8", "mode": "0664"}
+    },
+    {
+      "id": "phase7c-receipt",
+      "kind": "file",
+      "path": "../L1_L11_PEAK_SEARCH_PHASE_7C_2026-08-14/phase-7c.json",
+      "expect": {"size_bytes": 7103, "sha256": "29e2845310d768cc75c98732787a17c1a1d0c54260da7afb107ab75dcdd6c4ee", "mode": "0664"}
+    },
+    {
+      "id": "installed-package",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin",
+      "expect": {"size_bytes": 190139182, "sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9", "prefix_hex": "4c41594c31563800", "mode": "0644"}
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "extend-same-traversal-owner-7d", "kind": "filesystem_edit"},
+      {"id": "extend-independent-direct-oracle-7d", "kind": "filesystem_edit"},
+      {"id": "extend-fixed-family-proof-command", "kind": "filesystem_edit"},
+      {"id": "write-phase7d-receipts", "kind": "filesystem_write"},
+      {"id": "run-tiny-and-fixed-family-proofs", "kind": "test_execution"}
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "runtime_authority_change",
+      "production_traversal_reachability",
+      "heldout_target_search_input",
+      "generated_candidate_string",
+      "queue_truncation",
+      "scalar_state_dominance",
+      "second_traversal_owner",
+      "runtime_case_rule",
+      "hidden_legacy_fallback",
+      "algorithm_or_score_change",
+      "package_format_change",
+      "corpus_crystallization",
+      "runtime_restart",
+      "installed_package_mutation"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "runtime-traversal-vetoes",
+      "path": "../../../../src/nanda_wave/lexical_grokking/runtime.rs",
+      "sha256": "5d0d1a38ab0613da1ed753b6e266029f9c8f0912ba4ac0f31dc4ec0b2a528e70",
+      "forbidden_effect_patterns": [
+        {"effect": "production_traversal_reachability", "regex": "(?:L1TypedEditTraversal|typed_edit_traversal|prove_l1_typed_edit)"},
+        {"effect": "runtime_authority_change", "regex": "(?:(?:typed_edit_traversal|L1TypedEditTraversal).{0,120}(?:authorize|live_owner|runtime_owner)|(?:authorize|live_owner|runtime_owner).{0,120}(?:typed_edit_traversal|L1TypedEditTraversal))"},
+        {"effect": "algorithm_or_score_change", "regex": "(?:score_override|coefficient_override|algorithm_override)"},
+        {"effect": "generated_candidate_string", "regex": "(?:(?:typed_edit_traversal|L1TypedEditTraversal).{0,120}(?:format!|String::new|collect::<String>)|(?:format!|String::new|collect::<String>).{0,120}(?:typed_edit_traversal|L1TypedEditTraversal))"},
+        {"effect": "heldout_target_search_input", "regex": "(?:(?:typed_edit_traversal|L1TypedEditTraversal).{0,120}(?:heldout_target|expected_target)|(?:heldout_target|expected_target).{0,120}(?:typed_edit_traversal|L1TypedEditTraversal))"},
+        {"effect": "queue_truncation", "regex": "(?:(?:typed_edit_traversal|L1TypedEditTraversal).{0,120}(?:truncate|take\\s*\\()|(?:truncate|take\\s*\\().{0,120}(?:typed_edit_traversal|L1TypedEditTraversal))"},
+        {"effect": "scalar_state_dominance", "regex": "(?:(?:typed_edit_traversal|L1TypedEditTraversal).{0,120}(?:edit_cost|scalar_cost|lower_cost)|(?:edit_cost|scalar_cost|lower_cost).{0,120}(?:typed_edit_traversal|L1TypedEditTraversal))"},
+        {"effect": "second_traversal_owner", "regex": "(?:SecondTypedTraversal|AlternativeTypedTraversal|fallback_typed_traversal)"},
+        {"effect": "synthetic_fixture", "regex": "(?:(?:typed_edit_traversal|L1TypedEditTraversal).{0,120}(?:write|append).{0,80}(?:fixture|heldout)|(?:write|append).{0,80}(?:fixture|heldout).{0,120}(?:typed_edit_traversal|L1TypedEditTraversal))"},
+        {"effect": "hidden_legacy_fallback", "regex": "(?:fallback_to_legacy|hidden_fallback)"},
+        {"effect": "corpus_crystallization", "regex": "(?:(?:typed_edit_traversal|L1TypedEditTraversal).{0,120}crystallize_l1_lexical_grokking|crystallize_l1_lexical_grokking.{0,120}(?:typed_edit_traversal|L1TypedEditTraversal))"}
+      ]
+    },
+    {
+      "id": "format-vetoes",
+      "path": "../../../../src/nanda_wave/lexical_grokking/format.rs",
+      "sha256": "142ce3eb8e56421d2df7efb05b8bda64b2f8d0fe95267a6d86ba4d3b21342b36",
+      "forbidden_effect_patterns": [
+        {"effect": "package_format_change", "regex": "(?:FORMAT_VERSION|MAGIC|HEADER_BYTES)\\s*="},
+        {"effect": "installed_package_mutation", "regex": "(?:write|rename|remove_file|copy).{0,120}/home/ubu/\\.local/share/lay"},
+        {"effect": "runtime_restart", "regex": "(?:systemctl|restart|kill|pkill).{0,80}(?:lay-daemon|ibus)"}
+      ]
+    },
+    {
+      "id": "proof-source-vetoes",
+      "path": "../../../../src/nanda_wave/lexical_grokking/proof.rs",
+      "sha256": "77527fe80d268cd7f620586305164fd1c51f65305bfb13faa799121d49bbe148",
+      "forbidden_effect_patterns": [
+        {"effect": "generated_traffic", "regex": "(?:TcpStream|UdpSocket|ureq::|reqwest::)"},
+        {"effect": "runtime_case_rule", "regex": "(?:source_id|test_name|heldout_target)"}
+      ]
+    }
+  ],
+  "preserved_artifacts": [
+    {
+      "id": "phase7c-evidence",
+      "path": "../L1_L11_PEAK_SEARCH_PHASE_7C_2026-08-14/phase-7c.json",
+      "policy": "byte_identical",
+      "rollback_policy": "must remain byte-identical",
+      "baseline_check_id": "phase7c-receipt"
+    },
+    {
+      "id": "installed-package-bytes",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin",
+      "policy": "byte_identical",
+      "rollback_policy": "must remain byte-identical",
+      "baseline_check_id": "installed-package"
+    }
+  ],
+  "state_machine": {
+    "initial_state": "PHASE7C_PROVEN",
+    "terminal_states": ["PHASE7D_TYPED_TRAVERSAL_PROVEN", "PHASE7D_REJECTED"],
+    "steps": [
+      {
+        "id": "implement-and-prove-typed-traversal-7d",
+        "from": "PHASE7C_PROVEN",
+        "to": "PHASE7D_TYPED_TRAVERSAL_PROVEN",
+        "mutates": true,
+        "failure_state": "PHASE7D_REJECTED",
+        "cleanup": "retain failed receipts, revert only the separate Phase 7D patch, and leave Phase 7C evidence, installed runtime, and package untouched",
+        "preserves": ["phase7c-evidence", "installed-package-bytes"],
+        "test_id": "phase7d-rollback-isolation"
+      }
+    ]
+  },
+  "invariants": [
+    {"id": "one-proof-owner", "statement": "7D extends the same traversal and terminal event map; no second search or authority owner exists", "test_id": "traversal-production-unreachable"},
+    {"id": "target-free-search", "statement": "target WordCenterId class and expected surface are not traversal inputs", "test_id": "target-search-separation"},
+    {"id": "exact-state-dominance", "statement": "states deduplicate only on complete two-operation program state and canonical recorded positions", "test_id": "state-order-parity"},
+    {"id": "two-substitutions-only", "statement": "double substitution consumes exactly two unequal observed-target pairs at distinct positions", "test_id": "tiny-terminal-certificate-parity"},
+    {"id": "two-omissions-only", "statement": "sparse multi-omission inserts exactly two target symbols at distinct positions", "test_id": "tiny-terminal-certificate-parity"},
+    {"id": "omission-transposition-product", "statement": "omission transposition contains exactly one target insertion and one adjacent transposition in either order and emits only after both complete", "test_id": "tiny-terminal-certificate-parity"},
+    {"id": "complete-7d-terminal-certificates", "statement": "all thirteen admitted families exactly match the independent direct oracle", "test_id": "tiny-terminal-certificate-parity"},
+    {"id": "phase7abc-nonregression", "statement": "the exact Phase 7A through 7C terminal and certificate maps remain unchanged under their scopes", "test_id": "prior-scope-parity"},
+    {"id": "fixed-family-target-recall", "statement": "the frozen thirteen-family matrix retains every target with its declared certificate", "test_id": "fixed-family-matrix"},
+    {"id": "package-byte-preservation", "statement": "the proof-only traversal cannot write or change package bytes", "test_id": "package-byte-parity"}
+  ],
+  "identity_contracts": [
+    {
+      "id": "typed-terminal-certificate-identity",
+      "producer": "one proof-only decoder edit-product traversal over Phase 6 primary terminal lists",
+      "consumer": "independent direct all-center bounded sequence oracle",
+      "comparison": "exact WordCenterId to canonical TypedCertificate set plus state-order-stable counters",
+      "test_id": "tiny-terminal-certificate-parity"
+    },
+    {
+      "id": "two-operation-order-identity",
+      "producer": "all legal temporal orders of the same two-operation traversal program",
+      "consumer": "canonical completed typed certificate set",
+      "comparison": "exact operation kinds and ascending target positions independent of traversal schedule",
+      "test_id": "state-order-parity"
+    }
+  ],
+  "runtime_comparisons": [],
+  "tests": [
+    {"id": "phase7d-rollback-isolation", "kind": "fault_injection", "expected": "a rejected 7D patch leaves Phase 7C evidence and installed package byte-identical"},
+    {"id": "traversal-production-unreachable", "kind": "integration", "expected": "normal runtime service daemon and peak_search contain no traversal import call switch or fallback"},
+    {"id": "target-search-separation", "kind": "integration", "expected": "labels are applied only after the terminal event map is complete"},
+    {"id": "state-order-parity", "kind": "parity", "expected": "forward reverse and deterministic permuted scheduling produce byte-identical terminal certificate maps and counters"},
+    {"id": "tiny-terminal-certificate-parity", "kind": "parity", "expected": "complete thirteen-family terminal and certificate mapping equals the independent direct oracle on exhaustive tiny queries"},
+    {"id": "prior-scope-parity", "kind": "parity", "expected": "Phase 7A through Phase 7C exhaustive projections remain exact after 7D extension"},
+    {"id": "fixed-family-matrix", "kind": "parity", "expected": "all fixed thirteen-family cases retain their target and declared certificate with exact denominators"},
+    {"id": "package-byte-parity", "kind": "parity", "expected": "package SHA-256 is unchanged before and after proof"}
+  ]
+}

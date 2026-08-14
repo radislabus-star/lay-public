@@ -1,6 +1,6 @@
 # L1.1 Exact Typed Peak Search: Detailed Refactoring Plan
 
-Status: Phases 0-6 and 7A-7C complete; Phase 7D is the next admitted boundary
+Status: Phases 0-7 complete; Phase 8 is the next admitted boundary
 Date: 2026-08-13  
 Scope: `src/nanda_wave/lexical_grokking/` only, plus proof tooling and owned documentation
 
@@ -2037,3 +2037,39 @@ The next action is Phase 7D: add exact double-substitution,
 sparse-multi-omission, and omission-plus-adjacent-transposition programs under
 the same owner. The final Phase 7 gate is exactly `13 x 20,000 = 260,000`
 cases with 100% target, certificate, and schedule parity.
+
+### Phase 7D accepted result - 2026-08-14
+
+Phase 7 is complete and remains proof-only. One exact typed traversal now covers
+all 13 fixed damage classes without target-string generation, queue truncation,
+case-specific runtime branches, package changes, or production reachability.
+Partial two-operation states cannot emit terminals; completed states preserve
+canonical operation kinds and target positions.
+
+The final fixed gate passed clean identity `852,582/852,582` and all
+`13 x 20,000 = 260,000` cases with complete target retention, typed certificate
+retention, and schedule parity. Wall time was `406.519 s`, average CPU
+`1,464%`, and peak RSS `602,632 KiB`. The exhaustive work reached state p99 near
+`12,000` and queue p99 near `4,080`, so it proves completeness but is not a
+production latency design. Phase 8 owns that bound/index problem.
+
+Prior 7A-7C scoped proofs, lexical `143/143`, authority `20/20`, mutation
+`15/15`, changed-tree, and Cargo budget gates remained PASS. The package hash
+remained
+`47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9`.
+
+The receipt also records a rejected remote invocation that lacked the
+`lexical-compiler` feature and entered legacy default training. It changed two
+remote developer artifacts but did not touch the local installed Lay, package,
+daemon, or IBus. The accepted proof required both the feature build and an
+explicit command-string check.
+
+```text
+/home/ubu/projects/lay-l1-exact-peak-search/docs/l1-l11-typed-edit-product-phase7.md
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_7D_2026-08-14/phase-7d.json
+/home/ubu/.cache/lay/l1-peak-search-phase7d-2026-08-14/phase7d.json
+```
+
+The next action is Phase 8: derive and prove conservative posting-block and
+typed-state envelopes over the unchanged V8 bytes. No production owner flip is
+admitted until soundness, feasibility, and later settlement parity pass.

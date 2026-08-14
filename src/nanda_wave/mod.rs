@@ -84,7 +84,7 @@ pub use lexical_grokking::{
 #[cfg(feature = "lexical-compiler")]
 pub use lexical_grokking::{
     prove_l1_forward_decoder_index, prove_l1_typed_edit_phase7a, prove_l1_typed_edit_phase7b,
-    prove_l1_typed_edit_phase7c,
+    prove_l1_typed_edit_phase7c, prove_l1_typed_edit_phase7d,
 };
 pub use mode::{Mode8, ModeRole, CELL32_BYTES, MODES_PER_CELL32};
 pub use morphology_phase::{

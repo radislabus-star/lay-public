@@ -46,6 +46,21 @@ const PHASE7C_CLASSES: [&str; 10] = [
     "non_adjacent_transposition",
     "repeated_fragment",
 ];
+const PHASE7D_CLASSES: [&str; 13] = [
+    "missing_letter",
+    "extra_letter",
+    "adjacent_transposition",
+    "letter_substitution",
+    "double_substitution",
+    "prefix_truncation",
+    "suffix_truncation",
+    "layout_projection",
+    "punctuation_suffix",
+    "non_adjacent_transposition",
+    "sparse_multi_omission",
+    "omission_transposition",
+    "repeated_fragment",
+];
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Serialize)]
 #[serde(rename_all = "snake_case")]
@@ -75,15 +90,20 @@ enum TraversalScope {
     Phase7A,
     Phase7B,
     Phase7C,
+    Phase7D,
 }
 
 impl TraversalScope {
     const fn admits_phase7b(self) -> bool {
-        matches!(self, Self::Phase7B | Self::Phase7C)
+        matches!(self, Self::Phase7B | Self::Phase7C | Self::Phase7D)
     }
 
     const fn admits_phase7c(self) -> bool {
-        matches!(self, Self::Phase7C)
+        matches!(self, Self::Phase7C | Self::Phase7D)
+    }
+
+    const fn admits_phase7d(self) -> bool {
+        matches!(self, Self::Phase7D)
     }
 }
 
@@ -177,6 +197,18 @@ enum TypedCertificate {
         source_target_start: u8,
         len: u8,
     },
+    DoubleSubstitution {
+        first: u8,
+        second: u8,
+    },
+    SparseMultiOmission {
+        first: u8,
+        second: u8,
+    },
+    OmissionTransposition {
+        omitted_target: u8,
+        transposed_target: u8,
+    },
 }
 
 impl TypedCertificate {
@@ -193,6 +225,9 @@ impl TypedCertificate {
             Self::AdjacentTransposition { .. } => "adjacent_transposition",
             Self::NonAdjacentTransposition { .. } => "non_adjacent_transposition",
             Self::RepeatedFragment { .. } => "repeated_fragment",
+            Self::DoubleSubstitution { .. } => "double_substitution",
+            Self::SparseMultiOmission { .. } => "sparse_multi_omission",
+            Self::OmissionTransposition { .. } => "omission_transposition",
         }
     }
 }
@@ -226,6 +261,30 @@ enum LexicalEditState {
     RepeatedFragment {
         input_start: u8,
         source_target_start: u8,
+    },
+    DoubleSubstitutionPending {
+        first: u8,
+    },
+    DoubleSubstitution {
+        first: u8,
+        second: u8,
+    },
+    SparseMultiOmissionPending {
+        first: u8,
+    },
+    SparseMultiOmission {
+        first: u8,
+        second: u8,
+    },
+    OmissionBeforeTransposition {
+        omitted_target: u8,
+    },
+    TranspositionBeforeOmission {
+        transposed_target: u8,
+    },
+    OmissionTransposition {
+        omitted_target: u8,
+        transposed_target: u8,
     },
 }
 
@@ -411,6 +470,119 @@ impl<'a> L1TypedEditTraversal<'a> {
             }
             return;
         }
+        if let LexicalEditState::DoubleSubstitutionPending { first } = edit {
+            let Some(observed_symbol) = observed else {
+                return;
+            };
+            let mut children = self.index.children(state.decoder_node).to_vec();
+            reorder_children(&mut children, schedule);
+            metrics.decoder_edges_examined += children.len() as u64;
+            for child in children
+                .into_iter()
+                .filter(|child| child.symbol != observed_symbol)
+            {
+                self.push_state(
+                    TraversalState {
+                        decoder_node: child.node_id,
+                        input_position: state.input_position + 1,
+                        target_depth: state.target_depth + 1,
+                        program: OperatorProgram::Lexical(
+                            LexicalEditState::DoubleSubstitution {
+                                first,
+                                second: state.target_depth,
+                            },
+                        ),
+                    },
+                    seen,
+                    next,
+                    metrics,
+                );
+            }
+            return;
+        }
+        if let LexicalEditState::SparseMultiOmissionPending { first } = edit {
+            let mut children = self.index.children(state.decoder_node).to_vec();
+            reorder_children(&mut children, schedule);
+            metrics.decoder_edges_examined += children.len() as u64;
+            for child in children {
+                self.push_state(
+                    TraversalState {
+                        decoder_node: child.node_id,
+                        input_position: state.input_position,
+                        target_depth: state.target_depth + 1,
+                        program: OperatorProgram::Lexical(
+                            LexicalEditState::SparseMultiOmission {
+                                first,
+                                second: state.target_depth,
+                            },
+                        ),
+                    },
+                    seen,
+                    next,
+                    metrics,
+                );
+            }
+            return;
+        }
+        if let LexicalEditState::OmissionBeforeTransposition { omitted_target } = edit {
+            if let (Some(first), Some(second)) = (
+                observed,
+                query
+                    .lexical_symbols
+                    .get(usize::from(state.input_position) + 1)
+                    .copied(),
+            ) {
+                if first != second {
+                    metrics.decoder_edges_examined += 1;
+                    if let Some(first_child) = self.index.child(state.decoder_node, second) {
+                        metrics.decoder_edges_examined += 1;
+                        if let Some(second_child) = self.index.child(first_child, first) {
+                            self.push_state(
+                                TraversalState {
+                                    decoder_node: second_child,
+                                    input_position: state.input_position + 2,
+                                    target_depth: state.target_depth + 2,
+                                    program: OperatorProgram::Lexical(
+                                        LexicalEditState::OmissionTransposition {
+                                            omitted_target,
+                                            transposed_target: state.target_depth,
+                                        },
+                                    ),
+                                },
+                                seen,
+                                next,
+                                metrics,
+                            );
+                        }
+                    }
+                }
+            }
+            return;
+        }
+        if let LexicalEditState::TranspositionBeforeOmission { transposed_target } = edit {
+            let mut children = self.index.children(state.decoder_node).to_vec();
+            reorder_children(&mut children, schedule);
+            metrics.decoder_edges_examined += children.len() as u64;
+            for child in children {
+                self.push_state(
+                    TraversalState {
+                        decoder_node: child.node_id,
+                        input_position: state.input_position,
+                        target_depth: state.target_depth + 1,
+                        program: OperatorProgram::Lexical(
+                            LexicalEditState::OmissionTransposition {
+                                omitted_target: state.target_depth,
+                                transposed_target,
+                            },
+                        ),
+                    },
+                    seen,
+                    next,
+                    metrics,
+                );
+            }
+            return;
+        }
         if edit != LexicalEditState::None {
             return;
         }
@@ -457,6 +629,23 @@ impl<'a> L1TypedEditTraversal<'a> {
                                 next,
                                 metrics,
                             );
+                            if scope.admits_phase7d() {
+                                self.push_state(
+                                    TraversalState {
+                                        decoder_node: second_child,
+                                        input_position: state.input_position + 2,
+                                        target_depth: state.target_depth + 2,
+                                        program: OperatorProgram::Lexical(
+                                            LexicalEditState::TranspositionBeforeOmission {
+                                                transposed_target: state.target_depth,
+                                            },
+                                        ),
+                                    },
+                                    seen,
+                                    next,
+                                    metrics,
+                                );
+                            }
                         }
                     }
                 }
@@ -499,6 +688,38 @@ impl<'a> L1TypedEditTraversal<'a> {
                 next,
                 metrics,
             );
+            if scope.admits_phase7d() {
+                self.push_state(
+                    TraversalState {
+                        decoder_node: child.node_id,
+                        input_position: state.input_position,
+                        target_depth: state.target_depth + 1,
+                        program: OperatorProgram::Lexical(
+                            LexicalEditState::SparseMultiOmissionPending {
+                                first: state.target_depth,
+                            },
+                        ),
+                    },
+                    seen,
+                    next,
+                    metrics,
+                );
+                self.push_state(
+                    TraversalState {
+                        decoder_node: child.node_id,
+                        input_position: state.input_position,
+                        target_depth: state.target_depth + 1,
+                        program: OperatorProgram::Lexical(
+                            LexicalEditState::OmissionBeforeTransposition {
+                                omitted_target: state.target_depth,
+                            },
+                        ),
+                    },
+                    seen,
+                    next,
+                    metrics,
+                );
+            }
             if scope.admits_phase7b() && observed.is_some_and(|symbol| symbol != child.symbol) {
                 self.push_state(
                     TraversalState {
@@ -513,6 +734,25 @@ impl<'a> L1TypedEditTraversal<'a> {
                     next,
                     metrics,
                 );
+                if scope.admits_phase7d()
+                    && usize::from(state.input_position) + 1 < query.lexical_symbols.len()
+                {
+                    self.push_state(
+                        TraversalState {
+                            decoder_node: child.node_id,
+                            input_position: state.input_position + 1,
+                            target_depth: state.target_depth + 1,
+                            program: OperatorProgram::Lexical(
+                                LexicalEditState::DoubleSubstitutionPending {
+                                    first: state.target_depth,
+                                },
+                            ),
+                        },
+                        seen,
+                        next,
+                        metrics,
+                    );
+                }
             }
             if let Some(observed_symbol) = observed.filter(|symbol| {
                 scope.admits_phase7c()
@@ -694,6 +934,27 @@ impl<'a> L1TypedEditTraversal<'a> {
                     len: 2,
                 });
             }
+            OperatorProgram::Lexical(LexicalEditState::DoubleSubstitution {
+                first,
+                second,
+            }) if scope.admits_phase7d() => {
+                certificates.insert(TypedCertificate::DoubleSubstitution { first, second });
+            }
+            OperatorProgram::Lexical(LexicalEditState::SparseMultiOmission {
+                first,
+                second,
+            }) if scope.admits_phase7d() => {
+                certificates.insert(TypedCertificate::SparseMultiOmission { first, second });
+            }
+            OperatorProgram::Lexical(LexicalEditState::OmissionTransposition {
+                omitted_target,
+                transposed_target,
+            }) if scope.admits_phase7d() => {
+                certificates.insert(TypedCertificate::OmissionTransposition {
+                    omitted_target,
+                    transposed_target,
+                });
+            }
             OperatorProgram::Layout {
                 direction,
                 changed: true,
@@ -762,8 +1023,30 @@ fn operator_program_key(program: OperatorProgram) -> u64 {
             input_start,
             source_target_start,
         }) => 7 | (u64::from(input_start) << 8) | (u64::from(source_target_start) << 16),
+        OperatorProgram::Lexical(LexicalEditState::DoubleSubstitutionPending { first }) => {
+            8 | (u64::from(first) << 8)
+        }
+        OperatorProgram::Lexical(LexicalEditState::DoubleSubstitution { first, second }) => {
+            9 | (u64::from(first) << 8) | (u64::from(second) << 16)
+        }
+        OperatorProgram::Lexical(LexicalEditState::SparseMultiOmissionPending { first }) => {
+            10 | (u64::from(first) << 8)
+        }
+        OperatorProgram::Lexical(LexicalEditState::SparseMultiOmission { first, second }) => {
+            11 | (u64::from(first) << 8) | (u64::from(second) << 16)
+        }
+        OperatorProgram::Lexical(LexicalEditState::OmissionBeforeTransposition {
+            omitted_target,
+        }) => 12 | (u64::from(omitted_target) << 8),
+        OperatorProgram::Lexical(LexicalEditState::TranspositionBeforeOmission {
+            transposed_target,
+        }) => 13 | (u64::from(transposed_target) << 8),
+        OperatorProgram::Lexical(LexicalEditState::OmissionTransposition {
+            omitted_target,
+            transposed_target,
+        }) => 14 | (u64::from(omitted_target) << 8) | (u64::from(transposed_target) << 16),
         OperatorProgram::Layout { direction, changed } => {
-            8 | ((direction as u64) << 8) | ((changed as u64) << 16)
+            15 | ((direction as u64) << 8) | ((changed as u64) << 16)
         }
     }
 }
@@ -828,6 +1111,38 @@ fn direct_typed_oracle(
                     }
                 }
             }
+            if scope.admits_phase7d() {
+                for transposed_target in 0..target.len().saturating_sub(1) {
+                    if target[transposed_target] == target[transposed_target + 1] {
+                        continue;
+                    }
+                    for omitted_target in 0..target.len() {
+                        if omitted_target == transposed_target
+                            || omitted_target == transposed_target + 1
+                        {
+                            continue;
+                        }
+                        let matches = (0..target.len())
+                            .filter(|position| *position != omitted_target)
+                            .map(|position| {
+                                if position == transposed_target {
+                                    target[transposed_target + 1]
+                                } else if position == transposed_target + 1 {
+                                    target[transposed_target]
+                                } else {
+                                    target[position]
+                                }
+                            })
+                            .eq(query.lexical_symbols.iter().copied());
+                        if matches {
+                            certificates.insert(TypedCertificate::OmissionTransposition {
+                                omitted_target: omitted_target as u8,
+                                transposed_target: transposed_target as u8,
+                            });
+                        }
+                    }
+                }
+            }
         }
         if scope.admits_phase7b() && query.lexical_symbols.len() == target.len() + 1 {
             for input_position in 0..query.lexical_symbols.len() {
@@ -858,6 +1173,14 @@ fn direct_typed_oracle(
                 certificates.insert(TypedCertificate::SingleSubstitution {
                     position: *position as u8,
                 });
+            }
+            if scope.admits_phase7d() {
+                if let [first, second] = mismatches.as_slice() {
+                    certificates.insert(TypedCertificate::DoubleSubstitution {
+                        first: *first as u8,
+                        second: *second as u8,
+                    });
+                }
             }
             if scope.admits_phase7c() {
                 if let [first, second] = mismatches.as_slice() {
@@ -920,6 +1243,25 @@ fn direct_typed_oracle(
                             input_start: input_start as u8,
                             source_target_start: source_target_start as u8,
                             len: 2,
+                        });
+                    }
+                }
+            }
+        }
+        if scope.admits_phase7d() && query.lexical_symbols.len() + 2 == target.len() {
+            for first in 0..target.len().saturating_sub(1) {
+                for second in first + 1..target.len() {
+                    if target
+                        .iter()
+                        .enumerate()
+                        .filter_map(|(position, symbol)| {
+                            (position != first && position != second).then_some(*symbol)
+                        })
+                        .eq(query.lexical_symbols.iter().copied())
+                    {
+                        certificates.insert(TypedCertificate::SparseMultiOmission {
+                            first: first as u8,
+                            second: second as u8,
                         });
                     }
                 }
@@ -1071,6 +1413,23 @@ pub fn prove_l1_typed_edit_phase7c(
         TraversalScope::Phase7C,
         &PHASE7C_CLASSES,
         "phase7c",
+    )
+}
+
+pub fn prove_l1_typed_edit_phase7d(
+    corpus_path: &Path,
+    package_path: &Path,
+    max_words: usize,
+    heldout_per_class: usize,
+) -> io::Result<serde_json::Value> {
+    prove_l1_typed_edit_phase(
+        corpus_path,
+        package_path,
+        max_words,
+        heldout_per_class,
+        TraversalScope::Phase7D,
+        &PHASE7D_CLASSES,
+        "phase7d",
     )
 }
 
@@ -1359,6 +1718,10 @@ mod tests {
         queries.into_iter().collect()
     }
 
+    fn phase7d_queries() -> Vec<String> {
+        phase7c_queries()
+    }
+
     #[test]
     fn phase7a_traversal_matches_independent_dense_oracle_exhaustively() {
         let package = tiny_package();
@@ -1553,6 +1916,85 @@ mod tests {
             let result = traversal.traverse(
                 &L1TypedQueryField::encode(raw).unwrap(),
                 TraversalScope::Phase7C,
+                TraversalSchedule::Forward,
+            );
+            assert!(
+                result
+                    .terminals
+                    .get(&9)
+                    .is_some_and(|certificates| certificates.contains(&expected)),
+                "query {raw:?} lacks {expected:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn phase7d_traversal_matches_independent_dense_oracle_exhaustively() {
+        let package = tiny_package();
+        let index = ForwardDecoderIndex::build(&package).unwrap();
+        let traversal = traversal(&package, &index);
+        for raw in phase7d_queries() {
+            let query = L1TypedQueryField::encode(&raw).unwrap();
+            let expected = direct_typed_oracle(&package, &query, TraversalScope::Phase7D).unwrap();
+            let actual =
+                traversal.traverse(&query, TraversalScope::Phase7D, TraversalSchedule::Forward);
+            assert_eq!(actual.terminals, expected, "query {raw:?}");
+        }
+    }
+
+    #[test]
+    fn phase7d_schedule_cannot_change_terminal_or_metric_bytes() {
+        let package = tiny_package();
+        let index = ForwardDecoderIndex::build(&package).unwrap();
+        let traversal = traversal(&package, &index);
+        for raw in phase7d_queries() {
+            let query = L1TypedQueryField::encode(&raw).unwrap();
+            let forward =
+                traversal.traverse(&query, TraversalScope::Phase7D, TraversalSchedule::Forward);
+            let reverse =
+                traversal.traverse(&query, TraversalScope::Phase7D, TraversalSchedule::Reverse);
+            let permuted = traversal.traverse(
+                &query,
+                TraversalScope::Phase7D,
+                TraversalSchedule::Permuted(0x7d11_c0de),
+            );
+            assert_eq!(forward, reverse, "reverse query {raw:?}");
+            assert_eq!(forward, permuted, "permuted query {raw:?}");
+        }
+    }
+
+    #[test]
+    fn phase7d_operator_witnesses_emit_exact_typed_certificates() {
+        let package = tiny_package();
+        let index = ForwardDecoderIndex::build(&package).unwrap();
+        let traversal = traversal(&package, &index);
+        let cases = [
+            (
+                "accbb",
+                TypedCertificate::DoubleSubstitution {
+                    first: 1,
+                    second: 3,
+                },
+            ),
+            (
+                "acb",
+                TypedCertificate::SparseMultiOmission {
+                    first: 1,
+                    second: 3,
+                },
+            ),
+            (
+                "bacb",
+                TypedCertificate::OmissionTransposition {
+                    omitted_target: 3,
+                    transposed_target: 0,
+                },
+            ),
+        ];
+        for (raw, expected) in cases {
+            let result = traversal.traverse(
+                &L1TypedQueryField::encode(raw).unwrap(),
+                TraversalScope::Phase7D,
                 TraversalSchedule::Forward,
             );
             assert!(
