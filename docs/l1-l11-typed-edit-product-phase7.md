@@ -1,6 +1,6 @@
 # L1.1 Phase 7: Typed Edit-Product Traversal Paper
 
-Status: Phases 7A-7B implemented and proven; Phases 7C-7D pending
+Status: Phases 7A-7C implemented and proven; Phase 7D pending
 Date: 2026-08-14
 Owner: proof-only `L1TypedEditTraversal` under `L1PeakSearch`
 
@@ -540,4 +540,67 @@ production latency, package representation, or deployment.
 ```text
 /home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_7B_2026-08-14/phase-7b.json
 /home/ubu/.cache/lay/l1-peak-search-phase7b-2026-08-14/phase7b.json
+```
+
+## 16. Phase 7C Measured Result
+
+Phase 7C extends the same proof-only `L1TypedEditTraversal`; it does not add a
+second search owner. Adjacent transposition is one exact two-symbol decoder
+transition. Non-adjacent transposition retains the first mismatch symbols and
+position, requires at least one exact intermediate match, cannot terminate
+while pending, and closes only on the inverse symbol relation. Repeated
+fragment consumes exactly two observed symbols without decoder movement only
+when the pair already occurs in the traversed decoder-prefix ancestor chain.
+No target surface is generated.
+
+The independent direct oracle recognizes the three relations from decoded tiny
+targets without calling traversal code. The tiny package preserves terminal IDs
+`0..8` and appends `WordCenterId 9 = abcab`. Exhaustive traversal/oracle map
+parity and forward/reverse/permuted scheduling parity passed `11/11`, covering
+all `a/b/c` queries through length `7`.
+
+The fixed full gate used the unchanged `852,582`-center V8 package:
+
+| Dimension | Measured |
+|---|---:|
+| clean dictionary round-trip | `852,582 / 852,582` |
+| clean identity retention | `852,582 / 852,582` |
+| classes | `10` |
+| cases per class | `20,000` |
+| target retention | `200,000 / 200,000` |
+| typed certificate retention | `200,000 / 200,000` |
+| schedule parity | `200,000 / 200,000` |
+| proof wall time | `30.530 s` |
+| average CPU | `1,303%` |
+| peak RSS | `600,604 KiB` |
+| generated target strings | `0` |
+| queue truncations | `0` |
+| package hash changed | `no` |
+
+For the new classes, expanded-state p99/max was `971/1,108` for adjacent
+transposition, `928/1,076` for non-adjacent transposition, and `981/1,378` for
+repeated fragment. Their queue p99 was `236` in all three classes; maximum
+queue peaks were `252`, `257`, and `257`. These are completeness-proof work
+counters, not production latency.
+
+Exact scoped Phase 7A and 7B full regressions remained PASS. Lexical regression
+passed `140/140`, transition authority `20/20`, mutation monopoly `15/15`, and
+changed-tree, formatting, diff, and Cargo budget gates passed. Package SHA-256
+before and after remained
+`47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9`.
+The Phase 7C evidence SHA-256 is
+`12adc8874e755096f1f8bc22f724317de4b87969a4a9e020641cf7e82a9f2a8d`.
+
+Tested: complete 7A-7C tiny terminal/certificate parity, all three new operator
+families, full ten-class target and certificate completeness, clean identity,
+schedule invariance, package immutability, resource counters, and
+production-source isolation. Not tested: Phase 7D two-operation families,
+complete 13-class typed traversal, posting-bound soundness, nonlinear
+settlement parity, production latency, package representation, or deployment.
+Runtime authority, installed package, daemon, and IBus remain unchanged.
+Training and crystallization runs remain zero.
+
+```text
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_7C_2026-08-14/phase-7c.json
+/home/ubu/.cache/lay/l1-peak-search-phase7c-2026-08-14/phase7c.json
 ```

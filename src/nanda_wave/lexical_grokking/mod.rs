@@ -66,7 +66,9 @@ pub use service::{
     L1ServiceStats,
 };
 #[cfg(feature = "lexical-compiler")]
-pub use typed_edit_traversal::{prove_l1_typed_edit_phase7a, prove_l1_typed_edit_phase7b};
+pub use typed_edit_traversal::{
+    prove_l1_typed_edit_phase7a, prove_l1_typed_edit_phase7b, prove_l1_typed_edit_phase7c,
+};
 pub use v8::{build_lazy_v8_package, build_lazy_v8_package_with_shard_size};
 
 #[cfg(test)]

@@ -1,0 +1,147 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "PASS",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": true,
+  "contract": "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_7C_2026-08-14/route-design.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "source_root": "/home/ubu/projects/lay-l1-exact-peak-search",
+  "node_count": 10,
+  "edge_count": 9,
+  "routes": [
+    {
+      "id": "typed-edit-7c-execution",
+      "event": "typed_edit_7c_proof",
+      "kind": "execution",
+      "entry": "proof_query",
+      "via": [],
+      "terminal": "terminal_event_map",
+      "path_count": 1,
+      "paths": [
+        [
+          "proof_query",
+          "typed_edit_traversal_7c",
+          "terminal_event_map"
+        ]
+      ],
+      "role_owners": {
+        "interface": [
+          "proof_query"
+        ],
+        "evidence_owner": [
+          "terminal_event_map"
+        ],
+        "orchestrator": [
+          "typed_edit_traversal_7c"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "proof_query",
+          "to": "typed_edit_traversal_7c",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "proof_query",
+              "typed_edit_traversal_7c"
+            ]
+          ]
+        },
+        {
+          "from": "typed_edit_traversal_7c",
+          "to": "terminal_event_map",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "typed_edit_traversal_7c",
+              "terminal_event_map"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "typed-edit-7c-proof",
+      "event": "typed_edit_7c_proof",
+      "kind": "proof",
+      "entry": "terminal_event_map",
+      "via": [],
+      "terminal": "terminal_certificate_parity",
+      "path_count": 1,
+      "paths": [
+        [
+          "terminal_event_map",
+          "terminal_certificate_parity"
+        ]
+      ],
+      "role_owners": {
+        "proof_owner": [
+          "terminal_certificate_parity"
+        ],
+        "evidence_owner": [
+          "terminal_event_map"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "typed-edit-7c-observation",
+      "event": "typed_edit_7c_proof",
+      "kind": "observation",
+      "entry": "terminal_certificate_parity",
+      "via": [],
+      "terminal": "phase7c_receipt",
+      "path_count": 1,
+      "paths": [
+        [
+          "terminal_certificate_parity",
+          "fixed_matrix_projection",
+          "phase7c_receipt"
+        ]
+      ],
+      "role_owners": {
+        "observer": [
+          "fixed_matrix_projection",
+          "phase7c_receipt"
+        ],
+        "proof_owner": [
+          "terminal_certificate_parity"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {},
+  "source_evidence": {
+    "expected": 0,
+    "verified": 0,
+    "complete": true
+  },
+  "issues": [],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": false,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

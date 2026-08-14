@@ -1,6 +1,6 @@
 # L1.1 Exact Typed Peak Search: Detailed Refactoring Plan
 
-Status: Phases 0-6 complete; Phase 7 is the next admitted boundary
+Status: Phases 0-6 and 7A-7C complete; Phase 7D is the next admitted boundary
 Date: 2026-08-13  
 Scope: `src/nanda_wave/lexical_grokking/` only, plus proof tooling and owned documentation
 
@@ -2007,3 +2007,33 @@ The next action is Phase 7C: add adjacent transposition, exact non-adjacent
 transposition, and repeated-fragment programs under the same traversal owner.
 The direct oracle must remain independent and the complete scoped 7A-7B maps
 must remain exact before the ten-family fixed gate.
+
+### Phase 7C accepted result - 2026-08-14
+
+Phase 7C is complete and remains proof-only. The same `L1TypedEditTraversal`
+now owns exact adjacent transposition, non-adjacent transposition with an
+explicit pending state and minimum one-symbol gap, and repeated-fragment
+recognition against the decoder-prefix ancestor chain. No second search route,
+generated target string, queue cutoff, package-format change, or runtime
+authority change was introduced.
+
+Independent exhaustive tiny-oracle and schedule-order gates passed `11/11`.
+On the unchanged full package, clean identity passed `852,582/852,582`; all ten
+fixed classes passed target retention, certificate recall, and schedule parity
+`20,000/20,000`, for `200,000/200,000` on every denominator. The run took
+`30.530 s`, averaged `1,303%` CPU, and peaked at `600,604 KiB` RSS. Exact scoped
+7A and 7B regressions, lexical `140/140`, authority `20/20`, mutation `15/15`,
+changed-tree, formatting, and Cargo budget gates remained PASS.
+
+Measured evidence and scope boundaries are recorded at:
+
+```text
+/home/ubu/projects/lay-l1-exact-peak-search/docs/l1-l11-typed-edit-product-phase7.md
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_7C_2026-08-14/phase-7c.json
+/home/ubu/.cache/lay/l1-peak-search-phase7c-2026-08-14/phase7c.json
+```
+
+The next action is Phase 7D: add exact double-substitution,
+sparse-multi-omission, and omission-plus-adjacent-transposition programs under
+the same owner. The final Phase 7 gate is exactly `13 x 20,000 = 260,000`
+cases with 100% target, certificate, and schedule parity.

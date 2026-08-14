@@ -968,6 +968,22 @@ fn main() -> io::Result<()> {
         );
         return Ok(());
     }
+    #[cfg(feature = "lexical-compiler")]
+    if let Some(corpus) = arg_path(&args, "--prove-l1-typed-edit-phase7c") {
+        let package = arg_path(&args, "--memory")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--memory is required"))?;
+        let report = lay::nanda_wave::prove_l1_typed_edit_phase7c(
+            &corpus,
+            &package,
+            arg_usize(&args, "--max-words").unwrap_or(0),
+            arg_usize(&args, "--heldout-per-class").unwrap_or(20_000),
+        )?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
     if let Some(corpus) = arg_path(&args, "--prove-l1-lexical-grokking-scale-package") {
         let package = arg_path(&args, "--memory")
             .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--memory is required"))?;
