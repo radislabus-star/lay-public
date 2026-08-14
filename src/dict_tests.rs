@@ -35,6 +35,22 @@ fn us_shift_punctuation_maps_to_physical_ru_letters() {
     assert_convert_fixture("shift_punctuation_ru_to_us");
 }
 
+#[test]
+fn scalar_projection_matches_string_conversion_for_mapped_and_unmapped_symbols() {
+    let symbols = (0_u32..=0x7f)
+        .chain(0x400..=0x4ff)
+        .filter_map(char::from_u32);
+    for direction in [Direction::Us2Ru, Direction::Ru2Us] {
+        for symbol in symbols.clone() {
+            let projected = convert(&symbol.to_string(), direction);
+            assert_eq!(
+                projected.chars().collect::<Vec<_>>(),
+                [project_char(symbol, direction)]
+            );
+        }
+    }
+}
+
 fn assert_convert_fixture(label: &str) {
     let row = fixture_row_by_id("dict_convert.tsv", label);
     assert_eq!(row.len(), 4, "dict convert fixture must be TSV");

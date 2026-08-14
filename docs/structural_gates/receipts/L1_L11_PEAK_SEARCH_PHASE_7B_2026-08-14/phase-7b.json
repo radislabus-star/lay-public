@@ -1,0 +1,185 @@
+{
+  "schema": "lay.l11.typed-edit-phase-receipt.v1",
+  "receipt": "L1_L11_PEAK_SEARCH_PHASE_7B_2026-08-14",
+  "date": "2026-08-14",
+  "phase": "7B",
+  "verdict": "PASS_EXACT_TYPED_SINGLE_EDIT_AND_LAYOUT_TRAVERSAL",
+  "implementation": {
+    "owner": "L1TypedEditTraversal",
+    "module": "src/nanda_wave/lexical_grokking/typed_edit_traversal.rs",
+    "module_lines": 1217,
+    "certificate_families": [
+      "identity",
+      "punctuation_suffix",
+      "prefix_truncation",
+      "suffix_truncation",
+      "missing_letter",
+      "extra_letter",
+      "letter_substitution",
+      "layout_projection"
+    ],
+    "traversal_scopes": ["phase7a", "phase7b"],
+    "deduplication": "exact_structural_state_equality",
+    "generated_candidate_strings": 0,
+    "queue_truncations": 0,
+    "runtime_case_rules": 0,
+    "production_route_changed": false,
+    "runtime_authority_changed": false,
+    "package_format_changed": false
+  },
+  "structural_gates": {
+    "route_design": "PASS",
+    "execution_paths": 1,
+    "proof_paths": 1,
+    "observation_paths": 1,
+    "authority_paths": 0,
+    "implementation_preflight": "READY_TO_IMPLEMENT",
+    "preflight_manifest_sha256": "fef59438647c66b5b29ec9b439dd13cebbf8e80921d52670f19ad3001dff9ecd"
+  },
+  "tiny_oracle": {
+    "tests": 8,
+    "passed": 8,
+    "original_terminal_ids_preserved": true,
+    "alphabet_symbols": 3,
+    "maximum_query_length": 4,
+    "layout_directions": 2,
+    "punctuation_layout_witness": true,
+    "terminal_map_parity": true,
+    "certificate_set_parity": true,
+    "forward_reverse_permuted_bytes_equal": true
+  },
+  "fixed_full_gate": {
+    "primary_centers": 852582,
+    "dictionary_roundtripped": 852582,
+    "clean_identity_cases": 852582,
+    "clean_identity_retained": 852582,
+    "classes": 7,
+    "cases_per_class": 20000,
+    "cases": 140000,
+    "target_retained": 140000,
+    "certificate_retained": 140000,
+    "schedule_parity": 140000,
+    "heldout_sha256": "0bfb31fd78172b9454114af89ac5ba75d59c6ab8b3766b3c5518917acd899312",
+    "artifact_sha256": "77ff6d137cf2db2e002cc1cdd376e85091b64ed32a7691d86dd575b9095a8dc3",
+    "remote_path": "/home/e/build/lay-l1-exact-phase2d-evidence/phase7b-2026-08-14/phase7b.json",
+    "local_cache_path": "/home/ubu/.cache/lay/l1-peak-search-phase7b-2026-08-14/phase7b.json"
+  },
+  "phase7a_regression": {
+    "clean_identity_retained": 852582,
+    "cases": 60000,
+    "target_retained": 60000,
+    "certificate_retained": 60000,
+    "schedule_parity": 60000,
+    "artifact_sha256": "3d9b32f32a77e218668fcf2921221e5299c4ee30b0bd38eb675e10ce8e157223"
+  },
+  "work_counters": {
+    "maximum_states_expanded": 810,
+    "maximum_queue_peak": 179,
+    "maximum_terminal_events": 150,
+    "missing_letter_states_p99": 650,
+    "extra_letter_states_p99": 656,
+    "substitution_states_p99": 639,
+    "layout_states_p99": 462
+  },
+  "resources": {
+    "wall_seconds": 15.395,
+    "average_cpu_percent": 1293,
+    "peak_rss_kib": 591976,
+    "workers": 20,
+    "cargo_target_bytes": 3990716416,
+    "cargo_target_budget_bytes": 12884901888
+  },
+  "immutable_inputs": {
+    "package_sha256_before": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+    "package_sha256_after": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+    "forward_index_fingerprint_sha256": "6141fc0f7795b3e388edcc7061485854a0ed2c8f1426ba8a80d2f278cf360e6e"
+  },
+  "source_sha256": {
+    "src/nanda_wave/lexical_grokking/typed_edit_traversal.rs": "8e5ed7e0cca561b832f604f9c66257fdad04f111765966fda800e6e22fa9c523",
+    "src/nanda_wave/lexical_grokking/forward_decoder_index.rs": "754ce19ad880ef869bdad6f961c10de504966d5bf4d4c54d92f5bf01f7e9cffb",
+    "src/nanda_wave/lexical_grokking/proof.rs": "77527fe80d268cd7f620586305164fd1c51f65305bfb13faa799121d49bbe148",
+    "src/nanda_wave/lexical_grokking/mod.rs": "f6d96353759d34f226f82efecdc3e5f5b7faf280d515b3a04834c55352bf7772",
+    "src/nanda_wave/mod.rs": "7c92dc80a09e2c12ba01ced5df296ab24b860fbe8316ab0988759e947a074a2f",
+    "src/bin/lay_nanda_wave_train.rs": "13ca04e1b1377b87b0d900dafe7b69a6d8e22a18ca98c8c1dcf242f19410b4e8",
+    "src/dict.rs": "615e7b04d6823fb158bef72963ce6b04fcaa5323723769e904e4e75d680fbaf4",
+    "src/dict_tests.rs": "fc2847e2f509939a1f8b62a96250334c662370dfd0469ab04680f0e2c9391da0"
+  },
+  "checks": [
+    {
+      "command": "remote scripts/cargo-guard.sh test typed_edit_traversal --lib -- --test-threads=20",
+      "result": "8 passed; 0 failed"
+    },
+    {
+      "command": "remote fixed Phase 7A 3 x 20000 regression proof",
+      "result": "PASS; 60000/60000 target, certificate, and schedule parity"
+    },
+    {
+      "command": "remote fixed Phase 7B 7 x 20000 proof",
+      "result": "PASS; 140000/140000 target, certificate, and schedule parity"
+    },
+    {
+      "command": "remote scripts/cargo-guard.sh test dict --lib -- --test-threads=20",
+      "result": "28 passed; 0 failed"
+    },
+    {
+      "command": "remote scripts/cargo-guard.sh test lexical_grokking --lib -- --test-threads=20",
+      "result": "137 passed; 0 failed"
+    },
+    {
+      "command": "remote scripts/cargo-guard.sh test --test typing_transition_authority_contract",
+      "result": "20 passed; 0 failed"
+    },
+    {
+      "command": "remote scripts/cargo-guard.sh test --test text_mutation_monopoly_contract",
+      "result": "15 passed; 0 failed"
+    },
+    {
+      "command": "remote scripts/cargo-guard.sh check --lib --bins and --features lexical-compiler",
+      "result": "PASS"
+    },
+    {
+      "command": "remote scripts/check-lay-changed.sh; fmt; diff; cargo budget",
+      "result": "PASS"
+    }
+  ],
+  "rejected_attempts": [
+    {
+      "scope": "first implementation preflight",
+      "failure": "seven declared forbidden effects lacked static source veto patterns",
+      "runtime_or_proof_executed": false,
+      "production_code_edited": false,
+      "contract_changed_to_repair": false,
+      "accepted_repeat": "READY_TO_IMPLEMENT"
+    }
+  ],
+  "tested": [
+    "complete scoped Phase 7A and Phase 7B tiny-oracle map parity",
+    "interior target insertion, input deletion, generic substitution, and exact layout projection",
+    "forward reverse and permuted scheduling parity",
+    "fixed real-package target and certificate retention for seven classes",
+    "complete clean dictionary and identity round-trip",
+    "resource counters and package byte identity",
+    "production-source isolation and normal regression contracts"
+  ],
+  "not_tested": [
+    "Phase 7C and 7D composite operator families",
+    "complete 13-class typed traversal",
+    "posting bound soundness or feasibility",
+    "exact nonlinear settlement parity",
+    "optimized production latency",
+    "package representation or deployment"
+  ],
+  "claim_boundary": {
+    "phase7a_proof_complete": true,
+    "phase7b_proof_complete": true,
+    "all_phase7_operators_complete": false,
+    "optimized_exact_search_proven": false,
+    "runtime_authority_changed": false,
+    "installed_runtime_changed": false,
+    "installed_package_changed": false,
+    "daemon_or_ibus_restarted": false,
+    "training_runs": 0,
+    "crystallization_runs": 0
+  },
+  "next_action": "Phase 7C: add adjacent transposition, non-adjacent transposition, and repeated-fragment programs under the same traversal owner."
+}

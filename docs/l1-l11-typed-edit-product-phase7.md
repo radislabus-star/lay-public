@@ -1,6 +1,6 @@
 # L1.1 Phase 7: Typed Edit-Product Traversal Paper
 
-Status: Phase 7A implemented and proven; Phases 7B-7D pending
+Status: Phases 7A-7B implemented and proven; Phases 7C-7D pending
 Date: 2026-08-14
 Owner: proof-only `L1TypedEditTraversal` under `L1PeakSearch`
 
@@ -446,4 +446,98 @@ settlement parity, production latency, package representation, or deployment.
 ```text
 /home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_7A_2026-08-14/phase-7a.json
 /home/ubu/.cache/lay/l1-peak-search-phase7a-2026-08-14/full-3x20000.json
+```
+
+## 15. Phase 7B Measured Result
+
+Phase 7B extends the same proof-only `L1TypedEditTraversal`; it does not add a
+second search owner. The lexical program now has exact `None`,
+`TargetInsertion`, `InputDeletion`, and `Substitution` states. The separate raw
+observation lane has one all-symbol `Layout` program with an explicit direction
+and a `changed` bit. Both programs terminate into the same map:
+
+```text
+normalized lexical symbols ─> LexicalEditState ─┐
+                                                ├─> WordCenterId -> TypedCertificate set
+raw unstripped symbols ──────> Layout state ─────┘
+```
+
+The traversal scope is explicit. `Phase7A` admits only the previously proven
+identity and one-target-insertion behavior; `Phase7B` admits the four additional
+families. This prevents later operators from silently changing the accepted 7A
+proof surface. Scalar keyboard projection is shared with `dict::convert`, so
+the proof lane does not carry a second layout table.
+
+The admitted completed certificate families are now:
+
+```text
+Identity                 PunctuationSuffix
+PrefixTruncation         SuffixTruncation
+MissingLetter            ExtraLetter
+SingleSubstitution       KeyboardLayout
+```
+
+The independent direct oracle was extended without calling traversal code. It
+decodes every tiny-package target, derives insertion, deletion, substitution,
+and all-symbol layout relations directly, and compares the complete terminal
+map and certificate sets. The tiny package preserves the original six terminal
+IDs and appends Russian layout witnesses. Exhaustive 7A/7B oracle parity,
+forward/reverse/permuted scheduling parity, source isolation, lane preservation,
+and explicit operator witnesses passed `8/8`.
+
+The fixed full gate used the same unchanged `852,582`-center V8 package:
+
+| Dimension | Measured |
+|---|---:|
+| clean dictionary round-trip | `852,582 / 852,582` |
+| clean identity retention | `852,582 / 852,582` |
+| classes | `7` |
+| cases per class | `20,000` |
+| target retention | `140,000 / 140,000` |
+| typed certificate retention | `140,000 / 140,000` |
+| schedule parity | `140,000 / 140,000` |
+| proof wall time | `15.395 s` |
+| average CPU | `1,293%` |
+| peak RSS | `591,976 KiB` |
+| generated target strings | `0` |
+| queue truncations | `0` |
+| package hash changed | `no` |
+
+Maximum measured work was `810` expanded states, queue peak `179`, and `150`
+unique WordCenter certificate events. Expanded-state p99 by new class was `650`
+for missing letter, `656` for extra letter, `639` for substitution, and `462`
+for layout projection. These are proof work counters, not production latency.
+
+The exact Phase 7A scoped full gate was rerun after the extension and remained
+PASS: clean identity `852,582/852,582`, all three classes `20,000/20,000`, and
+exact target/certificate/schedule parity. The package SHA-256 before and after
+both gates remained
+`47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9`.
+The Phase 7B full evidence SHA-256 is
+`77ff6d137cf2db2e002cc1cdd376e85091b64ed32a7691d86dd575b9095a8dc3`.
+
+Lexical regression passed `137/137`, transition authority `20/20`, mutation
+monopoly `15/15`, dictionary/layout tests `28/28`, default and feature compile,
+changed-tree, formatting, diff, and Cargo disk-budget gates. Runtime authority,
+package format, installed package, daemon, and IBus remain unchanged. Training
+and crystallization runs remain zero.
+
+The first Phase 7B implementation preflight correctly returned
+`BLOCKED_BEFORE_CODE`: seven declared forbidden effects lacked static source
+tripwires. Only those checks were added to the paper manifest; the repeated
+preflight returned `READY_TO_IMPLEMENT` with manifest SHA-256
+`fef59438647c66b5b29ec9b439dd13cebbf8e80921d52670f19ad3001dff9ecd`.
+No production code was edited while the gate was blocked.
+
+Tested: complete 7A-7B tiny-oracle terminal/certificate parity, all four new
+operator families, both layout directions including punctuation keys, full
+seven-class target and certificate completeness, clean identity, schedule
+invariance, package immutability, resource counters, and production-source
+isolation. Not tested: Phase 7C-7D composite operators, complete 13-class typed
+traversal, posting-bound soundness, exact nonlinear settlement parity,
+production latency, package representation, or deployment.
+
+```text
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_7B_2026-08-14/phase-7b.json
+/home/ubu/.cache/lay/l1-peak-search-phase7b-2026-08-14/phase7b.json
 ```

@@ -1977,3 +1977,33 @@ The next action is Phase 7B: extend the same owner with interior target
 insertion, input deletion, generic one-symbol substitution, and all-symbol exact
 layout projection. It must retain the accepted 7A families and pass complete
 tiny terminal/certificate parity before the fixed seven-family gate.
+
+### Phase 7B accepted result - 2026-08-14
+
+Phase 7B is complete and remains proof-only. The same `L1TypedEditTraversal`
+now owns exact lexical insertion, input deletion, substitution, and all-symbol
+keyboard-layout programs. A scoped Phase 7A route remains available and was
+rerun unchanged; the new raw-layout lane and lexical program merge into one
+terminal certificate map rather than two candidate routes.
+
+Independent exhaustive tiny-oracle and scheduling gates passed `8/8`. On the
+unchanged full package, clean identity passed `852,582/852,582`; all seven fixed
+classes passed target retention, certificate recall, and schedule parity
+`20,000/20,000`, for `140,000/140,000` on every denominator. The run took
+`15.395 s`, averaged `1,293%` CPU, and peaked at `591,976 KiB` RSS. It generated
+no target strings, truncated no queues, changed no package bytes, and did not
+change runtime authority. Lexical regression is now `137/137`; authority
+`20/20`, mutation `15/15`, and changed-tree gates remain PASS.
+
+Measured evidence and scope boundaries are recorded at:
+
+```text
+/home/ubu/projects/lay-l1-exact-peak-search/docs/l1-l11-typed-edit-product-phase7.md
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_7B_2026-08-14/phase-7b.json
+/home/ubu/.cache/lay/l1-peak-search-phase7b-2026-08-14/phase7b.json
+```
+
+The next action is Phase 7C: add adjacent transposition, exact non-adjacent
+transposition, and repeated-fragment programs under the same traversal owner.
+The direct oracle must remain independent and the complete scoped 7A-7B maps
+must remain exact before the ten-family fixed gate.

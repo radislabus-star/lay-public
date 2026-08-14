@@ -82,7 +82,9 @@ pub use lexical_grokking::{
     ScaleTrainingSurfacePolicy,
 };
 #[cfg(feature = "lexical-compiler")]
-pub use lexical_grokking::{prove_l1_forward_decoder_index, prove_l1_typed_edit_phase7a};
+pub use lexical_grokking::{
+    prove_l1_forward_decoder_index, prove_l1_typed_edit_phase7a, prove_l1_typed_edit_phase7b,
+};
 pub use mode::{Mode8, ModeRole, CELL32_BYTES, MODES_PER_CELL32};
 pub use morphology_phase::{
     run_embedded_russian_morphology_proof, run_russian_morphology_proof_path,

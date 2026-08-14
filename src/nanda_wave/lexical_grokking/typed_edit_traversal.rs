@@ -9,6 +9,8 @@ use std::time::Instant;
 use serde::Serialize;
 use sha2::{Digest, Sha256};
 
+use crate::dict::{detect_direction, project_char, Direction};
+
 use super::atoms::normalize_lexical_surface;
 use super::format;
 use super::forward_decoder_index::{file_sha256, ForwardChild, ForwardDecoderIndex};
@@ -23,11 +25,56 @@ const PHASE7A_CLASSES: [&str; 3] = [
     "suffix_truncation",
     "punctuation_suffix",
 ];
+const PHASE7B_CLASSES: [&str; 7] = [
+    "missing_letter",
+    "extra_letter",
+    "letter_substitution",
+    "prefix_truncation",
+    "suffix_truncation",
+    "layout_projection",
+    "punctuation_suffix",
+];
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Serialize)]
+#[serde(rename_all = "snake_case")]
+enum LayoutDirection {
+    UsToRu,
+    RuToUs,
+}
+
+impl LayoutDirection {
+    fn from_raw(raw: &str) -> Self {
+        match detect_direction(raw) {
+            Direction::Us2Ru => Self::UsToRu,
+            Direction::Ru2Us => Self::RuToUs,
+        }
+    }
+
+    const fn as_dict_direction(self) -> Direction {
+        match self {
+            Self::UsToRu => Direction::Us2Ru,
+            Self::RuToUs => Direction::Ru2Us,
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+enum TraversalScope {
+    Phase7A,
+    Phase7B,
+}
+
+impl TraversalScope {
+    const fn admits_phase7b(self) -> bool {
+        matches!(self, Self::Phase7B)
+    }
+}
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 struct L1TypedQueryField {
     lexical_symbols: Box<[u32]>,
     raw_layout_symbols: Box<[u32]>,
+    layout_direction: LayoutDirection,
     leading_punctuation_len: u8,
     trailing_punctuation_start: u8,
     trailing_punctuation_len: u8,
@@ -50,6 +97,7 @@ impl L1TypedQueryField {
         let as_u8 = |value: usize, name: &str| {
             u8::try_from(value).map_err(|_| format!("{name} exceeds the typed query limit"))
         };
+        let layout_direction = LayoutDirection::from_raw(&raw);
         Ok(Self {
             lexical_symbols: normalize_lexical_surface(&raw)
                 .chars()
@@ -59,6 +107,7 @@ impl L1TypedQueryField {
                 .into_iter()
                 .map(|character| character as u32)
                 .collect(),
+            layout_direction,
             leading_punctuation_len: as_u8(leading_punctuation_len, "leading punctuation")?,
             trailing_punctuation_start: as_u8(
                 trailing_punctuation_start,
@@ -80,6 +129,10 @@ enum TypedCertificate {
     PunctuationSuffix { raw_start: u8, raw_len: u8 },
     PrefixTruncation { target_position: u8 },
     SuffixTruncation { target_position: u8 },
+    MissingLetter { target_position: u8 },
+    ExtraLetter { input_position: u8 },
+    SingleSubstitution { position: u8 },
+    KeyboardLayout { direction: LayoutDirection },
 }
 
 impl TypedCertificate {
@@ -89,6 +142,10 @@ impl TypedCertificate {
             Self::PunctuationSuffix { .. } => "punctuation_suffix",
             Self::PrefixTruncation { .. } => "prefix_truncation",
             Self::SuffixTruncation { .. } => "suffix_truncation",
+            Self::MissingLetter { .. } => "missing_letter",
+            Self::ExtraLetter { .. } => "extra_letter",
+            Self::SingleSubstitution { .. } => "letter_substitution",
+            Self::KeyboardLayout { .. } => "layout_projection",
         }
     }
 }
@@ -96,11 +153,28 @@ impl TypedCertificate {
 type TerminalEvents = BTreeMap<u32, BTreeSet<TypedCertificate>>;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+enum LexicalEditState {
+    None,
+    TargetInsertion { target_position: u8 },
+    InputDeletion { input_position: u8 },
+    Substitution { position: u8 },
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+enum OperatorProgram {
+    Lexical(LexicalEditState),
+    Layout {
+        direction: LayoutDirection,
+        changed: bool,
+    },
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 struct TraversalState {
     decoder_node: u32,
     input_position: u8,
     target_depth: u8,
-    inserted_target_position: Option<u8>,
+    program: OperatorProgram,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -134,19 +208,35 @@ struct L1TypedEditTraversal<'a> {
 }
 
 impl<'a> L1TypedEditTraversal<'a> {
-    fn traverse(&self, query: &L1TypedQueryField, schedule: TraversalSchedule) -> TraversalResult {
-        let root = TraversalState {
+    fn traverse(
+        &self,
+        query: &L1TypedQueryField,
+        scope: TraversalScope,
+        schedule: TraversalSchedule,
+    ) -> TraversalResult {
+        let lexical_root = TraversalState {
             decoder_node: 0,
             input_position: 0,
             target_depth: 0,
-            inserted_target_position: None,
+            program: OperatorProgram::Lexical(LexicalEditState::None),
         };
-        let mut seen = BTreeSet::from([root]);
-        let mut frontier = vec![root];
+        let mut frontier = vec![lexical_root];
+        if scope.admits_phase7b() {
+            frontier.push(TraversalState {
+                decoder_node: 0,
+                input_position: 0,
+                target_depth: 0,
+                program: OperatorProgram::Layout {
+                    direction: query.layout_direction,
+                    changed: false,
+                },
+            });
+        }
+        let mut seen = frontier.iter().copied().collect::<BTreeSet<_>>();
         let mut terminals = TerminalEvents::new();
         let mut metrics = TraversalMetrics {
-            states_generated: 1,
-            queue_peak: 1,
+            states_generated: frontier.len() as u64,
+            queue_peak: frontier.len(),
             ..TraversalMetrics::default()
         };
 
@@ -155,43 +245,27 @@ impl<'a> L1TypedEditTraversal<'a> {
             let mut next = BTreeSet::new();
             for state in frontier.drain(..) {
                 metrics.states_expanded += 1;
-                self.record_terminal_events(query, state, &mut terminals, &mut metrics);
-
-                if let Some(&symbol) = query.lexical_symbols.get(usize::from(state.input_position))
-                {
-                    metrics.decoder_edges_examined += 1;
-                    if let Some(child) = self.index.child(state.decoder_node, symbol) {
-                        self.push_state(
-                            TraversalState {
-                                decoder_node: child,
-                                input_position: state.input_position + 1,
-                                target_depth: state.target_depth + 1,
-                                inserted_target_position: state.inserted_target_position,
-                            },
-                            &mut seen,
-                            &mut next,
-                            &mut metrics,
-                        );
-                    }
-                }
-
-                if state.inserted_target_position.is_none() {
-                    let mut children = self.index.children(state.decoder_node).to_vec();
-                    reorder_children(&mut children, schedule);
-                    metrics.decoder_edges_examined += children.len() as u64;
-                    for child in children {
-                        self.push_state(
-                            TraversalState {
-                                decoder_node: child.node_id,
-                                input_position: state.input_position,
-                                target_depth: state.target_depth + 1,
-                                inserted_target_position: Some(state.target_depth),
-                            },
-                            &mut seen,
-                            &mut next,
-                            &mut metrics,
-                        );
-                    }
+                self.record_terminal_events(query, scope, state, &mut terminals, &mut metrics);
+                match state.program {
+                    OperatorProgram::Lexical(edit) => self.advance_lexical(
+                        query,
+                        scope,
+                        schedule,
+                        state,
+                        edit,
+                        &mut seen,
+                        &mut next,
+                        &mut metrics,
+                    ),
+                    OperatorProgram::Layout { direction, changed } => self.advance_layout(
+                        query,
+                        state,
+                        direction,
+                        changed,
+                        &mut seen,
+                        &mut next,
+                        &mut metrics,
+                    ),
                 }
             }
             frontier.extend(next);
@@ -201,6 +275,133 @@ impl<'a> L1TypedEditTraversal<'a> {
         metrics.unique_wordcenter_ids = terminals.len();
         metrics.certificates_emitted = terminals.values().map(BTreeSet::len).sum();
         TraversalResult { terminals, metrics }
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn advance_lexical(
+        &self,
+        query: &L1TypedQueryField,
+        scope: TraversalScope,
+        schedule: TraversalSchedule,
+        state: TraversalState,
+        edit: LexicalEditState,
+        seen: &mut BTreeSet<TraversalState>,
+        next: &mut BTreeSet<TraversalState>,
+        metrics: &mut TraversalMetrics,
+    ) {
+        let observed = query
+            .lexical_symbols
+            .get(usize::from(state.input_position))
+            .copied();
+        if let Some(symbol) = observed {
+            metrics.decoder_edges_examined += 1;
+            if let Some(child) = self.index.child(state.decoder_node, symbol) {
+                self.push_state(
+                    TraversalState {
+                        decoder_node: child,
+                        input_position: state.input_position + 1,
+                        target_depth: state.target_depth + 1,
+                        program: OperatorProgram::Lexical(edit),
+                    },
+                    seen,
+                    next,
+                    metrics,
+                );
+            }
+        }
+
+        if edit != LexicalEditState::None {
+            return;
+        }
+        if scope.admits_phase7b() && observed.is_some() {
+            self.push_state(
+                TraversalState {
+                    decoder_node: state.decoder_node,
+                    input_position: state.input_position + 1,
+                    target_depth: state.target_depth,
+                    program: OperatorProgram::Lexical(LexicalEditState::InputDeletion {
+                        input_position: state.input_position,
+                    }),
+                },
+                seen,
+                next,
+                metrics,
+            );
+        }
+
+        let mut children = self.index.children(state.decoder_node).to_vec();
+        reorder_children(&mut children, schedule);
+        metrics.decoder_edges_examined += children.len() as u64;
+        for child in children {
+            self.push_state(
+                TraversalState {
+                    decoder_node: child.node_id,
+                    input_position: state.input_position,
+                    target_depth: state.target_depth + 1,
+                    program: OperatorProgram::Lexical(LexicalEditState::TargetInsertion {
+                        target_position: state.target_depth,
+                    }),
+                },
+                seen,
+                next,
+                metrics,
+            );
+            if scope.admits_phase7b() && observed.is_some_and(|symbol| symbol != child.symbol) {
+                self.push_state(
+                    TraversalState {
+                        decoder_node: child.node_id,
+                        input_position: state.input_position + 1,
+                        target_depth: state.target_depth + 1,
+                        program: OperatorProgram::Lexical(LexicalEditState::Substitution {
+                            position: state.target_depth,
+                        }),
+                    },
+                    seen,
+                    next,
+                    metrics,
+                );
+            }
+        }
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn advance_layout(
+        &self,
+        query: &L1TypedQueryField,
+        state: TraversalState,
+        direction: LayoutDirection,
+        changed: bool,
+        seen: &mut BTreeSet<TraversalState>,
+        next: &mut BTreeSet<TraversalState>,
+        metrics: &mut TraversalMetrics,
+    ) {
+        let Some(&raw_symbol) = query
+            .raw_layout_symbols
+            .get(usize::from(state.input_position))
+        else {
+            return;
+        };
+        let Some(raw_character) = char::from_u32(raw_symbol) else {
+            return;
+        };
+        let projected = project_char(raw_character, direction.as_dict_direction()) as u32;
+        metrics.decoder_edges_examined += 1;
+        if let Some(child) = self.index.child(state.decoder_node, projected) {
+            self.push_state(
+                TraversalState {
+                    decoder_node: child,
+                    input_position: state.input_position + 1,
+                    target_depth: state.target_depth + 1,
+                    program: OperatorProgram::Layout {
+                        direction,
+                        changed: changed || projected != raw_symbol,
+                    },
+                },
+                seen,
+                next,
+                metrics,
+            );
+        }
     }
 
     fn push_state(
@@ -221,11 +422,16 @@ impl<'a> L1TypedEditTraversal<'a> {
     fn record_terminal_events(
         &self,
         query: &L1TypedQueryField,
+        scope: TraversalScope,
         state: TraversalState,
         terminals: &mut TerminalEvents,
         metrics: &mut TraversalMetrics,
     ) {
-        if usize::from(state.input_position) != query.lexical_symbols.len() {
+        let input_len = match state.program {
+            OperatorProgram::Lexical(_) => query.lexical_symbols.len(),
+            OperatorProgram::Layout { .. } => query.raw_layout_symbols.len(),
+        };
+        if usize::from(state.input_position) != input_len {
             return;
         }
         let center_ids = self.index.terminals(state.decoder_node);
@@ -233,8 +439,8 @@ impl<'a> L1TypedEditTraversal<'a> {
             return;
         }
         let mut certificates = BTreeSet::new();
-        match state.inserted_target_position {
-            None => {
+        match state.program {
+            OperatorProgram::Lexical(LexicalEditState::None) => {
                 certificates.insert(TypedCertificate::Identity);
                 if query.trailing_punctuation_len > 0 {
                     certificates.insert(TypedCertificate::PunctuationSuffix {
@@ -243,13 +449,33 @@ impl<'a> L1TypedEditTraversal<'a> {
                     });
                 }
             }
-            Some(target_position) if target_position == 0 => {
+            OperatorProgram::Lexical(LexicalEditState::TargetInsertion { target_position: 0 }) => {
+                let target_position = 0;
                 certificates.insert(TypedCertificate::PrefixTruncation { target_position });
             }
-            Some(target_position) if target_position + 1 == state.target_depth => {
+            OperatorProgram::Lexical(LexicalEditState::TargetInsertion { target_position })
+                if target_position + 1 == state.target_depth =>
+            {
                 certificates.insert(TypedCertificate::SuffixTruncation { target_position });
             }
-            Some(_) => {}
+            OperatorProgram::Lexical(LexicalEditState::TargetInsertion { target_position })
+                if scope.admits_phase7b() =>
+            {
+                certificates.insert(TypedCertificate::MissingLetter { target_position });
+            }
+            OperatorProgram::Lexical(LexicalEditState::InputDeletion { input_position }) => {
+                certificates.insert(TypedCertificate::ExtraLetter { input_position });
+            }
+            OperatorProgram::Lexical(LexicalEditState::Substitution { position }) => {
+                certificates.insert(TypedCertificate::SingleSubstitution { position });
+            }
+            OperatorProgram::Layout {
+                direction,
+                changed: true,
+            } => {
+                certificates.insert(TypedCertificate::KeyboardLayout { direction });
+            }
+            _ => {}
         }
         if certificates.is_empty() {
             return;
@@ -273,9 +499,28 @@ fn reorder_states(states: &mut [TraversalState], schedule: TraversalSchedule) {
             permutation_key(
                 seed ^ u64::from(state.decoder_node)
                     ^ u64::from(state.input_position).rotate_left(17)
-                    ^ u64::from(state.target_depth).rotate_left(31),
+                    ^ u64::from(state.target_depth).rotate_left(31)
+                    ^ operator_program_key(state.program).rotate_left(43),
             )
         }),
+    }
+}
+
+fn operator_program_key(program: OperatorProgram) -> u64 {
+    match program {
+        OperatorProgram::Lexical(LexicalEditState::None) => 0,
+        OperatorProgram::Lexical(LexicalEditState::TargetInsertion { target_position }) => {
+            1 | (u64::from(target_position) << 8)
+        }
+        OperatorProgram::Lexical(LexicalEditState::InputDeletion { input_position }) => {
+            2 | (u64::from(input_position) << 8)
+        }
+        OperatorProgram::Lexical(LexicalEditState::Substitution { position }) => {
+            3 | (u64::from(position) << 8)
+        }
+        OperatorProgram::Layout { direction, changed } => {
+            4 | ((direction as u64) << 8) | ((changed as u64) << 16)
+        }
     }
 }
 
@@ -299,9 +544,10 @@ fn permutation_key(mut value: u64) -> u64 {
     value ^ (value >> 31)
 }
 
-fn direct_phase7a_oracle(
+fn direct_typed_oracle(
     package: &LexicalGrokkingPackage,
     query: &L1TypedQueryField,
+    scope: TraversalScope,
 ) -> Result<TerminalEvents, String> {
     let mut events = TerminalEvents::new();
     for (center_id, center) in package.centers.iter().copied().enumerate() {
@@ -333,8 +579,62 @@ fn direct_phase7a_oracle(
                         certificates.insert(TypedCertificate::PrefixTruncation { target_position });
                     } else if usize::from(target_position) + 1 == target.len() {
                         certificates.insert(TypedCertificate::SuffixTruncation { target_position });
+                    } else if scope.admits_phase7b() {
+                        certificates.insert(TypedCertificate::MissingLetter { target_position });
                     }
                 }
+            }
+        }
+        if scope.admits_phase7b() && query.lexical_symbols.len() == target.len() + 1 {
+            for input_position in 0..query.lexical_symbols.len() {
+                if query
+                    .lexical_symbols
+                    .iter()
+                    .enumerate()
+                    .filter_map(|(index, symbol)| (index != input_position).then_some(*symbol))
+                    .eq(target.iter().copied())
+                {
+                    certificates.insert(TypedCertificate::ExtraLetter {
+                        input_position: input_position as u8,
+                    });
+                }
+            }
+        }
+        if scope.admits_phase7b() && query.lexical_symbols.len() == target.len() {
+            let mismatches = query
+                .lexical_symbols
+                .iter()
+                .zip(&target)
+                .enumerate()
+                .filter_map(|(position, (observed, expected))| {
+                    (observed != expected).then_some(position)
+                })
+                .collect::<Vec<_>>();
+            if let [position] = mismatches.as_slice() {
+                certificates.insert(TypedCertificate::SingleSubstitution {
+                    position: *position as u8,
+                });
+            }
+        }
+        if scope.admits_phase7b() && query.raw_layout_symbols.len() == target.len() {
+            let direction = query.layout_direction;
+            let mut changed = false;
+            let projected_matches =
+                query
+                    .raw_layout_symbols
+                    .iter()
+                    .zip(&target)
+                    .all(|(raw, expected)| {
+                        let Some(raw_character) = char::from_u32(*raw) else {
+                            return false;
+                        };
+                        let projected =
+                            project_char(raw_character, direction.as_dict_direction()) as u32;
+                        changed |= projected != *raw;
+                        projected == *expected
+                    });
+            if projected_matches && changed {
+                certificates.insert(TypedCertificate::KeyboardLayout { direction });
             }
         }
         if !certificates.is_empty() {
@@ -441,6 +741,43 @@ pub fn prove_l1_typed_edit_phase7a(
     max_words: usize,
     heldout_per_class: usize,
 ) -> io::Result<serde_json::Value> {
+    prove_l1_typed_edit_phase(
+        corpus_path,
+        package_path,
+        max_words,
+        heldout_per_class,
+        TraversalScope::Phase7A,
+        &PHASE7A_CLASSES,
+        "phase7a",
+    )
+}
+
+pub fn prove_l1_typed_edit_phase7b(
+    corpus_path: &Path,
+    package_path: &Path,
+    max_words: usize,
+    heldout_per_class: usize,
+) -> io::Result<serde_json::Value> {
+    prove_l1_typed_edit_phase(
+        corpus_path,
+        package_path,
+        max_words,
+        heldout_per_class,
+        TraversalScope::Phase7B,
+        &PHASE7B_CLASSES,
+        "phase7b",
+    )
+}
+
+fn prove_l1_typed_edit_phase(
+    corpus_path: &Path,
+    package_path: &Path,
+    max_words: usize,
+    heldout_per_class: usize,
+    traversal_scope: TraversalScope,
+    proof_classes: &[&'static str],
+    phase_name: &'static str,
+) -> io::Result<serde_json::Value> {
     let started = Instant::now();
     let package_sha256_before = file_sha256(package_path)?;
     let words = corpus_words_from_lines(&std::fs::read_to_string(corpus_path)?, max_words);
@@ -481,7 +818,8 @@ pub fn prove_l1_typed_edit_phase7a(
                             format::decode_center_surface(center, &package.decoder_nodes)?;
                         dictionary_matches += usize::from(decoded == *word);
                         let query = L1TypedQueryField::encode(word)?;
-                        let result = traversal.traverse(&query, TraversalSchedule::Forward);
+                        let result =
+                            traversal.traverse(&query, traversal_scope, TraversalSchedule::Forward);
                         identities +=
                             usize::from(result.terminals.get(&(terminal_id as u32)).is_some_and(
                                 |certificates| certificates.contains(&TypedCertificate::Identity),
@@ -495,7 +833,7 @@ pub fn prove_l1_typed_edit_phase7a(
             .map(|handle| {
                 handle
                     .join()
-                    .map_err(|_| "Phase 7A clean worker panicked".to_string())?
+                    .map_err(|_| format!("{phase_name} clean worker panicked"))?
             })
             .collect::<Result<Vec<_>, String>>()
     })
@@ -507,7 +845,7 @@ pub fn prove_l1_typed_edit_phase7a(
     let heldout_started = Instant::now();
     let heldout = prepare_fixed_heldout_cases(&words, heldout_per_class, 0)?
         .into_iter()
-        .filter(|case| PHASE7A_CLASSES.contains(&case.class))
+        .filter(|case| proof_classes.contains(&case.class))
         .collect::<Vec<_>>();
     let heldout_sha256 = sha256_hex(
         heldout
@@ -529,10 +867,21 @@ pub fn prove_l1_typed_edit_phase7a(
                         let mut classes = BTreeMap::<&'static str, ClassAccumulator>::new();
                         for case in heldout.iter().skip(worker).step_by(workers) {
                             let query = L1TypedQueryField::encode(&case.surface)?;
-                            let forward = traversal.traverse(&query, TraversalSchedule::Forward);
-                            let reverse = traversal.traverse(&query, TraversalSchedule::Reverse);
-                            let permuted = traversal
-                                .traverse(&query, TraversalSchedule::Permuted(0x7a11_c0de));
+                            let forward = traversal.traverse(
+                                &query,
+                                traversal_scope,
+                                TraversalSchedule::Forward,
+                            );
+                            let reverse = traversal.traverse(
+                                &query,
+                                traversal_scope,
+                                TraversalSchedule::Reverse,
+                            );
+                            let permuted = traversal.traverse(
+                                &query,
+                                traversal_scope,
+                                TraversalSchedule::Permuted(0x7a11_c0de),
+                            );
                             let parity = forward == reverse && forward == permuted;
                             classes
                                 .entry(case.class)
@@ -548,7 +897,7 @@ pub fn prove_l1_typed_edit_phase7a(
             .map(|handle| {
                 handle
                     .join()
-                    .map_err(|_| "Phase 7A heldout worker panicked".to_string())?
+                    .map_err(|_| format!("{phase_name} heldout worker panicked"))?
             })
             .collect::<Result<Vec<_>, String>>()
     })
@@ -567,7 +916,7 @@ pub fn prove_l1_typed_edit_phase7a(
 
     let package_sha256_after = file_sha256(package_path)?;
     let package_unchanged = package_sha256_before == package_sha256_after;
-    let all_class_counts_exact = PHASE7A_CLASSES.iter().all(|class| {
+    let all_class_counts_exact = proof_classes.iter().all(|class| {
         classes
             .get(class)
             .is_some_and(|metrics| metrics.cases == heldout_per_class)
@@ -590,7 +939,8 @@ pub fn prove_l1_typed_edit_phase7a(
         && schedule_parity_complete;
 
     Ok(serde_json::json!({
-        "schema": "lay.l11.typed-edit-phase7a-proof.v1",
+        "schema": format!("lay.l11.typed-edit-{phase_name}-proof.v1"),
+        "phase": phase_name,
         "verdict": if passed { "PASS" } else { "FAIL" },
         "corpus": corpus_path,
         "package": package_path,
@@ -631,7 +981,7 @@ mod tests {
     use crate::nanda_wave::lexical_grokking::training_corpus::TrainingWord;
 
     fn tiny_package() -> LexicalGrokkingPackage {
-        let words = ["a", "ab", "aba", "baa", "cab", "caba"]
+        let words = ["a", "ab", "aba", "baa", "cab", "caba", "ф", "фи", "б"]
             .into_iter()
             .enumerate()
             .map(|(terminal_id, surface)| TrainingWord {
@@ -663,6 +1013,16 @@ mod tests {
         queries.into_iter().collect()
     }
 
+    fn phase7b_queries() -> Vec<String> {
+        let mut queries = tiny_queries().into_iter().collect::<BTreeSet<_>>();
+        queries.extend(
+            [",", "ф", "фи", "б", "и", "aa", "abba", "cbb"]
+                .into_iter()
+                .map(str::to_string),
+        );
+        queries.into_iter().collect()
+    }
+
     #[test]
     fn phase7a_traversal_matches_independent_dense_oracle_exhaustively() {
         let package = tiny_package();
@@ -670,24 +1030,125 @@ mod tests {
         let traversal = L1TypedEditTraversal { index: &index };
         for raw in tiny_queries() {
             let query = L1TypedQueryField::encode(&raw).unwrap();
-            let expected = direct_phase7a_oracle(&package, &query).unwrap();
-            let actual = traversal.traverse(&query, TraversalSchedule::Forward);
+            let expected = direct_typed_oracle(&package, &query, TraversalScope::Phase7A).unwrap();
+            let actual =
+                traversal.traverse(&query, TraversalScope::Phase7A, TraversalSchedule::Forward);
             assert_eq!(actual.terminals, expected, "query {raw:?}");
         }
     }
 
     #[test]
-    fn traversal_schedule_cannot_change_terminal_or_metric_bytes() {
+    fn phase7a_schedule_cannot_change_terminal_or_metric_bytes() {
         let package = tiny_package();
         let index = ForwardDecoderIndex::build(&package).unwrap();
         let traversal = L1TypedEditTraversal { index: &index };
         for raw in tiny_queries() {
             let query = L1TypedQueryField::encode(&raw).unwrap();
-            let forward = traversal.traverse(&query, TraversalSchedule::Forward);
-            let reverse = traversal.traverse(&query, TraversalSchedule::Reverse);
-            let permuted = traversal.traverse(&query, TraversalSchedule::Permuted(0x7a11_c0de));
+            let forward =
+                traversal.traverse(&query, TraversalScope::Phase7A, TraversalSchedule::Forward);
+            let reverse =
+                traversal.traverse(&query, TraversalScope::Phase7A, TraversalSchedule::Reverse);
+            let permuted = traversal.traverse(
+                &query,
+                TraversalScope::Phase7A,
+                TraversalSchedule::Permuted(0x7a11_c0de),
+            );
             assert_eq!(forward, reverse, "reverse query {raw:?}");
             assert_eq!(forward, permuted, "permuted query {raw:?}");
+        }
+    }
+
+    #[test]
+    fn phase7b_traversal_matches_independent_dense_oracle_exhaustively() {
+        let package = tiny_package();
+        let index = ForwardDecoderIndex::build(&package).unwrap();
+        let traversal = L1TypedEditTraversal { index: &index };
+        for raw in phase7b_queries() {
+            let query = L1TypedQueryField::encode(&raw).unwrap();
+            let expected = direct_typed_oracle(&package, &query, TraversalScope::Phase7B).unwrap();
+            let actual =
+                traversal.traverse(&query, TraversalScope::Phase7B, TraversalSchedule::Forward);
+            assert_eq!(actual.terminals, expected, "query {raw:?}");
+        }
+    }
+
+    #[test]
+    fn phase7b_schedule_cannot_change_terminal_or_metric_bytes() {
+        let package = tiny_package();
+        let index = ForwardDecoderIndex::build(&package).unwrap();
+        let traversal = L1TypedEditTraversal { index: &index };
+        for raw in phase7b_queries() {
+            let query = L1TypedQueryField::encode(&raw).unwrap();
+            let forward =
+                traversal.traverse(&query, TraversalScope::Phase7B, TraversalSchedule::Forward);
+            let reverse =
+                traversal.traverse(&query, TraversalScope::Phase7B, TraversalSchedule::Reverse);
+            let permuted = traversal.traverse(
+                &query,
+                TraversalScope::Phase7B,
+                TraversalSchedule::Permuted(0x7b11_c0de),
+            );
+            assert_eq!(forward, reverse, "reverse query {raw:?}");
+            assert_eq!(forward, permuted, "permuted query {raw:?}");
+        }
+    }
+
+    #[test]
+    fn phase7b_operator_witnesses_emit_exact_typed_certificates() {
+        let package = tiny_package();
+        let index = ForwardDecoderIndex::build(&package).unwrap();
+        let traversal = L1TypedEditTraversal { index: &index };
+        let cases = [
+            (
+                "aa",
+                2,
+                TypedCertificate::MissingLetter { target_position: 1 },
+            ),
+            (
+                "abba",
+                2,
+                TypedCertificate::ExtraLetter { input_position: 1 },
+            ),
+            (
+                "cbb",
+                4,
+                TypedCertificate::SingleSubstitution { position: 1 },
+            ),
+            (
+                "ab",
+                7,
+                TypedCertificate::KeyboardLayout {
+                    direction: LayoutDirection::UsToRu,
+                },
+            ),
+            (
+                ",",
+                8,
+                TypedCertificate::KeyboardLayout {
+                    direction: LayoutDirection::UsToRu,
+                },
+            ),
+            (
+                "ф",
+                0,
+                TypedCertificate::KeyboardLayout {
+                    direction: LayoutDirection::RuToUs,
+                },
+            ),
+        ];
+        for (raw, center_id, expected) in cases {
+            let result = traversal.traverse(
+                &L1TypedQueryField::encode(raw).unwrap(),
+                TraversalScope::Phase7B,
+                TraversalSchedule::Forward,
+            );
+            assert!(
+                result
+                    .terminals
+                    .get(&center_id)
+                    .is_some_and(|certificates| certificates.contains(&expected)),
+                "query {raw:?} lacks {expected:?}"
+            );
         }
     }
 
@@ -698,6 +1159,7 @@ mod tests {
         let traversal = L1TypedEditTraversal { index: &index };
         let punctuated = traversal.traverse(
             &L1TypedQueryField::encode("cab,?").unwrap(),
+            TraversalScope::Phase7A,
             TraversalSchedule::Forward,
         );
         assert_eq!(
@@ -712,6 +1174,7 @@ mod tests {
         );
         let prefix = traversal.traverse(
             &L1TypedQueryField::encode("ab").unwrap(),
+            TraversalScope::Phase7A,
             TraversalSchedule::Forward,
         );
         assert!(prefix
@@ -721,6 +1184,7 @@ mod tests {
             .contains(&TypedCertificate::PrefixTruncation { target_position: 0 }));
         let suffix = traversal.traverse(
             &L1TypedQueryField::encode("cab").unwrap(),
+            TraversalScope::Phase7A,
             TraversalSchedule::Forward,
         );
         assert!(suffix

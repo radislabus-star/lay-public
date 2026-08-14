@@ -140,6 +140,14 @@ pub fn convert(text: &str, direction: Direction) -> String {
     text.chars().map(|c| *table.get(&c).unwrap_or(&c)).collect()
 }
 
+pub(crate) fn project_char(character: char, direction: Direction) -> char {
+    let table = match direction {
+        Direction::Us2Ru => us_to_ru(),
+        Direction::Ru2Us => ru_to_us(),
+    };
+    table.get(&character).copied().unwrap_or(character)
+}
+
 #[cfg(test)]
 #[path = "dict_tests.rs"]
 mod tests;
