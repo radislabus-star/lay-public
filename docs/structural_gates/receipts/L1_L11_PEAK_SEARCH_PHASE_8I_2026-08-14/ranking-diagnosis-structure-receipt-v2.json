@@ -1,0 +1,1078 @@
+{
+  "verdict": "VETO",
+  "engine": "nanda-check sparse-triad-v6.2-rust",
+  "core_version": "sparse-triad-v6.2-quality-gates",
+  "wave_dim": 1024,
+  "task_id": "l11-phase8i-ranking-diagnosis-v2",
+  "domain": "code",
+  "complexity_score": 57,
+  "mandatory_gate": true,
+  "limits": [],
+  "stable_triads": [
+    "t1",
+    "t2",
+    "t3",
+    "t4",
+    "t5",
+    "t6",
+    "t7",
+    "t8",
+    "t9",
+    "t10",
+    "t11"
+  ],
+  "weak_triads": [
+    "c1",
+    "c2",
+    "c3",
+    "c4",
+    "c5",
+    "c6"
+  ],
+  "conflicts": [
+    "c1 changes functional object for sampled ambiguity builder"
+  ],
+  "evidence_gaps": [],
+  "canonicalization": {
+    "enabled": false,
+    "applied_count": 0,
+    "conflict_count": 0,
+    "watch_count": 0,
+    "applied": [],
+    "conflicts": [],
+    "warnings": []
+  },
+  "baseline_summary": {
+    "exact_matches": [],
+    "reversed_hits": [],
+    "token_overlap": {
+      "c1": 0.0741,
+      "c2": 0.0741,
+      "c3": 0.0741,
+      "c4": 0.0741,
+      "c5": 0.0741,
+      "c6": 0.0741
+    }
+  },
+  "trusted_proof": {
+    "mode": "STRUCTURAL_ONLY",
+    "verdict": "NOT_REQUESTED",
+    "authority_ready": false,
+    "reason_codes": [
+      "trusted_proof_not_requested"
+    ],
+    "manifest_file_sha256": "",
+    "trusted_manifest_root_sha256": "",
+    "source_triads_sha256": "",
+    "candidate_triads_sha256": "",
+    "candidate_answer_sha256": "",
+    "source_provenance_root_sha256": "",
+    "candidate_extraction_root_sha256": "",
+    "source_producer_root_sha256": "",
+    "candidate_producer_root_sha256": ""
+  },
+  "authority_ready": false,
+  "quality_contract": {
+    "schema": "",
+    "require_evidence_bindings": false,
+    "require_derived_claims": false
+  },
+  "evidence_binding": {
+    "schema": "nanda.evidence-binding.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "complete": false,
+    "checked": 0,
+    "total": 17,
+    "missing_triads": [
+      "t1",
+      "t2",
+      "t3",
+      "t4",
+      "t5",
+      "t6",
+      "t7",
+      "t8",
+      "t9",
+      "t10",
+      "t11",
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6"
+    ],
+    "issues": []
+  },
+  "derived_claims": {
+    "schema": "nanda.derived-claims.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "total": 0,
+    "passed": 0,
+    "deferred": 0,
+    "coverage_complete": true,
+    "reason_codes": [],
+    "results": []
+  },
+  "quality_ready": false,
+  "wave_summary": {
+    "scores": {
+      "c1": 0.0121,
+      "c2": -0.0104,
+      "c3": 0.011,
+      "c4": -0.0392,
+      "c5": 0.0473,
+      "c6": -0.0208
+    },
+    "source_self_score": 0.3078,
+    "stable": [],
+    "weak": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6"
+    ],
+    "weak_details": {
+      "c1": {
+        "nearest_source": "t9",
+        "nearest_source_score": 0.0723,
+        "score": 0.0121,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c2": {
+        "nearest_source": "t10",
+        "nearest_source_score": 0.0566,
+        "score": -0.0104,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c3": {
+        "nearest_source": "t5",
+        "nearest_source_score": 0.0566,
+        "score": 0.011,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c4": {
+        "nearest_source": "t1",
+        "nearest_source_score": 0.0371,
+        "score": -0.0392,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c5": {
+        "nearest_source": "t7",
+        "nearest_source_score": 0.0586,
+        "score": 0.0473,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c6": {
+        "nearest_source": "t9",
+        "nearest_source_score": 0.0391,
+        "score": -0.0208,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      }
+    }
+  },
+  "route_coherence": {
+    "best_source_group": {
+      "implicit-owner": "implicit-owner",
+      "objective-owner": "observer-owner",
+      "observer-owner": "settlement-owner",
+      "projection-owner": "installed-runtime-owner",
+      "proof-isolation-owner": "observer-owner",
+      "settlement-owner": "heldout-owner"
+    },
+    "scores": {
+      "implicit-owner": 0.0566,
+      "objective-owner": 0.0723,
+      "observer-owner": 0.0586,
+      "projection-owner": 0.0566,
+      "proof-isolation-owner": 0.0391,
+      "settlement-owner": 0.0371
+    },
+    "weak": []
+  },
+  "structural_map": {
+    "candidate_group_sizes": {
+      "implicit-owner": 1,
+      "objective-owner": 1,
+      "observer-owner": 1,
+      "projection-owner": 1,
+      "proof-isolation-owner": 1,
+      "settlement-owner": 1
+    },
+    "candidate_superposition": {
+      "avg_triad_coherence": 0.4053,
+      "norm": 77.8203,
+      "triads": 6
+    },
+    "core_version": "sparse-triad-v6.2-quality-gates",
+    "dominant_source_group": {
+      "implicit-owner": "implicit-owner",
+      "objective-owner": "observer-owner",
+      "observer-owner": "settlement-owner",
+      "projection-owner": "installed-runtime-owner",
+      "proof-isolation-owner": "observer-owner",
+      "settlement-owner": "heldout-owner"
+    },
+    "foreign_pull": [],
+    "group_centroids": {
+      "candidate": {
+        "implicit-owner": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "objective-owner": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "observer-owner": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "projection-owner": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "proof-isolation-owner": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "settlement-owner": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      },
+      "source": {
+        "authority-owner": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "geometry-owner": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "heldout-owner": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "implicit-owner": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "installed-runtime-owner": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "objective-owner": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "observer-owner": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "projection-owner": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "proof-isolation-owner": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "settlement-owner": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "typed-owner": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      }
+    },
+    "group_links": {
+      "implicit-owner": {
+        "dominant_score": 0.0566,
+        "dominant_source_group": "implicit-owner",
+        "exact_source_groups": []
+      },
+      "objective-owner": {
+        "dominant_score": 0.0723,
+        "dominant_source_group": "observer-owner",
+        "exact_source_groups": []
+      },
+      "observer-owner": {
+        "dominant_score": 0.0586,
+        "dominant_source_group": "settlement-owner",
+        "exact_source_groups": []
+      },
+      "projection-owner": {
+        "dominant_score": 0.0566,
+        "dominant_source_group": "installed-runtime-owner",
+        "exact_source_groups": []
+      },
+      "proof-isolation-owner": {
+        "dominant_score": 0.0391,
+        "dominant_source_group": "observer-owner",
+        "exact_source_groups": []
+      },
+      "settlement-owner": {
+        "dominant_score": 0.0371,
+        "dominant_source_group": "heldout-owner",
+        "exact_source_groups": []
+      }
+    },
+    "interference_matrix": {
+      "implicit-owner": {
+        "authority-owner": -0.0332,
+        "geometry-owner": -0.0508,
+        "heldout-owner": -0.043,
+        "implicit-owner": 0.0566,
+        "installed-runtime-owner": 0.0,
+        "objective-owner": 0.0273,
+        "observer-owner": -0.0059,
+        "projection-owner": 0.0469,
+        "proof-isolation-owner": 0.0195,
+        "settlement-owner": 0.0176,
+        "typed-owner": 0.002
+      },
+      "objective-owner": {
+        "authority-owner": -0.0215,
+        "geometry-owner": 0.0078,
+        "heldout-owner": -0.0234,
+        "implicit-owner": -0.0254,
+        "installed-runtime-owner": -0.0039,
+        "objective-owner": -0.0313,
+        "observer-owner": 0.0723,
+        "projection-owner": -0.0039,
+        "proof-isolation-owner": 0.0273,
+        "settlement-owner": 0.0566,
+        "typed-owner": -0.0137
+      },
+      "observer-owner": {
+        "authority-owner": 0.0313,
+        "geometry-owner": 0.0488,
+        "heldout-owner": 0.0176,
+        "implicit-owner": 0.0156,
+        "installed-runtime-owner": 0.002,
+        "objective-owner": 0.0059,
+        "observer-owner": 0.0,
+        "projection-owner": 0.0254,
+        "proof-isolation-owner": 0.0137,
+        "settlement-owner": 0.0586,
+        "typed-owner": -0.0586
+      },
+      "projection-owner": {
+        "authority-owner": 0.0039,
+        "geometry-owner": -0.0215,
+        "heldout-owner": 0.0254,
+        "implicit-owner": -0.0039,
+        "installed-runtime-owner": 0.0566,
+        "objective-owner": 0.0176,
+        "observer-owner": -0.0469,
+        "projection-owner": -0.0371,
+        "proof-isolation-owner": 0.0488,
+        "settlement-owner": -0.043,
+        "typed-owner": -0.0352
+      },
+      "proof-isolation-owner": {
+        "authority-owner": -0.0078,
+        "geometry-owner": 0.0098,
+        "heldout-owner": -0.0371,
+        "implicit-owner": 0.0039,
+        "installed-runtime-owner": -0.0293,
+        "objective-owner": -0.0449,
+        "observer-owner": 0.0391,
+        "projection-owner": -0.0566,
+        "proof-isolation-owner": 0.0332,
+        "settlement-owner": 0.0078,
+        "typed-owner": 0.0117
+      },
+      "settlement-owner": {
+        "authority-owner": 0.0117,
+        "geometry-owner": -0.002,
+        "heldout-owner": 0.0371,
+        "implicit-owner": -0.0078,
+        "installed-runtime-owner": -0.0684,
+        "objective-owner": -0.0332,
+        "observer-owner": -0.0586,
+        "projection-owner": 0.002,
+        "proof-isolation-owner": -0.0059,
+        "settlement-owner": -0.0117,
+        "typed-owner": 0.0039
+      }
+    },
+    "mixed_candidate_groups": [],
+    "negative_routes": {
+      "anti_modes": [
+        "adapter must not decide",
+        "UI must not be source of truth",
+        "test helper must not become runtime route",
+        "experiment must not affect stable path",
+        "one decision owner only"
+      ],
+      "hits": []
+    },
+    "owner_gravity": {
+      "conflicts": [],
+      "group_centers": {
+        "authority-owner": {
+          "gravity": 1.0,
+          "owner": "frozen classifier",
+          "owners": {
+            "frozen classifier": 1
+          },
+          "support": 1,
+          "total": 1
+        },
+        "geometry-owner": {
+          "gravity": 1.0,
+          "owner": "runtime settlement owner",
+          "owners": {
+            "runtime settlement owner": 1
+          },
+          "support": 1,
+          "total": 1
+        },
+        "heldout-owner": {
+          "gravity": 1.0,
+          "owner": "fixed heldout reservoir",
+          "owners": {
+            "fixed heldout reservoir": 1
+          },
+          "support": 1,
+          "total": 1
+        },
+        "implicit-owner": {
+          "gravity": 1.0,
+          "owner": "implicit forward owner",
+          "owners": {
+            "implicit forward owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "installed-runtime-owner": {
+          "gravity": 1.0,
+          "owner": "installed lay",
+          "owners": {
+            "installed lay": 1
+          },
+          "support": 1,
+          "total": 1
+        },
+        "objective-owner": {
+          "gravity": 1.0,
+          "owner": "sampled ambiguity builder",
+          "owners": {
+            "sampled ambiguity builder": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "observer-owner": {
+          "gravity": 1.0,
+          "owner": "gate c recorder",
+          "owners": {
+            "gate c recorder": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "projection-owner": {
+          "gravity": 1.0,
+          "owner": "phase7d_terminal_evidence",
+          "owners": {
+            "phase7d_terminal_evidence": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "proof-isolation-owner": {
+          "gravity": 1.0,
+          "owner": "lexical compiler feature",
+          "owners": {
+            "lexical compiler feature": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "settlement-owner": {
+          "gravity": 1.0,
+          "owner": "exact settlement adapter",
+          "owners": {
+            "exact settlement adapter": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "typed-owner": {
+          "gravity": 1.0,
+          "owner": "l1typededittraversal",
+          "owners": {
+            "l1typededittraversal": 1
+          },
+          "support": 1,
+          "total": 1
+        }
+      },
+      "route_centers": {
+        "authority": {
+          "gravity": 1.0,
+          "owner": "frozen classifier",
+          "owners": {
+            "frozen classifier": 1
+          },
+          "support": 1,
+          "total": 1
+        },
+        "execution": {
+          "gravity": 0.2,
+          "owner": "exact settlement adapter",
+          "owners": {
+            "exact settlement adapter": 1,
+            "implicit forward owner": 1,
+            "l1typededittraversal": 1,
+            "phase7d_terminal_evidence": 1,
+            "runtime settlement owner": 1
+          },
+          "support": 1,
+          "total": 5
+        },
+        "isolation": {
+          "gravity": 0.6667,
+          "owner": "lexical compiler feature",
+          "owners": {
+            "installed lay": 1,
+            "lexical compiler feature": 2
+          },
+          "support": 2,
+          "total": 3
+        },
+        "observation": {
+          "gravity": 0.4,
+          "owner": "gate c recorder",
+          "owners": {
+            "exact settlement adapter": 1,
+            "gate c recorder": 2,
+            "implicit forward owner": 1,
+            "phase7d_terminal_evidence": 1
+          },
+          "support": 2,
+          "total": 5
+        },
+        "proof": {
+          "gravity": 0.6667,
+          "owner": "sampled ambiguity builder",
+          "owners": {
+            "fixed heldout reservoir": 1,
+            "sampled ambiguity builder": 2
+          },
+          "support": 2,
+          "total": 3
+        }
+      }
+    },
+    "repair_queue": [
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "implicit-owner"
+      },
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "objective-owner"
+      },
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "observer-owner"
+      },
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "projection-owner"
+      },
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "proof-isolation-owner"
+      },
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "settlement-owner"
+      }
+    ],
+    "repair_tasks": [
+      {
+        "candidate_group": "implicit-owner",
+        "dominant_source_group": "implicit-owner",
+        "reason": "candidate group has low interference coherence with every source group",
+        "score": 0.0566,
+        "suggested_fix": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes."
+      },
+      {
+        "candidate_group": "objective-owner",
+        "dominant_source_group": "observer-owner",
+        "reason": "candidate group has low interference coherence with every source group",
+        "score": 0.0723,
+        "suggested_fix": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes."
+      },
+      {
+        "candidate_group": "observer-owner",
+        "dominant_source_group": "settlement-owner",
+        "reason": "candidate group has low interference coherence with every source group",
+        "score": 0.0586,
+        "suggested_fix": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes."
+      },
+      {
+        "candidate_group": "projection-owner",
+        "dominant_source_group": "installed-runtime-owner",
+        "reason": "candidate group has low interference coherence with every source group",
+        "score": 0.0566,
+        "suggested_fix": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes."
+      },
+      {
+        "candidate_group": "proof-isolation-owner",
+        "dominant_source_group": "observer-owner",
+        "reason": "candidate group has low interference coherence with every source group",
+        "score": 0.0391,
+        "suggested_fix": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes."
+      },
+      {
+        "candidate_group": "settlement-owner",
+        "dominant_source_group": "heldout-owner",
+        "reason": "candidate group has low interference coherence with every source group",
+        "score": 0.0371,
+        "suggested_fix": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes."
+      }
+    ],
+    "route_field": {
+      "read_as": "Route field coordinates describe causal ownership: route, layer, owner, entrypoint, output, evidence_path, and scope.",
+      "routes": {
+        "authority": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 0,
+          "entrypoints": [
+            "classify"
+          ],
+          "evidence_paths": [
+            "src/nanda_wave/lexical_grokking/typed_basin/settlement.rs:550"
+          ],
+          "layers": [
+            "readout"
+          ],
+          "outputs": [
+            "restoration readout"
+          ],
+          "owners": [
+            "frozen classifier"
+          ],
+          "scopes": [
+            "proof-only"
+          ],
+          "source_triads": 1,
+          "triads": 1
+        },
+        "execution": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 0,
+          "entrypoints": [
+            "apply_candidate_restoration_geometry",
+            "evaluate_surface",
+            "phase7d_terminal_evidence",
+            "settle_exact_case",
+            "traverse"
+          ],
+          "evidence_paths": [
+            "src/nanda_wave/lexical_grokking/runtime/settlement.rs:454",
+            "src/nanda_wave/lexical_grokking/typed_basin/quality.rs:388",
+            "src/nanda_wave/lexical_grokking/typed_basin/settlement.rs:411",
+            "src/nanda_wave/lexical_grokking/typed_edit_traversal.rs:1022",
+            "src/nanda_wave/lexical_grokking/typed_edit_traversal.rs:348"
+          ],
+          "layers": [
+            "adapter",
+            "admission",
+            "geometry",
+            "reconstruction",
+            "settlement"
+          ],
+          "outputs": [
+            "candidate geometry fields",
+            "implicit candidates",
+            "settled candidate fields w",
+            "terminal certificate map",
+            "terminal id vector"
+          ],
+          "owners": [
+            "exact settlement adapter",
+            "implicit forward owner",
+            "l1typededittraversal",
+            "phase7d_terminal_evidence",
+            "runtime settlement owner"
+          ],
+          "scopes": [
+            "proof-only",
+            "shared-frozen-code"
+          ],
+          "source_triads": 5,
+          "triads": 5
+        },
+        "isolation": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [
+            "daemon and ibus",
+            "proof cli"
+          ],
+          "evidence_paths": [
+            "docs/l1-l11-typed-basin-implicit-forward-phase8i.md",
+            "docs/l1-l11-typed-basin-implicit-forward-phase8i.md:39",
+            "src/nanda_wave/lexical_grokking/mod.rs:33"
+          ],
+          "layers": [
+            "build",
+            "production"
+          ],
+          "outputs": [
+            "no production reachability",
+            "unchanged installed system"
+          ],
+          "owners": [
+            "installed lay",
+            "lexical compiler feature"
+          ],
+          "scopes": [
+            "production",
+            "proof-only"
+          ],
+          "source_triads": 2,
+          "triads": 3
+        },
+        "observation": {
+          "avg_confidence": 0.96,
+          "candidate_triads": 4,
+          "entrypoints": [
+            "evaluate_surface",
+            "phase7d_terminal_evidence",
+            "record_damaged",
+            "settle_exact_case"
+          ],
+          "evidence_paths": [
+            "docs/l1-l11-typed-basin-implicit-forward-phase8i.md",
+            "src/nanda_wave/lexical_grokking/typed_basin/quality.rs:475"
+          ],
+          "layers": [
+            "adapter",
+            "metrics",
+            "reconstruction",
+            "settlement"
+          ],
+          "outputs": [
+            "activation coordinates per terminal",
+            "bounded counters and diagnostics",
+            "first shared mechanism rows",
+            "settled candidate fields w",
+            "terminal ids plus certificate classes"
+          ],
+          "owners": [
+            "exact settlement adapter",
+            "gate c recorder",
+            "implicit forward owner",
+            "phase7d_terminal_evidence"
+          ],
+          "scopes": [
+            "proof-only"
+          ],
+          "source_triads": 1,
+          "triads": 5
+        },
+        "proof": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [
+            "populate_sampled_ambiguity",
+            "prepare_fixed_heldout_cases"
+          ],
+          "evidence_paths": [
+            "docs/l1-l11-typed-basin-implicit-forward-phase8i.md",
+            "src/nanda_wave/lexical_grokking/proof.rs:3046",
+            "src/nanda_wave/lexical_grokking/proof.rs:3084"
+          ],
+          "layers": [
+            "objective"
+          ],
+          "outputs": [
+            "fixed generator objective g",
+            "immutable damaged cases"
+          ],
+          "owners": [
+            "fixed heldout reservoir",
+            "sampled ambiguity builder"
+          ],
+          "scopes": [
+            "proof-only"
+          ],
+          "source_triads": 2,
+          "triads": 3
+        }
+      }
+    },
+    "route_memory": {
+      "candidate": {
+        "isolation": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "observation": {
+          "norm": 64.3428,
+          "self_coherence": 0.5027,
+          "triads": 4
+        },
+        "proof": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      },
+      "interference_matrix": {
+        "isolation": {
+          "authority": -0.0078,
+          "execution": -0.0108,
+          "isolation": 0.0027,
+          "observation": 0.0391,
+          "proof": -0.0573
+        },
+        "observation": {
+          "authority": 0.0068,
+          "execution": 0.0013,
+          "isolation": 0.0232,
+          "observation": -0.0554,
+          "proof": 0.019
+        },
+        "proof": {
+          "authority": -0.0215,
+          "execution": 0.0099,
+          "isolation": 0.0165,
+          "observation": 0.0723,
+          "proof": -0.0382
+        }
+      },
+      "source": {
+        "authority": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "execution": {
+          "norm": 69.3974,
+          "self_coherence": 0.4337,
+          "triads": 5
+        },
+        "isolation": {
+          "norm": 45.5192,
+          "self_coherence": 0.7112,
+          "triads": 2
+        },
+        "observation": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "proof": {
+          "norm": 45.7821,
+          "self_coherence": 0.7153,
+          "triads": 2
+        }
+      }
+    },
+    "source_group_sizes": {
+      "authority-owner": 1,
+      "geometry-owner": 1,
+      "heldout-owner": 1,
+      "implicit-owner": 1,
+      "installed-runtime-owner": 1,
+      "objective-owner": 1,
+      "observer-owner": 1,
+      "projection-owner": 1,
+      "proof-isolation-owner": 1,
+      "settlement-owner": 1,
+      "typed-owner": 1
+    },
+    "stable_groups": [],
+    "structural_energy": {
+      "adapter_leak_risk": 0,
+      "duplicate_decision_risk": 0,
+      "field_tension": 0,
+      "foreign_pull_energy": 0,
+      "owner_conflict": 0,
+      "route_coherence": 0.992,
+      "stale_experiment_risk": 0,
+      "ui_runtime_mismatch_risk": 0
+    },
+    "wave_dim": 1024
+  },
+  "codex_failure_field": {
+    "enabled": false,
+    "read_as": "Add failure_contract.enabled=true to turn on Codex Failure Field.",
+    "reason_codes": [],
+    "verdict": "NOT_ENABLED"
+  },
+  "repair_queue": [
+    {
+      "kind": "functional_object_mismatch",
+      "priority": "high",
+      "reason": "candidate changes the object of a functional relation",
+      "repair": "Restore the source-bound object or attach independent evidence for a changed relation.",
+      "target": "c1"
+    },
+    {
+      "kind": "coherence_repair",
+      "priority": "medium",
+      "reason": "candidate group has low interference coherence with every source group",
+      "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+      "target": "implicit-owner"
+    },
+    {
+      "kind": "coherence_repair",
+      "priority": "medium",
+      "reason": "candidate group has low interference coherence with every source group",
+      "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+      "target": "objective-owner"
+    },
+    {
+      "kind": "coherence_repair",
+      "priority": "medium",
+      "reason": "candidate group has low interference coherence with every source group",
+      "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+      "target": "observer-owner"
+    },
+    {
+      "kind": "coherence_repair",
+      "priority": "medium",
+      "reason": "candidate group has low interference coherence with every source group",
+      "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+      "target": "projection-owner"
+    },
+    {
+      "kind": "coherence_repair",
+      "priority": "medium",
+      "reason": "candidate group has low interference coherence with every source group",
+      "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+      "target": "proof-isolation-owner"
+    },
+    {
+      "kind": "coherence_repair",
+      "priority": "medium",
+      "reason": "candidate group has low interference coherence with every source group",
+      "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+      "target": "settlement-owner"
+    }
+  ],
+  "agent_decision": {
+    "action": "REPAIR_REQUIRED",
+    "codex_failure_reasons": [],
+    "codex_failure_verdict": "NOT_ENABLED",
+    "next": "Apply the repair_queue before editing or accepting this route.",
+    "repair_count": 7,
+    "repair_queue": [
+      {
+        "kind": "functional_object_mismatch",
+        "priority": "high",
+        "reason": "candidate changes the object of a functional relation",
+        "repair": "Restore the source-bound object or attach independent evidence for a changed relation.",
+        "target": "c1"
+      },
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "implicit-owner"
+      },
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "objective-owner"
+      },
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "observer-owner"
+      },
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "projection-owner"
+      },
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "proof-isolation-owner"
+      },
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "settlement-owner"
+      }
+    ],
+    "safe_to_edit": false
+  },
+  "explanation": [
+    "Structural conflicts were detected.",
+    "At least one candidate triad has weak composite-mode support."
+  ],
+  "repair_prompt": "Repair the candidate answer using only one coherent structural route.\nNANDA verdict: VETO.\nPrimary repair_queue:\n- [high] functional_object_mismatch: Restore the source-bound object or attach independent evidence for a changed relation.\n- [medium] coherence_repair: Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.\n- [medium] coherence_repair: Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.\n- [medium] coherence_repair: Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.\n- [medium] coherence_repair: Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.\n- [medium] coherence_repair: Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.\n- [medium] coherence_repair: Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.\nFix these conflicts:\n- c1 changes functional object for sampled ambiguity builder\nRecheck or remove weak candidate triads:\n- c1: score=0.0121, nearest_source=t9, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c2: score=-0.0104, nearest_source=t10, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c3: score=0.011, nearest_source=t5, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c4: score=-0.0392, nearest_source=t1, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c5: score=0.0473, nearest_source=t7, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c6: score=-0.0208, nearest_source=t9, why=candidate triad does not resonate with the composite source memory above the stability threshold",
+  "trace_path": "/tmp/nanda-structural-gate/l11-phase8i-ranking-diagnosis-v2.trace.json"
+}

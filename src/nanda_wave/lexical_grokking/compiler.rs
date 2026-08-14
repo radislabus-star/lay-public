@@ -1077,6 +1077,80 @@ fn resolve_surface(graph: &NGramGraph, surface: &str) -> ResolvedSurface {
     }
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
+pub(super) fn reference_depth0_reverse(
+    package: &LexicalGrokkingPackage,
+    exact_support: &[u32],
+    terminal_id: u32,
+) -> Result<Vec<WaveCoupling>, String> {
+    if exact_support.len() != package.atoms.len() {
+        return Err(format!(
+            "compiler reference support cardinality differs: {} != {}",
+            exact_support.len(),
+            package.atoms.len()
+        ));
+    }
+    let center = *package
+        .centers
+        .get(terminal_id as usize)
+        .ok_or_else(|| format!("compiler reference terminal is invalid: {terminal_id}"))?;
+    let surface = super::format::decode_center_surface(center, &package.decoder_nodes)?;
+    let resolved = encode_wave_surface(&surface)
+        .into_iter()
+        .map(|atom| {
+            let atom_id = package.graph.atom_id(atom.key).ok_or_else(|| {
+                format!(
+                    "compiler reference atom is absent from NGramGraph: terminal={terminal_id} channel={:?}",
+                    atom.key.channel
+                )
+            })?;
+            Ok((atom_id, atom.position, atom.weight, atom.key.channel))
+        })
+        .collect::<Result<Vec<_>, String>>()?;
+    let mut stats_by_atom = BTreeMap::<u32, CouplingStats>::new();
+    for (atom_id, position, weight, _) in resolved.iter().copied() {
+        let stats = stats_by_atom.entry(atom_id).or_default();
+        stats.observations = stats
+            .observations
+            .checked_add(1)
+            .ok_or_else(|| "compiler reference observation count exceeds u32".to_string())?;
+        stats.weighted_observations = stats
+            .weighted_observations
+            .checked_add(u32::from(weight))
+            .ok_or_else(|| "compiler reference weighted observations exceed u32".to_string())?;
+        stats.position_sum = stats
+            .position_sum
+            .checked_add(u64::from(position))
+            .ok_or_else(|| "compiler reference position sum exceeds u64".to_string())?;
+    }
+    let mut reverse = resolved
+        .into_iter()
+        .map(|(atom_id, position, _, channel)| {
+            let stats = stats_by_atom.get(&atom_id).copied().unwrap_or_default();
+            let position_mode = (position / 257).min(255) as u8;
+            WaveCoupling {
+                peer_id: atom_id,
+                strength: coupling_strength(
+                    stats,
+                    1,
+                    exact_support[atom_id as usize],
+                    package.centers.len(),
+                ),
+                phase_relation: position_phase(position_mode),
+                position_mode,
+                flags: coupling_flag(channel),
+            }
+        })
+        .collect::<Vec<_>>();
+    reverse.sort_unstable_by(coupling_order);
+    let anchor_count = reverse
+        .iter()
+        .take_while(|relation| relation.flags != 0)
+        .count();
+    reverse.truncate(anchor_count.saturating_add(MAX_REVERSE_LEXICAL_COUPLINGS));
+    Ok(reverse)
+}
+
 fn coupling_strength(
     stats: CouplingStats,
     surface_count: u32,

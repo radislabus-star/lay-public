@@ -1,0 +1,307 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-l11-phase8i-gap-omission-transposition-closure-2026-08-14",
+  "authority_bearing": false,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "phase8i-paper-with-smoke-analysis",
+      "kind": "file",
+      "path": "../../../l1-l11-typed-basin-implicit-forward-phase8i.md",
+      "expect": {
+        "size_bytes": 38560,
+        "sha256": "7519a3f92ab2858c55c774fd137a5518150e2a20efab47396a3eb16ec0098be7",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "typed-traversal-owner",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/typed_edit_traversal.rs",
+      "expect": {
+        "size_bytes": 78588,
+        "sha256": "2aaa264659f9a43fb818cc527f569f54bcbd47ae225878b323807c92c05842ff",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "quality-owner",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/typed_basin/quality.rs",
+      "expect": {
+        "size_bytes": 28617,
+        "sha256": "b6fcdf0088b916ced8d83f9f60741db2baffa0777f7486da6007b06c46600dd9",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "settlement-owner",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/runtime/settlement.rs",
+      "expect": {
+        "size_bytes": 51988,
+        "sha256": "05508a9c1007e6cff40dd1d4b50fa3ddd7d2882f9e399fa0f7fafc5df74bad29",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "smoke-v1-evidence",
+      "kind": "file",
+      "path": "evidence/phase-8i-gate-c-13x100-smoke-v1.json",
+      "expect": {
+        "size_bytes": 89191,
+        "sha256": "72ae5af8cafe68fa9483c8d55fbfdc67cd27552e23b60adb8da133cd663e5d7d",
+        "mode": "0600"
+      }
+    },
+    {
+      "id": "grounded-loss-analysis-v1",
+      "kind": "file",
+      "path": "evidence/phase-8i-gate-c-grounded-loss-analysis-v1.json",
+      "expect": {
+        "size_bytes": 20684,
+        "sha256": "2c5291f69d87624a5b834780a3795e4b6c0179e0e7fe958b897e3305a188e654",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "installed-package",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin",
+      "expect": {
+        "size_bytes": 190139182,
+        "sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+        "prefix_hex": "4c41594c31563800",
+        "mode": "0644"
+      }
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {
+        "id": "extend-gap-omission-transition",
+        "kind": "filesystem_edit"
+      },
+      {
+        "id": "extend-independent-dense-oracle",
+        "kind": "filesystem_edit"
+      },
+      {
+        "id": "add-systemic-operator-fixtures",
+        "kind": "filesystem_edit"
+      },
+      {
+        "id": "run-focused-tests-remotely",
+        "kind": "test_execution"
+      },
+      {
+        "id": "write-smoke-v2-receipt",
+        "kind": "filesystem_write"
+      }
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "literal_case_rule",
+      "heldout_target_pull",
+      "queue_truncation",
+      "legacy_candidate_union",
+      "settlement_change",
+      "gate_threshold_change",
+      "package_format_change",
+      "installed_package_mutation",
+      "runtime_authority_change",
+      "local_heavy_build",
+      "deployment",
+      "runtime_restart",
+      "version_bump",
+      "commit_or_push",
+      "full_proof_before_smoke_v2"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "typed-traversal-vetoes",
+      "path": "../../../../src/nanda_wave/lexical_grokking/typed_edit_traversal.rs",
+      "sha256": "2aaa264659f9a43fb818cc527f569f54bcbd47ae225878b323807c92c05842ff",
+      "forbidden_effect_patterns": [
+        {"effect": "generated_traffic", "regex": "reqwest|ureq::|TcpStream"},
+        {"effect": "synthetic_fixture", "regex": "write_synthetic|generate_fixture"},
+        {"effect": "literal_case_rule", "regex": "(thaa|figeu|сктерка|case\\.surface\\s*==)"},
+        {"effect": "heldout_target_pull", "regex": "case\\.terminal_id[^;]*(traverse|advance|push_state)"},
+        {"effect": "queue_truncation", "regex": "frontier\\.truncate|MAX_TYPED_TERMINALS|queue_limit"},
+        {"effect": "legacy_candidate_union", "regex": "legacy[^;]*(extend|chain|insert)"},
+        {"effect": "settlement_change", "regex": "SETTLING_ITERATIONS|base_settled_energy|with_sequence_energy"},
+        {"effect": "gate_threshold_change", "regex": "ratio_strictly_above|ratio_at_least|QUALITY_THRESHOLD"},
+        {"effect": "package_format_change", "regex": "LAYL1V9|VERSION\\s*[:=]\\s*9"},
+        {"effect": "installed_package_mutation", "regex": "File::create|fs::write|fs::rename"},
+        {"effect": "runtime_authority_change", "regex": "service::|runtime_owner|live_owner"},
+        {"effect": "local_heavy_build", "regex": "Command::new[^;]*(cargo|rustc)"},
+        {"effect": "deployment", "regex": "deploy|install_runtime"},
+        {"effect": "runtime_restart", "regex": "systemctl|pkill|killall"},
+        {"effect": "version_bump", "regex": "set_package_version|set-version"},
+        {"effect": "commit_or_push", "regex": "git\\s+(commit|push)"},
+        {"effect": "full_proof_before_smoke_v2", "regex": "heldout_per_class\\s*[:=]\\s*20_?000"}
+      ]
+    }
+  ],
+  "state_machine": {
+    "initial_state": "SMOKE_V1_MECHANISM_PROVEN",
+    "terminal_states": [
+      "SMOKE_V2_PASS",
+      "SOURCE_REJECTED",
+      "FOCUSED_TESTS_REJECTED",
+      "SMOKE_V2_REJECTED"
+    ],
+    "steps": [
+      {
+        "id": "implement-one-typed-operator-closure",
+        "from": "SMOKE_V1_MECHANISM_PROVEN",
+        "to": "SOURCE_READY",
+        "mutates": true,
+        "failure_state": "SOURCE_REJECTED",
+        "cleanup": "retain the scoped source diff for diagnosis; do not change package runtime gates or evidence v1",
+        "preserves": [
+          "installed-package-bytes",
+          "quality-owner-bytes",
+          "settlement-owner-bytes",
+          "smoke-v1-bytes",
+          "analysis-v1-bytes"
+        ],
+        "test_id": "gap-operator-source-failure"
+      },
+      {
+        "id": "run-focused-operator-and-parity-tests-remotely",
+        "from": "SOURCE_READY",
+        "to": "FOCUSED_TESTS_PASS",
+        "mutates": true,
+        "failure_state": "FOCUSED_TESTS_REJECTED",
+        "cleanup": "retain remote test output; do not run smoke or alter local runtime",
+        "preserves": [
+          "installed-package-bytes",
+          "quality-owner-bytes",
+          "settlement-owner-bytes",
+          "smoke-v1-bytes",
+          "analysis-v1-bytes"
+        ],
+        "test_id": "gap-operator-focused-failure"
+      },
+      {
+        "id": "run-fixed-13x100-smoke-v2-remotely",
+        "from": "FOCUSED_TESTS_PASS",
+        "to": "SMOKE_V2_PASS",
+        "mutates": true,
+        "failure_state": "SMOKE_V2_REJECTED",
+        "cleanup": "retain smoke v2 receipt and first shared failure mechanism; do not run full proof tune thresholds or touch runtime",
+        "preserves": [
+          "installed-package-bytes",
+          "quality-owner-bytes",
+          "settlement-owner-bytes",
+          "smoke-v1-bytes",
+          "analysis-v1-bytes"
+        ],
+        "test_id": "gap-operator-smoke-v2-failure"
+      }
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "installed-package-bytes",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin",
+      "policy": "byte_identical",
+      "rollback_policy": "must remain byte-identical",
+      "baseline_check_id": "installed-package"
+    },
+    {
+      "id": "quality-owner-bytes",
+      "path": "../../../../src/nanda_wave/lexical_grokking/typed_basin/quality.rs",
+      "policy": "byte_identical",
+      "rollback_policy": "must remain byte-identical during typed producer closure",
+      "baseline_check_id": "quality-owner"
+    },
+    {
+      "id": "settlement-owner-bytes",
+      "path": "../../../../src/nanda_wave/lexical_grokking/runtime/settlement.rs",
+      "policy": "byte_identical",
+      "rollback_policy": "must remain byte-identical during typed producer closure",
+      "baseline_check_id": "settlement-owner"
+    },
+    {
+      "id": "smoke-v1-bytes",
+      "path": "evidence/phase-8i-gate-c-13x100-smoke-v1.json",
+      "policy": "byte_identical",
+      "rollback_policy": "retain as rejected-mechanism evidence",
+      "baseline_check_id": "smoke-v1-evidence"
+    },
+    {
+      "id": "analysis-v1-bytes",
+      "path": "evidence/phase-8i-gate-c-grounded-loss-analysis-v1.json",
+      "policy": "byte_identical",
+      "rollback_policy": "retain the 32-of-32 classification",
+      "baseline_check_id": "grounded-loss-analysis-v1"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "typed-traversal-dense-oracle-identity",
+      "producer": "decoder-topology typed traversal",
+      "consumer": "independent dense target-string oracle",
+      "comparison": "complete terminal and typed-certificate maps are identical for exhaustive tiny queries",
+      "test_id": "gap-operator-exhaustive-oracle-parity"
+    },
+    {
+      "id": "operator-order-identity",
+      "producer": "forward traversal schedule",
+      "consumer": "reverse and deterministically permuted schedules",
+      "comparison": "terminal certificate maps and traversal metrics are byte-identical",
+      "test_id": "gap-operator-schedule-parity"
+    },
+    {
+      "id": "local-remote-source-identity",
+      "producer": "local scoped source bytes",
+      "consumer": "remote build checkout source bytes",
+      "comparison": "SHA-256 of every changed source file is identical before remote tests",
+      "test_id": "gap-operator-remote-source-parity"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "one-systemic-gap-transition",
+      "statement": "the producer admits prefix plus A X B plus suffix to prefix plus B A plus suffix without literal surfaces labels or candidate union",
+      "test_id": "gap-operator-witness"
+    },
+    {
+      "id": "prior-typed-language-preserved",
+      "statement": "all previously admitted Phase 7 terminal and certificate maps remain exact",
+      "test_id": "gap-operator-exhaustive-oracle-parity"
+    },
+    {
+      "id": "grounded-compatibility-closed",
+      "statement": "the repeated smoke reports zero current V8 grounded candidates missing from the exact field",
+      "test_id": "gap-operator-smoke-v2"
+    },
+    {
+      "id": "resource-delta-visible",
+      "statement": "smoke v2 reports candidate maximum typed latency wall CPU and RSS alongside v1",
+      "test_id": "gap-operator-smoke-v2"
+    },
+    {
+      "id": "runtime-remains-untouched",
+      "statement": "package daemon IBus version deployment commit and push remain unchanged through smoke v2",
+      "test_id": "gap-operator-package-isolation"
+    }
+  ],
+  "tests": [
+    {"id": "gap-operator-source-failure", "kind": "fault_injection", "expected": "a source or format failure blocks remote tests and preserves all protected bytes"},
+    {"id": "gap-operator-focused-failure", "kind": "fault_injection", "expected": "a focused compile test oracle or schedule failure blocks smoke v2"},
+    {"id": "gap-operator-smoke-v2-failure", "kind": "fault_injection", "expected": "a nonzero grounded loss schema error or package mismatch retains a rejected receipt and blocks full proof"},
+    {"id": "gap-operator-witness", "kind": "parity", "expected": "a general gap-centered deletion-transposition witness reaches the intended terminal with canonical positions"},
+    {"id": "gap-operator-exhaustive-oracle-parity", "kind": "parity", "expected": "exhaustive tiny traversal and independently extended dense oracle terminal/certificate maps match"},
+    {"id": "gap-operator-schedule-parity", "kind": "parity", "expected": "forward reverse and permuted traversal results match after operator closure"},
+    {"id": "gap-operator-remote-source-parity", "kind": "parity", "expected": "local and remote changed-source SHA-256 values match"},
+    {"id": "gap-operator-smoke-v2", "kind": "parity", "expected": "fixed 13x100 smoke has zero grounded loss and reports unchanged gates plus resource deltas"},
+    {"id": "gap-operator-package-isolation", "kind": "parity", "expected": "installed and proof package SHA-256 values remain byte-identical and runtime authority remains false"}
+  ],
+  "runtime_comparisons": []
+}

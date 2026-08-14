@@ -1,0 +1,48 @@
+{
+  "schema": "lay.l11.phase8i.support-width-audit.v1",
+  "date": "2026-08-14",
+  "package": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin",
+  "package_sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+  "package_bytes": 190139182,
+  "compact_base_bytes": 77960560,
+  "base_version": 7,
+  "atoms": 218763,
+  "stored_support_bits": 16,
+  "stored_support_max": 65535,
+  "saturated_atoms": 217,
+  "saturated_atoms_with_forward_postings": 180,
+  "saturated_atoms_without_forward_postings": 37,
+  "saturated_posting_atoms_with_degree_below_65535": 30,
+  "support_semantics": "atom occurrence count across clean center surfaces",
+  "posting_degree_semantics": "centers containing the atom",
+  "posting_degree_is_exact_support": false,
+  "exact_support_values_measured": false,
+  "fixed_width_projection": {
+    "header_bytes": 32,
+    "entry_bytes": 8,
+    "entries": 217,
+    "overflow_bytes": 1768,
+    "projected_compact_package_bytes": 77962328,
+    "package_limit_bytes": 204472320,
+    "within_package_limit": true
+  },
+  "derivation": {
+    "v8_base_offset": 128,
+    "v7_atom_record_bytes": 28,
+    "support_field_offset": 24,
+    "v8_posting_index_entry_bytes": 16,
+    "posting_relation_count_offset": 12,
+    "source_files": [
+      "src/nanda_wave/lexical_grokking/compiler.rs",
+      "src/nanda_wave/lexical_grokking/format.rs",
+      "src/nanda_wave/lexical_grokking/v8.rs"
+    ]
+  },
+  "verdict": "BASE_U16_INSUFFICIENT_EXACT_SUPPORT_SIDECAR_REQUIRED",
+  "claim_boundary": {
+    "package_mutated": false,
+    "exact_support_rebuilt": false,
+    "implicit_relation_parity_proven": false,
+    "runtime_authority_changed": false
+  }
+}

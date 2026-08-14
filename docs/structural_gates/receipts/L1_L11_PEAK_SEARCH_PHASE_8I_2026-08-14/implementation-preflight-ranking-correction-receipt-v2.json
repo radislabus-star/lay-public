@@ -1,0 +1,133 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "phase8i-paper-with-measured-diagnosis",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../l1-l11-typed-basin-implicit-forward-phase8i.md",
+      "sha256": "9995a9e8e67db76aaaeb0e3dc78b91322d96ea15f24087a6d79bd4a7f28ae172",
+      "size_bytes": 47023
+    },
+    {
+      "exists": true,
+      "id": "ranking-correction-route-pass",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/ranking-correction-route-receipt-v2.json",
+      "sha256": "27ba476119c1b1e329d4c77aea7478fc3e6516a66925b22d569d5e50dfad82cd",
+      "size_bytes": 4228
+    },
+    {
+      "exists": true,
+      "id": "accepted-diagnostic-smoke-v3",
+      "kind": "file",
+      "mode": "0600",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/phase-8i-gate-c-13x100-smoke-v3-diagnostic.json",
+      "sha256": "6c28fe0aaf2a3ef2426361cf334668bbe9a4557ff0aa8e2d35c8188a9a7543eb",
+      "size_bytes": 171408
+    },
+    {
+      "exists": true,
+      "id": "shared-settlement-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../../src/nanda_wave/lexical_grokking/runtime/settlement.rs",
+      "sha256": "05508a9c1007e6cff40dd1d4b50fa3ddd7d2882f9e399fa0f7fafc5df74bad29",
+      "size_bytes": 51988
+    },
+    {
+      "exists": true,
+      "id": "shared-settlement-tests",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../../src/nanda_wave/lexical_grokking/runtime/tests.rs",
+      "sha256": "a7176e2056c04a855f98861c2d67e524e79ebdfe9d2404cc00705117142b0ce2",
+      "size_bytes": 14806
+    },
+    {
+      "exists": true,
+      "id": "frozen-objective-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../../src/nanda_wave/lexical_grokking/proof.rs",
+      "sha256": "77527fe80d268cd7f620586305164fd1c51f65305bfb13faa799121d49bbe148",
+      "size_bytes": 133796
+    },
+    {
+      "exists": true,
+      "id": "frozen-version-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../../Cargo.toml",
+      "sha256": "69a864532bcf0f806b00fdf6d74784d536dafc95f02c7e1ee3d136df2cb85b68",
+      "size_bytes": 2399
+    },
+    {
+      "exists": true,
+      "id": "installed-package",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin",
+      "sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+      "size_bytes": 190139182
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 8,
+    "forbidden_side_effect_kinds": [
+      "candidate_admission_change",
+      "candidate_birth_change",
+      "commit_or_push",
+      "denominator_change",
+      "deployment",
+      "energy_or_lease_change",
+      "full_proof_before_smoke_pass",
+      "gate_threshold_change",
+      "generated_traffic",
+      "heldout_label_pull",
+      "installed_package_mutation",
+      "literal_case_rule",
+      "local_heavy_build",
+      "objective_set_change",
+      "operator_rank_change",
+      "package_format_change",
+      "runtime_restart",
+      "synthetic_fixture",
+      "version_bump"
+    ],
+    "identity_contracts": 3,
+    "invariants": 5,
+    "planned_side_effect_kinds": [
+      "filesystem_edit",
+      "filesystem_write",
+      "test_execution"
+    ],
+    "preserved_artifacts": 4,
+    "runtime_comparisons": 1,
+    "source_checks": 1,
+    "tests": 12
+  },
+  "manifest_sha256": "9a555163da9cbb827085220f027af15771bf8b777981a8060ae3a854d662990c",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "shared-settlement-vetoes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../../src/nanda_wave/lexical_grokking/runtime/settlement.rs",
+      "sha256": "05508a9c1007e6cff40dd1d4b50fa3ddd7d2882f9e399fa0f7fafc5df74bad29",
+      "size_bytes": 51988
+    }
+  ],
+  "task_id": "lay-l11-phase8i-ranking-correction-v2-2026-08-14",
+  "verdict": "READY_TO_IMPLEMENT"
+}

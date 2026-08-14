@@ -1,0 +1,320 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-l11-phase8i-ranking-diagnosis-2026-08-14",
+  "authority_bearing": false,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "phase8i-paper-with-ranking-contract",
+      "kind": "file",
+      "path": "../../../l1-l11-typed-basin-implicit-forward-phase8i.md",
+      "expect": {
+        "size_bytes": 42846,
+        "sha256": "d4c0b85f66c6241868b166aaee944edda8e1e07a907592ffcd3a1e42259ecdfb",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "ranking-structure-pass",
+      "kind": "file",
+      "path": "ranking-diagnosis-structure-receipt-v3.json",
+      "expect": {
+        "size_bytes": 20086,
+        "sha256": "7989d1176945972d71a772a2fb29538af6405bc8f347252199ffdde3d34da242",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "typed-traversal-owner",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/typed_edit_traversal.rs",
+      "expect": {
+        "size_bytes": 81838,
+        "sha256": "01845b4a0b9f33368f3a04e4d3a42ed41a72a13a1a1d6ccc4675ffeb4c722349",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "quality-owner",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/typed_basin/quality.rs",
+      "expect": {
+        "size_bytes": 28617,
+        "sha256": "b6fcdf0088b916ced8d83f9f60741db2baffa0777f7486da6007b06c46600dd9",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "quality-metrics-owner",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/typed_basin/quality/metrics.rs",
+      "expect": {
+        "size_bytes": 11631,
+        "sha256": "052ffbb882aae512bd29a1b6f6c26df7ee3cc57323f1a869d7eed1e1d150b9e7",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "frozen-settlement-owner",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/runtime/settlement.rs",
+      "expect": {
+        "size_bytes": 51988,
+        "sha256": "05508a9c1007e6cff40dd1d4b50fa3ddd7d2882f9e399fa0f7fafc5df74bad29",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "frozen-objective-owner",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/proof.rs",
+      "expect": {
+        "size_bytes": 133796,
+        "sha256": "77527fe80d268cd7f620586305164fd1c51f65305bfb13faa799121d49bbe148",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "accepted-smoke-v2",
+      "kind": "file",
+      "path": "evidence/phase-8i-gate-c-13x100-smoke-v2.json",
+      "expect": {
+        "size_bytes": 74783,
+        "sha256": "ce715e36458355a95f8cf70becdc345e9324e34e0e7b5a2399847158117f871c",
+        "mode": "0600"
+      }
+    },
+    {
+      "id": "installed-package",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin",
+      "expect": {
+        "size_bytes": 190139182,
+        "sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+        "prefix_hex": "4c41594c31563800",
+        "mode": "0644"
+      }
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "expose-bounded-certificate-observation", "kind": "filesystem_edit"},
+      {"id": "add-bounded-candidate-diagnostics", "kind": "filesystem_edit"},
+      {"id": "add-diagnostic-invariant-tests", "kind": "filesystem_edit"},
+      {"id": "run-focused-tests-remotely", "kind": "test_execution"},
+      {"id": "write-smoke-v3-diagnostic-receipt", "kind": "filesystem_write"},
+      {"id": "update-phase8i-measured-diagnosis", "kind": "filesystem_edit"}
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "literal_case_rule",
+      "heldout_label_pull",
+      "objective_set_change",
+      "candidate_admission_change",
+      "candidate_order_change",
+      "settlement_change",
+      "authority_change",
+      "gate_threshold_change",
+      "denominator_change",
+      "package_format_change",
+      "installed_package_mutation",
+      "runtime_authority_change",
+      "local_heavy_build",
+      "deployment",
+      "runtime_restart",
+      "version_bump",
+      "commit_or_push",
+      "full_proof_before_mechanism_verdict"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "typed-projection-vetoes",
+      "path": "../../../../src/nanda_wave/lexical_grokking/typed_edit_traversal.rs",
+      "sha256": "01845b4a0b9f33368f3a04e4d3a42ed41a72a13a1a1d6ccc4675ffeb4c722349",
+      "forbidden_effect_patterns": [
+        {"effect": "generated_traffic", "regex": "reqwest|ureq::|TcpStream"},
+        {"effect": "synthetic_fixture", "regex": "write_synthetic|generate_fixture"},
+        {"effect": "literal_case_rule", "regex": "(акрбаов|паьец|упрчнеием|усшою|case\\.surface\\s*==)"},
+        {"effect": "heldout_label_pull", "regex": "case\\.terminal_id[^;]*(traverse|advance|push_state)"},
+        {"effect": "objective_set_change", "regex": "populate_sampled_ambiguity|build_objectives"},
+        {"effect": "candidate_admission_change", "regex": "DIAGNOSTIC_(PUSH|ADMIT|FRONTIER)"},
+        {"effect": "candidate_order_change", "regex": "DIAGNOSTIC_(SORT|RANK|ENERGY)"},
+        {"effect": "settlement_change", "regex": "SETTLING_ITERATIONS|QUALITY_DIAGNOSTIC_WEIGHT"},
+        {"effect": "authority_change", "regex": "DIAGNOSTIC_(WINNER|AUTHORITY)"},
+        {"effect": "gate_threshold_change", "regex": "QUALITY_DIAGNOSTIC_THRESHOLD"},
+        {"effect": "denominator_change", "regex": "QUALITY_DIAGNOSTIC_DENOMINATOR"},
+        {"effect": "package_format_change", "regex": "LAYL1V9|VERSION\\s*[:=]\\s*9"},
+        {"effect": "installed_package_mutation", "regex": "File::create|fs::write|fs::rename"},
+        {"effect": "runtime_authority_change", "regex": "service::|runtime_owner|live_owner"},
+        {"effect": "local_heavy_build", "regex": "Command::new[^;]*(cargo|rustc)"},
+        {"effect": "deployment", "regex": "deploy|install_runtime"},
+        {"effect": "runtime_restart", "regex": "systemctl|pkill|killall"},
+        {"effect": "version_bump", "regex": "set_package_version|set-version"},
+        {"effect": "commit_or_push", "regex": "git\\s+(commit|push)"},
+        {"effect": "full_proof_before_mechanism_verdict", "regex": "DIAGNOSTIC_FULL_PROOF"}
+      ]
+    },
+    {
+      "id": "quality-observer-vetoes",
+      "path": "../../../../src/nanda_wave/lexical_grokking/typed_basin/quality.rs",
+      "sha256": "b6fcdf0088b916ced8d83f9f60741db2baffa0777f7486da6007b06c46600dd9",
+      "forbidden_effect_patterns": [
+        {"effect": "generated_traffic", "regex": "reqwest|ureq::|TcpStream"},
+        {"effect": "synthetic_fixture", "regex": "write_synthetic|generate_fixture"},
+        {"effect": "literal_case_rule", "regex": "(акрбаов|паьец|упрчнеием|усшою|case\\.surface\\s*==)"},
+        {"effect": "candidate_admission_change", "regex": "DIAGNOSTIC_(PUSH|ADMIT|FRONTIER)"},
+        {"effect": "candidate_order_change", "regex": "DIAGNOSTIC_(SORT|RANK|ENERGY)"},
+        {"effect": "settlement_change", "regex": "QUALITY_DIAGNOSTIC_WEIGHT"},
+        {"effect": "authority_change", "regex": "DIAGNOSTIC_(WINNER|AUTHORITY)"},
+        {"effect": "gate_threshold_change", "regex": "QUALITY_DIAGNOSTIC_THRESHOLD"},
+        {"effect": "denominator_change", "regex": "QUALITY_DIAGNOSTIC_DENOMINATOR"},
+        {"effect": "package_format_change", "regex": "LAYL1V9|VERSION\\s*[:=]\\s*9"},
+        {"effect": "installed_package_mutation", "regex": "File::create|fs::write|fs::rename"},
+        {"effect": "runtime_authority_change", "regex": "service::|runtime_owner|live_owner"},
+        {"effect": "local_heavy_build", "regex": "Command::new[^;]*(cargo|rustc)"},
+        {"effect": "deployment", "regex": "deploy|install_runtime"},
+        {"effect": "runtime_restart", "regex": "systemctl|pkill|killall"},
+        {"effect": "version_bump", "regex": "set_package_version|set-version"},
+        {"effect": "commit_or_push", "regex": "git\\s+(commit|push)"},
+        {"effect": "full_proof_before_mechanism_verdict", "regex": "DIAGNOSTIC_FULL_PROOF"}
+      ]
+    }
+  ],
+  "state_machine": {
+    "initial_state": "RANKING_DIAGNOSIS_PAPER_PASS",
+    "terminal_states": [
+      "DIAGNOSTIC_SMOKE_PASS",
+      "SOURCE_REJECTED",
+      "FOCUSED_TESTS_REJECTED",
+      "DIAGNOSTIC_SMOKE_REJECTED"
+    ],
+    "steps": [
+      {
+        "id": "implement-bounded-observation-only-fields",
+        "from": "RANKING_DIAGNOSIS_PAPER_PASS",
+        "to": "SOURCE_READY",
+        "mutates": true,
+        "failure_state": "SOURCE_REJECTED",
+        "cleanup": "retain the scoped proof-only diagnostic diff; preserve objective settlement runtime package and smoke v2 bytes",
+        "preserves": ["installed-package-bytes", "objective-owner-bytes", "settlement-owner-bytes", "smoke-v2-bytes"],
+        "test_id": "ranking-diagnostic-source-failure"
+      },
+      {
+        "id": "run-focused-observation-parity-tests-remotely",
+        "from": "SOURCE_READY",
+        "to": "FOCUSED_TESTS_PASS",
+        "mutates": true,
+        "failure_state": "FOCUSED_TESTS_REJECTED",
+        "cleanup": "retain remote output and stop before smoke; do not alter ranking objective runtime or package",
+        "preserves": ["installed-package-bytes", "objective-owner-bytes", "settlement-owner-bytes", "smoke-v2-bytes"],
+        "test_id": "ranking-diagnostic-focused-failure"
+      },
+      {
+        "id": "run-fixed-13x100-diagnostic-smoke-remotely",
+        "from": "FOCUSED_TESTS_PASS",
+        "to": "DIAGNOSTIC_SMOKE_PASS",
+        "mutates": true,
+        "failure_state": "DIAGNOSTIC_SMOKE_REJECTED",
+        "cleanup": "retain rejected receipt and first changed stable field; do not start ranking correction or full proof",
+        "preserves": ["installed-package-bytes", "objective-owner-bytes", "settlement-owner-bytes", "smoke-v2-bytes"],
+        "test_id": "ranking-diagnostic-smoke-failure"
+      }
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "installed-package-bytes",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin",
+      "policy": "byte_identical",
+      "rollback_policy": "must remain byte-identical",
+      "baseline_check_id": "installed-package"
+    },
+    {
+      "id": "objective-owner-bytes",
+      "path": "../../../../src/nanda_wave/lexical_grokking/proof.rs",
+      "policy": "byte_identical",
+      "rollback_policy": "objective construction and denominator semantics remain frozen",
+      "baseline_check_id": "frozen-objective-owner"
+    },
+    {
+      "id": "settlement-owner-bytes",
+      "path": "../../../../src/nanda_wave/lexical_grokking/runtime/settlement.rs",
+      "policy": "byte_identical",
+      "rollback_policy": "shared settlement ranking and authority remain frozen",
+      "baseline_check_id": "frozen-settlement-owner"
+    },
+    {
+      "id": "smoke-v2-bytes",
+      "path": "evidence/phase-8i-gate-c-13x100-smoke-v2.json",
+      "policy": "byte_identical",
+      "rollback_policy": "retain as accepted pre-diagnostic baseline",
+      "baseline_check_id": "accepted-smoke-v2"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "typed-terminal-projection-identity",
+      "producer": "L1TypedEditTraversal terminal certificate map",
+      "consumer": "Phase7dTerminalEvidence terminal ID vector",
+      "comparison": "dropping diagnostic certificate classes yields the exact pre-change sorted terminal ID vector",
+      "test_id": "ranking-diagnostic-terminal-id-parity"
+    },
+    {
+      "id": "quality-result-identity",
+      "producer": "Gate C execution without reading diagnostics",
+      "consumer": "Gate C execution with bounded diagnostics",
+      "comparison": "candidate fingerprints readout counters denominators gates and package hashes are identical",
+      "test_id": "ranking-diagnostic-quality-parity"
+    },
+    {
+      "id": "local-remote-source-identity",
+      "producer": "local scoped source bytes",
+      "consumer": "remote build checkout source bytes",
+      "comparison": "SHA-256 of every changed source file is identical before remote tests",
+      "test_id": "ranking-diagnostic-remote-source-parity"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "bounded-systemic-diagnostics",
+      "statement": "only existing bounded first-loss rows gain deterministic per-candidate certificate activation geometry and energy observations",
+      "test_id": "ranking-diagnostic-bounded-fields"
+    },
+    {
+      "id": "objective-and-denominator-frozen",
+      "statement": "fixed objective sets objective-unique counts class cases and quality thresholds remain byte-identical to smoke v2",
+      "test_id": "ranking-diagnostic-quality-parity"
+    },
+    {
+      "id": "execution-and-authority-frozen",
+      "statement": "typed terminal IDs implicit candidates final order and Winner Tied Abstain readout are unchanged by diagnostic projection",
+      "test_id": "ranking-diagnostic-quality-parity"
+    },
+    {
+      "id": "diagnosis-is-mechanism-level",
+      "statement": "diagnostics expose typed classes and numeric evidence but contain no runtime branch on literal surfaces or fixture IDs",
+      "test_id": "ranking-diagnostic-no-literals"
+    },
+    {
+      "id": "runtime-remains-untouched",
+      "statement": "package daemon IBus version deployment commit and push remain unchanged through diagnostic smoke",
+      "test_id": "ranking-diagnostic-package-isolation"
+    }
+  ],
+  "tests": [
+    {"id": "ranking-diagnostic-source-failure", "kind": "fault_injection", "expected": "a source or formatting failure blocks remote tests and preserves protected bytes"},
+    {"id": "ranking-diagnostic-focused-failure", "kind": "fault_injection", "expected": "a focused compile invariant or parity failure blocks diagnostic smoke"},
+    {"id": "ranking-diagnostic-smoke-failure", "kind": "fault_injection", "expected": "any changed stable quality field package hash or incomplete diagnostic writes a rejected receipt and blocks ranking correction"},
+    {"id": "ranking-diagnostic-terminal-id-parity", "kind": "parity", "expected": "certificate observation preserves the exact sorted terminal ID vector"},
+    {"id": "ranking-diagnostic-quality-parity", "kind": "parity", "expected": "all smoke v2 stable quality counters gates candidate order and readout fields remain identical"},
+    {"id": "ranking-diagnostic-remote-source-parity", "kind": "parity", "expected": "local and remote changed source hashes match"},
+    {"id": "ranking-diagnostic-bounded-fields", "kind": "parity", "expected": "every bounded loss row reports deterministic top candidate certificates activation geometry modes energy and rank"},
+    {"id": "ranking-diagnostic-no-literals", "kind": "parity", "expected": "runtime and proof execution contain no branch keyed by the four observed surfaces targets terminal IDs or class-specific coefficients"},
+    {"id": "ranking-diagnostic-package-isolation", "kind": "parity", "expected": "installed and proof package bytes remain identical and runtime authority remains false"},
+    {"id": "ranking-diagnostic-smoke-v3", "kind": "parity", "expected": "fixed 13x100 diagnostic smoke preserves v2 quality and isolates one shared ranking mechanism"}
+  ],
+  "runtime_comparisons": []
+}

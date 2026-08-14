@@ -1,0 +1,195 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "phase8h-paper",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8H_2026-08-14/../../../l1-l11-decoder-subtree-cover-phase8h.md",
+      "sha256": "5a142f8320cce9f8c72a0de60d885a710b3cf90bd6ac7eb026881aeda2665184",
+      "size_bytes": 17846
+    },
+    {
+      "exists": true,
+      "id": "phase8-proof-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8H_2026-08-14/../../../../src/nanda_wave/lexical_grokking/posting_bounds.rs",
+      "sha256": "e6bf8cf9ca523dcb6109249b375d952e75f690b677bbe37f5d30a7ef7ca99912",
+      "size_bytes": 91383
+    },
+    {
+      "exists": true,
+      "id": "phase8g-modal-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8H_2026-08-14/../../../../src/nanda_wave/lexical_grokking/posting_bounds/modal_residual.rs",
+      "sha256": "1d9c809eb2169a7aabc920805e7bcc114e6493d539dfbeec7c6fa8f06e2df84d",
+      "size_bytes": 44742
+    },
+    {
+      "exists": true,
+      "id": "decoder-topology-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8H_2026-08-14/../../../../src/nanda_wave/lexical_grokking/forward_decoder_index.rs",
+      "sha256": "754ce19ad880ef869bdad6f961c10de504966d5bf4d4c54d92f5bf01f7e9cffb",
+      "size_bytes": 19862
+    },
+    {
+      "exists": true,
+      "id": "activation-contract",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8H_2026-08-14/../../../../src/nanda_wave/lexical_grokking/runtime/contract.rs",
+      "sha256": "c72689b93cea694bd79f4d0323085aa99be5e9fb025765a1b120ace3db4df754",
+      "size_bytes": 6106
+    },
+    {
+      "exists": true,
+      "id": "v8-format-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8H_2026-08-14/../../../../src/nanda_wave/lexical_grokking/v8.rs",
+      "sha256": "cb722f5dfb7c7d80ccc1ee298ee898e2220f178f50ef19f27bdf7feba564605a",
+      "size_bytes": 40868
+    },
+    {
+      "exists": true,
+      "id": "complete-posting-batch-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8H_2026-08-14/../../../../src/nanda_wave/lexical_grokking/runtime/relations.rs",
+      "sha256": "c5a134fbb4e91f392ae5a8844b69864347a67dfa6299dbc07067b409305a8649",
+      "size_bytes": 11169
+    },
+    {
+      "exists": true,
+      "id": "rejected-phase8g-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8H_2026-08-14/../L1_L11_PEAK_SEARCH_PHASE_8G_2026-08-14/evidence/phase-8g-13x1.json",
+      "sha256": "3644e103754ded16a062dc45b0c3180d9a07ee852a9b362c1a8831c78d5b4482",
+      "size_bytes": 67462
+    },
+    {
+      "exists": true,
+      "id": "decoder-baseline-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8H_2026-08-14/baseline/decoder-index.json",
+      "sha256": "d1d0ed88fad2a23fcc830ac6872633f1924d79fb47046b96229bd77ed9c16a49",
+      "size_bytes": 1321
+    },
+    {
+      "exists": true,
+      "id": "phase8h-route-design",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8H_2026-08-14/route-design-v1.json",
+      "sha256": "9dc44d30e23989bcafa8ecde89b9e61b702d3a051ee2b6f100f814de17d6247d",
+      "size_bytes": 6392
+    },
+    {
+      "exists": true,
+      "id": "phase8h-route-gate",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8H_2026-08-14/route-gate-v1.json",
+      "sha256": "d0dd7884729939efaa6f1e927841d0d88a8d69a88f983d0cffc33eb31da09b04",
+      "size_bytes": 7005
+    },
+    {
+      "exists": true,
+      "id": "installed-package",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin",
+      "sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+      "size_bytes": 190139182
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 12,
+    "forbidden_side_effect_kinds": [
+      "corpus_crystallization",
+      "corpus_order_as_decoder_order",
+      "dense_oracle_cover_input",
+      "early_atom_selection",
+      "equality_pruning",
+      "full_center_hot_scan",
+      "full_decoder_hot_scan",
+      "generated_candidate_string",
+      "generated_traffic",
+      "heldout_target_cover_selection",
+      "installed_package_mutation",
+      "package_format_change",
+      "posting_budget_truncation",
+      "production_phase8h_reachability",
+      "queue_truncation",
+      "runtime_authority_change",
+      "runtime_case_rule",
+      "runtime_restart",
+      "sampled_package_size_extrapolation",
+      "score_or_settlement_change",
+      "synthetic_fixture"
+    ],
+    "identity_contracts": 6,
+    "invariants": 5,
+    "planned_side_effect_kinds": [
+      "filesystem_edit",
+      "filesystem_write",
+      "test_execution"
+    ],
+    "preserved_artifacts": 4,
+    "runtime_comparisons": 0,
+    "source_checks": 4,
+    "tests": 8
+  },
+  "manifest_sha256": "4661f9a6dcba7089f4c84b760db27ffc6c1727e0a7320cfa3511f38ad64d0ea5",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "phase8-proof-vetoes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8H_2026-08-14/../../../../src/nanda_wave/lexical_grokking/posting_bounds.rs",
+      "sha256": "e6bf8cf9ca523dcb6109249b375d952e75f690b677bbe37f5d30a7ef7ca99912",
+      "size_bytes": 91383
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "decoder-topology-vetoes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8H_2026-08-14/../../../../src/nanda_wave/lexical_grokking/forward_decoder_index.rs",
+      "sha256": "754ce19ad880ef869bdad6f961c10de504966d5bf4d4c54d92f5bf01f7e9cffb",
+      "size_bytes": 19862
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "complete-posting-batch-vetoes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8H_2026-08-14/../../../../src/nanda_wave/lexical_grokking/runtime/relations.rs",
+      "sha256": "c5a134fbb4e91f392ae5a8844b69864347a67dfa6299dbc07067b409305a8649",
+      "size_bytes": 11169
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "v8-runtime-preservation-vetoes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8H_2026-08-14/../../../../src/nanda_wave/lexical_grokking/v8.rs",
+      "sha256": "cb722f5dfb7c7d80ccc1ee298ee898e2220f178f50ef19f27bdf7feba564605a",
+      "size_bytes": 40868
+    }
+  ],
+  "task_id": "lay-l11-decoder-subtree-cover-phase8h-projection-2026-08-14",
+  "verdict": "READY_TO_IMPLEMENT"
+}

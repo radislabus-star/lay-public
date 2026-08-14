@@ -1,0 +1,108 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "phase8h_proof_cli", "role": "interface"},
+    {"id": "phase8h_orchestrator", "role": "orchestrator"},
+    {"id": "complete_posting_adapter", "role": "producer"},
+    {"id": "decoder_topology_adapter", "role": "producer"},
+    {"id": "homogeneous_cover_builder", "role": "producer"},
+    {"id": "replacement_package_projector", "role": "producer"},
+    {"id": "query_token_projector", "role": "producer"},
+    {"id": "activated_closure_projector", "role": "producer"},
+    {"id": "symbolic_cohort_readout", "role": "producer"},
+    {"id": "dense_complete_oracle", "role": "proof_owner"},
+    {"id": "typed_phase7d_evidence", "role": "proof_owner"},
+    {"id": "cover_parity_gate", "role": "proof_owner"},
+    {"id": "projection_admission_gate", "role": "proof_owner"},
+    {"id": "phase8h_metrics", "role": "observer"},
+    {"id": "phase8h_receipt", "role": "observer"}
+  ],
+  "edges": [
+    {"id": "exec-cli-orchestrator", "from": "phase8h_proof_cli", "relation": "calls", "to": "phase8h_orchestrator", "events": ["phase8h_field_projection", "phase8h_query_projection"]},
+    {"id": "exec-orchestrator-cover", "from": "phase8h_orchestrator", "relation": "calls", "to": "homogeneous_cover_builder", "events": ["phase8h_field_projection"]},
+    {"id": "exec-cover-postings", "from": "homogeneous_cover_builder", "relation": "calls", "to": "complete_posting_adapter", "events": ["phase8h_field_projection"]},
+    {"id": "exec-cover-topology", "from": "homogeneous_cover_builder", "relation": "calls", "to": "decoder_topology_adapter", "events": ["phase8h_field_projection"]},
+    {"id": "exec-cover-package", "from": "homogeneous_cover_builder", "relation": "delegates", "to": "replacement_package_projector", "events": ["phase8h_field_projection"]},
+    {"id": "exec-package-admission", "from": "replacement_package_projector", "relation": "delegates", "to": "projection_admission_gate", "events": ["phase8h_field_projection"]},
+    {"id": "exec-orchestrator-query", "from": "phase8h_orchestrator", "relation": "calls", "to": "query_token_projector", "events": ["phase8h_query_projection"]},
+    {"id": "exec-query-postings", "from": "query_token_projector", "relation": "calls", "to": "complete_posting_adapter", "events": ["phase8h_query_projection"]},
+    {"id": "exec-query-topology", "from": "query_token_projector", "relation": "calls", "to": "decoder_topology_adapter", "events": ["phase8h_query_projection"]},
+    {"id": "exec-query-closure", "from": "query_token_projector", "relation": "delegates", "to": "activated_closure_projector", "events": ["phase8h_query_projection"]},
+    {"id": "exec-closure-readout", "from": "activated_closure_projector", "relation": "delegates", "to": "symbolic_cohort_readout", "events": ["phase8h_query_projection"]},
+    {"id": "exec-readout-admission", "from": "symbolic_cohort_readout", "relation": "delegates", "to": "projection_admission_gate", "events": ["phase8h_query_projection"]},
+    {"id": "proof-dense-cover-parity", "from": "dense_complete_oracle", "relation": "proves", "to": "cover_parity_gate", "events": ["phase8h_activation_parity"]},
+    {"id": "proof-cover-parity", "from": "homogeneous_cover_builder", "relation": "proves", "to": "cover_parity_gate", "events": ["phase8h_activation_parity"]},
+    {"id": "proof-typed-union-parity", "from": "typed_phase7d_evidence", "relation": "proves", "to": "cover_parity_gate", "events": ["phase8h_typed_union_parity"]},
+    {"id": "proof-readout-parity", "from": "symbolic_cohort_readout", "relation": "proves", "to": "cover_parity_gate", "events": ["phase8h_readout_parity"]},
+    {"id": "proof-parity-admission", "from": "cover_parity_gate", "relation": "proves", "to": "projection_admission_gate", "events": ["phase8h_admission_proof"]},
+    {"id": "observe-admission-metrics", "from": "projection_admission_gate", "relation": "observes", "to": "phase8h_metrics", "events": ["phase8h_observation"]},
+    {"id": "observe-metrics-receipt", "from": "phase8h_metrics", "relation": "observes", "to": "phase8h_receipt", "events": ["phase8h_observation"]}
+  ],
+  "routes": [
+    {
+      "id": "phase8h-field-projection",
+      "event": "phase8h_field_projection",
+      "kind": "execution",
+      "entry": "phase8h_proof_cli",
+      "terminal": "projection_admission_gate",
+      "required_roles": ["interface", "orchestrator", "producer", "proof_owner"],
+      "via": ["homogeneous_cover_builder", "replacement_package_projector"],
+      "path_cardinality": [
+        {"from": "phase8h_proof_cli", "to": "projection_admission_gate", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "phase8h-query-projection",
+      "event": "phase8h_query_projection",
+      "kind": "execution",
+      "entry": "phase8h_proof_cli",
+      "terminal": "projection_admission_gate",
+      "required_roles": ["interface", "orchestrator", "producer", "proof_owner"],
+      "via": ["query_token_projector", "activated_closure_projector", "symbolic_cohort_readout"],
+      "path_cardinality": [
+        {"from": "phase8h_proof_cli", "to": "projection_admission_gate", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "phase8h-activation-parity",
+      "event": "phase8h_activation_parity",
+      "kind": "proof",
+      "entry": "dense_complete_oracle",
+      "terminal": "cover_parity_gate",
+      "required_roles": ["proof_owner"]
+    },
+    {
+      "id": "phase8h-typed-union-parity",
+      "event": "phase8h_typed_union_parity",
+      "kind": "proof",
+      "entry": "typed_phase7d_evidence",
+      "terminal": "cover_parity_gate",
+      "required_roles": ["proof_owner"]
+    },
+    {
+      "id": "phase8h-readout-parity",
+      "event": "phase8h_readout_parity",
+      "kind": "proof",
+      "entry": "symbolic_cohort_readout",
+      "terminal": "cover_parity_gate",
+      "required_roles": ["producer", "proof_owner"]
+    },
+    {
+      "id": "phase8h-admission-proof",
+      "event": "phase8h_admission_proof",
+      "kind": "proof",
+      "entry": "cover_parity_gate",
+      "terminal": "projection_admission_gate",
+      "required_roles": ["proof_owner"]
+    },
+    {
+      "id": "phase8h-observation",
+      "event": "phase8h_observation",
+      "kind": "observation",
+      "entry": "projection_admission_gate",
+      "terminal": "phase8h_receipt",
+      "required_roles": ["proof_owner", "observer"]
+    }
+  ]
+}

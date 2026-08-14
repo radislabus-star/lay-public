@@ -66,6 +66,21 @@ impl LexicalGrokkingMemory {
         }
     }
 
+    #[cfg(any(test, feature = "lexical-compiler"))]
+    pub(in crate::nanda_wave::lexical_grokking) fn complete_forward_couplings_batch(
+        &self,
+        atom_ids: &[u32],
+    ) -> Result<Vec<Arc<[WaveCoupling]>>, String> {
+        match &self.relations {
+            RelationStore::Eager => atom_ids
+                .iter()
+                .copied()
+                .map(|atom_id| self.complete_forward_couplings(atom_id))
+                .collect(),
+            RelationStore::LazyV8(artifact) => artifact.postings(atom_ids),
+        }
+    }
+
     pub(super) fn forward_coupling_views(&self, atom_ids: &[u32]) -> Vec<CouplingView<'_>> {
         match &self.relations {
             RelationStore::Eager => atom_ids

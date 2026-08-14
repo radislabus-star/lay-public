@@ -1050,8 +1050,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_nanda_wave_train.rs": {
-    "mtime": 1786685381.2763145,
-    "ast_hash": "4076bd52d28e10fe807b5181b218fe72",
+    "mtime": 1786718550.5459893,
+    "ast_hash": "ae99f3348face77bf3929f5b52be4673",
     "semantic_hash": ""
   },
   "src/bin/lay_ngram_corpus.rs": {
@@ -1575,8 +1575,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/mod.rs": {
-    "mtime": 1786681454.9459786,
-    "ast_hash": "d4573f8ffb1d13542865e64077db9de4",
+    "mtime": 1786718570.6301787,
+    "ast_hash": "71a528022999c47604bc94f689b14b4a",
     "semantic_hash": ""
   },
   "src/nanda_wave/mode.rs": {
@@ -3725,8 +3725,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/compiler.rs": {
-    "mtime": 1786642120.451044,
-    "ast_hash": "4ce17ca1b60c31eed49dd8535f1714bb",
+    "mtime": 1786706312.2150643,
+    "ast_hash": "cf4385c92770ffb118fe08cc595cb541",
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/corruption.rs": {
@@ -3740,8 +3740,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/mod.rs": {
-    "mtime": 1786681426.4967709,
-    "ast_hash": "33ad7e915cf9d22e4950241336d5e7dc",
+    "mtime": 1786718531.5368114,
+    "ast_hash": "8fc25445b9238130873a348933aa22b9",
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/model.rs": {
@@ -3755,8 +3755,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/runtime.rs": {
-    "mtime": 1786668783.899453,
-    "ast_hash": "9be37927e7da498ed1de9ea539d39af6",
+    "mtime": 1786718768.5241213,
+    "ast_hash": "ba21879c9e8ece1cc1b6b4b92eefcb05",
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/tests.rs": {
@@ -7545,8 +7545,8 @@
     "semantic_hash": ""
   },
   "docs/l1-l11-exact-peak-search-refactoring-plan.md": {
-    "mtime": 1786680382.32017,
-    "ast_hash": "7973540f0c140f1eb9d522930f028afa",
+    "mtime": 1786721736.4265556,
+    "ast_hash": "de90820bb496e98f3caa0b03ba9ea6a2",
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_2A_2026-08-13/phase-2a.json": {
@@ -7580,8 +7580,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/runtime/relations.rs": {
-    "mtime": 1786681549.774721,
-    "ast_hash": "3bc83e00d63a18e932c4f9fad79d0bff",
+    "mtime": 1786697065.054428,
+    "ast_hash": "457ca2a9957352702ac962fa5285a0d5",
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_2D_2026-08-13/phase-2d.json": {
@@ -7620,8 +7620,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/runtime/settlement.rs": {
-    "mtime": 1786668360.2460759,
-    "ast_hash": "d41c5da66b02656437f581cf999e0a1e",
+    "mtime": 1786715406.8254857,
+    "ast_hash": "2c2da5e45802e492ad4f6c39fffd9ba1",
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_2H_2026-08-14/phase-2h.json": {
@@ -7630,8 +7630,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/runtime/tests.rs": {
-    "mtime": 1786662225.3694026,
-    "ast_hash": "9d23ceb3e381b0a916591b30da0fbe6c",
+    "mtime": 1786715406.8254857,
+    "ast_hash": "53974447c6b066ddb00bf190c76518dc",
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_3_2026-08-14/binary-identity-investigation.json": {
@@ -7670,8 +7670,8 @@
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_3_2026-08-14/phase-3.json": {
-    "mtime": 1786667190.7692852,
-    "ast_hash": "f2e98147a78c485be95f7be45dd27cc4",
+    "mtime": 1786667282.6649308,
+    "ast_hash": "48dd683a0300dfdd82a77fd94648531d",
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_3_2026-08-14/route-design.json": {
@@ -7715,8 +7715,8 @@
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_4_2026-08-14/phase-4.json": {
-    "mtime": 1786669106.5032458,
-    "ast_hash": "57d8883bb511e93ce0414f7d262f5c18",
+    "mtime": 1786669213.7706556,
+    "ast_hash": "94ce638976233859a8a21fb0da10b1d1",
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_4_2026-08-14/route-design.json": {
@@ -7755,8 +7755,8 @@
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_5_2026-08-14/phase-5.json": {
-    "mtime": 1786673549.149591,
-    "ast_hash": "8a729d4024948ceb9596f116ecd0bd60",
+    "mtime": 1786673618.2883236,
+    "ast_hash": "fdd56b0d93b9522347055bf7208d7cf3",
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/proof_matrix.rs": {
@@ -7780,8 +7780,8 @@
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_6_2026-08-14/phase-6.json": {
-    "mtime": 1786674459.4090383,
-    "ast_hash": "08f1e96c2999187a11f2472c1821e175",
+    "mtime": 1786674522.3127968,
+    "ast_hash": "7b33fa50d3061f06c77597f87e33f2ec",
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_6_2026-08-14/route-design.json": {
@@ -7830,8 +7830,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/typed_edit_traversal.rs": {
-    "mtime": 1786685827.9990752,
-    "ast_hash": "4b272ad847969cb8cc54655085646e86",
+    "mtime": 1786713577.9299273,
+    "ast_hash": "8b9777f471b8e9bb9abbac8cd337b9da",
     "semantic_hash": ""
   },
   "docs/l1-l11-typed-edit-product-phase7.md": {
@@ -7919,21 +7919,6 @@
     "ast_hash": "c79a04fc62c41e4ed07d7b6d596656e6",
     "semantic_hash": ""
   },
-  "src-sync/lay_nanda_wave_train.rs": {
-    "mtime": 1786679292.8115685,
-    "ast_hash": "eb634cbcf0e44b3c3d8e56c4e5f1b712",
-    "semantic_hash": ""
-  },
-  "src-sync/mod.rs": {
-    "mtime": 1786679292.8085685,
-    "ast_hash": "fce65b90041fdab098a37a6478415f69",
-    "semantic_hash": ""
-  },
-  "src-sync/typed_edit_traversal.rs": {
-    "mtime": 1786679317.3159378,
-    "ast_hash": "d01d3fb8edddd181ba2a0a86076aaef5",
-    "semantic_hash": ""
-  },
   "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8_2026-08-14/implementation-preflight-receipt.json": {
     "mtime": 1786681114.2086697,
     "ast_hash": "bd4210a24aa6100e3db2f1cf6dce9a3a",
@@ -7960,13 +7945,693 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/posting_bounds.rs": {
-    "mtime": 1786687431.4226213,
-    "ast_hash": "653a8c7117322fe960dc6b3835458a85",
+    "mtime": 1786700998.6857445,
+    "ast_hash": "3ecafe7cb47a1acd1865e0ff426084f5",
     "semantic_hash": ""
   },
   "docs/l1-l11-posting-bound-phase8.md": {
     "mtime": 1786687706.3741343,
     "ast_hash": "069226001f73357053c5484dc8805fbf",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8E_2026-08-14/implementation-preflight-blocked-v1.json": {
+    "mtime": 1786688381.2955842,
+    "ast_hash": "a3bc9e5260d54e2840f44359fbaac9bb",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8E_2026-08-14/implementation-preflight-receipt-v2.json": {
+    "mtime": 1786688448.5368588,
+    "ast_hash": "64f58d5269db6145dc7e876fa7fb6629",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8E_2026-08-14/implementation-preflight-v1.json": {
+    "mtime": 1786688364.439078,
+    "ast_hash": "7907aacbd2e7f70f069b7f1f2aa6ae28",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8E_2026-08-14/implementation-preflight-v2.json": {
+    "mtime": 1786688434.7308595,
+    "ast_hash": "6f8687b7ad7b5dc015e0d8564e9688f8",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8E_2026-08-14/phase-8e.json": {
+    "mtime": 1786690097.3256776,
+    "ast_hash": "04b08e3ed97a8996d16891c39aa718b4",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8E_2026-08-14/route-design.json": {
+    "mtime": 1786688192.0501842,
+    "ast_hash": "8ff850bfab78c219cf6809c82ac6ca0b",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8E_2026-08-14/route-gate.json": {
+    "mtime": 1786688231.9416192,
+    "ast_hash": "4c5fc564cc52a46abd182828c65526b4",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8F_2026-08-14/implementation-preflight-receipt-v1.json": {
+    "mtime": 1786690415.232575,
+    "ast_hash": "e4f05de94b286cf72d764fce0bcb115d",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8F_2026-08-14/implementation-preflight-receipt-v2.json": {
+    "mtime": 1786694307.5393748,
+    "ast_hash": "dd3ddabf547fc7d9bd0abf398ec2aa3a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8F_2026-08-14/implementation-preflight-v1.json": {
+    "mtime": 1786690401.2224045,
+    "ast_hash": "fe8fdd7a881c7814f31e0b9d6aa4d448",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8F_2026-08-14/implementation-preflight-v2.json": {
+    "mtime": 1786694285.0978246,
+    "ast_hash": "971cca6cab54c6d7dcce3abed7a8627c",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8F_2026-08-14/phase-8f-v2-13x1.json": {
+    "mtime": 1786694771.5261736,
+    "ast_hash": "3255a2dd13290b06b1e1b890383274fe",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8F_2026-08-14/phase-8f-v2-summary.json": {
+    "mtime": 1786695412.6908882,
+    "ast_hash": "7c268b92c946092efb903e2ac43cab3a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8F_2026-08-14/reverse-replay-gate-a-fail-v1.json": {
+    "mtime": 1786694084.7491052,
+    "ast_hash": "fe06e82c9938f390cb88429f8cda9e32",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8F_2026-08-14/route-design-v2.json": {
+    "mtime": 1786694153.9520547,
+    "ast_hash": "091c3f8d3e04986aef236c44dd581204",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8F_2026-08-14/route-design.json": {
+    "mtime": 1786690253.4235985,
+    "ast_hash": "e7845040a2329217088197045aaa202c",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8F_2026-08-14/route-gate-v2.json": {
+    "mtime": 1786694171.3692918,
+    "ast_hash": "9c61f7cadaa052bef3b33daf73fd4096",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8F_2026-08-14/route-gate.json": {
+    "mtime": 1786690286.6370053,
+    "ast_hash": "230a16329c533889e8242faa26b9d1b1",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8G_2026-08-14/evidence/phase-8g-13x1.json": {
+    "mtime": 1786698154.4394019,
+    "ast_hash": "00feb8ea487036a2ccb78036544470bf",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8G_2026-08-14/implementation-preflight-receipt-v1.json": {
+    "mtime": 1786696618.0204146,
+    "ast_hash": "df30da4c4af56a8e55dffac1242b8ebe",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8G_2026-08-14/implementation-preflight-receipt-v2.json": {
+    "mtime": 1786696656.3230546,
+    "ast_hash": "6d8d9934023d16251ddbad4d90a55cf8",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8G_2026-08-14/implementation-preflight-receipt-v3.json": {
+    "mtime": 1786696852.0657208,
+    "ast_hash": "47d2bff559b52cd46afbf9fec347f6e3",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8G_2026-08-14/implementation-preflight-v1.json": {
+    "mtime": 1786696606.7263992,
+    "ast_hash": "5b73365943fffe80ed440d626881883f",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8G_2026-08-14/implementation-preflight-v2.json": {
+    "mtime": 1786696645.3519096,
+    "ast_hash": "4bec71afdb9425f3ffab3b92133a7251",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8G_2026-08-14/implementation-preflight-v3.json": {
+    "mtime": 1786696841.9054995,
+    "ast_hash": "abcaf293e7d676d74c048aedfea2a396",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8G_2026-08-14/route-design-v1.json": {
+    "mtime": 1786696368.1612315,
+    "ast_hash": "6f7aab5c2c1beb5923ff96430d2c8922",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8G_2026-08-14/route-design-v2.json": {
+    "mtime": 1786696414.8728542,
+    "ast_hash": "1fd3cb8ef69657c836a83e1fa1cc2905",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8G_2026-08-14/route-design-v3.json": {
+    "mtime": 1786696452.88036,
+    "ast_hash": "87f66e4a9d50f124b0595b49f27c10aa",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8G_2026-08-14/route-gate-v1.json": {
+    "mtime": 1786696376.0163364,
+    "ast_hash": "9773da92e988ed6e969a4a4b08988260",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8G_2026-08-14/route-gate-v2.json": {
+    "mtime": 1786696428.3330333,
+    "ast_hash": "50f0a7084960ebe3d41295709f780031",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8G_2026-08-14/route-gate-v3.json": {
+    "mtime": 1786696462.0214813,
+    "ast_hash": "d591ce7a9e40395843dd4f35fbd8fc35",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8H_2026-08-14/baseline/decoder-index.json": {
+    "mtime": 1786698816.9879403,
+    "ast_hash": "227c5e87e0fb94be0586609c4b656cc9",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8H_2026-08-14/evidence/phase-8h-13x1.json": {
+    "mtime": 1786701396.8063,
+    "ast_hash": "0ba9a5e3aff4ac591febacc46b195785",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8H_2026-08-14/implementation-preflight-receipt-v1.json": {
+    "mtime": 1786699502.43247,
+    "ast_hash": "c0c8232dd147419c5d982a50a3ed10a4",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8H_2026-08-14/implementation-preflight-receipt-v2.json": {
+    "mtime": 1786699547.5633407,
+    "ast_hash": "755038ec4f5c9fc4c78e5b8ad9742409",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8H_2026-08-14/implementation-preflight-v1.json": {
+    "mtime": 1786699479.8396726,
+    "ast_hash": "36dc6d5ff6904fdf8a37f3e0efc62a40",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8H_2026-08-14/implementation-preflight-v2.json": {
+    "mtime": 1786699538.5392177,
+    "ast_hash": "2758659ad1e412092c8b71eb549a0409",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8H_2026-08-14/route-design-v1.json": {
+    "mtime": 1786699329.074375,
+    "ast_hash": "cef7d7349970c66f08da49a7a6da7165",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8H_2026-08-14/route-gate-v1.json": {
+    "mtime": 1786699340.7874696,
+    "ast_hash": "9928dac8c2c0af9271d6076e21b83487",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/baseline/support-width-audit.json": {
+    "mtime": 1786703005.088819,
+    "ast_hash": "9ba5829f8974161f6af62da990053d65",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/bounded-projection-route-design-v1.json": {
+    "mtime": 1786718006.69176,
+    "ast_hash": "8a5f8464ab2dbb1c082bf4aedaca122d",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/bounded-projection-route-observed-source-receipt-v2.json": {
+    "mtime": 1786721846.2069361,
+    "ast_hash": "b3071ec40bbb0833c57f25a7a494b323",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/bounded-projection-route-observed-source-v2.json": {
+    "mtime": 1786721792.0632875,
+    "ast_hash": "ca982f982b9c05f07f3fea3f13ff4074",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/bounded-projection-route-receipt-v1.json": {
+    "mtime": 1786718017.6598208,
+    "ast_hash": "add8a0237e145dd52cb433bad9c791d9",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/phase-8i-13x1-a2.json": {
+    "mtime": 1786707431.644393,
+    "ast_hash": "a04ba3d48223be8e3fd5a8e5d454259b",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/phase-8i-13x1.json": {
+    "mtime": 1786705088.2616909,
+    "ast_hash": "d918070d27b74b070627e98863c8524d",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/phase-8i-gate-c-13x100-smoke-v1.json": {
+    "mtime": 1786711046.3676662,
+    "ast_hash": "6794c77b461f64b04111dc92a59ccf30",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/phase-8i-gate-c-13x100-smoke-v2.json": {
+    "mtime": 1786712074.8352084,
+    "ast_hash": "3830d991d43f2844096e196b58ed8ec9",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/phase-8i-gate-c-13x100-smoke-v3-diagnostic.json": {
+    "mtime": 1786714374.645848,
+    "ast_hash": "0b35251cc61c90aed6e00c915ddabd97",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/phase-8i-gate-c-13x100-smoke-v4-ranking-correction.json": {
+    "mtime": 1786716016.9455886,
+    "ast_hash": "d4ad7882831035d24b8cde596ff34f62",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/phase-8i-gate-c-13x100-smoke-v5-bounded-projection.json": {
+    "mtime": 1786719671.1448972,
+    "ast_hash": "29f1718ae36f539c7e5e0706e2928a64",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/phase-8i-gate-c-13x20000-full-v1-ranking-correction.json": {
+    "mtime": 1786717622.9023182,
+    "ast_hash": "e1c6ad4ee70a05a6be6a5f505a576506",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/phase-8i-gate-c-13x20000-full-v2-bounded-projection.json": {
+    "mtime": 1786721579.1574812,
+    "ast_hash": "74778e9f47773c4849dada54d3f8b715",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/phase-8i-gate-c-grounded-loss-analysis-v1.json": {
+    "mtime": 1786711046.7566714,
+    "ast_hash": "2762e4616e90d3da04c9121725132e7f",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/phase-8i-gate-c-layout-projection-20k-bounded-projection-v1.json": {
+    "mtime": 1786720030.3279223,
+    "ast_hash": "6bb055cc780734ba3cdb567cd7d137ff",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/phase-8i-gate-c-omission-transposition-20k-bounded-projection-v1.json": {
+    "mtime": 1786719508.7540796,
+    "ast_hash": "037c4bbda68ae35713ef081e10c5c621",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/implementation-preflight-a0-a1-b0-receipt-v1.json": {
+    "mtime": 1786703323.2592196,
+    "ast_hash": "49e751e3c1c9c353f9ca64d9212730b1",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/implementation-preflight-a0-a1-b0-receipt-v2.json": {
+    "mtime": 1786703435.1379194,
+    "ast_hash": "8e91b3cead6c0ce644520096ead8a4d2",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/implementation-preflight-a0-a1-b0-v1.json": {
+    "mtime": 1786703305.6328013,
+    "ast_hash": "5a8b85177a43c94969ff6473221c0b10",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/implementation-preflight-a0-a1-b0-v2.json": {
+    "mtime": 1786703422.4031994,
+    "ast_hash": "0d325219bb6df321e32eb43cdfcb7396",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/implementation-preflight-a2-receipt-v1.json": {
+    "mtime": 1786705978.5168276,
+    "ast_hash": "da867e841e69d1f4fb8a8853ffc1d28d",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/implementation-preflight-a2-receipt-v2.json": {
+    "mtime": 1786706064.8677342,
+    "ast_hash": "63cb23697b770b98f2f0a044eb292f4a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/implementation-preflight-a2-v2.json": {
+    "mtime": 1786706053.0207691,
+    "ast_hash": "3634e29e9bc7b6f82dfc2940d79f7d7c",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/implementation-preflight-bounded-projection-receipt-v1.json": {
+    "mtime": 1786718184.16654,
+    "ast_hash": "4c1063647273c3acdd9a665569f5cfa0",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/implementation-preflight-bounded-projection-receipt-v2.json": {
+    "mtime": 1786718247.0766892,
+    "ast_hash": "c40eb119688a8cc7fa534b114324ac2e",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/implementation-preflight-bounded-projection-v1.json": {
+    "mtime": 1786718169.5177915,
+    "ast_hash": "d31e1761cdaf677af12dd45d81949e77",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/implementation-preflight-bounded-projection-v2.json": {
+    "mtime": 1786718224.6921961,
+    "ast_hash": "c100b97a05c35cf8919c7866e9e78cb8",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/implementation-preflight-gap-omission-receipt-v1.json": {
+    "mtime": 1786711273.8238807,
+    "ast_hash": "267d002a17817d447c5c385c090e5739",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/implementation-preflight-gap-omission-receipt-v2.json": {
+    "mtime": 1786711353.9346926,
+    "ast_hash": "5acb38b54987ffc9a53e164d9479e2ac",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/implementation-preflight-gap-omission-v1.json": {
+    "mtime": 1786711259.946483,
+    "ast_hash": "b6a7779793f25f08b308085892fe62c7",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/implementation-preflight-gap-omission-v2.json": {
+    "mtime": 1786711340.664542,
+    "ast_hash": "46bf245b810698c9f5381a7fa0d4e991",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/implementation-preflight-gate-c-receipt-v1.json": {
+    "mtime": 1786708144.4515028,
+    "ast_hash": "7f2057bb7d8c0e7e26cd26b2ff79d25c",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/implementation-preflight-gate-c-receipt-v2.json": {
+    "mtime": 1786708294.2407122,
+    "ast_hash": "26d97a7a00a8ffd596f8ae2caf2d51ef",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/implementation-preflight-gate-c-v1.json": {
+    "mtime": 1786708128.836159,
+    "ast_hash": "698e4ba6c952cd6fd6329bb211dd56ab",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/implementation-preflight-gate-c-v2.json": {
+    "mtime": 1786708275.2249126,
+    "ast_hash": "6858cdac8d4a94777c757798cf7aac28",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/implementation-preflight-ranking-correction-receipt-v1.json": {
+    "mtime": 1786715207.8972857,
+    "ast_hash": "c277f2bf4dce8c35ea7d04580d6ef92e",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/implementation-preflight-ranking-correction-receipt-v2.json": {
+    "mtime": 1786715269.915685,
+    "ast_hash": "27502e0b3f8bcaeee4dd57d264a246a1",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/implementation-preflight-ranking-correction-v1.json": {
+    "mtime": 1786715197.5087233,
+    "ast_hash": "ab009b3188e7cb4f0d4cc21a70069708",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/implementation-preflight-ranking-correction-v2.json": {
+    "mtime": 1786715258.3975325,
+    "ast_hash": "777a0b9c92f1b229354d2f0dd1d2caae",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/implementation-preflight-ranking-diagnosis-receipt-v1.json": {
+    "mtime": 1786713316.605892,
+    "ast_hash": "28aef6e6efb15ae4e4111c2eea8b758f",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/implementation-preflight-ranking-diagnosis-receipt-v2.json": {
+    "mtime": 1786713348.6075938,
+    "ast_hash": "c585a1a9d1eb10fd47551e091c23d38e",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/implementation-preflight-ranking-diagnosis-v1.json": {
+    "mtime": 1786713306.3351238,
+    "ast_hash": "2778d409cbb6bc010b166fa34aef5eb7",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/implementation-preflight-ranking-diagnosis-v2.json": {
+    "mtime": 1786713338.2524507,
+    "ast_hash": "7f24856aec828b0003d628e131712b06",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/ranking-correction-route-design-v1.json": {
+    "mtime": 1786714988.9269066,
+    "ast_hash": "e8542b35458e25679f68a5aa3611553b",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/ranking-correction-route-design-v2.json": {
+    "mtime": 1786715051.5297604,
+    "ast_hash": "f8d9c68178354046a644a45fc87bb687",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/ranking-correction-route-receipt-v1.json": {
+    "mtime": 1786715004.7221227,
+    "ast_hash": "2815265d1baaf1cf2b19417c73acd594",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/ranking-correction-route-receipt-v2.json": {
+    "mtime": 1786715064.4509356,
+    "ast_hash": "7eabe5f90402fa5c10525f91563b4e47",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/ranking-diagnosis-structure-receipt-v1.json": {
+    "mtime": 1786713000.264042,
+    "ast_hash": "692054d1c00457d60699d9e8bc9f7a96",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/ranking-diagnosis-structure-receipt-v2.json": {
+    "mtime": 1786713095.2379863,
+    "ast_hash": "ee6f357fc510256f7e1e71dadd992fc2",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/ranking-diagnosis-structure-receipt-v3.json": {
+    "mtime": 1786713164.3896813,
+    "ast_hash": "1633c30f69655a68fc2b01550d0637a1",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/route-design-gate-c-v1.json": {
+    "mtime": 1786707907.3295212,
+    "ast_hash": "d2933a5ba5911e1bc4f8e7f007b6ba04",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/route-design-gate-c-v2.json": {
+    "mtime": 1786707959.2041368,
+    "ast_hash": "fc3fd38eb5d67032917e2f073ceafe28",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/route-design-v1.json": {
+    "mtime": 1786703005.088819,
+    "ast_hash": "6bb1ff540bbc1945e10789243148536a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/route-design-v2.json": {
+    "mtime": 1786703056.1544983,
+    "ast_hash": "775841106bbfcc2fce92afa712ad5a34",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/route-design-v3.json": {
+    "mtime": 1786703083.1768572,
+    "ast_hash": "a2ba988eec25778a0e15a52a34ae63c0",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/route-gate-c-v1.json": {
+    "mtime": 1786707941.027921,
+    "ast_hash": "550f4d4020e2f2decc05f08bf6c63f9d",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/route-gate-c-v2.json": {
+    "mtime": 1786707971.9862888,
+    "ast_hash": "fafda1325a479f14b119d7bbc14d7057",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/route-gate-v1.json": {
+    "mtime": 1786703018.4859974,
+    "ast_hash": "c279dc9706a1495c7a10e85a3a90cea0",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/route-gate-v2.json": {
+    "mtime": 1786703065.7266254,
+    "ast_hash": "087376c73fdf2be49394112948e8e362",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/route-gate-v3.json": {
+    "mtime": 1786703098.074055,
+    "ast_hash": "0704a41cabe2d5d37128ef2270ff59d9",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/lexical_grokking/posting_bounds/decoder_subtree_cover.rs": {
+    "mtime": 1786701081.4791234,
+    "ast_hash": "72e63f7c0faa995edc5dadca989fcd5d",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/lexical_grokking/posting_bounds/epoch.rs": {
+    "mtime": 1786689233.7587132,
+    "ast_hash": "c09798ce0838529aa3f082ca27105898",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/lexical_grokking/posting_bounds/impact.rs": {
+    "mtime": 1786694500.3896656,
+    "ast_hash": "ff5f390dc257eb7a892a857a3d13ff03",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/lexical_grokking/posting_bounds/modal_residual.rs": {
+    "mtime": 1786697816.0384502,
+    "ast_hash": "4aed5c30d9b9b9017855b2b1167441cc",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/lexical_grokking/typed_basin/exact_reverse.rs": {
+    "mtime": 1786706823.296433,
+    "ast_hash": "ab5698f5f93011997091e70f9332def6",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/lexical_grokking/typed_basin/implicit_forward.rs": {
+    "mtime": 1786704709.5349913,
+    "ast_hash": "e4735e276ce406d0b3a38c351f352d5c",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/lexical_grokking/typed_basin/mod.rs": {
+    "mtime": 1786718531.5358114,
+    "ast_hash": "e7a18866b11f24bb70125977928b6256",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/lexical_grokking/typed_basin/oracle.rs": {
+    "mtime": 1786704709.5349913,
+    "ast_hash": "0c75c82cc9f1860dd90dfb50ea543168",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/lexical_grokking/typed_basin/package_dependencies.rs": {
+    "mtime": 1786706823.3124332,
+    "ast_hash": "78c917596d570abbf2f3469880bc177e",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/lexical_grokking/typed_basin/quality.rs": {
+    "mtime": 1786718570.5271778,
+    "ast_hash": "8bfba0073024336df1c3c379567e6fb8",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/lexical_grokking/typed_basin/quality/metrics.rs": {
+    "mtime": 1786718422.005818,
+    "ast_hash": "991146dfb70ad2c607009f33cc4bebbe",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/lexical_grokking/typed_basin/quality/tests.rs": {
+    "mtime": 1786718570.5141776,
+    "ast_hash": "093619d9680360ec1dd3ffd410c41adc",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/lexical_grokking/typed_basin/settlement.rs": {
+    "mtime": 1786709399.676503,
+    "ast_hash": "4b9314160c383ed707e392217a6236ca",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/lexical_grokking/typed_basin/support.rs": {
+    "mtime": 1786706327.0592513,
+    "ast_hash": "cfe2690fef19489d625ba92accc0c5f8",
+    "semantic_hash": ""
+  },
+  "docs/l1-l11-decoder-subtree-cover-phase8h.md": {
+    "mtime": 1786701952.116169,
+    "ast_hash": "a0cc2d18568e6b400365c608ae2d1858",
+    "semantic_hash": ""
+  },
+  "docs/l1-l11-impact-threshold-phase8f.md": {
+    "mtime": 1786695412.6908882,
+    "ast_hash": "842b9c09520fed66bb470ec1c15fa28e",
+    "semantic_hash": ""
+  },
+  "docs/l1-l11-modal-residual-phase8g.md": {
+    "mtime": 1786699039.8558056,
+    "ast_hash": "4752c497d608d598f25755fa90206d92",
+    "semantic_hash": ""
+  },
+  "docs/l1-l11-sharded-epoch-phase8e.md": {
+    "mtime": 1786690097.3256776,
+    "ast_hash": "79d4882244eab391972dfa7e4fc2e8c1",
+    "semantic_hash": ""
+  },
+  "docs/l1-l11-typed-basin-implicit-forward-phase8i.md": {
+    "mtime": 1786721986.133022,
+    "ast_hash": "f9482a6ad1536453366f75b5280bc969",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8F_2026-08-14/phase-8f-v2-13x1.time.txt": {
+    "mtime": 1786694771.558174,
+    "ast_hash": "0f402db5d2bc4c5736fd8327e3bc6209",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8G_2026-08-14/evidence/phase-8g-13x1.time.txt": {
+    "mtime": 1786698154.476402,
+    "ast_hash": "a4bb1767105aa1544937e6baee2ce93a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8H_2026-08-14/baseline/decoder-index.time.txt": {
+    "mtime": 1786698816.9889402,
+    "ast_hash": "89c26a58288f1f46d797f788456ea2ae",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8H_2026-08-14/evidence/phase-8h-13x1.time.txt": {
+    "mtime": 1786701396.8633003,
+    "ast_hash": "de3497dd642f0f7c6cbeba621d4dda38",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/phase-8i-13x1-a2.time.txt": {
+    "mtime": 1786707431.659393,
+    "ast_hash": "63e3b9e38cf12ada246ccd404e82e76a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/phase-8i-13x1.time.txt": {
+    "mtime": 1786705088.277691,
+    "ast_hash": "cd1fd89af92cd659002dfaf9d603bed3",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/phase-8i-gate-c-13x100-smoke-v2.time.txt": {
+    "mtime": 1786712075.2052107,
+    "ast_hash": "3515c93c865c67f5fd35c74de5af09a0",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/phase-8i-gate-c-13x100-smoke-v3-diagnostic.time.txt": {
+    "mtime": 1786714375.025854,
+    "ast_hash": "e9777d1f69abdfc62d5dbba5ad267742",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/phase-8i-gate-c-13x100-smoke-v4-ranking-correction.time.txt": {
+    "mtime": 1786716017.2615929,
+    "ast_hash": "588f273a7cbc5c375ad875229d268ee9",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/phase-8i-gate-c-13x100-smoke-v5-bounded-projection.time.txt": {
+    "mtime": 1786719671.0548964,
+    "ast_hash": "22f70ce0e39020bdd269c6dc6dbb28fb",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/phase-8i-gate-c-13x20000-full-v1-ranking-correction.time.txt": {
+    "mtime": 1786717622.792317,
+    "ast_hash": "53122327aa145e7fd2f2a0dcb1924cd9",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/phase-8i-gate-c-13x20000-full-v2-bounded-projection.time.txt": {
+    "mtime": 1786721579.5064857,
+    "ast_hash": "6e9d3385bd9c58195049c719337566f5",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/phase-8i-gate-c-layout-projection-20k-bounded-projection-v1.time.txt": {
+    "mtime": 1786720030.697929,
+    "ast_hash": "b9dc92af808a2af134c86877b64fb8d6",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/phase-8i-gate-c-omission-transposition-20k-bounded-projection-v1.time.txt": {
+    "mtime": 1786719508.7440796,
+    "ast_hash": "b215ff7e23b5db0507fb620694b59bc8",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/ranking-diagnosis-structure-v1.md": {
+    "mtime": 1786712985.6488976,
+    "ast_hash": "7fda855f72cd8a71c733ab0106117c8f",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/ranking-diagnosis-structure-v2.md": {
+    "mtime": 1786713085.394888,
+    "ast_hash": "52b676fce7ddc2d391ead36b98207065",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/ranking-diagnosis-structure-v3.md": {
+    "mtime": 1786713138.3074186,
+    "ast_hash": "fb98859edc5b4dca165c89f3daaa3b28",
     "semantic_hash": ""
   }
 }

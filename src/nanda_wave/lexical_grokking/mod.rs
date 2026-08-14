@@ -32,6 +32,8 @@ mod service;
 mod training_budget;
 mod training_corpus;
 #[cfg(any(test, feature = "lexical-compiler"))]
+mod typed_basin;
+#[cfg(any(test, feature = "lexical-compiler"))]
 mod typed_edit_traversal;
 mod v8;
 mod wave_basis;
@@ -68,6 +70,11 @@ pub use service::{
     send_l11_service_request, send_l11_service_request_with_timeout, InstalledL11Package,
     L11SeedSurface, L11ServiceEnsureReport, L1ServiceHealth, L1ServiceRequest, L1ServiceResponse,
     L1ServiceStats,
+};
+#[cfg(feature = "lexical-compiler")]
+pub use typed_basin::{
+    diagnose_l1_typed_basin_quality_class, prove_l1_typed_basin_implicit_forward,
+    prove_l1_typed_basin_quality,
 };
 #[cfg(feature = "lexical-compiler")]
 pub use typed_edit_traversal::{

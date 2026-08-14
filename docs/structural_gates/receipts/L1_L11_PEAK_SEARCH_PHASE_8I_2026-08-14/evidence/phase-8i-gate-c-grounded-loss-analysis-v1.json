@@ -1,0 +1,668 @@
+{
+  "schema": "lay.l11.phase8i.grounded-loss-analysis.v1",
+  "source_smoke_receipt": "/home/e/build/lay-l1-exact-phase2d/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/phase-8i-gate-c-13x100-smoke-v1.json",
+  "source_smoke_receipt_sha256": "72ae5af8cafe68fa9483c8d55fbfdc67cd27552e23b60adb8da133cd663e5d7d",
+  "package_sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+  "losses": 32,
+  "gap_omission_transposition_matches": 32,
+  "other_mechanisms": 0,
+  "formal_relation": {
+    "target": "prefix + A + X + B + suffix",
+    "observed": "prefix + B + A + suffix",
+    "operation_order": "delete X, then transpose the newly adjacent A/B pair"
+  },
+  "implementation_finding": {
+    "legacy_reconstruction_modes": "admits delete-middle then swap-new-neighbours",
+    "phase7d_direct_oracle": "admits only an originally adjacent pair with omission outside the pair",
+    "phase7d_traversal": "has omission-before-pair and pair-before-omission paths but no omission-inside-pair transition",
+    "verdict": "SYSTEMIC_TYPED_PRODUCER_GAP"
+  },
+  "claim_boundary": {
+    "runtime_authority_changed": false,
+    "package_changed": false,
+    "full_quality_claimed": false,
+    "implementation_admitted": false
+  },
+  "rows": [
+    {
+      "class": "adjacent_transposition",
+      "query_raw": "figeu",
+      "query_normalized": "figeu",
+      "fixed_target_terminal": 829275,
+      "fixed_target_surface": "figue",
+      "legacy_candidate_terminal": 536284,
+      "legacy_candidate_surface": "figure",
+      "legacy_mode": "deletion_transposition",
+      "gap_omission_transposition_witnesses": [
+        {
+          "left_target_index": 3,
+          "omitted_target_index": 4,
+          "right_target_index": 5,
+          "left_symbol": "u",
+          "omitted_symbol": "r",
+          "right_symbol": "e"
+        }
+      ]
+    },
+    {
+      "class": "letter_substitution",
+      "query_raw": "dvur",
+      "query_normalized": "dvur",
+      "fixed_target_terminal": 773208,
+      "fixed_target_surface": "duur",
+      "legacy_candidate_terminal": 790504,
+      "legacy_candidate_surface": "vidur",
+      "legacy_mode": "deletion_transposition",
+      "gap_omission_transposition_witnesses": [
+        {
+          "left_target_index": 0,
+          "omitted_target_index": 1,
+          "right_target_index": 2,
+          "left_symbol": "v",
+          "omitted_symbol": "i",
+          "right_symbol": "d"
+        }
+      ]
+    },
+    {
+      "class": "missing_letter",
+      "query_raw": "поивать",
+      "query_normalized": "поивать",
+      "fixed_target_terminal": 334118,
+      "fixed_target_surface": "покивать",
+      "legacy_candidate_terminal": 295449,
+      "legacy_candidate_surface": "отпивать",
+      "legacy_mode": "deletion_transposition",
+      "gap_omission_transposition_witnesses": [
+        {
+          "left_target_index": 0,
+          "omitted_target_index": 1,
+          "right_target_index": 2,
+          "left_symbol": "о",
+          "omitted_symbol": "т",
+          "right_symbol": "п"
+        }
+      ]
+    },
+    {
+      "class": "missing_letter",
+      "query_raw": "поивать",
+      "query_normalized": "поивать",
+      "fixed_target_terminal": 334118,
+      "fixed_target_surface": "покивать",
+      "legacy_candidate_terminal": 319641,
+      "legacy_candidate_surface": "пировать",
+      "legacy_mode": "deletion_transposition",
+      "gap_omission_transposition_witnesses": [
+        {
+          "left_target_index": 1,
+          "omitted_target_index": 2,
+          "right_target_index": 3,
+          "left_symbol": "и",
+          "omitted_symbol": "р",
+          "right_symbol": "о"
+        }
+      ]
+    },
+    {
+      "class": "missing_letter",
+      "query_raw": "сктерка",
+      "query_normalized": "сктерка",
+      "fixed_target_terminal": 419808,
+      "fixed_target_surface": "скатерка",
+      "legacy_candidate_terminal": 194148,
+      "legacy_candidate_surface": "костерка",
+      "legacy_mode": "deletion_transposition",
+      "gap_omission_transposition_witnesses": [
+        {
+          "left_target_index": 0,
+          "omitted_target_index": 1,
+          "right_target_index": 2,
+          "left_symbol": "к",
+          "omitted_symbol": "о",
+          "right_symbol": "с"
+        }
+      ]
+    },
+    {
+      "class": "non_adjacent_transposition",
+      "query_raw": "cartsi",
+      "query_normalized": "cartsi",
+      "fixed_target_terminal": 800931,
+      "fixed_target_surface": "castri",
+      "legacy_candidate_terminal": 772883,
+      "legacy_candidate_surface": "carti's",
+      "legacy_mode": "deletion_transposition",
+      "gap_omission_transposition_witnesses": [
+        {
+          "left_target_index": 4,
+          "omitted_target_index": 5,
+          "right_target_index": 6,
+          "left_symbol": "i",
+          "omitted_symbol": "'",
+          "right_symbol": "s"
+        }
+      ]
+    },
+    {
+      "class": "non_adjacent_transposition",
+      "query_raw": "klaai",
+      "query_normalized": "klaai",
+      "fixed_target_terminal": 639585,
+      "fixed_target_surface": "kaali",
+      "legacy_candidate_terminal": 826019,
+      "legacy_candidate_surface": "kailai",
+      "legacy_mode": "deletion_transposition",
+      "gap_omission_transposition_witnesses": [
+        {
+          "left_target_index": 1,
+          "omitted_target_index": 2,
+          "right_target_index": 3,
+          "left_symbol": "a",
+          "omitted_symbol": "i",
+          "right_symbol": "l"
+        }
+      ]
+    },
+    {
+      "class": "omission_transposition",
+      "query_raw": "vrei",
+      "query_normalized": "vrei",
+      "fixed_target_terminal": 729942,
+      "fixed_target_surface": "verti",
+      "legacy_candidate_terminal": 655951,
+      "legacy_candidate_surface": "vrije",
+      "legacy_mode": "deletion_transposition",
+      "gap_omission_transposition_witnesses": [
+        {
+          "left_target_index": 2,
+          "omitted_target_index": 3,
+          "right_target_index": 4,
+          "left_symbol": "i",
+          "omitted_symbol": "j",
+          "right_symbol": "e"
+        }
+      ]
+    },
+    {
+      "class": "omission_transposition",
+      "query_raw": "vrei",
+      "query_normalized": "vrei",
+      "fixed_target_terminal": 729942,
+      "fixed_target_surface": "verti",
+      "legacy_candidate_terminal": 680993,
+      "legacy_candidate_surface": "vetri",
+      "legacy_mode": "deletion_transposition",
+      "gap_omission_transposition_witnesses": [
+        {
+          "left_target_index": 1,
+          "omitted_target_index": 2,
+          "right_target_index": 3,
+          "left_symbol": "e",
+          "omitted_symbol": "t",
+          "right_symbol": "r"
+        }
+      ]
+    },
+    {
+      "class": "omission_transposition",
+      "query_raw": "каерки",
+      "query_normalized": "каерки",
+      "fixed_target_terminal": 171537,
+      "fixed_target_surface": "каретки",
+      "legacy_candidate_terminal": 15478,
+      "legacy_candidate_surface": "анкерки",
+      "legacy_mode": "deletion_transposition",
+      "gap_omission_transposition_witnesses": [
+        {
+          "left_target_index": 0,
+          "omitted_target_index": 1,
+          "right_target_index": 2,
+          "left_symbol": "а",
+          "omitted_symbol": "н",
+          "right_symbol": "к"
+        }
+      ]
+    },
+    {
+      "class": "prefix_truncation",
+      "query_raw": "bits",
+      "query_normalized": "bits",
+      "fixed_target_terminal": 717453,
+      "fixed_target_surface": "mbits",
+      "legacy_candidate_terminal": 779524,
+      "legacy_candidate_surface": "igbts",
+      "legacy_mode": "deletion_transposition",
+      "gap_omission_transposition_witnesses": [
+        {
+          "left_target_index": 0,
+          "omitted_target_index": 1,
+          "right_target_index": 2,
+          "left_symbol": "i",
+          "omitted_symbol": "g",
+          "right_symbol": "b"
+        }
+      ]
+    },
+    {
+      "class": "prefix_truncation",
+      "query_raw": "bits",
+      "query_normalized": "bits",
+      "fixed_target_terminal": 717453,
+      "fixed_target_surface": "mbits",
+      "legacy_candidate_terminal": 721032,
+      "legacy_candidate_surface": "bisht",
+      "legacy_mode": "deletion_transposition",
+      "gap_omission_transposition_witnesses": [
+        {
+          "left_target_index": 2,
+          "omitted_target_index": 3,
+          "right_target_index": 4,
+          "left_symbol": "s",
+          "omitted_symbol": "h",
+          "right_symbol": "t"
+        }
+      ]
+    },
+    {
+      "class": "prefix_truncation",
+      "query_raw": "irma",
+      "query_normalized": "irma",
+      "fixed_target_terminal": 591808,
+      "fixed_target_surface": "firma",
+      "legacy_candidate_terminal": 688938,
+      "legacy_candidate_surface": "imara",
+      "legacy_mode": "deletion_transposition",
+      "gap_omission_transposition_witnesses": [
+        {
+          "left_target_index": 1,
+          "omitted_target_index": 2,
+          "right_target_index": 3,
+          "left_symbol": "m",
+          "omitted_symbol": "a",
+          "right_symbol": "r"
+        }
+      ]
+    },
+    {
+      "class": "prefix_truncation",
+      "query_raw": "irma",
+      "query_normalized": "irma",
+      "fixed_target_terminal": 591808,
+      "fixed_target_surface": "firma",
+      "legacy_candidate_terminal": 786634,
+      "legacy_candidate_surface": "raima",
+      "legacy_mode": "deletion_transposition",
+      "gap_omission_transposition_witnesses": [
+        {
+          "left_target_index": 0,
+          "omitted_target_index": 1,
+          "right_target_index": 2,
+          "left_symbol": "r",
+          "omitted_symbol": "a",
+          "right_symbol": "i"
+        }
+      ]
+    },
+    {
+      "class": "punctuation_suffix",
+      "query_raw": "deste.",
+      "query_normalized": "deste",
+      "fixed_target_terminal": 776007,
+      "fixed_target_surface": "deste",
+      "legacy_candidate_terminal": 538982,
+      "legacy_candidate_surface": "desert",
+      "legacy_mode": "deletion_transposition",
+      "gap_omission_transposition_witnesses": [
+        {
+          "left_target_index": 3,
+          "omitted_target_index": 4,
+          "right_target_index": 5,
+          "left_symbol": "e",
+          "omitted_symbol": "r",
+          "right_symbol": "t"
+        }
+      ]
+    },
+    {
+      "class": "punctuation_suffix",
+      "query_raw": "shany?",
+      "query_normalized": "shany",
+      "fixed_target_terminal": 799759,
+      "fixed_target_surface": "shany",
+      "legacy_candidate_terminal": 707352,
+      "legacy_candidate_surface": "shayan",
+      "legacy_mode": "deletion_transposition",
+      "gap_omission_transposition_witnesses": [
+        {
+          "left_target_index": 3,
+          "omitted_target_index": 4,
+          "right_target_index": 5,
+          "left_symbol": "y",
+          "omitted_symbol": "a",
+          "right_symbol": "n"
+        }
+      ]
+    },
+    {
+      "class": "punctuation_suffix",
+      "query_raw": "thaa?",
+      "query_normalized": "thaa",
+      "fixed_target_terminal": 727346,
+      "fixed_target_surface": "thaa",
+      "legacy_candidate_terminal": 810034,
+      "legacy_candidate_surface": "tatha",
+      "legacy_mode": "deletion_transposition",
+      "gap_omission_transposition_witnesses": [
+        {
+          "left_target_index": 1,
+          "omitted_target_index": 2,
+          "right_target_index": 3,
+          "left_symbol": "a",
+          "omitted_symbol": "t",
+          "right_symbol": "h"
+        }
+      ]
+    },
+    {
+      "class": "punctuation_suffix",
+      "query_raw": "thaa?",
+      "query_normalized": "thaa",
+      "fixed_target_terminal": 727346,
+      "fixed_target_surface": "thaa",
+      "legacy_candidate_terminal": 566810,
+      "legacy_candidate_surface": "tasha",
+      "legacy_mode": "deletion_transposition",
+      "gap_omission_transposition_witnesses": [
+        {
+          "left_target_index": 1,
+          "omitted_target_index": 2,
+          "right_target_index": 3,
+          "left_symbol": "a",
+          "omitted_symbol": "s",
+          "right_symbol": "h"
+        }
+      ]
+    },
+    {
+      "class": "punctuation_suffix",
+      "query_raw": "thaa?",
+      "query_normalized": "thaa",
+      "fixed_target_terminal": 727346,
+      "fixed_target_surface": "thaa",
+      "legacy_candidate_terminal": 640038,
+      "legacy_candidate_surface": "talha",
+      "legacy_mode": "deletion_transposition",
+      "gap_omission_transposition_witnesses": [
+        {
+          "left_target_index": 1,
+          "omitted_target_index": 2,
+          "right_target_index": 3,
+          "left_symbol": "a",
+          "omitted_symbol": "l",
+          "right_symbol": "h"
+        }
+      ]
+    },
+    {
+      "class": "punctuation_suffix",
+      "query_raw": "thaa?",
+      "query_normalized": "thaa",
+      "fixed_target_terminal": 727346,
+      "fixed_target_surface": "thaa",
+      "legacy_candidate_terminal": 734629,
+      "legacy_candidate_surface": "tanha",
+      "legacy_mode": "deletion_transposition",
+      "gap_omission_transposition_witnesses": [
+        {
+          "left_target_index": 1,
+          "omitted_target_index": 2,
+          "right_target_index": 3,
+          "left_symbol": "a",
+          "omitted_symbol": "n",
+          "right_symbol": "h"
+        }
+      ]
+    },
+    {
+      "class": "punctuation_suffix",
+      "query_raw": "thaa?",
+      "query_normalized": "thaa",
+      "fixed_target_terminal": 727346,
+      "fixed_target_surface": "thaa",
+      "legacy_candidate_terminal": 803354,
+      "legacy_candidate_surface": "tacha",
+      "legacy_mode": "deletion_transposition",
+      "gap_omission_transposition_witnesses": [
+        {
+          "left_target_index": 1,
+          "omitted_target_index": 2,
+          "right_target_index": 3,
+          "left_symbol": "a",
+          "omitted_symbol": "c",
+          "right_symbol": "h"
+        }
+      ]
+    },
+    {
+      "class": "punctuation_suffix",
+      "query_raw": "thaa?",
+      "query_normalized": "thaa",
+      "fixed_target_terminal": 727346,
+      "fixed_target_surface": "thaa",
+      "legacy_candidate_terminal": 803356,
+      "legacy_candidate_surface": "taeha",
+      "legacy_mode": "deletion_transposition",
+      "gap_omission_transposition_witnesses": [
+        {
+          "left_target_index": 1,
+          "omitted_target_index": 2,
+          "right_target_index": 3,
+          "left_symbol": "a",
+          "omitted_symbol": "e",
+          "right_symbol": "h"
+        }
+      ]
+    },
+    {
+      "class": "punctuation_suffix",
+      "query_raw": "turds.",
+      "query_normalized": "turds",
+      "fixed_target_terminal": 584921,
+      "fixed_target_surface": "turds",
+      "legacy_candidate_terminal": 592205,
+      "legacy_candidate_surface": "tudors",
+      "legacy_mode": "deletion_transposition",
+      "gap_omission_transposition_witnesses": [
+        {
+          "left_target_index": 2,
+          "omitted_target_index": 3,
+          "right_target_index": 4,
+          "left_symbol": "d",
+          "omitted_symbol": "o",
+          "right_symbol": "r"
+        }
+      ]
+    },
+    {
+      "class": "punctuation_suffix",
+      "query_raw": "гоул!",
+      "query_normalized": "гоул",
+      "fixed_target_terminal": 96969,
+      "fixed_target_surface": "гоул",
+      "legacy_candidate_terminal": 292890,
+      "legacy_candidate_surface": "отгул",
+      "legacy_mode": "deletion_transposition",
+      "gap_omission_transposition_witnesses": [
+        {
+          "left_target_index": 0,
+          "omitted_target_index": 1,
+          "right_target_index": 2,
+          "left_symbol": "о",
+          "omitted_symbol": "т",
+          "right_symbol": "г"
+        }
+      ]
+    },
+    {
+      "class": "sparse_multi_omission",
+      "query_raw": "ageti",
+      "query_normalized": "ageti",
+      "fixed_target_terminal": 703733,
+      "fixed_target_surface": "agresti",
+      "legacy_candidate_terminal": 620507,
+      "legacy_candidate_surface": "ageist",
+      "legacy_mode": "deletion_transposition",
+      "gap_omission_transposition_witnesses": [
+        {
+          "left_target_index": 3,
+          "omitted_target_index": 4,
+          "right_target_index": 5,
+          "left_symbol": "i",
+          "omitted_symbol": "s",
+          "right_symbol": "t"
+        }
+      ]
+    },
+    {
+      "class": "sparse_multi_omission",
+      "query_raw": "deued",
+      "query_normalized": "deued",
+      "fixed_target_terminal": 591755,
+      "fixed_target_surface": "defused",
+      "legacy_candidate_terminal": 712427,
+      "legacy_candidate_surface": "endued",
+      "legacy_mode": "deletion_transposition",
+      "gap_omission_transposition_witnesses": [
+        {
+          "left_target_index": 0,
+          "omitted_target_index": 1,
+          "right_target_index": 2,
+          "left_symbol": "e",
+          "omitted_symbol": "n",
+          "right_symbol": "d"
+        }
+      ]
+    },
+    {
+      "class": "sparse_multi_omission",
+      "query_raw": "sictt",
+      "query_normalized": "sictt",
+      "fixed_target_terminal": 783748,
+      "fixed_target_surface": "silcott",
+      "legacy_candidate_terminal": 713587,
+      "legacy_candidate_surface": "schitt",
+      "legacy_mode": "deletion_transposition",
+      "gap_omission_transposition_witnesses": [
+        {
+          "left_target_index": 1,
+          "omitted_target_index": 2,
+          "right_target_index": 3,
+          "left_symbol": "c",
+          "omitted_symbol": "h",
+          "right_symbol": "i"
+        }
+      ]
+    },
+    {
+      "class": "sparse_multi_omission",
+      "query_raw": "рдням",
+      "query_normalized": "рдням",
+      "fixed_target_terminal": 389141,
+      "fixed_target_surface": "рденьям",
+      "legacy_candidate_terminal": 123112,
+      "legacy_candidate_surface": "дурням",
+      "legacy_mode": "deletion_transposition",
+      "gap_omission_transposition_witnesses": [
+        {
+          "left_target_index": 0,
+          "omitted_target_index": 1,
+          "right_target_index": 2,
+          "left_symbol": "д",
+          "omitted_symbol": "у",
+          "right_symbol": "р"
+        }
+      ]
+    },
+    {
+      "class": "suffix_truncation",
+      "query_raw": "hofbur",
+      "query_normalized": "hofbur",
+      "fixed_target_terminal": 668633,
+      "fixed_target_surface": "hofburg",
+      "legacy_candidate_terminal": 782464,
+      "legacy_candidate_surface": "hofbrau",
+      "legacy_mode": "deletion_transposition",
+      "gap_omission_transposition_witnesses": [
+        {
+          "left_target_index": 4,
+          "omitted_target_index": 5,
+          "right_target_index": 6,
+          "left_symbol": "r",
+          "omitted_symbol": "a",
+          "right_symbol": "u"
+        }
+      ]
+    },
+    {
+      "class": "suffix_truncation",
+      "query_raw": "meng",
+      "query_normalized": "meng",
+      "fixed_target_terminal": 729003,
+      "fixed_target_surface": "mengo",
+      "legacy_candidate_terminal": 545122,
+      "legacy_candidate_surface": "megan",
+      "legacy_mode": "deletion_transposition",
+      "gap_omission_transposition_witnesses": [
+        {
+          "left_target_index": 2,
+          "omitted_target_index": 3,
+          "right_target_index": 4,
+          "left_symbol": "g",
+          "omitted_symbol": "a",
+          "right_symbol": "n"
+        }
+      ]
+    },
+    {
+      "class": "suffix_truncation",
+      "query_raw": "meng",
+      "query_normalized": "meng",
+      "fixed_target_terminal": 729003,
+      "fixed_target_surface": "mengo",
+      "legacy_candidate_terminal": 591346,
+      "legacy_candidate_surface": "megyn",
+      "legacy_mode": "deletion_transposition",
+      "gap_omission_transposition_witnesses": [
+        {
+          "left_target_index": 2,
+          "omitted_target_index": 3,
+          "right_target_index": 4,
+          "left_symbol": "g",
+          "omitted_symbol": "y",
+          "right_symbol": "n"
+        }
+      ]
+    },
+    {
+      "class": "suffix_truncation",
+      "query_raw": "resse",
+      "query_normalized": "resse",
+      "fixed_target_terminal": 827122,
+      "fixed_target_surface": "resses",
+      "legacy_candidate_terminal": 579215,
+      "legacy_candidate_surface": "resets",
+      "legacy_mode": "deletion_transposition",
+      "gap_omission_transposition_witnesses": [
+        {
+          "left_target_index": 3,
+          "omitted_target_index": 4,
+          "right_target_index": 5,
+          "left_symbol": "e",
+          "omitted_symbol": "t",
+          "right_symbol": "s"
+        }
+      ]
+    }
+  ]
+}

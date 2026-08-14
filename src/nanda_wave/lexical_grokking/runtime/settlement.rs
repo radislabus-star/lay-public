@@ -1,5 +1,13 @@
 use super::*;
 
+struct RestorationGeometryContext {
+    observed_character_sequence: AnchorSequence,
+    character_anchors_cover_surface: bool,
+    observed_keyboard_sequence: AnchorSequence,
+    observed_physical_keys: Vec<u32>,
+    observed_script_flags: u8,
+}
+
 impl LexicalGrokkingMemory {
     pub(in crate::nanda_wave::lexical_grokking) fn readout_modes(
         &self,
@@ -145,7 +153,7 @@ impl LexicalGrokkingMemory {
         self.finalize_candidates_after_geometry(limit, mode, surface_re, surface_im, candidates);
     }
 
-    fn finalize_candidates_after_geometry(
+    pub(in crate::nanda_wave::lexical_grokking) fn finalize_candidates_after_geometry(
         &self,
         limit: usize,
         mode: ReadoutMode,
@@ -396,6 +404,35 @@ impl LexicalGrokkingMemory {
     }
 
     fn apply_restoration_geometry(&self, surface: &str, candidates: &mut [GrokkingCandidate]) {
+        let context = self.restoration_geometry_context(surface);
+        for candidate in candidates {
+            let reverse = self.reverse_couplings(candidate.terminal_id);
+            self.apply_candidate_restoration_geometry(surface, candidate, &reverse, &context);
+        }
+    }
+
+    pub(in crate::nanda_wave::lexical_grokking) fn apply_restoration_geometry_with_explicit_reverse<
+        'a,
+    >(
+        &self,
+        surface: &str,
+        candidates: &mut [GrokkingCandidate],
+        reverse_for: impl Fn(u32) -> Option<&'a [WaveCoupling]>,
+    ) -> Result<(), String> {
+        let context = self.restoration_geometry_context(surface);
+        for candidate in candidates {
+            let reverse = reverse_for(candidate.terminal_id).ok_or_else(|| {
+                format!(
+                    "explicit restoration geometry lacks reverse terminal {}",
+                    candidate.terminal_id
+                )
+            })?;
+            self.apply_candidate_restoration_geometry(surface, candidate, reverse, &context);
+        }
+        Ok(())
+    }
+
+    fn restoration_geometry_context(&self, surface: &str) -> RestorationGeometryContext {
         let observed = self.resolve_surface(surface);
         let observed_character_sequence =
             observed_sequence(&observed, AtomChannel::CharacterAnchor);
@@ -405,69 +442,82 @@ impl LexicalGrokkingMemory {
         let observed_keyboard_sequence = observed_sequence(&observed, AtomChannel::KeyboardGram);
         let observed_physical_keys = physical_key_sequence(surface);
         let observed_script_flags = super::super::model::surface_script_flags(surface);
-        for candidate in candidates {
-            let Some(center) = self.package.centers.get(candidate.terminal_id as usize) else {
-                continue;
-            };
-            let profile = self
-                .package
-                .center_phase_profiles
-                .get(candidate.terminal_id as usize);
-            let reverse = self.reverse_couplings(candidate.terminal_id);
-            let expected_character_sequence =
-                expected_sequence(&reverse, COUPLING_FLAG_CHARACTER_ANCHOR);
-            candidate.reconstruction_modes = if character_anchors_cover_surface {
-                reconstruction_modes(
-                    observed_character_sequence.as_slice(),
-                    expected_character_sequence.as_slice(),
-                )
-            } else {
-                0
-            };
-            let expected_surface = self.decode_terminal(candidate.terminal_id);
-            if let Some(expected_surface) = expected_surface.as_deref() {
-                candidate.reconstruction_modes |=
-                    surface_operator_reconstruction_modes(surface, expected_surface);
-            }
-            let cross_script = center.flags != 0
-                && observed_script_flags != 0
-                && center.flags & observed_script_flags == 0;
-            if !cross_script {
-                continue;
-            }
-            let generated_geometry;
-            let (expected, uses_physical_keys) = if let Some(profile) = profile {
-                let start = profile.keyboard_geometry_start as usize;
-                let end = start.saturating_add(profile.keyboard_geometry_count as usize);
-                let Some(expected) = self.package.keyboard_geometry_units.get(start..end) else {
-                    continue;
-                };
-                (
-                    expected,
-                    profile.flags & CENTER_PHASE_FLAG_PHYSICAL_KEY_GEOMETRY != 0,
-                )
-            } else {
-                let Some(expected_surface) = expected_surface.as_deref() else {
-                    continue;
-                };
-                generated_geometry = physical_key_sequence(expected_surface);
-                (generated_geometry.as_slice(), true)
-            };
-            if expected.is_empty() {
-                continue;
-            }
-            let observed_geometry = if uses_physical_keys {
-                observed_physical_keys.as_slice()
-            } else {
-                observed_keyboard_sequence.as_slice()
-            };
-            if observed_geometry.is_empty() {
-                continue;
-            }
-            candidate.geometry_distance = candidate
-                .geometry_distance
-                .min(damerau_distance(observed_geometry, expected).min(u8::MAX as usize) as u8);
+        RestorationGeometryContext {
+            observed_character_sequence,
+            character_anchors_cover_surface,
+            observed_keyboard_sequence,
+            observed_physical_keys,
+            observed_script_flags,
         }
+    }
+
+    fn apply_candidate_restoration_geometry(
+        &self,
+        surface: &str,
+        candidate: &mut GrokkingCandidate,
+        reverse: &[WaveCoupling],
+        context: &RestorationGeometryContext,
+    ) {
+        let Some(center) = self.package.centers.get(candidate.terminal_id as usize) else {
+            return;
+        };
+        let profile = self
+            .package
+            .center_phase_profiles
+            .get(candidate.terminal_id as usize);
+        let expected_character_sequence =
+            expected_sequence(reverse, COUPLING_FLAG_CHARACTER_ANCHOR);
+        candidate.reconstruction_modes = if context.character_anchors_cover_surface {
+            reconstruction_modes(
+                context.observed_character_sequence.as_slice(),
+                expected_character_sequence.as_slice(),
+            )
+        } else {
+            0
+        };
+        let expected_surface = self.decode_terminal(candidate.terminal_id);
+        if let Some(expected_surface) = expected_surface.as_deref() {
+            candidate.reconstruction_modes |=
+                surface_operator_reconstruction_modes(surface, expected_surface);
+        }
+        let cross_script = center.flags != 0
+            && context.observed_script_flags != 0
+            && center.flags & context.observed_script_flags == 0;
+        if !cross_script {
+            return;
+        }
+        let generated_geometry;
+        let (expected, uses_physical_keys) = if let Some(profile) = profile {
+            let start = profile.keyboard_geometry_start as usize;
+            let end = start.saturating_add(profile.keyboard_geometry_count as usize);
+            let Some(expected) = self.package.keyboard_geometry_units.get(start..end) else {
+                return;
+            };
+            (
+                expected,
+                profile.flags & CENTER_PHASE_FLAG_PHYSICAL_KEY_GEOMETRY != 0,
+            )
+        } else {
+            let Some(expected_surface) = expected_surface.as_deref() else {
+                return;
+            };
+            generated_geometry = physical_key_sequence(expected_surface);
+            (generated_geometry.as_slice(), true)
+        };
+        if expected.is_empty() {
+            return;
+        }
+        let observed_geometry = if uses_physical_keys {
+            context.observed_physical_keys.as_slice()
+        } else {
+            context.observed_keyboard_sequence.as_slice()
+        };
+        if observed_geometry.is_empty() {
+            return;
+        }
+        candidate.geometry_distance = candidate
+            .geometry_distance
+            .min(damerau_distance(observed_geometry, expected).min(u8::MAX as usize) as u8);
     }
 
     pub(in crate::nanda_wave::lexical_grokking) fn ambiguity_observations(
@@ -578,7 +628,7 @@ impl LexicalGrokkingMemory {
     }
 
     #[allow(clippy::too_many_arguments)]
-    fn settle_candidate_with_reverse(
+    pub(in crate::nanda_wave::lexical_grokking) fn settle_candidate_with_reverse(
         &self,
         terminal_id: u32,
         activation: ForwardActivation,
@@ -871,18 +921,21 @@ pub(in crate::nanda_wave::lexical_grokking) fn apply_position_certificate_interf
 pub(in crate::nanda_wave::lexical_grokking) fn apply_geometry_certificate_interference(
     candidates: &mut [GrokkingCandidate],
 ) {
-    const MAX_ENERGY_DEFICIT: i32 = 1_000;
-
     let Some(incumbent) = candidates.first().copied() else {
         return;
     };
     if incumbent.exact_reconstruction {
         return;
     }
+    // Admission is candidate-local. Selecting before admission lets one rejected
+    // high-rank certificate hide a later challenger that passes the same gates.
     let mut evidence = candidates
         .iter()
         .enumerate()
-        .filter(|(_, candidate)| geometry_certificate_rank(candidate) != 0)
+        .skip(1)
+        .filter_map(|(index, candidate)| {
+            geometry_challenger_is_admissible(&incumbent, candidate).then_some((index, candidate))
+        })
         .collect::<Vec<_>>();
     evidence.sort_unstable_by(|left, right| {
         geometry_certificate_rank(right.1)
@@ -894,23 +947,33 @@ pub(in crate::nanda_wave::lexical_grokking) fn apply_geometry_certificate_interf
     let Some((winner, candidate)) = evidence.first().copied() else {
         return;
     };
-    if winner == 0 {
-        return;
-    }
+    debug_assert!(geometry_challenger_is_admissible(&incumbent, candidate));
+    candidates[..=winner].rotate_right(1);
+}
+
+fn geometry_challenger_is_admissible(
+    incumbent: &GrokkingCandidate,
+    candidate: &GrokkingCandidate,
+) -> bool {
+    const MAX_ENERGY_DEFICIT: i32 = 1_000;
+
     let candidate_rank = geometry_certificate_rank(candidate);
-    let incumbent_rank = geometry_certificate_rank(&incumbent);
+    if candidate_rank == 0 {
+        return false;
+    }
+    let incumbent_rank = geometry_certificate_rank(incumbent);
     if candidate_rank < incumbent_rank {
-        return;
+        return false;
     }
     if candidate.geometry_distance > incumbent.geometry_distance
         && !geometry_certificate_can_cross_distance(candidate)
     {
-        return;
+        return false;
     }
     if candidate_rank == incumbent_rank
         && candidate.geometry_distance >= incumbent.geometry_distance
     {
-        return;
+        return false;
     }
     let energy_deficit = incumbent
         .settled_energy
@@ -924,17 +987,17 @@ pub(in crate::nanda_wave::lexical_grokking) fn apply_geometry_certificate_interf
         && incumbent.geometry_distance < candidate.geometry_distance
         && energy_deficit > 0
     {
-        return;
+        return false;
     }
     if candidate.geometry_distance > incumbent.geometry_distance
         && energy_deficit > geometry_certificate_cross_distance_lease(candidate)
     {
-        return;
+        return false;
     }
     if candidate_rank == incumbent_rank && energy_deficit > MAX_ENERGY_DEFICIT {
-        return;
+        return false;
     }
-    candidates[..=winner].rotate_right(1);
+    true
 }
 
 fn geometry_certificate_rank(candidate: &GrokkingCandidate) -> u8 {

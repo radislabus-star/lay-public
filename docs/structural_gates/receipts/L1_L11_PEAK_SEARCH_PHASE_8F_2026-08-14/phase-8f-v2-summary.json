@@ -1,0 +1,48 @@
+{
+  "schema": "lay.l11.phase8f-v2-summary.v1",
+  "date": "2026-08-14",
+  "architecture": "impact_ordered_threshold_with_exact_posting_replay",
+  "verdict": "REJECT_INTRINSIC",
+  "gates": {
+    "correctness": "PASS",
+    "intrinsic_feasibility": "FAIL",
+    "maximum_search_plus_replay_us": 2128770,
+    "impact_intrinsic_limit_us": 2500,
+    "maximum_complete_contour_us": 2130512,
+    "complete_contour_limit_us": 5000,
+    "physical_representation_tested": false
+  },
+  "correctness": {
+    "closure_parity": "13/13",
+    "upper_bound_violations": 0,
+    "activation_field_mismatches": 0,
+    "tie_boundary_losses": 0,
+    "typed_terminal_losses": 0,
+    "union_schedule_parity": true,
+    "zero_mass_full_scans": 0
+  },
+  "work": {
+    "relation_events_min": 1009567,
+    "relation_events_max": 4159131,
+    "unique_centers_touched_min": 346554,
+    "unique_centers_touched_max": 643970,
+    "uncertain_closure_min": 40281,
+    "uncertain_closure_max": 446368,
+    "exact_replay_posting_probes_min": 6485241,
+    "exact_replay_posting_probes_max": 61306659,
+    "maximum_accumulation_us": 74595,
+    "maximum_closure_scan_us": 37366,
+    "maximum_exact_replay_us": 2028051
+  },
+  "first_shared_mechanism": "unfactored score-identical common mode creates broad activation and loose touched-center closure",
+  "artifact": {
+    "path": "phase-8f-v2-13x1.json",
+    "sha256": "44107b74372a68548339b4a2a54a394cf863d7f129cc83e72d8f0cc8ad1e562d"
+  },
+  "package_sha256_before": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+  "package_sha256_after": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+  "runtime_authority_changed": false,
+  "package_format_changed": false,
+  "promotion_to_physical_representation": false,
+  "next_design": "phase8g_modal_residual_factorization"
+}

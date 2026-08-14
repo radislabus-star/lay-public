@@ -1,0 +1,299 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "phase8i-paper",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../l1-l11-typed-basin-implicit-forward-phase8i.md",
+      "sha256": "b1ff0da4e943946634f6af17d522f082cff55e1218533cf9cae53fcb757ba07c",
+      "size_bytes": 20247
+    },
+    {
+      "exists": true,
+      "id": "support-width-audit",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/baseline/support-width-audit.json",
+      "sha256": "01128301717d2e81d7e9edd4f589ff099997edd7be23ecdb962608643b71a20d",
+      "size_bytes": 1712
+    },
+    {
+      "exists": true,
+      "id": "phase8i-route-design",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/route-design-v3.json",
+      "sha256": "882abbffc12cac3006166f9f85c2b20ca8ce497c0010f9ad018bbb8154a189bf",
+      "size_bytes": 6658
+    },
+    {
+      "exists": true,
+      "id": "phase8i-route-gate",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/route-gate-v3.json",
+      "sha256": "78a311eb6b32460d07e164e388603b55465b6f990b341d758fbae85f1cddb0c9",
+      "size_bytes": 6916
+    },
+    {
+      "exists": true,
+      "id": "proof-cli-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../../src/bin/lay_nanda_wave_train.rs",
+      "sha256": "eb36d3c1f5e54a44005897788909591a09549bdac4bd7c64f8edad919571fcc9",
+      "size_bytes": 91223
+    },
+    {
+      "exists": true,
+      "id": "lexical-module-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../../src/nanda_wave/lexical_grokking/mod.rs",
+      "sha256": "d554a07149e56089c78d0751d6e6b3dc7e58abd6cd37357806851fc79d4d0743",
+      "size_bytes": 3087
+    },
+    {
+      "exists": true,
+      "id": "public-export-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../../src/nanda_wave/mod.rs",
+      "sha256": "ad86971a7c14dc0ea04eeff41e4e297512c0c1492db208597e8545b7ad8fc33d",
+      "size_bytes": 60627
+    },
+    {
+      "exists": true,
+      "id": "typed-traversal-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../../src/nanda_wave/lexical_grokking/typed_edit_traversal.rs",
+      "sha256": "2aaa264659f9a43fb818cc527f569f54bcbd47ae225878b323807c92c05842ff",
+      "size_bytes": 78588
+    },
+    {
+      "exists": true,
+      "id": "decoder-index-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../../src/nanda_wave/lexical_grokking/forward_decoder_index.rs",
+      "sha256": "754ce19ad880ef869bdad6f961c10de504966d5bf4d4c54d92f5bf01f7e9cffb",
+      "size_bytes": 19862
+    },
+    {
+      "exists": true,
+      "id": "relation-oracle-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../../src/nanda_wave/lexical_grokking/runtime/relations.rs",
+      "sha256": "c5a134fbb4e91f392ae5a8844b69864347a67dfa6299dbc07067b409305a8649",
+      "size_bytes": 11169
+    },
+    {
+      "exists": true,
+      "id": "compiler-formula-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../../src/nanda_wave/lexical_grokking/compiler.rs",
+      "sha256": "4f26262a9e0fb0cfe8d853074d213c5345168816492197303cd1c2981d006d72",
+      "size_bytes": 91801
+    },
+    {
+      "exists": true,
+      "id": "compact-format-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../../src/nanda_wave/lexical_grokking/format.rs",
+      "sha256": "142ce3eb8e56421d2df7efb05b8bda64b2f8d0fe95267a6d86ba4d3b21342b36",
+      "size_bytes": 60594
+    },
+    {
+      "exists": true,
+      "id": "phase7d-proof",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../L1_L11_PEAK_SEARCH_PHASE_7D_2026-08-14/phase-7d.json",
+      "sha256": "76a9e77e4a33479d424746b45975f79e4a5ae440d1f505f408e5eca347418c4e",
+      "size_bytes": 8725
+    },
+    {
+      "exists": true,
+      "id": "phase8h-negative-proof",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../L1_L11_PEAK_SEARCH_PHASE_8H_2026-08-14/evidence/phase-8h-13x1.json",
+      "sha256": "897ea676f018fab4fe37e332c6c87ab662112cc1a492244f4ec123b9f51e5f9d",
+      "size_bytes": 87218
+    },
+    {
+      "exists": true,
+      "id": "installed-package",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin",
+      "sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+      "size_bytes": 190139182
+    }
+  ],
+  "blockers": [
+    {
+      "code": "baseline_sha256_mismatch",
+      "field": "baseline_checks[8]",
+      "message": "file SHA-256 differs"
+    },
+    {
+      "code": "baseline_byte_length_mismatch",
+      "field": "baseline_checks[12]",
+      "message": "expected 10173 bytes, observed 8725"
+    },
+    {
+      "code": "baseline_sha256_mismatch",
+      "field": "baseline_checks[12]",
+      "message": "file SHA-256 differs"
+    },
+    {
+      "code": "baseline_byte_length_mismatch",
+      "field": "baseline_checks[13]",
+      "message": "expected 73055 bytes, observed 87218"
+    },
+    {
+      "code": "source_sha256_mismatch",
+      "field": "source_checks[2].sha256",
+      "message": "reused source SHA-256 differs"
+    },
+    {
+      "code": "source_sha256_mismatch",
+      "field": "source_checks[3].sha256",
+      "message": "reused source SHA-256 differs"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: completion_lane_change"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: corpus_crystallization"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: generated_traffic"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: local_heavy_build"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: posting_degree_as_exact_support"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: settlement_change"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: synthetic_fixture"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: v8_relation_payload_as_implicit_input"
+    },
+    {
+      "code": "test_contract_incomplete",
+      "field": "tests[8]",
+      "message": "valid kind and non-empty expected result are required"
+    },
+    {
+      "code": "fault_injection_missing",
+      "field": "state_machine.steps[0].test_id",
+      "message": "mutating failure requires a fault_injection test"
+    }
+  ],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 15,
+    "forbidden_side_effect_kinds": [
+      "completion_lane_change",
+      "corpus_crystallization",
+      "generated_traffic",
+      "global_topk_admission",
+      "heldout_target_pull",
+      "installed_package_mutation",
+      "literal_case_rule",
+      "local_heavy_build",
+      "package_format_change",
+      "posting_degree_as_exact_support",
+      "production_phase8i_reachability",
+      "runtime_authority_change",
+      "runtime_restart",
+      "settlement_change",
+      "synthetic_fixture",
+      "typed_basin_truncation",
+      "v8_relation_payload_as_implicit_input"
+    ],
+    "identity_contracts": 6,
+    "invariants": 5,
+    "planned_side_effect_kinds": [
+      "filesystem_edit",
+      "filesystem_write",
+      "test_execution"
+    ],
+    "preserved_artifacts": 4,
+    "runtime_comparisons": 0,
+    "source_checks": 4,
+    "tests": 9
+  },
+  "manifest_sha256": "c17f383927b5d6a1992045165625e4f57f9827aa26d96b77662ce98d58341cc0",
+  "safe_to_implement": false,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "proof-cli-vetoes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../../src/bin/lay_nanda_wave_train.rs",
+      "sha256": "eb36d3c1f5e54a44005897788909591a09549bdac4bd7c64f8edad919571fcc9",
+      "size_bytes": 91223
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "typed-traversal-preservation-vetoes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../../src/nanda_wave/lexical_grokking/typed_edit_traversal.rs",
+      "sha256": "2aaa264659f9a43fb818cc527f569f54bcbd47ae225878b323807c92c05842ff",
+      "size_bytes": 78588
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "global-posting-route-isolation-vetoes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../../src/nanda_wave/lexical_grokking/posting_bounds.rs",
+      "sha256": "e7b3228c58011bc23d919bb99fa2ea014b80e51993f5d653afd15679ef5e9c70",
+      "size_bytes": 101476
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "production-runtime-isolation-vetoes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../../src/nanda_wave/lexical_grokking/service.rs",
+      "sha256": "19c83a5808e9131fb80a513bae394515337a97dfa441a2a8dd5087eb826accdc",
+      "size_bytes": 21594
+    }
+  ],
+  "task_id": "lay-l11-phase8i-typed-basin-implicit-forward-a0-a1-b0-2026-08-14",
+  "verdict": "BLOCKED_BEFORE_CODE"
+}

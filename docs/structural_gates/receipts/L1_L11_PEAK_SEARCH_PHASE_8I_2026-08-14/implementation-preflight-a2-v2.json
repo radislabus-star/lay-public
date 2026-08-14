@@ -1,0 +1,502 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-l11-phase8i-exact-u32-nonlinear-settlement-a2-2026-08-14",
+  "authority_bearing": false,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "phase8i-paper-with-a2-contract",
+      "kind": "file",
+      "path": "../../../l1-l11-typed-basin-implicit-forward-phase8i.md",
+      "expect": {
+        "size_bytes": 26014,
+        "sha256": "0940bd226130194f1abe67afb0b36b81bb78a7797790fa8ecd2037c0346fab4f",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "phase8i-a0-a1-b0-proof",
+      "kind": "file",
+      "path": "evidence/phase-8i-13x1.json",
+      "expect": {
+        "size_bytes": 21705,
+        "sha256": "c10286be357cbea3599949cf95b06f991e9c347f9d34af967e6ad2eac4d26fdb",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "phase8i-route-design",
+      "kind": "file",
+      "path": "route-design-v3.json",
+      "expect": {
+        "size_bytes": 6658,
+        "sha256": "882abbffc12cac3006166f9f85c2b20ca8ce497c0010f9ad018bbb8154a189bf",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "phase8i-route-gate",
+      "kind": "file",
+      "path": "route-gate-v3.json",
+      "expect": {
+        "size_bytes": 6916,
+        "sha256": "78a311eb6b32460d07e164e388603b55465b6f990b341d758fbae85f1cddb0c9",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "typed-basin-orchestrator",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/typed_basin/mod.rs",
+      "expect": {
+        "size_bytes": 28705,
+        "sha256": "f9da4de945edfc2b8812109ad15ae850164313b153f638d74a30144607a714a3",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "implicit-forward-owner",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/typed_basin/implicit_forward.rs",
+      "expect": {
+        "size_bytes": 6707,
+        "sha256": "bccd239e3035fcd3b387e33b4822d7f6706a0b339a022442498417d835d4d8fd",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "exact-support-owner",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/typed_basin/support.rs",
+      "expect": {
+        "size_bytes": 6436,
+        "sha256": "584fa7e468a21da5bda39018c91e9eb4868b4d749c69e0312abb9fa11e363c67",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "v8-forward-oracle-owner",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/typed_basin/oracle.rs",
+      "expect": {
+        "size_bytes": 10011,
+        "sha256": "e71d8938dd3912589987a8701c6397364416c7149d51a5ba382541d65ed88d2c",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "frozen-settlement-owner",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/runtime/settlement.rs",
+      "expect": {
+        "size_bytes": 50347,
+        "sha256": "ae8e297e35f51475fc02e840b73b1db55962a76864483cf4b0ed5aa1cd879054",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "compiler-formula-owner",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/compiler.rs",
+      "expect": {
+        "size_bytes": 91801,
+        "sha256": "4f26262a9e0fb0cfe8d853074d213c5345168816492197303cd1c2981d006d72",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "pure-classifier-owner",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/restoration.rs",
+      "expect": {
+        "size_bytes": 17793,
+        "sha256": "a9f79690117131a8634cd8e5fce189e426ca388cd19b2fd723f11843ab756211",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "installed-package",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin",
+      "expect": {
+        "size_bytes": 190139182,
+        "sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+        "prefix_hex": "4c41594c31563800",
+        "mode": "0644"
+      }
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {
+        "id": "add-proof-only-package-dependency-audit",
+        "kind": "filesystem_edit"
+      },
+      {
+        "id": "add-independent-exact-reverse-producer-and-compiler-reference",
+        "kind": "filesystem_edit"
+      },
+      {
+        "id": "add-explicit-reverse-settlement-and-geometry-adapter",
+        "kind": "filesystem_edit"
+      },
+      {
+        "id": "write-a2-proof-receipts",
+        "kind": "filesystem_write"
+      },
+      {
+        "id": "run-focused-tests-and-fixed-13x1-remotely",
+        "kind": "test_execution"
+      }
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "runtime_authority_change",
+      "production_phase8i_reachability",
+      "package_format_change",
+      "installed_package_mutation",
+      "corpus_crystallization",
+      "runtime_restart",
+      "version_bump",
+      "commit_or_push",
+      "heldout_target_pull",
+      "global_topk_admission",
+      "typed_basin_truncation",
+      "settlement_coefficient_change",
+      "restoration_calibration_change",
+      "mixed_exact_and_v8_reverse_fingerprint",
+      "missing_reverse_as_empty_fallback",
+      "unresolved_learned_bank_bypass",
+      "literal_case_rule",
+      "local_heavy_build",
+      "full_13x20000_before_a2_pass"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "production-runtime-isolation-vetoes",
+      "path": "../../../../src/nanda_wave/lexical_grokking/service.rs",
+      "sha256": "19c83a5808e9131fb80a513bae394515337a97dfa441a2a8dd5087eb826accdc",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "production_phase8i_reachability",
+          "regex": "TypedBasinImplicit|typed_basin_implicit|phase8i"
+        },
+        {
+          "effect": "runtime_authority_change",
+          "regex": "TypedBasinImplicit|typed_basin_implicit|phase8i"
+        },
+        {
+          "effect": "package_format_change",
+          "regex": "LAYL1V9|VERSION\\s*[:=]\\s*9"
+        }
+      ]
+    },
+    {
+      "id": "typed-traversal-preservation-vetoes",
+      "path": "../../../../src/nanda_wave/lexical_grokking/typed_edit_traversal.rs",
+      "sha256": "2aaa264659f9a43fb818cc527f569f54bcbd47ae225878b323807c92c05842ff",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "typed_basin_truncation",
+          "regex": "terminal_ids\\.truncate|MAX_TYPED_TERMINALS|queue_limit"
+        },
+        {
+          "effect": "heldout_target_pull",
+          "regex": "expected_terminal|case\\.terminal_id[^;]*(traverse|admit)"
+        },
+        {
+          "effect": "literal_case_rule",
+          "regex": "case\\.surface\\s*==|match\\s+case\\.class"
+        }
+      ]
+    },
+    {
+      "id": "proof-cli-side-effect-vetoes",
+      "path": "../../../../src/bin/lay_nanda_wave_train.rs",
+      "sha256": "73e37ad9cf3d18b25447b9b616c3854bcbd70348566ebee0c3e2b559b9a73c2c",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "generated_traffic",
+          "regex": "reqwest|ureq::"
+        },
+        {
+          "effect": "synthetic_fixture",
+          "regex": "write_synthetic|generate_fixture"
+        },
+        {
+          "effect": "corpus_crystallization",
+          "regex": "phase8i[^;]*crystallize|TypedBasin[^;]*crystallize"
+        },
+        {
+          "effect": "runtime_restart",
+          "regex": "systemctl|pkill|killall"
+        },
+        {
+          "effect": "installed_package_mutation",
+          "regex": "File::create\\(package|write\\(package"
+        },
+        {
+          "effect": "local_heavy_build",
+          "regex": "Command::new[^;]*(cargo|rustc)"
+        },
+        {
+          "effect": "version_bump",
+          "regex": "set_package_version|cargo[^;]*set-version"
+        },
+        {
+          "effect": "commit_or_push",
+          "regex": "Command::new\\(\"git\"\\)|git\\s+(commit|push)"
+        }
+      ]
+    },
+    {
+      "id": "typed-basin-a2-vetoes",
+      "path": "../../../../src/nanda_wave/lexical_grokking/typed_basin/mod.rs",
+      "sha256": "f9da4de945edfc2b8812109ad15ae850164313b153f638d74a30144607a714a3",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "global_topk_admission",
+          "regex": "TypedBasin[^;]*(LegacyBirthSearch|global_top|posting_bounds)"
+        },
+        {
+          "effect": "missing_reverse_as_empty_fallback",
+          "regex": "exact_reverse[^;]*(unwrap_or_default|Arc::from\\(\\[\\]\\))"
+        },
+        {
+          "effect": "mixed_exact_and_v8_reverse_fingerprint",
+          "regex": "(exact_reverse|exact_u32)[^;]*reverse_couplings\\("
+        },
+        {
+          "effect": "restoration_calibration_change",
+          "regex": "phase8i[^;]*restoration_calibration\\s*=|typed_basin[^;]*RestorationCalibration\\s*\\{"
+        },
+        {
+          "effect": "settlement_coefficient_change",
+          "regex": "typed_basin[^;]*(base_settled_energy|with_sequence_energy)|SETTLING_ITERATIONS\\s*[:=]"
+        },
+        {
+          "effect": "unresolved_learned_bank_bypass",
+          "regex": "(positive_subcenters|anti_subcenters|hard_negative_subcenters|ambiguity_subcenters|pair_profiles)[^;]*(unwrap_or_default|continue)"
+        },
+        {
+          "effect": "full_13x20000_before_a2_pass",
+          "regex": "heldout_per_class\\s*==\\s*20_000[^;]*settlement"
+        }
+      ]
+    }
+  ],
+  "state_machine": {
+    "initial_state": "PHASE8I_A0_A1_B0_PASS",
+    "terminal_states": [
+      "PHASE8I_A2_PASS",
+      "PHASE8I_A2_DEPENDENCY_REJECTED",
+      "PHASE8I_A2_REVERSE_PARITY_REJECTED",
+      "PHASE8I_A2_MIXED_FINGERPRINT_REJECTED",
+      "PHASE8I_A2_SETTLEMENT_PARITY_REJECTED"
+    ],
+    "steps": [
+      {
+        "id": "audit-package-finalization-dependencies",
+        "from": "PHASE8I_A0_A1_B0_PASS",
+        "to": "PHASE8I_A2_DEPENDENCIES_RESOLVED",
+        "mutates": true,
+        "failure_state": "PHASE8I_A2_DEPENDENCY_REJECTED",
+        "cleanup": "retain dependency report and source diff; do not settle a candidate and do not mutate package or runtime",
+        "preserves": [
+          "installed-package-bytes",
+          "phase8i-a0-a1-b0-proof-bytes",
+          "phase8i-route-proof-bytes"
+        ],
+        "test_id": "package-dependency-fault-injection"
+      },
+      {
+        "id": "implement-exact-reverse-and-reference-parity",
+        "from": "PHASE8I_A2_DEPENDENCIES_RESOLVED",
+        "to": "PHASE8I_A2_REVERSE_PARITY_PASS",
+        "mutates": true,
+        "failure_state": "PHASE8I_A2_REVERSE_PARITY_REJECTED",
+        "cleanup": "retain mismatch receipt and both independently produced relation vectors; do not continue to settlement",
+        "preserves": [
+          "installed-package-bytes",
+          "phase8i-a0-a1-b0-proof-bytes",
+          "phase8i-route-proof-bytes"
+        ],
+        "test_id": "exact-reverse-fault-injection"
+      },
+      {
+        "id": "implement-single-fingerprint-settlement-adapter",
+        "from": "PHASE8I_A2_REVERSE_PARITY_PASS",
+        "to": "PHASE8I_A2_PASS",
+        "mutates": true,
+        "failure_state": "PHASE8I_A2_SETTLEMENT_PARITY_REJECTED",
+        "cleanup": "retain exact and V8 fingerprint receipts and candidate-state mismatch; no full proof deployment or package mutation",
+        "preserves": [
+          "installed-package-bytes",
+          "phase8i-a0-a1-b0-proof-bytes",
+          "phase8i-route-proof-bytes"
+        ],
+        "test_id": "a2-mixed-fingerprint-fault-injection"
+      }
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "installed-package-bytes",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin",
+      "policy": "byte_identical",
+      "rollback_policy": "must remain byte-identical",
+      "baseline_check_id": "installed-package"
+    },
+    {
+      "id": "phase8i-a0-a1-b0-proof-bytes",
+      "path": "evidence/phase-8i-13x1.json",
+      "policy": "byte_identical",
+      "rollback_policy": "must remain byte-identical; A2 writes a new receipt",
+      "baseline_check_id": "phase8i-a0-a1-b0-proof"
+    },
+    {
+      "id": "phase8i-route-proof-bytes",
+      "path": "route-gate-v3.json",
+      "policy": "byte_identical",
+      "rollback_policy": "must remain byte-identical",
+      "baseline_check_id": "phase8i-route-gate"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "package-dependency-identity",
+      "producer": "loaded immutable V8 compact base",
+      "consumer": "A2 finalization dependency audit",
+      "comparison": "physical vector lengths summed profile and center references and calibration values are recorded before settlement",
+      "test_id": "package-dependency-audit"
+    },
+    {
+      "id": "exact-reverse-relation-identity",
+      "producer": "candidate-local exact-u32 reverse reconstructor",
+      "consumer": "independent compiler-formula reference",
+      "comparison": "peer strength phase position flags anchor-first order and lexical truncation are byte-identical",
+      "test_id": "exact-reverse-compiler-parity"
+    },
+    {
+      "id": "single-reverse-owner-identity",
+      "producer": "exact reverse bank entry keyed by terminal ID",
+      "consumer": "settlement and restoration geometry",
+      "comparison": "both stages consume the same relation-vector fingerprint and missing entries fail closed",
+      "test_id": "a2-single-reverse-owner"
+    },
+    {
+      "id": "complete-max-forward-identity",
+      "producer": "all implicit activations in D_E(Q)",
+      "consumer": "every compiler-exact candidate settlement",
+      "comparison": "one maximum is computed before settlement over the complete untruncated basin",
+      "test_id": "a2-complete-max-forward"
+    },
+    {
+      "id": "settlement-permutation-identity",
+      "producer": "forward terminal-order exact settlement",
+      "consumer": "reversed terminal-order exact settlement",
+      "comparison": "complete candidate state final order and serialized readout are identical",
+      "test_id": "a2-candidate-permutation-parity"
+    },
+    {
+      "id": "fingerprint-separation-identity",
+      "producer": "compiler-exact u32 settlement route",
+      "consumer": "current saturated-u16 V8 compatibility route",
+      "comparison": "each route is internally complete and separately labelled; differences are reported and never merged",
+      "test_id": "a2-fingerprint-separation"
+    }
+  ],
+  "runtime_comparisons": [],
+  "invariants": [
+    {
+      "id": "installed-runtime-untouched",
+      "statement": "installed package daemon IBus version and production authority remain unchanged",
+      "test_id": "a2-proof-route-isolation"
+    },
+    {
+      "id": "one-fingerprint-end-to-end",
+      "statement": "compiler-exact settlement and geometry never call the live saturated V8 reverse provider",
+      "test_id": "a2-single-reverse-owner"
+    },
+    {
+      "id": "learned-dependencies-fail-closed",
+      "statement": "an unresolved learned residual or pair bank stops A2 before candidate settlement",
+      "test_id": "package-dependency-fault-injection"
+    },
+    {
+      "id": "settlement-is-frozen",
+      "statement": "coefficients calibration finalizer order and classifier logic are unchanged",
+      "test_id": "frozen-settlement-source-parity"
+    },
+    {
+      "id": "a2-denominator-remains-small",
+      "statement": "only the fixed 13x1 proof runs until A2 passes",
+      "test_id": "a2-proof-route-isolation"
+    }
+  ],
+  "tests": [
+    {
+      "id": "package-dependency-audit",
+      "kind": "parity",
+      "expected": "all package vector lengths references and calibration values are explicit and every active dependency has an A2 owner"
+    },
+    {
+      "id": "package-dependency-fault-injection",
+      "kind": "fault_injection",
+      "expected": "a synthetic non-empty unresolved bank in a unit fixture stops before settlement without changing runtime code or package"
+    },
+    {
+      "id": "exact-reverse-fault-injection",
+      "kind": "fault_injection",
+      "expected": "a perturbed exact support or reverse relation produces REVERSE_PARITY_REJECTED before settlement"
+    },
+    {
+      "id": "a2-mixed-fingerprint-fault-injection",
+      "kind": "fault_injection",
+      "expected": "a missing exact reverse entry or attempted V8 fallback produces MIXED_FINGERPRINT_REJECTED without a readout"
+    },
+    {
+      "id": "exact-reverse-compiler-parity",
+      "kind": "parity",
+      "expected": "all exact reverse relation fields and order match the independent compiler reference including support above u16 max"
+    },
+    {
+      "id": "a2-single-reverse-owner",
+      "kind": "parity",
+      "expected": "settlement and geometry consume the same explicit exact relation fingerprint and cannot fall back to live V8 reverse"
+    },
+    {
+      "id": "a2-complete-max-forward",
+      "kind": "parity",
+      "expected": "max_forward equals the maximum activation over every D_E(Q) terminal before any ordering or finalization"
+    },
+    {
+      "id": "a2-candidate-permutation-parity",
+      "kind": "parity",
+      "expected": "forward and reversed basin order produce byte-identical exact candidate states final order and readout"
+    },
+    {
+      "id": "a2-fingerprint-separation",
+      "kind": "parity",
+      "expected": "compiler-exact and V8 live fingerprints are separately serialized with no mixed route"
+    },
+    {
+      "id": "frozen-settlement-source-parity",
+      "kind": "parity",
+      "expected": "existing settlement coefficients ordering and classifier behavior are unchanged outside the explicit proof adapter"
+    },
+    {
+      "id": "a2-single-fingerprint-settlement",
+      "kind": "parity",
+      "expected": "fixed 13x1 has 100 percent exact reverse candidate-state final-order and readout parity with zero unresolved dependencies"
+    },
+    {
+      "id": "a2-proof-route-isolation",
+      "kind": "parity",
+      "expected": "only the lexical-compiler proof route reaches A2; package bytes runtime authority daemon IBus version commit and push remain unchanged"
+    }
+  ]
+}

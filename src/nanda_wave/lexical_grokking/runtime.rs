@@ -19,8 +19,6 @@ use legacy::select_birth_atoms;
 #[cfg(test)]
 use legacy::should_expand_operator_lattice;
 pub(in crate::nanda_wave::lexical_grokking) use settlement::observed_sequence;
-#[cfg(test)]
-use settlement::truncate_with_reconstruction_tail;
 #[allow(unused_imports)]
 pub(super) use settlement::{
     apply_geometry_certificate_interference, apply_position_certificate_interference,
@@ -63,6 +61,13 @@ pub use host::{L1RestorationHost, L1RestorationHostStats};
 use relations::{RelationStore, ReverseCache};
 
 use crate::stable_hash::mix64_golden;
+
+pub(super) fn truncate_with_reconstruction_tail(
+    candidates: &mut Vec<GrokkingCandidate>,
+    limit: usize,
+) {
+    settlement::truncate_with_reconstruction_tail(candidates, limit);
+}
 
 use super::atoms::{
     encode_wave_surface, normalize_lexical_surface, physical_key_sequence, AtomChannel, NGramKey,

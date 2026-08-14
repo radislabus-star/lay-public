@@ -1,0 +1,159 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "phase8g-paper",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8G_2026-08-14/../../../l1-l11-modal-residual-phase8g.md",
+      "sha256": "cd92834fa44701e267e9886592513d7a74e0ec4946e7eb0357f05a9cd82634df",
+      "size_bytes": 16382
+    },
+    {
+      "exists": true,
+      "id": "phase8-proof-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8G_2026-08-14/../../../../src/nanda_wave/lexical_grokking/posting_bounds.rs",
+      "sha256": "2fd0c4972f004071fd0d725010bb762702ea6b9314e7211a7ff4f40f1696a0d8",
+      "size_bytes": 80620
+    },
+    {
+      "exists": true,
+      "id": "phase8f-impact-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8G_2026-08-14/../../../../src/nanda_wave/lexical_grokking/posting_bounds/impact.rs",
+      "sha256": "6c77c46c6c3ba0c05b171e631dae2ade0316a8a097a2d9abf19f519451f795a1",
+      "size_bytes": 36024
+    },
+    {
+      "exists": true,
+      "id": "activation-contract",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8G_2026-08-14/../../../../src/nanda_wave/lexical_grokking/runtime/contract.rs",
+      "sha256": "c72689b93cea694bd79f4d0323085aa99be5e9fb025765a1b120ace3db4df754",
+      "size_bytes": 6106
+    },
+    {
+      "exists": true,
+      "id": "v8-format-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8G_2026-08-14/../../../../src/nanda_wave/lexical_grokking/v8.rs",
+      "sha256": "cb722f5dfb7c7d80ccc1ee298ee898e2220f178f50ef19f27bdf7feba564605a",
+      "size_bytes": 40868
+    },
+    {
+      "exists": true,
+      "id": "rejected-phase8f-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8G_2026-08-14/../L1_L11_PEAK_SEARCH_PHASE_8F_2026-08-14/phase-8f-v2-13x1.json",
+      "sha256": "44107b74372a68548339b4a2a54a394cf863d7f129cc83e72d8f0cc8ad1e562d",
+      "size_bytes": 50216
+    },
+    {
+      "exists": true,
+      "id": "phase8g-route-design",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8G_2026-08-14/route-design-v3.json",
+      "sha256": "f287518067ef0066e7790d59e9699d377ea0acc894f5be58fda25ae208811903",
+      "size_bytes": 6567
+    },
+    {
+      "exists": true,
+      "id": "phase8g-route-gate",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8G_2026-08-14/route-gate-v3.json",
+      "sha256": "67f92c8a3abc011e86db91f8ddae50d50b9b8d8cb8aab277e42e600cdb2714d6",
+      "size_bytes": 6627
+    },
+    {
+      "exists": true,
+      "id": "installed-package",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin",
+      "sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+      "size_bytes": 190139182
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 9,
+    "forbidden_side_effect_kinds": [
+      "corpus_crystallization",
+      "dense_oracle_executor_input",
+      "early_atom_selection",
+      "equality_pruning",
+      "generated_candidate_string",
+      "generated_traffic",
+      "heldout_target_modal_selection",
+      "installed_package_mutation",
+      "negative_residual_omission",
+      "package_format_change",
+      "posting_budget_truncation",
+      "production_modal_projection_reachability",
+      "queue_truncation",
+      "runtime_authority_change",
+      "runtime_case_rule",
+      "runtime_restart",
+      "sampled_package_size_extrapolation",
+      "score_or_settlement_change",
+      "synthetic_fixture",
+      "zero_mass_residual_omission"
+    ],
+    "identity_contracts": 6,
+    "invariants": 7,
+    "planned_side_effect_kinds": [
+      "filesystem_edit",
+      "filesystem_write",
+      "test_execution"
+    ],
+    "preserved_artifacts": 3,
+    "runtime_comparisons": 0,
+    "source_checks": 3,
+    "tests": 11
+  },
+  "manifest_sha256": "955f8e7552340ac861db3093f5ea70bcca53781fd2397a575d04794f699b083a",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "phase8-proof-vetoes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8G_2026-08-14/../../../../src/nanda_wave/lexical_grokking/posting_bounds.rs",
+      "sha256": "2fd0c4972f004071fd0d725010bb762702ea6b9314e7211a7ff4f40f1696a0d8",
+      "size_bytes": 80620
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "phase8f-impact-preservation-vetoes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8G_2026-08-14/../../../../src/nanda_wave/lexical_grokking/posting_bounds/impact.rs",
+      "sha256": "6c77c46c6c3ba0c05b171e631dae2ade0316a8a097a2d9abf19f519451f795a1",
+      "size_bytes": 36024
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "v8-runtime-preservation-vetoes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8G_2026-08-14/../../../../src/nanda_wave/lexical_grokking/v8.rs",
+      "sha256": "cb722f5dfb7c7d80ccc1ee298ee898e2220f178f50ef19f27bdf7feba564605a",
+      "size_bytes": 40868
+    }
+  ],
+  "task_id": "lay-l11-modal-residual-phase8g-projection-2026-08-14",
+  "verdict": "READY_TO_IMPLEMENT"
+}

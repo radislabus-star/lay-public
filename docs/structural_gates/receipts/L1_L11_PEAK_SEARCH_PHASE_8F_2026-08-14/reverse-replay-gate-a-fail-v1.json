@@ -1,0 +1,43 @@
+{
+  "schema": "lay.l11.phase8f.failure-receipt.v1",
+  "phase": "8F-V1",
+  "date": "2026-08-14",
+  "verdict": "FAIL",
+  "scope": "tiny-package reverse replay parity",
+  "command": "scripts/cargo-guard.sh test --lib posting_bounds --features lexical-compiler -j16",
+  "denominator": {
+    "tests": 18,
+    "passed": 16,
+    "failed": 2
+  },
+  "mismatches": [
+    {
+      "dense_beta_k": 3611552,
+      "reverse_replay_beta_k": 3906680
+    },
+    {
+      "dense_beta_k": 856118,
+      "reverse_replay_beta_k": 1097598
+    }
+  ],
+  "first_shared_mechanism": {
+    "forward": "one atom-center relation with average position",
+    "reverse": "one relation per clean atom occurrence followed by a 96 lexical relation truncation",
+    "consequence": "activation_for_terminal is not an exact inverse of the complete forward posting field"
+  },
+  "rejected_owner": "reverse_exact_replay",
+  "not_rejected_by_this_receipt": [
+    "impact cell relation accounting",
+    "descending impact order",
+    "strict equality threshold",
+    "residual upper-bound theorem"
+  ],
+  "preservation": {
+    "installed_package_sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+    "phase8e_receipt_sha256": "37c17f10393cd53cc21bbf11a3bff57a2fd655bd6a1a463c4415297ad0c03648",
+    "runtime_authority_changed": false,
+    "package_format_changed": false,
+    "installed_package_mutated": false
+  },
+  "next_route": "exact terminal lookup replay over complete terminal-ordered postings"
+}

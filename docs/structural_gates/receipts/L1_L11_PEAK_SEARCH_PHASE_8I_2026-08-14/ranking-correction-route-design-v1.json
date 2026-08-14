@@ -1,0 +1,76 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "quality_cli", "role": "interface"},
+    {"id": "quality_orchestrator", "role": "orchestrator"},
+    {"id": "typed_basin", "role": "producer"},
+    {"id": "implicit_wave", "role": "evidence_owner"},
+    {"id": "exact_settlement", "role": "candidate_rank_owner"},
+    {"id": "restoration_classifier", "role": "authorization_owner"},
+    {"id": "quality_gate", "role": "proof_owner"},
+    {"id": "fixed_objective", "role": "proof_owner"},
+    {"id": "legacy_v8_observer", "role": "observer"},
+    {"id": "quality_receipt", "role": "observer"}
+  ],
+  "edges": [
+    {"id": "exec_cli_orchestrator", "from": "quality_cli", "relation": "calls", "to": "quality_orchestrator", "events": ["quality_case"]},
+    {"id": "exec_orchestrator_typed", "from": "quality_orchestrator", "relation": "delegates", "to": "typed_basin", "events": ["quality_case"]},
+    {"id": "exec_typed_implicit", "from": "typed_basin", "relation": "delegates", "to": "implicit_wave", "events": ["quality_case"]},
+    {"id": "exec_implicit_settlement", "from": "implicit_wave", "relation": "delegates", "to": "exact_settlement", "events": ["quality_case"]},
+    {"id": "exec_settlement_classifier", "from": "exact_settlement", "relation": "delegates", "to": "restoration_classifier", "events": ["quality_case"]},
+    {"id": "exec_classifier_gate", "from": "restoration_classifier", "relation": "delegates", "to": "quality_gate", "events": ["quality_case"]},
+    {"id": "authority_typed_implicit", "from": "typed_basin", "relation": "produces_for", "to": "implicit_wave", "events": ["quality_authority"]},
+    {"id": "authority_implicit_settlement", "from": "implicit_wave", "relation": "passes_to", "to": "exact_settlement", "events": ["quality_authority"]},
+    {"id": "authority_settlement_classifier", "from": "exact_settlement", "relation": "passes_to", "to": "restoration_classifier", "events": ["quality_authority"]},
+    {"id": "authority_classifier_gate", "from": "restoration_classifier", "relation": "authorizes", "to": "quality_gate", "events": ["quality_authority"]},
+    {"id": "proof_objective_gate", "from": "fixed_objective", "relation": "proves", "to": "quality_gate", "events": ["objective_proof"]},
+    {"id": "observe_legacy_receipt", "from": "legacy_v8_observer", "relation": "observes", "to": "quality_receipt", "events": ["legacy_observation"]},
+    {"id": "observe_gate_receipt", "from": "quality_gate", "relation": "observes", "to": "quality_receipt", "events": ["quality_report"]}
+  ],
+  "routes": [
+    {
+      "id": "quality-case-execution",
+      "event": "quality_case",
+      "kind": "execution",
+      "entry": "quality_cli",
+      "terminal": "quality_gate",
+      "required_roles": ["interface", "orchestrator", "producer", "evidence_owner", "candidate_rank_owner", "authorization_owner", "proof_owner"],
+      "via": ["quality_orchestrator", "typed_basin", "implicit_wave", "exact_settlement", "restoration_classifier"],
+      "path_cardinality": [{"from": "quality_cli", "to": "quality_gate", "min": 1, "max": 1}]
+    },
+    {
+      "id": "quality-authority",
+      "event": "quality_authority",
+      "kind": "authority",
+      "entry": "typed_basin",
+      "terminal": "quality_gate",
+      "required_roles": ["producer", "evidence_owner", "candidate_rank_owner", "authorization_owner", "proof_owner"],
+      "via": ["implicit_wave", "exact_settlement", "restoration_classifier"]
+    },
+    {
+      "id": "objective-proof",
+      "event": "objective_proof",
+      "kind": "proof",
+      "entry": "fixed_objective",
+      "terminal": "quality_gate",
+      "required_roles": ["proof_owner"]
+    },
+    {
+      "id": "legacy-observation",
+      "event": "legacy_observation",
+      "kind": "observation",
+      "entry": "legacy_v8_observer",
+      "terminal": "quality_receipt",
+      "required_roles": ["observer"]
+    },
+    {
+      "id": "quality-report",
+      "event": "quality_report",
+      "kind": "observation",
+      "entry": "quality_gate",
+      "terminal": "quality_receipt",
+      "required_roles": ["proof_owner", "observer"]
+    }
+  ]
+}

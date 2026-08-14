@@ -1,0 +1,46 @@
+{
+  "schema": "lay.l11.phase8e-summary.v1",
+  "date": "2026-08-14",
+  "architecture": "exact_sharded_epoch_accumulator",
+  "verdict": "FAIL",
+  "gates": {
+    "correctness": "PASS",
+    "feasibility": "FAIL",
+    "maximum_complete_latency_us": 25484,
+    "latency_limit_us": 5000,
+    "package_bytes": 190139182,
+    "package_limit_bytes": 204472320,
+    "accumulator_resident_bytes": 21245944,
+    "accumulator_limit_bytes": 33554432
+  },
+  "correctness": {
+    "dense_activation_field_mismatches": 0,
+    "closure_losses": 0,
+    "tie_boundary_losses": 0,
+    "typed_terminal_losses": 0,
+    "merged_target_losses": 0,
+    "complete_relation_decode": true,
+    "zero_mass_full_scans": 0
+  },
+  "work": {
+    "centers": 852582,
+    "centers_touched_per_case": 852582,
+    "forward_relations": 110928005,
+    "query_relations_min": 5446385,
+    "query_relations_max": 9544967,
+    "maximum_accumulation_us": 8555,
+    "maximum_readout_us": 16150,
+    "terminal_shards": 16,
+    "heldout_cases": 13
+  },
+  "artifact": {
+    "path": "/home/ubu/.cache/lay/l1-peak-search-phase8e-2026-08-14/epoch-s16-13x1.json",
+    "sha256": "c243cdae7105defe45efa0d6418686ffecd461280801bcdde033c139d81c5d25"
+  },
+  "package_sha256_before": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+  "package_sha256_after": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+  "runtime_authority_changed": false,
+  "package_format_changed": false,
+  "promotion_to_phase9": false,
+  "next_design": "phase8f_impact_ordered_threshold_search"
+}

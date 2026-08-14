@@ -1,0 +1,189 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "PASS",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": true,
+  "contract": "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8E_2026-08-14/route-design.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "source_root": null,
+  "node_count": 11,
+  "edge_count": 12,
+  "routes": [
+    {
+      "id": "phase8e-posting-execution",
+      "event": "phase8e_query",
+      "kind": "execution",
+      "entry": "phase8e_proof_cli",
+      "via": [
+        "complete_posting_adapter",
+        "sharded_epoch_accumulator"
+      ],
+      "terminal": "exact_kth_readout",
+      "path_count": 1,
+      "paths": [
+        [
+          "phase8e_proof_cli",
+          "phase8e_orchestrator",
+          "complete_posting_adapter",
+          "sharded_epoch_accumulator",
+          "terminal_evidence_union",
+          "exact_kth_readout"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "complete_posting_adapter",
+          "sharded_epoch_accumulator"
+        ],
+        "candidate_rank_owner": [
+          "exact_kth_readout"
+        ],
+        "orchestrator": [
+          "phase8e_orchestrator"
+        ],
+        "interface": [
+          "phase8e_proof_cli"
+        ],
+        "evidence_owner": [
+          "terminal_evidence_union"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "phase8e_proof_cli",
+          "to": "phase8e_orchestrator",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "phase8e_proof_cli",
+              "phase8e_orchestrator"
+            ]
+          ]
+        },
+        {
+          "from": "complete_posting_adapter",
+          "to": "sharded_epoch_accumulator",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "complete_posting_adapter",
+              "sharded_epoch_accumulator"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "phase8e-typed-execution",
+      "event": "phase8e_query",
+      "kind": "execution",
+      "entry": "phase8e_orchestrator",
+      "via": [
+        "typed_edit_traversal"
+      ],
+      "terminal": "terminal_evidence_union",
+      "path_count": 1,
+      "paths": [
+        [
+          "phase8e_orchestrator",
+          "typed_edit_traversal",
+          "terminal_evidence_union"
+        ]
+      ],
+      "role_owners": {
+        "orchestrator": [
+          "phase8e_orchestrator"
+        ],
+        "evidence_owner": [
+          "terminal_evidence_union"
+        ],
+        "producer": [
+          "typed_edit_traversal"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "phase8e-proof",
+      "event": "phase8e_query",
+      "kind": "proof",
+      "entry": "dense_accumulator_oracle",
+      "via": [],
+      "terminal": "closure_parity_gate",
+      "path_count": 1,
+      "paths": [
+        [
+          "dense_accumulator_oracle",
+          "closure_parity_gate"
+        ]
+      ],
+      "role_owners": {
+        "proof_owner": [
+          "closure_parity_gate",
+          "dense_accumulator_oracle"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "phase8e-observation",
+      "event": "phase8e_query",
+      "kind": "observation",
+      "entry": "closure_parity_gate",
+      "via": [],
+      "terminal": "phase8e_receipt",
+      "path_count": 1,
+      "paths": [
+        [
+          "closure_parity_gate",
+          "phase8e_metrics",
+          "phase8e_receipt"
+        ]
+      ],
+      "role_owners": {
+        "proof_owner": [
+          "closure_parity_gate"
+        ],
+        "observer": [
+          "phase8e_metrics",
+          "phase8e_receipt"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {},
+  "source_evidence": {
+    "expected": 0,
+    "verified": 0,
+    "complete": true
+  },
+  "issues": [],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": false,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

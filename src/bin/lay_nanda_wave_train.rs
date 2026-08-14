@@ -1001,6 +1001,59 @@ fn main() -> io::Result<()> {
         return Ok(());
     }
     #[cfg(feature = "lexical-compiler")]
+    if let Some(corpus) = arg_path(&args, "--prove-l1-typed-basin-implicit-forward") {
+        let package = arg_path(&args, "--memory")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--memory is required"))?;
+        let report = lay::nanda_wave::prove_l1_typed_basin_implicit_forward(
+            &corpus,
+            &package,
+            arg_usize(&args, "--max-words").unwrap_or(0),
+            arg_usize(&args, "--heldout-per-class").unwrap_or(1),
+        )?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    #[cfg(feature = "lexical-compiler")]
+    if let Some(corpus) = arg_path(&args, "--prove-l1-typed-basin-quality") {
+        let package = arg_path(&args, "--memory")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--memory is required"))?;
+        let max_words = arg_usize(&args, "--max-words").unwrap_or(0);
+        let heldout_per_class = arg_usize(&args, "--heldout-per-class").unwrap_or(20_000);
+        let workers = arg_usize(&args, "--workers").unwrap_or(0);
+        let report = if let Some(damage_class) = arg_string(&args, "--damage-class") {
+            lay::nanda_wave::diagnose_l1_typed_basin_quality_class(
+                &corpus,
+                &package,
+                max_words,
+                heldout_per_class,
+                workers,
+                &damage_class,
+            )?
+        } else {
+            lay::nanda_wave::prove_l1_typed_basin_quality(
+                &corpus,
+                &package,
+                max_words,
+                heldout_per_class,
+                arg_usize(&args, "--clean-limit").unwrap_or(0),
+                workers,
+            )?
+        };
+        if let Some(receipt) = arg_path(&args, "--receipt") {
+            let mut bytes = serde_json::to_vec_pretty(&report).map_err(io::Error::other)?;
+            bytes.push(b'\n');
+            lay::private_file::write_private_bytes(&receipt, &bytes)?;
+        }
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    #[cfg(feature = "lexical-compiler")]
     if let Some(corpus) = arg_path(&args, "--prove-l1-posting-bounds") {
         let package = arg_path(&args, "--memory")
             .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--memory is required"))?;
@@ -1012,6 +1065,9 @@ fn main() -> io::Result<()> {
             arg_usize(&args, "--posting-group-relations").unwrap_or(0),
             arg_usize(&args, "--requested-k").unwrap_or(128),
             arg_usize(&args, "--terminal-shards").unwrap_or(16),
+            arg_string(&args, "--posting-search")
+                .as_deref()
+                .unwrap_or("epoch"),
         )?;
         println!(
             "{}",
@@ -1622,7 +1678,9 @@ fn print_usage() {
            --l4-cross-scene-status PATH\n\
            --compile-l4-cross-scene --input EVENTS.jsonl [--corrections CORRECTIONS.jsonl] --out PACKAGE.bin\n\
            --prove-l4-cross-scene --russian-words RU --english-words EN --out PACKAGE.bin\n\
-           --prove-l1-posting-bounds CORPUS --memory L1.v8.bin [--heldout-per-class N] [--posting-group-relations N] [--requested-k N] [--terminal-shards N]\n\
+	           --prove-l1-typed-basin-implicit-forward CORPUS --memory L1.v8.bin [--heldout-per-class N]\n\
+	           --prove-l1-typed-basin-quality CORPUS --memory L1.v8.bin [--heldout-per-class N] [--clean-limit N] [--damage-class CLASS] [--workers N] [--receipt PATH]\n\
+	           --prove-l1-posting-bounds CORPUS --memory L1.v8.bin [--heldout-per-class N] [--posting-search subtree|modal|impact|epoch|wand] [--posting-group-relations N] [--requested-k N] [--terminal-shards N]\n\
            --reload-l3-context-composite\n\
            --version"
     );

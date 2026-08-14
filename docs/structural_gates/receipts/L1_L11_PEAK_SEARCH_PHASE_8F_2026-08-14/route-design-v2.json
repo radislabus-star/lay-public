@@ -1,0 +1,75 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "phase8f_proof_cli", "role": "interface"},
+    {"id": "phase8f_orchestrator", "role": "orchestrator"},
+    {"id": "complete_posting_adapter", "role": "producer"},
+    {"id": "impact_cell_builder", "role": "producer"},
+    {"id": "impact_threshold_search", "role": "producer"},
+    {"id": "exact_posting_replay", "role": "producer"},
+    {"id": "typed_edit_traversal", "role": "producer"},
+    {"id": "terminal_evidence_union", "role": "evidence_owner"},
+    {"id": "exact_kth_readout", "role": "candidate_rank_owner"},
+    {"id": "dense_complete_oracle", "role": "proof_owner"},
+    {"id": "phase8f_parity_gate", "role": "proof_owner"},
+    {"id": "phase8f_metrics", "role": "observer"},
+    {"id": "phase8f_receipt", "role": "observer"}
+  ],
+  "edges": [
+    {"id": "exec-cli-orchestrator", "from": "phase8f_proof_cli", "relation": "calls", "to": "phase8f_orchestrator", "events": ["phase8f_query"]},
+    {"id": "exec-orchestrator-postings", "from": "phase8f_orchestrator", "relation": "calls", "to": "complete_posting_adapter", "events": ["phase8f_query"]},
+    {"id": "exec-postings-cells", "from": "complete_posting_adapter", "relation": "delegates", "to": "impact_cell_builder", "events": ["phase8f_query"]},
+    {"id": "exec-cells-threshold", "from": "impact_cell_builder", "relation": "delegates", "to": "impact_threshold_search", "events": ["phase8f_query"]},
+    {"id": "exec-threshold-posting-replay", "from": "impact_threshold_search", "relation": "delegates", "to": "exact_posting_replay", "events": ["phase8f_query"]},
+    {"id": "exec-posting-replay-union", "from": "exact_posting_replay", "relation": "delegates", "to": "terminal_evidence_union", "events": ["phase8f_query"]},
+    {"id": "exec-orchestrator-typed", "from": "phase8f_orchestrator", "relation": "calls", "to": "typed_edit_traversal", "events": ["phase8f_typed"]},
+    {"id": "exec-typed-union", "from": "typed_edit_traversal", "relation": "delegates", "to": "terminal_evidence_union", "events": ["phase8f_typed"]},
+    {"id": "exec-union-readout", "from": "terminal_evidence_union", "relation": "delegates", "to": "exact_kth_readout", "events": ["phase8f_query"]},
+    {"id": "proof-postings-oracle", "from": "complete_posting_adapter", "relation": "proves", "to": "dense_complete_oracle", "events": ["phase8f_query"]},
+    {"id": "proof-oracle-parity", "from": "dense_complete_oracle", "relation": "proves", "to": "phase8f_parity_gate", "events": ["phase8f_query"]},
+    {"id": "proof-readout-parity", "from": "exact_kth_readout", "relation": "proves", "to": "phase8f_parity_gate", "events": ["phase8f_query"]},
+    {"id": "observe-parity-metrics", "from": "phase8f_parity_gate", "relation": "observes", "to": "phase8f_metrics", "events": ["phase8f_query"]},
+    {"id": "observe-metrics-receipt", "from": "phase8f_metrics", "relation": "observes", "to": "phase8f_receipt", "events": ["phase8f_query"]}
+  ],
+  "routes": [
+    {
+      "id": "phase8f-posting-execution",
+      "event": "phase8f_query",
+      "kind": "execution",
+      "entry": "phase8f_proof_cli",
+      "terminal": "exact_kth_readout",
+      "required_roles": ["interface", "orchestrator", "producer", "evidence_owner", "candidate_rank_owner"],
+      "via": ["impact_cell_builder", "impact_threshold_search", "exact_posting_replay"],
+      "path_cardinality": [
+        {"from": "phase8f_proof_cli", "to": "phase8f_orchestrator", "min": 1, "max": 1},
+        {"from": "impact_threshold_search", "to": "exact_posting_replay", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "phase8f-typed-execution",
+      "event": "phase8f_typed",
+      "kind": "execution",
+      "entry": "phase8f_orchestrator",
+      "terminal": "terminal_evidence_union",
+      "required_roles": ["orchestrator", "producer", "evidence_owner"],
+      "via": ["typed_edit_traversal"]
+    },
+    {
+      "id": "phase8f-proof",
+      "event": "phase8f_query",
+      "kind": "proof",
+      "entry": "dense_complete_oracle",
+      "terminal": "phase8f_parity_gate",
+      "required_roles": ["proof_owner"]
+    },
+    {
+      "id": "phase8f-observation",
+      "event": "phase8f_query",
+      "kind": "observation",
+      "entry": "phase8f_parity_gate",
+      "terminal": "phase8f_receipt",
+      "required_roles": ["proof_owner", "observer"]
+    }
+  ]
+}

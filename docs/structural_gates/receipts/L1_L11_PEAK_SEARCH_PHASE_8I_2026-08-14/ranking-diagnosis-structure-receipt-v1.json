@@ -1,0 +1,683 @@
+{
+  "verdict": "VETO",
+  "engine": "nanda-check sparse-triad-v6.2-rust",
+  "core_version": "sparse-triad-v6.2-quality-gates",
+  "wave_dim": 1024,
+  "task_id": "l11-phase8i-ranking-diagnosis",
+  "domain": "code",
+  "complexity_score": 52,
+  "mandatory_gate": true,
+  "limits": [],
+  "stable_triads": [
+    "t1",
+    "t2",
+    "t3",
+    "t4",
+    "t5",
+    "t6",
+    "t7",
+    "t8",
+    "t9",
+    "t10"
+  ],
+  "weak_triads": [
+    "c1",
+    "c2",
+    "c3",
+    "c4",
+    "c5",
+    "c6"
+  ],
+  "conflicts": [],
+  "evidence_gaps": [],
+  "canonicalization": {
+    "enabled": false,
+    "applied_count": 0,
+    "conflict_count": 0,
+    "watch_count": 0,
+    "applied": [],
+    "conflicts": [],
+    "warnings": []
+  },
+  "baseline_summary": {
+    "exact_matches": [],
+    "reversed_hits": [],
+    "token_overlap": {
+      "c1": 0.0357,
+      "c2": 0.0357,
+      "c3": 0.0357,
+      "c4": 0.0357,
+      "c5": 0.0,
+      "c6": 0.0741
+    }
+  },
+  "trusted_proof": {
+    "mode": "STRUCTURAL_ONLY",
+    "verdict": "NOT_REQUESTED",
+    "authority_ready": false,
+    "reason_codes": [
+      "trusted_proof_not_requested"
+    ],
+    "manifest_file_sha256": "",
+    "trusted_manifest_root_sha256": "",
+    "source_triads_sha256": "",
+    "candidate_triads_sha256": "",
+    "candidate_answer_sha256": "",
+    "source_provenance_root_sha256": "",
+    "candidate_extraction_root_sha256": "",
+    "source_producer_root_sha256": "",
+    "candidate_producer_root_sha256": ""
+  },
+  "authority_ready": false,
+  "quality_contract": {
+    "schema": "",
+    "require_evidence_bindings": false,
+    "require_derived_claims": false
+  },
+  "evidence_binding": {
+    "schema": "nanda.evidence-binding.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "complete": false,
+    "checked": 0,
+    "total": 16,
+    "missing_triads": [
+      "t1",
+      "t2",
+      "t3",
+      "t4",
+      "t5",
+      "t6",
+      "t7",
+      "t8",
+      "t9",
+      "t10",
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6"
+    ],
+    "issues": []
+  },
+  "derived_claims": {
+    "schema": "nanda.derived-claims.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "total": 0,
+    "passed": 0,
+    "deferred": 0,
+    "coverage_complete": true,
+    "reason_codes": [],
+    "results": []
+  },
+  "quality_ready": false,
+  "wave_summary": {
+    "scores": {
+      "c1": 0.0316,
+      "c2": -0.0189,
+      "c3": 0.0177,
+      "c4": -0.0606,
+      "c5": -0.0139,
+      "c6": 0.0265
+    },
+    "source_self_score": 0.3094,
+    "stable": [],
+    "weak": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6"
+    ],
+    "weak_details": {
+      "c1": {
+        "nearest_source": "t7",
+        "nearest_source_score": 0.0801,
+        "score": 0.0316,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c2": {
+        "nearest_source": "t8",
+        "nearest_source_score": 0.0898,
+        "score": -0.0189,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c3": {
+        "nearest_source": "t3",
+        "nearest_source_score": 0.041,
+        "score": 0.0177,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c4": {
+        "nearest_source": "t6",
+        "nearest_source_score": 0.0313,
+        "score": -0.0606,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c5": {
+        "nearest_source": "t8",
+        "nearest_source_score": 0.0508,
+        "score": -0.0139,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c6": {
+        "nearest_source": "t1",
+        "nearest_source_score": 0.0645,
+        "score": 0.0265,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      }
+    }
+  },
+  "route_coherence": {
+    "best_source_group": {
+      "ranking-diagnosis": "ranking-diagnosis"
+    },
+    "scores": {
+      "ranking-diagnosis": -0.0072
+    },
+    "weak": [
+      "ranking-diagnosis"
+    ]
+  },
+  "structural_map": {
+    "candidate_group_sizes": {
+      "ranking-diagnosis": 6
+    },
+    "candidate_superposition": {
+      "avg_triad_coherence": 0.4117,
+      "norm": 79.0443,
+      "triads": 6
+    },
+    "core_version": "sparse-triad-v6.2-quality-gates",
+    "dominant_source_group": {
+      "ranking-diagnosis": "ranking-diagnosis"
+    },
+    "foreign_pull": [],
+    "group_centroids": {
+      "candidate": {
+        "ranking-diagnosis": {
+          "norm": 79.0443,
+          "self_coherence": 0.4117,
+          "triads": 6
+        }
+      },
+      "source": {
+        "ranking-diagnosis": {
+          "norm": 98.9949,
+          "self_coherence": 0.3094,
+          "triads": 10
+        }
+      }
+    },
+    "group_links": {
+      "ranking-diagnosis": {
+        "dominant_score": -0.0072,
+        "dominant_source_group": "ranking-diagnosis",
+        "exact_source_groups": []
+      }
+    },
+    "interference_matrix": {
+      "ranking-diagnosis": {
+        "ranking-diagnosis": -0.0072
+      }
+    },
+    "mixed_candidate_groups": [],
+    "negative_routes": {
+      "anti_modes": [
+        "adapter must not decide",
+        "UI must not be source of truth",
+        "test helper must not become runtime route",
+        "experiment must not affect stable path",
+        "one decision owner only"
+      ],
+      "hits": []
+    },
+    "owner_gravity": {
+      "conflicts": [
+        {
+          "center": "gate c observer",
+          "group": "ranking-diagnosis",
+          "kind": "owner_conflict",
+          "owners": [
+            "exact settlement adapter",
+            "fixed heldout reservoir",
+            "frozen classifier",
+            "gate c observer",
+            "gate c recorder",
+            "implicit forward owner",
+            "installed lay",
+            "l1typededittraversal",
+            "lexical compiler feature",
+            "phase7d terminal projection",
+            "phase7d_terminal_evidence",
+            "runtime settlement owner",
+            "sampled ambiguity builder"
+          ],
+          "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+          "risk": "helper or candidate group is attracted to more than one decision owner"
+        }
+      ],
+      "group_centers": {
+        "ranking-diagnosis": {
+          "gravity": 0.1875,
+          "owner": "gate c observer",
+          "owners": {
+            "exact settlement adapter": 1,
+            "fixed heldout reservoir": 1,
+            "frozen classifier": 1,
+            "gate c observer": 3,
+            "gate c recorder": 1,
+            "implicit forward owner": 1,
+            "installed lay": 1,
+            "l1typededittraversal": 1,
+            "lexical compiler feature": 1,
+            "phase7d terminal projection": 1,
+            "phase7d_terminal_evidence": 1,
+            "runtime settlement owner": 1,
+            "sampled ambiguity builder": 2
+          },
+          "support": 3,
+          "total": 16
+        }
+      },
+      "route_centers": {
+        "authority": {
+          "gravity": 1.0,
+          "owner": "frozen classifier",
+          "owners": {
+            "frozen classifier": 1
+          },
+          "support": 1,
+          "total": 1
+        },
+        "execution": {
+          "gravity": 0.2,
+          "owner": "exact settlement adapter",
+          "owners": {
+            "exact settlement adapter": 1,
+            "implicit forward owner": 1,
+            "l1typededittraversal": 1,
+            "phase7d_terminal_evidence": 1,
+            "runtime settlement owner": 1
+          },
+          "support": 1,
+          "total": 5
+        },
+        "isolation": {
+          "gravity": 0.5,
+          "owner": "installed lay",
+          "owners": {
+            "installed lay": 1,
+            "lexical compiler feature": 1
+          },
+          "support": 1,
+          "total": 2
+        },
+        "observation": {
+          "gravity": 0.5,
+          "owner": "gate c observer",
+          "owners": {
+            "gate c observer": 2,
+            "gate c recorder": 1,
+            "phase7d terminal projection": 1
+          },
+          "support": 2,
+          "total": 4
+        },
+        "proof": {
+          "gravity": 0.5,
+          "owner": "sampled ambiguity builder",
+          "owners": {
+            "fixed heldout reservoir": 1,
+            "gate c observer": 1,
+            "sampled ambiguity builder": 2
+          },
+          "support": 2,
+          "total": 4
+        }
+      }
+    },
+    "repair_queue": [
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "ranking-diagnosis"
+      },
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "ranking-diagnosis"
+      }
+    ],
+    "repair_tasks": [
+      {
+        "candidate_group": "ranking-diagnosis",
+        "dominant_source_group": "ranking-diagnosis",
+        "reason": "candidate group has low interference coherence with every source group",
+        "score": -0.0072,
+        "suggested_fix": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes."
+      }
+    ],
+    "route_field": {
+      "read_as": "Route field coordinates describe causal ownership: route, layer, owner, entrypoint, output, evidence_path, and scope.",
+      "routes": {
+        "authority": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 0,
+          "entrypoints": [
+            "classify"
+          ],
+          "evidence_paths": [
+            "src/nanda_wave/lexical_grokking/typed_basin/settlement.rs:550"
+          ],
+          "layers": [
+            "readout"
+          ],
+          "outputs": [
+            "restoration readout"
+          ],
+          "owners": [
+            "frozen classifier"
+          ],
+          "scopes": [
+            "proof-only"
+          ],
+          "source_triads": 1,
+          "triads": 1
+        },
+        "execution": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 0,
+          "entrypoints": [
+            "apply_candidate_restoration_geometry",
+            "evaluate_surface",
+            "phase7d_terminal_evidence",
+            "settle_exact_case",
+            "traverse"
+          ],
+          "evidence_paths": [
+            "src/nanda_wave/lexical_grokking/runtime/settlement.rs:454",
+            "src/nanda_wave/lexical_grokking/typed_basin/quality.rs:388",
+            "src/nanda_wave/lexical_grokking/typed_basin/settlement.rs:411",
+            "src/nanda_wave/lexical_grokking/typed_edit_traversal.rs:1022",
+            "src/nanda_wave/lexical_grokking/typed_edit_traversal.rs:348"
+          ],
+          "layers": [
+            "adapter",
+            "admission",
+            "geometry",
+            "reconstruction",
+            "settlement"
+          ],
+          "outputs": [
+            "candidate geometry fields",
+            "implicit candidates",
+            "settled candidates",
+            "terminal certificate map",
+            "terminal id vector"
+          ],
+          "owners": [
+            "exact settlement adapter",
+            "implicit forward owner",
+            "l1typededittraversal",
+            "phase7d_terminal_evidence",
+            "runtime settlement owner"
+          ],
+          "scopes": [
+            "proof-only",
+            "shared-frozen-code"
+          ],
+          "source_triads": 5,
+          "triads": 5
+        },
+        "isolation": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [
+            "daemon and ibus",
+            "proof cli"
+          ],
+          "evidence_paths": [
+            "docs/l1-l11-typed-basin-implicit-forward-phase8i.md:39",
+            "paper contract section 16.6"
+          ],
+          "layers": [
+            "production"
+          ],
+          "outputs": [
+            "no runtime mutation",
+            "unchanged bytes"
+          ],
+          "owners": [
+            "installed lay",
+            "lexical compiler feature"
+          ],
+          "scopes": [
+            "production"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "observation": {
+          "avg_confidence": 0.9625,
+          "candidate_triads": 3,
+          "entrypoints": [
+            "evaluate_surface",
+            "phase7d_terminal_evidence",
+            "record_damaged"
+          ],
+          "evidence_paths": [
+            "paper contract section 16.6",
+            "src/nanda_wave/lexical_grokking/typed_basin/quality.rs:475"
+          ],
+          "layers": [
+            "adapter",
+            "metrics",
+            "reconstruction",
+            "settlement"
+          ],
+          "outputs": [
+            "bounded activation projection",
+            "bounded candidate projection",
+            "bounded certificate projection",
+            "counters and diagnostics"
+          ],
+          "owners": [
+            "gate c observer",
+            "gate c recorder",
+            "phase7d terminal projection"
+          ],
+          "scopes": [
+            "proof-only"
+          ],
+          "source_triads": 1,
+          "triads": 4
+        },
+        "proof": {
+          "avg_confidence": 0.975,
+          "candidate_triads": 2,
+          "entrypoints": [
+            "bounded diagnostics",
+            "build_objectives",
+            "populate_sampled_ambiguity",
+            "prepare_fixed_heldout_cases"
+          ],
+          "evidence_paths": [
+            "paper contract section 16.6",
+            "src/nanda_wave/lexical_grokking/proof.rs:3046",
+            "src/nanda_wave/lexical_grokking/proof.rs:3084"
+          ],
+          "layers": [
+            "metrics",
+            "objective"
+          ],
+          "outputs": [
+            "immutable cases",
+            "objective projection or wave gap",
+            "objective terminals",
+            "unchanged objective terminals"
+          ],
+          "owners": [
+            "fixed heldout reservoir",
+            "gate c observer",
+            "sampled ambiguity builder"
+          ],
+          "scopes": [
+            "proof-only"
+          ],
+          "source_triads": 2,
+          "triads": 4
+        }
+      }
+    },
+    "route_memory": {
+      "candidate": {
+        "isolation": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "observation": {
+          "norm": 56.285,
+          "self_coherence": 0.5863,
+          "triads": 3
+        },
+        "proof": {
+          "norm": 45.3431,
+          "self_coherence": 0.7085,
+          "triads": 2
+        }
+      },
+      "interference_matrix": {
+        "isolation": {
+          "authority": 0.0645,
+          "execution": -0.0061,
+          "isolation": 0.0234,
+          "observation": -0.0352,
+          "proof": 0.0301
+        },
+        "observation": {
+          "authority": 0.03,
+          "execution": 0.0084,
+          "isolation": -0.0044,
+          "observation": 0.0133,
+          "proof": -0.0031
+        },
+        "proof": {
+          "authority": 0.0276,
+          "execution": -0.0159,
+          "isolation": -0.011,
+          "observation": -0.0386,
+          "proof": -0.0735
+        }
+      },
+      "source": {
+        "authority": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "execution": {
+          "norm": 71.9444,
+          "self_coherence": 0.4497,
+          "triads": 5
+        },
+        "isolation": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "observation": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "proof": {
+          "norm": 45.607,
+          "self_coherence": 0.7126,
+          "triads": 2
+        }
+      }
+    },
+    "source_group_sizes": {
+      "ranking-diagnosis": 10
+    },
+    "stable_groups": [],
+    "structural_energy": {
+      "adapter_leak_risk": 0,
+      "duplicate_decision_risk": 0,
+      "field_tension": 1,
+      "foreign_pull_energy": 0,
+      "owner_conflict": 1,
+      "route_coherence": 0.9875,
+      "stale_experiment_risk": 0,
+      "ui_runtime_mismatch_risk": 0
+    },
+    "wave_dim": 1024
+  },
+  "codex_failure_field": {
+    "enabled": false,
+    "read_as": "Add failure_contract.enabled=true to turn on Codex Failure Field.",
+    "reason_codes": [],
+    "verdict": "NOT_ENABLED"
+  },
+  "repair_queue": [
+    {
+      "kind": "coherence_repair",
+      "priority": "medium",
+      "reason": "candidate group has low interference coherence with every source group",
+      "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+      "target": "ranking-diagnosis"
+    },
+    {
+      "kind": "owner_conflict",
+      "priority": "high",
+      "reason": "helper or candidate group is attracted to more than one decision owner",
+      "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+      "target": "ranking-diagnosis"
+    }
+  ],
+  "agent_decision": {
+    "action": "REPAIR_REQUIRED",
+    "codex_failure_reasons": [],
+    "codex_failure_verdict": "NOT_ENABLED",
+    "next": "Apply the repair_queue before editing or accepting this route.",
+    "repair_count": 2,
+    "repair_queue": [
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "ranking-diagnosis"
+      },
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "ranking-diagnosis"
+      }
+    ],
+    "safe_to_edit": false
+  },
+  "explanation": [
+    "At least one candidate group has weak route coherence.",
+    "At least one candidate triad has weak composite-mode support."
+  ],
+  "repair_prompt": "Repair the candidate answer using only one coherent structural route.\nNANDA verdict: VETO.\nPrimary repair_queue:\n- [medium] coherence_repair: Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.\n- [high] owner_conflict: Split the group by owner or move decision logic behind one public entrypoint.\nDo not splice triads from different source groups into one candidate group.\n- candidate group ranking-diagnosis best matches ranking-diagnosis only weakly: -0.0072\nRecheck or remove weak candidate triads:\n- c1: score=0.0316, nearest_source=t7, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c2: score=-0.0189, nearest_source=t8, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c3: score=0.0177, nearest_source=t3, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c4: score=-0.0606, nearest_source=t6, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c5: score=-0.0139, nearest_source=t8, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c6: score=0.0265, nearest_source=t1, why=candidate triad does not resonate with the composite source memory above the stability threshold",
+  "trace_path": "/tmp/nanda-structural-gate/l11-phase8i-ranking-diagnosis.trace.json"
+}

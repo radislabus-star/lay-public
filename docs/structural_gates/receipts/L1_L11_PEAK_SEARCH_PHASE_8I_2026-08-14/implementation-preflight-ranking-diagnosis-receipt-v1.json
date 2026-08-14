@@ -1,0 +1,162 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "phase8i-paper-with-ranking-contract",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../l1-l11-typed-basin-implicit-forward-phase8i.md",
+      "sha256": "d4c0b85f66c6241868b166aaee944edda8e1e07a907592ffcd3a1e42259ecdfb",
+      "size_bytes": 42846
+    },
+    {
+      "exists": true,
+      "id": "ranking-structure-pass",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/ranking-diagnosis-structure-receipt-v3.json",
+      "sha256": "7989d1176945972d71a772a2fb29538af6405bc8f347252199ffdde3d34da242",
+      "size_bytes": 20086
+    },
+    {
+      "exists": true,
+      "id": "typed-traversal-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../../src/nanda_wave/lexical_grokking/typed_edit_traversal.rs",
+      "sha256": "01845b4a0b9f33368f3a04e4d3a42ed41a72a13a1a1d6ccc4675ffeb4c722349",
+      "size_bytes": 81838
+    },
+    {
+      "exists": true,
+      "id": "quality-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../../src/nanda_wave/lexical_grokking/typed_basin/quality.rs",
+      "sha256": "b6fcdf0088b916ced8d83f9f60741db2baffa0777f7486da6007b06c46600dd9",
+      "size_bytes": 28617
+    },
+    {
+      "exists": true,
+      "id": "quality-metrics-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../../src/nanda_wave/lexical_grokking/typed_basin/quality/metrics.rs",
+      "sha256": "052ffbb882aae512bd29a1b6f6c26df7ee3cc57323f1a869d7eed1e1d150b9e7",
+      "size_bytes": 11631
+    },
+    {
+      "exists": true,
+      "id": "frozen-settlement-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../../src/nanda_wave/lexical_grokking/runtime/settlement.rs",
+      "sha256": "05508a9c1007e6cff40dd1d4b50fa3ddd7d2882f9e399fa0f7fafc5df74bad29",
+      "size_bytes": 51988
+    },
+    {
+      "exists": true,
+      "id": "frozen-objective-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../../src/nanda_wave/lexical_grokking/proof.rs",
+      "sha256": "77527fe80d268cd7f620586305164fd1c51f65305bfb13faa799121d49bbe148",
+      "size_bytes": 133796
+    },
+    {
+      "exists": true,
+      "id": "accepted-smoke-v2",
+      "kind": "file",
+      "mode": "0600",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/phase-8i-gate-c-13x100-smoke-v2.json",
+      "sha256": "ce715e36458355a95f8cf70becdc345e9324e34e0e7b5a2399847158117f871c",
+      "size_bytes": 74783
+    },
+    {
+      "exists": true,
+      "id": "installed-package",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin",
+      "sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+      "size_bytes": 190139182
+    }
+  ],
+  "blockers": [
+    {
+      "code": "forbidden_effect_in_reused_source",
+      "field": "source_checks[1].forbidden_effect_patterns[13]",
+      "message": "deployment matched at line 308"
+    }
+  ],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 9,
+    "forbidden_side_effect_kinds": [
+      "authority_change",
+      "candidate_admission_change",
+      "candidate_order_change",
+      "commit_or_push",
+      "denominator_change",
+      "deployment",
+      "full_proof_before_mechanism_verdict",
+      "gate_threshold_change",
+      "generated_traffic",
+      "heldout_label_pull",
+      "installed_package_mutation",
+      "literal_case_rule",
+      "local_heavy_build",
+      "objective_set_change",
+      "package_format_change",
+      "runtime_authority_change",
+      "runtime_restart",
+      "settlement_change",
+      "synthetic_fixture",
+      "version_bump"
+    ],
+    "identity_contracts": 3,
+    "invariants": 5,
+    "planned_side_effect_kinds": [
+      "filesystem_edit",
+      "filesystem_write",
+      "test_execution"
+    ],
+    "preserved_artifacts": 4,
+    "runtime_comparisons": 0,
+    "source_checks": 2,
+    "tests": 10
+  },
+  "manifest_sha256": "7a425fa99bccf2ea9542160ac9918897a67806b520059daf9b2a5218c43f75a6",
+  "safe_to_implement": false,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "typed-projection-vetoes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../../src/nanda_wave/lexical_grokking/typed_edit_traversal.rs",
+      "sha256": "01845b4a0b9f33368f3a04e4d3a42ed41a72a13a1a1d6ccc4675ffeb4c722349",
+      "size_bytes": 81838
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [
+        {
+          "effect": "deployment",
+          "line": 308
+        }
+      ],
+      "id": "quality-observer-vetoes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../../src/nanda_wave/lexical_grokking/typed_basin/quality.rs",
+      "sha256": "b6fcdf0088b916ced8d83f9f60741db2baffa0777f7486da6007b06c46600dd9",
+      "size_bytes": 28617
+    }
+  ],
+  "task_id": "lay-l11-phase8i-ranking-diagnosis-2026-08-14",
+  "verdict": "BLOCKED_BEFORE_CODE"
+}

@@ -1,0 +1,141 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "phase8i-paper-with-smoke-analysis",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../l1-l11-typed-basin-implicit-forward-phase8i.md",
+      "sha256": "7519a3f92ab2858c55c774fd137a5518150e2a20efab47396a3eb16ec0098be7",
+      "size_bytes": 38560
+    },
+    {
+      "exists": true,
+      "id": "typed-traversal-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../../src/nanda_wave/lexical_grokking/typed_edit_traversal.rs",
+      "sha256": "2aaa264659f9a43fb818cc527f569f54bcbd47ae225878b323807c92c05842ff",
+      "size_bytes": 78588
+    },
+    {
+      "exists": true,
+      "id": "quality-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../../src/nanda_wave/lexical_grokking/typed_basin/quality.rs",
+      "sha256": "b6fcdf0088b916ced8d83f9f60741db2baffa0777f7486da6007b06c46600dd9",
+      "size_bytes": 28617
+    },
+    {
+      "exists": true,
+      "id": "settlement-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../../src/nanda_wave/lexical_grokking/runtime/settlement.rs",
+      "sha256": "05508a9c1007e6cff40dd1d4b50fa3ddd7d2882f9e399fa0f7fafc5df74bad29",
+      "size_bytes": 51988
+    },
+    {
+      "exists": true,
+      "id": "smoke-v1-evidence",
+      "kind": "file",
+      "mode": "0600",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/phase-8i-gate-c-13x100-smoke-v1.json",
+      "sha256": "72ae5af8cafe68fa9483c8d55fbfdc67cd27552e23b60adb8da133cd663e5d7d",
+      "size_bytes": 89191
+    },
+    {
+      "exists": true,
+      "id": "grounded-loss-analysis-v1",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/phase-8i-gate-c-grounded-loss-analysis-v1.json",
+      "sha256": "2c5291f69d87624a5b834780a3795e4b6c0179e0e7fe958b897e3305a188e654",
+      "size_bytes": 20684
+    },
+    {
+      "exists": true,
+      "id": "installed-package",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin",
+      "sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+      "size_bytes": 190139182
+    }
+  ],
+  "blockers": [
+    {
+      "code": "forbidden_effect_in_reused_source",
+      "field": "source_checks[1].forbidden_effect_patterns[1]",
+      "message": "gate_threshold_change matched at line 182"
+    }
+  ],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 7,
+    "forbidden_side_effect_kinds": [
+      "commit_or_push",
+      "deployment",
+      "full_proof_before_smoke_v2",
+      "gate_threshold_change",
+      "generated_traffic",
+      "heldout_target_pull",
+      "installed_package_mutation",
+      "legacy_candidate_union",
+      "literal_case_rule",
+      "local_heavy_build",
+      "package_format_change",
+      "queue_truncation",
+      "runtime_authority_change",
+      "runtime_restart",
+      "settlement_change",
+      "synthetic_fixture",
+      "version_bump"
+    ],
+    "identity_contracts": 3,
+    "invariants": 5,
+    "planned_side_effect_kinds": [
+      "filesystem_edit",
+      "filesystem_write",
+      "test_execution"
+    ],
+    "preserved_artifacts": 5,
+    "runtime_comparisons": 0,
+    "source_checks": 2,
+    "tests": 9
+  },
+  "manifest_sha256": "a6cd588eb4c5d86e18b26f5f3a19865c3cadc5bc59b21e727168cf37cd296099",
+  "safe_to_implement": false,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "typed-traversal-vetoes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../../src/nanda_wave/lexical_grokking/typed_edit_traversal.rs",
+      "sha256": "2aaa264659f9a43fb818cc527f569f54bcbd47ae225878b323807c92c05842ff",
+      "size_bytes": 78588
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [
+        {
+          "effect": "gate_threshold_change",
+          "line": 182
+        }
+      ],
+      "id": "frozen-quality-and-settlement-vetoes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../../src/nanda_wave/lexical_grokking/typed_basin/quality.rs",
+      "sha256": "b6fcdf0088b916ced8d83f9f60741db2baffa0777f7486da6007b06c46600dd9",
+      "size_bytes": 28617
+    }
+  ],
+  "task_id": "lay-l11-phase8i-gap-omission-transposition-closure-2026-08-14",
+  "verdict": "BLOCKED_BEFORE_CODE"
+}

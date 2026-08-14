@@ -203,6 +203,56 @@ fn inverse_operator_cannot_spend_unbounded_energy_to_cross_distance() {
 }
 
 #[test]
+fn rejected_high_rank_geometry_cannot_hide_an_admitted_later_challenger() {
+    let incumbent = GrokkingCandidate {
+        terminal_id: 1,
+        geometry_distance: 1,
+        settled_energy: 8_000,
+        ..Default::default()
+    };
+    let rejected_high_rank = GrokkingCandidate {
+        terminal_id: 2,
+        reconstruction_modes: RECONSTRUCTION_MODE_DELETION_TRANSPOSITION,
+        geometry_distance: 2,
+        settled_energy: 6_000,
+        ..Default::default()
+    };
+    let admitted_later = GrokkingCandidate {
+        terminal_id: 3,
+        reconstruction_modes: RECONSTRUCTION_MODE_DELETION,
+        sequence_milli: 1_000,
+        geometry_distance: 2,
+        settled_energy: 7_000,
+        ..Default::default()
+    };
+    let mut forward = vec![incumbent, rejected_high_rank, admitted_later];
+    let mut permuted = vec![admitted_later, incumbent, rejected_high_rank];
+    forward.sort_unstable_by(candidate_order);
+    permuted.sort_unstable_by(candidate_order);
+
+    apply_geometry_certificate_interference(&mut forward);
+    apply_geometry_certificate_interference(&mut permuted);
+
+    let forward_ids = forward
+        .iter()
+        .map(|candidate| candidate.terminal_id)
+        .collect::<Vec<_>>();
+    let permuted_ids = permuted
+        .iter()
+        .map(|candidate| candidate.terminal_id)
+        .collect::<Vec<_>>();
+    assert_eq!(
+        forward_ids,
+        vec![
+            admitted_later.terminal_id,
+            incumbent.terminal_id,
+            rejected_high_rank.terminal_id
+        ]
+    );
+    assert_eq!(permuted_ids, forward_ids);
+}
+
+#[test]
 fn two_omission_operator_does_not_displace_a_stronger_one_omission_inverse() {
     let one_omission_inverse = GrokkingCandidate {
         terminal_id: 1,

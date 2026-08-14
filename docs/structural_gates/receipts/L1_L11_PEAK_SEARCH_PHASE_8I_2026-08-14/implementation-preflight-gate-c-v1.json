@@ -1,0 +1,288 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-l11-phase8i-compiler-exact-quality-gate-c-2026-08-14",
+  "authority_bearing": false,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "phase8i-paper-with-gate-c-contract",
+      "kind": "file",
+      "path": "../../../l1-l11-typed-basin-implicit-forward-phase8i.md",
+      "expect": {"size_bytes": 33552, "sha256": "705e66d57adbe52c1d3a554ca43d43f435141577518c313bc9e6c95053b93f2d", "mode": "0664"}
+    },
+    {
+      "id": "phase8i-a2-proof",
+      "kind": "file",
+      "path": "evidence/phase-8i-13x1-a2.json",
+      "expect": {"size_bytes": 43558, "sha256": "ec00a0217691e33be6d71a5e12d8af671016794632a18c9901bd9823c5e95790", "mode": "0664"}
+    },
+    {
+      "id": "gate-c-route-design",
+      "kind": "file",
+      "path": "route-design-gate-c-v2.json",
+      "expect": {"size_bytes": 5044, "sha256": "9824e8dbcd3d6bdade654fd12622c85eea93853aeb4b51f7d229a59b247dad2e", "mode": "0664"}
+    },
+    {
+      "id": "gate-c-route-receipt",
+      "kind": "file",
+      "path": "route-gate-c-v2.json",
+      "expect": {"size_bytes": 6667, "sha256": "424a0bdc819afa4337bcab012fb8a7371f37a4d38c276ecfe34488d5baad3544", "mode": "0664"}
+    },
+    {
+      "id": "typed-basin-orchestrator",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/typed_basin/mod.rs",
+      "expect": {"size_bytes": 33865, "sha256": "5e8edbcb06ff625956d8cfb42f87bd4f391488fb9a57836ea05a7ce502943b11", "mode": "0664"}
+    },
+    {
+      "id": "exact-settlement-owner",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/typed_basin/settlement.rs",
+      "expect": {"size_bytes": 21386, "sha256": "11928e7d6deb4429f30751aa42bad5ce8e54597a94c05c832b87d19cbd508281", "mode": "0664"}
+    },
+    {
+      "id": "fixed-heldout-owner",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/proof.rs",
+      "expect": {"size_bytes": 133796, "sha256": "77527fe80d268cd7f620586305164fd1c51f65305bfb13faa799121d49bbe148", "mode": "0664"}
+    },
+    {
+      "id": "proof-matrix-owner",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/proof_matrix.rs",
+      "expect": {"size_bytes": 29431, "sha256": "adec45bf7fa262baec250ce1caea4e87f78aaefd24a4035aa011f7cc158194e8", "mode": "0664"}
+    },
+    {
+      "id": "proof-cli-owner",
+      "kind": "file",
+      "path": "../../../../src/bin/lay_nanda_wave_train.rs",
+      "expect": {"size_bytes": 92013, "sha256": "73e37ad9cf3d18b25447b9b616c3854bcbd70348566ebee0c3e2b559b9a73c2c", "mode": "0664"}
+    },
+    {
+      "id": "installed-package",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin",
+      "expect": {"size_bytes": 190139182, "sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9", "prefix_hex": "4c41594c31563800", "mode": "0644"}
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "add-explicit-gate-c-quality-command", "kind": "filesystem_edit"},
+      {"id": "add-parallel-exact-quality-and-clean-audits", "kind": "filesystem_edit"},
+      {"id": "write-smoke-and-full-quality-receipts", "kind": "filesystem_write"},
+      {"id": "run-focused-smoke-and-full-proofs-remotely", "kind": "test_execution"}
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "runtime_authority_change",
+      "production_phase8i_reachability",
+      "package_format_change",
+      "installed_package_mutation",
+      "corpus_crystallization",
+      "runtime_restart",
+      "deployment",
+      "version_bump",
+      "commit_or_push",
+      "local_heavy_build",
+      "heldout_target_pull",
+      "objective_label_in_scoring",
+      "legacy_candidate_union",
+      "complete_posting_oracle_in_full_quality_loop",
+      "compiler_reference_in_full_quality_loop",
+      "top64_as_admission_frontier",
+      "typed_basin_truncation",
+      "settlement_coefficient_change",
+      "restoration_calibration_change",
+      "gate_threshold_change",
+      "literal_case_rule",
+      "class_specific_runtime_rule"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "production-runtime-isolation-vetoes",
+      "path": "../../../../src/nanda_wave/lexical_grokking/service.rs",
+      "sha256": "19c83a5808e9131fb80a513bae394515337a97dfa441a2a8dd5087eb826accdc",
+      "forbidden_effect_patterns": [
+        {"effect": "production_phase8i_reachability", "regex": "TypedBasinImplicit|typed_basin_implicit|phase8i"},
+        {"effect": "runtime_authority_change", "regex": "TypedBasinImplicit|typed_basin_implicit|phase8i"},
+        {"effect": "package_format_change", "regex": "LAYL1V9|VERSION\\s*[:=]\\s*9"}
+      ]
+    },
+    {
+      "id": "typed-traversal-preservation-vetoes",
+      "path": "../../../../src/nanda_wave/lexical_grokking/typed_edit_traversal.rs",
+      "sha256": "2aaa264659f9a43fb818cc527f569f54bcbd47ae225878b323807c92c05842ff",
+      "forbidden_effect_patterns": [
+        {"effect": "typed_basin_truncation", "regex": "terminal_ids\\.truncate|MAX_TYPED_TERMINALS|queue_limit"},
+        {"effect": "heldout_target_pull", "regex": "expected_terminal|case\\.terminal_id[^;]*(traverse|admit)"},
+        {"effect": "literal_case_rule", "regex": "case\\.surface\\s*==|match\\s+case\\.class"}
+      ]
+    },
+    {
+      "id": "frozen-settlement-vetoes",
+      "path": "../../../../src/nanda_wave/lexical_grokking/runtime/settlement.rs",
+      "sha256": "05508a9c1007e6cff40dd1d4b50fa3ddd7d2882f9e399fa0f7fafc5df74bad29",
+      "forbidden_effect_patterns": [
+        {"effect": "settlement_coefficient_change", "regex": "SETTLING_ITERATIONS\\s*[:=]|fn base_settled_energy|fn with_sequence_energy"},
+        {"effect": "restoration_calibration_change", "regex": "restoration_calibration\\s*="}
+      ]
+    },
+    {
+      "id": "fixed-heldout-preservation-vetoes",
+      "path": "../../../../src/nanda_wave/lexical_grokking/proof.rs",
+      "sha256": "77527fe80d268cd7f620586305164fd1c51f65305bfb13faa799121d49bbe148",
+      "forbidden_effect_patterns": [
+        {"effect": "gate_threshold_change", "regex": "unique_top1_percent\\s*[><=]|lattice_coverage_percent\\s*[><=]"},
+        {"effect": "heldout_target_pull", "regex": "target[^;]*(readout|settle|rank_best)"}
+      ]
+    },
+    {
+      "id": "proof-cli-side-effect-vetoes",
+      "path": "../../../../src/bin/lay_nanda_wave_train.rs",
+      "sha256": "73e37ad9cf3d18b25447b9b616c3854bcbd70348566ebee0c3e2b559b9a73c2c",
+      "forbidden_effect_patterns": [
+        {"effect": "generated_traffic", "regex": "reqwest|ureq::"},
+        {"effect": "synthetic_fixture", "regex": "write_synthetic|generate_fixture"},
+        {"effect": "runtime_restart", "regex": "systemctl|pkill|killall"},
+        {"effect": "installed_package_mutation", "regex": "File::create\\(package|write\\(package"},
+        {"effect": "local_heavy_build", "regex": "Command::new[^;]*(cargo|rustc)"},
+        {"effect": "version_bump", "regex": "set_package_version|cargo[^;]*set-version"},
+        {"effect": "commit_or_push", "regex": "Command::new\\(\"git\"\\)|git\\s+(commit|push)"}
+      ]
+    }
+  ],
+  "state_machine": {
+    "initial_state": "PHASE8I_A2_PASS",
+    "terminal_states": [
+      "PHASE8I_C_PASS",
+      "PHASE8I_C_HARNESS_REJECTED",
+      "PHASE8I_C_SMOKE_REJECTED",
+      "PHASE8I_C_QUALITY_REJECTED"
+    ],
+    "steps": [
+      {
+        "id": "implement-explicit-quality-harness",
+        "from": "PHASE8I_A2_PASS",
+        "to": "PHASE8I_C_HARNESS_READY",
+        "mutates": true,
+        "failure_state": "PHASE8I_C_HARNESS_REJECTED",
+        "cleanup": "retain source diff and failed test evidence; do not run a full proof or modify package/runtime",
+        "preserves": ["installed-package-bytes", "a2-proof-bytes", "gate-c-route-bytes"],
+        "test_id": "gate-c-focused-tests"
+      },
+      {
+        "id": "run-fixed-13x100-smoke",
+        "from": "PHASE8I_C_HARNESS_READY",
+        "to": "PHASE8I_C_SMOKE_PASS",
+        "mutates": true,
+        "failure_state": "PHASE8I_C_SMOKE_REJECTED",
+        "cleanup": "retain smoke receipt and first shared failure mechanism; do not tune gates or run full proof",
+        "preserves": ["installed-package-bytes", "a2-proof-bytes", "gate-c-route-bytes"],
+        "test_id": "gate-c-13x100-smoke"
+      },
+      {
+        "id": "run-fixed-13x20000-quality",
+        "from": "PHASE8I_C_SMOKE_PASS",
+        "to": "PHASE8I_C_PASS",
+        "mutates": true,
+        "failure_state": "PHASE8I_C_QUALITY_REJECTED",
+        "cleanup": "retain full receipt and class counters; remain proof-only with no package/runtime/version/deployment change",
+        "preserves": ["installed-package-bytes", "a2-proof-bytes", "gate-c-route-bytes"],
+        "test_id": "gate-c-13x20000-quality"
+      }
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "installed-package-bytes",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin",
+      "policy": "byte_identical",
+      "rollback_policy": "must remain byte-identical",
+      "baseline_check_id": "installed-package"
+    },
+    {
+      "id": "a2-proof-bytes",
+      "path": "evidence/phase-8i-13x1-a2.json",
+      "policy": "byte_identical",
+      "rollback_policy": "must remain byte-identical; Gate C writes new receipts",
+      "baseline_check_id": "phase8i-a2-proof"
+    },
+    {
+      "id": "gate-c-route-bytes",
+      "path": "route-gate-c-v2.json",
+      "policy": "byte_identical",
+      "rollback_policy": "must remain byte-identical",
+      "baseline_check_id": "gate-c-route-receipt"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "embedded-a2-package-identity",
+      "producer": "embedded fixed 13x1 A2 prerequisite",
+      "consumer": "Gate C quality workers",
+      "comparison": "same corpus cardinality package SHA exact support and resolved dependency audit before quality starts",
+      "test_id": "gate-c-embedded-a2"
+    },
+    {
+      "id": "objective-after-readout-identity",
+      "producer": "fixed objective map from immutable corpus and heldout reservoir",
+      "consumer": "post-settlement quality counter",
+      "comparison": "objective terminal IDs are read only after exact candidate order and RestorationReadout exist",
+      "test_id": "gate-c-objective-isolation"
+    },
+    {
+      "id": "complete-basin-top64-identity",
+      "producer": "complete settled D_E(Q)",
+      "consumer": "top-64 lattice coverage counter",
+      "comparison": "top-64 is a projection after settlement and never changes admission or max_forward",
+      "test_id": "gate-c-top64-projection"
+    },
+    {
+      "id": "legacy-observer-separation",
+      "producer": "current saturated-u16 V8 readout",
+      "consumer": "compatibility counters only",
+      "comparison": "no V8 candidate or score enters exact basin settlement ordering or authority",
+      "test_id": "gate-c-legacy-observer"
+    },
+    {
+      "id": "parallel-quality-identity",
+      "producer": "single-worker deterministic fixture metrics",
+      "consumer": "multi-worker deterministic fixture metrics",
+      "comparison": "class counters safety counters candidate outcomes and receipt projections are identical",
+      "test_id": "gate-c-parallel-parity"
+    },
+    {
+      "id": "fixed-denominator-identity",
+      "producer": "13-class heldout reservoir with 20000 cases per class",
+      "consumer": "Gate C conjunctive verdict",
+      "comparison": "exactly 260000 damaged cases plus all 852582 clean centers are accounted for with no missing class",
+      "test_id": "gate-c-denominator"
+    }
+  ],
+  "runtime_comparisons": [],
+  "invariants": [
+    {"id": "quality-route-is-explicit", "statement": "Gate C has a separate command and cannot be enabled by a sample-count branch in the A2 command", "test_id": "gate-c-explicit-command"},
+    {"id": "one-exact-authority-route", "statement": "each quality case has one typed basin one exact settlement and one exact readout; V8 is observation only", "test_id": "gate-c-legacy-observer"},
+    {"id": "labels-cannot-steer-scoring", "statement": "class target and objective labels cannot affect traversal reconstruction settlement ordering or authority", "test_id": "gate-c-objective-isolation"},
+    {"id": "full-basin-precedes-projection", "statement": "no candidate is dropped before max_forward nonlinear settlement and final order", "test_id": "gate-c-top64-projection"},
+    {"id": "conjunctive-quality-verdict", "statement": "every class quality threshold clean preservation and both zero-safety counters must pass", "test_id": "gate-c-verdict-fixture"},
+    {"id": "installed-runtime-untouched", "statement": "package daemon IBus version deployment commit and push remain unchanged", "test_id": "gate-c-package-isolation"}
+  ],
+  "tests": [
+    {"id": "gate-c-focused-tests", "kind": "parity", "expected": "all metric semantics route-isolation denominator and deterministic-merge unit tests pass remotely"},
+    {"id": "gate-c-explicit-command", "kind": "parity", "expected": "A2 and Gate C commands are distinct and sample count cannot switch execution owners"},
+    {"id": "gate-c-embedded-a2", "kind": "parity", "expected": "quality execution stops before workers unless the same package and corpus pass embedded A2"},
+    {"id": "gate-c-objective-isolation", "kind": "fault_injection", "expected": "perturbing target or objective labels after readout changes counters only and cannot change candidate or readout fingerprints"},
+    {"id": "gate-c-top64-projection", "kind": "fault_injection", "expected": "a target below rank 64 remains in the complete settled field and is counted as lattice loss without changing settlement"},
+    {"id": "gate-c-legacy-observer", "kind": "fault_injection", "expected": "perturbing V8 observation changes compatibility counters only and exact output remains byte-identical"},
+    {"id": "gate-c-parallel-parity", "kind": "parity", "expected": "one-worker and multi-worker fixture reports match on all stable quality and safety fields"},
+    {"id": "gate-c-denominator", "kind": "parity", "expected": "full report contains 13 classes x 20000 and all primary clean centers"},
+    {"id": "gate-c-verdict-fixture", "kind": "fault_injection", "expected": "one failing class clean miss false authority false singleton or grounded loss rejects the conjunctive verdict"},
+    {"id": "gate-c-package-isolation", "kind": "parity", "expected": "package SHA before and after is identical and runtime authority remains false"},
+    {"id": "gate-c-13x100-smoke", "kind": "parity", "expected": "1300 cases produce complete schema denominators bounded diagnostics and measured throughput without changing gates"},
+    {"id": "gate-c-13x20000-quality", "kind": "parity", "expected": "260000 damaged cases and every clean center report per-class quality with zero false authority singleton and grounded loss"}
+  ]
+}

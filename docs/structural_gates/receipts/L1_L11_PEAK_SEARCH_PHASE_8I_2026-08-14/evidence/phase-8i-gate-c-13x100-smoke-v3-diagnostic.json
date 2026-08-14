@@ -1,0 +1,5533 @@
+{
+  "artifact": {
+    "compact_base_bytes": 77960560,
+    "corpus": "/home/e/build/lay-l1-shadow/artifacts/l11-l2-global-compaction-2026-07-30/corpus-852582.txt",
+    "package": "/home/e/build/lay-l1-shadow/artifacts/l11-l2-global-compaction-2026-07-30/package.v8.bin",
+    "package_bytes": 190139182,
+    "package_bytes_unchanged": true,
+    "package_sha256_after": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+    "package_sha256_before": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+    "primary_centers": 852582,
+    "projected_compact_package_bytes": 77962328
+  },
+  "claim_boundary": {
+    "deployment_admitted": false,
+    "full_quality_claimed": false,
+    "full_quality_matrix_tested": false,
+    "installed_runtime_changed": false,
+    "package_format_changed": false,
+    "runtime_authority_changed": false
+  },
+  "clean_quality": {
+    "cases": 1300,
+    "mutating_winner": 0,
+    "phase_noop_cases": 1300,
+    "preservation_percent": 100.0,
+    "preserved": 1300,
+    "readout": {
+      "abstain": 0,
+      "tied": 7,
+      "winner": 1293
+    },
+    "target_rank1": 1300,
+    "target_retained_complete_field": 1300
+  },
+  "configuration": {
+    "clean_limit": 1300,
+    "clean_sampling": "deterministic_evenly_spaced_smoke_only",
+    "clean_workers": 20,
+    "damaged_workers": 20,
+    "expected_damaged_cases": 1300,
+    "fixed_damage_classes": 13,
+    "heldout_per_class": 100,
+    "top_k_projection": 64
+  },
+  "damaged_quality": {
+    "aggregate": {
+      "cases": 1300,
+      "complete_exact_candidates": {
+        "maximum_per_case": 1481,
+        "phase_noop_cases": 1300,
+        "total": 23767
+      },
+      "current_v8_observer": {
+        "false_authority": 0,
+        "grounded_candidate_losses_from_exact_field": 0,
+        "grounded_candidates": 2378,
+        "scope": "compatibility_observer_only",
+        "target_in_top64": 1300,
+        "unique_top1": 1050
+      },
+      "false_authority": 0,
+      "false_singleton": 0,
+      "gates": {
+        "lattice_coverage_ge_99_percent": true,
+        "unique_top1_strictly_gt_95_percent": true
+      },
+      "lattice_coverage_percent": 100.0,
+      "objective_unique_cases": 1064,
+      "readout": {
+        "abstain": 1156,
+        "tied": 0,
+        "winner": 144
+      },
+      "target_in_final_top64": 1300,
+      "target_retained_complete_field": 1300,
+      "target_retention_percent": 100.0,
+      "unique_top1": 1047,
+      "unique_top1_percent": 98.40225563909775
+    },
+    "classes": {
+      "adjacent_transposition": {
+        "cases": 100,
+        "complete_exact_candidates": {
+          "maximum_per_case": 109,
+          "phase_noop_cases": 100,
+          "total": 660
+        },
+        "current_v8_observer": {
+          "false_authority": 0,
+          "grounded_candidate_losses_from_exact_field": 0,
+          "grounded_candidates": 155,
+          "scope": "compatibility_observer_only",
+          "target_in_top64": 100,
+          "unique_top1": 78
+        },
+        "false_authority": 0,
+        "false_singleton": 0,
+        "gates": {
+          "lattice_coverage_ge_99_percent": true,
+          "unique_top1_strictly_gt_95_percent": true
+        },
+        "lattice_coverage_percent": 100.0,
+        "objective_unique_cases": 78,
+        "readout": {
+          "abstain": 100,
+          "tied": 0,
+          "winner": 0
+        },
+        "target_in_final_top64": 100,
+        "target_retained_complete_field": 100,
+        "target_retention_percent": 100.0,
+        "unique_top1": 78,
+        "unique_top1_percent": 100.0
+      },
+      "double_substitution": {
+        "cases": 100,
+        "complete_exact_candidates": {
+          "maximum_per_case": 65,
+          "phase_noop_cases": 100,
+          "total": 547
+        },
+        "current_v8_observer": {
+          "false_authority": 0,
+          "grounded_candidate_losses_from_exact_field": 0,
+          "grounded_candidates": 113,
+          "scope": "compatibility_observer_only",
+          "target_in_top64": 100,
+          "unique_top1": 89
+        },
+        "false_authority": 0,
+        "false_singleton": 0,
+        "gates": {
+          "lattice_coverage_ge_99_percent": true,
+          "unique_top1_strictly_gt_95_percent": true
+        },
+        "lattice_coverage_percent": 100.0,
+        "objective_unique_cases": 93,
+        "readout": {
+          "abstain": 100,
+          "tied": 0,
+          "winner": 0
+        },
+        "target_in_final_top64": 100,
+        "target_retained_complete_field": 100,
+        "target_retention_percent": 100.0,
+        "unique_top1": 89,
+        "unique_top1_percent": 95.6989247311828
+      },
+      "extra_letter": {
+        "cases": 100,
+        "complete_exact_candidates": {
+          "maximum_per_case": 12,
+          "phase_noop_cases": 100,
+          "total": 159
+        },
+        "current_v8_observer": {
+          "false_authority": 0,
+          "grounded_candidate_losses_from_exact_field": 0,
+          "grounded_candidates": 0,
+          "scope": "compatibility_observer_only",
+          "target_in_top64": 100,
+          "unique_top1": 100
+        },
+        "false_authority": 0,
+        "false_singleton": 0,
+        "gates": {
+          "lattice_coverage_ge_99_percent": true,
+          "unique_top1_strictly_gt_95_percent": true
+        },
+        "lattice_coverage_percent": 100.0,
+        "objective_unique_cases": 100,
+        "readout": {
+          "abstain": 100,
+          "tied": 0,
+          "winner": 0
+        },
+        "target_in_final_top64": 100,
+        "target_retained_complete_field": 100,
+        "target_retention_percent": 100.0,
+        "unique_top1": 100,
+        "unique_top1_percent": 100.0
+      },
+      "layout_projection": {
+        "cases": 100,
+        "complete_exact_candidates": {
+          "maximum_per_case": 483,
+          "phase_noop_cases": 100,
+          "total": 777
+        },
+        "current_v8_observer": {
+          "false_authority": 0,
+          "grounded_candidate_losses_from_exact_field": 0,
+          "grounded_candidates": 65,
+          "scope": "compatibility_observer_only",
+          "target_in_top64": 100,
+          "unique_top1": 97
+        },
+        "false_authority": 0,
+        "false_singleton": 0,
+        "gates": {
+          "lattice_coverage_ge_99_percent": true,
+          "unique_top1_strictly_gt_95_percent": true
+        },
+        "lattice_coverage_percent": 100.0,
+        "objective_unique_cases": 98,
+        "readout": {
+          "abstain": 100,
+          "tied": 0,
+          "winner": 0
+        },
+        "target_in_final_top64": 100,
+        "target_retained_complete_field": 100,
+        "target_retention_percent": 100.0,
+        "unique_top1": 97,
+        "unique_top1_percent": 98.9795918367347
+      },
+      "letter_substitution": {
+        "cases": 100,
+        "complete_exact_candidates": {
+          "maximum_per_case": 242,
+          "phase_noop_cases": 100,
+          "total": 956
+        },
+        "current_v8_observer": {
+          "false_authority": 0,
+          "grounded_candidate_losses_from_exact_field": 0,
+          "grounded_candidates": 114,
+          "scope": "compatibility_observer_only",
+          "target_in_top64": 100,
+          "unique_top1": 92
+        },
+        "false_authority": 0,
+        "false_singleton": 0,
+        "gates": {
+          "lattice_coverage_ge_99_percent": true,
+          "unique_top1_strictly_gt_95_percent": true
+        },
+        "lattice_coverage_percent": 100.0,
+        "objective_unique_cases": 92,
+        "readout": {
+          "abstain": 100,
+          "tied": 0,
+          "winner": 0
+        },
+        "target_in_final_top64": 100,
+        "target_retained_complete_field": 100,
+        "target_retention_percent": 100.0,
+        "unique_top1": 92,
+        "unique_top1_percent": 100.0
+      },
+      "missing_letter": {
+        "cases": 100,
+        "complete_exact_candidates": {
+          "maximum_per_case": 628,
+          "phase_noop_cases": 100,
+          "total": 2233
+        },
+        "current_v8_observer": {
+          "false_authority": 0,
+          "grounded_candidate_losses_from_exact_field": 0,
+          "grounded_candidates": 267,
+          "scope": "compatibility_observer_only",
+          "target_in_top64": 100,
+          "unique_top1": 65
+        },
+        "false_authority": 0,
+        "false_singleton": 0,
+        "gates": {
+          "lattice_coverage_ge_99_percent": true,
+          "unique_top1_strictly_gt_95_percent": true
+        },
+        "lattice_coverage_percent": 100.0,
+        "objective_unique_cases": 65,
+        "readout": {
+          "abstain": 98,
+          "tied": 0,
+          "winner": 2
+        },
+        "target_in_final_top64": 100,
+        "target_retained_complete_field": 100,
+        "target_retention_percent": 100.0,
+        "unique_top1": 65,
+        "unique_top1_percent": 100.0
+      },
+      "non_adjacent_transposition": {
+        "cases": 100,
+        "complete_exact_candidates": {
+          "maximum_per_case": 169,
+          "phase_noop_cases": 100,
+          "total": 878
+        },
+        "current_v8_observer": {
+          "false_authority": 0,
+          "grounded_candidate_losses_from_exact_field": 0,
+          "grounded_candidates": 118,
+          "scope": "compatibility_observer_only",
+          "target_in_top64": 100,
+          "unique_top1": 89
+        },
+        "false_authority": 0,
+        "false_singleton": 0,
+        "gates": {
+          "lattice_coverage_ge_99_percent": true,
+          "unique_top1_strictly_gt_95_percent": true
+        },
+        "lattice_coverage_percent": 100.0,
+        "objective_unique_cases": 92,
+        "readout": {
+          "abstain": 100,
+          "tied": 0,
+          "winner": 0
+        },
+        "target_in_final_top64": 100,
+        "target_retained_complete_field": 100,
+        "target_retention_percent": 100.0,
+        "unique_top1": 88,
+        "unique_top1_percent": 95.65217391304348
+      },
+      "omission_transposition": {
+        "cases": 100,
+        "complete_exact_candidates": {
+          "maximum_per_case": 388,
+          "phase_noop_cases": 100,
+          "total": 2264
+        },
+        "current_v8_observer": {
+          "false_authority": 0,
+          "grounded_candidate_losses_from_exact_field": 0,
+          "grounded_candidates": 176,
+          "scope": "compatibility_observer_only",
+          "target_in_top64": 100,
+          "unique_top1": 80
+        },
+        "false_authority": 0,
+        "false_singleton": 0,
+        "gates": {
+          "lattice_coverage_ge_99_percent": true,
+          "unique_top1_strictly_gt_95_percent": true
+        },
+        "lattice_coverage_percent": 100.0,
+        "objective_unique_cases": 81,
+        "readout": {
+          "abstain": 100,
+          "tied": 0,
+          "winner": 0
+        },
+        "target_in_final_top64": 100,
+        "target_retained_complete_field": 100,
+        "target_retention_percent": 100.0,
+        "unique_top1": 81,
+        "unique_top1_percent": 100.0
+      },
+      "prefix_truncation": {
+        "cases": 100,
+        "complete_exact_candidates": {
+          "maximum_per_case": 1038,
+          "phase_noop_cases": 100,
+          "total": 4528
+        },
+        "current_v8_observer": {
+          "false_authority": 0,
+          "grounded_candidate_losses_from_exact_field": 0,
+          "grounded_candidates": 498,
+          "scope": "compatibility_observer_only",
+          "target_in_top64": 100,
+          "unique_top1": 69
+        },
+        "false_authority": 0,
+        "false_singleton": 0,
+        "gates": {
+          "lattice_coverage_ge_99_percent": true,
+          "unique_top1_strictly_gt_95_percent": true
+        },
+        "lattice_coverage_percent": 100.0,
+        "objective_unique_cases": 69,
+        "readout": {
+          "abstain": 95,
+          "tied": 0,
+          "winner": 5
+        },
+        "target_in_final_top64": 100,
+        "target_retained_complete_field": 100,
+        "target_retention_percent": 100.0,
+        "unique_top1": 69,
+        "unique_top1_percent": 100.0
+      },
+      "punctuation_suffix": {
+        "cases": 100,
+        "complete_exact_candidates": {
+          "maximum_per_case": 1481,
+          "phase_noop_cases": 100,
+          "total": 5679
+        },
+        "current_v8_observer": {
+          "false_authority": 0,
+          "grounded_candidate_losses_from_exact_field": 0,
+          "grounded_candidates": 248,
+          "scope": "compatibility_observer_only",
+          "target_in_top64": 100,
+          "unique_top1": 100
+        },
+        "false_authority": 0,
+        "false_singleton": 0,
+        "gates": {
+          "lattice_coverage_ge_99_percent": true,
+          "unique_top1_strictly_gt_95_percent": true
+        },
+        "lattice_coverage_percent": 100.0,
+        "objective_unique_cases": 100,
+        "readout": {
+          "abstain": 0,
+          "tied": 0,
+          "winner": 100
+        },
+        "target_in_final_top64": 100,
+        "target_retained_complete_field": 100,
+        "target_retention_percent": 100.0,
+        "unique_top1": 100,
+        "unique_top1_percent": 100.0
+      },
+      "repeated_fragment": {
+        "cases": 100,
+        "complete_exact_candidates": {
+          "maximum_per_case": 30,
+          "phase_noop_cases": 100,
+          "total": 157
+        },
+        "current_v8_observer": {
+          "false_authority": 0,
+          "grounded_candidate_losses_from_exact_field": 0,
+          "grounded_candidates": 0,
+          "scope": "compatibility_observer_only",
+          "target_in_top64": 100,
+          "unique_top1": 100
+        },
+        "false_authority": 0,
+        "false_singleton": 0,
+        "gates": {
+          "lattice_coverage_ge_99_percent": true,
+          "unique_top1_strictly_gt_95_percent": true
+        },
+        "lattice_coverage_percent": 100.0,
+        "objective_unique_cases": 100,
+        "readout": {
+          "abstain": 100,
+          "tied": 0,
+          "winner": 0
+        },
+        "target_in_final_top64": 100,
+        "target_retained_complete_field": 100,
+        "target_retention_percent": 100.0,
+        "unique_top1": 97,
+        "unique_top1_percent": 97.0
+      },
+      "sparse_multi_omission": {
+        "cases": 100,
+        "complete_exact_candidates": {
+          "maximum_per_case": 145,
+          "phase_noop_cases": 100,
+          "total": 1228
+        },
+        "current_v8_observer": {
+          "false_authority": 0,
+          "grounded_candidate_losses_from_exact_field": 0,
+          "grounded_candidates": 190,
+          "scope": "compatibility_observer_only",
+          "target_in_top64": 100,
+          "unique_top1": 66
+        },
+        "false_authority": 0,
+        "false_singleton": 0,
+        "gates": {
+          "lattice_coverage_ge_99_percent": true,
+          "unique_top1_strictly_gt_95_percent": false
+        },
+        "lattice_coverage_percent": 100.0,
+        "objective_unique_cases": 70,
+        "readout": {
+          "abstain": 99,
+          "tied": 0,
+          "winner": 1
+        },
+        "target_in_final_top64": 100,
+        "target_retained_complete_field": 100,
+        "target_retention_percent": 100.0,
+        "unique_top1": 66,
+        "unique_top1_percent": 94.28571428571429
+      },
+      "suffix_truncation": {
+        "cases": 100,
+        "complete_exact_candidates": {
+          "maximum_per_case": 633,
+          "phase_noop_cases": 100,
+          "total": 3701
+        },
+        "current_v8_observer": {
+          "false_authority": 0,
+          "grounded_candidate_losses_from_exact_field": 0,
+          "grounded_candidates": 434,
+          "scope": "compatibility_observer_only",
+          "target_in_top64": 100,
+          "unique_top1": 25
+        },
+        "false_authority": 0,
+        "false_singleton": 0,
+        "gates": {
+          "lattice_coverage_ge_99_percent": true,
+          "unique_top1_strictly_gt_95_percent": true
+        },
+        "lattice_coverage_percent": 100.0,
+        "objective_unique_cases": 26,
+        "readout": {
+          "abstain": 64,
+          "tied": 0,
+          "winner": 36
+        },
+        "target_in_final_top64": 100,
+        "target_retained_complete_field": 100,
+        "target_retention_percent": 100.0,
+        "unique_top1": 25,
+        "unique_top1_percent": 96.15384615384616
+      }
+    },
+    "exact_reverse_relations": 8891321,
+    "exact_reverse_terminals": 105122,
+    "timing": {
+      "current_v8_observer_us_max": 280195,
+      "current_v8_observer_us_p50": 79215,
+      "current_v8_observer_us_p99": 197457,
+      "exact_settlement_us_max": 39518,
+      "exact_settlement_us_p50": 617,
+      "exact_settlement_us_p99": 16535,
+      "implicit_us_max": 26408,
+      "implicit_us_p50": 270,
+      "implicit_us_p99": 10428,
+      "scope": "proof_throughput_not_product_hot_latency",
+      "typed_us_max": 24209,
+      "typed_us_p50": 2341,
+      "typed_us_p99": 5777
+    }
+  },
+  "diagnostics": [
+    {
+      "authority_terminal": null,
+      "class": "double_substitution",
+      "geometric_basin_terminals": 29,
+      "legacy_grounded_losses": [],
+      "mechanism": "unique_objective_not_rank1",
+      "objective_terminals": [
+        623524
+      ],
+      "scope": "damaged",
+      "surface": "amcpn",
+      "target_rank": 27,
+      "target_surface": "alcon",
+      "target_terminal": 623524,
+      "top_candidate_evidence": [
+        {
+          "atom_hits": 37,
+          "backward_milli": 407,
+          "exact_reconstruction": false,
+          "forward_milli": 973,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 37,
+            "keyboard_hits": 17,
+            "mass": 4620100,
+            "surface_hits": 20
+          },
+          "keyboard_hits": 17,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 600,
+          "rank": 1,
+          "reconstruction_modes": 64,
+          "sequence_milli": 750,
+          "settled_energy": 7235,
+          "structural_milli": 1000,
+          "surface": "ambon",
+          "surface_hits": 20,
+          "terminal_id": 644041,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 37,
+          "backward_milli": 540,
+          "exact_reconstruction": false,
+          "forward_milli": 999,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 37,
+            "keyboard_hits": 17,
+            "mass": 4739966,
+            "surface_hits": 20
+          },
+          "keyboard_hits": 17,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 600,
+          "rank": 2,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 7662,
+          "structural_milli": 1000,
+          "surface": "amann",
+          "surface_hits": 20,
+          "terminal_id": 637767,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 37,
+          "backward_milli": 526,
+          "exact_reconstruction": false,
+          "forward_milli": 998,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 37,
+            "keyboard_hits": 17,
+            "mass": 4739734,
+            "surface_hits": 20
+          },
+          "keyboard_hits": 17,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 600,
+          "rank": 3,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 7623,
+          "structural_milli": 1000,
+          "surface": "amman",
+          "surface_hits": 20,
+          "terminal_id": 561114,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 37,
+          "backward_milli": 494,
+          "exact_reconstruction": false,
+          "forward_milli": 1000,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 37,
+            "keyboard_hits": 17,
+            "mass": 4744516,
+            "surface_hits": 20
+          },
+          "keyboard_hits": 17,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 600,
+          "rank": 4,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 7545,
+          "structural_milli": 1000,
+          "surface": "amcas",
+          "surface_hits": 20,
+          "terminal_id": 760977,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 37,
+          "backward_milli": 491,
+          "exact_reconstruction": false,
+          "forward_milli": 1000,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 37,
+            "keyboard_hits": 17,
+            "mass": 4744516,
+            "surface_hits": 20
+          },
+          "keyboard_hits": 17,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 600,
+          "rank": 5,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 7537,
+          "structural_milli": 1000,
+          "surface": "amcal",
+          "surface_hits": 20,
+          "terminal_id": 821083,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 37,
+          "backward_milli": 508,
+          "exact_reconstruction": false,
+          "forward_milli": 978,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 37,
+            "keyboard_hits": 17,
+            "mass": 4642216,
+            "surface_hits": 20
+          },
+          "keyboard_hits": 17,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 600,
+          "rank": 6,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 7515,
+          "structural_milli": 1000,
+          "surface": "ammen",
+          "surface_hits": 20,
+          "terminal_id": 727703,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 37,
+          "backward_milli": 493,
+          "exact_reconstruction": false,
+          "forward_milli": 988,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 37,
+            "keyboard_hits": 17,
+            "mass": 4692118,
+            "surface_hits": 20
+          },
+          "keyboard_hits": 17,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 600,
+          "rank": 7,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 7506,
+          "structural_milli": 1000,
+          "surface": "amaan",
+          "surface_hits": 20,
+          "terminal_id": 705711,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 37,
+          "backward_milli": 503,
+          "exact_reconstruction": false,
+          "forward_milli": 978,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 37,
+            "keyboard_hits": 17,
+            "mass": 4642216,
+            "surface_hits": 20
+          },
+          "keyboard_hits": 17,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 600,
+          "rank": 8,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 7502,
+          "structural_milli": 1000,
+          "surface": "ammon",
+          "surface_hits": 20,
+          "terminal_id": 589719,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        }
+      ],
+      "top_terminals": [
+        644041,
+        637767,
+        561114,
+        760977,
+        821083,
+        727703,
+        705711,
+        589719
+      ]
+    },
+    {
+      "authority_terminal": null,
+      "class": "double_substitution",
+      "geometric_basin_terminals": 42,
+      "legacy_grounded_losses": [],
+      "mechanism": "unique_objective_not_rank1",
+      "objective_terminals": [
+        785143
+      ],
+      "scope": "damaged",
+      "surface": "eodfn",
+      "target_rank": 9,
+      "target_surface": "enden",
+      "target_terminal": 785143,
+      "top_candidate_evidence": [
+        {
+          "atom_hits": 35,
+          "backward_milli": 403,
+          "exact_reconstruction": false,
+          "forward_milli": 822,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 35,
+            "keyboard_hits": 17,
+            "mass": 3844468,
+            "surface_hits": 18
+          },
+          "keyboard_hits": 17,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 600,
+          "rank": 1,
+          "reconstruction_modes": 128,
+          "sequence_milli": 840,
+          "settled_energy": 7040,
+          "structural_milli": 1000,
+          "surface": "foden",
+          "surface_hits": 18,
+          "terminal_id": 615955,
+          "typed_certificate_classes": [
+            "double_substitution",
+            "non_adjacent_transposition"
+          ]
+        },
+        {
+          "atom_hits": 37,
+          "backward_milli": 407,
+          "exact_reconstruction": false,
+          "forward_milli": 1000,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 37,
+            "keyboard_hits": 17,
+            "mass": 4674884,
+            "surface_hits": 20
+          },
+          "keyboard_hits": 17,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 600,
+          "rank": 2,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 7314,
+          "structural_milli": 1000,
+          "surface": "eowyn",
+          "surface_hits": 20,
+          "terminal_id": 660798,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 37,
+          "backward_milli": 406,
+          "exact_reconstruction": false,
+          "forward_milli": 1000,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 37,
+            "keyboard_hits": 17,
+            "mass": 4674884,
+            "surface_hits": 20
+          },
+          "keyboard_hits": 17,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 600,
+          "rank": 3,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 7312,
+          "structural_milli": 1000,
+          "surface": "eosin",
+          "surface_hits": 20,
+          "terminal_id": 644361,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 36,
+          "backward_milli": 444,
+          "exact_reconstruction": false,
+          "forward_milli": 910,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 36,
+            "keyboard_hits": 17,
+            "mass": 4257996,
+            "surface_hits": 19
+          },
+          "keyboard_hits": 17,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 600,
+          "rank": 4,
+          "reconstruction_modes": 0,
+          "sequence_milli": 760,
+          "settled_energy": 7172,
+          "structural_milli": 1000,
+          "surface": "endon",
+          "surface_hits": 19,
+          "terminal_id": 773257,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 36,
+          "backward_milli": 426,
+          "exact_reconstruction": false,
+          "forward_milli": 901,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 36,
+            "keyboard_hits": 17,
+            "mass": 4213952,
+            "surface_hits": 19
+          },
+          "keyboard_hits": 17,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 600,
+          "rank": 5,
+          "reconstruction_modes": 0,
+          "sequence_milli": 760,
+          "settled_energy": 7097,
+          "structural_milli": 1000,
+          "surface": "ebdon",
+          "surface_hits": 19,
+          "terminal_id": 654954,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 36,
+          "backward_milli": 423,
+          "exact_reconstruction": false,
+          "forward_milli": 901,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 36,
+            "keyboard_hits": 17,
+            "mass": 4213952,
+            "surface_hits": 19
+          },
+          "keyboard_hits": 17,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 600,
+          "rank": 6,
+          "reconstruction_modes": 0,
+          "sequence_milli": 760,
+          "settled_energy": 7089,
+          "structural_milli": 1000,
+          "surface": "eldon",
+          "surface_hits": 19,
+          "terminal_id": 575513,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 36,
+          "backward_milli": 422,
+          "exact_reconstruction": false,
+          "forward_milli": 901,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 36,
+            "keyboard_hits": 17,
+            "mass": 4213952,
+            "surface_hits": 19
+          },
+          "keyboard_hits": 17,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 600,
+          "rank": 7,
+          "reconstruction_modes": 0,
+          "sequence_milli": 760,
+          "settled_energy": 7087,
+          "structural_milli": 1000,
+          "surface": "egdon",
+          "surface_hits": 19,
+          "terminal_id": 758853,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 32,
+          "backward_milli": 439,
+          "exact_reconstruction": false,
+          "forward_milli": 827,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 32,
+            "keyboard_hits": 15,
+            "mass": 3866500,
+            "surface_hits": 17
+          },
+          "keyboard_hits": 15,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 600,
+          "rank": 8,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 6525,
+          "structural_milli": 882,
+          "surface": "eeden",
+          "surface_hits": 17,
+          "terminal_id": 735578,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        }
+      ],
+      "top_terminals": [
+        615955,
+        660798,
+        644361,
+        773257,
+        654954,
+        575513,
+        758853,
+        735578
+      ]
+    },
+    {
+      "authority_terminal": null,
+      "class": "double_substitution",
+      "geometric_basin_terminals": 1,
+      "legacy_grounded_losses": [],
+      "mechanism": "unique_objective_not_rank1",
+      "objective_terminals": [
+        748969
+      ],
+      "scope": "damaged",
+      "surface": "mahnbe",
+      "target_rank": 13,
+      "target_surface": "magnae",
+      "target_terminal": 748969,
+      "top_candidate_evidence": [
+        {
+          "atom_hits": 65,
+          "backward_milli": 670,
+          "exact_reconstruction": false,
+          "forward_milli": 1000,
+          "geometry_distance": 1,
+          "implicit_activation": {
+            "hits": 65,
+            "keyboard_hits": 30,
+            "mass": 8542960,
+            "surface_hits": 35
+          },
+          "keyboard_hits": 30,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 833,
+          "rank": 1,
+          "reconstruction_modes": 0,
+          "sequence_milli": 866,
+          "settled_energy": 8355,
+          "structural_milli": 1000,
+          "surface": "mahnke",
+          "surface_hits": 35,
+          "terminal_id": 774025,
+          "typed_certificate_classes": [
+            "letter_substitution"
+          ]
+        },
+        {
+          "atom_hits": 54,
+          "backward_milli": 587,
+          "exact_reconstruction": false,
+          "forward_milli": 809,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 54,
+            "keyboard_hits": 25,
+            "mass": 6912672,
+            "surface_hits": 29
+          },
+          "keyboard_hits": 25,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 666,
+          "rank": 2,
+          "reconstruction_modes": 0,
+          "sequence_milli": 866,
+          "settled_energy": 7063,
+          "structural_milli": 833,
+          "surface": "manabe",
+          "surface_hits": 29,
+          "terminal_id": 655357,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 54,
+          "backward_milli": 554,
+          "exact_reconstruction": false,
+          "forward_milli": 821,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 54,
+            "keyboard_hits": 25,
+            "mass": 7014776,
+            "surface_hits": 29
+          },
+          "keyboard_hits": 25,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 666,
+          "rank": 3,
+          "reconstruction_modes": 0,
+          "sequence_milli": 866,
+          "settled_energy": 7012,
+          "structural_milli": 833,
+          "surface": "mahone",
+          "surface_hits": 29,
+          "terminal_id": 584691,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 50,
+          "backward_milli": 534,
+          "exact_reconstruction": false,
+          "forward_milli": 760,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 50,
+            "keyboard_hits": 23,
+            "mass": 6496342,
+            "surface_hits": 27
+          },
+          "keyboard_hits": 23,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 666,
+          "rank": 4,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 6243,
+          "structural_milli": 771,
+          "surface": "mahnaz",
+          "surface_hits": 27,
+          "terminal_id": 751470,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 48,
+          "backward_milli": 517,
+          "exact_reconstruction": false,
+          "forward_milli": 742,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 48,
+            "keyboard_hits": 22,
+            "mass": 6339150,
+            "surface_hits": 26
+          },
+          "keyboard_hits": 22,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 666,
+          "rank": 5,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 6057,
+          "structural_milli": 742,
+          "surface": "mahale",
+          "surface_hits": 26,
+          "terminal_id": 746367,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 46,
+          "backward_milli": 494,
+          "exact_reconstruction": false,
+          "forward_milli": 711,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 46,
+            "keyboard_hits": 21,
+            "mass": 6077836,
+            "surface_hits": 25
+          },
+          "keyboard_hits": 21,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 666,
+          "rank": 6,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 5820,
+          "structural_milli": 714,
+          "surface": "makabe",
+          "surface_hits": 25,
+          "terminal_id": 678621,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 46,
+          "backward_milli": 458,
+          "exact_reconstruction": false,
+          "forward_milli": 710,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 46,
+            "keyboard_hits": 21,
+            "mass": 6068562,
+            "surface_hits": 25
+          },
+          "keyboard_hits": 21,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 666,
+          "rank": 7,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 5722,
+          "structural_milli": 714,
+          "surface": "makybe",
+          "surface_hits": 25,
+          "terminal_id": 756911,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 43,
+          "backward_milli": 506,
+          "exact_reconstruction": false,
+          "forward_milli": 638,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 43,
+            "keyboard_hits": 20,
+            "mass": 5458522,
+            "surface_hits": 23
+          },
+          "keyboard_hits": 20,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 666,
+          "rank": 8,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 5488,
+          "structural_milli": 666,
+          "surface": "mannie",
+          "surface_hits": 23,
+          "terminal_id": 631556,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        }
+      ],
+      "top_terminals": [
+        774025,
+        655357,
+        584691,
+        751470,
+        746367,
+        678621,
+        756911,
+        631556
+      ]
+    },
+    {
+      "authority_terminal": null,
+      "class": "double_substitution",
+      "geometric_basin_terminals": 2,
+      "legacy_grounded_losses": [],
+      "mechanism": "unique_objective_not_rank1",
+      "objective_terminals": [
+        8352
+      ],
+      "scope": "damaged",
+      "surface": "акньй",
+      "target_rank": 8,
+      "target_surface": "айный",
+      "target_terminal": 8352,
+      "top_candidate_evidence": [
+        {
+          "atom_hits": 55,
+          "backward_milli": 627,
+          "exact_reconstruction": false,
+          "forward_milli": 1000,
+          "geometry_distance": 1,
+          "implicit_activation": {
+            "hits": 55,
+            "keyboard_hits": 24,
+            "mass": 7055162,
+            "surface_hits": 31
+          },
+          "keyboard_hits": 24,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 800,
+          "rank": 1,
+          "reconstruction_modes": 0,
+          "sequence_milli": 840,
+          "settled_energy": 8158,
+          "structural_milli": 1000,
+          "surface": "акной",
+          "surface_hits": 31,
+          "terminal_id": 9144,
+          "typed_certificate_classes": [
+            "letter_substitution"
+          ]
+        },
+        {
+          "atom_hits": 40,
+          "backward_milli": 495,
+          "exact_reconstruction": false,
+          "forward_milli": 701,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 40,
+            "keyboard_hits": 17,
+            "mass": 4947836,
+            "surface_hits": 23
+          },
+          "keyboard_hits": 17,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 600,
+          "rank": 2,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 5868,
+          "structural_milli": 741,
+          "surface": "акнам",
+          "surface_hits": 23,
+          "terminal_id": 9140,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 40,
+          "backward_milli": 489,
+          "exact_reconstruction": false,
+          "forward_milli": 701,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 40,
+            "keyboard_hits": 17,
+            "mass": 4947836,
+            "surface_hits": 23
+          },
+          "keyboard_hits": 17,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 600,
+          "rank": 3,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 5852,
+          "structural_milli": 741,
+          "surface": "акнах",
+          "surface_hits": 23,
+          "terminal_id": 9142,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 40,
+          "backward_milli": 451,
+          "exact_reconstruction": false,
+          "forward_milli": 694,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 40,
+            "keyboard_hits": 17,
+            "mass": 4900922,
+            "surface_hits": 23
+          },
+          "keyboard_hits": 17,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 600,
+          "rank": 4,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 5731,
+          "structural_milli": 741,
+          "surface": "акною",
+          "surface_hits": 23,
+          "terminal_id": 9145,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 38,
+          "backward_milli": 412,
+          "exact_reconstruction": false,
+          "forward_milli": 679,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 38,
+            "keyboard_hits": 17,
+            "mass": 4790606,
+            "surface_hits": 21
+          },
+          "keyboard_hits": 17,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 600,
+          "rank": 5,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 5483,
+          "structural_milli": 708,
+          "surface": "аксай",
+          "surface_hits": 21,
+          "terminal_id": 9396,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 38,
+          "backward_milli": 400,
+          "exact_reconstruction": false,
+          "forward_milli": 668,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 38,
+            "keyboard_hits": 17,
+            "mass": 4717682,
+            "surface_hits": 21
+          },
+          "keyboard_hits": 17,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 600,
+          "rank": 6,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 5419,
+          "structural_milli": 708,
+          "surface": "акций",
+          "surface_hits": 21,
+          "terminal_id": 10235,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 32,
+          "backward_milli": 413,
+          "exact_reconstruction": false,
+          "forward_milli": 543,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 32,
+            "keyboard_hits": 15,
+            "mass": 3836192,
+            "surface_hits": 17
+          },
+          "keyboard_hits": 15,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 600,
+          "rank": 7,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 4829,
+          "structural_milli": 625,
+          "surface": "анный",
+          "surface_hits": 17,
+          "terminal_id": 15778,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 32,
+          "backward_milli": 359,
+          "exact_reconstruction": false,
+          "forward_milli": 538,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 32,
+            "keyboard_hits": 15,
+            "mass": 3797072,
+            "surface_hits": 17
+          },
+          "keyboard_hits": 15,
+          "length_milli": 1000,
+          "objective_member": true,
+          "position_milli": 600,
+          "rank": 8,
+          "reconstruction_modes": 64,
+          "sequence_milli": 750,
+          "settled_energy": 4670,
+          "structural_milli": 625,
+          "surface": "айный",
+          "surface_hits": 17,
+          "terminal_id": 8352,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        }
+      ],
+      "top_terminals": [
+        9144,
+        9140,
+        9142,
+        9145,
+        9396,
+        10235,
+        15778,
+        8352
+      ]
+    },
+    {
+      "authority_terminal": null,
+      "class": "layout_projection",
+      "geometric_basin_terminals": 1,
+      "legacy_grounded_losses": [],
+      "mechanism": "unique_objective_not_rank1",
+      "objective_terminals": [
+        681978
+      ],
+      "scope": "damaged",
+      "surface": "дфмкф",
+      "target_rank": 2,
+      "target_surface": "lavra",
+      "target_terminal": 681978,
+      "top_candidate_evidence": [
+        {
+          "atom_hits": 29,
+          "backward_milli": 327,
+          "exact_reconstruction": false,
+          "forward_milli": 702,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 29,
+            "keyboard_hits": 13,
+            "mass": 3094916,
+            "surface_hits": 16
+          },
+          "keyboard_hits": 13,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 600,
+          "rank": 1,
+          "reconstruction_modes": 64,
+          "sequence_milli": 750,
+          "settled_energy": 6207,
+          "structural_milli": 1000,
+          "surface": "думку",
+          "surface_hits": 16,
+          "terminal_id": 122740,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 36,
+          "backward_milli": 431,
+          "exact_reconstruction": false,
+          "forward_milli": 1000,
+          "geometry_distance": 0,
+          "implicit_activation": {
+            "hits": 36,
+            "keyboard_hits": 34,
+            "mass": 4403794,
+            "surface_hits": 2
+          },
+          "keyboard_hits": 34,
+          "length_milli": 1000,
+          "objective_member": true,
+          "position_milli": 0,
+          "rank": 2,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 7376,
+          "structural_milli": 1000,
+          "surface": "lavra",
+          "surface_hits": 2,
+          "terminal_id": 681978,
+          "typed_certificate_classes": [
+            "layout_projection"
+          ]
+        },
+        {
+          "atom_hits": 29,
+          "backward_milli": 337,
+          "exact_reconstruction": false,
+          "forward_milli": 702,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 29,
+            "keyboard_hits": 13,
+            "mass": 3094916,
+            "surface_hits": 16
+          },
+          "keyboard_hits": 13,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 600,
+          "rank": 3,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 6235,
+          "structural_milli": 1000,
+          "surface": "дамку",
+          "surface_hits": 16,
+          "terminal_id": 102579,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 29,
+          "backward_milli": 335,
+          "exact_reconstruction": false,
+          "forward_milli": 702,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 29,
+            "keyboard_hits": 13,
+            "mass": 3094916,
+            "surface_hits": 16
+          },
+          "keyboard_hits": 13,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 600,
+          "rank": 4,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 6230,
+          "structural_milli": 1000,
+          "surface": "домку",
+          "surface_hits": 16,
+          "terminal_id": 118544,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 29,
+          "backward_milli": 329,
+          "exact_reconstruction": false,
+          "forward_milli": 702,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 29,
+            "keyboard_hits": 13,
+            "mass": 3094916,
+            "surface_hits": 16
+          },
+          "keyboard_hits": 13,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 600,
+          "rank": 5,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 6214,
+          "structural_milli": 1000,
+          "surface": "дымку",
+          "surface_hits": 16,
+          "terminal_id": 123678,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 28,
+          "backward_milli": 330,
+          "exact_reconstruction": false,
+          "forward_milli": 673,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 28,
+            "keyboard_hits": 13,
+            "mass": 2964356,
+            "surface_hits": 15
+          },
+          "keyboard_hits": 13,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 600,
+          "rank": 6,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 5941,
+          "structural_milli": 937,
+          "surface": "дамки",
+          "surface_hits": 15,
+          "terminal_id": 102576,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 28,
+          "backward_milli": 327,
+          "exact_reconstruction": false,
+          "forward_milli": 673,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 28,
+            "keyboard_hits": 13,
+            "mass": 2964356,
+            "surface_hits": 15
+          },
+          "keyboard_hits": 13,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 600,
+          "rank": 7,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 5933,
+          "structural_milli": 937,
+          "surface": "домки",
+          "surface_hits": 15,
+          "terminal_id": 118522,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 28,
+          "backward_milli": 326,
+          "exact_reconstruction": false,
+          "forward_milli": 673,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 28,
+            "keyboard_hits": 13,
+            "mass": 2964356,
+            "surface_hits": 15
+          },
+          "keyboard_hits": 13,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 600,
+          "rank": 8,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 5930,
+          "structural_milli": 937,
+          "surface": "дамке",
+          "surface_hits": 15,
+          "terminal_id": 102575,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        }
+      ],
+      "top_terminals": [
+        122740,
+        681978,
+        102579,
+        118544,
+        123678,
+        102576,
+        118522,
+        102575
+      ]
+    },
+    {
+      "authority_terminal": null,
+      "class": "non_adjacent_transposition",
+      "geometric_basin_terminals": 2,
+      "legacy_grounded_losses": [],
+      "mechanism": "unique_objective_not_rank1",
+      "objective_terminals": [
+        828203
+      ],
+      "scope": "damaged",
+      "surface": "altoih",
+      "target_rank": 2,
+      "target_surface": "alioth",
+      "target_terminal": 828203,
+      "top_candidate_evidence": [
+        {
+          "atom_hits": 65,
+          "backward_milli": 689,
+          "exact_reconstruction": false,
+          "forward_milli": 1000,
+          "geometry_distance": 1,
+          "implicit_activation": {
+            "hits": 65,
+            "keyboard_hits": 30,
+            "mass": 8457702,
+            "surface_hits": 35
+          },
+          "keyboard_hits": 30,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 833,
+          "rank": 1,
+          "reconstruction_modes": 0,
+          "sequence_milli": 866,
+          "settled_energy": 8403,
+          "structural_milli": 1000,
+          "surface": "altoid",
+          "surface_hits": 35,
+          "terminal_id": 752812,
+          "typed_certificate_classes": [
+            "letter_substitution"
+          ]
+        },
+        {
+          "atom_hits": 53,
+          "backward_milli": 533,
+          "exact_reconstruction": false,
+          "forward_milli": 788,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 53,
+            "keyboard_hits": 25,
+            "mass": 6668184,
+            "surface_hits": 28
+          },
+          "keyboard_hits": 25,
+          "length_milli": 1000,
+          "objective_member": true,
+          "position_milli": 666,
+          "rank": 2,
+          "reconstruction_modes": 128,
+          "sequence_milli": 866,
+          "settled_energy": 6856,
+          "structural_milli": 833,
+          "surface": "alioth",
+          "surface_hits": 28,
+          "terminal_id": 828203,
+          "typed_certificate_classes": [
+            "double_substitution",
+            "non_adjacent_transposition"
+          ]
+        },
+        {
+          "atom_hits": 50,
+          "backward_milli": 518,
+          "exact_reconstruction": false,
+          "forward_milli": 756,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 50,
+            "keyboard_hits": 23,
+            "mass": 6395262,
+            "surface_hits": 27
+          },
+          "keyboard_hits": 23,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 666,
+          "rank": 3,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 6187,
+          "structural_milli": 771,
+          "surface": "altona",
+          "surface_hits": 27,
+          "terminal_id": 589117,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 50,
+          "backward_milli": 514,
+          "exact_reconstruction": false,
+          "forward_milli": 756,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 50,
+            "keyboard_hits": 23,
+            "mass": 6395262,
+            "surface_hits": 27
+          },
+          "keyboard_hits": 23,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 666,
+          "rank": 4,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 6176,
+          "structural_milli": 771,
+          "surface": "alto's",
+          "surface_hits": 27,
+          "terminal_id": 681130,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 43,
+          "backward_milli": 487,
+          "exact_reconstruction": false,
+          "forward_milli": 647,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 43,
+            "keyboard_hits": 20,
+            "mass": 5472466,
+            "surface_hits": 23
+          },
+          "keyboard_hits": 20,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 666,
+          "rank": 5,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 5463,
+          "structural_milli": 666,
+          "surface": "altair",
+          "surface_hits": 23,
+          "terminal_id": 587919,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 43,
+          "backward_milli": 480,
+          "exact_reconstruction": false,
+          "forward_milli": 647,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 43,
+            "keyboard_hits": 20,
+            "mass": 5472466,
+            "surface_hits": 23
+          },
+          "keyboard_hits": 20,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 666,
+          "rank": 6,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 5445,
+          "structural_milli": 666,
+          "surface": "altaic",
+          "surface_hits": 23,
+          "terminal_id": 650542,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 43,
+          "backward_milli": 448,
+          "exact_reconstruction": false,
+          "forward_milli": 638,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 43,
+            "keyboard_hits": 20,
+            "mass": 5400958,
+            "surface_hits": 23
+          },
+          "keyboard_hits": 20,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 666,
+          "rank": 7,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 5334,
+          "structural_milli": 666,
+          "surface": "altria",
+          "surface_hits": 23,
+          "terminal_id": 624583,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 39,
+          "backward_milli": 429,
+          "exact_reconstruction": false,
+          "forward_milli": 523,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 39,
+            "keyboard_hits": 19,
+            "mass": 4430122,
+            "surface_hits": 20
+          },
+          "keyboard_hits": 19,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 666,
+          "rank": 8,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 4840,
+          "structural_milli": 633,
+          "surface": "autoit",
+          "surface_hits": 20,
+          "terminal_id": 790890,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        }
+      ],
+      "top_terminals": [
+        752812,
+        828203,
+        589117,
+        681130,
+        587919,
+        650542,
+        624583,
+        790890
+      ]
+    },
+    {
+      "authority_terminal": null,
+      "class": "non_adjacent_transposition",
+      "geometric_basin_terminals": 3,
+      "legacy_grounded_losses": [],
+      "mechanism": "unique_objective_not_rank1",
+      "objective_terminals": [
+        211791
+      ],
+      "scope": "damaged",
+      "surface": "ликиром",
+      "target_rank": 2,
+      "target_surface": "лириком",
+      "target_terminal": 211791,
+      "top_candidate_evidence": [
+        {
+          "atom_hits": 80,
+          "backward_milli": 710,
+          "exact_reconstruction": false,
+          "forward_milli": 1000,
+          "geometry_distance": 1,
+          "implicit_activation": {
+            "hits": 80,
+            "keyboard_hits": 34,
+            "mass": 10754066,
+            "surface_hits": 46
+          },
+          "keyboard_hits": 34,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 857,
+          "rank": 1,
+          "reconstruction_modes": 0,
+          "sequence_milli": 885,
+          "settled_energy": 8517,
+          "structural_milli": 1000,
+          "surface": "ликёром",
+          "surface_hits": 46,
+          "terminal_id": 210681,
+          "typed_certificate_classes": [
+            "letter_substitution"
+          ]
+        },
+        {
+          "atom_hits": 70,
+          "backward_milli": 585,
+          "exact_reconstruction": false,
+          "forward_milli": 787,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 70,
+            "keyboard_hits": 30,
+            "mass": 8473696,
+            "surface_hits": 40
+          },
+          "keyboard_hits": 30,
+          "length_milli": 1000,
+          "objective_member": true,
+          "position_milli": 714,
+          "rank": 2,
+          "reconstruction_modes": 128,
+          "sequence_milli": 885,
+          "settled_energy": 7195,
+          "structural_milli": 882,
+          "surface": "лириком",
+          "surface_hits": 40,
+          "terminal_id": 211791,
+          "typed_certificate_classes": [
+            "double_substitution",
+            "non_adjacent_transposition"
+          ]
+        },
+        {
+          "atom_hits": 79,
+          "backward_milli": 508,
+          "exact_reconstruction": false,
+          "forward_milli": 897,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 79,
+            "keyboard_hits": 34,
+            "mass": 9649488,
+            "surface_hits": 45
+          },
+          "keyboard_hits": 34,
+          "length_milli": 640,
+          "objective_member": false,
+          "position_milli": 0,
+          "rank": 3,
+          "reconstruction_modes": 1,
+          "sequence_milli": 1000,
+          "settled_energy": 7077,
+          "structural_milli": 1000,
+          "surface": "эликсиром",
+          "surface_hits": 45,
+          "terminal_id": 527727,
+          "typed_certificate_classes": [
+            "sparse_multi_omission"
+          ]
+        },
+        {
+          "atom_hits": 68,
+          "backward_milli": 578,
+          "exact_reconstruction": false,
+          "forward_milli": 811,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 68,
+            "keyboard_hits": 29,
+            "mass": 8723742,
+            "surface_hits": 39
+          },
+          "keyboard_hits": 29,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 714,
+          "rank": 4,
+          "reconstruction_modes": 0,
+          "sequence_milli": 771,
+          "settled_energy": 6817,
+          "structural_milli": 852,
+          "surface": "факиром",
+          "surface_hits": 39,
+          "terminal_id": 484941,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 62,
+          "backward_milli": 562,
+          "exact_reconstruction": false,
+          "forward_milli": 766,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 62,
+            "keyboard_hits": 26,
+            "mass": 8244128,
+            "surface_hits": 36
+          },
+          "keyboard_hits": 26,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 714,
+          "rank": 5,
+          "reconstruction_modes": 0,
+          "sequence_milli": 771,
+          "settled_energy": 6430,
+          "structural_milli": 782,
+          "surface": "лидаром",
+          "surface_hits": 36,
+          "terminal_id": 210257,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 62,
+          "backward_milli": 562,
+          "exact_reconstruction": false,
+          "forward_milli": 766,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 62,
+            "keyboard_hits": 26,
+            "mass": 8244128,
+            "surface_hits": 36
+          },
+          "keyboard_hits": 26,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 714,
+          "rank": 6,
+          "reconstruction_modes": 0,
+          "sequence_milli": 771,
+          "settled_energy": 6430,
+          "structural_milli": 782,
+          "surface": "лидером",
+          "surface_hits": 36,
+          "terminal_id": 210279,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 62,
+          "backward_milli": 534,
+          "exact_reconstruction": false,
+          "forward_milli": 766,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 62,
+            "keyboard_hits": 26,
+            "mass": 8244128,
+            "surface_hits": 36
+          },
+          "keyboard_hits": 26,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 714,
+          "rank": 7,
+          "reconstruction_modes": 0,
+          "sequence_milli": 771,
+          "settled_energy": 6357,
+          "structural_milli": 782,
+          "surface": "ливером",
+          "surface_hits": 36,
+          "terminal_id": 210117,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 61,
+          "backward_milli": 552,
+          "exact_reconstruction": false,
+          "forward_milli": 754,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 61,
+            "keyboard_hits": 26,
+            "mass": 8113568,
+            "surface_hits": 35
+          },
+          "keyboard_hits": 26,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 714,
+          "rank": 8,
+          "reconstruction_modes": 0,
+          "sequence_milli": 771,
+          "settled_energy": 6314,
+          "structural_milli": 764,
+          "surface": "литером",
+          "surface_hits": 35,
+          "terminal_id": 212282,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        }
+      ],
+      "top_terminals": [
+        210681,
+        211791,
+        527727,
+        484941,
+        210257,
+        210279,
+        210117,
+        212282
+      ]
+    },
+    {
+      "authority_terminal": null,
+      "class": "non_adjacent_transposition",
+      "geometric_basin_terminals": 2,
+      "legacy_grounded_losses": [],
+      "mechanism": "unique_objective_not_rank1",
+      "objective_terminals": [
+        224481
+      ],
+      "scope": "damaged",
+      "surface": "мамяти",
+      "target_rank": 2,
+      "target_surface": "матями",
+      "target_terminal": 224481,
+      "top_candidate_evidence": [
+        {
+          "atom_hits": 70,
+          "backward_milli": 692,
+          "exact_reconstruction": false,
+          "forward_milli": 1000,
+          "geometry_distance": 1,
+          "implicit_activation": {
+            "hits": 70,
+            "keyboard_hits": 30,
+            "mass": 8902020,
+            "surface_hits": 40
+          },
+          "keyboard_hits": 30,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 833,
+          "rank": 1,
+          "reconstruction_modes": 0,
+          "sequence_milli": 866,
+          "settled_energy": 8412,
+          "structural_milli": 1000,
+          "surface": "памяти",
+          "surface_hits": 40,
+          "terminal_id": 301863,
+          "typed_certificate_classes": [
+            "letter_substitution"
+          ]
+        },
+        {
+          "atom_hits": 54,
+          "backward_milli": 485,
+          "exact_reconstruction": false,
+          "forward_milli": 736,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 54,
+            "keyboard_hits": 25,
+            "mass": 6552900,
+            "surface_hits": 29
+          },
+          "keyboard_hits": 25,
+          "length_milli": 1000,
+          "objective_member": true,
+          "position_milli": 666,
+          "rank": 2,
+          "reconstruction_modes": 128,
+          "sequence_milli": 866,
+          "settled_energy": 6576,
+          "structural_milli": 833,
+          "surface": "матями",
+          "surface_hits": 29,
+          "terminal_id": 224481,
+          "typed_certificate_classes": [
+            "double_substitution",
+            "non_adjacent_transposition"
+          ]
+        },
+        {
+          "atom_hits": 49,
+          "backward_milli": 653,
+          "exact_reconstruction": false,
+          "forward_milli": 692,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 49,
+            "keyboard_hits": 21,
+            "mass": 6168710,
+            "surface_hits": 28
+          },
+          "keyboard_hits": 21,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 666,
+          "rank": 3,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 6138,
+          "structural_milli": 700,
+          "surface": "мамами",
+          "surface_hits": 28,
+          "terminal_id": 220778,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 49,
+          "backward_milli": 533,
+          "exact_reconstruction": false,
+          "forward_milli": 703,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 49,
+            "keyboard_hits": 21,
+            "mass": 6260158,
+            "surface_hits": 28
+          },
+          "keyboard_hits": 21,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 666,
+          "rank": 4,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 5856,
+          "structural_milli": 700,
+          "surface": "мамани",
+          "surface_hits": 28,
+          "terminal_id": 220783,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 49,
+          "backward_milli": 526,
+          "exact_reconstruction": false,
+          "forward_milli": 707,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 49,
+            "keyboard_hits": 21,
+            "mass": 6294838,
+            "surface_hits": 28
+          },
+          "keyboard_hits": 21,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 666,
+          "rank": 5,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 5850,
+          "structural_milli": 700,
+          "surface": "мамаши",
+          "surface_hits": 28,
+          "terminal_id": 220812,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 49,
+          "backward_milli": 441,
+          "exact_reconstruction": false,
+          "forward_milli": 674,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 49,
+            "keyboard_hits": 22,
+            "mass": 5999980,
+            "surface_hits": 27
+          },
+          "keyboard_hits": 22,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 666,
+          "rank": 6,
+          "reconstruction_modes": 0,
+          "sequence_milli": 799,
+          "settled_energy": 5773,
+          "structural_milli": 733,
+          "surface": "мазями",
+          "surface_hits": 27,
+          "terminal_id": 218747,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 48,
+          "backward_milli": 450,
+          "exact_reconstruction": false,
+          "forward_milli": 659,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 48,
+            "keyboard_hits": 22,
+            "mass": 5869420,
+            "surface_hits": 26
+          },
+          "keyboard_hits": 22,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 666,
+          "rank": 7,
+          "reconstruction_modes": 0,
+          "sequence_milli": 799,
+          "settled_energy": 5752,
+          "structural_milli": 733,
+          "surface": "марями",
+          "surface_hits": 26,
+          "terminal_id": 223201,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 42,
+          "backward_milli": 472,
+          "exact_reconstruction": false,
+          "forward_milli": 594,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 42,
+            "keyboard_hits": 18,
+            "mass": 5291830,
+            "surface_hits": 24
+          },
+          "keyboard_hits": 18,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 666,
+          "rank": 8,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 5069,
+          "structural_milli": 600,
+          "surface": "мамать",
+          "surface_hits": 24,
+          "terminal_id": 220792,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        }
+      ],
+      "top_terminals": [
+        301863,
+        224481,
+        220778,
+        220783,
+        220812,
+        218747,
+        223201,
+        220792
+      ]
+    },
+    {
+      "authority_terminal": null,
+      "class": "non_adjacent_transposition",
+      "geometric_basin_terminals": 2,
+      "legacy_grounded_losses": [],
+      "mechanism": "unique_objective_not_rank1",
+      "objective_terminals": [
+        339312
+      ],
+      "scope": "damaged",
+      "surface": "поршалом",
+      "target_rank": 4,
+      "target_surface": "полшаром",
+      "target_terminal": 339312,
+      "top_candidate_evidence": [
+        {
+          "atom_hits": 95,
+          "backward_milli": 736,
+          "exact_reconstruction": false,
+          "forward_milli": 1000,
+          "geometry_distance": 1,
+          "implicit_activation": {
+            "hits": 95,
+            "keyboard_hits": 40,
+            "mass": 12634124,
+            "surface_hits": 55
+          },
+          "keyboard_hits": 40,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 875,
+          "rank": 1,
+          "reconstruction_modes": 0,
+          "sequence_milli": 900,
+          "settled_energy": 8630,
+          "structural_milli": 1000,
+          "surface": "порталом",
+          "surface_hits": 55,
+          "terminal_id": 342492,
+          "typed_certificate_classes": [
+            "letter_substitution"
+          ]
+        },
+        {
+          "atom_hits": 82,
+          "backward_milli": 652,
+          "exact_reconstruction": false,
+          "forward_milli": 849,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 82,
+            "keyboard_hits": 35,
+            "mass": 10737118,
+            "surface_hits": 47
+          },
+          "keyboard_hits": 35,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 750,
+          "rank": 2,
+          "reconstruction_modes": 0,
+          "sequence_milli": 800,
+          "settled_energy": 7281,
+          "structural_milli": 875,
+          "surface": "маршалом",
+          "surface_hits": 47,
+          "terminal_id": 223097,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 75,
+          "backward_milli": 580,
+          "exact_reconstruction": false,
+          "forward_milli": 784,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 75,
+            "keyboard_hits": 32,
+            "mass": 9906412,
+            "surface_hits": 43
+          },
+          "keyboard_hits": 32,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 750,
+          "rank": 3,
+          "reconstruction_modes": 0,
+          "sequence_milli": 800,
+          "settled_energy": 6672,
+          "structural_milli": 800,
+          "surface": "подвалом",
+          "surface_hits": 43,
+          "terminal_id": 326796,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 69,
+          "backward_milli": 472,
+          "exact_reconstruction": false,
+          "forward_milli": 696,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 69,
+            "keyboard_hits": 31,
+            "mass": 8805184,
+            "surface_hits": 38
+          },
+          "keyboard_hits": 31,
+          "length_milli": 1000,
+          "objective_member": true,
+          "position_milli": 750,
+          "rank": 4,
+          "reconstruction_modes": 128,
+          "sequence_milli": 900,
+          "settled_energy": 6350,
+          "structural_milli": 775,
+          "surface": "полшаром",
+          "surface_hits": 38,
+          "terminal_id": 339312,
+          "typed_certificate_classes": [
+            "double_substitution",
+            "non_adjacent_transposition"
+          ]
+        },
+        {
+          "atom_hits": 68,
+          "backward_milli": 464,
+          "exact_reconstruction": false,
+          "forward_milli": 680,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 68,
+            "keyboard_hits": 30,
+            "mass": 8596084,
+            "surface_hits": 38
+          },
+          "keyboard_hits": 30,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 750,
+          "rank": 5,
+          "reconstruction_modes": 0,
+          "sequence_milli": 850,
+          "settled_energy": 6056,
+          "structural_milli": 750,
+          "surface": "полшагом",
+          "surface_hits": 38,
+          "terminal_id": 339288,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 69,
+          "backward_milli": 497,
+          "exact_reconstruction": false,
+          "forward_milli": 685,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 69,
+            "keyboard_hits": 29,
+            "mass": 8659212,
+            "surface_hits": 40
+          },
+          "keyboard_hits": 29,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 750,
+          "rank": 6,
+          "reconstruction_modes": 0,
+          "sequence_milli": 800,
+          "settled_energy": 5938,
+          "structural_milli": 727,
+          "surface": "порталов",
+          "surface_hits": 40,
+          "terminal_id": 342491,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 68,
+          "backward_milli": 504,
+          "exact_reconstruction": false,
+          "forward_milli": 680,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 68,
+            "keyboard_hits": 29,
+            "mass": 8591460,
+            "surface_hits": 39
+          },
+          "keyboard_hits": 29,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 750,
+          "rank": 7,
+          "reconstruction_modes": 0,
+          "sequence_milli": 800,
+          "settled_energy": 5936,
+          "structural_milli": 725,
+          "surface": "порталам",
+          "surface_hits": 39,
+          "terminal_id": 342487,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 68,
+          "backward_milli": 486,
+          "exact_reconstruction": false,
+          "forward_milli": 670,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 68,
+            "keyboard_hits": 29,
+            "mass": 8473868,
+            "surface_hits": 39
+          },
+          "keyboard_hits": 29,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 750,
+          "rank": 8,
+          "reconstruction_modes": 0,
+          "sequence_milli": 800,
+          "settled_energy": 5859,
+          "structural_milli": 725,
+          "surface": "морталом",
+          "surface_hits": 39,
+          "terminal_id": 239924,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        }
+      ],
+      "top_terminals": [
+        342492,
+        223097,
+        326796,
+        339312,
+        339288,
+        342491,
+        342487,
+        239924
+      ]
+    },
+    {
+      "authority_terminal": null,
+      "class": "repeated_fragment",
+      "geometric_basin_terminals": 1,
+      "legacy_grounded_losses": [],
+      "mechanism": "unique_objective_not_rank1",
+      "objective_terminals": [
+        558232
+      ],
+      "scope": "damaged",
+      "surface": "plalaya",
+      "target_rank": 2,
+      "target_surface": "playa",
+      "target_terminal": 558232,
+      "top_candidate_evidence": [
+        {
+          "atom_hits": 70,
+          "backward_milli": 691,
+          "exact_reconstruction": false,
+          "forward_milli": 992,
+          "geometry_distance": 1,
+          "implicit_activation": {
+            "hits": 70,
+            "keyboard_hits": 32,
+            "mass": 9464088,
+            "surface_hits": 38
+          },
+          "keyboard_hits": 32,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 857,
+          "rank": 1,
+          "reconstruction_modes": 0,
+          "sequence_milli": 885,
+          "settled_energy": 8443,
+          "structural_milli": 1000,
+          "surface": "pralaya",
+          "surface_hits": 38,
+          "terminal_id": 809478,
+          "typed_certificate_classes": [
+            "letter_substitution"
+          ]
+        },
+        {
+          "atom_hits": 71,
+          "backward_milli": 877,
+          "exact_reconstruction": false,
+          "forward_milli": 1000,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 71,
+            "keyboard_hits": 32,
+            "mass": 9534434,
+            "surface_hits": 39
+          },
+          "keyboard_hits": 32,
+          "length_milli": 640,
+          "objective_member": true,
+          "position_milli": 0,
+          "rank": 2,
+          "reconstruction_modes": 0,
+          "sequence_milli": 1000,
+          "settled_energy": 8355,
+          "structural_milli": 1000,
+          "surface": "playa",
+          "surface_hits": 39,
+          "terminal_id": 558232,
+          "typed_certificate_classes": [
+            "repeated_fragment"
+          ]
+        },
+        {
+          "atom_hits": 57,
+          "backward_milli": 581,
+          "exact_reconstruction": false,
+          "forward_milli": 794,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 57,
+            "keyboard_hits": 26,
+            "mass": 7573092,
+            "surface_hits": 31
+          },
+          "keyboard_hits": 26,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 714,
+          "rank": 3,
+          "reconstruction_modes": 0,
+          "sequence_milli": 771,
+          "settled_energy": 6654,
+          "structural_milli": 812,
+          "surface": "atalaya",
+          "surface_hits": 31,
+          "terminal_id": 810653,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 46,
+          "backward_milli": 475,
+          "exact_reconstruction": false,
+          "forward_milli": 635,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 46,
+            "keyboard_hits": 21,
+            "mass": 6059260,
+            "surface_hits": 25
+          },
+          "keyboard_hits": 21,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 714,
+          "rank": 4,
+          "reconstruction_modes": 0,
+          "sequence_milli": 771,
+          "settled_energy": 5431,
+          "structural_milli": 656,
+          "surface": "plataea",
+          "surface_hits": 25,
+          "terminal_id": 675544,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        }
+      ],
+      "top_terminals": [
+        809478,
+        558232,
+        810653,
+        675544
+      ]
+    },
+    {
+      "authority_terminal": null,
+      "class": "repeated_fragment",
+      "geometric_basin_terminals": 1,
+      "legacy_grounded_losses": [],
+      "mechanism": "unique_objective_not_rank1",
+      "objective_terminals": [
+        271184
+      ],
+      "scope": "damaged",
+      "surface": "оберерами",
+      "target_rank": 2,
+      "target_surface": "оберами",
+      "target_terminal": 271184,
+      "top_candidate_evidence": [
+        {
+          "atom_hits": 104,
+          "backward_milli": 717,
+          "exact_reconstruction": false,
+          "forward_milli": 983,
+          "geometry_distance": 1,
+          "implicit_activation": {
+            "hits": 104,
+            "keyboard_hits": 44,
+            "mass": 13604650,
+            "surface_hits": 60
+          },
+          "keyboard_hits": 44,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 888,
+          "rank": 1,
+          "reconstruction_modes": 0,
+          "sequence_milli": 910,
+          "settled_energy": 8490,
+          "structural_milli": 977,
+          "surface": "оберегами",
+          "surface_hits": 60,
+          "terminal_id": 271190,
+          "typed_certificate_classes": [
+            "letter_substitution"
+          ]
+        },
+        {
+          "atom_hits": 107,
+          "backward_milli": 907,
+          "exact_reconstruction": false,
+          "forward_milli": 1000,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 107,
+            "keyboard_hits": 45,
+            "mass": 13835852,
+            "surface_hits": 62
+          },
+          "keyboard_hits": 45,
+          "length_milli": 640,
+          "objective_member": true,
+          "position_milli": 0,
+          "rank": 2,
+          "reconstruction_modes": 0,
+          "sequence_milli": 1000,
+          "settled_energy": 8434,
+          "structural_milli": 1000,
+          "surface": "оберами",
+          "surface_hits": 62,
+          "terminal_id": 271184,
+          "typed_certificate_classes": [
+            "repeated_fragment"
+          ]
+        },
+        {
+          "atom_hits": 89,
+          "backward_milli": 613,
+          "exact_reconstruction": false,
+          "forward_milli": 831,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 89,
+            "keyboard_hits": 37,
+            "mass": 11498350,
+            "surface_hits": 52
+          },
+          "keyboard_hits": 37,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 777,
+          "rank": 3,
+          "reconstruction_modes": 0,
+          "sequence_milli": 821,
+          "settled_energy": 7077,
+          "structural_milli": 838,
+          "surface": "оберонами",
+          "surface_hits": 52,
+          "terminal_id": 271227,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 77,
+          "backward_milli": 529,
+          "exact_reconstruction": false,
+          "forward_milli": 683,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 77,
+            "keyboard_hits": 33,
+            "mass": 9453250,
+            "surface_hits": 44
+          },
+          "keyboard_hits": 33,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 777,
+          "rank": 4,
+          "reconstruction_modes": 0,
+          "sequence_milli": 821,
+          "settled_energy": 6097,
+          "structural_milli": 733,
+          "surface": "очеретами",
+          "surface_hits": 44,
+          "terminal_id": 299583,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        }
+      ],
+      "top_terminals": [
+        271190,
+        271184,
+        271227,
+        299583
+      ]
+    },
+    {
+      "authority_terminal": null,
+      "class": "repeated_fragment",
+      "geometric_basin_terminals": 1,
+      "legacy_grounded_losses": [],
+      "mechanism": "unique_objective_not_rank1",
+      "objective_terminals": [
+        361752
+      ],
+      "scope": "damaged",
+      "surface": "прододать",
+      "target_rank": 2,
+      "target_surface": "продать",
+      "target_terminal": 361752,
+      "top_candidate_evidence": [
+        {
+          "atom_hits": 105,
+          "backward_milli": 727,
+          "exact_reconstruction": false,
+          "forward_milli": 992,
+          "geometry_distance": 1,
+          "implicit_activation": {
+            "hits": 105,
+            "keyboard_hits": 44,
+            "mass": 13986596,
+            "surface_hits": 61
+          },
+          "keyboard_hits": 44,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 888,
+          "rank": 1,
+          "reconstruction_modes": 0,
+          "sequence_milli": 910,
+          "settled_energy": 8561,
+          "structural_milli": 983,
+          "surface": "продовать",
+          "surface_hits": 61,
+          "terminal_id": 361940,
+          "typed_certificate_classes": [
+            "letter_substitution"
+          ]
+        },
+        {
+          "atom_hits": 107,
+          "backward_milli": 896,
+          "exact_reconstruction": false,
+          "forward_milli": 1000,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 107,
+            "keyboard_hits": 45,
+            "mass": 14090078,
+            "surface_hits": 62
+          },
+          "keyboard_hits": 45,
+          "length_milli": 640,
+          "objective_member": true,
+          "position_milli": 0,
+          "rank": 2,
+          "reconstruction_modes": 0,
+          "sequence_milli": 1000,
+          "settled_energy": 8405,
+          "structural_milli": 1000,
+          "surface": "продать",
+          "surface_hits": 62,
+          "terminal_id": 361752,
+          "typed_certificate_classes": [
+            "repeated_fragment"
+          ]
+        },
+        {
+          "atom_hits": 96,
+          "backward_milli": 690,
+          "exact_reconstruction": false,
+          "forward_milli": 893,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 96,
+            "keyboard_hits": 40,
+            "mass": 12583682,
+            "surface_hits": 56
+          },
+          "keyboard_hits": 40,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 777,
+          "rank": 3,
+          "reconstruction_modes": 0,
+          "sequence_milli": 821,
+          "settled_energy": 7660,
+          "structural_milli": 903,
+          "surface": "продавать",
+          "surface_hits": 56,
+          "terminal_id": 361691,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 91,
+          "backward_milli": 692,
+          "exact_reconstruction": false,
+          "forward_milli": 864,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 91,
+            "keyboard_hits": 38,
+            "mass": 12177170,
+            "surface_hits": 53
+          },
+          "keyboard_hits": 38,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 777,
+          "rank": 4,
+          "reconstruction_modes": 0,
+          "sequence_milli": 821,
+          "settled_energy": 7431,
+          "structural_milli": 854,
+          "surface": "пропадать",
+          "surface_hits": 53,
+          "terminal_id": 364574,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 92,
+          "backward_milli": 653,
+          "exact_reconstruction": false,
+          "forward_milli": 879,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 92,
+            "keyboard_hits": 39,
+            "mass": 12391342,
+            "surface_hits": 53
+          },
+          "keyboard_hits": 39,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 777,
+          "rank": 5,
+          "reconstruction_modes": 0,
+          "sequence_milli": 821,
+          "settled_energy": 7410,
+          "structural_milli": 866,
+          "surface": "преподать",
+          "surface_hits": 53,
+          "terminal_id": 351636,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 89,
+          "backward_milli": 653,
+          "exact_reconstruction": false,
+          "forward_milli": 846,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 89,
+            "keyboard_hits": 37,
+            "mass": 11922866,
+            "surface_hits": 52
+          },
+          "keyboard_hits": 37,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 777,
+          "rank": 6,
+          "reconstruction_modes": 0,
+          "sequence_milli": 821,
+          "settled_energy": 7227,
+          "structural_milli": 838,
+          "surface": "прогадать",
+          "surface_hits": 52,
+          "terminal_id": 361195,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 89,
+          "backward_milli": 645,
+          "exact_reconstruction": false,
+          "forward_milli": 847,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 89,
+            "keyboard_hits": 37,
+            "mass": 11937230,
+            "surface_hits": 52
+          },
+          "keyboard_hits": 37,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 777,
+          "rank": 7,
+          "reconstruction_modes": 0,
+          "sequence_milli": 821,
+          "settled_energy": 7209,
+          "structural_milli": 838,
+          "surface": "проведать",
+          "surface_hits": 52,
+          "terminal_id": 360527,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 88,
+          "backward_milli": 656,
+          "exact_reconstruction": false,
+          "forward_milli": 836,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 88,
+            "keyboard_hits": 37,
+            "mass": 11789330,
+            "surface_hits": 51
+          },
+          "keyboard_hits": 37,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 777,
+          "rank": 8,
+          "reconstruction_modes": 0,
+          "sequence_milli": 821,
+          "settled_energy": 7157,
+          "structural_milli": 822,
+          "surface": "прорыдать",
+          "surface_hits": 51,
+          "terminal_id": 365453,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        }
+      ],
+      "top_terminals": [
+        361940,
+        361752,
+        361691,
+        364574,
+        351636,
+        361195,
+        360527,
+        365453
+      ]
+    },
+    {
+      "authority_terminal": null,
+      "class": "sparse_multi_omission",
+      "geometric_basin_terminals": 3,
+      "legacy_grounded_losses": [],
+      "mechanism": "unique_objective_not_rank1",
+      "objective_terminals": [
+        9317
+      ],
+      "scope": "damaged",
+      "surface": "акрбаов",
+      "target_rank": 3,
+      "target_surface": "акробатов",
+      "target_terminal": 9317,
+      "top_candidate_evidence": [
+        {
+          "atom_hits": 62,
+          "backward_milli": 559,
+          "exact_reconstruction": false,
+          "forward_milli": 821,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 62,
+            "keyboard_hits": 26,
+            "mass": 8262470,
+            "surface_hits": 36
+          },
+          "keyboard_hits": 26,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 714,
+          "rank": 1,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 6578,
+          "structural_milli": 800,
+          "surface": "акрилов",
+          "surface_hits": 36,
+          "terminal_id": 9230,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 66,
+          "backward_milli": 441,
+          "exact_reconstruction": false,
+          "forward_milli": 801,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 66,
+            "keyboard_hits": 30,
+            "mass": 8064908,
+            "surface_hits": 36
+          },
+          "keyboard_hits": 30,
+          "length_milli": 820,
+          "objective_member": false,
+          "position_milli": 0,
+          "rank": 2,
+          "reconstruction_modes": 2,
+          "sequence_milli": 750,
+          "settled_energy": 5982,
+          "structural_milli": 882,
+          "surface": "карбасов",
+          "surface_hits": 36,
+          "terminal_id": 171032,
+          "typed_certificate_classes": [
+            "omission_transposition"
+          ]
+        },
+        {
+          "atom_hits": 79,
+          "backward_milli": 540,
+          "exact_reconstruction": false,
+          "forward_milli": 1000,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 79,
+            "keyboard_hits": 34,
+            "mass": 10061174,
+            "surface_hits": 45
+          },
+          "keyboard_hits": 34,
+          "length_milli": 640,
+          "objective_member": true,
+          "position_milli": 0,
+          "rank": 3,
+          "reconstruction_modes": 1,
+          "sequence_milli": 1000,
+          "settled_energy": 7470,
+          "structural_milli": 1000,
+          "surface": "акробатов",
+          "surface_hits": 45,
+          "terminal_id": 9317,
+          "typed_certificate_classes": [
+            "sparse_multi_omission"
+          ]
+        }
+      ],
+      "top_terminals": [
+        9230,
+        171032,
+        9317
+      ]
+    },
+    {
+      "authority_terminal": null,
+      "class": "sparse_multi_omission",
+      "geometric_basin_terminals": 3,
+      "legacy_grounded_losses": [],
+      "mechanism": "unique_objective_not_rank1",
+      "objective_terminals": [
+        301733
+      ],
+      "scope": "damaged",
+      "surface": "паьец",
+      "target_rank": 2,
+      "target_surface": "пальтец",
+      "target_terminal": 301733,
+      "top_candidate_evidence": [
+        {
+          "atom_hits": 54,
+          "backward_milli": 580,
+          "exact_reconstruction": false,
+          "forward_milli": 1000,
+          "geometry_distance": 1,
+          "implicit_activation": {
+            "hits": 54,
+            "keyboard_hits": 24,
+            "mass": 6798992,
+            "surface_hits": 30
+          },
+          "keyboard_hits": 24,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 800,
+          "rank": 1,
+          "reconstruction_modes": 0,
+          "sequence_milli": 840,
+          "settled_energy": 8039,
+          "structural_milli": 1000,
+          "surface": "палец",
+          "surface_hits": 30,
+          "terminal_id": 301344,
+          "typed_certificate_classes": [
+            "letter_substitution"
+          ]
+        },
+        {
+          "atom_hits": 52,
+          "backward_milli": 402,
+          "exact_reconstruction": false,
+          "forward_milli": 967,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 52,
+            "keyboard_hits": 23,
+            "mass": 6579024,
+            "surface_hits": 29
+          },
+          "keyboard_hits": 23,
+          "length_milli": 640,
+          "objective_member": true,
+          "position_milli": 0,
+          "rank": 2,
+          "reconstruction_modes": 1,
+          "sequence_milli": 1000,
+          "settled_energy": 6905,
+          "structural_milli": 966,
+          "surface": "пальтец",
+          "surface_hits": 29,
+          "terminal_id": 301733,
+          "typed_certificate_classes": [
+            "sparse_multi_omission"
+          ]
+        },
+        {
+          "atom_hits": 43,
+          "backward_milli": 376,
+          "exact_reconstruction": false,
+          "forward_milli": 781,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 43,
+            "keyboard_hits": 20,
+            "mass": 5314916,
+            "surface_hits": 23
+          },
+          "keyboard_hits": 20,
+          "length_milli": 820,
+          "objective_member": false,
+          "position_milli": 0,
+          "rank": 3,
+          "reconstruction_modes": 2,
+          "sequence_milli": 886,
+          "settled_energy": 6011,
+          "structural_milli": 833,
+          "surface": "пальце",
+          "surface_hits": 23,
+          "terminal_id": 301757,
+          "typed_certificate_classes": [
+            "omission_transposition"
+          ]
+        },
+        {
+          "atom_hits": 38,
+          "backward_milli": 460,
+          "exact_reconstruction": false,
+          "forward_milli": 722,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 38,
+            "keyboard_hits": 17,
+            "mass": 4910726,
+            "surface_hits": 21
+          },
+          "keyboard_hits": 17,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 600,
+          "rank": 4,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 5744,
+          "structural_milli": 708,
+          "surface": "перец",
+          "surface_hits": 21,
+          "terminal_id": 315395,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 38,
+          "backward_milli": 455,
+          "exact_reconstruction": false,
+          "forward_milli": 722,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 38,
+            "keyboard_hits": 17,
+            "mass": 4910726,
+            "surface_hits": 21
+          },
+          "keyboard_hits": 17,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 600,
+          "rank": 5,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 5730,
+          "structural_milli": 708,
+          "surface": "песец",
+          "surface_hits": 21,
+          "terminal_id": 316948,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 38,
+          "backward_milli": 454,
+          "exact_reconstruction": false,
+          "forward_milli": 722,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 38,
+            "keyboard_hits": 17,
+            "mass": 4910726,
+            "surface_hits": 21
+          },
+          "keyboard_hits": 17,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 600,
+          "rank": 6,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 5728,
+          "structural_milli": 708,
+          "surface": "певец",
+          "surface_hits": 21,
+          "terminal_id": 307195,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 38,
+          "backward_milli": 446,
+          "exact_reconstruction": false,
+          "forward_milli": 705,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 38,
+            "keyboard_hits": 17,
+            "mass": 4795740,
+            "surface_hits": 21
+          },
+          "keyboard_hits": 17,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 600,
+          "rank": 7,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 5656,
+          "structural_milli": 708,
+          "surface": "пипец",
+          "surface_hits": 21,
+          "terminal_id": 319381,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 38,
+          "backward_milli": 399,
+          "exact_reconstruction": false,
+          "forward_milli": 700,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 38,
+            "keyboard_hits": 17,
+            "mass": 4763796,
+            "surface_hits": 21
+          },
+          "keyboard_hits": 17,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 600,
+          "rank": 8,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 5517,
+          "structural_milli": 708,
+          "surface": "проец",
+          "surface_hits": 21,
+          "terminal_id": 362327,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        }
+      ],
+      "top_terminals": [
+        301344,
+        301733,
+        301757,
+        315395,
+        316948,
+        307195,
+        319381,
+        362327
+      ]
+    },
+    {
+      "authority_terminal": null,
+      "class": "sparse_multi_omission",
+      "geometric_basin_terminals": 2,
+      "legacy_grounded_losses": [],
+      "mechanism": "unique_objective_not_rank1",
+      "objective_terminals": [
+        479988
+      ],
+      "scope": "damaged",
+      "surface": "упрчнеием",
+      "target_rank": 2,
+      "target_surface": "упрочнением",
+      "target_terminal": 479988,
+      "top_candidate_evidence": [
+        {
+          "atom_hits": 94,
+          "backward_milli": 572,
+          "exact_reconstruction": false,
+          "forward_milli": 938,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 94,
+            "keyboard_hits": 41,
+            "mass": 12553432,
+            "surface_hits": 53
+          },
+          "keyboard_hits": 41,
+          "length_milli": 820,
+          "objective_member": false,
+          "position_milli": 0,
+          "rank": 1,
+          "reconstruction_modes": 2,
+          "sequence_milli": 750,
+          "settled_energy": 6950,
+          "structural_milli": 953,
+          "surface": "упрочением",
+          "surface_hits": 53,
+          "terminal_id": 479968,
+          "typed_certificate_classes": [
+            "omission_transposition"
+          ]
+        },
+        {
+          "atom_hits": 102,
+          "backward_milli": 633,
+          "exact_reconstruction": false,
+          "forward_milli": 1000,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 102,
+            "keyboard_hits": 43,
+            "mass": 13380652,
+            "surface_hits": 59
+          },
+          "keyboard_hits": 43,
+          "length_milli": 640,
+          "objective_member": true,
+          "position_milli": 0,
+          "rank": 2,
+          "reconstruction_modes": 1,
+          "sequence_milli": 1000,
+          "settled_energy": 7714,
+          "structural_milli": 1000,
+          "surface": "упрочнением",
+          "surface_hits": 59,
+          "terminal_id": 479988,
+          "typed_certificate_classes": [
+            "sparse_multi_omission"
+          ]
+        }
+      ],
+      "top_terminals": [
+        479968,
+        479988
+      ]
+    },
+    {
+      "authority_terminal": null,
+      "class": "sparse_multi_omission",
+      "geometric_basin_terminals": 3,
+      "legacy_grounded_losses": [],
+      "mechanism": "unique_objective_not_rank1",
+      "objective_terminals": [
+        482190
+      ],
+      "scope": "damaged",
+      "surface": "усшою",
+      "target_rank": 2,
+      "target_surface": "усушкою",
+      "target_terminal": 482190,
+      "top_candidate_evidence": [
+        {
+          "atom_hits": 55,
+          "backward_milli": 609,
+          "exact_reconstruction": false,
+          "forward_milli": 936,
+          "geometry_distance": 1,
+          "implicit_activation": {
+            "hits": 55,
+            "keyboard_hits": 24,
+            "mass": 7156530,
+            "surface_hits": 31
+          },
+          "keyboard_hits": 24,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 800,
+          "rank": 1,
+          "reconstruction_modes": 0,
+          "sequence_milli": 840,
+          "settled_energy": 7741,
+          "structural_milli": 939,
+          "surface": "устою",
+          "surface_hits": 31,
+          "terminal_id": 481932,
+          "typed_certificate_classes": [
+            "letter_substitution"
+          ]
+        },
+        {
+          "atom_hits": 59,
+          "backward_milli": 475,
+          "exact_reconstruction": false,
+          "forward_milli": 1000,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 59,
+            "keyboard_hits": 26,
+            "mass": 7645774,
+            "surface_hits": 33
+          },
+          "keyboard_hits": 26,
+          "length_milli": 640,
+          "objective_member": true,
+          "position_milli": 0,
+          "rank": 2,
+          "reconstruction_modes": 1,
+          "sequence_milli": 1000,
+          "settled_energy": 7300,
+          "structural_milli": 1000,
+          "surface": "усушкою",
+          "surface_hits": 33,
+          "terminal_id": 482190,
+          "typed_certificate_classes": [
+            "sparse_multi_omission"
+          ]
+        },
+        {
+          "atom_hits": 46,
+          "backward_milli": 541,
+          "exact_reconstruction": false,
+          "forward_milli": 753,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 46,
+            "keyboard_hits": 20,
+            "mass": 5764726,
+            "surface_hits": 26
+          },
+          "keyboard_hits": 20,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 600,
+          "rank": 3,
+          "reconstruction_modes": 0,
+          "sequence_milli": 840,
+          "settled_energy": 6558,
+          "structural_milli": 787,
+          "surface": "душою",
+          "surface_hits": 26,
+          "terminal_id": 123546,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 43,
+          "backward_milli": 403,
+          "exact_reconstruction": false,
+          "forward_milli": 698,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 43,
+            "keyboard_hits": 20,
+            "mass": 5343776,
+            "surface_hits": 23
+          },
+          "keyboard_hits": 20,
+          "length_milli": 820,
+          "objective_member": false,
+          "position_milli": 0,
+          "rank": 4,
+          "reconstruction_modes": 2,
+          "sequence_milli": 886,
+          "settled_energy": 5642,
+          "structural_milli": 769,
+          "surface": "сушкою",
+          "surface_hits": 23,
+          "terminal_id": 448822,
+          "typed_certificate_classes": [
+            "omission_transposition"
+          ]
+        },
+        {
+          "atom_hits": 39,
+          "backward_milli": 414,
+          "exact_reconstruction": false,
+          "forward_milli": 663,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 39,
+            "keyboard_hits": 17,
+            "mass": 5069770,
+            "surface_hits": 22
+          },
+          "keyboard_hits": 17,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 600,
+          "rank": 5,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 5322,
+          "structural_milli": 666,
+          "surface": "устью",
+          "surface_hits": 22,
+          "terminal_id": 482139,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 38,
+          "backward_milli": 400,
+          "exact_reconstruction": false,
+          "forward_milli": 625,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 38,
+            "keyboard_hits": 17,
+            "mass": 4786024,
+            "surface_hits": 21
+          },
+          "keyboard_hits": 17,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 600,
+          "rank": 6,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 5132,
+          "structural_milli": 653,
+          "surface": "уткою",
+          "surface_hits": 21,
+          "terminal_id": 482724,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 38,
+          "backward_milli": 399,
+          "exact_reconstruction": false,
+          "forward_milli": 625,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 38,
+            "keyboard_hits": 17,
+            "mass": 4786024,
+            "surface_hits": 21
+          },
+          "keyboard_hits": 17,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 600,
+          "rank": 7,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 5127,
+          "structural_milli": 653,
+          "surface": "уркою",
+          "surface_hits": 21,
+          "terminal_id": 480606,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        },
+        {
+          "atom_hits": 38,
+          "backward_milli": 397,
+          "exact_reconstruction": false,
+          "forward_milli": 625,
+          "geometry_distance": 2,
+          "implicit_activation": {
+            "hits": 38,
+            "keyboard_hits": 17,
+            "mass": 4786024,
+            "surface_hits": 21
+          },
+          "keyboard_hits": 17,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 600,
+          "rank": 8,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 5122,
+          "structural_milli": 653,
+          "surface": "урною",
+          "surface_hits": 21,
+          "terminal_id": 480628,
+          "typed_certificate_classes": [
+            "double_substitution"
+          ]
+        }
+      ],
+      "top_terminals": [
+        481932,
+        482190,
+        123546,
+        448822,
+        482139,
+        482724,
+        480606,
+        480628
+      ]
+    },
+    {
+      "authority_terminal": null,
+      "class": "suffix_truncation",
+      "geometric_basin_terminals": 6,
+      "legacy_grounded_losses": [],
+      "mechanism": "unique_objective_not_rank1",
+      "objective_terminals": [
+        67962
+      ],
+      "scope": "damaged",
+      "surface": "волдырё",
+      "target_rank": 2,
+      "target_surface": "волдырём",
+      "target_terminal": 67962,
+      "top_candidate_evidence": [
+        {
+          "atom_hits": 84,
+          "backward_milli": 732,
+          "exact_reconstruction": false,
+          "forward_milli": 891,
+          "geometry_distance": 1,
+          "implicit_activation": {
+            "hits": 84,
+            "keyboard_hits": 36,
+            "mass": 11195732,
+            "surface_hits": 48
+          },
+          "keyboard_hits": 36,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 857,
+          "rank": 1,
+          "reconstruction_modes": 32,
+          "sequence_milli": 750,
+          "settled_energy": 7413,
+          "structural_milli": 857,
+          "surface": "волдыре",
+          "surface_hits": 48,
+          "terminal_id": 67943,
+          "typed_certificate_classes": [
+            "letter_substitution"
+          ]
+        },
+        {
+          "atom_hits": 98,
+          "backward_milli": 713,
+          "exact_reconstruction": false,
+          "forward_milli": 1000,
+          "geometry_distance": 1,
+          "implicit_activation": {
+            "hits": 98,
+            "keyboard_hits": 42,
+            "mass": 12560224,
+            "surface_hits": 56
+          },
+          "keyboard_hits": 42,
+          "length_milli": 820,
+          "objective_member": true,
+          "position_milli": 0,
+          "rank": 2,
+          "reconstruction_modes": 4,
+          "sequence_milli": 1000,
+          "settled_energy": 8397,
+          "structural_milli": 1000,
+          "surface": "волдырём",
+          "surface_hits": 56,
+          "terminal_id": 67962,
+          "typed_certificate_classes": [
+            "suffix_truncation"
+          ]
+        },
+        {
+          "atom_hits": 85,
+          "backward_milli": 743,
+          "exact_reconstruction": false,
+          "forward_milli": 901,
+          "geometry_distance": 1,
+          "implicit_activation": {
+            "hits": 85,
+            "keyboard_hits": 36,
+            "mass": 11326292,
+            "surface_hits": 49
+          },
+          "keyboard_hits": 36,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 857,
+          "rank": 3,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 7526,
+          "structural_milli": 875,
+          "surface": "волдырь",
+          "surface_hits": 49,
+          "terminal_id": 67956,
+          "typed_certificate_classes": [
+            "letter_substitution"
+          ]
+        },
+        {
+          "atom_hits": 85,
+          "backward_milli": 743,
+          "exact_reconstruction": false,
+          "forward_milli": 901,
+          "geometry_distance": 1,
+          "implicit_activation": {
+            "hits": 85,
+            "keyboard_hits": 36,
+            "mass": 11326292,
+            "surface_hits": 49
+          },
+          "keyboard_hits": 36,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 857,
+          "rank": 4,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 7526,
+          "structural_milli": 875,
+          "surface": "волдыря",
+          "surface_hits": 49,
+          "terminal_id": 67958,
+          "typed_certificate_classes": [
+            "letter_substitution"
+          ]
+        },
+        {
+          "atom_hits": 85,
+          "backward_milli": 732,
+          "exact_reconstruction": false,
+          "forward_milli": 901,
+          "geometry_distance": 1,
+          "implicit_activation": {
+            "hits": 85,
+            "keyboard_hits": 36,
+            "mass": 11326292,
+            "surface_hits": 49
+          },
+          "keyboard_hits": 36,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 857,
+          "rank": 5,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 7497,
+          "structural_milli": 875,
+          "surface": "волдырю",
+          "surface_hits": 49,
+          "terminal_id": 67957,
+          "typed_certificate_classes": [
+            "letter_substitution"
+          ]
+        },
+        {
+          "atom_hits": 84,
+          "backward_milli": 732,
+          "exact_reconstruction": false,
+          "forward_milli": 891,
+          "geometry_distance": 1,
+          "implicit_activation": {
+            "hits": 84,
+            "keyboard_hits": 36,
+            "mass": 11195732,
+            "surface_hits": 48
+          },
+          "keyboard_hits": 36,
+          "length_milli": 1000,
+          "objective_member": false,
+          "position_milli": 857,
+          "rank": 6,
+          "reconstruction_modes": 0,
+          "sequence_milli": 750,
+          "settled_energy": 7413,
+          "structural_milli": 857,
+          "surface": "волдыри",
+          "surface_hits": 48,
+          "terminal_id": 67945,
+          "typed_certificate_classes": [
+            "letter_substitution"
+          ]
+        }
+      ],
+      "top_terminals": [
+        67943,
+        67962,
+        67956,
+        67958,
+        67957,
+        67945
+      ]
+    }
+  ],
+  "embedded_a2_prerequisite": {
+    "aggregate": {
+      "candidate_permutation_parity": 13,
+      "cases": 13,
+      "implicit_relations": 25618,
+      "implicit_target_retained": 13,
+      "maximum_typed_queue": 3857,
+      "maximum_typed_terminal_ids": 145,
+      "nonlinear_settlement": {
+        "cases": 13,
+        "compiler_exact": {
+          "candidate_state_and_order_parity": 13,
+          "compiler_phase_evidence_noop": 13,
+          "compiler_reference_permutation_parity": 13,
+          "compiler_reference_relations": 27728,
+          "complete_max_forward": 13,
+          "exact_permutation_parity": 13,
+          "exact_phase_evidence_noop": 13,
+          "exact_reverse_relations": 27728,
+          "false_completeness_certificates": 0,
+          "pass": true,
+          "readout_parity": 13,
+          "reverse_mismatches": 0,
+          "reverse_terminals": 288
+        },
+        "current_v8_fingerprint": {
+          "candidate_difference_cases": 11,
+          "candidate_state_and_order_parity_vs_exact": 2,
+          "internal_permutation_parity": 13,
+          "phase_evidence_noop": 13,
+          "readout_difference_cases": 8,
+          "readout_parity_vs_exact": 5,
+          "reverse_difference_cases": 13,
+          "reverse_mismatches_vs_exact": 17947,
+          "reverse_relations": 27728,
+          "scope": "compatibility_observation_not_a2_gate"
+        },
+        "executed": 13,
+        "timing": {
+          "compiler_reference_us_max": 965,
+          "compiler_reference_us_p99": 758,
+          "current_v8_us_max": 926,
+          "current_v8_us_p99": 757,
+          "exact_us_max": 1059,
+          "exact_us_p50": 311,
+          "exact_us_p99": 813,
+          "scope": "proof_only_settlement_not_product_hot_p99"
+        }
+      },
+      "relation_parity": {
+        "activation_hits_mismatches": 0,
+        "activation_keyboard_hits_mismatches": 0,
+        "activation_mass_mismatches": 0,
+        "activation_surface_hits_mismatches": 0,
+        "candidates_compared": 288,
+        "canonical_relations_expected": 25618,
+        "canonical_relations_missing_from_v8": 0,
+        "implicit_relations_compared": 25618,
+        "implicit_relations_missing_from_v8": 0,
+        "implicit_relations_outside_canonical_surface": 0,
+        "relation_state_mismatches": 0,
+        "v8_relations_missing_implicitly": 0
+      },
+      "target_retained": 13,
+      "timing": {
+        "combined_us_max": 3936,
+        "combined_us_p50": 1731,
+        "combined_us_p95": 2501,
+        "combined_us_p99": 2501,
+        "implicit_us_max": 1717,
+        "implicit_us_p50": 92,
+        "implicit_us_p95": 1153,
+        "implicit_us_p99": 1153,
+        "oracle_us_max": 117943,
+        "oracle_us_p99": 91376,
+        "typed_us_max": 2219,
+        "typed_us_p50": 1501,
+        "typed_us_p95": 2108,
+        "typed_us_p99": 2108
+      },
+      "typed_states_expanded": 102663,
+      "typed_terminal_ids": 288
+    },
+    "artifact": {
+      "atoms": 218763,
+      "centers": 852582,
+      "compact_base_bytes": 77960560,
+      "corpus": "/home/e/build/lay-l1-shadow/artifacts/l11-l2-global-compaction-2026-07-30/corpus-852582.txt",
+      "package": "/home/e/build/lay-l1-shadow/artifacts/l11-l2-global-compaction-2026-07-30/package.v8.bin",
+      "package_bytes": 190139182,
+      "package_bytes_unchanged": true,
+      "package_sha256_after": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+      "package_sha256_before": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9"
+    },
+    "claim_boundary": {
+      "full_quality_claimed": false,
+      "full_quality_matrix_tested": false,
+      "implicit_forward_state_tested": true,
+      "installed_runtime_changed": false,
+      "nonlinear_settlement_tested": true,
+      "physical_package_roundtrip_tested": false,
+      "runtime_authority_changed": false,
+      "runtime_latency_claimed": false,
+      "typed_restoration_admission_tested": true
+    },
+    "classes": {
+      "adjacent_transposition": {
+        "candidate_permutation_parity": 1,
+        "cases": 1,
+        "implicit_relations": 167,
+        "implicit_target_retained": 1,
+        "maximum_typed_queue": 3358,
+        "maximum_typed_terminal_ids": 1,
+        "nonlinear_settlement": {
+          "cases": 1,
+          "compiler_exact": {
+            "candidate_state_and_order_parity": 1,
+            "compiler_phase_evidence_noop": 1,
+            "compiler_reference_permutation_parity": 1,
+            "compiler_reference_relations": 108,
+            "complete_max_forward": 1,
+            "exact_permutation_parity": 1,
+            "exact_phase_evidence_noop": 1,
+            "exact_reverse_relations": 108,
+            "false_completeness_certificates": 0,
+            "pass": true,
+            "readout_parity": 1,
+            "reverse_mismatches": 0,
+            "reverse_terminals": 1
+          },
+          "current_v8_fingerprint": {
+            "candidate_difference_cases": 1,
+            "candidate_state_and_order_parity_vs_exact": 0,
+            "internal_permutation_parity": 1,
+            "phase_evidence_noop": 1,
+            "readout_difference_cases": 1,
+            "readout_parity_vs_exact": 0,
+            "reverse_difference_cases": 1,
+            "reverse_mismatches_vs_exact": 37,
+            "reverse_relations": 108,
+            "scope": "compatibility_observation_not_a2_gate"
+          },
+          "executed": 1,
+          "timing": {
+            "compiler_reference_us_max": 266,
+            "compiler_reference_us_p99": 266,
+            "current_v8_us_max": 262,
+            "current_v8_us_p99": 262,
+            "exact_us_max": 299,
+            "exact_us_p50": 299,
+            "exact_us_p99": 299,
+            "scope": "proof_only_settlement_not_product_hot_p99"
+          }
+        },
+        "relation_parity": {
+          "activation_hits_mismatches": 0,
+          "activation_keyboard_hits_mismatches": 0,
+          "activation_mass_mismatches": 0,
+          "activation_surface_hits_mismatches": 0,
+          "candidates_compared": 1,
+          "canonical_relations_expected": 167,
+          "canonical_relations_missing_from_v8": 0,
+          "implicit_relations_compared": 167,
+          "implicit_relations_missing_from_v8": 0,
+          "implicit_relations_outside_canonical_surface": 0,
+          "relation_state_mismatches": 0,
+          "v8_relations_missing_implicitly": 0
+        },
+        "target_retained": 1,
+        "timing": {
+          "combined_us_max": 1629,
+          "combined_us_p50": 1629,
+          "combined_us_p95": 1629,
+          "combined_us_p99": 1629,
+          "implicit_us_max": 92,
+          "implicit_us_p50": 92,
+          "implicit_us_p95": 92,
+          "implicit_us_p99": 92,
+          "oracle_us_max": 54807,
+          "oracle_us_p99": 54807,
+          "typed_us_max": 1537,
+          "typed_us_p50": 1537,
+          "typed_us_p95": 1537,
+          "typed_us_p99": 1537
+        },
+        "typed_states_expanded": 8139,
+        "typed_terminal_ids": 1
+      },
+      "double_substitution": {
+        "candidate_permutation_parity": 1,
+        "cases": 1,
+        "implicit_relations": 127,
+        "implicit_target_retained": 1,
+        "maximum_typed_queue": 3310,
+        "maximum_typed_terminal_ids": 1,
+        "nonlinear_settlement": {
+          "cases": 1,
+          "compiler_exact": {
+            "candidate_state_and_order_parity": 1,
+            "compiler_phase_evidence_noop": 1,
+            "compiler_reference_permutation_parity": 1,
+            "compiler_reference_relations": 104,
+            "complete_max_forward": 1,
+            "exact_permutation_parity": 1,
+            "exact_phase_evidence_noop": 1,
+            "exact_reverse_relations": 104,
+            "false_completeness_certificates": 0,
+            "pass": true,
+            "readout_parity": 1,
+            "reverse_mismatches": 0,
+            "reverse_terminals": 1
+          },
+          "current_v8_fingerprint": {
+            "candidate_difference_cases": 1,
+            "candidate_state_and_order_parity_vs_exact": 0,
+            "internal_permutation_parity": 1,
+            "phase_evidence_noop": 1,
+            "readout_difference_cases": 1,
+            "readout_parity_vs_exact": 0,
+            "reverse_difference_cases": 1,
+            "reverse_mismatches_vs_exact": 55,
+            "reverse_relations": 104,
+            "scope": "compatibility_observation_not_a2_gate"
+          },
+          "executed": 1,
+          "timing": {
+            "compiler_reference_us_max": 189,
+            "compiler_reference_us_p99": 189,
+            "current_v8_us_max": 185,
+            "current_v8_us_p99": 185,
+            "exact_us_max": 223,
+            "exact_us_p50": 223,
+            "exact_us_p99": 223,
+            "scope": "proof_only_settlement_not_product_hot_p99"
+          }
+        },
+        "relation_parity": {
+          "activation_hits_mismatches": 0,
+          "activation_keyboard_hits_mismatches": 0,
+          "activation_mass_mismatches": 0,
+          "activation_surface_hits_mismatches": 0,
+          "candidates_compared": 1,
+          "canonical_relations_expected": 127,
+          "canonical_relations_missing_from_v8": 0,
+          "implicit_relations_compared": 127,
+          "implicit_relations_missing_from_v8": 0,
+          "implicit_relations_outside_canonical_surface": 0,
+          "relation_state_mismatches": 0,
+          "v8_relations_missing_implicitly": 0
+        },
+        "target_retained": 1,
+        "timing": {
+          "combined_us_max": 1185,
+          "combined_us_p50": 1185,
+          "combined_us_p95": 1185,
+          "combined_us_p99": 1185,
+          "implicit_us_max": 64,
+          "implicit_us_p50": 64,
+          "implicit_us_p95": 64,
+          "implicit_us_p99": 64,
+          "oracle_us_max": 36067,
+          "oracle_us_p99": 36067,
+          "typed_us_max": 1121,
+          "typed_us_p50": 1121,
+          "typed_us_p95": 1121,
+          "typed_us_p99": 1121
+        },
+        "typed_states_expanded": 5808,
+        "typed_terminal_ids": 1
+      },
+      "extra_letter": {
+        "candidate_permutation_parity": 1,
+        "cases": 1,
+        "implicit_relations": 184,
+        "implicit_target_retained": 1,
+        "maximum_typed_queue": 3376,
+        "maximum_typed_terminal_ids": 1,
+        "nonlinear_settlement": {
+          "cases": 1,
+          "compiler_exact": {
+            "candidate_state_and_order_parity": 1,
+            "compiler_phase_evidence_noop": 1,
+            "compiler_reference_permutation_parity": 1,
+            "compiler_reference_relations": 111,
+            "complete_max_forward": 1,
+            "exact_permutation_parity": 1,
+            "exact_phase_evidence_noop": 1,
+            "exact_reverse_relations": 111,
+            "false_completeness_certificates": 0,
+            "pass": true,
+            "readout_parity": 1,
+            "reverse_mismatches": 0,
+            "reverse_terminals": 1
+          },
+          "current_v8_fingerprint": {
+            "candidate_difference_cases": 0,
+            "candidate_state_and_order_parity_vs_exact": 1,
+            "internal_permutation_parity": 1,
+            "phase_evidence_noop": 1,
+            "readout_difference_cases": 0,
+            "readout_parity_vs_exact": 1,
+            "reverse_difference_cases": 1,
+            "reverse_mismatches_vs_exact": 34,
+            "reverse_relations": 111,
+            "scope": "compatibility_observation_not_a2_gate"
+          },
+          "executed": 1,
+          "timing": {
+            "compiler_reference_us_max": 292,
+            "compiler_reference_us_p99": 292,
+            "current_v8_us_max": 286,
+            "current_v8_us_p99": 286,
+            "exact_us_max": 330,
+            "exact_us_p50": 330,
+            "exact_us_p99": 330,
+            "scope": "proof_only_settlement_not_product_hot_p99"
+          }
+        },
+        "relation_parity": {
+          "activation_hits_mismatches": 0,
+          "activation_keyboard_hits_mismatches": 0,
+          "activation_mass_mismatches": 0,
+          "activation_surface_hits_mismatches": 0,
+          "candidates_compared": 1,
+          "canonical_relations_expected": 184,
+          "canonical_relations_missing_from_v8": 0,
+          "implicit_relations_compared": 184,
+          "implicit_relations_missing_from_v8": 0,
+          "implicit_relations_outside_canonical_surface": 0,
+          "relation_state_mismatches": 0,
+          "v8_relations_missing_implicitly": 0
+        },
+        "target_retained": 1,
+        "timing": {
+          "combined_us_max": 1819,
+          "combined_us_p50": 1819,
+          "combined_us_p95": 1819,
+          "combined_us_p99": 1819,
+          "implicit_us_max": 87,
+          "implicit_us_p50": 87,
+          "implicit_us_p95": 87,
+          "implicit_us_p99": 87,
+          "oracle_us_max": 40160,
+          "oracle_us_p99": 40160,
+          "typed_us_max": 1732,
+          "typed_us_p50": 1732,
+          "typed_us_p95": 1732,
+          "typed_us_p99": 1732
+        },
+        "typed_states_expanded": 8905,
+        "typed_terminal_ids": 1
+      },
+      "layout_projection": {
+        "candidate_permutation_parity": 1,
+        "cases": 1,
+        "implicit_relations": 184,
+        "implicit_target_retained": 1,
+        "maximum_typed_queue": 3376,
+        "maximum_typed_terminal_ids": 1,
+        "nonlinear_settlement": {
+          "cases": 1,
+          "compiler_exact": {
+            "candidate_state_and_order_parity": 1,
+            "compiler_phase_evidence_noop": 1,
+            "compiler_reference_permutation_parity": 1,
+            "compiler_reference_relations": 110,
+            "complete_max_forward": 1,
+            "exact_permutation_parity": 1,
+            "exact_phase_evidence_noop": 1,
+            "exact_reverse_relations": 110,
+            "false_completeness_certificates": 0,
+            "pass": true,
+            "readout_parity": 1,
+            "reverse_mismatches": 0,
+            "reverse_terminals": 1
+          },
+          "current_v8_fingerprint": {
+            "candidate_difference_cases": 1,
+            "candidate_state_and_order_parity_vs_exact": 0,
+            "internal_permutation_parity": 1,
+            "phase_evidence_noop": 1,
+            "readout_difference_cases": 1,
+            "readout_parity_vs_exact": 0,
+            "reverse_difference_cases": 1,
+            "reverse_mismatches_vs_exact": 32,
+            "reverse_relations": 110,
+            "scope": "compatibility_observation_not_a2_gate"
+          },
+          "executed": 1,
+          "timing": {
+            "compiler_reference_us_max": 247,
+            "compiler_reference_us_p99": 247,
+            "current_v8_us_max": 247,
+            "current_v8_us_p99": 247,
+            "exact_us_max": 290,
+            "exact_us_p50": 290,
+            "exact_us_p99": 290,
+            "scope": "proof_only_settlement_not_product_hot_p99"
+          }
+        },
+        "relation_parity": {
+          "activation_hits_mismatches": 0,
+          "activation_keyboard_hits_mismatches": 0,
+          "activation_mass_mismatches": 0,
+          "activation_surface_hits_mismatches": 0,
+          "candidates_compared": 1,
+          "canonical_relations_expected": 184,
+          "canonical_relations_missing_from_v8": 0,
+          "implicit_relations_compared": 184,
+          "implicit_relations_missing_from_v8": 0,
+          "implicit_relations_outside_canonical_surface": 0,
+          "relation_state_mismatches": 0,
+          "v8_relations_missing_implicitly": 0
+        },
+        "target_retained": 1,
+        "timing": {
+          "combined_us_max": 1612,
+          "combined_us_p50": 1612,
+          "combined_us_p95": 1612,
+          "combined_us_p99": 1612,
+          "implicit_us_max": 92,
+          "implicit_us_p50": 92,
+          "implicit_us_p95": 92,
+          "implicit_us_p99": 92,
+          "oracle_us_max": 45835,
+          "oracle_us_p99": 45835,
+          "typed_us_max": 1520,
+          "typed_us_p50": 1520,
+          "typed_us_p95": 1520,
+          "typed_us_p99": 1520
+        },
+        "typed_states_expanded": 7521,
+        "typed_terminal_ids": 1
+      },
+      "letter_substitution": {
+        "candidate_permutation_parity": 1,
+        "cases": 1,
+        "implicit_relations": 2378,
+        "implicit_target_retained": 1,
+        "maximum_typed_queue": 3320,
+        "maximum_typed_terminal_ids": 26,
+        "nonlinear_settlement": {
+          "cases": 1,
+          "compiler_exact": {
+            "candidate_state_and_order_parity": 1,
+            "compiler_phase_evidence_noop": 1,
+            "compiler_reference_permutation_parity": 1,
+            "compiler_reference_relations": 2652,
+            "complete_max_forward": 1,
+            "exact_permutation_parity": 1,
+            "exact_phase_evidence_noop": 1,
+            "exact_reverse_relations": 2652,
+            "false_completeness_certificates": 0,
+            "pass": true,
+            "readout_parity": 1,
+            "reverse_mismatches": 0,
+            "reverse_terminals": 26
+          },
+          "current_v8_fingerprint": {
+            "candidate_difference_cases": 1,
+            "candidate_state_and_order_parity_vs_exact": 0,
+            "internal_permutation_parity": 1,
+            "phase_evidence_noop": 1,
+            "readout_difference_cases": 1,
+            "readout_parity_vs_exact": 0,
+            "reverse_difference_cases": 1,
+            "reverse_mismatches_vs_exact": 1809,
+            "reverse_relations": 2652,
+            "scope": "compatibility_observation_not_a2_gate"
+          },
+          "executed": 1,
+          "timing": {
+            "compiler_reference_us_max": 281,
+            "compiler_reference_us_p99": 281,
+            "current_v8_us_max": 281,
+            "current_v8_us_p99": 281,
+            "exact_us_max": 340,
+            "exact_us_p50": 340,
+            "exact_us_p99": 340,
+            "scope": "proof_only_settlement_not_product_hot_p99"
+          }
+        },
+        "relation_parity": {
+          "activation_hits_mismatches": 0,
+          "activation_keyboard_hits_mismatches": 0,
+          "activation_mass_mismatches": 0,
+          "activation_surface_hits_mismatches": 0,
+          "candidates_compared": 26,
+          "canonical_relations_expected": 2378,
+          "canonical_relations_missing_from_v8": 0,
+          "implicit_relations_compared": 2378,
+          "implicit_relations_missing_from_v8": 0,
+          "implicit_relations_outside_canonical_surface": 0,
+          "relation_state_mismatches": 0,
+          "v8_relations_missing_implicitly": 0
+        },
+        "target_retained": 1,
+        "timing": {
+          "combined_us_max": 1900,
+          "combined_us_p50": 1900,
+          "combined_us_p95": 1900,
+          "combined_us_p99": 1900,
+          "implicit_us_max": 428,
+          "implicit_us_p50": 428,
+          "implicit_us_p95": 428,
+          "implicit_us_p99": 428,
+          "oracle_us_max": 65162,
+          "oracle_us_p99": 65162,
+          "typed_us_max": 1472,
+          "typed_us_p50": 1472,
+          "typed_us_p95": 1472,
+          "typed_us_p99": 1472
+        },
+        "typed_states_expanded": 7512,
+        "typed_terminal_ids": 26
+      },
+      "missing_letter": {
+        "candidate_permutation_parity": 1,
+        "cases": 1,
+        "implicit_relations": 489,
+        "implicit_target_retained": 1,
+        "maximum_typed_queue": 3325,
+        "maximum_typed_terminal_ids": 3,
+        "nonlinear_settlement": {
+          "cases": 1,
+          "compiler_exact": {
+            "candidate_state_and_order_parity": 1,
+            "compiler_phase_evidence_noop": 1,
+            "compiler_reference_permutation_parity": 1,
+            "compiler_reference_relations": 322,
+            "complete_max_forward": 1,
+            "exact_permutation_parity": 1,
+            "exact_phase_evidence_noop": 1,
+            "exact_reverse_relations": 322,
+            "false_completeness_certificates": 0,
+            "pass": true,
+            "readout_parity": 1,
+            "reverse_mismatches": 0,
+            "reverse_terminals": 3
+          },
+          "current_v8_fingerprint": {
+            "candidate_difference_cases": 1,
+            "candidate_state_and_order_parity_vs_exact": 0,
+            "internal_permutation_parity": 1,
+            "phase_evidence_noop": 1,
+            "readout_difference_cases": 0,
+            "readout_parity_vs_exact": 1,
+            "reverse_difference_cases": 1,
+            "reverse_mismatches_vs_exact": 126,
+            "reverse_relations": 322,
+            "scope": "compatibility_observation_not_a2_gate"
+          },
+          "executed": 1,
+          "timing": {
+            "compiler_reference_us_max": 270,
+            "compiler_reference_us_p99": 270,
+            "current_v8_us_max": 271,
+            "current_v8_us_p99": 271,
+            "exact_us_max": 311,
+            "exact_us_p50": 311,
+            "exact_us_p99": 311,
+            "scope": "proof_only_settlement_not_product_hot_p99"
+          }
+        },
+        "relation_parity": {
+          "activation_hits_mismatches": 0,
+          "activation_keyboard_hits_mismatches": 0,
+          "activation_mass_mismatches": 0,
+          "activation_surface_hits_mismatches": 0,
+          "candidates_compared": 3,
+          "canonical_relations_expected": 489,
+          "canonical_relations_missing_from_v8": 0,
+          "implicit_relations_compared": 489,
+          "implicit_relations_missing_from_v8": 0,
+          "implicit_relations_outside_canonical_surface": 0,
+          "relation_state_mismatches": 0,
+          "v8_relations_missing_implicitly": 0
+        },
+        "target_retained": 1,
+        "timing": {
+          "combined_us_max": 1572,
+          "combined_us_p50": 1572,
+          "combined_us_p95": 1572,
+          "combined_us_p99": 1572,
+          "implicit_us_max": 144,
+          "implicit_us_p50": 144,
+          "implicit_us_p95": 144,
+          "implicit_us_p99": 144,
+          "oracle_us_max": 50782,
+          "oracle_us_p99": 50782,
+          "typed_us_max": 1428,
+          "typed_us_p50": 1428,
+          "typed_us_p95": 1428,
+          "typed_us_p99": 1428
+        },
+        "typed_states_expanded": 7447,
+        "typed_terminal_ids": 3
+      },
+      "non_adjacent_transposition": {
+        "candidate_permutation_parity": 1,
+        "cases": 1,
+        "implicit_relations": 137,
+        "implicit_target_retained": 1,
+        "maximum_typed_queue": 3346,
+        "maximum_typed_terminal_ids": 1,
+        "nonlinear_settlement": {
+          "cases": 1,
+          "compiler_exact": {
+            "candidate_state_and_order_parity": 1,
+            "compiler_phase_evidence_noop": 1,
+            "compiler_reference_permutation_parity": 1,
+            "compiler_reference_relations": 105,
+            "complete_max_forward": 1,
+            "exact_permutation_parity": 1,
+            "exact_phase_evidence_noop": 1,
+            "exact_reverse_relations": 105,
+            "false_completeness_certificates": 0,
+            "pass": true,
+            "readout_parity": 1,
+            "reverse_mismatches": 0,
+            "reverse_terminals": 1
+          },
+          "current_v8_fingerprint": {
+            "candidate_difference_cases": 1,
+            "candidate_state_and_order_parity_vs_exact": 0,
+            "internal_permutation_parity": 1,
+            "phase_evidence_noop": 1,
+            "readout_difference_cases": 1,
+            "readout_parity_vs_exact": 0,
+            "reverse_difference_cases": 1,
+            "reverse_mismatches_vs_exact": 53,
+            "reverse_relations": 105,
+            "scope": "compatibility_observation_not_a2_gate"
+          },
+          "executed": 1,
+          "timing": {
+            "compiler_reference_us_max": 216,
+            "compiler_reference_us_p99": 216,
+            "current_v8_us_max": 216,
+            "current_v8_us_p99": 216,
+            "exact_us_max": 247,
+            "exact_us_p50": 247,
+            "exact_us_p99": 247,
+            "scope": "proof_only_settlement_not_product_hot_p99"
+          }
+        },
+        "relation_parity": {
+          "activation_hits_mismatches": 0,
+          "activation_keyboard_hits_mismatches": 0,
+          "activation_mass_mismatches": 0,
+          "activation_surface_hits_mismatches": 0,
+          "candidates_compared": 1,
+          "canonical_relations_expected": 137,
+          "canonical_relations_missing_from_v8": 0,
+          "implicit_relations_compared": 137,
+          "implicit_relations_missing_from_v8": 0,
+          "implicit_relations_outside_canonical_surface": 0,
+          "relation_state_mismatches": 0,
+          "v8_relations_missing_implicitly": 0
+        },
+        "target_retained": 1,
+        "timing": {
+          "combined_us_max": 1568,
+          "combined_us_p50": 1568,
+          "combined_us_p95": 1568,
+          "combined_us_p99": 1568,
+          "implicit_us_max": 67,
+          "implicit_us_p50": 67,
+          "implicit_us_p95": 67,
+          "implicit_us_p99": 67,
+          "oracle_us_max": 38288,
+          "oracle_us_p99": 38288,
+          "typed_us_max": 1501,
+          "typed_us_p50": 1501,
+          "typed_us_p95": 1501,
+          "typed_us_p99": 1501
+        },
+        "typed_states_expanded": 7775,
+        "typed_terminal_ids": 1
+      },
+      "omission_transposition": {
+        "candidate_permutation_parity": 1,
+        "cases": 1,
+        "implicit_relations": 8058,
+        "implicit_target_retained": 1,
+        "maximum_typed_queue": 3361,
+        "maximum_typed_terminal_ids": 95,
+        "nonlinear_settlement": {
+          "cases": 1,
+          "compiler_exact": {
+            "candidate_state_and_order_parity": 1,
+            "compiler_phase_evidence_noop": 1,
+            "compiler_reference_permutation_parity": 1,
+            "compiler_reference_relations": 9308,
+            "complete_max_forward": 1,
+            "exact_permutation_parity": 1,
+            "exact_phase_evidence_noop": 1,
+            "exact_reverse_relations": 9308,
+            "false_completeness_certificates": 0,
+            "pass": true,
+            "readout_parity": 1,
+            "reverse_mismatches": 0,
+            "reverse_terminals": 95
+          },
+          "current_v8_fingerprint": {
+            "candidate_difference_cases": 1,
+            "candidate_state_and_order_parity_vs_exact": 0,
+            "internal_permutation_parity": 1,
+            "phase_evidence_noop": 1,
+            "readout_difference_cases": 1,
+            "readout_parity_vs_exact": 0,
+            "reverse_difference_cases": 1,
+            "reverse_mismatches_vs_exact": 6205,
+            "reverse_relations": 9308,
+            "scope": "compatibility_observation_not_a2_gate"
+          },
+          "executed": 1,
+          "timing": {
+            "compiler_reference_us_max": 758,
+            "compiler_reference_us_p99": 758,
+            "current_v8_us_max": 757,
+            "current_v8_us_p99": 757,
+            "exact_us_max": 813,
+            "exact_us_p50": 813,
+            "exact_us_p99": 813,
+            "scope": "proof_only_settlement_not_product_hot_p99"
+          }
+        },
+        "relation_parity": {
+          "activation_hits_mismatches": 0,
+          "activation_keyboard_hits_mismatches": 0,
+          "activation_mass_mismatches": 0,
+          "activation_surface_hits_mismatches": 0,
+          "candidates_compared": 95,
+          "canonical_relations_expected": 8058,
+          "canonical_relations_missing_from_v8": 0,
+          "implicit_relations_compared": 8058,
+          "implicit_relations_missing_from_v8": 0,
+          "implicit_relations_outside_canonical_surface": 0,
+          "relation_state_mismatches": 0,
+          "v8_relations_missing_implicitly": 0
+        },
+        "target_retained": 1,
+        "timing": {
+          "combined_us_max": 2501,
+          "combined_us_p50": 2501,
+          "combined_us_p95": 2501,
+          "combined_us_p99": 2501,
+          "implicit_us_max": 1153,
+          "implicit_us_p50": 1153,
+          "implicit_us_p95": 1153,
+          "implicit_us_p99": 1153,
+          "oracle_us_max": 117943,
+          "oracle_us_p99": 117943,
+          "typed_us_max": 1348,
+          "typed_us_p50": 1348,
+          "typed_us_p95": 1348,
+          "typed_us_p99": 1348
+        },
+        "typed_states_expanded": 7023,
+        "typed_terminal_ids": 95
+      },
+      "prefix_truncation": {
+        "candidate_permutation_parity": 1,
+        "cases": 1,
+        "implicit_relations": 161,
+        "implicit_target_retained": 1,
+        "maximum_typed_queue": 3351,
+        "maximum_typed_terminal_ids": 1,
+        "nonlinear_settlement": {
+          "cases": 1,
+          "compiler_exact": {
+            "candidate_state_and_order_parity": 1,
+            "compiler_phase_evidence_noop": 1,
+            "compiler_reference_permutation_parity": 1,
+            "compiler_reference_relations": 107,
+            "complete_max_forward": 1,
+            "exact_permutation_parity": 1,
+            "exact_phase_evidence_noop": 1,
+            "exact_reverse_relations": 107,
+            "false_completeness_certificates": 0,
+            "pass": true,
+            "readout_parity": 1,
+            "reverse_mismatches": 0,
+            "reverse_terminals": 1
+          },
+          "current_v8_fingerprint": {
+            "candidate_difference_cases": 1,
+            "candidate_state_and_order_parity_vs_exact": 0,
+            "internal_permutation_parity": 1,
+            "phase_evidence_noop": 1,
+            "readout_difference_cases": 1,
+            "readout_parity_vs_exact": 0,
+            "reverse_difference_cases": 1,
+            "reverse_mismatches_vs_exact": 44,
+            "reverse_relations": 107,
+            "scope": "compatibility_observation_not_a2_gate"
+          },
+          "executed": 1,
+          "timing": {
+            "compiler_reference_us_max": 237,
+            "compiler_reference_us_p99": 237,
+            "current_v8_us_max": 238,
+            "current_v8_us_p99": 238,
+            "exact_us_max": 274,
+            "exact_us_p50": 274,
+            "exact_us_p99": 274,
+            "scope": "proof_only_settlement_not_product_hot_p99"
+          }
+        },
+        "relation_parity": {
+          "activation_hits_mismatches": 0,
+          "activation_keyboard_hits_mismatches": 0,
+          "activation_mass_mismatches": 0,
+          "activation_surface_hits_mismatches": 0,
+          "candidates_compared": 1,
+          "canonical_relations_expected": 161,
+          "canonical_relations_missing_from_v8": 0,
+          "implicit_relations_compared": 161,
+          "implicit_relations_missing_from_v8": 0,
+          "implicit_relations_outside_canonical_surface": 0,
+          "relation_state_mismatches": 0,
+          "v8_relations_missing_implicitly": 0
+        },
+        "target_retained": 1,
+        "timing": {
+          "combined_us_max": 1189,
+          "combined_us_p50": 1189,
+          "combined_us_p95": 1189,
+          "combined_us_p99": 1189,
+          "implicit_us_max": 67,
+          "implicit_us_p50": 67,
+          "implicit_us_p95": 67,
+          "implicit_us_p99": 67,
+          "oracle_us_max": 44880,
+          "oracle_us_p99": 44880,
+          "typed_us_max": 1122,
+          "typed_us_p50": 1122,
+          "typed_us_p95": 1122,
+          "typed_us_p99": 1122
+        },
+        "typed_states_expanded": 5919,
+        "typed_terminal_ids": 1
+      },
+      "punctuation_suffix": {
+        "candidate_permutation_parity": 1,
+        "cases": 1,
+        "implicit_relations": 736,
+        "implicit_target_retained": 1,
+        "maximum_typed_queue": 3372,
+        "maximum_typed_terminal_ids": 4,
+        "nonlinear_settlement": {
+          "cases": 1,
+          "compiler_exact": {
+            "candidate_state_and_order_parity": 1,
+            "compiler_phase_evidence_noop": 1,
+            "compiler_reference_permutation_parity": 1,
+            "compiler_reference_relations": 440,
+            "complete_max_forward": 1,
+            "exact_permutation_parity": 1,
+            "exact_phase_evidence_noop": 1,
+            "exact_reverse_relations": 440,
+            "false_completeness_certificates": 0,
+            "pass": true,
+            "readout_parity": 1,
+            "reverse_mismatches": 0,
+            "reverse_terminals": 4
+          },
+          "current_v8_fingerprint": {
+            "candidate_difference_cases": 1,
+            "candidate_state_and_order_parity_vs_exact": 0,
+            "internal_permutation_parity": 1,
+            "phase_evidence_noop": 1,
+            "readout_difference_cases": 0,
+            "readout_parity_vs_exact": 1,
+            "reverse_difference_cases": 1,
+            "reverse_mismatches_vs_exact": 129,
+            "reverse_relations": 440,
+            "scope": "compatibility_observation_not_a2_gate"
+          },
+          "executed": 1,
+          "timing": {
+            "compiler_reference_us_max": 310,
+            "compiler_reference_us_p99": 310,
+            "current_v8_us_max": 312,
+            "current_v8_us_p99": 312,
+            "exact_us_max": 337,
+            "exact_us_p50": 337,
+            "exact_us_p99": 337,
+            "scope": "proof_only_settlement_not_product_hot_p99"
+          }
+        },
+        "relation_parity": {
+          "activation_hits_mismatches": 0,
+          "activation_keyboard_hits_mismatches": 0,
+          "activation_mass_mismatches": 0,
+          "activation_surface_hits_mismatches": 0,
+          "candidates_compared": 4,
+          "canonical_relations_expected": 736,
+          "canonical_relations_missing_from_v8": 0,
+          "implicit_relations_compared": 736,
+          "implicit_relations_missing_from_v8": 0,
+          "implicit_relations_outside_canonical_surface": 0,
+          "relation_state_mismatches": 0,
+          "v8_relations_missing_implicitly": 0
+        },
+        "target_retained": 1,
+        "timing": {
+          "combined_us_max": 1731,
+          "combined_us_p50": 1731,
+          "combined_us_p95": 1731,
+          "combined_us_p99": 1731,
+          "implicit_us_max": 170,
+          "implicit_us_p50": 170,
+          "implicit_us_p95": 170,
+          "implicit_us_p99": 170,
+          "oracle_us_max": 47816,
+          "oracle_us_p99": 47816,
+          "typed_us_max": 1561,
+          "typed_us_p50": 1561,
+          "typed_us_p95": 1561,
+          "typed_us_p99": 1561
+        },
+        "typed_states_expanded": 8325,
+        "typed_terminal_ids": 4
+      },
+      "repeated_fragment": {
+        "candidate_permutation_parity": 1,
+        "cases": 1,
+        "implicit_relations": 80,
+        "implicit_target_retained": 1,
+        "maximum_typed_queue": 3857,
+        "maximum_typed_terminal_ids": 1,
+        "nonlinear_settlement": {
+          "cases": 1,
+          "compiler_exact": {
+            "candidate_state_and_order_parity": 1,
+            "compiler_phase_evidence_noop": 1,
+            "compiler_reference_permutation_parity": 1,
+            "compiler_reference_relations": 93,
+            "complete_max_forward": 1,
+            "exact_permutation_parity": 1,
+            "exact_phase_evidence_noop": 1,
+            "exact_reverse_relations": 93,
+            "false_completeness_certificates": 0,
+            "pass": true,
+            "readout_parity": 1,
+            "reverse_mismatches": 0,
+            "reverse_terminals": 1
+          },
+          "current_v8_fingerprint": {
+            "candidate_difference_cases": 0,
+            "candidate_state_and_order_parity_vs_exact": 1,
+            "internal_permutation_parity": 1,
+            "phase_evidence_noop": 1,
+            "readout_difference_cases": 0,
+            "readout_parity_vs_exact": 1,
+            "reverse_difference_cases": 1,
+            "reverse_mismatches_vs_exact": 65,
+            "reverse_relations": 93,
+            "scope": "compatibility_observation_not_a2_gate"
+          },
+          "executed": 1,
+          "timing": {
+            "compiler_reference_us_max": 160,
+            "compiler_reference_us_p99": 160,
+            "current_v8_us_max": 156,
+            "current_v8_us_p99": 156,
+            "exact_us_max": 188,
+            "exact_us_p50": 188,
+            "exact_us_p99": 188,
+            "scope": "proof_only_settlement_not_product_hot_p99"
+          }
+        },
+        "relation_parity": {
+          "activation_hits_mismatches": 0,
+          "activation_keyboard_hits_mismatches": 0,
+          "activation_mass_mismatches": 0,
+          "activation_surface_hits_mismatches": 0,
+          "candidates_compared": 1,
+          "canonical_relations_expected": 80,
+          "canonical_relations_missing_from_v8": 0,
+          "implicit_relations_compared": 80,
+          "implicit_relations_missing_from_v8": 0,
+          "implicit_relations_outside_canonical_surface": 0,
+          "relation_state_mismatches": 0,
+          "v8_relations_missing_implicitly": 0
+        },
+        "target_retained": 1,
+        "timing": {
+          "combined_us_max": 2157,
+          "combined_us_p50": 2157,
+          "combined_us_p95": 2157,
+          "combined_us_p99": 2157,
+          "implicit_us_max": 49,
+          "implicit_us_p50": 49,
+          "implicit_us_p95": 49,
+          "implicit_us_p99": 49,
+          "oracle_us_max": 26491,
+          "oracle_us_p99": 26491,
+          "typed_us_max": 2108,
+          "typed_us_p50": 2108,
+          "typed_us_p95": 2108,
+          "typed_us_p99": 2108
+        },
+        "typed_states_expanded": 10243,
+        "typed_terminal_ids": 1
+      },
+      "sparse_multi_omission": {
+        "candidate_permutation_parity": 1,
+        "cases": 1,
+        "implicit_relations": 11423,
+        "implicit_target_retained": 1,
+        "maximum_typed_queue": 3748,
+        "maximum_typed_terminal_ids": 145,
+        "nonlinear_settlement": {
+          "cases": 1,
+          "compiler_exact": {
+            "candidate_state_and_order_parity": 1,
+            "compiler_phase_evidence_noop": 1,
+            "compiler_reference_permutation_parity": 1,
+            "compiler_reference_relations": 13369,
+            "complete_max_forward": 1,
+            "exact_permutation_parity": 1,
+            "exact_phase_evidence_noop": 1,
+            "exact_reverse_relations": 13369,
+            "false_completeness_certificates": 0,
+            "pass": true,
+            "readout_parity": 1,
+            "reverse_mismatches": 0,
+            "reverse_terminals": 145
+          },
+          "current_v8_fingerprint": {
+            "candidate_difference_cases": 1,
+            "candidate_state_and_order_parity_vs_exact": 0,
+            "internal_permutation_parity": 1,
+            "phase_evidence_noop": 1,
+            "readout_difference_cases": 1,
+            "readout_parity_vs_exact": 0,
+            "reverse_difference_cases": 1,
+            "reverse_mismatches_vs_exact": 9137,
+            "reverse_relations": 13369,
+            "scope": "compatibility_observation_not_a2_gate"
+          },
+          "executed": 1,
+          "timing": {
+            "compiler_reference_us_max": 965,
+            "compiler_reference_us_p99": 965,
+            "current_v8_us_max": 926,
+            "current_v8_us_p99": 926,
+            "exact_us_max": 1059,
+            "exact_us_p50": 1059,
+            "exact_us_p99": 1059,
+            "scope": "proof_only_settlement_not_product_hot_p99"
+          }
+        },
+        "relation_parity": {
+          "activation_hits_mismatches": 0,
+          "activation_keyboard_hits_mismatches": 0,
+          "activation_mass_mismatches": 0,
+          "activation_surface_hits_mismatches": 0,
+          "candidates_compared": 145,
+          "canonical_relations_expected": 11423,
+          "canonical_relations_missing_from_v8": 0,
+          "implicit_relations_compared": 11423,
+          "implicit_relations_missing_from_v8": 0,
+          "implicit_relations_outside_canonical_surface": 0,
+          "relation_state_mismatches": 0,
+          "v8_relations_missing_implicitly": 0
+        },
+        "target_retained": 1,
+        "timing": {
+          "combined_us_max": 3936,
+          "combined_us_p50": 3936,
+          "combined_us_p95": 3936,
+          "combined_us_p99": 3936,
+          "implicit_us_max": 1717,
+          "implicit_us_p50": 1717,
+          "implicit_us_p95": 1717,
+          "implicit_us_p99": 1717,
+          "oracle_us_max": 91376,
+          "oracle_us_p99": 91376,
+          "typed_us_max": 2219,
+          "typed_us_p50": 2219,
+          "typed_us_p95": 2219,
+          "typed_us_p99": 2219
+        },
+        "typed_states_expanded": 10168,
+        "typed_terminal_ids": 145
+      },
+      "suffix_truncation": {
+        "candidate_permutation_parity": 1,
+        "cases": 1,
+        "implicit_relations": 1494,
+        "implicit_target_retained": 1,
+        "maximum_typed_queue": 3352,
+        "maximum_typed_terminal_ids": 8,
+        "nonlinear_settlement": {
+          "cases": 1,
+          "compiler_exact": {
+            "candidate_state_and_order_parity": 1,
+            "compiler_phase_evidence_noop": 1,
+            "compiler_reference_permutation_parity": 1,
+            "compiler_reference_relations": 899,
+            "complete_max_forward": 1,
+            "exact_permutation_parity": 1,
+            "exact_phase_evidence_noop": 1,
+            "exact_reverse_relations": 899,
+            "false_completeness_certificates": 0,
+            "pass": true,
+            "readout_parity": 1,
+            "reverse_mismatches": 0,
+            "reverse_terminals": 8
+          },
+          "current_v8_fingerprint": {
+            "candidate_difference_cases": 1,
+            "candidate_state_and_order_parity_vs_exact": 0,
+            "internal_permutation_parity": 1,
+            "phase_evidence_noop": 1,
+            "readout_difference_cases": 0,
+            "readout_parity_vs_exact": 1,
+            "reverse_difference_cases": 1,
+            "reverse_mismatches_vs_exact": 221,
+            "reverse_relations": 899,
+            "scope": "compatibility_observation_not_a2_gate"
+          },
+          "executed": 1,
+          "timing": {
+            "compiler_reference_us_max": 436,
+            "compiler_reference_us_p99": 436,
+            "current_v8_us_max": 371,
+            "current_v8_us_p99": 371,
+            "exact_us_max": 425,
+            "exact_us_p50": 425,
+            "exact_us_p99": 425,
+            "scope": "proof_only_settlement_not_product_hot_p99"
+          }
+        },
+        "relation_parity": {
+          "activation_hits_mismatches": 0,
+          "activation_keyboard_hits_mismatches": 0,
+          "activation_mass_mismatches": 0,
+          "activation_surface_hits_mismatches": 0,
+          "candidates_compared": 8,
+          "canonical_relations_expected": 1494,
+          "canonical_relations_missing_from_v8": 0,
+          "implicit_relations_compared": 1494,
+          "implicit_relations_missing_from_v8": 0,
+          "implicit_relations_outside_canonical_surface": 0,
+          "relation_state_mismatches": 0,
+          "v8_relations_missing_implicitly": 0
+        },
+        "target_retained": 1,
+        "timing": {
+          "combined_us_max": 1787,
+          "combined_us_p50": 1787,
+          "combined_us_p95": 1787,
+          "combined_us_p99": 1787,
+          "implicit_us_max": 295,
+          "implicit_us_p50": 295,
+          "implicit_us_p95": 295,
+          "implicit_us_p99": 295,
+          "oracle_us_max": 52032,
+          "oracle_us_p99": 52032,
+          "typed_us_max": 1492,
+          "typed_us_p50": 1492,
+          "typed_us_p95": 1492,
+          "typed_us_p99": 1492
+        },
+        "typed_states_expanded": 7878,
+        "typed_terminal_ids": 8
+      }
+    },
+    "configuration": {
+      "cases": 13,
+      "classes": 13,
+      "combined_latency_limit_us": 5000,
+      "expected_cases": 13,
+      "expected_classes": 13,
+      "heldout_per_class": 1,
+      "implicit_latency_limit_us": 2500,
+      "package_format_changed": false,
+      "package_limit_bytes": 204472320,
+      "runtime_authority_changed": false,
+      "settlement_executed": true
+    },
+    "exact_support": {
+      "centers_decoded": 852582,
+      "corpus_surface_mismatches": 0,
+      "encoded_atom_occurrences": 127310722,
+      "exact_overflow_atoms": 217,
+      "maximum_exact_support": 852582,
+      "projected_compact_package_bytes": 77962328,
+      "projected_overflow_bytes": 1768,
+      "rebuild_ms": 2043,
+      "stored_saturated_atoms": 217,
+      "stored_support_mismatches": 0
+    },
+    "gates": {
+      "a2_exact_reverse_parity": true,
+      "a2_fixed_denominator_complete": true,
+      "a2_nonlinear_settlement_parity": true,
+      "a2_package_dependencies_resolved": true,
+      "activation_parity": true,
+      "combined_latency_max_le_5000_us": true,
+      "fixed_denominator_complete": true,
+      "implicit_latency_max_le_2500_us": true,
+      "package_isolation": true,
+      "package_projection_le_195_mib": true,
+      "relation_parity": true,
+      "support_sufficiency": true,
+      "typed_target_and_permutation_parity": true
+    },
+    "package_dependencies": {
+      "a2_resolved": true,
+      "invalid_references": 0,
+      "keyboard_geometry_policy": "package-backed_or_lazy_generated_non_reverse_dependency",
+      "physical_vectors": {
+        "ambiguity_subcenters": 0,
+        "anti_subcenters": 0,
+        "center_phase_profiles": 0,
+        "directional_anti_centers": 0,
+        "hard_negative_subcenters": 0,
+        "keyboard_geometry_units": 0,
+        "pair_centers": 0,
+        "pair_profiles": 0,
+        "positive_subcenters": 0
+      },
+      "restoration_calibration": {
+        "max_geometry_distance": 0,
+        "min_backward_milli": 663,
+        "min_positive_milli": 990,
+        "min_tied_energy_margin": 0
+      },
+      "summed_references": {
+        "ambiguity": 0,
+        "anti": 0,
+        "directional_anti": 0,
+        "hard_negative": 0,
+        "keyboard_geometry": 0,
+        "pair_centers": 0,
+        "positive": 0
+      },
+      "unresolved": []
+    },
+    "schema": "lay.l11.typed-basin-implicit-forward-proof.v2",
+    "setup_timing": {
+      "decoder_index_ms": 58,
+      "exact_support_rebuild_ms": 2043,
+      "package_load_ms": 841,
+      "wall_ms": 8467
+    },
+    "verdict": "PASS_A0_A1_B0_A2"
+  },
+  "exact_support": {
+    "centers_decoded": 852582,
+    "corpus_surface_mismatches": 0,
+    "encoded_atom_occurrences": 127310722,
+    "exact_overflow_atoms": 217,
+    "maximum_exact_support": 852582,
+    "projected_compact_package_bytes": 77962328,
+    "projected_overflow_bytes": 1768,
+    "rebuild_ms": 2221,
+    "stored_saturated_atoms": 217,
+    "stored_support_mismatches": 0
+  },
+  "gates": {
+    "clean_denominator_complete": true,
+    "clean_preservation_ge_99_9_percent": true,
+    "conjunctive_full_quality_pass": false,
+    "embedded_a2_pass": true,
+    "false_authority_zero": true,
+    "false_singleton_zero": true,
+    "fixed_damaged_denominator_complete": true,
+    "full_fixed_denominator": false,
+    "grounded_legacy_candidate_loss_zero": true,
+    "lattice_coverage_every_class_ge_99_percent": true,
+    "package_dependencies_resolved": true,
+    "package_isolation": true,
+    "target_retention_complete": true,
+    "unique_top1_every_class_strictly_gt_95_percent": false
+  },
+  "package_dependencies": {
+    "a2_resolved": true,
+    "invalid_references": 0,
+    "keyboard_geometry_policy": "package-backed_or_lazy_generated_non_reverse_dependency",
+    "physical_vectors": {
+      "ambiguity_subcenters": 0,
+      "anti_subcenters": 0,
+      "center_phase_profiles": 0,
+      "directional_anti_centers": 0,
+      "hard_negative_subcenters": 0,
+      "keyboard_geometry_units": 0,
+      "pair_centers": 0,
+      "pair_profiles": 0,
+      "positive_subcenters": 0
+    },
+    "restoration_calibration": {
+      "max_geometry_distance": 0,
+      "min_backward_milli": 663,
+      "min_positive_milli": 990,
+      "min_tied_energy_margin": 0
+    },
+    "summed_references": {
+      "ambiguity": 0,
+      "anti": 0,
+      "directional_anti": 0,
+      "hard_negative": 0,
+      "keyboard_geometry": 0,
+      "pair_centers": 0,
+      "positive": 0
+    },
+    "unresolved": []
+  },
+  "schema": "lay.l11.typed-basin-quality-proof.v1",
+  "timing": {
+    "clean_quality_ms": 473,
+    "damaged_quality_ms": 5941,
+    "decoder_index_ms": 53,
+    "exact_support_rebuild_ms": 2221,
+    "objective_build_ms": 60402,
+    "package_load_ms": 786,
+    "scope": "proof_throughput_not_product_hot_latency",
+    "wall_ms": 79099
+  },
+  "verdict": "PASS_C_SMOKE"
+}

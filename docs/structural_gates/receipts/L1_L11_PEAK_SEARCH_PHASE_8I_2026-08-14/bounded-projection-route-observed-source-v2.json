@@ -1,0 +1,189 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "observed_source",
+  "source_root": ".",
+  "nodes": [
+    {
+      "id": "quality_cli",
+      "role": "interface",
+      "evidence": {
+        "path": "src/bin/lay_nanda_wave_train.rs",
+        "line": 1020,
+        "contains": "if let Some(corpus) = arg_path(&args, \"--prove-l1-typed-basin-quality\")"
+      }
+    },
+    {
+      "id": "quality_orchestrator",
+      "role": "orchestrator",
+      "evidence": {
+        "path": "src/nanda_wave/lexical_grokking/typed_basin/quality.rs",
+        "line": 118,
+        "contains": "fn prove_l1_typed_basin_quality_scoped("
+      }
+    },
+    {
+      "id": "complete_exact_field",
+      "role": "candidate_rank_owner",
+      "evidence": {
+        "path": "src/nanda_wave/lexical_grokking/typed_basin/quality.rs",
+        "line": 519,
+        "contains": "let exact = settle_exact_case(memory, support, surface, &implicit)?;"
+      }
+    },
+    {
+      "id": "bounded_projector",
+      "role": "producer",
+      "evidence": {
+        "path": "src/nanda_wave/lexical_grokking/typed_basin/quality.rs",
+        "line": 638,
+        "contains": "truncate_with_reconstruction_tail(&mut bounded, TOP_K);"
+      }
+    },
+    {
+      "id": "quality_metrics",
+      "role": "proof_owner",
+      "evidence": {
+        "path": "src/nanda_wave/lexical_grokking/typed_basin/quality.rs",
+        "line": 677,
+        "contains": "metrics.target_top64 += usize::from(bounded_target_rank.is_some());"
+      }
+    },
+    {
+      "id": "fixed_objective",
+      "role": "proof_owner",
+      "evidence": {
+        "path": "src/nanda_wave/lexical_grokking/typed_basin/quality.rs",
+        "line": 174,
+        "contains": "let objectives = build_objectives(&words, &fixed_cases)?;"
+      }
+    },
+    {
+      "id": "quality_receipt",
+      "role": "observer",
+      "evidence": {
+        "path": "src/bin/lay_nanda_wave_train.rs",
+        "line": 1048,
+        "contains": "lay::private_file::write_private_bytes(&receipt, &bytes)?;"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "exec_cli_orchestrator",
+      "from": "quality_cli",
+      "relation": "calls",
+      "to": "quality_orchestrator",
+      "events": ["quality_case"],
+      "evidence": {
+        "path": "src/bin/lay_nanda_wave_train.rs",
+        "line": 1036,
+        "contains": "lay::nanda_wave::prove_l1_typed_basin_quality("
+      }
+    },
+    {
+      "id": "exec_orchestrator_complete",
+      "from": "quality_orchestrator",
+      "relation": "delegates",
+      "to": "complete_exact_field",
+      "events": ["quality_case"],
+      "evidence": {
+        "path": "src/nanda_wave/lexical_grokking/typed_basin/quality.rs",
+        "line": 519,
+        "contains": "let exact = settle_exact_case(memory, support, surface, &implicit)?;"
+      }
+    },
+    {
+      "id": "exec_complete_projection",
+      "from": "complete_exact_field",
+      "relation": "delegates",
+      "to": "bounded_projector",
+      "events": ["quality_case"],
+      "evidence": {
+        "path": "src/nanda_wave/lexical_grokking/typed_basin/quality.rs",
+        "line": 653,
+        "contains": "let bounded = bounded_projection(exact);"
+      }
+    },
+    {
+      "id": "exec_projection_metrics",
+      "from": "bounded_projector",
+      "relation": "delegates",
+      "to": "quality_metrics",
+      "events": ["quality_case"],
+      "evidence": {
+        "path": "src/nanda_wave/lexical_grokking/typed_basin/quality.rs",
+        "line": 677,
+        "contains": "metrics.target_top64 += usize::from(bounded_target_rank.is_some());"
+      }
+    },
+    {
+      "id": "proof_objective_metrics",
+      "from": "fixed_objective",
+      "relation": "proves",
+      "to": "quality_metrics",
+      "events": ["objective_proof"],
+      "evidence": {
+        "path": "src/nanda_wave/lexical_grokking/typed_basin/quality.rs",
+        "line": 174,
+        "contains": "let objectives = build_objectives(&words, &fixed_cases)?;"
+      }
+    },
+    {
+      "id": "observe_metrics_receipt",
+      "from": "quality_metrics",
+      "relation": "observes",
+      "to": "quality_receipt",
+      "events": ["quality_report"],
+      "evidence": {
+        "path": "src/bin/lay_nanda_wave_train.rs",
+        "line": 1048,
+        "contains": "lay::private_file::write_private_bytes(&receipt, &bytes)?;"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "id": "quality-case-execution",
+      "event": "quality_case",
+      "kind": "execution",
+      "entry": "quality_cli",
+      "terminal": "quality_metrics",
+      "required_roles": [
+        "interface",
+        "orchestrator",
+        "candidate_rank_owner",
+        "producer",
+        "proof_owner"
+      ],
+      "via": [
+        "quality_orchestrator",
+        "complete_exact_field",
+        "bounded_projector"
+      ],
+      "path_cardinality": [
+        {
+          "from": "quality_cli",
+          "to": "quality_metrics",
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "objective-proof",
+      "event": "objective_proof",
+      "kind": "proof",
+      "entry": "fixed_objective",
+      "terminal": "quality_metrics",
+      "required_roles": ["proof_owner"]
+    },
+    {
+      "id": "quality-report",
+      "event": "quality_report",
+      "kind": "observation",
+      "entry": "quality_metrics",
+      "terminal": "quality_receipt",
+      "required_roles": ["proof_owner", "observer"]
+    }
+  ]
+}

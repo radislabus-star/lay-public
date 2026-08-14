@@ -1,0 +1,282 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-l11-decoder-subtree-cover-phase8h-projection-2026-08-14",
+  "authority_bearing": false,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "phase8h-paper",
+      "kind": "file",
+      "path": "../../../l1-l11-decoder-subtree-cover-phase8h.md",
+      "expect": {"size_bytes": 17846, "sha256": "5a142f8320cce9f8c72a0de60d885a710b3cf90bd6ac7eb026881aeda2665184", "mode": "0664"}
+    },
+    {
+      "id": "phase8-proof-owner",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/posting_bounds.rs",
+      "expect": {"size_bytes": 91383, "sha256": "e6bf8cf9ca523dcb6109249b375d952e75f690b677bbe37f5d30a7ef7ca99912", "mode": "0664"}
+    },
+    {
+      "id": "phase8g-modal-owner",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/posting_bounds/modal_residual.rs",
+      "expect": {"size_bytes": 44742, "sha256": "1d9c809eb2169a7aabc920805e7bcc114e6493d539dfbeec7c6fa8f06e2df84d", "mode": "0664"}
+    },
+    {
+      "id": "decoder-topology-owner",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/forward_decoder_index.rs",
+      "expect": {"size_bytes": 19862, "sha256": "754ce19ad880ef869bdad6f961c10de504966d5bf4d4c54d92f5bf01f7e9cffb", "mode": "0664"}
+    },
+    {
+      "id": "activation-contract",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/runtime/contract.rs",
+      "expect": {"size_bytes": 6106, "sha256": "c72689b93cea694bd79f4d0323085aa99be5e9fb025765a1b120ace3db4df754", "mode": "0664"}
+    },
+    {
+      "id": "v8-format-owner",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/v8.rs",
+      "expect": {"size_bytes": 40868, "sha256": "cb722f5dfb7c7d80ccc1ee298ee898e2220f178f50ef19f27bdf7feba564605a", "mode": "0664"}
+    },
+    {
+      "id": "complete-posting-batch-owner",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/runtime/relations.rs",
+      "expect": {"size_bytes": 11169, "sha256": "c5a134fbb4e91f392ae5a8844b69864347a67dfa6299dbc07067b409305a8649", "mode": "0664"}
+    },
+    {
+      "id": "rejected-phase8g-receipt",
+      "kind": "file",
+      "path": "../L1_L11_PEAK_SEARCH_PHASE_8G_2026-08-14/evidence/phase-8g-13x1.json",
+      "expect": {"size_bytes": 67462, "sha256": "3644e103754ded16a062dc45b0c3180d9a07ee852a9b362c1a8831c78d5b4482", "mode": "0664"}
+    },
+    {
+      "id": "decoder-baseline-receipt",
+      "kind": "file",
+      "path": "baseline/decoder-index.json",
+      "expect": {"size_bytes": 1321, "sha256": "d1d0ed88fad2a23fcc830ac6872633f1924d79fb47046b96229bd77ed9c16a49", "mode": "0664"}
+    },
+    {
+      "id": "phase8h-route-design",
+      "kind": "file",
+      "path": "route-design-v1.json",
+      "expect": {"size_bytes": 6392, "sha256": "9dc44d30e23989bcafa8ecde89b9e61b702d3a051ee2b6f100f814de17d6247d", "mode": "0664"}
+    },
+    {
+      "id": "phase8h-route-gate",
+      "kind": "file",
+      "path": "route-gate-v1.json",
+      "expect": {"size_bytes": 7005, "sha256": "d0dd7884729939efaa6f1e927841d0d88a8d69a88f983d0cffc33eb31da09b04", "mode": "0664"}
+    },
+    {
+      "id": "installed-package",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin",
+      "expect": {"size_bytes": 190139182, "sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9", "prefix_hex": "4c41594c31563800", "mode": "0644"}
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "add-proof-only-decoder-subtree-cover-projection", "kind": "filesystem_edit"},
+      {"id": "extend-proof-selector-and-report-schema", "kind": "filesystem_edit"},
+      {"id": "write-phase8h-negative-or-admission-receipts", "kind": "filesystem_write"},
+      {"id": "run-focused-and-fixed-projection-proofs-remotely", "kind": "test_execution"}
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "runtime_authority_change",
+      "production_phase8h_reachability",
+      "early_atom_selection",
+      "posting_budget_truncation",
+      "queue_truncation",
+      "equality_pruning",
+      "heldout_target_cover_selection",
+      "generated_candidate_string",
+      "runtime_case_rule",
+      "score_or_settlement_change",
+      "package_format_change",
+      "corpus_crystallization",
+      "runtime_restart",
+      "installed_package_mutation",
+      "dense_oracle_cover_input",
+      "sampled_package_size_extrapolation",
+      "corpus_order_as_decoder_order",
+      "full_center_hot_scan",
+      "full_decoder_hot_scan"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "phase8-proof-vetoes",
+      "path": "../../../../src/nanda_wave/lexical_grokking/posting_bounds.rs",
+      "sha256": "e6bf8cf9ca523dcb6109249b375d952e75f690b677bbe37f5d30a7ef7ca99912",
+      "forbidden_effect_patterns": [
+        {"effect": "generated_traffic", "regex": "reqwest|ureq::"},
+        {"effect": "synthetic_fixture", "regex": "write_synthetic|generate_fixture"},
+        {"effect": "runtime_authority_change", "regex": "authorize_edit|mutation_owner|live_owner"},
+        {"effect": "early_atom_selection", "regex": "select_birth_atoms|birth_atoms_per_channel"},
+        {"effect": "posting_budget_truncation", "regex": "birth_posting_budget|posting_budget"},
+        {"effect": "queue_truncation", "regex": "subtree_[a-z_]*\\.truncate|MAX_SUBTREE_QUEUE"},
+        {"effect": "equality_pruning", "regex": "drop_equal_boundary|prune_equal_mass"},
+        {"effect": "heldout_target_cover_selection", "regex": "(cover|subtree)[^;]*(expected|target)|match\\s+case\\.class"},
+        {"effect": "generated_candidate_string", "regex": "generated_surface|candidate_surface"},
+        {"effect": "runtime_case_rule", "regex": "case\\.surface\\s*==|match\\s+case\\.class"},
+        {"effect": "score_or_settlement_change", "regex": "score_override|settlement_override"},
+        {"effect": "corpus_crystallization", "regex": "crystallize_l1_lexical_grokking"},
+        {"effect": "runtime_restart", "regex": "systemctl|pkill|killall"},
+        {"effect": "installed_package_mutation", "regex": "File::create\\(package_path|write\\(package_path"},
+        {"effect": "dense_oracle_cover_input", "regex": "DecoderSubtreeCover[^;]*(dense|oracle)|subtree_executor[^;]*(dense|oracle)"},
+        {"effect": "sampled_package_size_extrapolation", "regex": "sampled_(ratio|bytes)|extrapolated_package"},
+        {"effect": "corpus_order_as_decoder_order", "regex": "terminal_id_as_dfs_rank|corpus_order_is_decoder_order"}
+      ]
+    },
+    {
+      "id": "decoder-topology-vetoes",
+      "path": "../../../../src/nanda_wave/lexical_grokking/forward_decoder_index.rs",
+      "sha256": "754ce19ad880ef869bdad6f961c10de504966d5bf4d4c54d92f5bf01f7e9cffb",
+      "forbidden_effect_patterns": [
+        {"effect": "production_phase8h_reachability", "regex": "DecoderSubtreeCoverProjection|decoder_subtree_cover"},
+        {"effect": "runtime_authority_change", "regex": "authorize_edit|mutation_owner|live_owner"},
+        {"effect": "package_format_change", "regex": "LAYL1V9|VERSION\\s*[:=]\\s*9"}
+      ]
+    },
+    {
+      "id": "complete-posting-batch-vetoes",
+      "path": "../../../../src/nanda_wave/lexical_grokking/runtime/relations.rs",
+      "sha256": "c5a134fbb4e91f392ae5a8844b69864347a67dfa6299dbc07067b409305a8649",
+      "forbidden_effect_patterns": [
+        {"effect": "runtime_authority_change", "regex": "authorize_edit|mutation_owner|live_owner"},
+        {"effect": "posting_budget_truncation", "regex": "posting_budget|relation_budget|\\.truncate\\("},
+        {"effect": "package_format_change", "regex": "LAYL1V9|VERSION\\s*[:=]\\s*9"}
+      ]
+    },
+    {
+      "id": "v8-runtime-preservation-vetoes",
+      "path": "../../../../src/nanda_wave/lexical_grokking/v8.rs",
+      "sha256": "cb722f5dfb7c7d80ccc1ee298ee898e2220f178f50ef19f27bdf7feba564605a",
+      "forbidden_effect_patterns": [
+        {"effect": "production_phase8h_reachability", "regex": "DecoderSubtreeCoverProjection|decoder_subtree_cover"},
+        {"effect": "package_format_change", "regex": "LAYL1V9|VERSION\\s*[:=]\\s*9"},
+        {"effect": "installed_package_mutation", "regex": "File::create\\(package_path|write\\(package_path"}
+      ]
+    }
+  ],
+  "state_machine": {
+    "initial_state": "PHASE8G_HEAD_CERTIFICATE_REJECTED",
+    "terminal_states": [
+      "PHASE8H_PROJECTION_ADMITTED",
+      "PHASE8H_TOPOLOGY_REJECTED",
+      "PHASE8H_CORRECTNESS_REJECTED",
+      "PHASE8H_REPRESENTATION_REJECTED",
+      "PHASE8H_WORK_REJECTED"
+    ],
+    "steps": [
+      {
+        "id": "implement-and-run-decoder-subtree-cover-projection",
+        "from": "PHASE8G_HEAD_CERTIFICATE_REJECTED",
+        "to": "PHASE8H_PROJECTION_ADMITTED",
+        "mutates": true,
+        "failure_state": "PHASE8H_CORRECTNESS_REJECTED",
+        "cleanup": "retain every Phase 8G and Phase 8H receipt and projection source; do not mutate the installed package or runtime",
+        "preserves": ["installed-package-bytes", "rejected-phase8g-evidence", "decoder-baseline-evidence", "phase8h-route-evidence"],
+        "test_id": "phase8h-rollback-isolation"
+      }
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "installed-package-bytes",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin",
+      "policy": "byte_identical",
+      "rollback_policy": "must remain byte-identical",
+      "baseline_check_id": "installed-package"
+    },
+    {
+      "id": "rejected-phase8g-evidence",
+      "path": "../L1_L11_PEAK_SEARCH_PHASE_8G_2026-08-14/evidence/phase-8g-13x1.json",
+      "policy": "byte_identical",
+      "rollback_policy": "must remain byte-identical",
+      "baseline_check_id": "rejected-phase8g-receipt"
+    },
+    {
+      "id": "decoder-baseline-evidence",
+      "path": "baseline/decoder-index.json",
+      "policy": "byte_identical",
+      "rollback_policy": "must remain byte-identical",
+      "baseline_check_id": "decoder-baseline-receipt"
+    },
+    {
+      "id": "phase8h-route-evidence",
+      "path": "route-gate-v1.json",
+      "policy": "byte_identical",
+      "rollback_policy": "must remain byte-identical",
+      "baseline_check_id": "phase8h-route-gate"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "decoder-dfs-topology-identity",
+      "producer": "immutable decoder parent links and primary center decoder terminals",
+      "consumer": "derived child edges DFS terminal ranks subtree intervals and terminal mappings",
+      "comparison": "every center round-trips exactly once and all subtree intervals are nested or disjoint with exact counts",
+      "test_id": "decoder-dfs-topology-parity"
+    },
+    {
+      "id": "cover-state-partition-identity",
+      "producer": "complete terminal-ordered forward posting with exact strength and position state",
+      "consumer": "disjoint maximal Subtree and Terminal tokens for the atom",
+      "comparison": "expansion yields every original relation state exactly once and no absent center",
+      "test_id": "cover-state-roundtrip"
+    },
+    {
+      "id": "cover-activation-vector-identity",
+      "producer": "subtree and terminal token path sums for mass hits surface_hits and keyboard_hits",
+      "consumer": "dense complete-posting ForwardActivation for every terminal",
+      "comparison": "all four activation fields are identical",
+      "test_id": "cover-dense-activation-parity"
+    },
+    {
+      "id": "symbolic-readout-identity",
+      "producer": "activated ancestor closure and symbolic uniform cohorts",
+      "consumer": "dense exact K-th mass and all terminal IDs at or above equality boundary",
+      "comparison": "K-th mass activation fields multiplicities and retained-ID set are identical",
+      "test_id": "symbolic-readout-parity"
+    },
+    {
+      "id": "complete-package-projection-identity",
+      "producer": "all atom token lanes plus exact compact base indices alignment and zstd-19 shards",
+      "consumer": "reported complete replacement package byte ledger",
+      "comparison": "all atoms and tokens are encoded once and projected bytes equal deterministic encoded bytes",
+      "test_id": "complete-package-ledger-parity"
+    },
+    {
+      "id": "typed-union-identity",
+      "producer": "Phase 7D typed terminal evidence unioned before posting evidence",
+      "consumer": "the same evidence unioned after exact subtree posting readout",
+      "comparison": "byte-identical source masks activations certificates and retained target set",
+      "test_id": "typed-union-schedule-parity"
+    }
+  ],
+  "runtime_comparisons": [],
+  "invariants": [
+    {"id": "installed-runtime-untouched", "statement": "installed package daemon IBus runtime and authority remain unchanged", "test_id": "phase8h-rollback-isolation"},
+    {"id": "cover-is-complete", "statement": "cover token expansion equals every complete posting state without truncation", "test_id": "cover-state-roundtrip"},
+    {"id": "readout-is-exact", "statement": "symbolic cohort readout preserves dense activation K and equality", "test_id": "symbolic-readout-parity"},
+    {"id": "projection-is-global", "statement": "package bytes cover the complete atom field rather than query-local samples", "test_id": "complete-package-ledger-parity"},
+    {"id": "proof-route-isolated", "statement": "projection code remains proof-only and cannot authorize runtime edits", "test_id": "phase8h-route-isolation"}
+  ],
+  "tests": [
+    {"id": "phase8h-rollback-isolation", "kind": "fault_injection", "expected": "every failure retains receipts while installed package hash and runtime state remain unchanged"},
+    {"id": "decoder-dfs-topology-parity", "kind": "parity", "expected": "all decoder centers edges ranks intervals and subtree counts round-trip exactly"},
+    {"id": "cover-state-roundtrip", "kind": "parity", "expected": "expanded cover states equal complete postings with zero omissions duplicates overlaps or absent inclusions"},
+    {"id": "cover-dense-activation-parity", "kind": "parity", "expected": "all four activation coordinates match dense complete accumulation for every fixed query"},
+    {"id": "symbolic-readout-parity", "kind": "parity", "expected": "K-th mass equality multiplicity and retained terminal IDs match dense readout"},
+    {"id": "complete-package-ledger-parity", "kind": "parity", "expected": "complete deterministic encoded projection exactly matches reported global package bytes"},
+    {"id": "typed-union-schedule-parity", "kind": "permutation", "expected": "typed-first and posting-first evidence unions are byte-identical with zero target loss"},
+    {"id": "phase8h-route-isolation", "kind": "static", "expected": "no production route package writer runtime authority or restart call reaches Phase 8H"}
+  ]
+}

@@ -1,0 +1,194 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-l11-impact-threshold-phase8f-2026-08-14",
+  "authority_bearing": false,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "phase8f-paper",
+      "kind": "file",
+      "path": "../../../l1-l11-impact-threshold-phase8f.md",
+      "expect": {"size_bytes": 10214, "sha256": "b002db636ee55b36aca3c417b7297545237fc0af1dbc8a208eed01b85dcd8352", "mode": "0664"}
+    },
+    {
+      "id": "phase8-proof-owner",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/posting_bounds.rs",
+      "expect": {"size_bytes": 65274, "sha256": "674457547349bb4237ff883a5e361d0ad34c3e5d00ff520ac22d81ab41c28cb4", "mode": "0664"}
+    },
+    {
+      "id": "legacy-reverse-replay",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/runtime/legacy.rs",
+      "expect": {"size_bytes": 32273, "sha256": "d1cbf8834050aa29051c7c49f254b1c56b537d509c8b15f6ee7ff668b9d9b2c3", "mode": "0664"}
+    },
+    {
+      "id": "relation-owner",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/runtime/relations.rs",
+      "expect": {"size_bytes": 10618, "sha256": "6d249c07c30abec6af8eb8be08253d5f0e981cb96bf12c9da2f1dea3fdde397d", "mode": "0664"}
+    },
+    {
+      "id": "activation-contract",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/runtime/contract.rs",
+      "expect": {"size_bytes": 6106, "sha256": "c72689b93cea694bd79f4d0323085aa99be5e9fb025765a1b120ace3db4df754", "mode": "0664"}
+    },
+    {
+      "id": "rejected-phase8e-receipt",
+      "kind": "file",
+      "path": "../L1_L11_PEAK_SEARCH_PHASE_8E_2026-08-14/phase-8e.json",
+      "expect": {"size_bytes": 1550, "sha256": "37c17f10393cd53cc21bbf11a3bff57a2fd655bd6a1a463c4415297ad0c03648", "mode": "0664"}
+    },
+    {
+      "id": "installed-package",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin",
+      "expect": {"size_bytes": 190139182, "sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9", "prefix_hex": "4c41594c31563800", "mode": "0644"}
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "add-proof-only-impact-module", "kind": "filesystem_edit"},
+      {"id": "extend-phase8-proof-selector-and-report", "kind": "filesystem_edit"},
+      {"id": "write-phase8f-receipts", "kind": "filesystem_write"},
+      {"id": "run-tiny-and-full-package-screen", "kind": "test_execution"}
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "runtime_authority_change",
+      "production_impact_search_reachability",
+      "early_atom_selection",
+      "posting_budget_truncation",
+      "queue_truncation",
+      "equality_pruning",
+      "heldout_target_search_input",
+      "generated_candidate_string",
+      "runtime_case_rule",
+      "score_or_settlement_change",
+      "package_format_change",
+      "corpus_crystallization",
+      "runtime_restart",
+      "installed_package_mutation",
+      "dense_oracle_runtime_input"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "phase8-proof-vetoes",
+      "path": "../../../../src/nanda_wave/lexical_grokking/posting_bounds.rs",
+      "sha256": "674457547349bb4237ff883a5e361d0ad34c3e5d00ff520ac22d81ab41c28cb4",
+      "forbidden_effect_patterns": [
+        {"effect": "generated_traffic", "regex": "reqwest|ureq::"},
+        {"effect": "synthetic_fixture", "regex": "write_synthetic|generate_fixture"},
+        {"effect": "runtime_authority_change", "regex": "authorize_edit|mutation_owner|live_owner"},
+        {"effect": "early_atom_selection", "regex": "select_birth_atoms|birth_atoms_per_channel"},
+        {"effect": "posting_budget_truncation", "regex": "birth_posting_budget|posting_budget"},
+        {"effect": "queue_truncation", "regex": "impact_queue\\.truncate|MAX_IMPACT_QUEUE"},
+        {"effect": "equality_pruning", "regex": "drop_equal_boundary|prune_equal_mass"},
+        {"effect": "heldout_target_search_input", "regex": "expected_target|heldout_target"},
+        {"effect": "generated_candidate_string", "regex": "generated_surface|candidate_surface"},
+        {"effect": "runtime_case_rule", "regex": "case\\.surface\\s*==|match\\s+case\\.class"},
+        {"effect": "score_or_settlement_change", "regex": "score_override|settlement_override"},
+        {"effect": "corpus_crystallization", "regex": "crystallize_l1_lexical_grokking"},
+        {"effect": "runtime_restart", "regex": "systemctl|pkill|killall"},
+        {"effect": "installed_package_mutation", "regex": "File::create\\(package_path|write\\(package_path"},
+        {"effect": "dense_oracle_runtime_input", "regex": "impact_[a-z_]*\\([^)]*dense|dense_[a-z_]*\\([^)]*impact"}
+      ]
+    },
+    {
+      "id": "legacy-runtime-vetoes",
+      "path": "../../../../src/nanda_wave/lexical_grokking/runtime/legacy.rs",
+      "sha256": "d1cbf8834050aa29051c7c49f254b1c56b537d509c8b15f6ee7ff668b9d9b2c3",
+      "forbidden_effect_patterns": [
+        {"effect": "production_impact_search_reachability", "regex": "ImpactThresholdSearch|impact_threshold|prove_l1_posting_bounds"},
+        {"effect": "package_format_change", "regex": "LAYL1V9|VERSION\\s*=\\s*9"}
+      ]
+    }
+  ],
+  "state_machine": {
+    "initial_state": "PHASE8E_EXECUTOR_REJECTED",
+    "terminal_states": ["PHASE8F_INTRINSIC_PASS", "PHASE8F_EXECUTOR_REJECTED"],
+    "steps": [
+      {
+        "id": "implement-and-prove-impact-threshold-search",
+        "from": "PHASE8E_EXECUTOR_REJECTED",
+        "to": "PHASE8F_INTRINSIC_PASS",
+        "mutates": true,
+        "failure_state": "PHASE8F_EXECUTOR_REJECTED",
+        "cleanup": "retain failed receipts and proof source, do not mutate installed runtime or package, and keep Phase 8 and Phase 8E negative evidence byte-identical",
+        "preserves": ["installed-package-bytes", "rejected-phase8e-evidence"],
+        "test_id": "phase8f-rollback-isolation"
+      }
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "installed-package-bytes",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin",
+      "policy": "byte_identical",
+      "rollback_policy": "must remain byte-identical",
+      "baseline_check_id": "installed-package"
+    },
+    {
+      "id": "rejected-phase8e-evidence",
+      "path": "../L1_L11_PEAK_SEARCH_PHASE_8E_2026-08-14/phase-8e.json",
+      "policy": "byte_identical",
+      "rollback_policy": "must remain byte-identical",
+      "baseline_check_id": "rejected-phase8e-receipt"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "impact-cell-relation-identity",
+      "producer": "complete forward posting relations grouped by exact strength and position",
+      "consumer": "impact cell relation stream",
+      "comparison": "every atom terminal strength and position tuple occurs exactly once",
+      "test_id": "impact-cell-roundtrip"
+    },
+    {
+      "id": "threshold-closure-identity",
+      "producer": "strict residual threshold and uncertain closure",
+      "consumer": "dense complete-posting K-th equality closure",
+      "comparison": "beta and ordered retained terminal ids are identical",
+      "test_id": "impact-dense-closure-parity"
+    },
+    {
+      "id": "reverse-replay-field-identity",
+      "producer": "existing reverse activation replay for uncertain closure",
+      "consumer": "complete forward activation field for the same terminal ids",
+      "comparison": "mass hits surface hits and keyboard hits are identical",
+      "test_id": "impact-reverse-field-parity"
+    },
+    {
+      "id": "typed-union-identity",
+      "producer": "impact posting closure and Phase 7D typed terminal events",
+      "consumer": "one source-mask evidence map keyed by WordCenterId",
+      "comparison": "posting-first and typed-first maps are byte-identical",
+      "test_id": "impact-typed-union-parity"
+    }
+  ],
+  "runtime_comparisons": [],
+  "invariants": [
+    {"id": "complete-impact-field", "statement": "no resolved posting relation is omitted or duplicated by impact cells", "test_id": "impact-cell-roundtrip"},
+    {"id": "descending-impact-heads", "statement": "each posting head never understates any unread relation contribution", "test_id": "impact-order-and-bound"},
+    {"id": "strict-equality-stop", "statement": "search certifies only when unseen threshold is strictly below K-th lower mass", "test_id": "impact-equality-fault"},
+    {"id": "exact-replay", "statement": "uncertain closure is replayed without dense oracle values", "test_id": "impact-reverse-field-parity"},
+    {"id": "runtime-unreachable", "statement": "Phase 8F remains proof-only and cannot authorize or apply edits", "test_id": "phase8f-production-unreachable"},
+    {"id": "package-preserved", "statement": "intrinsic proof reads the V8 package without changing bytes", "test_id": "phase8f-package-parity"}
+  ],
+  "tests": [
+    {"id": "phase8f-rollback-isolation", "kind": "fault_injection", "expected": "rejected Phase 8F leaves installed package and Phase 8E receipt byte-identical"},
+    {"id": "impact-cell-roundtrip", "kind": "parity", "expected": "impact cells contain each complete relation exactly once"},
+    {"id": "impact-order-and-bound", "kind": "parity", "expected": "all observed positions preserve descending heads and conservative residual bounds"},
+    {"id": "impact-equality-fault", "kind": "fault_injection", "expected": "equal unseen threshold cannot certify"},
+    {"id": "impact-dense-closure-parity", "kind": "parity", "expected": "exact K-th and equality closure match dense oracle"},
+    {"id": "impact-reverse-field-parity", "kind": "parity", "expected": "reverse replay fields match complete forward fields"},
+    {"id": "impact-typed-union-parity", "kind": "parity", "expected": "source-mask union is schedule independent"},
+    {"id": "impact-state-reset", "kind": "fault_injection", "expected": "repeated query and epoch wrap cannot revive partial mass or posting bits"},
+    {"id": "phase8f-production-unreachable", "kind": "integration", "expected": "normal runtime modules contain no Phase 8F import call or switch"},
+    {"id": "phase8f-package-parity", "kind": "parity", "expected": "package SHA-256 before and after is identical"}
+  ]
+}

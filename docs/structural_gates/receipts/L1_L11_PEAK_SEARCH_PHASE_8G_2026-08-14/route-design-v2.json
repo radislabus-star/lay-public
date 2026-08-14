@@ -1,0 +1,190 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    { "id": "phase8g_proof_cli", "role": "interface" },
+    { "id": "phase8g_orchestrator", "role": "orchestrator" },
+    { "id": "complete_posting_adapter", "role": "producer" },
+    { "id": "modal_profile_builder", "role": "producer" },
+    { "id": "query_residual_projector", "role": "producer" },
+    { "id": "oracle_greedy_screen", "role": "proof_owner" },
+    { "id": "fractional_lower_bound", "role": "proof_owner" },
+    { "id": "signed_readout_projection", "role": "producer" },
+    { "id": "replacement_package_projector", "role": "producer" },
+    { "id": "dense_complete_oracle", "role": "proof_owner" },
+    { "id": "activation_parity_gate", "role": "proof_owner" },
+    { "id": "projection_admission_gate", "role": "proof_owner" },
+    { "id": "phase8g_metrics", "role": "observer" },
+    { "id": "phase8g_receipt", "role": "observer" }
+  ],
+  "edges": [
+    {
+      "id": "exec-cli-orchestrator",
+      "from": "phase8g_proof_cli",
+      "relation": "calls",
+      "to": "phase8g_orchestrator",
+      "events": ["phase8g_field_projection", "phase8g_query_projection"]
+    },
+    {
+      "id": "exec-orchestrator-postings",
+      "from": "phase8g_orchestrator",
+      "relation": "calls",
+      "to": "complete_posting_adapter",
+      "events": ["phase8g_field_projection", "phase8g_query_projection"]
+    },
+    {
+      "id": "exec-postings-modal-profile",
+      "from": "complete_posting_adapter",
+      "relation": "delegates",
+      "to": "modal_profile_builder",
+      "events": ["phase8g_field_projection", "phase8g_query_projection"]
+    },
+    {
+      "id": "exec-profile-package-projection",
+      "from": "modal_profile_builder",
+      "relation": "delegates",
+      "to": "replacement_package_projector",
+      "events": ["phase8g_field_projection"]
+    },
+    {
+      "id": "exec-package-admission",
+      "from": "replacement_package_projector",
+      "relation": "delegates",
+      "to": "projection_admission_gate",
+      "events": ["phase8g_field_projection"]
+    },
+    {
+      "id": "exec-profile-query-projection",
+      "from": "modal_profile_builder",
+      "relation": "delegates",
+      "to": "query_residual_projector",
+      "events": ["phase8g_query_projection"]
+    },
+    {
+      "id": "exec-query-greedy-screen",
+      "from": "query_residual_projector",
+      "relation": "delegates",
+      "to": "oracle_greedy_screen",
+      "events": ["phase8g_query_projection"]
+    },
+    {
+      "id": "exec-greedy-signed-readout",
+      "from": "oracle_greedy_screen",
+      "relation": "delegates",
+      "to": "signed_readout_projection",
+      "events": ["phase8g_query_projection"]
+    },
+    {
+      "id": "exec-readout-admission",
+      "from": "signed_readout_projection",
+      "relation": "delegates",
+      "to": "projection_admission_gate",
+      "events": ["phase8g_query_projection"]
+    },
+    {
+      "id": "proof-dense-parity",
+      "from": "dense_complete_oracle",
+      "relation": "proves",
+      "to": "activation_parity_gate",
+      "events": ["phase8g_algebra_proof"]
+    },
+    {
+      "id": "proof-residual-parity",
+      "from": "query_residual_projector",
+      "relation": "proves",
+      "to": "activation_parity_gate",
+      "events": ["phase8g_algebra_proof"]
+    },
+    {
+      "id": "proof-dense-greedy-beta",
+      "from": "dense_complete_oracle",
+      "relation": "proves",
+      "to": "oracle_greedy_screen",
+      "events": ["phase8g_oracle_screen"]
+    },
+    {
+      "id": "proof-greedy-lower-bound",
+      "from": "oracle_greedy_screen",
+      "relation": "proves",
+      "to": "fractional_lower_bound",
+      "events": ["phase8g_oracle_screen"]
+    },
+    {
+      "id": "proof-lower-bound-admission",
+      "from": "fractional_lower_bound",
+      "relation": "proves",
+      "to": "projection_admission_gate",
+      "events": ["phase8g_oracle_screen"]
+    },
+    {
+      "id": "observe-parity-admission",
+      "from": "activation_parity_gate",
+      "relation": "proves",
+      "to": "projection_admission_gate",
+      "events": ["phase8g_observation"]
+    },
+    {
+      "id": "observe-admission-metrics",
+      "from": "projection_admission_gate",
+      "relation": "observes",
+      "to": "phase8g_metrics",
+      "events": ["phase8g_observation"]
+    },
+    {
+      "id": "observe-metrics-receipt",
+      "from": "phase8g_metrics",
+      "relation": "observes",
+      "to": "phase8g_receipt",
+      "events": ["phase8g_observation"]
+    }
+  ],
+  "routes": [
+    {
+      "id": "phase8g-field-projection",
+      "event": "phase8g_field_projection",
+      "kind": "execution",
+      "entry": "phase8g_proof_cli",
+      "terminal": "projection_admission_gate",
+      "required_roles": ["interface", "orchestrator", "producer", "proof_owner"],
+      "via": ["complete_posting_adapter", "modal_profile_builder", "replacement_package_projector"],
+      "path_cardinality": [
+        { "from": "phase8g_proof_cli", "to": "phase8g_orchestrator", "min": 1, "max": 1 },
+        { "from": "modal_profile_builder", "to": "replacement_package_projector", "min": 1, "max": 1 }
+      ]
+    },
+    {
+      "id": "phase8g-query-projection",
+      "event": "phase8g_query_projection",
+      "kind": "execution",
+      "entry": "phase8g_proof_cli",
+      "terminal": "projection_admission_gate",
+      "required_roles": ["interface", "orchestrator", "producer", "proof_owner"],
+      "via": ["query_residual_projector", "oracle_greedy_screen", "signed_readout_projection"]
+    },
+    {
+      "id": "phase8g-algebra-proof",
+      "event": "phase8g_algebra_proof",
+      "kind": "proof",
+      "entry": "dense_complete_oracle",
+      "terminal": "activation_parity_gate",
+      "required_roles": ["proof_owner"]
+    },
+    {
+      "id": "phase8g-oracle-screen-proof",
+      "event": "phase8g_oracle_screen",
+      "kind": "proof",
+      "entry": "dense_complete_oracle",
+      "terminal": "projection_admission_gate",
+      "required_roles": ["proof_owner"],
+      "via": ["oracle_greedy_screen", "fractional_lower_bound"]
+    },
+    {
+      "id": "phase8g-observation",
+      "event": "phase8g_observation",
+      "kind": "observation",
+      "entry": "activation_parity_gate",
+      "terminal": "phase8g_receipt",
+      "required_roles": ["proof_owner", "observer"]
+    }
+  ]
+}

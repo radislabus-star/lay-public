@@ -1,0 +1,97 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    { "id": "quality_cli", "role": "interface" },
+    { "id": "quality_orchestrator", "role": "orchestrator" },
+    { "id": "complete_exact_field", "role": "candidate_rank_owner" },
+    { "id": "bounded_projector", "role": "producer" },
+    { "id": "quality_metrics", "role": "proof_owner" },
+    { "id": "fixed_objective", "role": "proof_owner" },
+    { "id": "quality_receipt", "role": "observer" }
+  ],
+  "edges": [
+    {
+      "id": "exec_cli_orchestrator",
+      "from": "quality_cli",
+      "relation": "calls",
+      "to": "quality_orchestrator",
+      "events": ["quality_case"]
+    },
+    {
+      "id": "exec_orchestrator_complete",
+      "from": "quality_orchestrator",
+      "relation": "delegates",
+      "to": "complete_exact_field",
+      "events": ["quality_case"]
+    },
+    {
+      "id": "exec_complete_projection",
+      "from": "complete_exact_field",
+      "relation": "delegates",
+      "to": "bounded_projector",
+      "events": ["quality_case"]
+    },
+    {
+      "id": "exec_projection_metrics",
+      "from": "bounded_projector",
+      "relation": "delegates",
+      "to": "quality_metrics",
+      "events": ["quality_case"]
+    },
+    {
+      "id": "proof_objective_metrics",
+      "from": "fixed_objective",
+      "relation": "proves",
+      "to": "quality_metrics",
+      "events": ["objective_proof"]
+    },
+    {
+      "id": "observe_metrics_receipt",
+      "from": "quality_metrics",
+      "relation": "observes",
+      "to": "quality_receipt",
+      "events": ["quality_report"]
+    }
+  ],
+  "routes": [
+    {
+      "id": "quality-case-execution",
+      "event": "quality_case",
+      "kind": "execution",
+      "entry": "quality_cli",
+      "terminal": "quality_metrics",
+      "required_roles": [
+        "interface",
+        "orchestrator",
+        "candidate_rank_owner",
+        "producer",
+        "proof_owner"
+      ],
+      "via": [
+        "quality_orchestrator",
+        "complete_exact_field",
+        "bounded_projector"
+      ],
+      "path_cardinality": [
+        { "from": "quality_cli", "to": "quality_metrics", "min": 1, "max": 1 }
+      ]
+    },
+    {
+      "id": "objective-proof",
+      "event": "objective_proof",
+      "kind": "proof",
+      "entry": "fixed_objective",
+      "terminal": "quality_metrics",
+      "required_roles": ["proof_owner"]
+    },
+    {
+      "id": "quality-report",
+      "event": "quality_report",
+      "kind": "observation",
+      "entry": "quality_metrics",
+      "terminal": "quality_receipt",
+      "required_roles": ["proof_owner", "observer"]
+    }
+  ]
+}

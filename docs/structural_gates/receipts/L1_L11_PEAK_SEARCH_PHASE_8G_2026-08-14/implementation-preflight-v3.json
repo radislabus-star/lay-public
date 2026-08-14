@@ -1,0 +1,401 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-l11-modal-residual-phase8g-projection-2026-08-14",
+  "authority_bearing": false,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "phase8g-paper",
+      "kind": "file",
+      "path": "../../../l1-l11-modal-residual-phase8g.md",
+      "expect": {
+        "size_bytes": 16382,
+        "sha256": "cd92834fa44701e267e9886592513d7a74e0ec4946e7eb0357f05a9cd82634df",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "phase8-proof-owner",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/posting_bounds.rs",
+      "expect": {
+        "size_bytes": 80620,
+        "sha256": "2fd0c4972f004071fd0d725010bb762702ea6b9314e7211a7ff4f40f1696a0d8",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "phase8f-impact-owner",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/posting_bounds/impact.rs",
+      "expect": {
+        "size_bytes": 36024,
+        "sha256": "6c77c46c6c3ba0c05b171e631dae2ade0316a8a097a2d9abf19f519451f795a1",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "activation-contract",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/runtime/contract.rs",
+      "expect": {
+        "size_bytes": 6106,
+        "sha256": "c72689b93cea694bd79f4d0323085aa99be5e9fb025765a1b120ace3db4df754",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "v8-format-owner",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/v8.rs",
+      "expect": {
+        "size_bytes": 40868,
+        "sha256": "cb722f5dfb7c7d80ccc1ee298ee898e2220f178f50ef19f27bdf7feba564605a",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "complete-posting-batch-owner",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/runtime/relations.rs",
+      "expect": {
+        "size_bytes": 10618,
+        "sha256": "6d249c07c30abec6af8eb8be08253d5f0e981cb96bf12c9da2f1dea3fdde397d",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "rejected-phase8f-receipt",
+      "kind": "file",
+      "path": "../L1_L11_PEAK_SEARCH_PHASE_8F_2026-08-14/phase-8f-v2-13x1.json",
+      "expect": {
+        "size_bytes": 50216,
+        "sha256": "44107b74372a68548339b4a2a54a394cf863d7f129cc83e72d8f0cc8ad1e562d",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "phase8g-route-design",
+      "kind": "file",
+      "path": "route-design-v3.json",
+      "expect": {
+        "size_bytes": 6567,
+        "sha256": "f287518067ef0066e7790d59e9699d377ea0acc894f5be58fda25ae208811903",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "phase8g-route-gate",
+      "kind": "file",
+      "path": "route-gate-v3.json",
+      "expect": {
+        "size_bytes": 6627,
+        "sha256": "67f92c8a3abc011e86db91f8ddae50d50b9b8d8cb8aab277e42e600cdb2714d6",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "installed-package",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin",
+      "expect": {
+        "size_bytes": 190139182,
+        "sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+        "prefix_hex": "4c41594c31563800",
+        "mode": "0644"
+      }
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      { "id": "add-proof-only-modal-residual-projection", "kind": "filesystem_edit" },
+      { "id": "extend-proof-cli-and-metrics-schema", "kind": "filesystem_edit" },
+      { "id": "write-phase8g-receipts", "kind": "filesystem_write" },
+      { "id": "run-focused-and-fixed-projection-proofs", "kind": "test_execution" }
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "runtime_authority_change",
+      "production_modal_projection_reachability",
+      "early_atom_selection",
+      "posting_budget_truncation",
+      "queue_truncation",
+      "equality_pruning",
+      "heldout_target_modal_selection",
+      "generated_candidate_string",
+      "runtime_case_rule",
+      "score_or_settlement_change",
+      "package_format_change",
+      "corpus_crystallization",
+      "runtime_restart",
+      "installed_package_mutation",
+      "dense_oracle_executor_input",
+      "sampled_package_size_extrapolation",
+      "negative_residual_omission",
+      "zero_mass_residual_omission"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "phase8-proof-vetoes",
+      "path": "../../../../src/nanda_wave/lexical_grokking/posting_bounds.rs",
+      "sha256": "2fd0c4972f004071fd0d725010bb762702ea6b9314e7211a7ff4f40f1696a0d8",
+      "forbidden_effect_patterns": [
+        { "effect": "generated_traffic", "regex": "reqwest|ureq::" },
+        { "effect": "synthetic_fixture", "regex": "write_synthetic|generate_fixture" },
+        { "effect": "runtime_authority_change", "regex": "authorize_edit|mutation_owner|live_owner" },
+        { "effect": "early_atom_selection", "regex": "select_birth_atoms|birth_atoms_per_channel" },
+        { "effect": "posting_budget_truncation", "regex": "birth_posting_budget|posting_budget" },
+        { "effect": "queue_truncation", "regex": "modal_[a-z_]*\\.truncate|MAX_MODAL_QUEUE" },
+        { "effect": "equality_pruning", "regex": "drop_equal_boundary|prune_equal_mass" },
+        { "effect": "heldout_target_modal_selection", "regex": "modal_[a-z_]*\\([^)]*(expected|target)|select_modal[^;]*(expected|target)" },
+        { "effect": "generated_candidate_string", "regex": "generated_surface|candidate_surface" },
+        { "effect": "runtime_case_rule", "regex": "case\\.surface\\s*==|match\\s+case\\.class" },
+        { "effect": "score_or_settlement_change", "regex": "score_override|settlement_override" },
+        { "effect": "corpus_crystallization", "regex": "crystallize_l1_lexical_grokking" },
+        { "effect": "runtime_restart", "regex": "systemctl|pkill|killall" },
+        { "effect": "installed_package_mutation", "regex": "File::create\\(package_path|write\\(package_path" },
+        { "effect": "dense_oracle_executor_input", "regex": "ModalResidualExecutor[^;]*(dense|oracle)|modal_executor[^;]*(dense|oracle)" },
+        { "effect": "sampled_package_size_extrapolation", "regex": "sampled_(ratio|bytes)|extrapolated_package" },
+        { "effect": "negative_residual_omission", "regex": "(filter|retain)[^\\n]*delta[^\\n]*>\\s*0" },
+        { "effect": "zero_mass_residual_omission", "regex": "(filter|retain)[^\\n]*delta[^\\n]*!=\\s*0" }
+      ]
+    },
+    {
+      "id": "phase8f-impact-preservation-vetoes",
+      "path": "../../../../src/nanda_wave/lexical_grokking/posting_bounds/impact.rs",
+      "sha256": "6c77c46c6c3ba0c05b171e631dae2ade0316a8a097a2d9abf19f519451f795a1",
+      "forbidden_effect_patterns": [
+        { "effect": "production_modal_projection_reachability", "regex": "ModalResidualProjection|modal_residual_projection" },
+        { "effect": "package_format_change", "regex": "LAYL1V9|VERSION\\s*[:=]\\s*9" }
+      ]
+    },
+    {
+      "id": "complete-posting-batch-vetoes",
+      "path": "../../../../src/nanda_wave/lexical_grokking/runtime/relations.rs",
+      "sha256": "6d249c07c30abec6af8eb8be08253d5f0e981cb96bf12c9da2f1dea3fdde397d",
+      "forbidden_effect_patterns": [
+        { "effect": "runtime_authority_change", "regex": "authorize_edit|mutation_owner|live_owner" },
+        { "effect": "posting_budget_truncation", "regex": "posting_budget|relation_budget|\\.truncate\\(" },
+        { "effect": "package_format_change", "regex": "LAYL1V9|VERSION\\s*[:=]\\s*9" }
+      ]
+    },
+    {
+      "id": "v8-runtime-preservation-vetoes",
+      "path": "../../../../src/nanda_wave/lexical_grokking/v8.rs",
+      "sha256": "cb722f5dfb7c7d80ccc1ee298ee898e2220f178f50ef19f27bdf7feba564605a",
+      "forbidden_effect_patterns": [
+        { "effect": "production_modal_projection_reachability", "regex": "ModalResidualProjection|modal_residual_projection" },
+        { "effect": "package_format_change", "regex": "LAYL1V9|VERSION\\s*[:=]\\s*9" }
+      ]
+    }
+  ],
+  "state_machine": {
+    "initial_state": "PHASE8F_V2_EXECUTOR_REJECTED",
+    "terminal_states": [
+      "PHASE8G_SCAN_EXECUTOR_ADMITTED",
+      "PHASE8G_DISCOVERY_PASS_READOUT_OPEN",
+      "PHASE8G_SCHEDULER_WATCH",
+      "PHASE8G_HEAD_CERTIFICATE_REJECTED",
+      "PHASE8G_REPRESENTATION_REJECTED",
+      "PHASE8G_CORRECTNESS_REJECTED"
+    ],
+    "steps": [
+      {
+        "id": "implement-and-run-modal-residual-projection",
+        "from": "PHASE8F_V2_EXECUTOR_REJECTED",
+        "to": "PHASE8G_SCAN_EXECUTOR_ADMITTED",
+        "mutates": true,
+        "failure_state": "PHASE8G_CORRECTNESS_REJECTED",
+        "cleanup": "retain every Phase 8F and Phase 8G route receipt, retain projection source and negative verdict, do not mutate the installed package or runtime",
+        "preserves": [
+          "installed-package-bytes",
+          "rejected-phase8f-evidence",
+          "phase8g-route-evidence"
+        ],
+        "test_id": "phase8g-rollback-isolation"
+      }
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "installed-package-bytes",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin",
+      "policy": "byte_identical",
+      "rollback_policy": "must remain byte-identical",
+      "baseline_check_id": "installed-package"
+    },
+    {
+      "id": "rejected-phase8f-evidence",
+      "path": "../L1_L11_PEAK_SEARCH_PHASE_8F_2026-08-14/phase-8f-v2-13x1.json",
+      "policy": "byte_identical",
+      "rollback_policy": "must remain byte-identical",
+      "baseline_check_id": "rejected-phase8f-receipt"
+    },
+    {
+      "id": "phase8g-route-evidence",
+      "path": "route-gate-v3.json",
+      "policy": "byte_identical",
+      "rollback_policy": "must remain byte-identical",
+      "baseline_check_id": "phase8g-route-gate"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "complete-posting-batch-identity",
+      "producer": "one V8 shard batch decode for an ordered atom id slice",
+      "consumer": "independent complete_forward_couplings results for the same atom ids",
+      "comparison": "posting count order and every WaveCoupling tuple are byte-identical",
+      "test_id": "complete-posting-batch-parity"
+    },
+    {
+      "id": "modal-state-partition-identity",
+      "producer": "complete terminal-ordered forward posting plus implicit absent centers",
+      "consumer": "one modal state and every non-modal residual state per atom",
+      "comparison": "every atom-center pair reconstructs exactly one absent or exact strength-position state",
+      "test_id": "modal-state-partition-roundtrip"
+    },
+    {
+      "id": "signed-activation-vector-identity",
+      "producer": "modal baseline plus signed mass hits surface_hits and keyboard_hits residuals",
+      "consumer": "dense complete-posting ForwardActivation for every terminal",
+      "comparison": "all four activation coordinates, K-th mass, and equality closure are identical",
+      "test_id": "modal-dense-activation-parity"
+    },
+    {
+      "id": "untouched-upper-bound-identity",
+      "producer": "modal mass baseline plus unread positive residual heads",
+      "consumer": "dense masses of every center untouched by consumed positive cells",
+      "comparison": "no untouched dense mass exceeds the projected upper bound and strict beta comparison preserves equality",
+      "test_id": "modal-untouched-bound-parity"
+    },
+    {
+      "id": "fractional-lower-bound-identity",
+      "producer": "precedence-free fractional head-reduction relaxation",
+      "consumer": "exhaustive integral head schedules on bounded fixtures",
+      "comparison": "fractional event cost never exceeds exact minimum integral event cost",
+      "test_id": "modal-fractional-bound-parity"
+    },
+    {
+      "id": "replacement-package-ledger-identity",
+      "producer": "all atom residual lanes encoded in 32-atom zstd-19 shards",
+      "consumer": "full replacement package byte ledger",
+      "comparison": "header plus unchanged base plus complete indices plus every compressed shard equals projected total and repeats byte-identically",
+      "test_id": "modal-package-projection-determinism"
+    },
+    {
+      "id": "fixed-denominator-identity",
+      "producer": "ordered fixed 13 x 1 heldout query manifest with K 128",
+      "consumer": "Phase 8G per-class receipt",
+      "comparison": "case count class order query hash package hash and requested K remain fixed",
+      "test_id": "phase8g-fixed-denominator"
+    }
+  ],
+  "runtime_comparisons": [],
+  "invariants": [
+    {
+      "id": "batch-decode-completeness",
+      "statement": "batch posting access propagates decode errors and never substitutes an empty posting",
+      "test_id": "complete-posting-batch-parity"
+    },
+    {
+      "id": "query-independent-modal-selection",
+      "statement": "modal states use only complete posting state frequencies and deterministic structural tie order",
+      "test_id": "modal-query-independence"
+    },
+    {
+      "id": "complete-signed-field",
+      "statement": "negative and zero-mass residual records remain in accounting and exact reconstruction",
+      "test_id": "modal-dense-activation-parity"
+    },
+    {
+      "id": "strict-default-cohort-exclusion",
+      "statement": "untouched default centers are excluded only when dense K-th mass is strictly above modal baseline",
+      "test_id": "modal-default-cohort-equality-fault"
+    },
+    {
+      "id": "oracle-proof-only",
+      "statement": "dense beta may measure projection work but cannot enter a future executor",
+      "test_id": "phase8g-production-unreachable"
+    },
+    {
+      "id": "full-field-size-projection",
+      "statement": "package bytes are measured by encoding every atom lane and never by sample extrapolation",
+      "test_id": "modal-package-projection-determinism"
+    },
+    {
+      "id": "runtime-unreachable",
+      "statement": "Phase 8G projection cannot rank runtime candidates authorize edits or mutate packages",
+      "test_id": "phase8g-production-unreachable"
+    },
+    {
+      "id": "package-preserved",
+      "statement": "projection reads the V8 package and leaves installed bytes unchanged",
+      "test_id": "phase8g-package-parity"
+    }
+  ],
+  "tests": [
+    {
+      "id": "complete-posting-batch-parity",
+      "kind": "parity",
+      "expected": "batch and scalar complete posting access return identical ordered WaveCoupling arrays"
+    },
+    {
+      "id": "phase8g-rollback-isolation",
+      "kind": "fault_injection",
+      "expected": "any rejected projection leaves installed package and Phase 8F receipt byte-identical"
+    },
+    {
+      "id": "modal-state-partition-roundtrip",
+      "kind": "parity",
+      "expected": "every static atom-center state appears exactly once as modal or residual"
+    },
+    {
+      "id": "modal-dense-activation-parity",
+      "kind": "parity",
+      "expected": "signed residual reconstruction matches all four dense activation fields and exact K-th equality"
+    },
+    {
+      "id": "modal-untouched-bound-parity",
+      "kind": "parity",
+      "expected": "oracle-greedy unread-head upper bound never understates an untouched dense center"
+    },
+    {
+      "id": "modal-fractional-bound-parity",
+      "kind": "parity",
+      "expected": "fractional relaxed cost never exceeds exhaustive integral schedule cost"
+    },
+    {
+      "id": "modal-default-cohort-equality-fault",
+      "kind": "fault_injection",
+      "expected": "beta equal to modal baseline remains unresolved and cannot hide default equality centers"
+    },
+    {
+      "id": "modal-query-independence",
+      "kind": "parity",
+      "expected": "modal state is unchanged across query positions weights classes and target labels"
+    },
+    {
+      "id": "modal-package-projection-determinism",
+      "kind": "parity",
+      "expected": "two full-field encodes have identical section counts compressed bytes total bytes and payload SHA-256"
+    },
+    {
+      "id": "phase8g-fixed-denominator",
+      "kind": "parity",
+      "expected": "fixed 13 x 1 manifest package SHA and requested K 128 match the preregistered receipt"
+    },
+    {
+      "id": "phase8g-production-unreachable",
+      "kind": "integration",
+      "expected": "normal runtime modules contain no Phase 8G import call switch or authority route"
+    },
+    {
+      "id": "phase8g-package-parity",
+      "kind": "parity",
+      "expected": "installed package SHA-256 before and after is identical"
+    }
+  ]
+}

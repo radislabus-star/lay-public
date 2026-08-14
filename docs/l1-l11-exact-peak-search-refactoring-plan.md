@@ -1,6 +1,6 @@
 # L1.1 Exact Typed Peak Search: Detailed Refactoring Plan
 
-Status: Phases 0-7 complete; Phase 8 is the next admitted boundary
+Status: Phases 0-7 complete; Phase 8A-8H rejected physically; Phase 8I full Gate C v2 PASS, proof-only
 Date: 2026-08-13  
 Scope: `src/nanda_wave/lexical_grokking/` only, plus proof tooling and owned documentation
 
@@ -1319,28 +1319,37 @@ separate gates.
 
 ## 13. Current Verdict And Next Action
 
-Current verdict: `PHASE_2_COMPLETE_MOVE_ONLY_PARITY_PASS`; implementation preflight
-verdict remains `READY_TO_IMPLEMENT` with `safe_to_implement = true` and no
-blockers.
+Current verdict: `PHASE_8I_GATE_C_V2_PASS_PROOF_ONLY`. The bounded-projection
+implementation preflight was `READY_TO_IMPLEMENT` with
+`safe_to_implement = true` and no blockers. Its mapped implementation and proof
+gates have now completed.
 
-Phase 0 is complete. The immutable source, reader, package, corpus, heldout,
-latency, and semantic projection inputs are pinned. The installed reader was
-reproduced byte-for-byte from the isolated source snapshot. The fixed current
-proof passes all 13 quality and safety class gates, while current diverse hot
-`p99 = 21.1-22.2 ms` fails the future `<=5 ms` promotion gate. Runtime authority,
-installed package bytes, daemon, and IBus remain unchanged.
+Phase 0-7 established the immutable baseline and complete typed traversal.
+Phase 8A-8H rejected four global posting executors and decoder-subtree cover on
+measured work or package budgets. Phase 8I changed the damaged-restoration
+admission domain to the complete typed basin, reconstructed depth-0 evidence
+candidate-locally, and passed A0/A1/B0/A2 plus the full fixed Gate C v2.
 
-The design-only route gate still proves only route separation: two producers
-converge on one evidence owner, then one rank owner and one restoration
-authority owner. The implementation preflight admits code work against the
-pinned baseline; neither result proves the future search mathematics,
-implementation correctness, artifact feasibility, or deployment readiness.
+The accepted Gate C denominator is `13 x 20,000 = 260,000` damaged cases plus
+all `852,582` clean centers. Every class has unique top-1 strictly above `95%`;
+the minimum is `97.053%`. Every class has bounded lattice coverage at least
+`99%`; the minimum is `99.520%`. Complete-field retention and clean
+preservation are `100%`, false authority and false singleton are `0 / 0`, and
+the immutable package remains `190,139,182 B` with unchanged SHA-256.
+
+This result proves the Phase 8I quality contract only. It does not prove a
+physical compact package round-trip, production startup/RSS/first-touch, hot
+`p99 <=5 ms`, prefix completion integration, live owner transfer, physical
+input, rollback, or deployment. Runtime authority, installed package bytes,
+daemon, and IBus remain unchanged. The next boundary is the separate Phase 13
+physical package/runtime decision, followed by Gate D before M8/M9.
 
 ```text
 /home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_EXACT_PEAK_SEARCH_PLAN_2026-08-13/route-design.json
 /home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_EXACT_PEAK_SEARCH_PLAN_2026-08-13/route-gate.json
 /home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_BASELINE_2026-08-13/baseline.json
 /home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_BASELINE_2026-08-13/implementation-preflight-receipt.json
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/phase-8i-gate-c-13x20000-full-v2-bounded-projection.json
 ```
 
 Phase 0 measured facts:
@@ -2070,6 +2079,26 @@ explicit command-string check.
 /home/ubu/.cache/lay/l1-peak-search-phase7d-2026-08-14/phase7d.json
 ```
 
-The next action is Phase 8: derive and prove conservative posting-block and
-typed-state envelopes over the unchanged V8 bytes. No production owner flip is
-admitted until soundness, feasibility, and later settlement parity pass.
+Phase 8A-8G established exact posting algebra but rejected interval WAND,
+terminal-order accumulation, impact-head search, and global modal residuals as
+physical executors. The strongest latest negative point is Phase 8G: only four
+of `218,763` atoms have a non-absent global mode, the fractional event lower
+bound reaches `150,315`, and exact signed readout remains in the millions even
+though a `175,504,286 B` replacement package would fit.
+
+Phase 8H then tested the existing decoder trie as a lossless homogeneous posting
+cover. Correctness passed with zero activation, K/equality, typed-target, or
+union losses, but the topology is rejected: `83,525,208` cover tokens project to
+`317,591,731 B`, `91.602%` of tokens represent one center, and fixed query work
+reaches `6,288,648` units against the preregistered `100,000` screen. The package
+and every readout-work gate fail. Runtime authority and installed bytes remain
+unchanged.
+
+The next admitted action is paper-only Phase 8I. It must explicitly decide
+whether the product contract should continue demanding a global exact top-128
+over every center, or instead use the already proven complete Phase 7 typed
+geometry basin as the L1 admission domain and reconstruct depth-0 forward state
+for those terminals directly from `DecoderGraph + Atom.support + surface`. That
+is a semantic correction, not an optimization that may be hidden under Phase 8H
+parity. No executor, package change, Phase 9 work, or production owner flip is
+admitted before the new contract, independent parity proof, and gates pass.

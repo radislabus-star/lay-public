@@ -1,0 +1,101 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "phase8i_proof_cli", "role": "interface"},
+    {"id": "phase8i_orchestrator", "role": "orchestrator"},
+    {"id": "decoder_topology_adapter", "role": "producer"},
+    {"id": "typed_phase7d_transducer", "role": "producer"},
+    {"id": "exact_support_rebuilder", "role": "producer"},
+    {"id": "implicit_relation_reconstructor", "role": "producer"},
+    {"id": "typed_basin_settlement_adapter", "role": "producer"},
+    {"id": "v8_complete_posting_oracle", "role": "proof_owner"},
+    {"id": "compiler_formula_oracle", "role": "proof_owner"},
+    {"id": "support_parity_gate", "role": "proof_owner"},
+    {"id": "relation_activation_parity_gate", "role": "proof_owner"},
+    {"id": "settlement_parity_gate", "role": "proof_owner"},
+    {"id": "phase8i_admission_gate", "role": "proof_owner"},
+    {"id": "legacy_compatibility_observer", "role": "observer"},
+    {"id": "phase8i_metrics", "role": "observer"},
+    {"id": "phase8i_receipt", "role": "observer"}
+  ],
+  "edges": [
+    {"id": "exec-cli-orchestrator", "from": "phase8i_proof_cli", "relation": "calls", "to": "phase8i_orchestrator", "events": ["phase8i_support_projection", "phase8i_query_evaluation"]},
+    {"id": "exec-support-topology", "from": "phase8i_orchestrator", "relation": "calls", "to": "decoder_topology_adapter", "events": ["phase8i_support_projection"]},
+    {"id": "exec-support-rebuild", "from": "decoder_topology_adapter", "relation": "delegates", "to": "exact_support_rebuilder", "events": ["phase8i_support_projection"]},
+    {"id": "exec-support-admission", "from": "exact_support_rebuilder", "relation": "delegates", "to": "support_parity_gate", "events": ["phase8i_support_projection"]},
+    {"id": "exec-query-typed", "from": "phase8i_orchestrator", "relation": "calls", "to": "typed_phase7d_transducer", "events": ["phase8i_query_evaluation"]},
+    {"id": "exec-typed-topology", "from": "typed_phase7d_transducer", "relation": "calls", "to": "decoder_topology_adapter", "events": ["phase8i_query_evaluation"]},
+    {"id": "exec-typed-implicit", "from": "typed_phase7d_transducer", "relation": "delegates", "to": "implicit_relation_reconstructor", "events": ["phase8i_query_evaluation"]},
+    {"id": "exec-implicit-settlement", "from": "implicit_relation_reconstructor", "relation": "delegates", "to": "typed_basin_settlement_adapter", "events": ["phase8i_query_evaluation"]},
+    {"id": "exec-settlement-admission", "from": "typed_basin_settlement_adapter", "relation": "delegates", "to": "phase8i_admission_gate", "events": ["phase8i_query_evaluation"]},
+    {"id": "proof-support-compiler", "from": "compiler_formula_oracle", "relation": "proves", "to": "support_parity_gate", "events": ["phase8i_support_parity"]},
+    {"id": "proof-support-admission", "from": "support_parity_gate", "relation": "proves", "to": "phase8i_admission_gate", "events": ["phase8i_support_parity"]},
+    {"id": "proof-v8-relation", "from": "v8_complete_posting_oracle", "relation": "proves", "to": "relation_activation_parity_gate", "events": ["phase8i_relation_activation_parity"]},
+    {"id": "proof-implicit-relation", "from": "implicit_relation_reconstructor", "relation": "proves", "to": "relation_activation_parity_gate", "events": ["phase8i_relation_activation_parity"]},
+    {"id": "proof-relation-admission", "from": "relation_activation_parity_gate", "relation": "proves", "to": "phase8i_admission_gate", "events": ["phase8i_relation_activation_parity"]},
+    {"id": "proof-compiler-settlement", "from": "compiler_formula_oracle", "relation": "proves", "to": "settlement_parity_gate", "events": ["phase8i_settlement_parity"]},
+    {"id": "proof-settlement-adapter", "from": "typed_basin_settlement_adapter", "relation": "proves", "to": "settlement_parity_gate", "events": ["phase8i_settlement_parity"]},
+    {"id": "proof-settlement-admission", "from": "settlement_parity_gate", "relation": "proves", "to": "phase8i_admission_gate", "events": ["phase8i_settlement_parity"]},
+    {"id": "observe-admission-compatibility", "from": "phase8i_admission_gate", "relation": "observes", "to": "legacy_compatibility_observer", "events": ["phase8i_observation"]},
+    {"id": "observe-compatibility-metrics", "from": "legacy_compatibility_observer", "relation": "observes", "to": "phase8i_metrics", "events": ["phase8i_observation"]},
+    {"id": "observe-metrics-receipt", "from": "phase8i_metrics", "relation": "observes", "to": "phase8i_receipt", "events": ["phase8i_observation"]}
+  ],
+  "routes": [
+    {
+      "id": "phase8i-support-projection",
+      "event": "phase8i_support_projection",
+      "kind": "execution",
+      "entry": "phase8i_proof_cli",
+      "terminal": "support_parity_gate",
+      "required_roles": ["interface", "orchestrator", "producer", "proof_owner"],
+      "via": ["exact_support_rebuilder", "decoder_topology_adapter"],
+      "path_cardinality": [{"from": "phase8i_proof_cli", "to": "support_parity_gate", "min": 1, "max": 1}]
+    },
+    {
+      "id": "phase8i-query-evaluation",
+      "event": "phase8i_query_evaluation",
+      "kind": "execution",
+      "entry": "phase8i_proof_cli",
+      "terminal": "phase8i_admission_gate",
+      "required_roles": ["interface", "orchestrator", "producer", "proof_owner"],
+      "via": ["typed_phase7d_transducer", "implicit_relation_reconstructor", "typed_basin_settlement_adapter"],
+      "path_cardinality": [{"from": "phase8i_proof_cli", "to": "phase8i_admission_gate", "min": 1, "max": 1}]
+    },
+    {
+      "id": "phase8i-support-parity",
+      "event": "phase8i_support_parity",
+      "kind": "proof",
+      "entry": "compiler_formula_oracle",
+      "terminal": "phase8i_admission_gate",
+      "required_roles": ["proof_owner"],
+      "via": ["support_parity_gate"]
+    },
+    {
+      "id": "phase8i-relation-activation-parity",
+      "event": "phase8i_relation_activation_parity",
+      "kind": "proof",
+      "entry": "v8_complete_posting_oracle",
+      "terminal": "phase8i_admission_gate",
+      "required_roles": ["proof_owner"],
+      "via": ["relation_activation_parity_gate"]
+    },
+    {
+      "id": "phase8i-settlement-parity",
+      "event": "phase8i_settlement_parity",
+      "kind": "proof",
+      "entry": "compiler_formula_oracle",
+      "terminal": "phase8i_admission_gate",
+      "required_roles": ["proof_owner"],
+      "via": ["settlement_parity_gate"]
+    },
+    {
+      "id": "phase8i-observation",
+      "event": "phase8i_observation",
+      "kind": "observation",
+      "entry": "phase8i_admission_gate",
+      "terminal": "phase8i_receipt",
+      "required_roles": ["proof_owner", "observer"]
+    }
+  ]
+}

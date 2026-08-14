@@ -1,0 +1,330 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-l11-phase8i-bounded-projection-proof-v1-2026-08-14",
+  "authority_bearing": true,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "phase8i-paper-with-full-v1-diagnosis",
+      "kind": "file",
+      "path": "../../../l1-l11-typed-basin-implicit-forward-phase8i.md",
+      "expect": {
+        "size_bytes": 54407,
+        "sha256": "b4ae622251616a4af3466b287f17e9e5066fc9057c4f64a5eeffd261619b4f98",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "bounded-projection-route-pass",
+      "kind": "file",
+      "path": "bounded-projection-route-receipt-v1.json",
+      "expect": {
+        "size_bytes": 3486,
+        "sha256": "6df12e12d77f9838eace2c12a719c894364c5ef3f9294ab988236d191b6363a3",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "rejected-full-v1-receipt",
+      "kind": "file",
+      "path": "evidence/phase-8i-gate-c-13x20000-full-v1-ranking-correction.json",
+      "expect": {
+        "size_bytes": 526644,
+        "sha256": "69acd031114c0ec2709fe5d97699cae470c11c0b87626c3056f40c3dc9c90a51",
+        "mode": "0600"
+      }
+    },
+    {
+      "id": "quality-owner",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/typed_basin/quality.rs",
+      "expect": {
+        "size_bytes": 31357,
+        "sha256": "6692646b7bdba6ac622845c10a6d737c4fcb158428b8e6925dd6748980420a1b",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "quality-tests",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/typed_basin/quality/tests.rs",
+      "expect": {
+        "size_bytes": 8035,
+        "sha256": "6491805910c3e966ad9d5f918aeefc405ee1d45a0fa6d4a5a4a582b7f5e47829",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "runtime-export-owner",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/runtime.rs",
+      "expect": {
+        "size_bytes": 21823,
+        "sha256": "5d0d1a38ab0613da1ed753b6e266029f9c8f0912ba4ac0f31dc4ec0b2a528e70",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "frozen-runtime-projector",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/runtime/settlement.rs",
+      "expect": {
+        "size_bytes": 52503,
+        "sha256": "85edd991403ba1ba1e186c62c09d3e0fbcd36c93aa9d9d91ced475c62a7da675",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "quality-cli-owner",
+      "kind": "file",
+      "path": "../../../../src/bin/lay_nanda_wave_train.rs",
+      "expect": {
+        "size_bytes": 93211,
+        "sha256": "c3fcd15a7734aab8ec5bdcafad58f19c58e49f5d09cc8079e0abe8c9b9c265d5",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "frozen-version-owner",
+      "kind": "file",
+      "path": "../../../../Cargo.toml",
+      "expect": {
+        "size_bytes": 2399,
+        "sha256": "69a864532bcf0f806b00fdf6d74784d536dafc95f02c7e1ee3d136df2cb85b68",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "installed-package",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin",
+      "expect": {
+        "size_bytes": 190139182,
+        "sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+        "prefix_hex": "4c41594c31563800",
+        "mode": "0644"
+      }
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      { "id": "reuse-projector-in-proof", "kind": "filesystem_edit" },
+      { "id": "measure-cloned-bounded-field", "kind": "filesystem_edit" },
+      { "id": "add-scoped-diagnostic-scheduler", "kind": "filesystem_edit" },
+      { "id": "add-projection-contract-tests", "kind": "filesystem_edit" },
+      { "id": "run-focused-tests-remotely", "kind": "test_execution" },
+      { "id": "run-scoped-omission-diagnostic-remotely", "kind": "test_execution" },
+      { "id": "update-phase8i-result", "kind": "filesystem_edit" }
+    ],
+    "forbidden": [
+      "literal_case_rule",
+      "heldout_label_pull_into_projection",
+      "runtime_projector_change",
+      "candidate_birth_change",
+      "typed_traversal_change",
+      "implicit_activation_change",
+      "ranking_or_energy_change",
+      "top_k_change",
+      "objective_change",
+      "fixed_denominator_change",
+      "package_format_change",
+      "installed_package_mutation",
+      "runtime_restart",
+      "local_heavy_build",
+      "deployment",
+      "version_bump",
+      "commit_or_push",
+      "full_proof_before_scoped_pass"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "proof-correction-vetoes",
+      "path": "../../../../src/nanda_wave/lexical_grokking/typed_basin/quality.rs",
+      "sha256": "6692646b7bdba6ac622845c10a6d737c4fcb158428b8e6925dd6748980420a1b",
+      "forbidden_effect_patterns": [
+        { "effect": "literal_case_rule", "regex": "case\\.surface\\s*==|target_surface\\s*==" },
+        { "effect": "candidate_birth_change", "regex": "BOUNDED_PROJECTION_BIRTH" },
+        { "effect": "typed_traversal_change", "regex": "BOUNDED_PROJECTION_TRAVERSAL" },
+        { "effect": "implicit_activation_change", "regex": "BOUNDED_PROJECTION_ACTIVATION" },
+        { "effect": "ranking_or_energy_change", "regex": "BOUNDED_PROJECTION_(RANK|ENERGY|LEASE|THRESHOLD)" },
+        { "effect": "top_k_change", "regex": "BOUNDED_PROJECTION_TOP_K" },
+        { "effect": "objective_change", "regex": "BOUNDED_PROJECTION_OBJECTIVE" },
+        { "effect": "fixed_denominator_change", "regex": "BOUNDED_PROJECTION_DENOMINATOR" },
+        { "effect": "package_format_change", "regex": "LAYL1V9|VERSION\\s*[:=]\\s*9" },
+        { "effect": "installed_package_mutation", "regex": "File::create|fs::write|fs::rename" },
+        { "effect": "runtime_restart", "regex": "systemctl|pkill|killall" },
+        { "effect": "local_heavy_build", "regex": "Command::new[^;]*(cargo|rustc)" },
+        { "effect": "deployment", "regex": "Command::new[^;]*(deploy|install)|install_runtime" },
+        { "effect": "version_bump", "regex": "set_package_version|set-version" },
+        { "effect": "commit_or_push", "regex": "git\\s+(commit|push)" },
+        { "effect": "full_proof_before_scoped_pass", "regex": "BOUNDED_PROJECTION_FULL_PROOF" }
+      ]
+    }
+  ],
+  "state_machine": {
+    "initial_state": "BOUNDED_PROJECTION_DESIGN_PASS",
+    "terminal_states": [
+      "SCOPED_DIAGNOSTIC_PASS",
+      "SOURCE_REJECTED",
+      "FOCUSED_TESTS_REJECTED",
+      "SCOPED_DIAGNOSTIC_REJECTED"
+    ],
+    "steps": [
+      {
+        "id": "implement-proof-projection",
+        "from": "BOUNDED_PROJECTION_DESIGN_PASS",
+        "to": "SOURCE_READY",
+        "mutates": true,
+        "failure_state": "SOURCE_REJECTED",
+        "cleanup": "retain the scoped proof diff and rejected full v1 receipt; preserve runtime projector package and version bytes",
+        "preserves": ["runtime-projector-bytes", "installed-package-bytes", "version-owner-bytes", "full-v1-receipt-bytes"],
+        "test_id": "bounded-projection-source-failure"
+      },
+      {
+        "id": "run-focused-projection-tests-remotely",
+        "from": "SOURCE_READY",
+        "to": "FOCUSED_TESTS_PASS",
+        "mutates": true,
+        "failure_state": "FOCUSED_TESTS_REJECTED",
+        "cleanup": "retain remote test output and stop before scoped diagnostic",
+        "preserves": ["runtime-projector-bytes", "installed-package-bytes", "version-owner-bytes", "full-v1-receipt-bytes"],
+        "test_id": "bounded-projection-focused-failure"
+      },
+      {
+        "id": "run-scoped-omission-diagnostic-remotely",
+        "from": "FOCUSED_TESTS_PASS",
+        "to": "SCOPED_DIAGNOSTIC_PASS",
+        "mutates": true,
+        "failure_state": "SCOPED_DIAGNOSTIC_REJECTED",
+        "cleanup": "retain the scoped receipt and classify the first real bounded loss before any runtime edit or full rerun",
+        "preserves": ["runtime-projector-bytes", "installed-package-bytes", "version-owner-bytes", "full-v1-receipt-bytes"],
+        "test_id": "bounded-projection-scoped-failure"
+      }
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "runtime-projector-bytes",
+      "path": "../../../../src/nanda_wave/lexical_grokking/runtime/settlement.rs",
+      "policy": "byte_identical",
+      "rollback_policy": "proof correction cannot change product projection semantics",
+      "baseline_check_id": "frozen-runtime-projector"
+    },
+    {
+      "id": "installed-package-bytes",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin",
+      "policy": "byte_identical",
+      "rollback_policy": "installed package remains byte-identical",
+      "baseline_check_id": "installed-package"
+    },
+    {
+      "id": "version-owner-bytes",
+      "path": "../../../../Cargo.toml",
+      "policy": "byte_identical",
+      "rollback_policy": "no version change before promotion",
+      "baseline_check_id": "frozen-version-owner"
+    },
+    {
+      "id": "full-v1-receipt-bytes",
+      "path": "evidence/phase-8i-gate-c-13x20000-full-v1-ranking-correction.json",
+      "policy": "byte_identical",
+      "rollback_policy": "retain the rejected receipt as immutable evidence",
+      "baseline_check_id": "rejected-full-v1-receipt"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "projector-source-identity",
+      "producer": "runtime truncate_with_reconstruction_tail",
+      "consumer": "Gate C bounded projection",
+      "comparison": "the proof invokes the same function with limit 64 on a clone of the complete field",
+      "test_id": "bounded-projection-shared-owner"
+    },
+    {
+      "id": "complete-field-identity",
+      "producer": "exact settlement complete candidates",
+      "consumer": "quality metrics and authority readout",
+      "comparison": "bounded projection cannot mutate candidate order count readout or complete-field rank",
+      "test_id": "bounded-projection-complete-field-immutable"
+    },
+    {
+      "id": "local-remote-source-identity",
+      "producer": "local changed source bytes",
+      "consumer": "remote proof checkout source bytes",
+      "comparison": "SHA-256 equality before every remote test",
+      "test_id": "bounded-projection-remote-source-parity"
+    }
+  ],
+  "runtime_comparisons": [
+    {
+      "id": "full-v1-v2-contract",
+      "source": "fixed Gate C receipts",
+      "comparison": "projection_semantics_only",
+      "reason": "only bounded membership and projection diagnostics may change",
+      "stable_fields": [
+        "configuration.heldout_per_class",
+        "configuration.fixed_damage_classes",
+        "damaged_quality.classes.*.cases",
+        "damaged_quality.classes.*.objective_unique_cases",
+        "damaged_quality.classes.*.target_retained_complete_field",
+        "damaged_quality.classes.*.unique_top1",
+        "damaged_quality.classes.*.false_authority",
+        "damaged_quality.classes.*.false_singleton",
+        "damaged_quality.classes.*.complete_exact_candidates",
+        "clean_quality",
+        "artifact.package_bytes",
+        "artifact.package_sha256_before",
+        "artifact.package_sha256_after",
+        "claim_boundary.runtime_authority_changed",
+        "claim_boundary.installed_runtime_changed"
+      ],
+      "expected_to_change_fields": [
+        "damaged_quality.classes.*.target_in_final_top64",
+        "damaged_quality.classes.*.lattice_coverage_percent",
+        "damaged_quality.*.gates.lattice_coverage_ge_99_percent",
+        "diagnostics",
+        "gates.lattice_coverage_every_class_ge_99_percent",
+        "gates.conjunctive_full_quality_pass",
+        "verdict"
+      ],
+      "observed_not_compared_fields": ["timing", "resource_usage"],
+      "test_id": "bounded-projection-full-parity"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "one-bounded-projector-owner",
+      "statement": "Gate C reuses the runtime bounded projector and does not implement a second truncation policy",
+      "test_id": "bounded-projection-shared-owner"
+    },
+    {
+      "id": "labels-after-projection",
+      "statement": "target objective class and fixture labels are read only after projection for metrics",
+      "test_id": "bounded-projection-no-label-input"
+    },
+    {
+      "id": "scoped-diagnostic-cannot-promote",
+      "statement": "a damage-class-filtered run has an explicit diagnostic verdict and full_quality_claimed false",
+      "test_id": "bounded-projection-filter-claim-boundary"
+    },
+    {
+      "id": "deployment-isolation",
+      "statement": "proof changes cannot mutate package daemon IBus installed binary version commit or remote branch",
+      "test_id": "bounded-projection-package-isolation"
+    }
+  ],
+  "tests": [
+    { "id": "bounded-projection-source-failure", "kind": "fault_injection", "expected": "source or format failure blocks remote tests" },
+    { "id": "bounded-projection-focused-failure", "kind": "fault_injection", "expected": "focused test failure blocks scoped replay" },
+    { "id": "bounded-projection-scoped-failure", "kind": "fault_injection", "expected": "scoped coverage failure blocks full proof" },
+    { "id": "bounded-projection-shared-owner", "kind": "parity", "expected": "proof uses the shared runtime projector with limit 64" },
+    { "id": "bounded-projection-complete-field-immutable", "kind": "parity", "expected": "projection leaves the complete field and authority readout unchanged" },
+    { "id": "bounded-projection-no-label-input", "kind": "parity", "expected": "projection receives candidates and limit only" },
+    { "id": "bounded-projection-filter-claim-boundary", "kind": "parity", "expected": "filtered diagnostic cannot return PASS_C_QUALITY" },
+    { "id": "bounded-projection-remote-source-parity", "kind": "parity", "expected": "local and remote changed source hashes match" },
+    { "id": "bounded-projection-package-isolation", "kind": "parity", "expected": "package and installed runtime remain unchanged" },
+    { "id": "bounded-projection-full-parity", "kind": "parity", "expected": "a later full receipt differs only in declared projection fields and timing" }
+  ]
+}

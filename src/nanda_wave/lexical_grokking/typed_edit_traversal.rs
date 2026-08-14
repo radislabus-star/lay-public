@@ -339,6 +339,12 @@ pub(super) struct Phase7dTerminalEvidence {
     pub(super) terminal_events: u64,
 }
 
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub(super) struct Phase7dTerminalDiagnosticEvidence {
+    pub(super) terminal: Phase7dTerminalEvidence,
+    pub(super) certificate_classes: BTreeMap<u32, Vec<&'static str>>,
+}
+
 struct L1TypedEditTraversal<'a> {
     index: &'a ForwardDecoderIndex,
     decoder_nodes: &'a [DecoderNode],
@@ -675,6 +681,46 @@ impl<'a> L1TypedEditTraversal<'a> {
             }
         }
 
+        if scope.admits_phase7d() {
+            if let (Some(first), Some(second)) = (
+                observed,
+                query
+                    .lexical_symbols
+                    .get(usize::from(state.input_position) + 1)
+                    .copied(),
+            ) {
+                if first != second {
+                    metrics.decoder_edges_examined += 1;
+                    if let Some(left) = self.index.child(state.decoder_node, second) {
+                        let mut omitted_children = self.index.children(left).to_vec();
+                        reorder_children(&mut omitted_children, schedule);
+                        metrics.decoder_edges_examined += omitted_children.len() as u64;
+                        for omitted in omitted_children {
+                            metrics.decoder_edges_examined += 1;
+                            if let Some(right) = self.index.child(omitted.node_id, first) {
+                                self.push_state(
+                                    TraversalState {
+                                        decoder_node: right,
+                                        input_position: state.input_position + 2,
+                                        target_depth: state.target_depth + 3,
+                                        program: OperatorProgram::Lexical(
+                                            LexicalEditState::OmissionTransposition {
+                                                omitted_target: state.target_depth + 1,
+                                                transposed_target: state.target_depth,
+                                            },
+                                        ),
+                                    },
+                                    seen,
+                                    next,
+                                    metrics,
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         let mut children = self.index.children(state.decoder_node).to_vec();
         reorder_children(&mut children, schedule);
         metrics.decoder_edges_examined += children.len() as u64;
@@ -984,18 +1030,56 @@ pub(super) fn phase7d_terminal_evidence(
     decoder_nodes: &[DecoderNode],
     surface: &str,
 ) -> Result<Phase7dTerminalEvidence, String> {
+    let result = traverse_phase7d(index, decoder_nodes, surface)?;
+    Ok(project_phase7d_terminal_evidence(&result))
+}
+
+pub(super) fn phase7d_terminal_diagnostic_evidence(
+    index: &ForwardDecoderIndex,
+    decoder_nodes: &[DecoderNode],
+    surface: &str,
+) -> Result<Phase7dTerminalDiagnosticEvidence, String> {
+    let result = traverse_phase7d(index, decoder_nodes, surface)?;
+    let terminal = project_phase7d_terminal_evidence(&result);
+    let certificate_classes = result
+        .terminals
+        .iter()
+        .map(|(terminal_id, certificates)| {
+            let classes = certificates
+                .iter()
+                .map(TypedCertificate::class)
+                .collect::<BTreeSet<_>>()
+                .into_iter()
+                .collect();
+            (*terminal_id, classes)
+        })
+        .collect();
+    Ok(Phase7dTerminalDiagnosticEvidence {
+        terminal,
+        certificate_classes,
+    })
+}
+
+fn traverse_phase7d(
+    index: &ForwardDecoderIndex,
+    decoder_nodes: &[DecoderNode],
+    surface: &str,
+) -> Result<TraversalResult, String> {
     let query = L1TypedQueryField::encode(surface)?;
-    let result = L1TypedEditTraversal {
+    Ok(L1TypedEditTraversal {
         index,
         decoder_nodes,
     }
-    .traverse(&query, TraversalScope::Phase7D, TraversalSchedule::Forward);
-    Ok(Phase7dTerminalEvidence {
-        terminal_ids: result.terminals.into_keys().collect(),
+    .traverse(&query, TraversalScope::Phase7D, TraversalSchedule::Forward))
+}
+
+fn project_phase7d_terminal_evidence(result: &TraversalResult) -> Phase7dTerminalEvidence {
+    Phase7dTerminalEvidence {
+        terminal_ids: result.terminals.keys().copied().collect(),
         states_expanded: result.metrics.states_expanded,
         queue_peak: result.metrics.queue_peak,
         terminal_events: result.metrics.wordcenter_terminal_events,
-    })
+    }
 }
 
 fn reorder_states(states: &mut [TraversalState], schedule: TraversalSchedule) {
@@ -1161,6 +1245,25 @@ fn direct_typed_oracle(
                                 transposed_target: transposed_target as u8,
                             });
                         }
+                    }
+                }
+                for transposed_target in 0..target.len().saturating_sub(2) {
+                    let omitted_target = transposed_target + 1;
+                    if target[transposed_target] == target[transposed_target + 2] {
+                        continue;
+                    }
+                    let matches = target[..transposed_target]
+                        .iter()
+                        .copied()
+                        .chain(std::iter::once(target[transposed_target + 2]))
+                        .chain(std::iter::once(target[transposed_target]))
+                        .chain(target[transposed_target + 3..].iter().copied())
+                        .eq(query.lexical_symbols.iter().copied());
+                    if matches {
+                        certificates.insert(TypedCertificate::OmissionTransposition {
+                            omitted_target: omitted_target as u8,
+                            transposed_target: transposed_target as u8,
+                        });
                     }
                 }
             }
@@ -2011,6 +2114,13 @@ mod tests {
                     transposed_target: 0,
                 },
             ),
+            (
+                "caab",
+                TypedCertificate::OmissionTransposition {
+                    omitted_target: 1,
+                    transposed_target: 0,
+                },
+            ),
         ];
         for (raw, expected) in cases {
             let result = traversal.traverse(
@@ -2026,6 +2136,31 @@ mod tests {
                 "query {raw:?} lacks {expected:?}"
             );
         }
+    }
+
+    #[test]
+    fn phase7d_projection_preserves_terminal_ids_and_certificate_classes() {
+        let package = tiny_package();
+        let index = ForwardDecoderIndex::build(&package).unwrap();
+        let query = L1TypedQueryField::encode("acb").unwrap();
+        let complete = traversal(&package, &index).traverse(
+            &query,
+            TraversalScope::Phase7D,
+            TraversalSchedule::Forward,
+        );
+        let baseline = phase7d_terminal_evidence(&index, &package.decoder_nodes, "acb").unwrap();
+        let projected =
+            phase7d_terminal_diagnostic_evidence(&index, &package.decoder_nodes, "acb").unwrap();
+
+        assert_eq!(
+            baseline.terminal_ids,
+            complete.terminals.keys().copied().collect::<Vec<_>>()
+        );
+        assert_eq!(projected.terminal, baseline);
+        assert_eq!(
+            projected.certificate_classes.get(&9),
+            Some(&vec!["sparse_multi_omission"])
+        );
     }
 
     #[test]

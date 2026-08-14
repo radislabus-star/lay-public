@@ -1,0 +1,221 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-l11-phase8i-typed-basin-implicit-forward-a0-a1-b0-2026-08-14",
+  "authority_bearing": false,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "phase8i-paper",
+      "kind": "file",
+      "path": "../../../l1-l11-typed-basin-implicit-forward-phase8i.md",
+      "expect": {"size_bytes": 20247, "sha256": "b1ff0da4e943946634f6af17d522f082cff55e1218533cf9cae53fcb757ba07c", "mode": "0664"}
+    },
+    {
+      "id": "support-width-audit",
+      "kind": "file",
+      "path": "baseline/support-width-audit.json",
+      "expect": {"size_bytes": 1712, "sha256": "01128301717d2e81d7e9edd4f589ff099997edd7be23ecdb962608643b71a20d", "mode": "0664"}
+    },
+    {
+      "id": "phase8i-route-design",
+      "kind": "file",
+      "path": "route-design-v3.json",
+      "expect": {"size_bytes": 6658, "sha256": "882abbffc12cac3006166f9f85c2b20ca8ce497c0010f9ad018bbb8154a189bf", "mode": "0664"}
+    },
+    {
+      "id": "phase8i-route-gate",
+      "kind": "file",
+      "path": "route-gate-v3.json",
+      "expect": {"size_bytes": 6916, "sha256": "78a311eb6b32460d07e164e388603b55465b6f990b341d758fbae85f1cddb0c9", "mode": "0664"}
+    },
+    {
+      "id": "proof-cli-owner",
+      "kind": "file",
+      "path": "../../../../src/bin/lay_nanda_wave_train.rs",
+      "expect": {"size_bytes": 91223, "sha256": "eb36d3c1f5e54a44005897788909591a09549bdac4bd7c64f8edad919571fcc9", "mode": "0664"}
+    },
+    {
+      "id": "lexical-module-owner",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/mod.rs",
+      "expect": {"size_bytes": 3087, "sha256": "d554a07149e56089c78d0751d6e6b3dc7e58abd6cd37357806851fc79d4d0743", "mode": "0664"}
+    },
+    {
+      "id": "public-export-owner",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/mod.rs",
+      "expect": {"size_bytes": 60627, "sha256": "ad86971a7c14dc0ea04eeff41e4e297512c0c1492db208597e8545b7ad8fc33d", "mode": "0664"}
+    },
+    {
+      "id": "typed-traversal-owner",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/typed_edit_traversal.rs",
+      "expect": {"size_bytes": 78588, "sha256": "2aaa264659f9a43fb818cc527f569f54bcbd47ae225878b323807c92c05842ff", "mode": "0664"}
+    },
+    {
+      "id": "decoder-index-owner",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/forward_decoder_index.rs",
+      "expect": {"size_bytes": 19862, "sha256": "754ce19ad880ef869bdad6f961c10de504966d5bf01f7e9cffb1", "mode": "0664"}
+    },
+    {
+      "id": "relation-oracle-owner",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/runtime/relations.rs",
+      "expect": {"size_bytes": 11169, "sha256": "c5a134fbb4e91f392ae5a8844b69864347a67dfa6299dbc07067b409305a8649", "mode": "0664"}
+    },
+    {
+      "id": "compiler-formula-owner",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/compiler.rs",
+      "expect": {"size_bytes": 91801, "sha256": "4f26262a9e0fb0cfe8d853074d213c5345168816492197303cd1c2981d006d72", "mode": "0664"}
+    },
+    {
+      "id": "compact-format-owner",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/format.rs",
+      "expect": {"size_bytes": 60594, "sha256": "142ce3eb8e56421d2df7efb05b8bda64b2f8d0fe95267a6d86ba4d3b21342b36", "mode": "0664"}
+    },
+    {
+      "id": "phase7d-proof",
+      "kind": "file",
+      "path": "../L1_L11_PEAK_SEARCH_PHASE_7D_2026-08-14/phase-7d.json",
+      "expect": {"size_bytes": 10173, "sha256": "bd123b9d525134de972beca1ae1f552ce22c9a3f4368fd033d90483e82fe6983", "mode": "0664"}
+    },
+    {
+      "id": "phase8h-negative-proof",
+      "kind": "file",
+      "path": "../L1_L11_PEAK_SEARCH_PHASE_8H_2026-08-14/evidence/phase-8h-13x1.json",
+      "expect": {"size_bytes": 73055, "sha256": "897ea676f018fab4fe37e332c6c87ab662112cc1a492244f4ec123b9f51e5f9d", "mode": "0664"}
+    },
+    {
+      "id": "installed-package",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin",
+      "expect": {"size_bytes": 190139182, "sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9", "prefix_hex": "4c41594c31563800", "mode": "0644"}
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "add-proof-only-typed-basin-module", "kind": "filesystem_edit"},
+      {"id": "add-explicit-proof-cli-route", "kind": "filesystem_edit"},
+      {"id": "write-phase8i-proof-receipts", "kind": "filesystem_write"},
+      {"id": "run-focused-tests-and-small-proof-remotely", "kind": "test_execution"}
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "runtime_authority_change",
+      "production_phase8i_reachability",
+      "package_format_change",
+      "installed_package_mutation",
+      "corpus_crystallization",
+      "runtime_restart",
+      "heldout_target_pull",
+      "v8_relation_payload_as_implicit_input",
+      "posting_degree_as_exact_support",
+      "typed_basin_truncation",
+      "global_topk_admission",
+      "settlement_change",
+      "completion_lane_change",
+      "literal_case_rule",
+      "local_heavy_build"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "proof-cli-vetoes",
+      "path": "../../../../src/bin/lay_nanda_wave_train.rs",
+      "sha256": "eb36d3c1f5e54a44005897788909591a09549bdac4bd7c64f8edad919571fcc9",
+      "forbidden_effect_patterns": [
+        {"effect": "runtime_restart", "regex": "systemctl|pkill|killall"},
+        {"effect": "installed_package_mutation", "regex": "File::create\\(package|write\\(package"},
+        {"effect": "literal_case_rule", "regex": "case\\.surface\\s*==|match\\s+case\\.class"}
+      ]
+    },
+    {
+      "id": "typed-traversal-preservation-vetoes",
+      "path": "../../../../src/nanda_wave/lexical_grokking/typed_edit_traversal.rs",
+      "sha256": "2aaa264659f9a43fb818cc527f569f54bcbd47ae225878b323807c92c05842ff",
+      "forbidden_effect_patterns": [
+        {"effect": "typed_basin_truncation", "regex": "terminal_ids\\.truncate|MAX_TYPED_TERMINALS|queue_limit"},
+        {"effect": "heldout_target_pull", "regex": "expected_terminal|case\\.terminal_id[^;]*(traverse|admit)"},
+        {"effect": "literal_case_rule", "regex": "case\\.surface\\s*==|match\\s+case\\.class"}
+      ]
+    },
+    {
+      "id": "global-posting-route-isolation-vetoes",
+      "path": "../../../../src/nanda_wave/lexical_grokking/posting_bounds.rs",
+      "sha256": "84398d19074a719eef4e1a0fe947bd6182e9f4b7a31148e034bd169a4ba9c6cf",
+      "forbidden_effect_patterns": [
+        {"effect": "global_topk_admission", "regex": "TypedBasinImplicit|typed_basin_implicit|phase8i"},
+        {"effect": "runtime_authority_change", "regex": "authorize_edit|mutation_owner|live_owner"}
+      ]
+    },
+    {
+      "id": "production-runtime-isolation-vetoes",
+      "path": "../../../../src/nanda_wave/lexical_grokking/service.rs",
+      "sha256": "fb8f3696e4c4899eef514eadbf0c8fb2e09809772bdd893885043448ec8ea2df",
+      "forbidden_effect_patterns": [
+        {"effect": "production_phase8i_reachability", "regex": "TypedBasinImplicit|typed_basin_implicit|phase8i"},
+        {"effect": "package_format_change", "regex": "LAYL1V9|VERSION\\s*[:=]\\s*9"}
+      ]
+    }
+  ],
+  "state_machine": {
+    "initial_state": "PHASE8I_PAPER_ROUTE_PASS",
+    "terminal_states": [
+      "PHASE8I_A0_A1_B0_ADMITTED",
+      "PHASE8I_SUPPORT_REPRESENTATION_REJECTED",
+      "PHASE8I_RELATION_PARITY_REJECTED",
+      "PHASE8I_ACTIVATION_PARITY_REJECTED",
+      "PHASE8I_FEASIBILITY_REJECTED"
+    ],
+    "steps": [
+      {
+        "id": "implement-proof-only-support-and-implicit-activation",
+        "from": "PHASE8I_PAPER_ROUTE_PASS",
+        "to": "PHASE8I_A0_A1_B0_ADMITTED",
+        "mutates": true,
+        "failure_state": "PHASE8I_RELATION_PARITY_REJECTED",
+        "cleanup": "retain paper, route revisions, source, and every negative receipt; do not mutate installed package or runtime",
+        "preserves": ["installed-package-bytes", "phase7d-proof-bytes", "phase8h-negative-proof-bytes", "phase8i-route-proof-bytes"],
+        "test_id": "phase8i-proof-route-isolation"
+      }
+    ]
+  },
+  "preserved_artifacts": [
+    {"id": "installed-package-bytes", "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin", "policy": "byte_identical", "rollback_policy": "must remain byte-identical", "baseline_check_id": "installed-package"},
+    {"id": "phase7d-proof-bytes", "path": "../L1_L11_PEAK_SEARCH_PHASE_7D_2026-08-14/phase-7d.json", "policy": "byte_identical", "rollback_policy": "must remain byte-identical", "baseline_check_id": "phase7d-proof"},
+    {"id": "phase8h-negative-proof-bytes", "path": "../L1_L11_PEAK_SEARCH_PHASE_8H_2026-08-14/evidence/phase-8h-13x1.json", "policy": "byte_identical", "rollback_policy": "must remain byte-identical", "baseline_check_id": "phase8h-negative-proof"},
+    {"id": "phase8i-route-proof-bytes", "path": "route-gate-v3.json", "policy": "byte_identical", "rollback_policy": "must remain byte-identical", "baseline_check_id": "phase8i-route-gate"}
+  ],
+  "identity_contracts": [
+    {"id": "exact-support-identity", "producer": "full immutable decoder surface scan using canonical atom encoder", "consumer": "candidate-local relation strength formula", "comparison": "stored support equals saturated exact support for every atom and no encoded atom is unresolved", "test_id": "exact-support-field-parity"},
+    {"id": "implicit-relation-identity", "producer": "candidate-local relation reconstruction without V8 payload access", "consumer": "complete V8 relation for the same AtomId and WordCenterId", "comparison": "atom ID peer strength phase position and flags are byte-identical", "test_id": "implicit-v8-relation-parity"},
+    {"id": "activation-vector-identity", "producer": "implicit candidate-local relations for the observed query", "consumer": "complete V8 observed-posting accumulation", "comparison": "mass hits surface_hits and keyboard_hits are identical", "test_id": "implicit-v8-activation-parity"},
+    {"id": "typed-basin-identity", "producer": "exact Phase 7D transducer terminal set", "consumer": "implicit reconstruction execution domain", "comparison": "every and only typed terminal is reconstructed exactly once without a cap", "test_id": "typed-basin-domain-parity"},
+    {"id": "query-order-identity", "producer": "forward and permuted typed terminal order", "consumer": "sorted implicit activation records", "comparison": "byte-identical records and metrics", "test_id": "implicit-candidate-permutation-parity"},
+    {"id": "timing-boundary-identity", "producer": "typed traversal plus implicit reconstruction timestamps", "consumer": "reported execution latency", "comparison": "V8 oracle comparison and global setup time are excluded and reported separately", "test_id": "phase8i-timing-boundary"}
+  ],
+  "runtime_comparisons": [],
+  "invariants": [
+    {"id": "installed-runtime-untouched", "statement": "installed package daemon IBus version and authority remain unchanged", "test_id": "phase8i-proof-route-isolation"},
+    {"id": "support-is-query-independent", "statement": "exact support is rebuilt over every primary center before heldout evaluation", "test_id": "exact-support-field-parity"},
+    {"id": "implicit-producer-does-not-read-v8-payload", "statement": "V8 relations are available only to the parity oracle after implicit records exist", "test_id": "implicit-producer-isolation"},
+    {"id": "typed-domain-is-complete", "statement": "no typed terminal or equal activation is truncated to meet latency", "test_id": "typed-basin-domain-parity"},
+    {"id": "semantic-lanes-remain-separated", "statement": "Phase 8I adds no prefix completion morphology context or production route", "test_id": "phase8i-proof-route-isolation"}
+  ],
+  "tests": [
+    {"id": "phase8i-proof-route-isolation", "kind": "parity", "expected": "observed source contains one proof-only route and no package writer runtime owner restart or production caller"},
+    {"id": "exact-support-field-parity", "kind": "parity", "expected": "all centers and atom occurrences rebuild deterministically with zero stored-saturation mismatch"},
+    {"id": "implicit-v8-relation-parity", "kind": "parity", "expected": "every typed candidate relation matches complete V8 bytes with no missing or extra relation"},
+    {"id": "implicit-v8-activation-parity", "kind": "parity", "expected": "all four activation coordinates match complete V8 accumulation"},
+    {"id": "typed-basin-domain-parity", "kind": "parity", "expected": "execution reconstructs exactly every D_E(Q) terminal once with target retained"},
+    {"id": "implicit-candidate-permutation-parity", "kind": "parity", "expected": "candidate order cannot change implicit records or activation bytes"},
+    {"id": "phase8i-timing-boundary", "kind": "parity", "expected": "execution and oracle timings are disjoint and complete"},
+    {"id": "implicit-producer-isolation", "kind": "fault_injection", "expected": "V8 parity oracle corruption changes only the proof verdict and cannot change implicit output"},
+    {"id": "phase8i-small-feasibility", "kind": "performance", "expected": "fixed 13 x 1 has zero parity loss, implicit max <=2.5 ms, combined typed plus implicit max <=5 ms"}
+  ]
+}

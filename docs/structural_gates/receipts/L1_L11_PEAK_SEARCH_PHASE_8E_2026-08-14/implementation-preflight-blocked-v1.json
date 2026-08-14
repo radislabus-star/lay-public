@@ -1,0 +1,164 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "phase8e-paper",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8E_2026-08-14/../../../l1-l11-sharded-epoch-phase8e.md",
+      "sha256": "6bedc54ce6952c4e061b35df9346b9ce3a9a0e76df4deed0accd806f6e6563c1",
+      "size_bytes": 7080
+    },
+    {
+      "exists": true,
+      "id": "phase8-proof-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8E_2026-08-14/../../../../src/nanda_wave/lexical_grokking/posting_bounds.rs",
+      "sha256": "56eb7499f4b5fcf28d1c0b63f577b76ae7356581d8010b0c922876260da854b8",
+      "size_bytes": 47045
+    },
+    {
+      "exists": true,
+      "id": "legacy-epoch-pattern",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8E_2026-08-14/../../../../src/nanda_wave/lexical_grokking/runtime/legacy.rs",
+      "sha256": "d1cbf8834050aa29051c7c49f254b1c56b537d509c8b15f6ee7ff668b9d9b2c3",
+      "size_bytes": 32273
+    },
+    {
+      "exists": true,
+      "id": "activation-contract",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8E_2026-08-14/../../../../src/nanda_wave/lexical_grokking/runtime/contract.rs",
+      "sha256": "c72689b93cea694bd79f4d0323085aa99be5e9fb025765a1b120ace3db4df754",
+      "size_bytes": 6106
+    },
+    {
+      "exists": true,
+      "id": "rejected-phase8-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8E_2026-08-14/../L1_L11_PEAK_SEARCH_PHASE_8_2026-08-14/phase-8.json",
+      "sha256": "199aed858fb38d7462465fc7c73cf28f846e6f96cc0cadc1b5608970c71dea37",
+      "size_bytes": 8004
+    },
+    {
+      "exists": true,
+      "id": "installed-package",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin",
+      "sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+      "size_bytes": 190139182
+    }
+  ],
+  "blockers": [
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: corpus_crystallization"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: equality_pruning"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: generated_traffic"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: installed_package_mutation"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: queue_truncation"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: runtime_case_rule"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: synthetic_fixture"
+    }
+  ],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 6,
+    "forbidden_side_effect_kinds": [
+      "corpus_crystallization",
+      "early_atom_selection",
+      "equality_pruning",
+      "generated_candidate_string",
+      "generated_traffic",
+      "heldout_target_search_input",
+      "installed_package_mutation",
+      "package_format_change",
+      "posting_budget_truncation",
+      "production_epoch_search_reachability",
+      "queue_truncation",
+      "runtime_authority_change",
+      "runtime_case_rule",
+      "runtime_restart",
+      "score_or_settlement_change",
+      "synthetic_fixture"
+    ],
+    "identity_contracts": 3,
+    "invariants": 6,
+    "planned_side_effect_kinds": [
+      "filesystem_edit",
+      "filesystem_write",
+      "test_execution"
+    ],
+    "preserved_artifacts": 2,
+    "runtime_comparisons": 0,
+    "source_checks": 3,
+    "tests": 10
+  },
+  "manifest_sha256": "03ab182e3bc4c0207103f5ab8c31e0627ca9f9a8daf7fa1670e01e37c8d856d2",
+  "safe_to_implement": false,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "phase8-proof-vetoes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8E_2026-08-14/../../../../src/nanda_wave/lexical_grokking/posting_bounds.rs",
+      "sha256": "56eb7499f4b5fcf28d1c0b63f577b76ae7356581d8010b0c922876260da854b8",
+      "size_bytes": 47045
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "legacy-runtime-vetoes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8E_2026-08-14/../../../../src/nanda_wave/lexical_grokking/runtime/legacy.rs",
+      "sha256": "d1cbf8834050aa29051c7c49f254b1c56b537d509c8b15f6ee7ff668b9d9b2c3",
+      "size_bytes": 32273
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "activation-contract-vetoes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8E_2026-08-14/../../../../src/nanda_wave/lexical_grokking/runtime/contract.rs",
+      "sha256": "c72689b93cea694bd79f4d0323085aa99be5e9fb025765a1b120ace3db4df754",
+      "size_bytes": 6106
+    }
+  ],
+  "task_id": "lay-l11-sharded-epoch-phase8e-2026-08-14",
+  "verdict": "BLOCKED_BEFORE_CODE"
+}

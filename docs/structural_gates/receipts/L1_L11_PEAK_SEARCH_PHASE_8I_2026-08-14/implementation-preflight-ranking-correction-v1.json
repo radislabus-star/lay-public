@@ -1,0 +1,262 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-l11-phase8i-ranking-correction-v1-2026-08-14",
+  "authority_bearing": true,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "phase8i-paper-with-measured-diagnosis",
+      "kind": "file",
+      "path": "../../../l1-l11-typed-basin-implicit-forward-phase8i.md",
+      "expect": {"size_bytes": 47023, "sha256": "9995a9e8e67db76aaaeb0e3dc78b91322d96ea15f24087a6d79bd4a7f28ae172", "mode": "0664"}
+    },
+    {
+      "id": "ranking-correction-route-pass",
+      "kind": "file",
+      "path": "ranking-correction-route-receipt-v2.json",
+      "expect": {"size_bytes": 4228, "sha256": "27ba476119c1b1e329d4c77aea7478fc3e6516a66925b22d569d5e50dfad82cd", "mode": "0664"}
+    },
+    {
+      "id": "accepted-diagnostic-smoke-v3",
+      "kind": "file",
+      "path": "evidence/phase-8i-gate-c-13x100-smoke-v3-diagnostic.json",
+      "expect": {"size_bytes": 171408, "sha256": "6c28fe0aaf2a3ef2426361cf334668bbe9a4557ff0aa8e2d35c8188a9a7543eb", "mode": "0600"}
+    },
+    {
+      "id": "shared-settlement-owner",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/runtime/settlement.rs",
+      "expect": {"size_bytes": 51988, "sha256": "05508a9c1007e6cff40dd1d4b50fa3ddd7d2882f9e399fa0f7fafc5df74bad29", "mode": "0664"}
+    },
+    {
+      "id": "shared-settlement-tests",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/runtime/tests.rs",
+      "expect": {"size_bytes": 14806, "sha256": "a7176e2056c04a855f98861c2d67e524e79ebdfe9d2404cc00705117142b0ce2", "mode": "0664"}
+    },
+    {
+      "id": "frozen-objective-owner",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/proof.rs",
+      "expect": {"size_bytes": 133796, "sha256": "77527fe80d268cd7f620586305164fd1c51f65305bfb13faa799121d49bbe148", "mode": "0664"}
+    },
+    {
+      "id": "frozen-version-owner",
+      "kind": "file",
+      "path": "../../../../Cargo.toml",
+      "expect": {"size_bytes": 2399, "sha256": "69a864532bcf0f806b00fdf6d74784d536dafc95f02c7e1ee3d136df2cb85b68", "mode": "0664"}
+    },
+    {
+      "id": "installed-package",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin",
+      "expect": {"size_bytes": 190139182, "sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9", "prefix_hex": "4c41594c31563800", "mode": "0644"}
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "filter-geometry-challengers-before-selection", "kind": "filesystem_edit"},
+      {"id": "add-selection-order-invariant-tests", "kind": "filesystem_edit"},
+      {"id": "run-focused-tests-remotely", "kind": "test_execution"},
+      {"id": "write-fixed-smoke-v4-receipt", "kind": "filesystem_write"},
+      {"id": "update-phase8i-result", "kind": "filesystem_edit"},
+      {"id": "run-full-proof-only-after-smoke-pass", "kind": "test_execution"}
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "literal_case_rule",
+      "heldout_label_pull",
+      "objective_set_change",
+      "candidate_birth_change",
+      "candidate_admission_change",
+      "operator_rank_change",
+      "energy_or_lease_change",
+      "gate_threshold_change",
+      "denominator_change",
+      "package_format_change",
+      "installed_package_mutation",
+      "runtime_restart",
+      "local_heavy_build",
+      "deployment",
+      "version_bump",
+      "commit_or_push",
+      "full_proof_before_smoke_pass"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "shared-settlement-vetoes",
+      "path": "../../../../src/nanda_wave/lexical_grokking/runtime/settlement.rs",
+      "sha256": "05508a9c1007e6cff40dd1d4b50fa3ddd7d2882f9e399fa0f7fafc5df74bad29",
+      "forbidden_effect_patterns": [
+        {"effect": "generated_traffic", "regex": "reqwest|ureq::|TcpStream"},
+        {"effect": "synthetic_fixture", "regex": "write_synthetic|generate_fixture"},
+        {"effect": "literal_case_rule", "regex": "(акрбаов|паьец|упрчнеием|усшою|case\\.surface\\s*==)"},
+        {"effect": "heldout_label_pull", "regex": "objective_member|objective_terminals|DamageExample|heldout"},
+        {"effect": "objective_set_change", "regex": "populate_sampled_ambiguity|build_objectives"},
+        {"effect": "candidate_birth_change", "regex": "BIRTH_(LIMIT|FRONTIER)|birth_atoms"},
+        {"effect": "package_format_change", "regex": "LAYL1V9|VERSION\\s*[:=]\\s*9"},
+        {"effect": "installed_package_mutation", "regex": "File::create|fs::write|fs::rename"},
+        {"effect": "runtime_restart", "regex": "systemctl|pkill|killall"},
+        {"effect": "local_heavy_build", "regex": "Command::new[^;]*(cargo|rustc)"},
+        {"effect": "deployment", "regex": "Command::new[^;]*(deploy|install)|install_runtime"},
+        {"effect": "version_bump", "regex": "set_package_version|set-version"},
+        {"effect": "commit_or_push", "regex": "git\\s+(commit|push)"}
+      ]
+    }
+  ],
+  "state_machine": {
+    "initial_state": "RANKING_CORRECTION_DESIGN_PASS",
+    "terminal_states": ["FULL_PROOF_PASS", "SOURCE_REJECTED", "FOCUSED_TESTS_REJECTED", "SMOKE_REJECTED", "FULL_PROOF_REJECTED"],
+    "steps": [
+      {
+        "id": "implement-admissibility-before-selection",
+        "from": "RANKING_CORRECTION_DESIGN_PASS",
+        "to": "SOURCE_READY",
+        "mutates": true,
+        "failure_state": "SOURCE_REJECTED",
+        "cleanup": "retain the scoped diff for diagnosis; preserve objective version package and accepted v3 receipt bytes",
+        "preserves": ["objective-owner-bytes", "version-owner-bytes", "installed-package-bytes", "smoke-v3-bytes"],
+        "test_id": "ranking-correction-source-failure"
+      },
+      {
+        "id": "run-focused-ranking-tests-remotely",
+        "from": "SOURCE_READY",
+        "to": "FOCUSED_TESTS_PASS",
+        "mutates": true,
+        "failure_state": "FOCUSED_TESTS_REJECTED",
+        "cleanup": "retain remote test output and stop before smoke",
+        "preserves": ["objective-owner-bytes", "version-owner-bytes", "installed-package-bytes", "smoke-v3-bytes"],
+        "test_id": "ranking-correction-focused-failure"
+      },
+      {
+        "id": "run-fixed-13x100-smoke-v4-remotely",
+        "from": "FOCUSED_TESTS_PASS",
+        "to": "SMOKE_PASS",
+        "mutates": true,
+        "failure_state": "SMOKE_REJECTED",
+        "cleanup": "retain rejected v4 receipt and first regressed stable field; do not run the full proof",
+        "preserves": ["objective-owner-bytes", "version-owner-bytes", "installed-package-bytes", "smoke-v3-bytes"],
+        "test_id": "ranking-correction-smoke-failure"
+      },
+      {
+        "id": "run-fixed-full-quality-proof-remotely",
+        "from": "SMOKE_PASS",
+        "to": "FULL_PROOF_PASS",
+        "mutates": true,
+        "failure_state": "FULL_PROOF_REJECTED",
+        "cleanup": "retain the full rejected receipt and mechanism summary; do not deploy or change the package",
+        "preserves": ["objective-owner-bytes", "version-owner-bytes", "installed-package-bytes", "smoke-v3-bytes"],
+        "test_id": "ranking-correction-full-proof-failure"
+      }
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "objective-owner-bytes",
+      "path": "../../../../src/nanda_wave/lexical_grokking/proof.rs",
+      "policy": "byte_identical",
+      "rollback_policy": "objective construction and denominator semantics remain frozen",
+      "baseline_check_id": "frozen-objective-owner"
+    },
+    {
+      "id": "version-owner-bytes",
+      "path": "../../../../Cargo.toml",
+      "policy": "byte_identical",
+      "rollback_policy": "no version change before deployment admission",
+      "baseline_check_id": "frozen-version-owner"
+    },
+    {
+      "id": "installed-package-bytes",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin",
+      "policy": "byte_identical",
+      "rollback_policy": "installed package remains byte-identical",
+      "baseline_check_id": "installed-package"
+    },
+    {
+      "id": "smoke-v3-bytes",
+      "path": "evidence/phase-8i-gate-c-13x100-smoke-v3-diagnostic.json",
+      "policy": "byte_identical",
+      "rollback_policy": "retain as accepted pre-correction evidence",
+      "baseline_check_id": "accepted-diagnostic-smoke-v3"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "admissibility-predicate-identity",
+      "producer": "existing geometry distance energy mode and lease predicates",
+      "consumer": "pre-filtered geometry challenger set",
+      "comparison": "each challenger receives the same boolean admission result as the pre-change single-challenger predicate",
+      "test_id": "ranking-correction-predicate-parity"
+    },
+    {
+      "id": "no-admitted-challenger-order-identity",
+      "producer": "wave candidate order before geometry interference",
+      "consumer": "candidate order after geometry interference when no challenger is admitted",
+      "comparison": "candidate fingerprint remains identical",
+      "test_id": "ranking-correction-empty-admitted-set"
+    },
+    {
+      "id": "local-remote-source-identity",
+      "producer": "local changed source bytes",
+      "consumer": "remote build checkout changed source bytes",
+      "comparison": "SHA-256 equality before every remote test",
+      "test_id": "ranking-correction-remote-source-parity"
+    }
+  ],
+  "runtime_comparisons": [
+    {
+      "id": "smoke-v3-v4-stable-projection",
+      "source": "fixed 13x100 Gate C receipts",
+      "comparison": "exact_stable_projection",
+      "reason": "ranking may change while the denominator candidate field safety package and runtime isolation must not",
+      "stable_fields": ["configuration", "damaged_quality.classes.*.cases", "damaged_quality.classes.*.objective_unique_cases", "damaged_quality.classes.*.target_retained_complete_field", "damaged_quality.classes.*.target_in_final_top64", "damaged_quality.classes.*.false_authority", "damaged_quality.classes.*.false_singleton", "damaged_quality.classes.*.complete_exact_candidates", "clean_quality", "artifact.package_bytes", "artifact.package_sha256_before", "artifact.package_sha256_after", "artifact.package_bytes_unchanged", "claim_boundary.runtime_authority_changed", "claim_boundary.installed_runtime_changed"],
+      "expected_to_change_fields": ["damaged_quality.classes.*.unique_top1", "damaged_quality.classes.*.unique_top1_percent", "damaged_quality.aggregate.unique_top1", "damaged_quality.aggregate.unique_top1_percent", "damaged_quality.*.readout", "diagnostics", "gates.unique_top1_every_class_strictly_gt_95_percent", "verdict"],
+      "observed_not_compared_fields": ["timing", "exact_support.rebuild_ms", "embedded_a2_prerequisite.setup_timing", "resource_usage"],
+      "test_id": "ranking-correction-smoke-v4"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "admission-before-selection",
+      "statement": "every geometry challenger is evaluated independently before the existing ordering chooses at most one admitted challenger",
+      "test_id": "ranking-correction-rejected-first-admitted-later"
+    },
+    {
+      "id": "frozen-ranking-evidence",
+      "statement": "candidate scores reconstruction modes geometry ranks energy leases thresholds and tie breakers are unchanged",
+      "test_id": "ranking-correction-predicate-parity"
+    },
+    {
+      "id": "no-heldout-authority",
+      "statement": "selection reads candidate evidence only and never objective membership class surface terminal ID fixture label or expected target",
+      "test_id": "ranking-correction-no-literals"
+    },
+    {
+      "id": "deterministic-single-rotation",
+      "statement": "the same candidate set produces the same order under input permutations and rotates at most one admitted challenger",
+      "test_id": "ranking-correction-permutation-parity"
+    },
+    {
+      "id": "deployment-isolation",
+      "statement": "source proof cannot mutate package daemon IBus version installed binary commit or remote branch",
+      "test_id": "ranking-correction-package-isolation"
+    }
+  ],
+  "tests": [
+    {"id": "ranking-correction-source-failure", "kind": "fault_injection", "expected": "source or formatting failure blocks remote tests and preserves protected bytes"},
+    {"id": "ranking-correction-focused-failure", "kind": "fault_injection", "expected": "focused test failure blocks smoke v4"},
+    {"id": "ranking-correction-smoke-failure", "kind": "fault_injection", "expected": "stable-field safety or class regression blocks full proof"},
+    {"id": "ranking-correction-full-proof-failure", "kind": "fault_injection", "expected": "any failed full quality conjunct blocks deployment"},
+    {"id": "ranking-correction-predicate-parity", "kind": "parity", "expected": "all existing per-candidate geometry admission predicates and constants are unchanged"},
+    {"id": "ranking-correction-empty-admitted-set", "kind": "parity", "expected": "no admitted challenger preserves the incoming wave order"},
+    {"id": "ranking-correction-rejected-first-admitted-later", "kind": "parity", "expected": "an inadmissible higher-rank challenger cannot hide a later admissible challenger"},
+    {"id": "ranking-correction-permutation-parity", "kind": "parity", "expected": "geometry readout is deterministic under candidate input permutation"},
+    {"id": "ranking-correction-no-literals", "kind": "parity", "expected": "runtime selector contains no heldout surface target terminal class or fixture branch"},
+    {"id": "ranking-correction-remote-source-parity", "kind": "parity", "expected": "local and remote changed source SHA-256 values match"},
+    {"id": "ranking-correction-package-isolation", "kind": "parity", "expected": "proof and installed package hashes remain byte-identical and runtime authority remains false"},
+    {"id": "ranking-correction-smoke-v4", "kind": "parity", "expected": "fixed 13x100 smoke passes every stable and safety field with every class strictly above 95 percent"}
+  ]
+}

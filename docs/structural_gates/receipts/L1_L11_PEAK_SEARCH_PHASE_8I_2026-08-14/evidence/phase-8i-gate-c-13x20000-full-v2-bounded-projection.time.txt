@@ -1,0 +1,23 @@
+	Command being timed: "/home/e/build/lay-l1-exact-phase2d/target/release/lay-nanda-wave-train --prove-l1-typed-basin-quality /home/e/build/lay-l1-shadow/artifacts/l11-l2-global-compaction-2026-07-30/corpus-852582.txt --memory /home/e/build/lay-l1-shadow/artifacts/l11-l2-global-compaction-2026-07-30/package.v8.bin --heldout-per-class 20000 --workers 20 --receipt /home/e/build/lay-l1-exact-phase2d/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/phase-8i-gate-c-13x20000-full-v2-bounded-projection.json"
+	User time (seconds): 13537.70
+	System time (seconds): 60.56
+	Percent of CPU this job got: 921%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 24:35.38
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 1442916
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 431896
+	Voluntary context switches: 7223950
+	Involuntary context switches: 2832510
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 1144
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

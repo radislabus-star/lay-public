@@ -1,0 +1,288 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "phase8i-paper-with-gate-c-contract",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../l1-l11-typed-basin-implicit-forward-phase8i.md",
+      "sha256": "705e66d57adbe52c1d3a554ca43d43f435141577518c313bc9e6c95053b93f2d",
+      "size_bytes": 33552
+    },
+    {
+      "exists": true,
+      "id": "phase8i-a2-proof",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/phase-8i-13x1-a2.json",
+      "sha256": "ec00a0217691e33be6d71a5e12d8af671016794632a18c9901bd9823c5e95790",
+      "size_bytes": 43558
+    },
+    {
+      "exists": true,
+      "id": "gate-c-route-design",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/route-design-gate-c-v2.json",
+      "sha256": "9824e8dbcd3d6bdade654fd12622c85eea93853aeb4b51f7d229a59b247dad2e",
+      "size_bytes": 5044
+    },
+    {
+      "exists": true,
+      "id": "gate-c-route-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/route-gate-c-v2.json",
+      "sha256": "424a0bdc819afa4337bcab012fb8a7371f37a4d38c276ecfe34488d5baad3544",
+      "size_bytes": 6667
+    },
+    {
+      "exists": true,
+      "id": "typed-basin-orchestrator",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../../src/nanda_wave/lexical_grokking/typed_basin/mod.rs",
+      "sha256": "5e8edbcb06ff625956d8cfb42f87bd4f391488fb9a57836ea05a7ce502943b11",
+      "size_bytes": 33865
+    },
+    {
+      "exists": true,
+      "id": "exact-settlement-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../../src/nanda_wave/lexical_grokking/typed_basin/settlement.rs",
+      "sha256": "11928e7d6deb4429f30751aa42bad5ce8e54597a94c05c832b87d19cbd508281",
+      "size_bytes": 21386
+    },
+    {
+      "exists": true,
+      "id": "fixed-heldout-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../../src/nanda_wave/lexical_grokking/proof.rs",
+      "sha256": "77527fe80d268cd7f620586305164fd1c51f65305bfb13faa799121d49bbe148",
+      "size_bytes": 133796
+    },
+    {
+      "exists": true,
+      "id": "proof-matrix-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../../src/nanda_wave/lexical_grokking/proof_matrix.rs",
+      "sha256": "adec45bf7fa262baec250ce1caea4e87f78aaefd24a4035aa011f7cc158194e8",
+      "size_bytes": 29431
+    },
+    {
+      "exists": true,
+      "id": "proof-cli-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../../src/bin/lay_nanda_wave_train.rs",
+      "sha256": "73e37ad9cf3d18b25447b9b616c3854bcbd70348566ebee0c3e2b559b9a73c2c",
+      "size_bytes": 92013
+    },
+    {
+      "exists": true,
+      "id": "installed-package",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin",
+      "sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+      "size_bytes": 190139182
+    }
+  ],
+  "blockers": [
+    {
+      "code": "forbidden_effect_in_reused_source",
+      "field": "source_checks[2].forbidden_effect_patterns[0]",
+      "message": "settlement_coefficient_change matched at line 1115"
+    },
+    {
+      "code": "forbidden_effect_in_reused_source",
+      "field": "source_checks[3].forbidden_effect_patterns[0]",
+      "message": "gate_threshold_change matched at line 669"
+    },
+    {
+      "code": "forbidden_effect_in_reused_source",
+      "field": "source_checks[3].forbidden_effect_patterns[1]",
+      "message": "heldout_target_pull matched at line 99"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: class_specific_runtime_rule"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: compiler_reference_in_full_quality_loop"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: complete_posting_oracle_in_full_quality_loop"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: corpus_crystallization"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: deployment"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: legacy_candidate_union"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: objective_label_in_scoring"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: top64_as_admission_frontier"
+    },
+    {
+      "code": "fault_injection_missing",
+      "field": "state_machine.steps[0].test_id",
+      "message": "mutating failure requires a fault_injection test"
+    },
+    {
+      "code": "fault_injection_missing",
+      "field": "state_machine.steps[1].test_id",
+      "message": "mutating failure requires a fault_injection test"
+    },
+    {
+      "code": "fault_injection_missing",
+      "field": "state_machine.steps[2].test_id",
+      "message": "mutating failure requires a fault_injection test"
+    },
+    {
+      "code": "identity_parity_missing",
+      "field": "identity_contracts[1].test_id",
+      "message": "identity contract requires a parity test"
+    },
+    {
+      "code": "identity_parity_missing",
+      "field": "identity_contracts[2].test_id",
+      "message": "identity contract requires a parity test"
+    },
+    {
+      "code": "identity_parity_missing",
+      "field": "identity_contracts[3].test_id",
+      "message": "identity contract requires a parity test"
+    }
+  ],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 10,
+    "forbidden_side_effect_kinds": [
+      "class_specific_runtime_rule",
+      "commit_or_push",
+      "compiler_reference_in_full_quality_loop",
+      "complete_posting_oracle_in_full_quality_loop",
+      "corpus_crystallization",
+      "deployment",
+      "gate_threshold_change",
+      "generated_traffic",
+      "heldout_target_pull",
+      "installed_package_mutation",
+      "legacy_candidate_union",
+      "literal_case_rule",
+      "local_heavy_build",
+      "objective_label_in_scoring",
+      "package_format_change",
+      "production_phase8i_reachability",
+      "restoration_calibration_change",
+      "runtime_authority_change",
+      "runtime_restart",
+      "settlement_coefficient_change",
+      "synthetic_fixture",
+      "top64_as_admission_frontier",
+      "typed_basin_truncation",
+      "version_bump"
+    ],
+    "identity_contracts": 6,
+    "invariants": 6,
+    "planned_side_effect_kinds": [
+      "filesystem_edit",
+      "filesystem_write",
+      "test_execution"
+    ],
+    "preserved_artifacts": 3,
+    "runtime_comparisons": 0,
+    "source_checks": 5,
+    "tests": 12
+  },
+  "manifest_sha256": "71122b976505c6db33531b403ae5c654f547e9e3514b2607db291924dc4192b1",
+  "safe_to_implement": false,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "production-runtime-isolation-vetoes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../../src/nanda_wave/lexical_grokking/service.rs",
+      "sha256": "19c83a5808e9131fb80a513bae394515337a97dfa441a2a8dd5087eb826accdc",
+      "size_bytes": 21594
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "typed-traversal-preservation-vetoes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../../src/nanda_wave/lexical_grokking/typed_edit_traversal.rs",
+      "sha256": "2aaa264659f9a43fb818cc527f569f54bcbd47ae225878b323807c92c05842ff",
+      "size_bytes": 78588
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [
+        {
+          "effect": "settlement_coefficient_change",
+          "line": 1115
+        }
+      ],
+      "id": "frozen-settlement-vetoes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../../src/nanda_wave/lexical_grokking/runtime/settlement.rs",
+      "sha256": "05508a9c1007e6cff40dd1d4b50fa3ddd7d2882f9e399fa0f7fafc5df74bad29",
+      "size_bytes": 51988
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [
+        {
+          "effect": "gate_threshold_change",
+          "line": 669
+        },
+        {
+          "effect": "heldout_target_pull",
+          "line": 99
+        }
+      ],
+      "id": "fixed-heldout-preservation-vetoes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../../src/nanda_wave/lexical_grokking/proof.rs",
+      "sha256": "77527fe80d268cd7f620586305164fd1c51f65305bfb13faa799121d49bbe148",
+      "size_bytes": 133796
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "proof-cli-side-effect-vetoes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/../../../../src/bin/lay_nanda_wave_train.rs",
+      "sha256": "73e37ad9cf3d18b25447b9b616c3854bcbd70348566ebee0c3e2b559b9a73c2c",
+      "size_bytes": 92013
+    }
+  ],
+  "task_id": "lay-l11-phase8i-compiler-exact-quality-gate-c-2026-08-14",
+  "verdict": "BLOCKED_BEFORE_CODE"
+}
