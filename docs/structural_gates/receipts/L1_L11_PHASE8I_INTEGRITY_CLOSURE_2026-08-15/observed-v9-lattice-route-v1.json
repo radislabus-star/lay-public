@@ -1,0 +1,33 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "observed_source",
+  "source_root": ".",
+  "nodes": [
+    {"id":"l2_bridge","role":"interface","evidence":{"path":"src/nanda_wave/l2_field/bridge.rs","line":269,"contains":"fn canonical_owned_text_candidates(original: &str) -> CanonicalL2FieldReadout"}},
+    {"id":"lattice_client","role":"interface","evidence":{"path":"src/nanda_wave/lexical_grokking/service.rs","line":188,"contains":"fn request_l11_lattice_persistent("}},
+    {"id":"service_dispatch","role":"orchestrator","evidence":{"path":"src/bin/lay_l1_1_serve.rs","line":345,"contains":"fn handle_request("}},
+    {"id":"l11_host","role":"orchestrator","evidence":{"path":"src/nanda_wave/lexical_grokking/runtime/host.rs","line":341,"contains":"pub fn try_typed_lattice_seed_rows("}},
+    {"id":"typed_birth","role":"producer","evidence":{"path":"src/nanda_wave/lexical_grokking/typed_basin/runtime.rs","line":58,"contains":"phase7d_terminal_evidence(&self.decoder_index"}},
+    {"id":"exact_support","role":"evidence_owner","evidence":{"path":"src/nanda_wave/lexical_grokking/typed_basin/runtime.rs","line":64,"contains":"reconstruct_candidate(&memory.package, &self.support"}},
+    {"id":"exact_settlement","role":"candidate_rank_owner","evidence":{"path":"src/nanda_wave/lexical_grokking/typed_basin/runtime.rs","line":74,"contains":"let exact = settle_exact_case(memory, &self.support, surface, &implicit)?;"}},
+    {"id":"bounded_lattice","role":"display_rank_owner","evidence":{"path":"src/nanda_wave/lexical_grokking/typed_basin/runtime.rs","line":76,"contains":"truncate_with_reconstruction_tail(&mut candidates, limit);"}},
+    {"id":"l2_field","role":"authorization_owner","evidence":{"path":"src/nanda_wave/l2_field/bridge.rs","line":307,"contains":"Ok(runtime) => super::productive_v1::live_productive_v1_readout("}}
+  ],
+  "edges": [
+    {"id":"exec-bridge-client","from":"l2_bridge","relation":"calls","to":"lattice_client","events":["v9_lattice_query"],"evidence":{"path":"src/nanda_wave/l2_field/bridge.rs","line":347,"contains":"Ok(crate::nanda_wave::request_l11_seed_surfaces("}},
+    {"id":"exec-client-service","from":"lattice_client","relation":"calls","to":"service_dispatch","events":["v9_lattice_query"],"evidence":{"path":"src/nanda_wave/lexical_grokking/service.rs","line":717,"contains":"match request_l11_lattice_persistent(socket_path, surface, limit, timeout)?"}},
+    {"id":"exec-service-host","from":"service_dispatch","relation":"delegates","to":"l11_host","events":["v9_lattice_query"],"evidence":{"path":"src/bin/lay_l1_1_serve.rs","line":384,"contains":"lattice_response(host.try_typed_lattice_seed_rows(&surface, limit))"}},
+    {"id":"exec-host-birth","from":"l11_host","relation":"delegates","to":"typed_birth","events":["v9_lattice_query"],"evidence":{"path":"src/nanda_wave/lexical_grokking/runtime/host.rs","line":359,"contains":".try_restoration_readout(surface, limit)"}},
+    {"id":"exec-birth-support","from":"typed_birth","relation":"delegates","to":"exact_support","events":["v9_lattice_query"],"evidence":{"path":"src/nanda_wave/lexical_grokking/typed_basin/runtime.rs","line":64,"contains":"reconstruct_candidate(&memory.package, &self.support, &observed, terminal_id)"}},
+    {"id":"exec-support-settlement","from":"exact_support","relation":"delegates","to":"exact_settlement","events":["v9_lattice_query"],"evidence":{"path":"src/nanda_wave/lexical_grokking/typed_basin/runtime.rs","line":74,"contains":"let exact = settle_exact_case(memory, &self.support, surface, &implicit)?;"}},
+    {"id":"exec-settlement-bounded","from":"exact_settlement","relation":"delegates","to":"bounded_lattice","events":["v9_lattice_query"],"evidence":{"path":"src/nanda_wave/lexical_grokking/typed_basin/runtime.rs","line":76,"contains":"truncate_with_reconstruction_tail(&mut candidates, limit);"}},
+    {"id":"authority-birth-support","from":"typed_birth","relation":"produces_for","to":"exact_support","events":["v9_lattice_query"],"evidence":{"path":"src/nanda_wave/lexical_grokking/typed_basin/runtime.rs","line":60,"contains":"let mut implicit = typed"}},
+    {"id":"authority-support-settlement","from":"exact_support","relation":"passes_to","to":"exact_settlement","events":["v9_lattice_query"],"evidence":{"path":"src/nanda_wave/lexical_grokking/typed_basin/runtime.rs","line":66,"contains":".collect::<Result<Vec<ImplicitCandidate>, String>>()?;"}},
+    {"id":"authority-settlement-bounded","from":"exact_settlement","relation":"passes_to","to":"bounded_lattice","events":["v9_lattice_query"],"evidence":{"path":"src/nanda_wave/lexical_grokking/typed_basin/runtime.rs","line":75,"contains":"let mut candidates = exact.candidates;"}},
+    {"id":"authority-bounded-l2","from":"bounded_lattice","relation":"passes_to","to":"l2_field","events":["v9_lattice_query"],"evidence":{"path":"src/nanda_wave/l2_field/bridge.rs","line":312,"contains":"&l11_seeds,"}}
+  ],
+  "routes": [
+    {"id":"v9-lattice-execution","event":"v9_lattice_query","kind":"execution","entry":"l2_bridge","terminal":"bounded_lattice","required_roles":["interface","orchestrator","producer","evidence_owner","candidate_rank_owner","display_rank_owner"],"via":["lattice_client","service_dispatch","l11_host","typed_birth","exact_support","exact_settlement"],"path_cardinality":[{"from":"l2_bridge","to":"bounded_lattice","min":1,"max":1}]},
+    {"id":"v9-lattice-authority","event":"v9_lattice_query","kind":"authority","entry":"typed_birth","terminal":"l2_field","required_roles":["producer","evidence_owner","candidate_rank_owner","display_rank_owner","authorization_owner"],"via":["exact_support","exact_settlement","bounded_lattice"],"path_cardinality":[{"from":"typed_birth","to":"l2_field","min":1,"max":1}]}
+  ]
+}

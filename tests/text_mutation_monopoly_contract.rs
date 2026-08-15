@@ -540,6 +540,10 @@ fn typed_authority_mints_have_only_named_runtime_callers() {
                 "src/bin/lay_ibus_engine/composition_commit.rs",
             ][..],
         ),
+        (
+            "plan_ime_manual_toggle_edit(",
+            &["src/bin/lay_ibus_engine/shift.rs"][..],
+        ),
     ];
 
     for path in source_files("src/bin") {
@@ -558,6 +562,24 @@ fn typed_authority_mints_have_only_named_runtime_callers() {
             }
         }
     }
+}
+
+#[test]
+fn ime_auto_undo_restores_pending_snapshot_on_backend_error() {
+    let source =
+        std::fs::read_to_string(Path::new(ROOT).join("src/bin/lay_ibus_engine/committed_tail.rs"))
+            .expect("committed-tail source");
+    let function = source
+        .split("pub(super) async fn undo_last_ime_autocorrect")
+        .nth(1)
+        .expect("auto-undo function")
+        .split("fn committed_tail_toggle_plan")
+        .next()
+        .expect("bounded auto-undo function");
+
+    assert!(function.contains("Err(error) =>"));
+    assert!(function.contains("self.restore_pending_ime_auto_undo(pending);"));
+    assert!(!function.contains("replace_committed_tail(emitter, request).await?"));
 }
 
 #[test]

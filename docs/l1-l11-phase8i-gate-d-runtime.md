@@ -1,6 +1,6 @@
 # L1.1 Phase 8I Gate D: Physical Package And Live Runtime
 
-Status: deployed live in Lay 1.0.28; reference Gate D PASS; local cold-start WATCH and user physical-input gate pending
+Status: integrity-closure Gate C and rebuilt remote Gate D PASS; corrective Lay 1.0.29 release deployed to daemon, L1.1, and GNOME runtime; managed IBus process preserved; physical input gate pending
 Date: 2026-08-15
 Input authority: accepted Phase 8I Gate C v2 receipt
 
@@ -397,3 +397,195 @@ V8/V9 per-request fallback or union route was introduced.
 Not physically tested by the agent after activation: real application typing,
 WeChat behavior, and the autocorrection double-Shift rollback gesture. Those
 remain the user physical-input gate and are not inferred from process health.
+
+## 11. Post-Activation Integrity Closure
+
+The activation in Section 10 is retained as historical evidence. The current
+corrective branch has not replaced the installed Lay `1.0.28` binaries, V9
+package, active receipt, daemon, or IBus process. The verified installed package
+is still `77,962,328 B` with SHA-256
+`bf5a1619a89038466ef786305cf35eda5f4af5b9f12b9140f7d3cac407e2f2a7`.
+
+The post-activation review found four integrity boundaries that are now closed
+in source:
+
+1. V9 can be admitted only by `PASS_C_QUALITY`; the legacy `PASS_shadow`
+   compatibility verdict remains restricted to V7/V8.
+2. Installer and runtime admission recompute the fixed schema-v3 denominator,
+   exact 13-class set, every per-class top-1 and bounded-coverage threshold,
+   clean preservation, false-authority/singleton counters, grounded loss, and
+   package identity. The installer rechecks copied bytes before publishing the
+   receipt and does not trust only the aggregate PASS boolean.
+3. Startup checks the active integrity-bound receipt before socket ownership and
+   again after warmup. Reload checks before loading and immediately before the
+   atomic snapshot flip; a changed receipt preserves the current snapshot.
+4. Live V9 transport accepts only limits `1..=32`, while L2 requests exactly
+   `32`. V9 query errors remain typed protocol errors and cannot reach V8.
+
+The Double Shift route was also brought under the common mutation monopoly.
+The active-composition path now carries one typed IME `AuthorizedEdit` through
+the commit owner without pre-commit state mutation. The recorded-autocorrection
+path restores its pending undo snapshot on both an unhandled replacement and a
+backend error.
+
+Current local evidence:
+
+```text
+installer integrity regression suite                       PASS
+runtime service/admission tests                          13 / 13
+mutation monopoly tests                                 16 / 16
+observed V9 lattice route                               20 / 20 PASS
+observed V9 lifecycle route                             25 / 25 PASS
+observed Double Shift route                             21 / 21 PASS
+scripts/check-lay-changed.sh                                      PASS
+runtime deployment by this branch                                  no
+```
+
+Observed-source receipts:
+
+```text
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/observed-v9-lattice-route-receipt-v1.json
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/observed-v9-lifecycle-route-receipt-v1.json
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/observed-double-shift-route-receipt-v1.json
+```
+
+This local result is not a replacement Gate C or Gate D PASS. The participating
+source packet must still pass the direct V9 schema-v3 `13 x 100` smoke and then
+the fixed `13 x 20,000 + all clean` proof on the remote 20-core host. Only after
+that proof may rebuilt release latency, RSS, cold startup, rollback, managed
+service restart, and physical application input be measured. Global IBus must
+not be restarted.
+
+## 12. Integrity-Closure Gate C And Gate D Acceptance
+
+The corrective packet subsequently passed the required direct V9 proof route
+without rebuilding or modifying the accepted V9 artifact:
+
+```text
+participating-source parity                              789 / 789
+smoke                                                      PASS_C_SMOKE
+full fixed proof                                         PASS_C_QUALITY
+damaged denominator                                            260,000
+clean denominator                                              852,582
+complete-field target retention                                 100.0%
+aggregate unique top-1                                          98.941%
+aggregate bounded lattice coverage                              99.868%
+primary false authority / false singleton                         0 / 0
+clean preservation                                              100.000%
+stored exact support vs corpus rebuild                            exact
+V8 fallback used                                                  false
+```
+
+All thirteen classes passed strict `unique top-1 >95%`, bounded lattice
+coverage `>=99%`, complete-field retention `100%`, and class false-authority /
+false-singleton `0 / 0`. The compatibility-only observer recorded four false
+authorities and zero grounded-candidate losses; it remained outside runtime
+authority and did not alter the primary verdict.
+
+The release service was installed into an isolated model root with an
+integrity-bound schema-v3 receipt and a unique socket. It did not connect to the
+installed Lay runtime. Rebuilt measurements were:
+
+```text
+package bytes                                             77,962,328 B
+package SHA-256          bf5a1619a89038466ef786305cf35eda5f4af5b9f12b9140f7d3cac407e2f2a7
+terminal count                                                852,582
+cold ready repeats                         836 / 991 / 793 / 774 ms
+initial post-build observation                              1,029 ms WATCH
+steady RSS                                                188,536 KiB
+peak RSS                                                  205,780 KiB
+direct p99, four runs                    3.938 / 3.938 / 3.914 / 3.858 ms
+production-client p99                    4.433 / 4.232 / 4.330 / 4.117 ms
+candidate fingerprint, four direct runs                         exact
+service response failures / query failures                       0 / 0
+service instances during measurement                                  1
+temporary service after measurement                               stopped
+```
+
+The production-client measurement used the public persistent
+`request_l11_seed_surfaces()` route, `Lattice(limit=32)`, 520 fixed surfaces,
+one warmup pass, and four measured passes. The direct and production transport
+p99 values pass `<=5 ms`; repeated isolated cold starts pass `<=1 s`; steady RSS
+passes `<=250 MiB`. The first `1,029 ms` observation immediately after release
+linking remains an explicit WATCH and is not deleted or relabeled.
+
+Measured facts not covered by this verdict: rebuilt local installation,
+rollback execution, managed daemon restart, physical application input, WeChat,
+and the physical Double Shift undo gesture. Runtime authority remains the
+previously installed Lay `1.0.28` V9 service. Global IBus was not restarted.
+
+The complete local evidence copy is:
+
+```text
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/direct-v9-proof-v3/
+```
+
+## 13. Corrective Release 1.0.29 Deployment
+
+The integrity-closure source packet was built on the remote 20-core host with
+`scripts/cargo-guard.sh build --release --bins`. The release build passed in
+`76.01 s`, produced ten binaries totalling `45,346,928 B`, and used a maximum
+RSS of `1,104,084 KiB`. All ten copied binaries matched the recorded size and
+SHA-256 before installation and again under the installed names.
+
+Before mutation, the complete Lay `1.0.28` runtime was captured at:
+
+```text
+/home/ubu/.local/lib/lay/rollback/1.0.28-pre-1.0.29-phase8i-integrity-20260815-170702
+rollback bytes                                           789,183,548
+rollback SHA-256 verification                         42 / 42 PASS
+```
+
+The V9 installer then admitted the byte-identical package only after validating
+the schema-v3 full proof and independently published the immutable proof and
+active receipts:
+
+```text
+package bytes                                             77,962,328 B
+package SHA-256          bf5a1619a89038466ef786305cf35eda5f4af5b9f12b9140f7d3cac407e2f2a7
+proof verdict                                           PASS_C_QUALITY
+proof SHA-256            4983930495e793c1d28c7558fe006ddf8097ee575bebb1afd3f1dba4ddb1d01d
+active receipt SHA-256   52076ffdf4f17e8b02d2334ec8d04fc10991a16c7dffccbf03849b8985c8eb2e
+runtime admitted                                                   true
+```
+
+All ten Lay `1.0.29` binaries and the unchanged canonical L2 package were
+installed. The GNOME extension source/runtime parity check passed and its live
+DBus version became `1.0.29`. Only `lay-daemon.service` was restarted:
+
+```text
+daemon PID                                      3440152 -> 150902
+L1.1 service PID                                3440215 -> 150984
+global ibus-daemon PID                                3702 -> 3702
+managed lay-ibus-engine PID                     3719399 -> 3719399
+daemon count / L1.1 service count                              1 / 1
+service state                                                   ready
+terminal / atom count                              852,582 / 218,763
+live requests served                                                8
+live query failures                                                  0
+journal integrity, query, and panic errors                            0
+```
+
+The running daemon and L1.1 service executable hashes equal the release hashes.
+At the recorded steady observation, the cgroup used `376,770,560 B` with a
+`378,494,976 B` peak. Individual RSS was `350,796 KiB` for the daemon and
+`183,592 KiB` for L1.1; these values share mapped pages and must not be added as
+an independent cgroup total.
+
+Socket smoke exercised an exact winner, damaged-form target retention without
+authority, a layout tie, and fail-closed abstention. It proved transport and
+typed verdict delivery only; fixed quality remains owned by the full Gate C
+proof. Package authority remains the same single V9 Phase 8I owner, with no V8
+fallback or union route.
+
+The managed `lay-ibus-engine` process was deliberately not restarted and still
+maps its pre-deployment inode. Therefore this deployment does not claim active
+byte parity for that already-running process. Real application typing, WeChat,
+and autocorrection followed by Double Shift remain an explicit physical user
+gate and are not inferred from daemon health.
+
+Deployment receipt:
+
+```text
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/deployment-receipt-v1.json
+```

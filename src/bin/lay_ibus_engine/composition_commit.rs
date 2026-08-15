@@ -43,6 +43,22 @@ impl ActiveCompositionCommit {
 }
 
 impl LayIbusEngine {
+    pub(super) async fn commit_verified_active_composition(
+        &mut self,
+        emitter: &SignalEmitter<'_>,
+        authorized_edit: AuthorizedEdit,
+    ) -> fdo::Result<()> {
+        let text = authorized_edit.action().to_text().to_string();
+        self.commit_authorized_active_composition_text(
+            emitter,
+            text,
+            false,
+            false,
+            ActiveCompositionAuthority::VerifiedEdit(Box::new(authorized_edit)),
+        )
+        .await
+    }
+
     pub(super) async fn commit_active_composition(
         &mut self,
         emitter: &SignalEmitter<'_>,

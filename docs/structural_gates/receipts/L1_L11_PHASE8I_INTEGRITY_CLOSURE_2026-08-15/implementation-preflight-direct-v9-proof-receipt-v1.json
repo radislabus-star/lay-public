@@ -1,0 +1,143 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "quality-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/../../../../src/nanda_wave/lexical_grokking/typed_basin/quality.rs",
+      "sha256": "ae75082b92c861dd4ed74fdefc4c9b583e9de85b403d8a688ad0e4fc25fd0136",
+      "size_bytes": 35712
+    },
+    {
+      "exists": true,
+      "id": "v9-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/../../../../src/nanda_wave/lexical_grokking/v9.rs",
+      "sha256": "1085b571756c97439edd6f4f7828589a51dbf304a73a9c59529446c78d058cd3",
+      "size_bytes": 13494
+    },
+    {
+      "exists": true,
+      "id": "service-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/../../../../src/nanda_wave/lexical_grokking/service.rs",
+      "sha256": "bdbfecda75bd77f458b530140b7108bab5b8e32b7e244688a6d3570448f6d916",
+      "size_bytes": 61127
+    },
+    {
+      "exists": true,
+      "id": "installer-source",
+      "kind": "file",
+      "mode": "0775",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/../../../../scripts/install-l11-shadow-package.sh",
+      "sha256": "bb56785eccc3250d6a21587a8a7f78f2adf9a86d4a0dc0e111302e5765f62f89",
+      "size_bytes": 14265
+    },
+    {
+      "exists": true,
+      "id": "installed-v9",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.v9.bin",
+      "sha256": "bf5a1619a89038466ef786305cf35eda5f4af5b9f12b9140f7d3cac407e2f2a7",
+      "size_bytes": 77962328
+    }
+  ],
+  "blockers": [
+    {
+      "code": "scientific_veto_missing",
+      "field": "side_effects.forbidden",
+      "message": "must forbid generated_traffic"
+    },
+    {
+      "code": "scientific_veto_missing",
+      "field": "side_effects.forbidden",
+      "message": "must forbid synthetic_fixture"
+    },
+    {
+      "code": "forbidden_effect_in_reused_source",
+      "field": "source_checks[0].forbidden_effect_patterns[2]",
+      "message": "heldout_target_pull matched at line 501"
+    },
+    {
+      "code": "runtime_comparison_incomplete",
+      "field": "runtime_comparisons[0]",
+      "message": "source, comparison, reason, and test_id are required"
+    },
+    {
+      "code": "identity_parity_missing",
+      "field": "identity_contracts[2].test_id",
+      "message": "identity contract requires a parity test"
+    }
+  ],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 5,
+    "forbidden_side_effect_kinds": [
+      "global_ibus_restart",
+      "heldout_target_pull",
+      "literal_word_or_case_rule",
+      "local_full_quality_proof",
+      "package_byte_change",
+      "pre_proof_install",
+      "proof_threshold_change",
+      "rebuilt_support_as_unverified_runtime_authority",
+      "v8_fallback_for_v9"
+    ],
+    "identity_contracts": 3,
+    "invariants": 4,
+    "planned_side_effect_kinds": [
+      "filesystem_edit",
+      "process_restart",
+      "test_execution"
+    ],
+    "preserved_artifacts": 1,
+    "runtime_comparisons": 1,
+    "source_checks": 3,
+    "tests": 9
+  },
+  "manifest_sha256": "c0121e94d99f73fcbe41545a900ed75e86bfea229e928501ffcc5784a75ad2f2",
+  "safe_to_implement": false,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [
+        {
+          "effect": "heldout_target_pull",
+          "line": 501
+        }
+      ],
+      "id": "quality-effects-baseline",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/../../../../src/nanda_wave/lexical_grokking/typed_basin/quality.rs",
+      "sha256": "ae75082b92c861dd4ed74fdefc4c9b583e9de85b403d8a688ad0e4fc25fd0136",
+      "size_bytes": 35712
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "installer-effects-baseline",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/../../../../scripts/install-l11-shadow-package.sh",
+      "sha256": "bb56785eccc3250d6a21587a8a7f78f2adf9a86d4a0dc0e111302e5765f62f89",
+      "size_bytes": 14265
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "service-effects-baseline",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/../../../../src/nanda_wave/lexical_grokking/service.rs",
+      "sha256": "bdbfecda75bd77f458b530140b7108bab5b8e32b7e244688a6d3570448f6d916",
+      "size_bytes": 61127
+    }
+  ],
+  "task_id": "lay-l11-direct-v9-quality-proof-v1-2026-08-15",
+  "verdict": "BLOCKED_BEFORE_CODE"
+}

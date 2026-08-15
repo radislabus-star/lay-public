@@ -87,6 +87,14 @@ impl TypedBasinRuntime {
         }
     }
 
+    pub(in crate::nanda_wave::lexical_grokking) fn query_failures(&self) -> u64 {
+        self.query_failures.load(Ordering::Relaxed)
+    }
+
+    pub(in crate::nanda_wave::lexical_grokking) fn support(&self) -> &ExactSupportField {
+        &self.support
+    }
+
     pub(in crate::nanda_wave::lexical_grokking) fn stats(&self) -> serde_json::Value {
         serde_json::json!({
             "format": "v9",
@@ -95,7 +103,7 @@ impl TypedBasinRuntime {
             "exact_support_bytes": self.support.resident_bytes(),
             "exact_support_overflow_atoms": self.support.metrics.exact_overflow_atoms,
             "maximum_exact_support": self.support.metrics.maximum_exact_support,
-            "query_failures": self.query_failures.load(Ordering::Relaxed),
+            "query_failures": self.query_failures(),
         })
     }
 }

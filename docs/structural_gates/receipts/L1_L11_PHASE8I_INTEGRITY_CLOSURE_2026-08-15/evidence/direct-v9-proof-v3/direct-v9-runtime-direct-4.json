@@ -1,0 +1,44 @@
+{
+  "background_warmup_ms": 0,
+  "birth_profile": {
+    "format": "v9",
+    "owner": "phase8i_exact_typed_basin",
+    "runtime": {
+      "decoder_index_bytes": 28759240,
+      "exact_support_bytes": 875052,
+      "exact_support_overflow_atoms": 217,
+      "format": "v9",
+      "maximum_exact_support": 852582,
+      "owner": "phase8i_exact_typed_basin",
+      "query_failures": 0
+    },
+    "surface_count": 520
+  },
+  "candidate_sha256": "a09d5179ffec508da6ec9ad3e3153e7ebc40a60d5649eb3b3cbe807eabe03525",
+  "limit": 32,
+  "max_us": 14184,
+  "p50_us": 1119,
+  "p90_us": 1516,
+  "p99_us": 3858,
+  "package": "runtime-model/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.v9.bin",
+  "raw_readout_max_us": 14311,
+  "raw_readout_p50_us": 1132,
+  "raw_readout_p90_us": 1516,
+  "raw_readout_p99_us": 3921,
+  "readout_max_us": 14171,
+  "readout_p50_us": 1123,
+  "readout_p90_us": 1517,
+  "readout_p99_us": 3921,
+  "sample_count": 520,
+  "surfaces": "inputs/latency-13x40.txt",
+  "warmup": {
+    "decoded_surface_pool_bytes": 17041820,
+    "decoder_index_bytes": 28759240,
+    "exact_support_bytes": 875052,
+    "exact_support_overflow_atoms": 217,
+    "format": "v9",
+    "maximum_exact_support": 852582,
+    "owner": "phase8i_exact_typed_basin",
+    "query_failures": 0
+  }
+}

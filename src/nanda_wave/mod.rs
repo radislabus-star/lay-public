@@ -64,11 +64,11 @@ pub use l2_field::{
     CANONICAL_L2_PRODUCTIVE_LEMMA_LIMIT,
 };
 pub use lexical_grokking::{
-    admit_l11_delta, admit_l11_tombstone, analyze_l1_forward_compression,
-    authoritative_restore_surface, benchmark_l1_diverse_restoration, benchmark_l1_lexical_grokking,
-    build_exact_v9_package, build_lazy_v8_package, build_lazy_v8_package_with_shard_size,
-    compact_depth0_package, crystallize_l1_lexical_grokking,
-    crystallize_l1_lexical_grokking_with_rss_budget,
+    admit_l11_delta, admit_l11_service_artifact, admit_l11_tombstone,
+    analyze_l1_forward_compression, authoritative_restore_surface,
+    benchmark_l1_diverse_restoration, benchmark_l1_lexical_grokking, build_exact_v9_package,
+    build_lazy_v8_package, build_lazy_v8_package_with_shard_size, compact_depth0_package,
+    crystallize_l1_lexical_grokking, crystallize_l1_lexical_grokking_with_rss_budget,
     crystallize_l1_lexical_grokking_with_surface_policy, default_l11_model_dir,
     default_l11_socket_path, discover_installed_l11_package, ensure_l11_service_started,
     export_l1_fixed_latency_surfaces, fingerprint_l1_behavior, initialize_l11_composite_manifest,
@@ -80,7 +80,7 @@ pub use lexical_grokking::{
     restore_l1_surface, send_l11_service_request, send_l11_service_request_with_timeout,
     InstalledL11Package, L11SeedSurface, L11ServiceEnsureReport, L1RestorationHost,
     L1RestorationHostStats, L1ServiceHealth, L1ServiceRequest, L1ServiceResponse, L1ServiceStats,
-    ScaleTrainingSurfacePolicy,
+    ScaleTrainingSurfacePolicy, L11_LIVE_LATTICE_LIMIT,
 };
 #[cfg(feature = "lexical-compiler")]
 pub use lexical_grokking::{

@@ -1,0 +1,10 @@
+{
+  "package_id": "LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9",
+  "crystal_bytes": 77962328,
+  "crystal_sha256": "bf5a1619a89038466ef786305cf35eda5f4af5b9f12b9140f7d3cac407e2f2a7",
+  "crystal_format": "V9 phase8i-exact-typed-basin",
+  "proof_receipt": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/direct-v9-proof-v3/direct-v9-full-13x20000-all-clean.json",
+  "proof_verdict": "PASS_C_QUALITY",
+  "runtime_authority": false,
+  "release_shadow_installable": true
+}

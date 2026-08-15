@@ -1,5 +1,6 @@
 use super::super::super::restoration::{RestorationCalibration, RestorationCandidate};
 use super::super::super::runtime::RECONSTRUCTION_MODE_DELETION_TRANSPOSITION;
+use super::super::super::{compiler, format, v8, v9};
 use super::*;
 
 fn candidate(
@@ -65,7 +66,7 @@ fn fixed_case(terminal_id: u32) -> FixedHeldoutCase {
 }
 
 #[test]
-fn gate_c_bounded_projection_rescues_certificate_below_raw_rank64() {
+fn gate_c_bounded_projection_rescues_certificate_below_raw_projection_rank() {
     let mut candidates = (0..80)
         .map(|terminal| candidate(terminal, 0, 0))
         .collect::<Vec<_>>();
@@ -83,7 +84,7 @@ fn gate_c_bounded_projection_rescues_certificate_below_raw_rank64() {
     );
     let metrics = shard.classes["missing_letter"].clone();
     assert_eq!(metrics.target_retained, 1);
-    assert_eq!(metrics.target_top64, 1);
+    assert_eq!(metrics.target_in_projection, 1);
     assert_eq!(output.exact.candidates, before);
 }
 
@@ -105,7 +106,7 @@ fn gate_c_bounded_projection_does_not_rescue_ungrounded_tail() {
         &output,
     );
 
-    assert_eq!(shard.classes["missing_letter"].target_top64, 0);
+    assert_eq!(shard.classes["missing_letter"].target_in_projection, 0);
     assert_eq!(output.exact.candidates, before);
 }
 
@@ -292,4 +293,98 @@ fn gate_c_class_filter_is_scheduler_only_and_cannot_claim_full_pass() {
         "DIAGNOSTIC_C_CLASS"
     );
     assert_ne!(quality_verdict(true, false, true, false), "PASS_C_QUALITY");
+}
+
+#[test]
+fn gate_c_direct_v9_uses_artifact_support_only_after_corpus_parity() {
+    let (root, v9_path, words) = direct_v9_fixture("support-parity");
+    let layout = read_quality_artifact_layout(&v9_path).expect("read direct V9 layout");
+    let memory = LexicalGrokkingMemory::load(&v9_path).expect("load direct V9 fixture");
+    let rebuilt = ExactSupportField::rebuild(&memory.package, &words)
+        .expect("rebuild exact support from fixture corpus");
+    let projected = layout
+        .base_bytes
+        .saturating_add(rebuilt.metrics.projected_overflow_bytes as u64);
+
+    assert_eq!(layout.format, QualityArtifactFormat::V9);
+    assert!(direct_v9_support_matches_rebuild(
+        layout,
+        memory.typed_basin_support(),
+        &rebuilt,
+        projected,
+    ));
+
+    let mut wrong_words = words;
+    wrong_words[0].push('x');
+    let mismatched = ExactSupportField::rebuild(&memory.package, &wrong_words)
+        .expect("rebuild mismatched fixture support");
+    assert!(!direct_v9_support_matches_rebuild(
+        layout,
+        memory.typed_basin_support(),
+        &mismatched,
+        layout
+            .base_bytes
+            .saturating_add(mismatched.metrics.projected_overflow_bytes as u64),
+    ));
+
+    let _ = std::fs::remove_dir_all(root);
+}
+
+#[test]
+fn gate_c_v8_and_v9_layout_routes_are_distinct() {
+    let (root, v9_path, _) = direct_v9_fixture("format-route");
+    let v8_path = root.join("fixture.v8.bin");
+
+    assert_eq!(
+        read_quality_artifact_layout(&v8_path)
+            .expect("read V8 layout")
+            .format,
+        QualityArtifactFormat::V8
+    );
+    assert_eq!(
+        read_quality_artifact_layout(&v9_path)
+            .expect("read V9 layout")
+            .format,
+        QualityArtifactFormat::V9
+    );
+
+    let _ = std::fs::remove_dir_all(root);
+}
+
+fn direct_v9_fixture(label: &str) -> (std::path::PathBuf, std::path::PathBuf, Vec<String>) {
+    let words = vec![
+        "время".to_string(),
+        "работает".to_string(),
+        "download".to_string(),
+    ];
+    let training = words
+        .iter()
+        .enumerate()
+        .map(|(terminal_id, surface)| compiler::TrainingWord {
+            terminal_id: terminal_id as u32,
+            surface: surface.clone(),
+            training_surfaces: Vec::new(),
+        })
+        .collect::<Vec<_>>();
+    let package =
+        compiler::compile_with_policy(&training, compiler::ForwardPostingPolicy::Complete)
+            .expect("compile direct V9 fixture")
+            .package;
+    let root = std::env::temp_dir().join(format!(
+        "lay-quality-direct-v9-{label}-{}",
+        std::process::id()
+    ));
+    std::fs::create_dir_all(&root).expect("create direct V9 fixture directory");
+    let v7_path = root.join("fixture.v7.bin");
+    let v8_path = root.join("fixture.v8.bin");
+    let v9_path = root.join("fixture.v9.bin");
+    std::fs::write(
+        &v7_path,
+        format::encode_compact_depth0(&package).expect("encode direct V9 compact base"),
+    )
+    .expect("write direct V9 compact base");
+    v8::build_lazy_v8_package_with_shard_size(&v7_path, &v8_path, 32)
+        .expect("build direct V9 source fixture");
+    v9::build_exact_v9_package(&v8_path, &v9_path).expect("build direct V9 fixture");
+    (root, v9_path, words)
 }

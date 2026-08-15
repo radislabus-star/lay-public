@@ -10,7 +10,7 @@ use super::runtime::{GrokkingCandidate, LexicalGrokkingMemory};
 const LANGUAGES: [&str; 2] = ["ru", "en"];
 const LENGTHS: [&str; 4] = ["2_4", "5_8", "9_16", "17_32"];
 const FREQUENCIES: [&str; 3] = ["head", "middle", "tail"];
-const DAMAGE_CLASSES: [&str; 13] = [
+pub(super) const DAMAGE_CLASSES: [&str; 13] = [
     "missing_letter",
     "extra_letter",
     "adjacent_transposition",

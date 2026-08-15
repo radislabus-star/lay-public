@@ -1,0 +1,14 @@
+{
+  "schema": "lay.l11.installed-package.v1",
+  "package_id": "LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9",
+  "format": "V9 phase8i-exact-typed-basin",
+  "installed_artifact": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.v9.bin",
+  "artifact_bytes": 77962328,
+  "artifact_sha256": "bf5a1619a89038466ef786305cf35eda5f4af5b9f12b9140f7d3cac407e2f2a7",
+  "proof_receipt": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.4983930495e793c1d28c7558fe006ddf8097ee575bebb1afd3f1dba4ddb1d01d.proof.json",
+  "proof_source": "/home/e/build/lay-l1-phase8i-integrity-20260815/receipts/direct-v9-full-13x20000-all-clean.json",
+  "proof_sha256": "4983930495e793c1d28c7558fe006ddf8097ee575bebb1afd3f1dba4ddb1d01d",
+  "proof_verdict": "PASS_C_QUALITY",
+  "runtime_authority": false,
+  "runtime_admitted": true
+}

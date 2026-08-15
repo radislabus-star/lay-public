@@ -1,0 +1,187 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "quality_cli", "role": "interface"},
+    {"id": "artifact_router", "role": "orchestrator"},
+    {"id": "v8_a2_prerequisite", "role": "proof_owner"},
+    {"id": "v9_loader", "role": "evidence_owner"},
+    {"id": "v9_checksum_gate", "role": "proof_owner"},
+    {"id": "corpus_support_rebuilder", "role": "producer"},
+    {"id": "v9_support_parity_gate", "role": "proof_owner"},
+    {"id": "artifact_support_owner", "role": "producer"},
+    {"id": "typed_basin_quality", "role": "producer"},
+    {"id": "runtime_readout_observer", "role": "observer"},
+    {"id": "quality_admission", "role": "authorization_owner"},
+    {"id": "schema_v3_receipt", "role": "proof_owner"},
+    {"id": "installer_validator", "role": "authorization_owner"},
+    {"id": "runtime_validator", "role": "authorization_owner"}
+  ],
+  "edges": [
+    {
+      "id": "exec-cli-router",
+      "from": "quality_cli",
+      "relation": "calls",
+      "to": "artifact_router",
+      "events": ["v8_quality_proof", "v9_quality_proof"]
+    },
+    {
+      "id": "exec-router-v8",
+      "from": "artifact_router",
+      "relation": "delegates",
+      "to": "v8_a2_prerequisite",
+      "events": ["v8_quality_proof"]
+    },
+    {
+      "id": "exec-router-v9",
+      "from": "artifact_router",
+      "relation": "delegates",
+      "to": "v9_loader",
+      "events": ["v9_quality_proof"]
+    },
+    {
+      "id": "proof-v9-checksum",
+      "from": "v9_loader",
+      "relation": "proves",
+      "to": "v9_checksum_gate",
+      "events": ["v9_artifact_prerequisite"]
+    },
+    {
+      "id": "exec-v9-rebuild",
+      "from": "v9_loader",
+      "relation": "delegates",
+      "to": "corpus_support_rebuilder",
+      "events": ["v9_artifact_prerequisite"]
+    },
+    {
+      "id": "proof-v9-support-parity",
+      "from": "corpus_support_rebuilder",
+      "relation": "proves",
+      "to": "v9_support_parity_gate",
+      "events": ["v9_artifact_prerequisite"]
+    },
+    {
+      "id": "authority-v9-support",
+      "from": "v9_support_parity_gate",
+      "relation": "authorizes",
+      "to": "artifact_support_owner",
+      "events": ["v9_quality_proof"]
+    },
+    {
+      "id": "exec-v8-quality",
+      "from": "v8_a2_prerequisite",
+      "relation": "delegates",
+      "to": "typed_basin_quality",
+      "events": ["v8_quality_proof"]
+    },
+    {
+      "id": "exec-v9-quality",
+      "from": "artifact_support_owner",
+      "relation": "delegates",
+      "to": "typed_basin_quality",
+      "events": ["v9_quality_proof"]
+    },
+    {
+      "id": "observe-runtime-readout",
+      "from": "typed_basin_quality",
+      "relation": "observes",
+      "to": "runtime_readout_observer",
+      "events": ["quality_observation"]
+    },
+    {
+      "id": "proof-quality-admission",
+      "from": "typed_basin_quality",
+      "relation": "proves",
+      "to": "quality_admission",
+      "events": ["quality_admission"]
+    },
+    {
+      "id": "observe-quality-receipt",
+      "from": "quality_admission",
+      "relation": "proves",
+      "to": "schema_v3_receipt",
+      "events": ["quality_receipt"]
+    },
+    {
+      "id": "authority-receipt-installer",
+      "from": "schema_v3_receipt",
+      "relation": "authorizes",
+      "to": "installer_validator",
+      "events": ["deployment_admission"]
+    },
+    {
+      "id": "authority-receipt-runtime",
+      "from": "schema_v3_receipt",
+      "relation": "authorizes",
+      "to": "runtime_validator",
+      "events": ["runtime_admission"]
+    }
+  ],
+  "routes": [
+    {
+      "id": "v8-proof-execution",
+      "event": "v8_quality_proof",
+      "kind": "execution",
+      "entry": "quality_cli",
+      "terminal": "typed_basin_quality",
+      "required_roles": ["interface", "orchestrator", "proof_owner", "producer"],
+      "via": ["artifact_router", "v8_a2_prerequisite"],
+      "path_cardinality": [
+        {"from": "quality_cli", "to": "typed_basin_quality", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "v9-artifact-prerequisite",
+      "event": "v9_artifact_prerequisite",
+      "kind": "proof",
+      "entry": "v9_loader",
+      "terminal": "v9_support_parity_gate",
+      "required_roles": ["evidence_owner", "producer", "proof_owner"],
+      "via": ["corpus_support_rebuilder"]
+    },
+    {
+      "id": "v9-proof-execution",
+      "event": "v9_quality_proof",
+      "kind": "execution",
+      "entry": "quality_cli",
+      "terminal": "typed_basin_quality",
+      "required_roles": ["interface", "orchestrator", "evidence_owner", "proof_owner", "producer"],
+      "via": ["artifact_router", "v9_loader", "v9_support_parity_gate", "artifact_support_owner"],
+      "path_cardinality": [
+        {"from": "quality_cli", "to": "typed_basin_quality", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "quality-observation",
+      "event": "quality_observation",
+      "kind": "observation",
+      "entry": "typed_basin_quality",
+      "terminal": "runtime_readout_observer",
+      "required_roles": ["producer", "observer"]
+    },
+    {
+      "id": "quality-authority",
+      "event": "quality_admission",
+      "kind": "authority",
+      "entry": "typed_basin_quality",
+      "terminal": "quality_admission",
+      "required_roles": ["producer", "authorization_owner"]
+    },
+    {
+      "id": "deployment-authority",
+      "event": "deployment_admission",
+      "kind": "authority",
+      "entry": "schema_v3_receipt",
+      "terminal": "installer_validator",
+      "required_roles": ["proof_owner", "authorization_owner"]
+    },
+    {
+      "id": "runtime-authority",
+      "event": "runtime_admission",
+      "kind": "authority",
+      "entry": "schema_v3_receipt",
+      "terminal": "runtime_validator",
+      "required_roles": ["proof_owner", "authorization_owner"]
+    }
+  ]
+}

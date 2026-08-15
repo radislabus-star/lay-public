@@ -1,0 +1,154 @@
+{
+  "schema": "lay.l1-l11.phase8i-integrity-release-deployment.v1",
+  "task_id": "L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15",
+  "created_at": "2026-08-15T17:22:13+03:00",
+  "verdict": "DEPLOYED_DAEMON_L11_GNOME_PASS_MANAGED_IBUS_PRESERVED_PHYSICAL_PENDING",
+  "release": {
+    "version": "1.0.29",
+    "branch": "codex/l1-exact-peak-search",
+    "source_base_commit": "2639559",
+    "remote_build_host": "e@192.168.3.94",
+    "build_command": "scripts/cargo-guard.sh build --release --bins",
+    "build_elapsed_seconds": 76.01,
+    "build_max_rss_kib": 1104084,
+    "binary_count": 10,
+    "binary_bytes": 45346928,
+    "staging_root": "/home/ubu/.cache/lay/release-1.0.29-phase8i",
+    "binary_manifest": "/home/ubu/.cache/lay/release-1.0.29-phase8i/release-1.0.29-binaries.tsv",
+    "binary_manifest_sha256": "521cf4ed220a791b3b3252b10932737067ce1e2c09bad013df55eef329d54b9e",
+    "staged_binary_parity": {
+      "passed": 10,
+      "total": 10
+    },
+    "installed_binary_parity": {
+      "passed": 10,
+      "total": 10
+    },
+    "installed_root": "/home/ubu/.local/lib/lay/bin"
+  },
+  "package_admission": {
+    "package_id": "LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9",
+    "format": "V9 phase8i-exact-typed-basin",
+    "artifact": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.v9.bin",
+    "artifact_bytes": 77962328,
+    "artifact_sha256": "bf5a1619a89038466ef786305cf35eda5f4af5b9f12b9140f7d3cac407e2f2a7",
+    "proof_verdict": "PASS_C_QUALITY",
+    "proof_sha256": "4983930495e793c1d28c7558fe006ddf8097ee575bebb1afd3f1dba4ddb1d01d",
+    "active_receipt": "/home/ubu/.local/share/lay/nanda_wave/l1.1/active.installed.json",
+    "active_receipt_bytes": 955,
+    "active_receipt_sha256": "52076ffdf4f17e8b02d2334ec8d04fc10991a16c7dffccbf03849b8985c8eb2e",
+    "named_and_active_receipts_identical": true,
+    "runtime_authority": false,
+    "runtime_admitted": true
+  },
+  "activation": {
+    "activated_at": "2026-08-15T17:20:05+03:00",
+    "restarted_unit": "lay-daemon.service",
+    "daemon_pid_before": 3440152,
+    "daemon_pid_after": 150902,
+    "l11_pid_before": 3440215,
+    "l11_pid_after": 150984,
+    "global_ibus_pid_before": 3702,
+    "global_ibus_pid_after": 3702,
+    "managed_engine_pid_before": 3719399,
+    "managed_engine_pid_after": 3719399,
+    "managed_engine_restarted": false,
+    "managed_engine_executable_state": "pre-deployment inode mapped as deleted",
+    "daemon_count": 1,
+    "l11_service_count": 1,
+    "gnome_extension_enabled": true,
+    "gnome_extension_source_runtime_parity": true,
+    "gnome_extension_dbus_version": "1.0.29",
+    "observed_active_ibus_engine": "lay-ime-us"
+  },
+  "live_service": {
+    "status": "ready",
+    "socket": "/run/user/1000/lay-l11.sock",
+    "owner": "phase8i_exact_typed_basin",
+    "format": "v9",
+    "package_count": 1,
+    "terminal_count": 852582,
+    "atom_count": 218763,
+    "exact_surface_count": 852582,
+    "character_anchor_count": 852582,
+    "forward_relations": 0,
+    "reverse_relations": 0,
+    "decoded_surface_pool_bytes": 17041820,
+    "decoder_index_bytes": 28759240,
+    "exact_support_bytes": 875052,
+    "exact_support_overflow_atoms": 217,
+    "maximum_exact_support": 852582,
+    "requests_served": 8,
+    "query_failures": 0,
+    "journal_errors": 0,
+    "running_daemon_sha256_matches_release": true,
+    "running_l11_sha256_matches_release": true,
+    "cgroup_memory_current_bytes": 376770560,
+    "cgroup_memory_peak_bytes": 378494976,
+    "daemon_rss_kib": 350796,
+    "l11_rss_kib": 183592
+  },
+  "socket_smoke": {
+    "scope": "transport and typed-verdict delivery only",
+    "queries": [
+      {
+        "surface": "морфология",
+        "verdict": "winner",
+        "authority": true,
+        "top_surface": "морфология"
+      },
+      {
+        "surface": "марфология",
+        "verdict": "abstain",
+        "authority": false,
+        "retained_surface": "морфология"
+      },
+      {
+        "surface": "ytn",
+        "verdict": "tied",
+        "authority": false,
+        "retained_surfaces": [
+          "ytn",
+          "нет"
+        ]
+      },
+      {
+        "surface": "рабоают",
+        "verdict": "abstain",
+        "authority": false,
+        "reason": "no_candidates"
+      }
+    ],
+    "quality_claimed_from_smoke": false
+  },
+  "authority": {
+    "package_owner_before": "single_live_v9_phase8i_service",
+    "package_owner_after": "single_live_v9_phase8i_service",
+    "package_authority_changed": false,
+    "runtime_implementation_updated": true,
+    "v8_fallback": false,
+    "v8_v9_union_route": false
+  },
+  "rollback": {
+    "root": "/home/ubu/.local/lib/lay/rollback/1.0.28-pre-1.0.29-phase8i-integrity-20260815-170702",
+    "previous_version": "1.0.28",
+    "bytes": 789183548,
+    "sha256_files_passed": 42,
+    "sha256_files_failed": 0,
+    "complete": true
+  },
+  "evidence": {
+    "release_root": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/release-1.0.29",
+    "quality_proof": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/direct-v9-proof-v3/direct-v9-full-13x20000-all-clean.json",
+    "architecture_documents": [
+      "docs/l1-l11-phase8i-gate-d-runtime.md",
+      "docs/l1-l11-typed-basin-implicit-forward-phase8i.md"
+    ]
+  },
+  "not_physically_tested": [
+    "new lay-ibus-engine bytes in the running managed process",
+    "real application typing after deployment",
+    "WeChat behavior after deployment",
+    "autocorrection followed by physical Double Shift undo"
+  ]
+}

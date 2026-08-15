@@ -1,0 +1,186 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "PASS",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": true,
+  "contract": "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/observed-v9-lattice-route-v1.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "observed_source",
+  "source_root": "/home/ubu/projects/lay-l1-exact-peak-search",
+  "node_count": 9,
+  "edge_count": 11,
+  "routes": [
+    {
+      "id": "v9-lattice-execution",
+      "event": "v9_lattice_query",
+      "kind": "execution",
+      "entry": "l2_bridge",
+      "via": [
+        "lattice_client",
+        "service_dispatch",
+        "l11_host",
+        "typed_birth",
+        "exact_support",
+        "exact_settlement"
+      ],
+      "terminal": "bounded_lattice",
+      "path_count": 1,
+      "paths": [
+        [
+          "l2_bridge",
+          "lattice_client",
+          "service_dispatch",
+          "l11_host",
+          "typed_birth",
+          "exact_support",
+          "exact_settlement",
+          "bounded_lattice"
+        ]
+      ],
+      "role_owners": {
+        "display_rank_owner": [
+          "bounded_lattice"
+        ],
+        "candidate_rank_owner": [
+          "exact_settlement"
+        ],
+        "evidence_owner": [
+          "exact_support"
+        ],
+        "orchestrator": [
+          "l11_host",
+          "service_dispatch"
+        ],
+        "interface": [
+          "l2_bridge",
+          "lattice_client"
+        ],
+        "producer": [
+          "typed_birth"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "l2_bridge",
+          "to": "bounded_lattice",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "l2_bridge",
+              "lattice_client",
+              "service_dispatch",
+              "l11_host",
+              "typed_birth",
+              "exact_support",
+              "exact_settlement",
+              "bounded_lattice"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "v9-lattice-authority",
+      "event": "v9_lattice_query",
+      "kind": "authority",
+      "entry": "typed_birth",
+      "via": [
+        "exact_support",
+        "exact_settlement",
+        "bounded_lattice"
+      ],
+      "terminal": "l2_field",
+      "path_count": 1,
+      "paths": [
+        [
+          "typed_birth",
+          "exact_support",
+          "exact_settlement",
+          "bounded_lattice",
+          "l2_field"
+        ]
+      ],
+      "role_owners": {
+        "display_rank_owner": [
+          "bounded_lattice"
+        ],
+        "candidate_rank_owner": [
+          "exact_settlement"
+        ],
+        "evidence_owner": [
+          "exact_support"
+        ],
+        "authorization_owner": [
+          "l2_field"
+        ],
+        "producer": [
+          "typed_birth"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "typed_birth",
+          "to": "l2_field",
+          "via": [],
+          "graph": "authority",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "typed_birth",
+              "exact_support",
+              "exact_settlement",
+              "bounded_lattice",
+              "l2_field"
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {
+    "v9_lattice_query": {
+      "render_owner": [],
+      "mutation_owner": [],
+      "display_rank_owner": [
+        "bounded_lattice"
+      ],
+      "candidate_rank_owner": [
+        "exact_settlement"
+      ],
+      "authorization_owner": [
+        "l2_field"
+      ],
+      "evidence_owner": [
+        "exact_support"
+      ]
+    }
+  },
+  "source_evidence": {
+    "expected": 20,
+    "verified": 20,
+    "complete": true
+  },
+  "issues": [],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": true,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

@@ -1,0 +1,377 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-l11-phase8i-proof-runtime-integrity-closure-2026-08-15",
+  "authority_bearing": true,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "installer-source",
+      "kind": "file",
+      "path": "../../../../scripts/install-l11-shadow-package.sh",
+      "expect": {
+        "size_bytes": 5045,
+        "sha256": "ead4c9489a9e2b46747ba06912e2874e75efca83f86275bf8006d1e3ae8106ff",
+        "mode": "0775"
+      }
+    },
+    {
+      "id": "service-source",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/service.rs",
+      "expect": {
+        "size_bytes": 39284,
+        "sha256": "ca415a8d7929a5cf0453a2128fb7ae208dbbbba92902443b3107513bbcbaa67e",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "serve-source",
+      "kind": "file",
+      "path": "../../../../src/bin/lay_l1_1_serve.rs",
+      "expect": {
+        "size_bytes": 27989,
+        "sha256": "463197e78871a9ab1b15eedb6a3ebbe46a7185b61945f4c5ab784132dc39ec9c",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "shift-source",
+      "kind": "file",
+      "path": "../../../../src/bin/lay_ibus_engine/shift.rs",
+      "expect": {
+        "size_bytes": 3915,
+        "sha256": "e857ce34a0b4dbde71507d90c8743a014912ee8d041ff3d1824c8722c2fd39d8",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "installed-v9",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.v9.bin",
+      "expect": {
+        "size_bytes": 77962328,
+        "sha256": "bf5a1619a89038466ef786305cf35eda5f4af5b9f12b9140f7d3cac407e2f2a7",
+        "prefix_hex": "4c41594c31563900",
+        "mode": "0644"
+      }
+    },
+    {
+      "id": "installed-daemon",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+      "expect": {
+        "size_bytes": 8202992,
+        "sha256": "890f6566b185a0eb382cef8b0c2d69285105b1d7b17de9639e9de0772fa17d8e",
+        "mode": "0755"
+      }
+    },
+    {
+      "id": "installed-service",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-l1.1-serve",
+      "expect": {
+        "size_bytes": 2105816,
+        "sha256": "997bb8c7dd899adccb8976496a5cfd90f37d32602891bf2ef77c4ba5b4dc8480",
+        "mode": "0755"
+      }
+    },
+    {
+      "id": "installed-receipt",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.installed.json",
+      "expect": {
+        "size_bytes": 537,
+        "sha256": "d08849efdb217a63215878253cabed18528f28bdda5d035697938e39f829a481",
+        "mode": "0644"
+      }
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {
+        "id": "tighten-proof-verdict-admission",
+        "kind": "filesystem_edit"
+      },
+      {
+        "id": "close-reload-flip-race",
+        "kind": "filesystem_edit"
+      },
+      {
+        "id": "defer-ime-state-mutation-until-commit",
+        "kind": "filesystem_edit"
+      },
+      {
+        "id": "run-focused-and-remote-proof-gates",
+        "kind": "test_execution"
+      },
+      {
+        "id": "deploy-only-after-conjunctive-pass",
+        "kind": "process_restart"
+      }
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "package_byte_change",
+      "proof_threshold_change",
+      "literal_word_or_case_rule",
+      "broad_pass_prefix_admission",
+      "reload_flip_without_current_admission",
+      "ime_state_mutation_before_commit",
+      "hidden_runtime_fallback",
+      "local_full_quality_proof",
+      "pre_proof_install",
+      "global_ibus_restart"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "service-effects-baseline",
+      "path": "../../../../src/nanda_wave/lexical_grokking/service.rs",
+      "sha256": "ca415a8d7929a5cf0453a2128fb7ae208dbbbba92902443b3107513bbcbaa67e",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "generated_traffic",
+          "regex": "(reqwest|ureq)::"
+        },
+        {
+          "effect": "literal_word_or_case_rule",
+          "regex": "surface\\s*==\\s*\""
+        },
+        {
+          "effect": "package_byte_change",
+          "regex": "(File::create|fs::write)[^;]*v9"
+        },
+        {
+          "effect": "global_ibus_restart",
+          "regex": "ibus[^;]*(restart|exit|kill)"
+        }
+      ]
+    },
+    {
+      "id": "shift-effects-baseline",
+      "path": "../../../../src/bin/lay_ibus_engine/shift.rs",
+      "sha256": "e857ce34a0b4dbde71507d90c8743a014912ee8d041ff3d1824c8722c2fd39d8",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "literal_word_or_case_rule",
+          "regex": "(buffer|replacement)\\s*==\\s*\""
+        },
+        {
+          "effect": "global_ibus_restart",
+          "regex": "ibus[^;]*(restart|exit|kill)"
+        }
+      ]
+    }
+  ],
+  "state_machine": {
+    "initial_state": "POST_DEPLOY_INTEGRITY_REVIEW",
+    "terminal_states": [
+      "LOCAL_GATES_PASS",
+      "REMOTE_PROOF_PASS",
+      "DEPLOYED",
+      "IMPLEMENTATION_REJECTED",
+      "PROOF_REJECTED",
+      "DEPLOY_REJECTED"
+    ],
+    "steps": [
+      {
+        "id": "implement-integrity-closure",
+        "from": "POST_DEPLOY_INTEGRITY_REVIEW",
+        "to": "INTEGRITY_CLOSURE_IMPLEMENTED",
+        "mutates": true,
+        "failure_state": "IMPLEMENTATION_REJECTED",
+        "cleanup": "retain rejected diff and receipt; do not build release binaries or restart processes",
+        "preserves": [
+          "installed-v9",
+          "installed-binaries",
+          "installed-receipt"
+        ],
+        "test_id": "implementation-failure"
+      },
+      {
+        "id": "run-local-integrity-gates",
+        "from": "INTEGRITY_CLOSURE_IMPLEMENTED",
+        "to": "LOCAL_GATES_PASS",
+        "mutates": true,
+        "failure_state": "IMPLEMENTATION_REJECTED",
+        "cleanup": "retain test evidence; leave installed runtime byte-identical and running",
+        "preserves": [
+          "installed-v9",
+          "installed-binaries",
+          "installed-receipt"
+        ],
+        "test_id": "local-gate-failure"
+      },
+      {
+        "id": "run-remote-fixed-quality-proof",
+        "from": "LOCAL_GATES_PASS",
+        "to": "REMOTE_PROOF_PASS",
+        "mutates": true,
+        "failure_state": "PROOF_REJECTED",
+        "cleanup": "stop only remote proof processes; retain rejected receipts; do not change live Lay",
+        "preserves": [
+          "installed-v9",
+          "installed-binaries",
+          "installed-receipt"
+        ],
+        "test_id": "remote-proof-failure"
+      },
+      {
+        "id": "deploy-after-proof-and-release-gates",
+        "from": "REMOTE_PROOF_PASS",
+        "to": "DEPLOYED",
+        "mutates": true,
+        "failure_state": "DEPLOY_REJECTED",
+        "cleanup": "restore the pinned installed binary and receipt set; restart only managed Lay services; never restart global IBus",
+        "preserves": [
+          "installed-v9",
+          "installed-binaries",
+          "installed-receipt"
+        ],
+        "test_id": "deploy-failure"
+      }
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "installed-v9",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.v9.bin",
+      "policy": "byte_identical",
+      "rollback_policy": "never rebuild or replace the accepted package bytes in this change",
+      "baseline_check_id": "installed-v9"
+    },
+    {
+      "id": "installed-binaries",
+      "path": "/home/ubu/.local/lib/lay/bin",
+      "policy": "copy_before_replace",
+      "rollback_policy": "restore exact pinned daemon and service binaries before a managed restart",
+      "baseline_check_id": "installed-daemon"
+    },
+    {
+      "id": "installed-receipt",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.installed.json",
+      "policy": "copy_before_replace",
+      "rollback_policy": "retain the old receipt until a new integrity-bound active receipt is proven and atomically installed",
+      "baseline_check_id": "installed-receipt"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "proof-verdict-identity",
+      "producer": "fixed proof receipt verdict",
+      "consumer": "installer and runtime admission receipt",
+      "comparison": "only exact admitted verdict tokens; proof bytes and SHA-256 remain bound",
+      "test_id": "proof-admission-parity"
+    },
+    {
+      "id": "reload-active-package-identity",
+      "producer": "active.installed.json at atomic flip time",
+      "consumer": "new HostedMemory snapshot",
+      "comparison": "package path and integrity-bound receipt identity exact immediately before flip",
+      "test_id": "reload-admission-race"
+    },
+    {
+      "id": "manual-toggle-commit-identity",
+      "producer": "one IME AuthorizedEdit",
+      "consumer": "CommitText and post-commit tail state",
+      "comparison": "to_text exact; failed CommitText preserves original preedit and tail",
+      "test_id": "manual-toggle-commit-order"
+    }
+  ],
+  "runtime_comparisons": [
+    {
+      "id": "v9-before-after",
+      "source": "fixed 13-class proof plus live health and stats",
+      "comparison": "exact_stable_projection",
+      "reason": "integrity closure must not change package, quality thresholds, candidates or live authority route",
+      "stable_fields": [
+        "package_sha256",
+        "package_bytes",
+        "terminal_count",
+        "13 class denominators",
+        "quality thresholds",
+        "false_authority",
+        "false_singleton"
+      ],
+      "expected_to_change_fields": [
+        "proof schema",
+        "bounded lattice projection from 64 to the actual live 32",
+        "binary SHA-256",
+        "version"
+      ],
+      "observed_not_compared_fields": [
+        "pid",
+        "uptime_ms",
+        "scheduler timing",
+        "kernel page residency"
+      ],
+      "test_id": "remote-fixed-proof"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "exact-proof-admission",
+      "statement": "smoke, watch, reject, and arbitrary PASS-prefixed strings cannot create an active admission receipt",
+      "test_id": "proof-admission-parity"
+    },
+    {
+      "id": "reload-current-at-flip",
+      "statement": "a snapshot may replace the live host only while its package remains the currently active admitted artifact",
+      "test_id": "reload-admission-race"
+    },
+    {
+      "id": "failed-ime-commit-preserves-input",
+      "statement": "manual toggle state changes occur after successful CommitText; failure retains exact original preedit and tail",
+      "test_id": "manual-toggle-commit-order"
+    },
+    {
+      "id": "one-live-lattice-limit",
+      "statement": "proof and L1.1 to L2 transport use the same bounded lattice limit of 32",
+      "test_id": "remote-fixed-proof"
+    }
+  ],
+  "tests": [
+    {
+      "id": "implementation-failure",
+      "kind": "fault_injection",
+      "expected": "IMPLEMENTATION_REJECTED with installed package, binaries and receipt unchanged"
+    },
+    {
+      "id": "local-gate-failure",
+      "kind": "fault_injection",
+      "expected": "IMPLEMENTATION_REJECTED and no release build or restart"
+    },
+    {
+      "id": "remote-proof-failure",
+      "kind": "fault_injection",
+      "expected": "PROOF_REJECTED with live Lay unchanged"
+    },
+    {
+      "id": "deploy-failure",
+      "kind": "fault_injection",
+      "expected": "exact pinned binaries and receipt restored without global IBus restart"
+    },
+    {
+      "id": "proof-admission-parity",
+      "kind": "parity",
+      "expected": "PASS_shadow and PASS_C_QUALITY accepted; smoke, watch, reject and arbitrary prefixes rejected"
+    },
+    {
+      "id": "reload-admission-race",
+      "kind": "fault_injection",
+      "expected": "active receipt change between load and flip rejects replacement and preserves current snapshot"
+    },
+    {
+      "id": "manual-toggle-commit-order",
+      "kind": "parity",
+      "expected": "AuthorizedEdit is held to CommitText and no pre-commit buffer or tail replacement remains"
+    },
+    {
+      "id": "remote-fixed-proof",
+      "kind": "integration",
+      "expected": "13 x 100 then 13 x 20,000 pass the unchanged conjunctive gate using lattice limit 32"
+    }
+  ]
+}

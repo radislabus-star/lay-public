@@ -22,6 +22,8 @@ pub struct L1RestorationHostStats {
     pub manifest_generation: u64,
     pub delta_count: usize,
     pub tombstone_count: usize,
+    #[serde(default)]
+    pub query_failures: u64,
 }
 
 pub struct L1RestorationHost {
@@ -148,9 +150,24 @@ impl L1RestorationHost {
     }
 
     pub fn restore(&self, surface: &str, limit: usize) -> serde_json::Value {
+        self.try_restore(surface, limit).unwrap_or_else(|error| {
+            serde_json::json!({
+                "package": self.package_path,
+                "input": surface,
+                "terminal_count": self.terminal_count(),
+                "result": {
+                    "verdict": "error",
+                    "authority": false,
+                    "reason": error.to_string(),
+                },
+            })
+        })
+    }
+
+    pub fn try_restore(&self, surface: &str, limit: usize) -> io::Result<serde_json::Value> {
         if self.is_composite() {
             let candidates = self
-                .lattice_seed_rows(surface, limit.max(1))
+                .try_lattice_seed_rows(surface, limit.max(1))?
                 .into_iter()
                 .map(|(terminal_id, surface, score_milli)| {
                     serde_json::json!({
@@ -165,7 +182,7 @@ impl L1RestorationHost {
             } else {
                 "lattice"
             };
-            return serde_json::json!({
+            return Ok(serde_json::json!({
                 "package": self.package_path,
                 "input": surface,
                 "terminal_count": self.terminal_count(),
@@ -176,9 +193,12 @@ impl L1RestorationHost {
                     "reason": "append_only_overlay_requires_composite_proof",
                     "candidates": candidates,
                 },
-            });
+            }));
         }
-        let (_candidates, readout) = self.memory.restoration_readout(surface, limit.max(1));
+        let (_candidates, readout) = self
+            .memory
+            .try_restoration_readout(surface, limit.max(1))
+            .map_err(io::Error::other)?;
         let result = match readout {
             restoration::RestorationReadout::Winner { candidate } => {
                 serde_json::json!({
@@ -228,18 +248,34 @@ impl L1RestorationHost {
                     .collect::<Vec<_>>(),
             }),
         };
-        serde_json::json!({
+        Ok(serde_json::json!({
             "package": self.package_path,
             "input": surface,
             "terminal_count": self.memory.package.terminal_count(),
             "result": result,
-        })
+        }))
     }
 
     pub fn lattice(&self, surface: &str, limit: usize) -> serde_json::Value {
+        self.try_lattice(surface, limit).unwrap_or_else(|error| {
+            serde_json::json!({
+                "package": self.package_path,
+                "input": surface,
+                "terminal_count": self.terminal_count(),
+                "result": {
+                    "verdict": "error",
+                    "authority": false,
+                    "reason": error.to_string(),
+                    "candidates": [],
+                },
+            })
+        })
+    }
+
+    pub fn try_lattice(&self, surface: &str, limit: usize) -> io::Result<serde_json::Value> {
         if self.is_composite() {
             let candidates = self
-                .lattice_seed_rows(surface, limit.max(1))
+                .try_lattice_seed_rows(surface, limit.max(1))?
                 .into_iter()
                 .map(|(terminal_id, surface, score_milli)| {
                     serde_json::json!({
@@ -249,7 +285,7 @@ impl L1RestorationHost {
                     })
                 })
                 .collect::<Vec<_>>();
-            return serde_json::json!({
+            return Ok(serde_json::json!({
                 "package": self.package_path,
                 "input": surface,
                 "terminal_count": self.terminal_count(),
@@ -259,15 +295,16 @@ impl L1RestorationHost {
                     "authority": false,
                     "candidates": candidates,
                 },
-            });
+            }));
         }
         let candidates = self
             .memory
-            .readout(surface, limit.max(1), ReadoutMode::Full)
+            .try_readout(surface, limit.max(1), ReadoutMode::Full)
+            .map_err(io::Error::other)?
             .into_iter()
             .map(|candidate| candidate_json(&self.memory, candidate))
             .collect::<Vec<_>>();
-        serde_json::json!({
+        Ok(serde_json::json!({
             "package": self.package_path,
             "input": surface,
             "terminal_count": self.memory.package.terminal_count(),
@@ -276,11 +313,20 @@ impl L1RestorationHost {
                 "authority": false,
                 "candidates": candidates,
             },
-        })
+        }))
     }
 
     pub fn lattice_seed_rows(&self, surface: &str, limit: usize) -> Vec<(u32, String, u32)> {
-        self.lattice_seed_rows_with_parallel_packages(surface, limit, true)
+        self.try_lattice_seed_rows(surface, limit)
+            .unwrap_or_default()
+    }
+
+    pub fn try_lattice_seed_rows(
+        &self,
+        surface: &str,
+        limit: usize,
+    ) -> io::Result<Vec<(u32, String, u32)>> {
+        self.try_lattice_seed_rows_with_parallel_packages(surface, limit, true)
     }
 
     pub fn typed_lattice_seed_rows(
@@ -288,25 +334,37 @@ impl L1RestorationHost {
         surface: &str,
         limit: usize,
     ) -> Vec<(u32, String, bool, u32)> {
+        self.try_typed_lattice_seed_rows(surface, limit)
+            .unwrap_or_default()
+    }
+
+    pub fn try_typed_lattice_seed_rows(
+        &self,
+        surface: &str,
+        limit: usize,
+    ) -> io::Result<Vec<(u32, String, bool, u32)>> {
         if self.is_composite() {
-            return self
-                .lattice_seed_rows(surface, limit)
+            return Ok(self
+                .try_lattice_seed_rows(surface, limit)?
                 .into_iter()
                 .map(|(terminal_id, surface, score_milli)| {
                     (terminal_id, surface, false, score_milli)
                 })
-                .collect();
+                .collect());
         }
 
         let limit = limit.max(1);
-        let (candidates, readout) = self.memory.restoration_readout(surface, limit);
+        let (candidates, readout) = self
+            .memory
+            .try_restoration_readout(surface, limit)
+            .map_err(io::Error::other)?;
         let authority_terminal = match readout {
             restoration::RestorationReadout::Winner { candidate } => Some(candidate.terminal_id),
             restoration::RestorationReadout::Tied { .. }
             | restoration::RestorationReadout::TiedOverflow { .. }
             | restoration::RestorationReadout::Abstain { .. } => None,
         };
-        candidates
+        Ok(candidates
             .into_iter()
             .filter_map(|candidate| {
                 let terminal_id = candidate.terminal_id;
@@ -318,7 +376,7 @@ impl L1RestorationHost {
                 ))
             })
             .take(limit)
-            .collect()
+            .collect())
     }
 
     pub(in crate::nanda_wave::lexical_grokking) fn lattice_seed_rows_batched(
@@ -326,27 +384,28 @@ impl L1RestorationHost {
         surface: &str,
         limit: usize,
     ) -> Vec<(u32, String, u32)> {
-        self.lattice_seed_rows_with_parallel_packages(surface, limit, false)
+        self.try_lattice_seed_rows_with_parallel_packages(surface, limit, false)
+            .unwrap_or_default()
     }
 
-    fn lattice_seed_rows_with_parallel_packages(
+    fn try_lattice_seed_rows_with_parallel_packages(
         &self,
         surface: &str,
         limit: usize,
         parallel_packages: bool,
-    ) -> Vec<(u32, String, u32)> {
+    ) -> io::Result<Vec<(u32, String, u32)>> {
         let limit = limit.max(1);
         let exact_terminal = self.terminal_for_exact_surface(surface);
         if limit == 1 {
             if let Some(terminal_id) = exact_terminal {
                 if let Some(surface) = self.decode_terminal(terminal_id) {
-                    return vec![(terminal_id, surface, u32::MAX)];
+                    return Ok(vec![(terminal_id, surface, u32::MAX)]);
                 }
             }
         }
         let mut rows = if parallel_packages {
             if let [overlay] = self.overlays.as_slice() {
-                let (mut base, delta) = v8::runtime_pool_install(|| {
+                let (base, delta) = v8::runtime_pool_install(|| {
                     rayon::join(
                         || memory_seed_rows(&self.memory, 0, surface, limit),
                         || {
@@ -359,13 +418,14 @@ impl L1RestorationHost {
                         },
                     )
                 });
-                base.extend(delta);
+                let mut base = base?;
+                base.extend(delta?);
                 base
             } else {
-                self.sequential_seed_rows(surface, limit)
+                self.try_sequential_seed_rows(surface, limit)?
             }
         } else {
-            self.sequential_seed_rows(surface, limit)
+            self.try_sequential_seed_rows(surface, limit)?
         };
         rows.retain(|row| !self.is_tombstoned(&row.surface));
         rows.sort_unstable_by(|left, right| {
@@ -380,22 +440,27 @@ impl L1RestorationHost {
         let mut seen = BTreeSet::new();
         rows.retain(|row| seen.insert(normalize_lexical_surface(&row.surface)));
         rows.truncate(limit);
-        rows.into_iter()
+        Ok(rows
+            .into_iter()
             .map(|row| (row.terminal_id, row.surface, row.score_milli))
-            .collect()
+            .collect())
     }
 
-    fn sequential_seed_rows(&self, surface: &str, limit: usize) -> Vec<LatticeSeedRow> {
-        let mut rows = memory_seed_rows(&self.memory, 0, surface, limit);
+    fn try_sequential_seed_rows(
+        &self,
+        surface: &str,
+        limit: usize,
+    ) -> io::Result<Vec<LatticeSeedRow>> {
+        let mut rows = memory_seed_rows(&self.memory, 0, surface, limit)?;
         for overlay in &self.overlays {
             rows.extend(memory_seed_rows(
                 &overlay.memory,
                 overlay.terminal_offset,
                 surface,
                 limit,
-            ));
+            )?);
         }
-        rows
+        Ok(rows)
     }
 
     pub fn stats(&self) -> L1RestorationHostStats {
@@ -445,6 +510,12 @@ impl L1RestorationHost {
             manifest_generation: self.manifest_generation,
             delta_count: self.overlays.len(),
             tombstone_count: self.tombstones.len(),
+            query_failures: self.memory.query_failures().saturating_add(
+                self.overlays
+                    .iter()
+                    .map(|overlay| overlay.memory.query_failures())
+                    .sum(),
+            ),
         }
     }
 
@@ -471,9 +542,10 @@ fn memory_seed_rows(
     terminal_offset: u32,
     surface: &str,
     limit: usize,
-) -> Vec<LatticeSeedRow> {
-    memory
-        .readout(surface, limit, ReadoutMode::Full)
+) -> io::Result<Vec<LatticeSeedRow>> {
+    Ok(memory
+        .try_readout(surface, limit, ReadoutMode::Full)
+        .map_err(io::Error::other)?
         .into_iter()
         .enumerate()
         .filter_map(|(local_rank, candidate)| {
@@ -487,7 +559,7 @@ fn memory_seed_rows(
                 local_rank: local_rank.min(u16::MAX as usize) as u16,
             })
         })
-        .collect()
+        .collect())
 }
 
 fn lattice_seed_score(candidate: GrokkingCandidate) -> u32 {

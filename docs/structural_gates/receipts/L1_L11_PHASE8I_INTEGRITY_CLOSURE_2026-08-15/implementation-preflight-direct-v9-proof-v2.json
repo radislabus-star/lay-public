@@ -1,0 +1,216 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-l11-direct-v9-quality-proof-v1-2026-08-15",
+  "authority_bearing": true,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "quality-source",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/typed_basin/quality.rs",
+      "expect": {"size_bytes": 35712, "sha256": "ae75082b92c861dd4ed74fdefc4c9b583e9de85b403d8a688ad0e4fc25fd0136", "mode": "0664"}
+    },
+    {
+      "id": "v9-source",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/v9.rs",
+      "expect": {"size_bytes": 13494, "sha256": "1085b571756c97439edd6f4f7828589a51dbf304a73a9c59529446c78d058cd3", "mode": "0664"}
+    },
+    {
+      "id": "service-source",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/service.rs",
+      "expect": {"size_bytes": 61127, "sha256": "bdbfecda75bd77f458b530140b7108bab5b8e32b7e244688a6d3570448f6d916", "mode": "0664"}
+    },
+    {
+      "id": "installer-source",
+      "kind": "file",
+      "path": "../../../../scripts/install-l11-shadow-package.sh",
+      "expect": {"size_bytes": 14265, "sha256": "bb56785eccc3250d6a21587a8a7f78f2adf9a86d4a0dc0e111302e5765f62f89", "mode": "0775"}
+    },
+    {
+      "id": "installed-v9",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.v9.bin",
+      "expect": {"size_bytes": 77962328, "sha256": "bf5a1619a89038466ef786305cf35eda5f4af5b9f12b9140f7d3cac407e2f2a7", "prefix_hex": "4c41594c31563900", "mode": "0644"}
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "edit-proof-producer-and-consumers", "kind": "filesystem_edit"},
+      {"id": "run-focused-local-gates", "kind": "test_execution"},
+      {"id": "run-remote-smoke-and-full-proof", "kind": "test_execution"},
+      {"id": "deploy-only-after-conjunctive-pass", "kind": "process_restart"}
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "package_byte_change",
+      "v8_fallback_for_v9",
+      "proof_threshold_change",
+      "heldout_target_pull",
+      "literal_word_or_case_rule",
+      "rebuilt_support_as_unverified_runtime_authority",
+      "local_full_quality_proof",
+      "pre_proof_install",
+      "global_ibus_restart"
+    ]
+  },
+  "invariants": [
+    {
+      "id": "v9-proof-is-direct",
+      "statement": "A V9 quality proof consumes the exact V9 bytes named by the receipt and never extracts, discovers, or falls back to a V8 artifact.",
+      "test_id": "v9-no-fallback"
+    },
+    {
+      "id": "stored-support-is-authority",
+      "statement": "Quality settlement for V9 consumes exact support decoded from V9 only after byte-for-byte equality with an independent corpus rebuild.",
+      "test_id": "v9-support-parity"
+    },
+    {
+      "id": "v8-route-remains-separated",
+      "statement": "V8 diagnostics retain the existing embedded A2 prerequisite and cannot produce a V9-admissible artifact claim.",
+      "test_id": "v8-route-separation"
+    },
+    {
+      "id": "schema-consumers-match-producer",
+      "statement": "The proof producer, installer, and runtime admission require the same direct-V9 prerequisite fields and reject any missing or false field.",
+      "test_id": "proof-consumer-parity"
+    }
+  ],
+  "state_machine": {
+    "initial_state": "DIRECT_V9_PROOF_GAP_CONFIRMED",
+    "terminal_states": ["LOCAL_GATES_PASS", "REMOTE_PROOF_PASS", "DEPLOYED", "IMPLEMENTATION_REJECTED", "PROOF_REJECTED", "DEPLOY_REJECTED"],
+    "steps": [
+      {
+        "id": "implement-direct-v9-proof",
+        "from": "DIRECT_V9_PROOF_GAP_CONFIRMED",
+        "to": "DIRECT_V9_PROOF_IMPLEMENTED",
+        "mutates": true,
+        "failure_state": "IMPLEMENTATION_REJECTED",
+        "cleanup": "retain the rejected diff and failure receipt; leave installed package, binaries, daemon, and IBus unchanged",
+        "preserves": ["installed-v9"],
+        "test_id": "implementation-failure"
+      },
+      {
+        "id": "run-local-gates",
+        "from": "DIRECT_V9_PROOF_IMPLEMENTED",
+        "to": "LOCAL_GATES_PASS",
+        "mutates": true,
+        "failure_state": "IMPLEMENTATION_REJECTED",
+        "cleanup": "retain local evidence; do not sync a failed source packet",
+        "preserves": ["installed-v9"],
+        "test_id": "local-gate-failure"
+      },
+      {
+        "id": "run-remote-proof",
+        "from": "LOCAL_GATES_PASS",
+        "to": "REMOTE_PROOF_PASS",
+        "mutates": true,
+        "failure_state": "PROOF_REJECTED",
+        "cleanup": "retain smoke or full rejection receipt and stop only proof-owned remote processes",
+        "preserves": ["installed-v9"],
+        "test_id": "remote-proof-failure"
+      },
+      {
+        "id": "deploy-after-proof",
+        "from": "REMOTE_PROOF_PASS",
+        "to": "DEPLOYED",
+        "mutates": true,
+        "failure_state": "DEPLOY_REJECTED",
+        "cleanup": "restore pinned binaries and receipt and restart only managed Lay services; never restart global IBus",
+        "preserves": ["installed-v9"],
+        "test_id": "deploy-failure"
+      }
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "installed-v9",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.v9.bin",
+      "policy": "byte_identical",
+      "rollback_policy": "never rebuild or replace the accepted V9 package during proof repair",
+      "baseline_check_id": "installed-v9"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "v9-package-proof-identity",
+      "producer": "V9 bytes loaded by direct quality proof",
+      "consumer": "schema-v3 artifact path, bytes, and before/after SHA-256",
+      "comparison": "exact path plus byte count plus SHA-256 before and after",
+      "test_id": "v9-package-identity"
+    },
+    {
+      "id": "v9-support-identity",
+      "producer": "exact support decoded from V9 overflow",
+      "consumer": "typed-basin settlement and runtime readout",
+      "comparison": "all u32 support values equal independent corpus rebuild before quality workers start",
+      "test_id": "v9-support-parity"
+    },
+    {
+      "id": "proof-admission-identity",
+      "producer": "schema-v3 direct-V9 gates",
+      "consumer": "installer and runtime admission validators",
+      "comparison": "same required gate names, exact true values, V9 format, full denominator, and package identity",
+      "test_id": "proof-consumer-parity"
+    }
+  ],
+  "runtime_comparisons": [
+    {
+      "id": "v9-proof-runtime-readout",
+      "source": "direct V9 fixed quality proof",
+      "comparison": "typed-basin exact candidates from artifact support versus LexicalGrokkingMemory V9 runtime readout",
+      "reason": "the proof must detect any grounded candidate lost by the deployed V9 readout",
+      "test_id": "v9-runtime-observer-parity"
+    }
+  ],
+  "tests": [
+    {"id": "v9-no-fallback", "kind": "fault_injection", "expected": "V9 proof succeeds without any V8 path and malformed V9 fails closed"},
+    {"id": "v9-support-parity", "kind": "parity", "expected": "stored V9 u32 support equals the independent corpus rebuild before quality evaluation"},
+    {"id": "v8-route-separation", "kind": "parity", "expected": "V8 continues through embedded A2 while V9 never calls read_v8_layout or V8QueryOracle"},
+    {"id": "proof-consumer-parity", "kind": "parity", "expected": "producer, installer, and runtime require the same direct-V9 prerequisite fields"},
+    {"id": "proof-consumer-rejection", "kind": "fault_injection", "expected": "installer and runtime reject every absent or false direct-V9 prerequisite field"},
+    {"id": "v9-runtime-observer-parity", "kind": "parity", "expected": "the fixed proof reports zero grounded candidate losses from exact field to V9 runtime readout"},
+    {"id": "v9-package-identity", "kind": "parity", "expected": "receipt bytes and before/after SHA-256 match the exact V9 artifact"},
+    {"id": "implementation-failure", "kind": "fault_injection", "expected": "installed runtime remains byte-identical on any code or test failure"},
+    {"id": "local-gate-failure", "kind": "fault_injection", "expected": "failed local gates prevent remote proof and deployment"},
+    {"id": "remote-proof-failure", "kind": "fault_injection", "expected": "failed smoke or full proof leaves installed Lay unchanged"},
+    {"id": "deploy-failure", "kind": "fault_injection", "expected": "rollback restores pinned binaries and managed service without global IBus restart"}
+  ],
+  "source_checks": [
+    {
+      "id": "quality-effects-baseline",
+      "path": "../../../../src/nanda_wave/lexical_grokking/typed_basin/quality.rs",
+      "sha256": "ae75082b92c861dd4ed74fdefc4c9b583e9de85b403d8a688ad0e4fc25fd0136",
+      "forbidden_effect_patterns": [
+        {"effect": "v8_fallback_for_v9", "regex": "V9[^;\\n]*(read_v8_layout|V8QueryOracle)"},
+        {"effect": "proof_threshold_change", "regex": "(FULL_HELDOUT_PER_CLASS|ratio_strictly_above|ratio_at_least)\\s*="},
+        {"effect": "heldout_target_pull", "regex": "case\\.terminal_id[^\\n]*(evaluate_surface|reconstruct_candidate|settle_exact_case)"},
+        {"effect": "literal_word_or_case_rule", "regex": "surface\\s*==\\s*\\\""},
+        {"effect": "rebuilt_support_as_unverified_runtime_authority", "regex": "V9[^;\\n]*ExactSupportField::rebuild[^;\\n]*(settle|evaluate)"}
+      ]
+    },
+    {
+      "id": "installer-effects-baseline",
+      "path": "../../../../scripts/install-l11-shadow-package.sh",
+      "sha256": "bb56785eccc3250d6a21587a8a7f78f2adf9a86d4a0dc0e111302e5765f62f89",
+      "forbidden_effect_patterns": [
+        {"effect": "package_byte_change", "regex": "(truncate|dd|sed -i)[^\\n]*v9"},
+        {"effect": "pre_proof_install", "regex": "install[^\\n]*PASS_C_SMOKE"},
+        {"effect": "global_ibus_restart", "regex": "ibus[^\\n]*(restart|exit|kill)"}
+      ]
+    },
+    {
+      "id": "service-effects-baseline",
+      "path": "../../../../src/nanda_wave/lexical_grokking/service.rs",
+      "sha256": "bdbfecda75bd77f458b530140b7108bab5b8e32b7e244688a6d3570448f6d916",
+      "forbidden_effect_patterns": [
+        {"effect": "v8_fallback_for_v9", "regex": "V9[^;\\n]*(PASS_shadow|fallback)"},
+        {"effect": "proof_threshold_change", "regex": "FULL_HELDOUT_PER_CLASS\\s*=\\s*(?!20_000)"},
+        {"effect": "local_full_quality_proof", "regex": "Command::new[^;]*prove-l1-typed-basin-quality"}
+      ]
+    }
+  ]
+}

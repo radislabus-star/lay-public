@@ -361,7 +361,13 @@ impl LayIbusEngine {
         if causal_precondition_snapshot {
             request = request.with_causal_precondition_external_snapshot(pending.original.clone());
         }
-        let handled = self.replace_committed_tail(emitter, request).await?;
+        let handled = match self.replace_committed_tail(emitter, request).await {
+            Ok(handled) => handled,
+            Err(error) => {
+                self.restore_pending_ime_auto_undo(pending);
+                return Err(error);
+            }
+        };
         if handled {
             lay::typing_cpu::TypingCpu::record_reverted_system_apply(
                 &accepted_context,

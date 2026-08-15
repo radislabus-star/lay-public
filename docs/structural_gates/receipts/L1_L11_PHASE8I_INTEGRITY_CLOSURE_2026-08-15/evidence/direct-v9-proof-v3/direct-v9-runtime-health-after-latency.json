@@ -1,0 +1,14 @@
+{
+  "type": "health",
+  "report": {
+    "status": "ready",
+    "message": null,
+    "socket": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime/phase8i-integrity.sock",
+    "package_path": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.v9.bin",
+    "package_bytes": 77962328,
+    "terminal_count": 852582,
+    "manifest_generation": 0,
+    "requests_served": 2139,
+    "uptime_ms": 127721
+  }
+}

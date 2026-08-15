@@ -1,0 +1,190 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "installer-source",
+      "kind": "file",
+      "mode": "0775",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/../../../../scripts/install-l11-shadow-package.sh",
+      "sha256": "ead4c9489a9e2b46747ba06912e2874e75efca83f86275bf8006d1e3ae8106ff",
+      "size_bytes": 5045
+    },
+    {
+      "exists": true,
+      "id": "service-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/../../../../src/nanda_wave/lexical_grokking/service.rs",
+      "sha256": "ca415a8d7929a5cf0453a2128fb7ae208dbbbba92902443b3107513bbcbaa67e",
+      "size_bytes": 39284
+    },
+    {
+      "exists": true,
+      "id": "serve-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/../../../../src/bin/lay_l1_1_serve.rs",
+      "sha256": "463197e78871a9ab1b15eedb6a3ebbe46a7185b61945f4c5ab784132dc39ec9c",
+      "size_bytes": 27989
+    },
+    {
+      "exists": true,
+      "id": "shift-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/../../../../src/bin/lay_ibus_engine/shift.rs",
+      "sha256": "e857ce34a0b4dbde71507d90c8743a014912ee8d041ff3d1824c8722c2fd39d8",
+      "size_bytes": 3915
+    },
+    {
+      "exists": true,
+      "id": "installed-v9",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.v9.bin",
+      "sha256": "bf5a1619a89038466ef786305cf35eda5f4af5b9f12b9140f7d3cac407e2f2a7",
+      "size_bytes": 77962328
+    },
+    {
+      "exists": true,
+      "id": "installed-daemon",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+      "sha256": "890f6566b185a0eb382cef8b0c2d69285105b1d7b17de9639e9de0772fa17d8e",
+      "size_bytes": 8202992
+    },
+    {
+      "exists": true,
+      "id": "installed-service",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-l1.1-serve",
+      "sha256": "997bb8c7dd899adccb8976496a5cfd90f37d32602891bf2ef77c4ba5b4dc8480",
+      "size_bytes": 2105816
+    },
+    {
+      "exists": true,
+      "id": "installed-receipt",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.installed.json",
+      "sha256": "d08849efdb217a63215878253cabed18528f28bdda5d035697938e39f829a481",
+      "size_bytes": 537
+    }
+  ],
+  "blockers": [
+    {
+      "code": "forbidden_effect_in_reused_source",
+      "field": "source_checks[0].forbidden_effect_patterns[2]",
+      "message": "package_byte_change matched at line 864"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: broad_pass_prefix_admission"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: hidden_runtime_fallback"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: ime_state_mutation_before_commit"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: local_full_quality_proof"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: pre_proof_install"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: proof_threshold_change"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: reload_flip_without_current_admission"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: synthetic_fixture"
+    },
+    {
+      "code": "identity_parity_missing",
+      "field": "identity_contracts[1].test_id",
+      "message": "identity contract requires a parity test"
+    }
+  ],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 8,
+    "forbidden_side_effect_kinds": [
+      "broad_pass_prefix_admission",
+      "generated_traffic",
+      "global_ibus_restart",
+      "hidden_runtime_fallback",
+      "ime_state_mutation_before_commit",
+      "literal_word_or_case_rule",
+      "local_full_quality_proof",
+      "package_byte_change",
+      "pre_proof_install",
+      "proof_threshold_change",
+      "reload_flip_without_current_admission",
+      "synthetic_fixture"
+    ],
+    "identity_contracts": 3,
+    "invariants": 4,
+    "planned_side_effect_kinds": [
+      "filesystem_edit",
+      "process_restart",
+      "test_execution"
+    ],
+    "preserved_artifacts": 3,
+    "runtime_comparisons": 1,
+    "source_checks": 2,
+    "tests": 8
+  },
+  "manifest_sha256": "204e6dc8bc7aab782e68b89e1a2d264d3a189ac9bd7ea6a6d22a297e5edefca5",
+  "safe_to_implement": false,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [
+        {
+          "effect": "package_byte_change",
+          "line": 864
+        }
+      ],
+      "id": "service-effects-baseline",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/../../../../src/nanda_wave/lexical_grokking/service.rs",
+      "sha256": "ca415a8d7929a5cf0453a2128fb7ae208dbbbba92902443b3107513bbcbaa67e",
+      "size_bytes": 39284
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "shift-effects-baseline",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/../../../../src/bin/lay_ibus_engine/shift.rs",
+      "sha256": "e857ce34a0b4dbde71507d90c8743a014912ee8d041ff3d1824c8722c2fd39d8",
+      "size_bytes": 3915
+    }
+  ],
+  "task_id": "lay-l11-phase8i-proof-runtime-integrity-closure-2026-08-15",
+  "verdict": "BLOCKED_BEFORE_CODE"
+}

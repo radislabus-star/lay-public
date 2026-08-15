@@ -1,0 +1,10 @@
+{
+  "package_id": "LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9",
+  "crystal_bytes": 77962328,
+  "crystal_sha256": "bf5a1619a89038466ef786305cf35eda5f4af5b9f12b9140f7d3cac407e2f2a7",
+  "crystal_format": "V9 phase8i-exact-typed-basin",
+  "proof_receipt": "/home/e/build/lay-l1-phase8i-integrity-20260815/receipts/direct-v9-full-13x20000-all-clean.json",
+  "proof_verdict": "PASS_C_QUALITY",
+  "runtime_authority": false,
+  "release_shadow_installable": true
+}

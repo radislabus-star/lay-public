@@ -1,0 +1,273 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "PASS",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": true,
+  "contract": "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/observed-v9-lifecycle-route-v1.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "observed_source",
+  "source_root": "/home/ubu/projects/lay-l1-exact-peak-search",
+  "node_count": 14,
+  "edge_count": 11,
+  "routes": [
+    {
+      "id": "receipt-validation-execution",
+      "event": "receipt_validation",
+      "kind": "execution",
+      "entry": "receipt_reader",
+      "via": [
+        "artifact_identity"
+      ],
+      "terminal": "proof_claim_validator",
+      "path_count": 1,
+      "paths": [
+        [
+          "receipt_reader",
+          "artifact_identity",
+          "proof_claim_validator"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "artifact_identity"
+        ],
+        "proof_owner": [
+          "proof_claim_validator"
+        ],
+        "interface": [
+          "receipt_reader"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "receipt_reader",
+          "to": "proof_claim_validator",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "receipt_reader",
+              "artifact_identity",
+              "proof_claim_validator"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "startup-execution",
+      "event": "startup",
+      "kind": "execution",
+      "entry": "startup_entry",
+      "via": [
+        "startup_pre_admission",
+        "startup_loader",
+        "startup_warmup"
+      ],
+      "terminal": "startup_post_admission",
+      "path_count": 1,
+      "paths": [
+        [
+          "startup_entry",
+          "startup_pre_admission",
+          "startup_loader",
+          "startup_warmup",
+          "startup_post_admission"
+        ]
+      ],
+      "role_owners": {
+        "interface": [
+          "startup_entry"
+        ],
+        "producer": [
+          "startup_loader"
+        ],
+        "authorization_owner": [
+          "startup_post_admission"
+        ],
+        "observer": [
+          "startup_pre_admission"
+        ],
+        "orchestrator": [
+          "startup_warmup"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "startup_entry",
+          "to": "startup_post_admission",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "startup_entry",
+              "startup_pre_admission",
+              "startup_loader",
+              "startup_warmup",
+              "startup_post_admission"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "startup-authority",
+      "event": "startup",
+      "kind": "authority",
+      "entry": "startup_post_admission",
+      "via": [],
+      "terminal": "ready_snapshot",
+      "path_count": 1,
+      "paths": [
+        [
+          "startup_post_admission",
+          "ready_snapshot"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "ready_snapshot"
+        ],
+        "authorization_owner": [
+          "startup_post_admission"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "reload-execution",
+      "event": "reload",
+      "kind": "execution",
+      "entry": "reload_entry",
+      "via": [
+        "reload_pre_admission",
+        "reload_loader"
+      ],
+      "terminal": "reload_preflip_admission",
+      "path_count": 1,
+      "paths": [
+        [
+          "reload_entry",
+          "reload_pre_admission",
+          "reload_loader",
+          "reload_preflip_admission"
+        ]
+      ],
+      "role_owners": {
+        "interface": [
+          "reload_entry"
+        ],
+        "producer": [
+          "reload_loader"
+        ],
+        "observer": [
+          "reload_pre_admission"
+        ],
+        "authorization_owner": [
+          "reload_preflip_admission"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "reload_entry",
+          "to": "reload_preflip_admission",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "reload_entry",
+              "reload_pre_admission",
+              "reload_loader",
+              "reload_preflip_admission"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "reload-authority",
+      "event": "reload",
+      "kind": "authority",
+      "entry": "reload_preflip_admission",
+      "via": [],
+      "terminal": "atomic_flip",
+      "path_count": 1,
+      "paths": [
+        [
+          "reload_preflip_admission",
+          "atomic_flip"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "atomic_flip"
+        ],
+        "authorization_owner": [
+          "reload_preflip_admission"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {
+    "startup": {
+      "mutation_owner": [
+        "ready_snapshot"
+      ],
+      "authorization_owner": [
+        "startup_post_admission"
+      ],
+      "evidence_owner": [],
+      "display_rank_owner": [],
+      "candidate_rank_owner": [],
+      "render_owner": []
+    },
+    "reload": {
+      "mutation_owner": [
+        "atomic_flip"
+      ],
+      "authorization_owner": [
+        "reload_preflip_admission"
+      ],
+      "evidence_owner": [],
+      "display_rank_owner": [],
+      "candidate_rank_owner": [],
+      "render_owner": []
+    }
+  },
+  "source_evidence": {
+    "expected": 25,
+    "verified": 25,
+    "complete": true
+  },
+  "issues": [],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": true,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

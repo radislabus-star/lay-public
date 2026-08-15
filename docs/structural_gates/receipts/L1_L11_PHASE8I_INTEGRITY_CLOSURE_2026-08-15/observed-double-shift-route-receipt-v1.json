@@ -1,0 +1,291 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "PASS",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": true,
+  "contract": "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/observed-double-shift-route-v1.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "observed_source",
+  "source_root": "/home/ubu/projects/lay-l1-exact-peak-search",
+  "node_count": 10,
+  "edge_count": 11,
+  "routes": [
+    {
+      "id": "recorded-auto-undo-execution",
+      "event": "recorded_auto_undo",
+      "kind": "execution",
+      "entry": "double_shift",
+      "via": [
+        "auto_undo_request"
+      ],
+      "terminal": "committed_tail_authorizer",
+      "path_count": 1,
+      "paths": [
+        [
+          "double_shift",
+          "auto_undo_request",
+          "committed_tail_authorizer"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "auto_undo_request"
+        ],
+        "authorization_owner": [
+          "committed_tail_authorizer"
+        ],
+        "interface": [
+          "double_shift"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "double_shift",
+          "to": "committed_tail_authorizer",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "double_shift",
+              "auto_undo_request",
+              "committed_tail_authorizer"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "recorded-auto-undo-authority",
+      "event": "recorded_auto_undo",
+      "kind": "authority",
+      "entry": "committed_tail_authorizer",
+      "via": [],
+      "terminal": "committed_tail_commit",
+      "path_count": 1,
+      "paths": [
+        [
+          "committed_tail_authorizer",
+          "committed_tail_commit"
+        ]
+      ],
+      "role_owners": {
+        "authorization_owner": [
+          "committed_tail_authorizer"
+        ],
+        "mutation_owner": [
+          "committed_tail_commit"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "auto-undo-failure-restoration",
+      "event": "auto_undo_backend_failure",
+      "kind": "execution",
+      "entry": "auto_undo_request",
+      "via": [
+        "auto_undo_backend_failure"
+      ],
+      "terminal": "pending_snapshot_restore",
+      "path_count": 1,
+      "paths": [
+        [
+          "auto_undo_request",
+          "auto_undo_backend_failure",
+          "pending_snapshot_restore"
+        ]
+      ],
+      "role_owners": {
+        "observer": [
+          "auto_undo_backend_failure"
+        ],
+        "producer": [
+          "auto_undo_request"
+        ],
+        "mutation_owner": [
+          "pending_snapshot_restore"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "auto_undo_request",
+          "to": "pending_snapshot_restore",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "auto_undo_request",
+              "auto_undo_backend_failure",
+              "pending_snapshot_restore"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "active-toggle-execution",
+      "event": "active_composition_toggle",
+      "kind": "execution",
+      "entry": "double_shift",
+      "via": [
+        "manual_toggle_planner",
+        "manual_toggle_authorizer",
+        "active_commit_owner"
+      ],
+      "terminal": "active_commit_text",
+      "path_count": 1,
+      "paths": [
+        [
+          "double_shift",
+          "manual_toggle_planner",
+          "manual_toggle_authorizer",
+          "active_commit_owner",
+          "active_commit_text"
+        ]
+      ],
+      "role_owners": {
+        "orchestrator": [
+          "active_commit_owner"
+        ],
+        "mutation_owner": [
+          "active_commit_text"
+        ],
+        "interface": [
+          "double_shift"
+        ],
+        "authorization_owner": [
+          "manual_toggle_authorizer"
+        ],
+        "producer": [
+          "manual_toggle_planner"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "double_shift",
+          "to": "active_commit_text",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "double_shift",
+              "manual_toggle_planner",
+              "manual_toggle_authorizer",
+              "active_commit_owner",
+              "active_commit_text"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "active-toggle-authority",
+      "event": "active_composition_toggle",
+      "kind": "authority",
+      "entry": "manual_toggle_planner",
+      "via": [
+        "manual_toggle_authorizer"
+      ],
+      "terminal": "active_commit_text",
+      "path_count": 1,
+      "paths": [
+        [
+          "manual_toggle_planner",
+          "manual_toggle_authorizer",
+          "active_commit_text"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "active_commit_text"
+        ],
+        "authorization_owner": [
+          "manual_toggle_authorizer"
+        ],
+        "producer": [
+          "manual_toggle_planner"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "manual_toggle_planner",
+          "to": "active_commit_text",
+          "via": [],
+          "graph": "authority",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "manual_toggle_planner",
+              "manual_toggle_authorizer",
+              "active_commit_text"
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {
+    "recorded_auto_undo": {
+      "mutation_owner": [
+        "committed_tail_commit"
+      ],
+      "render_owner": [],
+      "authorization_owner": [
+        "committed_tail_authorizer"
+      ],
+      "candidate_rank_owner": [],
+      "evidence_owner": [],
+      "display_rank_owner": []
+    },
+    "active_composition_toggle": {
+      "mutation_owner": [
+        "active_commit_text"
+      ],
+      "render_owner": [],
+      "authorization_owner": [
+        "manual_toggle_authorizer"
+      ],
+      "candidate_rank_owner": [],
+      "evidence_owner": [],
+      "display_rank_owner": []
+    }
+  },
+  "source_evidence": {
+    "expected": 21,
+    "verified": 21,
+    "complete": true
+  },
+  "issues": [],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": true,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

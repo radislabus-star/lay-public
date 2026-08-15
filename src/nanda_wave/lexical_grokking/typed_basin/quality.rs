@@ -1,5 +1,6 @@
 use std::collections::{BTreeMap, BTreeSet, HashMap};
-use std::io;
+use std::fs::File;
+use std::io::{self, Read};
 use std::path::Path;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::thread;
@@ -29,8 +30,35 @@ mod tests;
 use metrics::*;
 
 const FULL_HELDOUT_PER_CLASS: usize = 20_000;
-const TOP_K: usize = 64;
 const WORKER_DIAGNOSTIC_LIMIT: usize = 16;
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum QualityArtifactFormat {
+    V8,
+    V9,
+}
+
+impl QualityArtifactFormat {
+    fn label(self) -> &'static str {
+        match self {
+            Self::V8 => "V8",
+            Self::V9 => "V9",
+        }
+    }
+
+    fn is_v9(self) -> bool {
+        self == Self::V9
+    }
+}
+
+#[derive(Clone, Copy, Debug)]
+struct QualityArtifactLayout {
+    format: QualityArtifactFormat,
+    package_bytes: u64,
+    base_bytes: u64,
+    v9_overflow_count: Option<u32>,
+    v9_checksum: Option<u64>,
+}
 
 struct SurfaceEvaluation {
     exact: ExactSettlementResult,
@@ -126,24 +154,33 @@ fn prove_l1_typed_basin_quality_scoped(
 ) -> io::Result<serde_json::Value> {
     let wall_started = Instant::now();
     let package_sha256_before = super::file_sha256(package_path)?;
-    let embedded_a2 =
-        super::prove_l1_typed_basin_implicit_forward(corpus_path, package_path, max_words, 1)?;
-    let embedded_a2_pass = embedded_a2
-        .get("verdict")
-        .and_then(serde_json::Value::as_str)
-        == Some("PASS_A0_A1_B0_A2");
-    if !embedded_a2_pass {
-        return prerequisite_rejection(
-            corpus_path,
-            package_path,
-            package_sha256_before,
-            embedded_a2,
-            wall_started,
-        );
-    }
-
-    let layout = super::read_v8_layout(package_path)?;
+    let layout = read_quality_artifact_layout(package_path)?;
     let words = corpus_words_from_lines(&std::fs::read_to_string(corpus_path)?, max_words);
+    let legacy_v8_prerequisite = if layout.format == QualityArtifactFormat::V8 {
+        let prerequisite =
+            super::prove_l1_typed_basin_implicit_forward(corpus_path, package_path, max_words, 1)?;
+        let passed = prerequisite
+            .get("verdict")
+            .and_then(serde_json::Value::as_str)
+            == Some("PASS_A0_A1_B0_A2");
+        if !passed {
+            return prerequisite_rejection(
+                corpus_path,
+                package_path,
+                package_sha256_before,
+                layout,
+                prerequisite,
+                false,
+                false,
+                false,
+                wall_started,
+            );
+        }
+        Some(prerequisite)
+    } else {
+        None
+    };
+
     let load_started = Instant::now();
     let memory = LexicalGrokkingMemory::load(package_path).map_err(io::Error::other)?;
     let package_load_ms = load_started.elapsed().as_millis();
@@ -162,11 +199,78 @@ fn prove_l1_typed_basin_quality_scoped(
     let decoder_index = ForwardDecoderIndex::build(&memory.package).map_err(io::Error::other)?;
     let decoder_index_ms = decoder_started.elapsed().as_millis();
     let support_started = Instant::now();
-    let support = ExactSupportField::rebuild(&memory.package, &words).map_err(io::Error::other)?;
+    let rebuilt_support =
+        ExactSupportField::rebuild(&memory.package, &words).map_err(io::Error::other)?;
     let support_rebuild_ms = support_started.elapsed().as_millis();
     let projected_package_bytes = layout
         .base_bytes
-        .saturating_add(support.metrics.projected_overflow_bytes as u64);
+        .saturating_add(rebuilt_support.metrics.projected_overflow_bytes as u64);
+    let direct_v9_artifact = layout.format.is_v9();
+    let v9_checksum_valid = direct_v9_artifact;
+    let runtime_support = memory.typed_basin_support();
+    let stored_exact_support_matches_rebuild = if direct_v9_artifact {
+        direct_v9_support_matches_rebuild(
+            layout,
+            runtime_support,
+            &rebuilt_support,
+            projected_package_bytes,
+        )
+    } else {
+        true
+    };
+    let artifact_prerequisite_pass = if direct_v9_artifact {
+        v9_checksum_valid && stored_exact_support_matches_rebuild
+    } else {
+        legacy_v8_prerequisite.is_some()
+    };
+    let artifact_prerequisite = if direct_v9_artifact {
+        serde_json::json!({
+            "schema": "lay.l11.typed-basin-v9-prerequisite.v1",
+            "verdict": if artifact_prerequisite_pass {
+                "PASS_V9_ARTIFACT_PREREQUISITE"
+            } else {
+                "REJECT_V9_ARTIFACT_PREREQUISITE"
+            },
+            "format": layout.format.label(),
+            "package_bytes": layout.package_bytes,
+            "compact_base_bytes": layout.base_bytes,
+            "overflow_entries": layout.v9_overflow_count,
+            "checksum": layout.v9_checksum,
+            "checksum_valid": v9_checksum_valid,
+            "runtime_support_source": "v9_exact_support_overflow",
+            "stored_exact_support_matches_corpus_rebuild": stored_exact_support_matches_rebuild,
+            "corpus_surface_mismatches": rebuilt_support.metrics.corpus_surface_mismatches,
+            "stored_support_mismatches": rebuilt_support.metrics.stored_support_mismatches,
+            "projected_package_bytes": projected_package_bytes,
+            "projected_package_bytes_match": projected_package_bytes == layout.package_bytes,
+            "v8_fallback_used": false,
+        })
+    } else {
+        legacy_v8_prerequisite.expect("V8 prerequisite was checked")
+    };
+    if !artifact_prerequisite_pass {
+        return prerequisite_rejection(
+            corpus_path,
+            package_path,
+            package_sha256_before,
+            layout,
+            artifact_prerequisite,
+            direct_v9_artifact,
+            v9_checksum_valid,
+            stored_exact_support_matches_rebuild,
+            wall_started,
+        );
+    }
+    let support = if direct_v9_artifact {
+        runtime_support.ok_or_else(|| {
+            io::Error::new(
+                io::ErrorKind::InvalidData,
+                "direct V9 proof has no artifact-owned exact support",
+            )
+        })?
+    } else {
+        &rebuilt_support
+    };
     let dependencies = PackageDependencyAudit::inspect(&memory.package);
 
     let objective_started = Instant::now();
@@ -182,7 +286,7 @@ fn prove_l1_typed_basin_quality_scoped(
     let mut result = evaluate_damaged(
         &memory,
         &decoder_index,
-        &support,
+        support,
         &words,
         &cases,
         &objectives,
@@ -195,7 +299,7 @@ fn prove_l1_typed_basin_quality_scoped(
     let clean_result = evaluate_clean(
         &memory,
         &decoder_index,
-        &support,
+        support,
         &words,
         &clean_terminal_ids,
         clean_workers,
@@ -223,7 +327,7 @@ fn prove_l1_typed_basin_quality_scoped(
             .values()
             .all(|metrics| metrics.cases == heldout_per_class);
     let clean_denominator_complete = result.clean.cases == clean_terminal_ids.len();
-    let route_complete = embedded_a2_pass
+    let route_complete = artifact_prerequisite_pass
         && dependencies.resolved()
         && package_unchanged
         && class_denominator_complete
@@ -232,10 +336,10 @@ fn prove_l1_typed_basin_quality_scoped(
     let every_class_unique_top1 = result.classes.values().all(|metrics| {
         ratio_strictly_above(metrics.unique_top1, metrics.objective_unique_cases, 95, 100)
     });
-    let every_class_top64 = result
+    let every_class_lattice_coverage = result
         .classes
         .values()
-        .all(|metrics| ratio_at_least(metrics.target_top64, metrics.cases, 99, 100));
+        .all(|metrics| ratio_at_least(metrics.target_in_projection, metrics.cases, 99, 100));
     let clean_preservation_pass =
         ratio_at_least(result.clean.preserved, result.clean.cases, 999, 1_000);
     let full_denominator = damage_class_filter.is_none()
@@ -246,7 +350,7 @@ fn prove_l1_typed_basin_quality_scoped(
         && full_denominator
         && target_retention_complete
         && every_class_unique_top1
-        && every_class_top64
+        && every_class_lattice_coverage
         && clean_preservation_pass
         && aggregate.false_authority == 0
         && aggregate.false_singleton == 0
@@ -264,9 +368,10 @@ fn prove_l1_typed_basin_quality_scoped(
         .map(|(class, metrics)| ((*class).to_string(), metrics.report()))
         .collect::<serde_json::Map<_, _>>();
     Ok(serde_json::json!({
-        "schema": "lay.l11.typed-basin-quality-proof.v2",
+        "schema": "lay.l11.typed-basin-quality-proof.v3",
         "verdict": verdict,
         "artifact": {
+            "format": layout.format.label(),
             "corpus": corpus_path,
             "package": package_path,
             "package_bytes": layout.package_bytes,
@@ -291,14 +396,23 @@ fn prove_l1_typed_basin_quality_scoped(
             },
             "damaged_workers": damaged_workers,
             "clean_workers": clean_workers,
-            "top_k_projection": TOP_K,
+            "lattice_projection_limit": super::super::L11_LIVE_LATTICE_LIMIT,
         },
-        "embedded_a2_prerequisite": embedded_a2,
+        "artifact_prerequisite": artifact_prerequisite,
         "exact_support": super::support_report(
-            support.metrics,
+            rebuilt_support.metrics,
             projected_package_bytes,
             support_rebuild_ms,
         ),
+        "artifact_support": {
+            "source": if direct_v9_artifact {
+                "v9_exact_support_overflow"
+            } else {
+                "independent_corpus_rebuild"
+            },
+            "stored_exact_support_matches_corpus_rebuild": stored_exact_support_matches_rebuild,
+            "v9_fallback_used": false,
+        },
         "package_dependencies": dependencies.report(),
         "damaged_quality": {
             "classes": class_report,
@@ -323,7 +437,11 @@ fn prove_l1_typed_basin_quality_scoped(
         },
         "diagnostics": result.diagnostics,
         "gates": {
-            "embedded_a2_pass": embedded_a2_pass,
+            "artifact_prerequisite_pass": artifact_prerequisite_pass,
+            "direct_v9_artifact": direct_v9_artifact,
+            "v9_checksum_valid": v9_checksum_valid,
+            "stored_exact_support_matches_rebuild": stored_exact_support_matches_rebuild,
+            "legacy_v8_embedded_a2_pass": !direct_v9_artifact && artifact_prerequisite_pass,
             "package_dependencies_resolved": dependencies.resolved(),
             "package_isolation": package_unchanged,
             "fixed_damaged_denominator_complete": class_denominator_complete,
@@ -331,7 +449,7 @@ fn prove_l1_typed_basin_quality_scoped(
             "full_fixed_denominator": full_denominator,
             "target_retention_complete": target_retention_complete,
             "unique_top1_every_class_strictly_gt_95_percent": every_class_unique_top1,
-            "lattice_coverage_every_class_ge_99_percent": every_class_top64,
+            "lattice_coverage_every_class_ge_99_percent": every_class_lattice_coverage,
             "clean_preservation_ge_99_9_percent": clean_preservation_pass,
             "false_authority_zero": aggregate.false_authority == 0,
             "false_singleton_zero": aggregate.false_singleton == 0,
@@ -389,23 +507,33 @@ fn prerequisite_rejection(
     corpus_path: &Path,
     package_path: &Path,
     package_sha256_before: String,
-    embedded_a2: serde_json::Value,
+    layout: QualityArtifactLayout,
+    artifact_prerequisite: serde_json::Value,
+    direct_v9_artifact: bool,
+    v9_checksum_valid: bool,
+    stored_exact_support_matches_rebuild: bool,
     wall_started: Instant,
 ) -> io::Result<serde_json::Value> {
     let package_sha256_after = super::file_sha256(package_path)?;
     Ok(serde_json::json!({
-        "schema": "lay.l11.typed-basin-quality-proof.v2",
+        "schema": "lay.l11.typed-basin-quality-proof.v3",
         "verdict": "REJECT_C_PREREQUISITE",
         "artifact": {
+            "format": layout.format.label(),
             "corpus": corpus_path,
             "package": package_path,
+            "package_bytes": layout.package_bytes,
+            "compact_base_bytes": layout.base_bytes,
             "package_sha256_before": package_sha256_before,
             "package_sha256_after": package_sha256_after,
             "package_bytes_unchanged": package_sha256_before == package_sha256_after,
         },
-        "embedded_a2_prerequisite": embedded_a2,
+        "artifact_prerequisite": artifact_prerequisite,
         "gates": {
-            "embedded_a2_pass": false,
+            "artifact_prerequisite_pass": false,
+            "direct_v9_artifact": direct_v9_artifact,
+            "v9_checksum_valid": v9_checksum_valid,
+            "stored_exact_support_matches_rebuild": stored_exact_support_matches_rebuild,
             "quality_workers_started": false,
             "conjunctive_full_quality_pass": false,
         },
@@ -419,6 +547,51 @@ fn prerequisite_rejection(
             "installed_runtime_changed": false,
         }
     }))
+}
+
+fn read_quality_artifact_layout(path: &Path) -> io::Result<QualityArtifactLayout> {
+    let mut file = File::open(path)?;
+    let mut prefix = [0_u8; 8];
+    file.read_exact(&mut prefix)?;
+    if super::super::v9::is_v9(&prefix) {
+        let header = super::super::v9::read_file_header(path).map_err(io::Error::other)?;
+        return Ok(QualityArtifactLayout {
+            format: QualityArtifactFormat::V9,
+            package_bytes: header.file_bytes,
+            base_bytes: header.base_bytes,
+            v9_overflow_count: Some(header.overflow_count),
+            v9_checksum: Some(header.checksum),
+        });
+    }
+    if !super::super::v8::is_v8(&prefix) {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            "typed-basin quality proof requires a V8 or V9 package",
+        ));
+    }
+    let layout = super::read_v8_layout(path)?;
+    Ok(QualityArtifactLayout {
+        format: QualityArtifactFormat::V8,
+        package_bytes: layout.package_bytes,
+        base_bytes: layout.base_bytes,
+        v9_overflow_count: None,
+        v9_checksum: None,
+    })
+}
+
+fn direct_v9_support_matches_rebuild(
+    layout: QualityArtifactLayout,
+    stored: Option<&ExactSupportField>,
+    rebuilt: &ExactSupportField,
+    projected_package_bytes: u64,
+) -> bool {
+    layout.format == QualityArtifactFormat::V9
+        && stored.is_some_and(|stored| stored.values() == rebuilt.values())
+        && rebuilt.metrics.corpus_surface_mismatches == 0
+        && rebuilt.metrics.stored_support_mismatches == 0
+        && layout.v9_overflow_count.map(|count| count as usize)
+            == Some(rebuilt.metrics.exact_overflow_atoms)
+        && projected_package_bytes == layout.package_bytes
 }
 
 fn select_damage_cases(
@@ -520,7 +693,11 @@ fn evaluate_surface(
 
     let legacy_started = Instant::now();
     let (legacy_candidates, legacy_readout) = if observe_legacy {
-        let mut candidates = memory.readout(surface, TOP_K, ReadoutMode::Full);
+        let mut candidates = memory.try_readout(
+            surface,
+            super::super::L11_LIVE_LATTICE_LIMIT,
+            ReadoutMode::Full,
+        )?;
         let readout = memory.classify_restoration(
             surface,
             &mut candidates,
@@ -635,7 +812,7 @@ fn evaluate_clean(
 
 fn bounded_projection(candidates: &[GrokkingCandidate]) -> Vec<GrokkingCandidate> {
     let mut bounded = candidates.to_vec();
-    truncate_with_reconstruction_tail(&mut bounded, TOP_K);
+    truncate_with_reconstruction_tail(&mut bounded, super::super::L11_LIVE_LATTICE_LIMIT);
     bounded
 }
 
@@ -674,7 +851,7 @@ fn record_damaged(
     metrics.cases += 1;
     metrics.objective_unique_cases += usize::from(objective.len() == 1);
     metrics.target_retained += usize::from(complete_target_rank.is_some());
-    metrics.target_top64 += usize::from(bounded_target_rank.is_some());
+    metrics.target_in_projection += usize::from(bounded_target_rank.is_some());
     metrics.unique_top1 += usize::from(
         objective.len() == 1
             && exact
@@ -700,7 +877,7 @@ fn record_damaged(
         .filter(|candidate| candidate.reconstruction_modes != 0)
         .count();
     metrics.legacy_grounded_losses += legacy_grounded_losses.len();
-    metrics.legacy_target_top64 += usize::from(
+    metrics.runtime_target_in_projection += usize::from(
         output
             .legacy_candidates
             .iter()

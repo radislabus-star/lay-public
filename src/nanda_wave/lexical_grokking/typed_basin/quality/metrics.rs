@@ -11,7 +11,7 @@ pub(super) struct ClassQuality {
     pub(super) cases: usize,
     pub(super) objective_unique_cases: usize,
     pub(super) target_retained: usize,
-    pub(super) target_top64: usize,
+    pub(super) target_in_projection: usize,
     pub(super) unique_top1: usize,
     pub(super) winners: usize,
     pub(super) tied: usize,
@@ -23,7 +23,7 @@ pub(super) struct ClassQuality {
     pub(super) exact_phase_noop: usize,
     pub(super) legacy_grounded_candidates: usize,
     pub(super) legacy_grounded_losses: usize,
-    pub(super) legacy_target_top64: usize,
+    pub(super) runtime_target_in_projection: usize,
     pub(super) legacy_unique_top1: usize,
     pub(super) legacy_false_authority: usize,
 }
@@ -117,7 +117,9 @@ impl ClassQuality {
             .objective_unique_cases
             .saturating_add(other.objective_unique_cases);
         self.target_retained = self.target_retained.saturating_add(other.target_retained);
-        self.target_top64 = self.target_top64.saturating_add(other.target_top64);
+        self.target_in_projection = self
+            .target_in_projection
+            .saturating_add(other.target_in_projection);
         self.unique_top1 = self.unique_top1.saturating_add(other.unique_top1);
         self.winners = self.winners.saturating_add(other.winners);
         self.tied = self.tied.saturating_add(other.tied);
@@ -135,9 +137,9 @@ impl ClassQuality {
         self.legacy_grounded_losses = self
             .legacy_grounded_losses
             .saturating_add(other.legacy_grounded_losses);
-        self.legacy_target_top64 = self
-            .legacy_target_top64
-            .saturating_add(other.legacy_target_top64);
+        self.runtime_target_in_projection = self
+            .runtime_target_in_projection
+            .saturating_add(other.runtime_target_in_projection);
         self.legacy_unique_top1 = self
             .legacy_unique_top1
             .saturating_add(other.legacy_unique_top1);
@@ -152,8 +154,8 @@ impl ClassQuality {
             "objective_unique_cases": self.objective_unique_cases,
             "target_retained_complete_field": self.target_retained,
             "target_retention_percent": percent(self.target_retained, self.cases),
-            "target_in_final_top64": self.target_top64,
-            "lattice_coverage_percent": percent(self.target_top64, self.cases),
+            "target_in_bounded_lattice": self.target_in_projection,
+            "lattice_coverage_percent": percent(self.target_in_projection, self.cases),
             "unique_top1": self.unique_top1,
             "unique_top1_percent": percent(self.unique_top1, self.objective_unique_cases),
             "readout": {
@@ -168,10 +170,10 @@ impl ClassQuality {
                 "maximum_per_case": self.exact_candidate_max,
                 "phase_noop_cases": self.exact_phase_noop,
             },
-            "current_v8_observer": {
+            "runtime_observer": {
                 "grounded_candidates": self.legacy_grounded_candidates,
                 "grounded_candidate_losses_from_exact_field": self.legacy_grounded_losses,
-                "target_in_top64": self.legacy_target_top64,
+                "target_in_bounded_lattice": self.runtime_target_in_projection,
                 "unique_top1": self.legacy_unique_top1,
                 "false_authority": self.legacy_false_authority,
                 "scope": "compatibility_observer_only",
@@ -184,7 +186,7 @@ impl ClassQuality {
                     100,
                 ),
                 "lattice_coverage_ge_99_percent": ratio_at_least(
-                    self.target_top64,
+                    self.target_in_projection,
                     self.cases,
                     99,
                     100,
@@ -228,9 +230,9 @@ impl Timings {
             "exact_settlement_us_p50": percentile(&self.exact_settlement_us, 50),
             "exact_settlement_us_p99": percentile(&self.exact_settlement_us, 99),
             "exact_settlement_us_max": maximum(&self.exact_settlement_us),
-            "current_v8_observer_us_p50": percentile(&self.legacy_v8_us, 50),
-            "current_v8_observer_us_p99": percentile(&self.legacy_v8_us, 99),
-            "current_v8_observer_us_max": maximum(&self.legacy_v8_us),
+            "runtime_observer_us_p50": percentile(&self.legacy_v8_us, 50),
+            "runtime_observer_us_p99": percentile(&self.legacy_v8_us, 99),
+            "runtime_observer_us_max": maximum(&self.legacy_v8_us),
             "scope": "proof_throughput_not_product_hot_latency",
         })
     }

@@ -1,8 +1,8 @@
 # L1.1 Phase 8I: Typed Basin With Implicit Forward State
 
-Status: A0/A1/B0/A2 and full Gate C v2 PASS; Phase 8I remains proof-only; runtime authority unchanged
+Status: direct V9 schema-v3 Gate C and rebuilt remote Gate D PASS; corrective Lay 1.0.29 release installed and activated for daemon, L1.1, and GNOME runtime; managed IBus process and physical input gate pending
 Date: 2026-08-14
-Owner: proof-only `TypedBasinImplicitForwardProof`
+Quality owner: `TypedBasinImplicitForwardProof`; installed L1.1 owner is the single integrity-bound V9 Phase 8I service under Lay 1.0.29
 
 ## 1. Decision
 
@@ -1558,3 +1558,259 @@ The route receipt reports one declared execution path, separate proof and
 observation paths, no mixed owners, no stale source marker, no issue, and no
 warning. These checks verify the proof implementation and its source binding;
 they do not expand the Gate C claim boundary or admit runtime deployment.
+
+### 16.14 Post-Deployment Integrity Closure
+
+The reference Gate C v2 result and the previously activated Lay `1.0.28` V9
+runtime remain historical accepted facts. A later source review found that the
+deployment protocol did not bind every quality assertion strongly enough at
+install and runtime admission. This section records the corrective branch; it
+does not relabel the old receipt and does not claim a new quality PASS.
+
+The physical V9 artifact remains byte-identical:
+
+```text
+package bytes                                           77,962,328 B
+package SHA-256        bf5a1619a89038466ef786305cf35eda5f4af5b9f12b9140f7d3cac407e2f2a7
+installed Lay version                                         1.0.28
+installed lay-daemon.service                                   active
+runtime authority changed by this branch                       no
+```
+
+The integrity closure fixes one proof identity and one live transport:
+
+```text
+V9 artifact -> only PASS_C_QUALITY
+V7/V8 legacy artifact -> PASS_shadow remains compatibility-only
+
+active receipt
+  -> exact artifact path / bytes / SHA-256
+  -> exact proof path / SHA-256 / verdict
+  -> post-copy size/hash recheck before receipt publication
+  -> installer admission before active receipt publication
+  -> runtime admission before load
+  -> runtime admission again before startup readiness or reload flip
+
+L1.1 V9 query
+  -> one exact typed-basin readout
+  -> bounded projector limit 32
+  -> L2 requests exactly 32
+  -> protocol Error on failure
+  -X-> silent V8 fallback, empty-success fallback, or V8/V9 union
+```
+
+Both installer and runtime now independently validate the material claims in
+`lay.l11.typed-basin-quality-proof.v3`; the aggregate
+`conjunctive_full_quality_pass` boolean is insufficient by itself. Admission
+requires all of the following:
+
+```text
+schema / verdict                         exact v3 / PASS_C_QUALITY
+package bytes and before/after SHA-256                       exact
+package bytes unchanged                                      true
+live lattice projection limit                                  32
+heldout per class                                           20,000
+fixed / selected classes                                    13 / 13
+damaged denominator                                        260,000
+damage-class filter                                            null
+clean limit                                                       0
+required conjunctive gate fields                       all true
+class map                                      exact fixed 13 names
+cases in every class                                         20,000
+complete-field target retention, every class                100.0%
+unique top-1, every class                           strictly >95.0%
+bounded lattice coverage, every class                       >=99.0%
+class false authority / false singleton                       0 / 0
+aggregate false authority / false singleton                   0 / 0
+grounded runtime-observer losses                                  0
+clean cases                                      primary center count
+clean preservation                                           >=99.9%
+full matrix tested / claimed                              true / true
+```
+
+Count fields are range-checked as well as threshold-checked: a numerator above
+its denominator cannot manufacture a PASS. The exact class names are bound to
+the fixed proof matrix rather than accepting any object with thirteen keys.
+
+The same closure preserves the Double Shift mutation contract. An active
+composition layout toggle mints one typed IME `AuthorizedEdit`; the commit owner
+applies it once and only then changes preedit/tail state. For recorded
+autocorrection undo, both `Ok(false)` and backend `Err` restore the exact pending
+undo snapshot, so a failed backend commit cannot silently consume the user's
+rollback opportunity.
+
+Local measured evidence after the validator correction:
+
+```text
+implementation preflight v1                  BLOCKED_BEFORE_CODE
+implementation preflight v2                  READY_TO_IMPLEMENT
+installer integrity regression suite                       PASS
+runtime service/admission unit tests                    13 / 13
+text mutation monopoly contract                         16 / 16
+V9 lattice observed-source markers                      20 / 20 PASS
+V9 lifecycle observed-source markers                    25 / 25 PASS
+Double Shift observed-source markers                    21 / 21 PASS
+final scripts/check-lay-changed.sh                              PASS
+```
+
+The contracts and deterministic receipts are rooted at:
+
+```text
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/implementation-preflight-v2.json
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/implementation-preflight-receipt-v2.json
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/observed-v9-lattice-route-receipt-v1.json
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/observed-v9-lifecycle-route-receipt-v1.json
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/observed-double-shift-route-receipt-v1.json
+```
+
+Not yet tested for this corrective source packet:
+
+```text
+direct V9 schema-v3 fixed 13 x 100 smoke                    pending
+direct V9 schema-v3 fixed 13 x 20,000 + all clean           pending
+participating-source parity on the remote proof host         pending
+rebuilt release latency / RSS / cold start                    pending
+new binary installation and managed restart                  not done
+physical application input and Double Shift                  not done
+```
+
+The promotion order is fixed: final local gates, exact source-hash sync to the
+remote 20-core host, `13 x 100`, then one `13 x 20,000 + all clean` proof. Only
+a new `PASS_C_QUALITY` receipt satisfying every assertion above can admit
+release measurement, version bump, managed deployment, and physical input
+checks. Failure at any step leaves the installed package, binaries, daemon, and
+global IBus unchanged.
+
+### 16.15 Direct V9 Gate C And Rebuilt Gate D Acceptance
+
+The corrective source packet was synchronized to the remote 20-core host with
+exact participating-source parity (`789 / 789`). The first remote test attempt
+did not reach quality evaluation because the isolated source bundle omitted
+compile-time fixtures. After synchronizing the tracked fixtures, the unchanged
+source and V9 package passed the focused proof and service contracts:
+
+```text
+direct-V9 quality unit tests                              13 / 13 PASS
+service admission unit tests                             13 / 13 PASS
+schema-v3 smoke verdict                            PASS_C_SMOKE
+schema-v3 full verdict                           PASS_C_QUALITY
+V8 fallback used                                               false
+stored V9 exact support vs independent rebuild                  exact
+package bytes                                             77,962,328 B
+package SHA-256          bf5a1619a89038466ef786305cf35eda5f4af5b9f12b9140f7d3cac407e2f2a7
+package bytes changed                                              no
+```
+
+The full fixed proof used exactly `13 x 20,000 = 260,000` damaged cases and all
+`852,582` primary centers for clean preservation. Per-class percentages are:
+
+```text
+class                         complete  unique top-1  lattice
+adjacent_transposition          100.0%       99.970%   99.970%
+double_substitution             100.0%       97.832%  100.000%
+extra_letter                    100.0%       99.250%   99.990%
+layout_projection               100.0%       99.594%   99.215%
+letter_substitution             100.0%       99.951%   99.980%
+missing_letter                  100.0%       99.425%   99.695%
+non_adjacent_transposition      100.0%       97.053%  100.000%
+omission_transposition          100.0%       98.557%   99.620%
+prefix_truncation               100.0%       98.486%   99.995%
+punctuation_suffix              100.0%      100.000%  100.000%
+repeated_fragment               100.0%       98.950%  100.000%
+sparse_multi_omission           100.0%       97.730%   99.830%
+suffix_truncation               100.0%       99.445%   99.990%
+```
+
+Aggregate damaged unique top-1 was `98.941%`, bounded lattice coverage was
+`99.868%`, clean preservation was `100.000%`, and primary false authority and
+false singleton were `0 / 0`. The compatibility-only runtime observer reported
+four false-authority cases but lost zero grounded candidates from the exact
+field. That observer is not the authority owner and its denominator is not
+merged with the primary safety counters.
+
+The full proof completed in `7:52.87` with average CPU utilization `1528%` and
+maximum RSS `767,160 KiB`. These are proof-throughput measurements, not product
+latency. Rebuilt standalone Gate D measured:
+
+```text
+repeated cold ready                         836 / 991 / 793 / 774 ms
+initial post-build scheduler observation                         1,029 ms WATCH
+steady RSS                                              188,536 KiB
+peak RSS                                                205,780 KiB
+direct runtime p99                    3.938 / 3.938 / 3.914 / 3.858 ms
+production-client p99                 4.433 / 4.232 / 4.330 / 4.117 ms
+candidate fingerprint, four runs                               exact
+response failures / runtime query failures                     0 / 0
+temporary service count                                            1
+temporary service after measurement                           stopped
+```
+
+Verdict scope: direct V9 proof identity, full fixed quality, package integrity,
+remote cold start, RSS, direct runtime latency, persistent production-client
+latency, and response integrity pass for this corrective source packet. The
+single `1,029 ms` startup immediately after release linking is retained as a
+scheduler WATCH; four isolated repeats pass the `<=1 s` gate. Runtime authority
+did not change during these measurements.
+
+Evidence is rooted at:
+
+```text
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/direct-v9-proof-v3/direct-v9-smoke-13x100.json
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/direct-v9-proof-v3/direct-v9-full-13x20000-all-clean.json
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/direct-v9-proof-v3/participating-source-parity-v2.log
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/direct-v9-proof-v3/direct-v9-runtime-cold-starts.tsv
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/direct-v9-proof-v3/direct-v9-runtime-production-client.txt
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/direct-v9-proof-v3/evidence.sha256
+```
+
+Not yet tested by this corrective packet: installation of rebuilt release
+binaries, managed daemon restart, physical application input, WeChat behavior,
+and the physical autocorrection Double Shift gesture. Global IBus remains
+untouched.
+
+### 16.16 Corrective Release Deployment
+
+The rebuilt release was installed on 2026-08-15 after a complete `1.0.28`
+rollback snapshot verified `42 / 42` files. The immutable V9 artifact and its
+schema-v3 proof were admitted through the new installer contract before the
+active receipt was published. Installed package and proof identities are:
+
+```text
+Lay release                                                   1.0.29
+V9 package bytes                                          77,962,328 B
+V9 package SHA-256       bf5a1619a89038466ef786305cf35eda5f4af5b9f12b9140f7d3cac407e2f2a7
+proof verdict                                            PASS_C_QUALITY
+proof SHA-256             4983930495e793c1d28c7558fe006ddf8097ee575bebb1afd3f1dba4ddb1d01d
+installed binary parity                                  10 / 10 PASS
+GNOME source/runtime DBus version                              1.0.29
+```
+
+Only the daemon cgroup was restarted. Its new daemon and L1.1 child hashes match
+the release packet; the global IBus and managed engine PIDs were preserved:
+
+```text
+daemon PID                                       3440152 -> 150902
+L1.1 child PID                                   3440215 -> 150984
+global IBus PID                                        3702 -> 3702
+managed engine PID                               3719399 -> 3719399
+L1.1 health                                                  ready
+terminals / atoms                                  852,582 / 218,763
+requests / query failures                                  8 / 0
+journal errors                                                   0
+cgroup current / peak bytes               376,770,560 / 378,494,976
+```
+
+This changes the installed corrective runtime implementation but does not
+replace the already-live package authority: the one V9 Phase 8I service remains
+the only L1.1 owner, and no V8 fallback or union route exists. The managed IBus
+process intentionally retains the old mapped inode until a separately admitted
+engine lifecycle action. Consequently physical WeChat typing and the Double
+Shift undo gesture remain unclaimed rather than being inferred from service
+readiness.
+
+The deployment evidence is recorded at:
+
+```text
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/deployment-receipt-v1.json
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/release-1.0.29/
+```

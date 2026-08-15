@@ -1,0 +1,448 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "PASS",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": true,
+  "contract": "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/direct-v9-proof-route-design-v2.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "source_root": "/home/ubu/projects/lay-l1-exact-peak-search",
+  "node_count": 18,
+  "edge_count": 20,
+  "routes": [
+    {
+      "id": "v8-proof-execution",
+      "event": "v8_quality_proof",
+      "kind": "execution",
+      "entry": "quality_cli",
+      "via": [
+        "artifact_router",
+        "v8_a2_prerequisite"
+      ],
+      "terminal": "typed_basin_quality",
+      "path_count": 1,
+      "paths": [
+        [
+          "quality_cli",
+          "artifact_router",
+          "v8_a2_prerequisite",
+          "typed_basin_quality"
+        ]
+      ],
+      "role_owners": {
+        "orchestrator": [
+          "artifact_router"
+        ],
+        "interface": [
+          "quality_cli"
+        ],
+        "producer": [
+          "typed_basin_quality"
+        ],
+        "proof_owner": [
+          "v8_a2_prerequisite"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "quality_cli",
+          "to": "typed_basin_quality",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "quality_cli",
+              "artifact_router",
+              "v8_a2_prerequisite",
+              "typed_basin_quality"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "v9-checksum-proof",
+      "event": "v9_checksum_proof",
+      "kind": "proof",
+      "entry": "v9_loader",
+      "via": [],
+      "terminal": "v9_checksum_gate",
+      "path_count": 1,
+      "paths": [
+        [
+          "v9_loader",
+          "v9_checksum_gate"
+        ]
+      ],
+      "role_owners": {
+        "proof_owner": [
+          "v9_checksum_gate"
+        ],
+        "evidence_owner": [
+          "v9_loader"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "v9-support-parity-proof",
+      "event": "v9_support_parity",
+      "kind": "proof",
+      "entry": "corpus_support_rebuilder",
+      "via": [],
+      "terminal": "v9_support_parity_gate",
+      "path_count": 1,
+      "paths": [
+        [
+          "corpus_support_rebuilder",
+          "v9_support_parity_gate"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "corpus_support_rebuilder"
+        ],
+        "proof_owner": [
+          "v9_support_parity_gate"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "v9-proof-execution",
+      "event": "v9_quality_proof",
+      "kind": "execution",
+      "entry": "quality_cli",
+      "via": [
+        "artifact_router",
+        "v9_loader",
+        "v9_checksum_gate",
+        "corpus_support_rebuilder",
+        "v9_support_parity_gate",
+        "artifact_support_owner"
+      ],
+      "terminal": "typed_basin_quality",
+      "path_count": 1,
+      "paths": [
+        [
+          "quality_cli",
+          "artifact_router",
+          "v9_loader",
+          "v9_checksum_gate",
+          "corpus_support_rebuilder",
+          "v9_support_parity_gate",
+          "artifact_support_owner",
+          "typed_basin_quality"
+        ]
+      ],
+      "role_owners": {
+        "orchestrator": [
+          "artifact_router"
+        ],
+        "producer": [
+          "artifact_support_owner",
+          "corpus_support_rebuilder",
+          "typed_basin_quality"
+        ],
+        "interface": [
+          "quality_cli"
+        ],
+        "proof_owner": [
+          "v9_checksum_gate",
+          "v9_support_parity_gate"
+        ],
+        "evidence_owner": [
+          "v9_loader"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "quality_cli",
+          "to": "typed_basin_quality",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "quality_cli",
+              "artifact_router",
+              "v9_loader",
+              "v9_checksum_gate",
+              "corpus_support_rebuilder",
+              "v9_support_parity_gate",
+              "artifact_support_owner",
+              "typed_basin_quality"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "quality-observation",
+      "event": "quality_observation",
+      "kind": "observation",
+      "entry": "typed_basin_quality",
+      "via": [],
+      "terminal": "runtime_readout_observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "typed_basin_quality",
+          "runtime_readout_observer"
+        ]
+      ],
+      "role_owners": {
+        "observer": [
+          "runtime_readout_observer"
+        ],
+        "producer": [
+          "typed_basin_quality"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "quality-proof",
+      "event": "quality_proof",
+      "kind": "proof",
+      "entry": "typed_basin_quality",
+      "via": [],
+      "terminal": "quality_gate",
+      "path_count": 1,
+      "paths": [
+        [
+          "typed_basin_quality",
+          "quality_gate"
+        ]
+      ],
+      "role_owners": {
+        "proof_owner": [
+          "quality_gate"
+        ],
+        "producer": [
+          "typed_basin_quality"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "receipt-publication-authority",
+      "event": "receipt_authorization",
+      "kind": "authority",
+      "entry": "quality_admission",
+      "via": [],
+      "terminal": "receipt_publisher",
+      "path_count": 1,
+      "paths": [
+        [
+          "quality_admission",
+          "receipt_publisher"
+        ]
+      ],
+      "role_owners": {
+        "authorization_owner": [
+          "quality_admission"
+        ],
+        "mutation_owner": [
+          "receipt_publisher"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "receipt-materialization",
+      "event": "receipt_materialization",
+      "kind": "execution",
+      "entry": "receipt_publisher",
+      "via": [],
+      "terminal": "schema_v3_receipt",
+      "path_count": 1,
+      "paths": [
+        [
+          "receipt_publisher",
+          "schema_v3_receipt"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "receipt_publisher"
+        ],
+        "evidence_owner": [
+          "schema_v3_receipt"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "installer-validation",
+      "event": "installer_validation",
+      "kind": "execution",
+      "entry": "schema_v3_receipt",
+      "via": [],
+      "terminal": "installer_validator",
+      "path_count": 1,
+      "paths": [
+        [
+          "schema_v3_receipt",
+          "installer_validator"
+        ]
+      ],
+      "role_owners": {
+        "authorization_owner": [
+          "installer_validator"
+        ],
+        "evidence_owner": [
+          "schema_v3_receipt"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "deployment-authority",
+      "event": "deployment_admission",
+      "kind": "authority",
+      "entry": "installer_validator",
+      "via": [],
+      "terminal": "installed_receipt_publisher",
+      "path_count": 1,
+      "paths": [
+        [
+          "installer_validator",
+          "installed_receipt_publisher"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "installed_receipt_publisher"
+        ],
+        "authorization_owner": [
+          "installer_validator"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "runtime-validation",
+      "event": "runtime_validation",
+      "kind": "execution",
+      "entry": "schema_v3_receipt",
+      "via": [],
+      "terminal": "runtime_validator",
+      "path_count": 1,
+      "paths": [
+        [
+          "schema_v3_receipt",
+          "runtime_validator"
+        ]
+      ],
+      "role_owners": {
+        "authorization_owner": [
+          "runtime_validator"
+        ],
+        "evidence_owner": [
+          "schema_v3_receipt"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "runtime-authority",
+      "event": "runtime_admission",
+      "kind": "authority",
+      "entry": "runtime_validator",
+      "via": [],
+      "terminal": "runtime_host_flip",
+      "path_count": 1,
+      "paths": [
+        [
+          "runtime_validator",
+          "runtime_host_flip"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "runtime_host_flip"
+        ],
+        "authorization_owner": [
+          "runtime_validator"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {
+    "receipt_authorization": {
+      "mutation_owner": [
+        "receipt_publisher"
+      ],
+      "evidence_owner": [],
+      "candidate_rank_owner": [],
+      "render_owner": [],
+      "authorization_owner": [
+        "quality_admission"
+      ],
+      "display_rank_owner": []
+    },
+    "deployment_admission": {
+      "mutation_owner": [
+        "installed_receipt_publisher"
+      ],
+      "evidence_owner": [],
+      "candidate_rank_owner": [],
+      "render_owner": [],
+      "authorization_owner": [
+        "installer_validator"
+      ],
+      "display_rank_owner": []
+    },
+    "runtime_admission": {
+      "mutation_owner": [
+        "runtime_host_flip"
+      ],
+      "evidence_owner": [],
+      "candidate_rank_owner": [],
+      "render_owner": [],
+      "authorization_owner": [
+        "runtime_validator"
+      ],
+      "display_rank_owner": []
+    }
+  },
+  "source_evidence": {
+    "expected": 0,
+    "verified": 0,
+    "complete": true
+  },
+  "issues": [],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": false,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

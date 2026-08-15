@@ -16,8 +16,6 @@ use super::runtime::{
     CANONICAL_L2_READOUT_SOURCE_ID, CANONICAL_L2_SURFACE_SOURCE_ID,
 };
 
-const LIVE_L11_LATTICE_LIMIT: usize = 32;
-
 pub(crate) fn canonical_text_candidates(original: &str) -> Vec<UnifiedCorrectionCandidate> {
     canonical_text_readout(original).candidates
 }
@@ -282,7 +280,10 @@ fn canonical_owned_text_candidates(original: &str) -> CanonicalL2FieldReadout {
         return CanonicalL2FieldReadout::abstain(L2FieldAvailability::UnsupportedInput);
     }
     let seed_started = std::time::Instant::now();
-    let l11_seeds = match live_l11_seed_surfaces(token, LIVE_L11_LATTICE_LIMIT) {
+    let l11_seeds = match live_l11_seed_surfaces(
+        token,
+        super::super::lexical_grokking::L11_LIVE_LATTICE_LIMIT,
+    ) {
         Ok(seeds) => seeds,
         Err(_) => {
             return CanonicalL2FieldReadout::unavailable(L2FieldAvailability::L11ServiceUnavailable)

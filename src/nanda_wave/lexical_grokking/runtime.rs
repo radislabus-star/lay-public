@@ -282,20 +282,30 @@ impl LexicalGrokkingMemory {
         limit: usize,
         mode: ReadoutMode,
     ) -> Vec<GrokkingCandidate> {
+        self.try_readout(surface, limit, mode).unwrap_or_default()
+    }
+
+    pub(super) fn try_readout(
+        &self,
+        surface: &str,
+        limit: usize,
+        mode: ReadoutMode,
+    ) -> Result<Vec<GrokkingCandidate>, String> {
         if let Some(runtime) = &self.typed_basin {
             if mode != ReadoutMode::Full {
-                runtime.record_failure("non-full readout mode is not admitted for V9");
-                return Vec::new();
+                let error = "non-full readout mode is not admitted for V9".to_string();
+                runtime.record_failure(&error);
+                return Err(error);
             }
-            return match runtime.readout(self, surface, limit) {
-                Ok(output) => output.candidates,
-                Err(error) => {
+            return runtime
+                .readout(self, surface, limit)
+                .map(|output| output.candidates)
+                .map_err(|error| {
                     runtime.record_failure(&error);
-                    Vec::new()
-                }
-            };
+                    error
+                });
         }
-        self.legacy_readout(surface, limit, mode)
+        Ok(self.legacy_readout(surface, limit, mode))
     }
 
     fn legacy_readout(
@@ -323,17 +333,34 @@ impl LexicalGrokkingMemory {
         Vec<GrokkingCandidate>,
         super::restoration::RestorationReadout,
     ) {
+        self.try_restoration_readout(surface, limit)
+            .unwrap_or_else(|_| {
+                (
+                    Vec::new(),
+                    super::restoration::classify(&[], self.package.restoration_calibration),
+                )
+            })
+    }
+
+    pub(in crate::nanda_wave::lexical_grokking) fn try_restoration_readout(
+        &self,
+        surface: &str,
+        limit: usize,
+    ) -> Result<
+        (
+            Vec<GrokkingCandidate>,
+            super::restoration::RestorationReadout,
+        ),
+        String,
+    > {
         if let Some(runtime) = &self.typed_basin {
-            return match runtime.readout(self, surface, limit) {
-                Ok(output) => (output.candidates, output.readout),
-                Err(error) => {
+            return runtime
+                .readout(self, surface, limit)
+                .map(|output| (output.candidates, output.readout))
+                .map_err(|error| {
                     runtime.record_failure(&error);
-                    (
-                        Vec::new(),
-                        super::restoration::classify(&[], self.package.restoration_calibration),
-                    )
-                }
-            };
+                    error
+                });
         }
         let mut candidates = self.legacy_readout(surface, limit, ReadoutMode::Full);
         let readout = self.classify_restoration(
@@ -341,7 +368,22 @@ impl LexicalGrokkingMemory {
             &mut candidates,
             self.package.restoration_calibration,
         );
-        (candidates, readout)
+        Ok((candidates, readout))
+    }
+
+    pub(super) fn query_failures(&self) -> u64 {
+        self.typed_basin
+            .as_ref()
+            .map(super::typed_basin::TypedBasinRuntime::query_failures)
+            .unwrap_or_default()
+    }
+
+    pub(in crate::nanda_wave::lexical_grokking) fn typed_basin_support(
+        &self,
+    ) -> Option<&super::typed_basin::ExactSupportField> {
+        self.typed_basin
+            .as_ref()
+            .map(super::typed_basin::TypedBasinRuntime::support)
     }
 
     pub(super) fn warm_first_touch(&self) -> io::Result<serde_json::Value> {

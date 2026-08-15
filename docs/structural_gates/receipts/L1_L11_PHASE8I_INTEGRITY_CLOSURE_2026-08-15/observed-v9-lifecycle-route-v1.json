@@ -1,0 +1,41 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "observed_source",
+  "source_root": ".",
+  "nodes": [
+    {"id":"receipt_reader","role":"interface","evidence":{"path":"src/nanda_wave/lexical_grokking/service.rs","line":305,"contains":"fn validate_installed_l11_receipt(receipt_path: &Path)"}},
+    {"id":"artifact_identity","role":"evidence_owner","evidence":{"path":"src/nanda_wave/lexical_grokking/service.rs","line":354,"contains":"let actual_sha256 = streaming_sha256(&receipt.installed_artifact)?;"}},
+    {"id":"proof_claim_validator","role":"proof_owner","evidence":{"path":"src/nanda_wave/lexical_grokking/service.rs","line":445,"contains":"&& complete_quality_proof_contract(proof)"}},
+    {"id":"startup_entry","role":"interface","evidence":{"path":"src/bin/lay_l1_1_serve.rs","line":110,"contains":"fn run_server(memory: &Path, socket_path: &Path)"}},
+    {"id":"startup_pre_admission","role":"observer","evidence":{"path":"src/bin/lay_l1_1_serve.rs","line":111,"contains":"lay::nanda_wave::admit_l11_service_artifact(memory)?;"}},
+    {"id":"startup_loader","role":"producer","evidence":{"path":"src/bin/lay_l1_1_serve.rs","line":242,"contains":"L1RestorationHost::load(&package_path)"}},
+    {"id":"startup_warmup","role":"orchestrator","evidence":{"path":"src/bin/lay_l1_1_serve.rs","line":243,"contains":"Ok(loaded) => match loaded.warm_first_touch()"}},
+    {"id":"startup_post_admission","role":"authorization_owner","evidence":{"path":"src/bin/lay_l1_1_serve.rs","line":246,"contains":"admit_l11_service_artifact(&package_path)"}},
+    {"id":"ready_snapshot","role":"mutation_owner","evidence":{"path":"src/bin/lay_l1_1_serve.rs","line":266,"contains":"*host.write().expect(\"L1.1 host write lock\") = next;"}},
+    {"id":"reload_entry","role":"interface","evidence":{"path":"src/bin/lay_l1_1_serve.rs","line":448,"contains":"L1ServiceRequest::Reload { memory } =>"}},
+    {"id":"reload_pre_admission","role":"observer","evidence":{"path":"src/bin/lay_l1_1_serve.rs","line":457,"contains":"admit_l11_service_artifact(&memory)"}},
+    {"id":"reload_loader","role":"producer","evidence":{"path":"src/bin/lay_l1_1_serve.rs","line":467,"contains":"L1RestorationHost::load(&memory)"}},
+    {"id":"reload_preflip_admission","role":"authorization_owner","evidence":{"path":"src/bin/lay_l1_1_serve.rs","line":476,"contains":"admit_l11_service_artifact(&memory).map_err"}},
+    {"id":"atomic_flip","role":"mutation_owner","evidence":{"path":"src/bin/lay_l1_1_serve.rs","line":564,"contains":"*current = next;"}}
+  ],
+  "edges": [
+    {"id":"exec-receipt-artifact","from":"receipt_reader","relation":"delegates","to":"artifact_identity","events":["receipt_validation"],"evidence":{"path":"src/nanda_wave/lexical_grokking/service.rs","line":354,"contains":"streaming_sha256(&receipt.installed_artifact)?"}},
+    {"id":"exec-artifact-proof","from":"artifact_identity","relation":"delegates","to":"proof_claim_validator","events":["receipt_validation"],"evidence":{"path":"src/nanda_wave/lexical_grokking/service.rs","line":380,"contains":"validate_l11_proof_claims(&proof, &receipt)?;"}},
+    {"id":"exec-start-pre","from":"startup_entry","relation":"calls","to":"startup_pre_admission","events":["startup"],"evidence":{"path":"src/bin/lay_l1_1_serve.rs","line":111,"contains":"admit_l11_service_artifact(memory)?"}},
+    {"id":"exec-start-load","from":"startup_pre_admission","relation":"delegates","to":"startup_loader","events":["startup"],"evidence":{"path":"src/bin/lay_l1_1_serve.rs","line":125,"contains":"spawn_background_load(host, memory.to_path_buf());"}},
+    {"id":"exec-start-warm","from":"startup_loader","relation":"delegates","to":"startup_warmup","events":["startup"],"evidence":{"path":"src/bin/lay_l1_1_serve.rs","line":243,"contains":"loaded.warm_first_touch()"}},
+    {"id":"exec-start-post","from":"startup_warmup","relation":"delegates","to":"startup_post_admission","events":["startup"],"evidence":{"path":"src/bin/lay_l1_1_serve.rs","line":246,"contains":"match lay::nanda_wave::admit_l11_service_artifact(&package_path)"}},
+    {"id":"authority-start-ready","from":"startup_post_admission","relation":"authorizes","to":"ready_snapshot","events":["startup"],"evidence":{"path":"src/bin/lay_l1_1_serve.rs","line":247,"contains":"Ok(_) => HostedMemory::Ready(loaded)"}},
+    {"id":"exec-reload-pre","from":"reload_entry","relation":"calls","to":"reload_pre_admission","events":["reload"],"evidence":{"path":"src/bin/lay_l1_1_serve.rs","line":457,"contains":"if let Err(error) = lay::nanda_wave::admit_l11_service_artifact(&memory)"}},
+    {"id":"exec-reload-load","from":"reload_pre_admission","relation":"delegates","to":"reload_loader","events":["reload"],"evidence":{"path":"src/bin/lay_l1_1_serve.rs","line":467,"contains":"lay::nanda_wave::L1RestorationHost::load(&memory)"}},
+    {"id":"exec-reload-preflip","from":"reload_loader","relation":"delegates","to":"reload_preflip_admission","events":["reload"],"evidence":{"path":"src/bin/lay_l1_1_serve.rs","line":476,"contains":"lay::nanda_wave::admit_l11_service_artifact(&memory).map_err"}},
+    {"id":"authority-reload-flip","from":"reload_preflip_admission","relation":"authorizes","to":"atomic_flip","events":["reload"],"evidence":{"path":"src/bin/lay_l1_1_serve.rs","line":563,"contains":"validate(&current, &next)?;"}}
+  ],
+  "routes": [
+    {"id":"receipt-validation-execution","event":"receipt_validation","kind":"execution","entry":"receipt_reader","terminal":"proof_claim_validator","required_roles":["interface","evidence_owner","proof_owner"],"via":["artifact_identity"],"path_cardinality":[{"from":"receipt_reader","to":"proof_claim_validator","min":1,"max":1}]},
+    {"id":"startup-execution","event":"startup","kind":"execution","entry":"startup_entry","terminal":"startup_post_admission","required_roles":["interface","observer","producer","orchestrator","authorization_owner"],"via":["startup_pre_admission","startup_loader","startup_warmup"],"path_cardinality":[{"from":"startup_entry","to":"startup_post_admission","min":1,"max":1}]},
+    {"id":"startup-authority","event":"startup","kind":"authority","entry":"startup_post_admission","terminal":"ready_snapshot","required_roles":["authorization_owner","mutation_owner"]},
+    {"id":"reload-execution","event":"reload","kind":"execution","entry":"reload_entry","terminal":"reload_preflip_admission","required_roles":["interface","observer","producer","authorization_owner"],"via":["reload_pre_admission","reload_loader"],"path_cardinality":[{"from":"reload_entry","to":"reload_preflip_admission","min":1,"max":1}]},
+    {"id":"reload-authority","event":"reload","kind":"authority","entry":"reload_preflip_admission","terminal":"atomic_flip","required_roles":["authorization_owner","mutation_owner"]}
+  ]
+}

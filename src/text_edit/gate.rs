@@ -143,6 +143,21 @@ pub fn plan_manual_edit(
     )
 }
 
+pub fn plan_ime_manual_toggle_edit(
+    from_text: &str,
+    to_text: &str,
+    plan: TextReplacement,
+) -> EditAction {
+    plan_manual_edit(
+        "ibus-active-composition-manual-toggle",
+        1_000,
+        from_text,
+        to_text,
+        plan,
+        1,
+    )
+}
+
 pub fn plan_native_edit(
     source: &str,
     confidence_milli: i16,

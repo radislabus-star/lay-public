@@ -25,8 +25,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1786747795.2686114,
-    "ast_hash": "1ecbcce2e1479961d450b62ac5b67c6b",
+    "mtime": 1786800635.1681528,
+    "ast_hash": "b324e4f12cd841c46158da0bbadb7b26",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
@@ -45,8 +45,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1786747795.2706115,
-    "ast_hash": "3a64a80b0633ed1411bda3241f00ab8a",
+    "mtime": 1786800635.1681528,
+    "ast_hash": "69dc4de76032e0934b3ddd0291904710",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -85,8 +85,8 @@
     "semantic_hash": ""
   },
   "scripts/check-lay-changed.sh": {
-    "mtime": 1786642120.3940442,
-    "ast_hash": "6226bbf3c7eac4c8a4baf72bb39cb0cd",
+    "mtime": 1786792817.6094515,
+    "ast_hash": "825dcdc25e88649e0b06b602ba0baa98",
     "semantic_hash": ""
   },
   "scripts/check-lay-full.sh": {
@@ -875,13 +875,13 @@
     "semantic_hash": "562af74b70d3d9a2ef9b8fe78fb73ccf"
   },
   "src/bin/lay_ibus_engine/committed_tail.rs": {
-    "mtime": 1786642120.4082844,
-    "ast_hash": "8a70a366bf7c06ce2abc50bdd5d0fdcd",
+    "mtime": 1786794885.6463723,
+    "ast_hash": "c31c7766687c0a6cc6b0730c2db49d2d",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/composition_commit.rs": {
-    "mtime": 1786642120.4082844,
-    "ast_hash": "5d3ec263a10be99e4370f0eb71edf0f8",
+    "mtime": 1786793619.4205117,
+    "ast_hash": "28701d9021ba81a32a28e06bd422876c",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/composition_edit.rs": {
@@ -960,8 +960,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/shift.rs": {
-    "mtime": 1786642120.4117308,
-    "ast_hash": "b6c7b463d6a7612c84d4b16c6b86d497",
+    "mtime": 1786793619.4525125,
+    "ast_hash": "b90a05ac32c76e028f0c647768aebbb9",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/state.rs": {
@@ -1575,8 +1575,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/mod.rs": {
-    "mtime": 1786745401.197886,
-    "ast_hash": "1ae0f411029e882b01fde3cc16b5b1ee",
+    "mtime": 1786791106.5445254,
+    "ast_hash": "07184322afaf45e03d30855c4b7d349a",
     "semantic_hash": ""
   },
   "src/nanda_wave/mode.rs": {
@@ -1955,8 +1955,8 @@
     "semantic_hash": "aab27e3f956ca4e44e3d7c29b07a656d"
   },
   "src/text_edit.rs": {
-    "mtime": 1786642120.4680607,
-    "ast_hash": "aa2698d6b719fe1e3342b1c6cae50253",
+    "mtime": 1786793608.2502375,
+    "ast_hash": "75bcaafc630de7ff005658dcc920fc13",
     "semantic_hash": ""
   },
   "src/text_edit/action.rs": {
@@ -1985,8 +1985,8 @@
     "semantic_hash": ""
   },
   "src/text_edit/gate.rs": {
-    "mtime": 1786642120.468741,
-    "ast_hash": "29af975505d7bb667a60f9ab04bd49c0",
+    "mtime": 1786793608.2502375,
+    "ast_hash": "ca7f1fc7e0f75f96c41b6734166d627c",
     "semantic_hash": ""
   },
   "src/text_edit/mutation.rs": {
@@ -2390,8 +2390,8 @@
     "semantic_hash": ""
   },
   "tests/text_mutation_monopoly_contract.rs": {
-    "mtime": 1786642120.482044,
-    "ast_hash": "5bf1b54a79cd784033e9d77d446f9a98",
+    "mtime": 1786795061.399013,
+    "ast_hash": "bf9585b3daa6573418061a73c5bdc59d",
     "semantic_hash": ""
   },
   "tests/tray_ui_contract.rs": {
@@ -2515,8 +2515,8 @@
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1786747795.2726116,
-    "ast_hash": "11783d2e2b0d725887cc07e1d984bf0f",
+    "mtime": 1786800635.167153,
+    "ast_hash": "e57f25589000206e4d1fec0f84c09221",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -3740,8 +3740,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/mod.rs": {
-    "mtime": 1786745288.8165333,
-    "ast_hash": "31f583efc65c64601f9f74c2b22ddc24",
+    "mtime": 1786791106.1935215,
+    "ast_hash": "3cdd08232c5dfba4979ef05649ae3e35",
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/model.rs": {
@@ -3755,8 +3755,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/runtime.rs": {
-    "mtime": 1786749340.0033307,
-    "ast_hash": "ffd850c0dcc8dc428709bf013c391d97",
+    "mtime": 1786798107.0238273,
+    "ast_hash": "23a9a8d51d6cba740f35c8d62239968b",
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/tests.rs": {
@@ -4350,8 +4350,8 @@
     "semantic_hash": ""
   },
   "scripts/install-l11-shadow-package.sh": {
-    "mtime": 1786642120.3940442,
-    "ast_hash": "80622e2b0114838e12d2ba8ab20b05ca",
+    "mtime": 1786798286.5320504,
+    "ast_hash": "d580e47d4fa99980707b6765273fb1ed",
     "semantic_hash": ""
   },
   "data/lexical_grokking/lay_l11_ru_composite_en300k_shadow_v2.txt": {
@@ -4365,13 +4365,13 @@
     "semantic_hash": ""
   },
   "src/bin/lay_l1_1_serve.rs": {
-    "mtime": 1786642120.412044,
-    "ast_hash": "e26fad065a941f24f2532f0bfa538433",
+    "mtime": 1786793182.35294,
+    "ast_hash": "f224c70a801fffdd21afef4d18121507",
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/service.rs": {
-    "mtime": 1786749455.5074928,
-    "ast_hash": "0da4de71b4235a362c7195a569f60155",
+    "mtime": 1786798286.5320504,
+    "ast_hash": "02ef4bb85da45ac9b4507e9baf055d2d",
     "semantic_hash": ""
   },
   "docs/l2-l11-candidate-field-contract.md": {
@@ -4385,8 +4385,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/l2_field/bridge.rs": {
-    "mtime": 1786642120.4330442,
-    "ast_hash": "c000ead01081635621ae7a4ca9b92fa0",
+    "mtime": 1786789117.895183,
+    "ast_hash": "53c25444168cd58b9395cf3610e480cb",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2_field/format.rs": {
@@ -7590,8 +7590,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/runtime/host.rs": {
-    "mtime": 1786745288.8085332,
-    "ast_hash": "a55d8a0e43c50fe439b684cb4fd1ac1f",
+    "mtime": 1786789693.1146483,
+    "ast_hash": "61bc358af559c545e5af07ccfcb65d45",
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_2E_2026-08-13/phase-2e.json": {
@@ -7760,8 +7760,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/proof_matrix.rs": {
-    "mtime": 1786673549.1475909,
-    "ast_hash": "ff097614d3bb0c24464c6d6854ae97e2",
+    "mtime": 1786795439.0125756,
+    "ast_hash": "034998684bc3386b5239056d500adf39",
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_6_2026-08-14/implementation-preflight-blocked-v1.json": {
@@ -8500,18 +8500,18 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/typed_basin/quality.rs": {
-    "mtime": 1786718570.5271778,
-    "ast_hash": "8bfba0073024336df1c3c379567e6fb8",
+    "mtime": 1786798382.5609238,
+    "ast_hash": "126746cba65be5615a4a159eb08ec35a",
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/typed_basin/quality/metrics.rs": {
-    "mtime": 1786718422.005818,
-    "ast_hash": "991146dfb70ad2c607009f33cc4bebbe",
+    "mtime": 1786790390.6954427,
+    "ast_hash": "2bb2e913e2c819046e9060aebb386c76",
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/typed_basin/quality/tests.rs": {
-    "mtime": 1786718570.5141776,
-    "ast_hash": "093619d9680360ec1dd3ffd410c41adc",
+    "mtime": 1786798401.8629184,
+    "ast_hash": "613ecbebd6cf3442e0b5195ac0a51e76",
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/typed_basin/settlement.rs": {
@@ -8545,8 +8545,8 @@
     "semantic_hash": ""
   },
   "docs/l1-l11-typed-basin-implicit-forward-phase8i.md": {
-    "mtime": 1786721986.133022,
-    "ast_hash": "f9482a6ad1536453366f75b5280bc969",
+    "mtime": 1786803924.4790714,
+    "ast_hash": "f301008ae9abddde038fe126108baa9c",
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8F_2026-08-14/phase-8f-v2-13x1.time.txt": {
@@ -8725,18 +8725,228 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/typed_basin/runtime.rs": {
-    "mtime": 1786751105.392072,
-    "ast_hash": "88c8005f0a6742f701eae404a5f0ee1f",
+    "mtime": 1786798107.0228271,
+    "ast_hash": "cea1afc111c3034cf6d0d5c36754ee9d",
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/v9.rs": {
-    "mtime": 1786745470.1467159,
-    "ast_hash": "2a6952a49323501f412760157d6f5b07",
+    "mtime": 1786798107.0228271,
+    "ast_hash": "aca537008e77b6bb94aa50430eeb4312",
     "semantic_hash": ""
   },
   "docs/l1-l11-phase8i-gate-d-runtime.md": {
-    "mtime": 1786752943.2828138,
-    "ast_hash": "4b7c4dbde856c1504fd31a949a260fea",
+    "mtime": 1786803924.390071,
+    "ast_hash": "1a35e8124113d78784da7f2671959c5a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/implementation-preflight-receipt-v1.json": {
+    "mtime": 1786791694.6887736,
+    "ast_hash": "d1223cf0815b9ef597963fd2881d8f49",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/implementation-preflight-receipt-v2.json": {
+    "mtime": 1786791811.096663,
+    "ast_hash": "59ddb0a5da93e3b5ab90766e72b4ccc9",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/implementation-preflight-v1.json": {
+    "mtime": 1786791685.9731815,
+    "ast_hash": "bba30b5f8af9f727d88eeeb7948404ab",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/implementation-preflight-v2.json": {
+    "mtime": 1786791799.243915,
+    "ast_hash": "3d205a914ffa65df45ee7792fd30d0ff",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/observed-double-shift-route-receipt-v1.json": {
+    "mtime": 1786796154.6619232,
+    "ast_hash": "a903bf9e605190fe58e7610a69a66a59",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/observed-double-shift-route-v1.json": {
+    "mtime": 1786795009.125232,
+    "ast_hash": "e7bc898948a70199eccc41a6e0a11a54",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/observed-v9-lattice-route-receipt-v1.json": {
+    "mtime": 1786796154.7329242,
+    "ast_hash": "5d7c108bb194809efd4dcc8baa93f733",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/observed-v9-lattice-route-v1.json": {
+    "mtime": 1786795597.100876,
+    "ast_hash": "41f32b606b9c4b632db92e4aa101f511",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/observed-v9-lifecycle-route-receipt-v1.json": {
+    "mtime": 1786796154.789925,
+    "ast_hash": "ef522dddfcb487e046104bb5b4cc4bd2",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/observed-v9-lifecycle-route-v1.json": {
+    "mtime": 1786794803.1921165,
+    "ast_hash": "65cdc7d823267d361412d2956d8a3872",
+    "semantic_hash": ""
+  },
+  "scripts/test-install-l11-shadow-package.sh": {
+    "mtime": 1786798286.5330503,
+    "ast_hash": "ef9ef96864e27cad6b06b19e7acd7a9f",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/deployment-receipt-v1.json": {
+    "mtime": 1786803924.4790714,
+    "ast_hash": "bf31a18c3c07ac03fd49e4dc336df832",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/direct-v9-proof-route-design-v1.json": {
+    "mtime": 1786797642.9652798,
+    "ast_hash": "26050ffc422b4bf4884627fea781f784",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/direct-v9-proof-route-design-v2.json": {
+    "mtime": 1786797853.2396371,
+    "ast_hash": "c6e966a2714c42f338798c36625ddcb7",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/direct-v9-proof-route-receipt-v1-veto.json": {
+    "mtime": 1786797774.0250843,
+    "ast_hash": "958979c6676143fe22c8629c45c0eaff",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/direct-v9-proof-route-receipt-v2.json": {
+    "mtime": 1786797902.0448987,
+    "ast_hash": "0ed3233422999303343dc2ca6c0b7b5d",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/direct-v9-proof-v3/active.installed.json": {
+    "mtime": 1786800524.792253,
+    "ast_hash": "d21fab225db668650a94c60a56c603ae",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/direct-v9-proof-v3/direct-v9-full-13x20000-all-clean.json": {
+    "mtime": 1786800520.3222165,
+    "ast_hash": "b3063cbcae56c5da43cd6e76a29ad617",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/direct-v9-proof-v3/direct-v9-runtime-direct-1.json": {
+    "mtime": 1786800521.7922285,
+    "ast_hash": "07ecbb1f267c93dd3631a3cfe3a60af7",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/direct-v9-proof-v3/direct-v9-runtime-direct-2.json": {
+    "mtime": 1786800522.1632316,
+    "ast_hash": "612c463dd9468bee565b095451210426",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/direct-v9-proof-v3/direct-v9-runtime-direct-3.json": {
+    "mtime": 1786800522.5222344,
+    "ast_hash": "24b0659ae5b1f3b0d47c32be5d096cfa",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/direct-v9-proof-v3/direct-v9-runtime-direct-4.json": {
+    "mtime": 1786800522.8922374,
+    "ast_hash": "5c593ab3be670b0cee43c7ffd2a4c80c",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/direct-v9-proof-v3/direct-v9-runtime-health-after-latency.json": {
+    "mtime": 1786800523.6222434,
+    "ast_hash": "69d3536676553b5f562e134ebfe09b62",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/direct-v9-proof-v3/direct-v9-runtime-manifest.json": {
+    "mtime": 1786800525.173256,
+    "ast_hash": "15f99d010acab026c4dff0f7b68178ae",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/direct-v9-proof-v3/direct-v9-runtime-stats-after-latency.json": {
+    "mtime": 1786800524.0032465,
+    "ast_hash": "c1e13922a0a98960f4684c3c406c3189",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/direct-v9-proof-v3/direct-v9-smoke-13x100.json": {
+    "mtime": 1786800519.54221,
+    "ast_hash": "bc485f3e11ad787b90de1b25c2dbdd1a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/implementation-preflight-direct-v9-proof-receipt-v1.json": {
+    "mtime": 1786797669.4755654,
+    "ast_hash": "0a12f54616c8501842b44487d1a74110",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/implementation-preflight-direct-v9-proof-receipt-v2.json": {
+    "mtime": 1786797866.933706,
+    "ast_hash": "aea4f1739966ae052f7a2ef393b35c34",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/implementation-preflight-direct-v9-proof-receipt-v3.json": {
+    "mtime": 1786797924.470811,
+    "ast_hash": "63aebe194a4997ed976ca115a45d8b38",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/implementation-preflight-direct-v9-proof-v1.json": {
+    "mtime": 1786797642.9652798,
+    "ast_hash": "53369df5eb515224e1d6244c0a6f7456",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/implementation-preflight-direct-v9-proof-v2.json": {
+    "mtime": 1786797853.2396371,
+    "ast_hash": "9e457582ee8fef7f5a7fc6ed45b71723",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/implementation-preflight-direct-v9-proof-v3.json": {
+    "mtime": 1786797914.5657263,
+    "ast_hash": "2e860570f8011188c83de0c7e0833074",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/release-1.0.29-l11-manifest.json": {
+    "mtime": 1786801350.4930289,
+    "ast_hash": "45d8fc78b1907f57fdeda068e68bf952",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/direct-v9-proof-v3/direct-v9-full-13x20000-all-clean.time.txt": {
+    "mtime": 1786800520.6922195,
+    "ast_hash": "8cf73d19f59269a69dcbcbdd41f1b5c2",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/direct-v9-proof-v3/direct-v9-runtime-production-client.txt": {
+    "mtime": 1786800523.2532403,
+    "ast_hash": "45dbafbd9c5c8ef6bb129d87ab671343",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/direct-v9-proof-v3/direct-v9-runtime-rss-after-latency.txt": {
+    "mtime": 1786800524.4342499,
+    "ast_hash": "5629ebc4dd817c7cbd447eb442f1afe1",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/direct-v9-proof-v3/direct-v9-smoke-13x100.time.txt": {
+    "mtime": 1786800519.9132133,
+    "ast_hash": "257da33c3f75e09b564b435de34ff9dd",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/participating-source-sha256-v1.txt": {
+    "mtime": 1786796665.4432523,
+    "ast_hash": "eacc3b5e0925c17848a8da444ae216a6",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/participating-source-sha256-v2.txt": {
+    "mtime": 1786798444.9789279,
+    "ast_hash": "ba578c685aebb44a2a2c2ac351426441",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/participating-source-sha256-v3.txt": {
+    "mtime": 1786800705.8427305,
+    "ast_hash": "01fc42c96aa1a4233848f85f7a74d469",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/release-1.0.29/release-1.0.29-build-attempt2.time.txt": {
+    "mtime": 1786801165.2294972,
+    "ast_hash": "575b022c2c9c3e6bd0a1a752bdfb08aa",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/release-source-sha256-v1.txt": {
+    "mtime": 1786801058.9486277,
+    "ast_hash": "06d52a1cc444568878f2ea8d3c8866f8",
     "semantic_hash": ""
   }
 }

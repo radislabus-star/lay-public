@@ -2,9 +2,11 @@ use zbus::fdo;
 use zbus::object_server::SignalEmitter;
 
 use lay::manual_toggle::{plan_manual_toggle, ManualToggleRequest};
-use lay::text_edit::VisibleTail;
+use lay::text_edit::{
+    authorize_backend_edit, plan_ime_manual_toggle_edit, plan_text_replacement, TextEditBackend,
+    VisibleTail,
+};
 
-use super::composition_commit::ActiveCompositionCommit;
 use super::engine::{LayIbusEngine, ManualToggleAuthority};
 use super::trace;
 
@@ -47,10 +49,23 @@ impl LayIbusEngine {
             return Ok(None);
         };
         trace::record_manual_toggle_plan(&plan);
-        let original = std::mem::replace(&mut self.buffer, plan.replacement.clone());
-        self.composition_cursor = self.buffer.chars().count();
-        self.replace_last_tail_token_text(&plan.replacement, original.chars().count());
-        self.commit_active_composition(emitter, ActiveCompositionCommit::plain())
+        let original = self.buffer.clone();
+        let Some(replacement_plan) = plan_text_replacement(&original, &plan.replacement) else {
+            return Ok(None);
+        };
+        let action = plan_ime_manual_toggle_edit(&original, &plan.replacement, replacement_plan);
+        lay::action_log::record_candidate_edit_action_before_apply(
+            &action,
+            lay::action_log::MutationLogRoute::IME_ACTIVE_COMPOSITION,
+            None,
+        );
+        let Some(authorized_edit) =
+            authorize_backend_edit(TextEditBackend::Ime, action).into_authorized()
+        else {
+            trace::record(r#"{"kind":"ibus_manual_toggle_authorization_blocked"}"#);
+            return Ok(None);
+        };
+        self.commit_verified_active_composition(emitter, authorized_edit)
             .await?;
         lay::typing_cpu::TypingCpu::record_accepted_layout_projection(&original, &plan.replacement);
         self.suppress_next_committed_tail_autocorrect = plan.suppress_next_autocorrect;
@@ -83,5 +98,29 @@ mod tests {
         engine.defer_committed_tail_manual_toggle_to_daemon();
 
         assert!(engine.suppress_next_committed_tail_autocorrect);
+    }
+
+    #[test]
+    fn active_composition_toggle_defers_state_mutation_to_commit_owner() {
+        let source = include_str!("shift.rs");
+        let production = source.split("#[cfg(test)]").next().unwrap();
+        assert!(!production.contains("self.buffer = plan.replacement"));
+        assert!(!production.contains("replace_last_tail_token_text(&plan.replacement"));
+        assert!(production.contains("commit_verified_active_composition(emitter, authorized_edit)"));
+    }
+
+    #[test]
+    fn active_composition_toggle_uses_one_typed_ime_authority() {
+        let plan = lay::text_edit::plan_text_replacement("ghbdtn", "привет")
+            .expect("manual toggle replacement plan");
+        let action = lay::text_edit::plan_ime_manual_toggle_edit("ghbdtn", "привет", plan);
+        let edit =
+            lay::text_edit::authorize_backend_edit(lay::text_edit::TextEditBackend::Ime, action)
+                .into_authorized()
+                .expect("manual toggle must be authorized");
+
+        assert_eq!(edit.backend(), lay::text_edit::TextEditBackend::Ime);
+        assert_eq!(edit.action().from_text(), "ghbdtn");
+        assert_eq!(edit.action().to_text(), "привет");
     }
 }

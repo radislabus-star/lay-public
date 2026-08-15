@@ -1,0 +1,24 @@
+{
+  "type": "stats",
+  "report": {
+    "status": "ready",
+    "message": null,
+    "socket": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime/phase8i-integrity.sock",
+    "requests_served": 2140,
+    "uptime_ms": 127723,
+    "host": {
+      "package_path": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.v9.bin",
+      "package_bytes": 77962328,
+      "terminal_count": 852582,
+      "atom_count": 218763,
+      "forward_relations": 0,
+      "reverse_relations": 0,
+      "exact_surface_count": 852582,
+      "character_anchor_count": 852582,
+      "manifest_generation": 0,
+      "delta_count": 0,
+      "tombstone_count": 0,
+      "query_failures": 0
+    }
+  }
+}

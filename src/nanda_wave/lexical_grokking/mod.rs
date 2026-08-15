@@ -36,6 +36,10 @@ mod v8;
 mod v9;
 mod wave_basis;
 
+/// Bounded L1.1 lattice transported into the live L2 field and measured by
+/// the fixed Gate C proof. This is an output projection, never a birth bound.
+pub const L11_LIVE_LATTICE_LIMIT: usize = 32;
+
 pub use behavior_fingerprint::fingerprint_l1_behavior;
 pub use compaction::compact_depth0_package;
 pub use composite::initialize_manifest as initialize_l11_composite_manifest;
@@ -62,12 +66,12 @@ pub use runtime::{
     L1RestorationHost, L1RestorationHostStats,
 };
 pub use service::{
-    authoritative_restore_surface, default_l11_model_dir, default_l11_socket_path,
-    discover_installed_l11_package, ensure_l11_service_started, l11_seed_surfaces,
-    request_l11_authoritative_surface, request_l11_decoded_surfaces, request_l11_seed_surfaces,
-    send_l11_service_request, send_l11_service_request_with_timeout, InstalledL11Package,
-    L11SeedSurface, L11ServiceEnsureReport, L1ServiceHealth, L1ServiceRequest, L1ServiceResponse,
-    L1ServiceStats,
+    admit_l11_service_artifact, authoritative_restore_surface, default_l11_model_dir,
+    default_l11_socket_path, discover_installed_l11_package, ensure_l11_service_started,
+    l11_seed_surfaces, request_l11_authoritative_surface, request_l11_decoded_surfaces,
+    request_l11_seed_surfaces, send_l11_service_request, send_l11_service_request_with_timeout,
+    InstalledL11Package, L11SeedSurface, L11ServiceEnsureReport, L1ServiceHealth, L1ServiceRequest,
+    L1ServiceResponse, L1ServiceStats,
 };
 #[cfg(feature = "lexical-compiler")]
 pub use typed_basin::{

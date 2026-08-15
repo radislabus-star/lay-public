@@ -1,7 +1,7 @@
 //! Physical Phase 8I package: compact V7 base plus exact-support overflow.
 
 use std::fs::{self, File};
-use std::io::{self, Write};
+use std::io::{self, Read, Write};
 use std::path::{Path, PathBuf};
 
 use sha2::{Digest, Sha256};
@@ -41,6 +41,22 @@ pub(super) fn load(path: &Path) -> Result<LoadedV9, String> {
 }
 
 pub(super) fn read_header(bytes: &[u8]) -> Result<V9Header, String> {
+    read_header_with_file_bytes(bytes, bytes.len() as u64)
+}
+
+pub(super) fn read_file_header(path: &Path) -> Result<V9Header, String> {
+    let mut file = File::open(path).map_err(|error| format!("{}: {error}", path.display()))?;
+    let file_bytes = file
+        .metadata()
+        .map_err(|error| format!("{}: {error}", path.display()))?
+        .len();
+    let mut header = [0_u8; HEADER_BYTES];
+    file.read_exact(&mut header)
+        .map_err(|error| format!("{}: {error}", path.display()))?;
+    read_header_with_file_bytes(&header, file_bytes)
+}
+
+fn read_header_with_file_bytes(bytes: &[u8], file_bytes: u64) -> Result<V9Header, String> {
     if bytes.len() < HEADER_BYTES
         || !is_v9(bytes)
         || read_u32(bytes, 8)? != VERSION
@@ -49,18 +65,17 @@ pub(super) fn read_header(bytes: &[u8]) -> Result<V9Header, String> {
         return Err("invalid L1.1 V9 header".to_string());
     }
     let base_bytes = read_u64(bytes, 16)?;
-    let payload_bytes = bytes
-        .len()
-        .checked_sub(HEADER_BYTES)
-        .and_then(|value| value.checked_sub(base_bytes as usize))
+    let payload_bytes = file_bytes
+        .checked_sub(HEADER_BYTES as u64)
+        .and_then(|value| value.checked_sub(base_bytes))
         .ok_or_else(|| "invalid L1.1 V9 base length".to_string())?;
-    if payload_bytes % OVERFLOW_ENTRY_BYTES != 0 {
+    if payload_bytes % OVERFLOW_ENTRY_BYTES as u64 != 0 {
         return Err("invalid L1.1 V9 overflow length".to_string());
     }
-    let overflow_count = u32::try_from(payload_bytes / OVERFLOW_ENTRY_BYTES)
+    let overflow_count = u32::try_from(payload_bytes / OVERFLOW_ENTRY_BYTES as u64)
         .map_err(|_| "L1.1 V9 overflow count exceeds u32".to_string())?;
     Ok(V9Header {
-        file_bytes: bytes.len() as u64,
+        file_bytes,
         base_bytes,
         overflow_count,
         checksum: read_u64(bytes, CHECKSUM_OFFSET)?,
@@ -291,9 +306,11 @@ mod tests {
         let memory = LexicalGrokkingMemory::load(&v9_path).expect("load V9 runtime");
 
         assert!(!memory.readout("вреям", 8, ReadoutMode::Full).is_empty());
-        assert!(memory
-            .readout("вреям", 8, ReadoutMode::WithoutAnti)
-            .is_empty());
+        let error = memory
+            .try_readout("вреям", 8, ReadoutMode::WithoutAnti)
+            .expect_err("unadmitted V9 mode must fail");
+        assert!(error.contains("non-full readout mode"));
+        assert_eq!(memory.query_failures(), 1);
 
         let _ = fs::remove_dir_all(root);
     }
