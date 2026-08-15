@@ -258,6 +258,15 @@ pub(crate) fn compile_observations(
     }
 
     let mut package = L4CrossScenePackage {
+        encoder_version: super::ENCODER_VERSION,
+        encoder_hash: super::ENCODER_HASH,
+        applied_segment: 0,
+        symbols: observations
+            .iter()
+            .flat_map(|observation| observation.scene_symbols.iter().cloned())
+            .collect::<BTreeSet<_>>()
+            .into_iter()
+            .collect(),
         profiles: profiles.into_values().collect(),
         pair_profiles: pairs.into_values().collect(),
         source_observations: report.source_observations,
@@ -289,6 +298,7 @@ pub(crate) fn compile_observations(
     }
     report.profiles = package.profiles.len().min(u32::MAX as usize) as u32;
     report.pair_profiles = package.pair_profiles.len().min(u32::MAX as usize) as u32;
+    report.symbols = package.symbols.len().min(u32::MAX as usize) as u32;
     report.logical_center_bytes = encode_package(&package).len() as u64;
     report.raw_text_stored = false;
     report.runtime_authority_changed = false;
@@ -455,7 +465,10 @@ mod tests {
     use super::*;
     use crate::nanda_wave::l4_cross_scene::model::L4CrossSceneL2Signal;
     use crate::transition_relation::{TransitionOperatorKind, TransitionRelationAtoms};
-    use crate::typing_memory::{LayoutProjectionDirection, LayoutProjectionScope};
+    use crate::typing_memory::{
+        LayoutProjectionDirection, LayoutProjectionScope, TypingTransitionIdentity,
+    };
+    use crate::typing_scene::SentenceLanguageEvidence;
 
     fn observation(outcome: TypingMemoryOutcome, receipt_id: u64) -> L4CrossSceneObservation {
         let from = "ghbdtn";
@@ -466,6 +479,8 @@ mod tests {
             TransitionOperatorKind::LayoutProjection,
         );
         let context = vec!["мы".to_string(), "пишем".to_string()];
+        let identity = TypingTransitionIdentity::observed(from, to, "replacement");
+        let sentence_language = SentenceLanguageEvidence::script_only(&context, to);
         L4CrossSceneObservation {
             receipt_id,
             complete_chain: true,
@@ -473,7 +488,8 @@ mod tests {
                 TransitionOperatorKind::LayoutProjection,
                 Some(LayoutProjectionDirection::EnToRu),
                 Some(LayoutProjectionScope::CurrentToken),
-            ),
+            )
+            .with_scene(identity.scene, sentence_language),
             context: context.clone(),
             from_text: from.to_string(),
             to_text: to.to_string(),
@@ -483,6 +499,8 @@ mod tests {
             l3_relation_class: relation_class_from_context(&context, to),
             context_signal: super::super::model::L4CrossSceneContextSignal::Support,
             l2_signal: L4CrossSceneL2Signal::Support,
+            sentence_language,
+            scene_symbols: identity.scene.known_symbols(),
             outcome,
         }
     }

@@ -1,0 +1,175 @@
+{
+  "schema": "lay.architecture-experiment.v1",
+  "task_id": "lay-l4-multilingual-scene-field-v2-incremental-2026-08-15",
+  "timestamp": "2026-08-15T20:54:12+03:00",
+  "branch": "codex/l1-exact-peak-search",
+  "base_head": "b8b85281ddb45557a7ecce7c81eb7c0ca5aa5a6c",
+  "tested": [
+    {
+      "command": "scripts/cargo-guard.sh test --lib nanda_wave::l4_cross_scene --no-run",
+      "result": "PASS",
+      "compile_seconds": 33.54
+    },
+    {
+      "command": "scripts/cargo-guard.sh test --lib nanda_wave::l4_cross_scene -- --nocapture",
+      "result": "PASS",
+      "passed": 27,
+      "failed": 0,
+      "test_execution_seconds": 0.02
+    },
+    {
+      "command": "scripts/cargo-guard.sh build --bin lay-nanda-wave-train",
+      "result": "PASS"
+    },
+    {
+      "command": "target/debug/lay-nanda-wave-train --compile-l4-cross-scene --input /dev/null --out TEMP/package.bin",
+      "result": "PASS"
+    },
+    {
+      "command": "target/debug/lay-nanda-wave-train --l4-cross-scene-status TEMP/package.bin",
+      "result": "PASS"
+    },
+    {
+      "command": "target/debug/lay-nanda-wave-train --l4-cross-scene-inbox-status TEMP/inbox",
+      "result": "PASS"
+    },
+    {
+      "command": "target/debug/lay-nanda-wave-train --update-l4-cross-scene --inbox TEMP/inbox --package TEMP/package.bin",
+      "result": "PASS"
+    }
+  ],
+  "remote_experiments": [
+    {
+      "id": "v2-typed-key-baseline",
+      "report": "/home/e/build/lay-l4-v2-20260815/artifacts/l4-v2-20260815/ru-en-proof.json",
+      "report_sha256": "a2f1d048a1919bcd64d808855545480d0c9bfd1e1d1566151f554a7dfc2ca99c",
+      "verdict": "WATCH",
+      "heldout_cases": 436,
+      "classes_at_100_percent": 8,
+      "anti_prevented_false_supports": 0,
+      "reason": "typed V2 profile keys separated reverse language routes, so the V1-shaped matrix no longer exercised anti evidence"
+    },
+    {
+      "id": "same-route-three-position-negative-control",
+      "report": "/home/e/build/lay-l4-v2-20260815/artifacts/l4-v2-20260815/ru-en-proof-v2.json",
+      "report_sha256": "cd97d665e383ee9dbc5bb64bd794fa4d0e8cbcfd28ce5029b7e1fd7fd354b92a",
+      "verdict": "REJECTED",
+      "heldout_cases": 640,
+      "anti_prevented_false_supports": 204,
+      "whole_token_positive_percent": 0,
+      "reason": "negative center was too close and suppressed valid whole-token positive scenes"
+    },
+    {
+      "id": "same-route-eight-position-negative-control-with-hot-readout-latency",
+      "report": "/home/e/build/lay-l4-v2-20260815/artifacts/l4-v2-20260815/ru-en-proof-v4.json",
+      "report_sha256": "50ac2bcadf09f6c033a78cdba23fa9bdba9d7809268d46b28d0d2dd0faa26f50",
+      "package": "/home/e/build/lay-l4-v2-20260815/artifacts/l4-v2-20260815/ru-en-proof-package-v4.bin",
+      "package_sha256": "d4485c4befdcafe5bb2f76d1d4aad436e3ad19ca51ecce9e2cc3436edacb0683",
+      "verdict": "PASS_SHADOW",
+      "training_observations": 2536,
+      "heldout_cases": 640,
+      "classes": 10,
+      "minimum_class_percent": 100.0,
+      "positive_supports": 218,
+      "positive_cases": 218,
+      "false_supports": 0,
+      "automatic_apply": 0,
+      "anti_prevented_false_supports": 204,
+      "hot_readout_samples": 20480,
+      "hot_readout_p50_us": 3.023,
+      "hot_readout_p99_us": 4.061,
+      "hot_readout_max_us": 7.572,
+      "hot_readout_gate_us": 500,
+      "proof_elapsed_seconds": 0.31,
+      "proof_peak_rss_kib": 22440,
+      "runtime_authority_changed": false
+    },
+    {
+      "id": "organic-v2-package-compile",
+      "report": "/home/e/build/lay-l4-v2-20260815/artifacts/l4-v2-20260815/l4-cross-scene-organic-v2.json",
+      "report_sha256": "8c45d5e30908d3595ed45dabe2c82b054539a0468129c8052989fb03e30d13dc",
+      "status": "/home/e/build/lay-l4-v2-20260815/artifacts/l4-v2-20260815/l4-cross-scene-organic-v2-status.json",
+      "status_sha256": "cef1a4b177985fba9d1d77f92c9f3b8a1cbd3f208efb7ee65995faae037accda",
+      "package": "/home/e/build/lay-l4-v2-20260815/artifacts/l4-v2-20260815/l4-cross-scene-organic-v2.bin",
+      "package_sha256": "1a1e926c4b4c972add54ce3235b1f1527276365abe74952abb538a3132c97e3e",
+      "verdict": "PASS_SHADOW_PACKAGE_ONLY",
+      "usage_input_rows": 1608,
+      "correction_input_rows": 2958,
+      "joined_observations": 208,
+      "positive_observations": 28,
+      "reverted_observations": 180,
+      "negative_observations": 0,
+      "profiles": 26,
+      "pair_profiles": 67,
+      "symbols": 5,
+      "package_bytes": 21445,
+      "compile_elapsed_seconds": 0.01,
+      "compile_peak_rss_kib": 5948,
+      "runtime_authority_changed": false,
+      "promotion_evidence": "WATCH_NO_COMPLETE_NEGATIVE_OBSERVATIONS"
+    }
+  ],
+  "measured_facts": {
+    "empty_v2_package_bytes": 84,
+    "encoder_version": 2,
+    "encoder_hash": "0x4c344d554c544932",
+    "empty_package_symbols": 0,
+    "empty_package_applied_segment": 0,
+    "empty_inbox_segments": 0,
+    "empty_inbox_sequence_floor": 0,
+    "empty_inbox_next_segment": 1,
+    "empty_update_verdict": "NOOP",
+    "automatic_apply_count": 0,
+    "remote_host": "e@192.168.3.94",
+    "remote_build_root": "/home/e/build/lay-l4-v2-20260815",
+    "remote_logical_cpus": 20,
+    "remote_source_proof_sha256": "7f01d63b0335c3c22b5e90e8e6fbcb3417bcd2ce261e0f33de650490dfaa3022",
+    "remote_release_binary_sha256": "927b8f6c77f41397fb2b35a0c4cce6df882d37e80e66ae1169b14def506f0b61",
+    "remote_release_build_elapsed_seconds": 187.69,
+    "remote_release_build_peak_rss_kib": 2499004,
+    "ru_source_sha256": "6d4d2d226b138d54b4d31ea87f771e1c687745d25ea71e6f025d73f704b003a2",
+    "en_source_sha256": "91b4533234355724b871abe62825fa4b010ed63ae5d90bcd66e7f8061d2f1e8b",
+    "ru_en_proof_package_bytes": 6469,
+    "ru_en_proof_profiles": 8,
+    "ru_en_proof_pair_profiles": 16,
+    "ru_en_proof_symbols": 5,
+    "ru_en_hot_readout_samples": 20480,
+    "ru_en_hot_readout_p50_us": 3.023,
+    "ru_en_hot_readout_p99_us": 4.061,
+    "ru_en_hot_readout_max_us": 7.572,
+    "organic_usage_input_sha256": "6d48687f05b70cc2cec5eb3512ab9cd75aab536d5bdae9cf88e6f047af1d08b1",
+    "organic_corrections_input_sha256": "e62950073ccec7d5dc6f7ea477fdf44fc1996e0d65213c1bad637dc6634f6ef6",
+    "organic_v2_package_sha256": "1a1e926c4b4c972add54ce3235b1f1527276365abe74952abb538a3132c97e3e",
+    "organic_v2_package_bytes": 21445,
+    "organic_v2_profiles": 26,
+    "organic_v2_pair_profiles": 67,
+    "organic_v2_symbols": 5,
+    "organic_v2_negative_observations": 0,
+    "installed_lay_version": "1.0.30",
+    "installed_v1_package_bytes": 13228,
+    "installed_v1_sha256": "5a32cf50b94105679ec40bec7bd5c46c2937075ede864bd7961203427a6cf1b5"
+  },
+  "not_tested": [
+    "fixed heldout quality for any language beyond RU and EN",
+    "whole live L1 to L2 to L3 to L4 phrase-route quality",
+    "clean preservation and lattice target retention denominators",
+    "whole Space contour p99",
+    "organic false-route quality because the source journal has zero complete negative observations",
+    "process-kill fault injection around every fsync and rename",
+    "shadow installation and physical IME input"
+  ],
+  "verdict_scope": {
+    "focused_format_ingest_merge_checkpoint_rollback_cli": "PASS",
+    "ru_en_typed_layout_route": "PASS_SHADOW",
+    "additional_language_quality": "UNKNOWN",
+    "hot_l4_readout_latency": "PASS",
+    "whole_space_contour_latency": "UNKNOWN",
+    "organic_package_format_and_reader": "PASS",
+    "organic_promotion_evidence": "WATCH_NO_COMPLETE_NEGATIVE_OBSERVATIONS",
+    "runtime_authority_changed": false,
+    "installed_v1_package_changed": false,
+    "installed_v2_shadow_package": true,
+    "deployment_performed": true,
+    "managed_ibus_engine_restarted": false
+  }
+}

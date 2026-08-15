@@ -1,0 +1,190 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "architecture-document",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../l4-multilingual-scene-field-v2.md",
+      "sha256": "3d80e543f7e11da5f1f880ece1dd0d7b24a1564dcf495ee0df2c6a7c730430af",
+      "size_bytes": 11535
+    },
+    {
+      "exists": true,
+      "id": "typing-memory-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/typing_memory.rs",
+      "sha256": "a1d9d205534d89d66cec0fc07931f66fb72472ab07bd612a3d03f946d43c92ae",
+      "size_bytes": 45208
+    },
+    {
+      "exists": true,
+      "id": "usage-prior-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/usage_prior.rs",
+      "sha256": "dde647589f91bc850c462941c971a0fd7333bdc2fc70a89196f9dab4620f1a3a",
+      "size_bytes": 105629
+    },
+    {
+      "exists": true,
+      "id": "l4-model-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l4_cross_scene/model.rs",
+      "sha256": "188ee691b7ff225cd26718f1caab34189670dde5f6b413b4d309cb8066563b5e",
+      "size_bytes": 7164
+    },
+    {
+      "exists": true,
+      "id": "l4-encoder-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l4_cross_scene/encoder.rs",
+      "sha256": "cc8dfa3f2a4edf263f08d4c4fa6119a00ae5b86492e54c3771352813ebfb52d5",
+      "size_bytes": 8393
+    },
+    {
+      "exists": true,
+      "id": "l4-format-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l4_cross_scene/format.rs",
+      "sha256": "6f3e2cab41abd7ee1b44e7454d23b06b669ff188554eef182a37ec3dc9fe9169",
+      "size_bytes": 17318
+    },
+    {
+      "exists": true,
+      "id": "l4-usage-adapter-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l4_cross_scene/usage_adapter.rs",
+      "sha256": "6e7453487c6b86d5c5770bf847c8bb64910406691d6ccdc06b4516291f6e2d7b",
+      "size_bytes": 12082
+    },
+    {
+      "exists": true,
+      "id": "l4-runtime-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l4_cross_scene/runtime.rs",
+      "sha256": "9b2e65b9b71f1fe77b1ffc1d4c979667a225532c2b2ef684449455c095ae054c",
+      "size_bytes": 11396
+    },
+    {
+      "exists": true,
+      "id": "l4-rebuild-script",
+      "kind": "file",
+      "mode": "0775",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../scripts/rebuild-l4-feedback-memory.sh",
+      "sha256": "38aba64df8b22f86f9daac885335c6284c4deea1b1c13de90422d59990d02e89",
+      "size_bytes": 3031
+    },
+    {
+      "exists": true,
+      "id": "usage-journal-prefix",
+      "kind": "file",
+      "mode": "0600",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/word_usage_events.jsonl",
+      "sha256": "8d1f6f024cd89ec0d4a06ae7d175b55fdf2f5990d846b8e2ef34295370943843",
+      "size_bytes": 511930
+    },
+    {
+      "exists": true,
+      "id": "correction-journal-prefix",
+      "kind": "file",
+      "mode": "0600",
+      "path": "/home/ubu/.local/share/lay/corrections.jsonl",
+      "sha256": "e62950073ccec7d5dc6f7ea477fdf44fc1996e0d65213c1bad637dc6634f6ef6",
+      "size_bytes": 392026
+    },
+    {
+      "exists": true,
+      "id": "installed-v1-package",
+      "kind": "file",
+      "mode": "0600",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l4_cross_scene_v1.bin",
+      "sha256": "5a32cf50b94105679ec40bec7bd5c46c2937075ede864bd7961203427a6cf1b5",
+      "size_bytes": 13228
+    }
+  ],
+  "blockers": [
+    {
+      "code": "baseline_byte_length_mismatch",
+      "field": "baseline_checks[9]",
+      "message": "expected 511990 bytes, observed 511930"
+    },
+    {
+      "code": "baseline_sha256_mismatch",
+      "field": "baseline_checks[9]",
+      "message": "file SHA-256 differs"
+    },
+    {
+      "code": "test_contract_incomplete",
+      "field": "tests[6]",
+      "message": "valid kind and non-empty expected result are required"
+    },
+    {
+      "code": "test_contract_incomplete",
+      "field": "tests[12]",
+      "message": "valid kind and non-empty expected result are required"
+    },
+    {
+      "code": "runtime_comparison_test_missing",
+      "field": "runtime_comparisons[0].test_id",
+      "message": "runtime comparison requires unit, integration, or parity test"
+    }
+  ],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 12,
+    "forbidden_side_effect_kinds": [
+      "grant_unproved_v2_apply_authority",
+      "install_live_runtime",
+      "literal_surface_runtime_branch",
+      "overwrite_v1_package",
+      "restart_global_ibus",
+      "rewrite_existing_journal_prefix",
+      "second_candidate_rank_owner",
+      "synchronous_hot_path_package_rebuild",
+      "weaken_safety_or_verifier_authority"
+    ],
+    "identity_contracts": 4,
+    "invariants": 6,
+    "planned_side_effect_kinds": [
+      "append_only_schema_emission",
+      "atomic_cursor_replace",
+      "atomic_file_replace",
+      "cargo_test",
+      "filesystem_edit",
+      "graph_update",
+      "private_temporary_file",
+      "remote_read_compute"
+    ],
+    "preserved_artifacts": 12,
+    "runtime_comparisons": 1,
+    "source_checks": 1,
+    "tests": 13
+  },
+  "manifest_sha256": "756522f9ac9e55ad69b1ba4d50d021873891c9a0d4106b73ff5d92aeb2a56292",
+  "safe_to_implement": false,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "l4-runtime-forbidden-effects",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l4_cross_scene/runtime.rs",
+      "sha256": "9b2e65b9b71f1fe77b1ffc1d4c979667a225532c2b2ef684449455c095ae054c",
+      "size_bytes": 11396
+    }
+  ],
+  "task_id": "lay-l4-multilingual-scene-field-v2-2026-08-15",
+  "verdict": "BLOCKED_BEFORE_CODE"
+}

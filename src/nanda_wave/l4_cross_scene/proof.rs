@@ -2,6 +2,7 @@ use std::collections::BTreeSet;
 use std::fs;
 use std::io;
 use std::path::Path;
+use std::time::Instant;
 
 use serde::Serialize;
 
@@ -19,6 +20,8 @@ use crate::transition_relation::{TransitionOperatorKind, TransitionRelationAtoms
 use crate::typing_memory::{LayoutProjectionDirection, LayoutProjectionScope, TypingMemoryOutcome};
 
 const MAX_WORDS_PER_LANGUAGE: usize = 512;
+const HOT_READOUT_REPEATS: usize = 32;
+const HOT_READOUT_P99_LIMIT_NS: u64 = 500_000;
 
 #[derive(Clone, Debug)]
 struct ProofCase {
@@ -56,6 +59,17 @@ struct AblationScore {
     full_positive_supports: usize,
     no_context_positive_supports: usize,
     shuffled_direction_positive_supports: usize,
+}
+
+#[derive(Clone, Debug, Default, Serialize)]
+struct HotReadoutLatency {
+    samples: usize,
+    repeats: usize,
+    p50_us: f64,
+    p99_us: f64,
+    max_us: f64,
+    gate_us: u64,
+    pass: bool,
 }
 
 pub(crate) fn prove_cross_scene_word_lists(
@@ -148,6 +162,7 @@ pub(crate) fn prove_cross_scene_word_lists(
     }
     let (shuffled_sign, _) = compile_observations(&shuffled, CrossSceneCompileConfig::default());
     let ablation = evaluate_ablations(&cases, &restored, &without_anti, &shuffled_sign);
+    let hot_readout_latency = measure_hot_readout_latency(&restored, &cases);
 
     let all_classes_pass = by_class.values().all(|score| score.percent > 95.0);
     let false_automatic_projection = by_class
@@ -167,6 +182,7 @@ pub(crate) fn prove_cross_scene_word_lists(
             .is_some_and(|score| score.percent > 95.0)
     });
     let anti_ablation_pass = ablation.anti_prevented_false_supports > 0;
+    let hot_readout_latency_pass = hot_readout_latency.pass;
     let verdict = if all_classes_pass
         && separate_directions_pass
         && anti_ablation_pass
@@ -177,6 +193,7 @@ pub(crate) fn prove_cross_scene_word_lists(
         && package_roundtrip
         && runtime_evaluator_parity
         && raw_text_absent
+        && hot_readout_latency_pass
     {
         "PASS_SHADOW"
     } else {
@@ -216,7 +233,9 @@ pub(crate) fn prove_cross_scene_word_lists(
             "package_roundtrip_exact": package_roundtrip,
             "runtime_evaluator_parity": runtime_evaluator_parity,
             "raw_text_absent": raw_text_absent,
+            "hot_readout_p99_under_500_us": hot_readout_latency_pass,
         },
+        "hot_readout_latency": hot_readout_latency,
         "package": {
             "path": output,
             "bytes": package_bytes.len(),
@@ -262,6 +281,15 @@ fn build_word_observations(
                 next_receipt(receipt),
             ));
             output.push(make_observation(
+                &wrong_en,
+                &russian[index],
+                &negative_control_context(ru_context),
+                LayoutProjectionDirection::EnToRu,
+                LayoutProjectionScope::CurrentToken,
+                TypingMemoryOutcome::Reverted,
+                next_receipt(receipt),
+            ));
+            output.push(make_observation(
                 &russian[index],
                 &wrong_en,
                 context_at(russian, index + 7),
@@ -283,6 +311,15 @@ fn build_word_observations(
                 } else {
                     TypingMemoryOutcome::ConfirmedPositive
                 },
+                next_receipt(receipt),
+            ));
+            output.push(make_observation(
+                &wrong_ru,
+                &english[index],
+                &negative_control_context(en_context),
+                LayoutProjectionDirection::RuToEn,
+                LayoutProjectionScope::CurrentToken,
+                TypingMemoryOutcome::Reverted,
                 next_receipt(receipt),
             ));
             output.push(make_observation(
@@ -322,6 +359,19 @@ fn build_word_cases(
             });
             output.push(ProofCase {
                 observation: make_observation(
+                    &wrong_en,
+                    &russian[index],
+                    &negative_control_context(context_at(russian, index)),
+                    LayoutProjectionDirection::EnToRu,
+                    LayoutProjectionScope::CurrentToken,
+                    TypingMemoryOutcome::Censored,
+                    next_receipt(receipt),
+                ),
+                expected_support: false,
+                class: "whole_token_en_to_ru_same_route_negative",
+            });
+            output.push(ProofCase {
+                observation: make_observation(
                     &russian[index],
                     &wrong_en,
                     context_at(russian, index + 5),
@@ -347,6 +397,19 @@ fn build_word_cases(
                 ),
                 expected_support: true,
                 class: "whole_token_ru_to_en_positive",
+            });
+            output.push(ProofCase {
+                observation: make_observation(
+                    &wrong_ru,
+                    &english[index],
+                    &negative_control_context(context_at(english, index)),
+                    LayoutProjectionDirection::RuToEn,
+                    LayoutProjectionScope::CurrentToken,
+                    TypingMemoryOutcome::Censored,
+                    next_receipt(receipt),
+                ),
+                expected_support: false,
+                class: "whole_token_ru_to_en_same_route_negative",
             });
             output.push(ProofCase {
                 observation: make_observation(
@@ -452,6 +515,9 @@ fn make_observation(
 ) -> L4CrossSceneObservation {
     let relation =
         TransitionRelationAtoms::for_operator(from, to, TransitionOperatorKind::LayoutProjection);
+    let identity =
+        crate::typing_memory::TypingTransitionIdentity::observed(from, to, "replacement");
+    let sentence_language = crate::typing_scene::SentenceLanguageEvidence::script_only(context, to);
     L4CrossSceneObservation {
         receipt_id,
         complete_chain: outcome != TypingMemoryOutcome::Censored,
@@ -459,7 +525,8 @@ fn make_observation(
             TransitionOperatorKind::LayoutProjection,
             Some(direction),
             Some(scope),
-        ),
+        )
+        .with_scene(identity.scene, sentence_language),
         context: context.to_vec(),
         from_text: from.to_string(),
         to_text: to.to_string(),
@@ -469,6 +536,8 @@ fn make_observation(
         l3_relation_class: relation_class_from_context(context, to),
         context_signal: context_signal_from_text(context, to),
         l2_signal: L4CrossSceneL2Signal::Support,
+        sentence_language,
+        scene_symbols: identity.scene.known_symbols(),
         outcome,
     }
 }
@@ -519,6 +588,44 @@ fn evaluate_ablations(
         .without_anti_false_supports
         .saturating_sub(score.full_false_supports);
     score
+}
+
+fn measure_hot_readout_latency(
+    package: &super::model::L4CrossScenePackage,
+    cases: &[ProofCase],
+) -> HotReadoutLatency {
+    let mut samples = Vec::with_capacity(cases.len().saturating_mul(HOT_READOUT_REPEATS));
+    for _ in 0..HOT_READOUT_REPEATS {
+        for case in cases {
+            let started = Instant::now();
+            std::hint::black_box(readout(package, case.observation.input()));
+            samples.push(started.elapsed().as_nanos().min(u128::from(u64::MAX)) as u64);
+        }
+    }
+    samples.sort_unstable();
+    let p50_ns = percentile(&samples, 50);
+    let p99_ns = percentile(&samples, 99);
+    let max_ns = samples.last().copied().unwrap_or_default();
+    HotReadoutLatency {
+        samples: samples.len(),
+        repeats: HOT_READOUT_REPEATS,
+        p50_us: p50_ns as f64 / 1_000.0,
+        p99_us: p99_ns as f64 / 1_000.0,
+        max_us: max_ns as f64 / 1_000.0,
+        gate_us: HOT_READOUT_P99_LIMIT_NS / 1_000,
+        pass: !samples.is_empty() && p99_ns <= HOT_READOUT_P99_LIMIT_NS,
+    }
+}
+
+fn percentile(sorted: &[u64], percent: usize) -> u64 {
+    if sorted.is_empty() {
+        return 0;
+    }
+    let rank = sorted
+        .len()
+        .saturating_mul(percent.clamp(1, 100))
+        .div_ceil(100);
+    sorted[rank.saturating_sub(1).min(sorted.len() - 1)]
 }
 
 fn load_words(path: &Path, russian: bool) -> io::Result<LoadedWords> {
@@ -579,6 +686,18 @@ fn context_at(words: &[String], index: usize) -> &[String] {
     }
     let start = index % (words.len() - 2);
     &words[start..start + 3]
+}
+
+fn negative_control_context(context: &[String]) -> Vec<String> {
+    if context.is_empty() {
+        return Vec::new();
+    }
+    context
+        .iter()
+        .cycle()
+        .take(8)
+        .map(|token| format!("`{token}`"))
+        .collect()
 }
 
 fn opposite_layout(text: &str) -> Option<String> {
@@ -661,5 +780,36 @@ mod tests {
         let (train, heldout) = split_words(&words);
         assert_eq!(overlap_count(&train, &heldout), 0);
         assert_eq!(train.len() + heldout.len(), words.len());
+    }
+
+    #[test]
+    fn same_route_negative_controls_require_signed_evidence() {
+        let russian = "абвгдежзий"
+            .chars()
+            .map(|suffix| format!("слово{suffix}"))
+            .collect::<Vec<_>>();
+        let english = "abcdefghij"
+            .chars()
+            .map(|suffix| format!("word{suffix}"))
+            .collect::<Vec<_>>();
+        let mut receipt = 1;
+        let mut training = Vec::new();
+        build_word_observations(&russian, &english, &mut receipt, &mut training, false);
+        let mut cases = Vec::new();
+        build_word_cases(&russian, &english, &mut receipt, &mut cases);
+        let (full, _) = compile_observations(&training, CrossSceneCompileConfig::default());
+        let (without_anti, _) = compile_observations(
+            &training,
+            CrossSceneCompileConfig {
+                include_anti_centers: false,
+                ..CrossSceneCompileConfig::default()
+            },
+        );
+        let score = evaluate_ablations(&cases, &full, &without_anti, &full);
+        let positive_cases = cases.iter().filter(|case| case.expected_support).count();
+
+        assert_eq!(score.full_false_supports, 0);
+        assert_eq!(score.full_positive_supports, positive_cases);
+        assert!(score.anti_prevented_false_supports > 0);
     }
 }

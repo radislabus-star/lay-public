@@ -25,8 +25,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1786800635.1681528,
-    "ast_hash": "b324e4f12cd841c46158da0bbadb7b26",
+    "mtime": 1786816939.8624442,
+    "ast_hash": "6b440bb0c1f859a1415268675c8b007e",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
@@ -45,8 +45,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1786800635.1681528,
-    "ast_hash": "69dc4de76032e0934b3ddd0291904710",
+    "mtime": 1786816939.8624442,
+    "ast_hash": "d60cb2b1f561aceada91ba469c99a297",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -1050,8 +1050,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_nanda_wave_train.rs": {
-    "mtime": 1786745288.8155332,
-    "ast_hash": "a60d47953dcfc2ee963dd7deadbe8395",
+    "mtime": 1786812134.104735,
+    "ast_hash": "7da405e4d1013d6670e983f98cf756b1",
     "semantic_hash": ""
   },
   "src/bin/lay_ngram_corpus.rs": {
@@ -1415,8 +1415,8 @@
     "semantic_hash": ""
   },
   "src/lib.rs": {
-    "mtime": 1786642120.425044,
-    "ast_hash": "39e129b3dd68b40e71e91c75bac1ec97",
+    "mtime": 1786808487.5127676,
+    "ast_hash": "af37b0cb73e965a08195f00d597b2179",
     "semantic_hash": ""
   },
   "src/llm.rs": {
@@ -1575,8 +1575,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/mod.rs": {
-    "mtime": 1786791106.5445254,
-    "ast_hash": "07184322afaf45e03d30855c4b7d349a",
+    "mtime": 1786812135.7727396,
+    "ast_hash": "33e293fd25651639fe1a0ac4d67698ce",
     "semantic_hash": ""
   },
   "src/nanda_wave/mode.rs": {
@@ -1635,8 +1635,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/usage_prior.rs": {
-    "mtime": 1786642120.461044,
-    "ast_hash": "a8aa174f1af485cf8ffdd405cf5c3531",
+    "mtime": 1786810863.2158403,
+    "ast_hash": "317db1ee6816f577d2f9a8e229d4025e",
     "semantic_hash": ""
   },
   "src/ngram.rs": {
@@ -2125,8 +2125,8 @@
     "semantic_hash": "c5eb584efd158316a5facacb4cb0574e"
   },
   "src/typing_memory.rs": {
-    "mtime": 1786642120.4715598,
-    "ast_hash": "f2d58e4812ef439b74000af246acbb10",
+    "mtime": 1786809874.888199,
+    "ast_hash": "70255d20d92373b08724f3c78d65fb92",
     "semantic_hash": ""
   },
   "src/typing_pipeline.rs": {
@@ -2515,8 +2515,8 @@
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1786800635.167153,
-    "ast_hash": "e57f25589000206e4d1fec0f84c09221",
+    "mtime": 1786816939.8634443,
+    "ast_hash": "2fb2f35e37a6f3a372e834a88f6603a6",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -3120,8 +3120,8 @@
     "semantic_hash": ""
   },
   "src/typing_transition/decision_signals.rs": {
-    "mtime": 1786642120.474044,
-    "ast_hash": "478a3185fa4f83be09f415712dc4e971",
+    "mtime": 1786809568.2914088,
+    "ast_hash": "ff7b276fa93104e2a3f5d2a4931c8bf2",
     "semantic_hash": ""
   },
   "docs/structural_gates/lay-live-transition-gate.profile.json": {
@@ -3405,8 +3405,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/usage_prior/projection.rs": {
-    "mtime": 1786642120.462044,
-    "ast_hash": "ca0c35ac411b03edf979f13e6cd0820d",
+    "mtime": 1786809874.7791977,
+    "ast_hash": "438ba4f72d6926bf6d67ee8534277577",
     "semantic_hash": ""
   },
   "tests/test_architecture_graph_gate.py": {
@@ -3485,8 +3485,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/phase_field.rs": {
-    "mtime": 1786642120.4601543,
-    "ast_hash": "2c75dad2a448ede37eb6f40821be0317",
+    "mtime": 1786811489.902931,
+    "ast_hash": "5f965903492ecec9aa28e4e98a39899a",
     "semantic_hash": ""
   },
   "src/nanda_wave/l4_active_disambiguation.rs": {
@@ -4835,43 +4835,43 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/l4_cross_scene/compiler.rs": {
-    "mtime": 1786642120.448044,
-    "ast_hash": "d77c39ae972db7c6d4c07af728a6549a",
+    "mtime": 1786809909.0776243,
+    "ast_hash": "9b432ccf40f25b40d60e3967495aabe4",
     "semantic_hash": ""
   },
   "src/nanda_wave/l4_cross_scene/encoder.rs": {
-    "mtime": 1786642120.4493585,
-    "ast_hash": "54846d0852ce69348ae7876a53e1427b",
+    "mtime": 1786809568.2914088,
+    "ast_hash": "a47f26d3444059daa96247213531d720",
     "semantic_hash": ""
   },
   "src/nanda_wave/l4_cross_scene/format.rs": {
-    "mtime": 1786642120.4493585,
-    "ast_hash": "d2b8eb96bd9970623889352d5563aab5",
+    "mtime": 1786809874.2781916,
+    "ast_hash": "c823e71e6739f41e91407202c63568c2",
     "semantic_hash": ""
   },
   "src/nanda_wave/l4_cross_scene/mod.rs": {
-    "mtime": 1786642120.4493585,
-    "ast_hash": "3a444a9728f5a67a0bca68acaa9c75c8",
+    "mtime": 1786812113.1536782,
+    "ast_hash": "d20db517534aa3972517209ee4d7cd5c",
     "semantic_hash": ""
   },
   "src/nanda_wave/l4_cross_scene/model.rs": {
-    "mtime": 1786642120.4493585,
-    "ast_hash": "d68862209b040d11e03cdaf9098f1712",
+    "mtime": 1786809568.2904086,
+    "ast_hash": "fe351479a6a8d1c6b733c9bcc29295ff",
     "semantic_hash": ""
   },
   "src/nanda_wave/l4_cross_scene/proof.rs": {
-    "mtime": 1786642120.4493585,
-    "ast_hash": "aeac66d4cf8188bc9e2b9828b832aea9",
+    "mtime": 1786814506.6851532,
+    "ast_hash": "b25090e892245f51925d44be8234ac55",
     "semantic_hash": ""
   },
   "src/nanda_wave/l4_cross_scene/runtime.rs": {
-    "mtime": 1786642120.4493585,
-    "ast_hash": "d98f3db418a853ef50a4b833d33ffa77",
+    "mtime": 1786809874.2861917,
+    "ast_hash": "e81725a702ee0b6c231b34dc84aaf0e0",
     "semantic_hash": ""
   },
   "src/nanda_wave/l4_cross_scene/usage_adapter.rs": {
-    "mtime": 1786642120.4500442,
-    "ast_hash": "c7901abd463356150891c9b16965ca55",
+    "mtime": 1786811612.1676636,
+    "ast_hash": "77e5681377f3ccaabc3532262b0f1657",
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/L1_L11_FIRST_TOUCH_PHASE6_2026-08-02.json": {
@@ -8947,6 +8947,61 @@
   "docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/release-source-sha256-v1.txt": {
     "mtime": 1786801058.9486277,
     "ast_hash": "06d52a1cc444568878f2ea8d3c8866f8",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/preflights/L4_MULTILINGUAL_SCENE_FIELD_V2_IMPLEMENTATION_2026-08-15.json": {
+    "mtime": 1786808234.0866756,
+    "ast_hash": "4048bc086551464e0c6f01c0e3851642",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/preflights/L4_MULTILINGUAL_SCENE_FIELD_V2_ROUTE_2026-08-15.json": {
+    "mtime": 1786807825.7588968,
+    "ast_hash": "4ba5511d1acede5af9ae0cf40061cbe4",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L4_MULTILINGUAL_SCENE_FIELD_V2_IMPLEMENTATION_PREFLIGHT_2026-08-15.json": {
+    "mtime": 1786808017.1161118,
+    "ast_hash": "f1e008ee713b7cff491012d2388ae87f",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L4_MULTILINGUAL_SCENE_FIELD_V2_IMPLEMENTATION_PREFLIGHT_V2_2026-08-15.json": {
+    "mtime": 1786808242.486395,
+    "ast_hash": "e2cce73b7f6c6befd9adfa80441db101",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L4_MULTILINGUAL_SCENE_FIELD_V2_INCREMENTAL_2026-08-15.json": {
+    "mtime": 1786817668.8177114,
+    "ast_hash": "48b80bf43f7336b7e7f84d017bb85b18",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/l4_cross_scene/incremental.rs": {
+    "mtime": 1786811877.3343983,
+    "ast_hash": "9178f2f241e5bb2809cad05346a2a930",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/l4_cross_scene/merge.rs": {
+    "mtime": 1786812231.1440969,
+    "ast_hash": "7e5d4d9c8d8c2cdcdd3e3129e219f8f7",
+    "semantic_hash": ""
+  },
+  "src/nanda_wave/l4_cross_scene/segments.rs": {
+    "mtime": 1786812113.154678,
+    "ast_hash": "36b88048fef50dea612cd973f388cd72",
+    "semantic_hash": ""
+  },
+  "src/typing_scene.rs": {
+    "mtime": 1786809874.9031994,
+    "ast_hash": "b84d040f773141f52d1ee1fb9bb78752",
+    "semantic_hash": ""
+  },
+  "docs/l4-multilingual-scene-field-v2.md": {
+    "mtime": 1786818634.4457886,
+    "ast_hash": "be82b5bf06bde299909e51a44f87ebc0",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L4_MULTILINGUAL_SCENE_FIELD_V2_DEPLOYMENT_2026-08-15.json": {
+    "mtime": 1786818634.4467885,
+    "ast_hash": "8622196f0e7f5a8985b8e04bfa3efa97",
     "semantic_hash": ""
   }
 }

@@ -1,0 +1,95 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "typing-event", "role": "interface"},
+    {"id": "l1-language-fields", "role": "producer"},
+    {"id": "l2-local-field", "role": "producer"},
+    {"id": "l3-sentence-field", "role": "producer"},
+    {"id": "l4-scene-field", "role": "producer"},
+    {"id": "transition-evidence", "role": "evidence_owner"},
+    {"id": "decision-core", "role": "candidate_rank_owner"},
+    {"id": "verifier", "role": "authorization_owner"},
+    {"id": "text-mutator", "role": "mutation_owner"},
+    {"id": "causal-outcome", "role": "interface"},
+    {"id": "typing-journal-v3", "role": "observer"},
+    {"id": "l4-incremental-updater", "role": "observer"},
+    {"id": "l4-package-v2", "role": "observer"},
+    {"id": "fixed-proof-corpus", "role": "proof_owner"},
+    {"id": "l4-proof-evaluator", "role": "proof_owner"},
+    {"id": "l4-proof-receipt", "role": "proof_owner"}
+  ],
+  "edges": [
+    {"id": "exec-input-l1", "from": "typing-event", "relation": "calls", "to": "l1-language-fields", "events": ["candidate-evaluation"]},
+    {"id": "exec-l1-l2", "from": "l1-language-fields", "relation": "delegates", "to": "l2-local-field", "events": ["candidate-evaluation"]},
+    {"id": "exec-l2-l3", "from": "l2-local-field", "relation": "delegates", "to": "l3-sentence-field", "events": ["candidate-evaluation"]},
+    {"id": "exec-l3-l4", "from": "l3-sentence-field", "relation": "delegates", "to": "l4-scene-field", "events": ["candidate-evaluation"]},
+    {"id": "exec-l4-evidence", "from": "l4-scene-field", "relation": "delegates", "to": "transition-evidence", "events": ["candidate-evaluation"]},
+    {"id": "exec-evidence-decision", "from": "transition-evidence", "relation": "delegates", "to": "decision-core", "events": ["candidate-evaluation"]},
+    {"id": "exec-decision-verifier", "from": "decision-core", "relation": "delegates", "to": "verifier", "events": ["candidate-evaluation"]},
+    {"id": "exec-verifier-mutator", "from": "verifier", "relation": "delegates", "to": "text-mutator", "events": ["candidate-evaluation"]},
+
+    {"id": "auth-l1-l2", "from": "l1-language-fields", "relation": "produces_for", "to": "l2-local-field", "events": ["candidate-evaluation"]},
+    {"id": "auth-l2-l3", "from": "l2-local-field", "relation": "produces_for", "to": "l3-sentence-field", "events": ["candidate-evaluation"]},
+    {"id": "auth-l3-l4", "from": "l3-sentence-field", "relation": "produces_for", "to": "l4-scene-field", "events": ["candidate-evaluation"]},
+    {"id": "auth-l4-evidence", "from": "l4-scene-field", "relation": "produces_for", "to": "transition-evidence", "events": ["candidate-evaluation"]},
+    {"id": "auth-evidence-decision", "from": "transition-evidence", "relation": "passes_to", "to": "decision-core", "events": ["candidate-evaluation"]},
+    {"id": "auth-decision-verifier", "from": "decision-core", "relation": "passes_to", "to": "verifier", "events": ["candidate-evaluation"]},
+    {"id": "auth-verifier-mutator", "from": "verifier", "relation": "authorizes", "to": "text-mutator", "events": ["candidate-evaluation"]},
+
+    {"id": "obs-outcome-journal", "from": "causal-outcome", "relation": "observes", "to": "typing-journal-v3", "events": ["complete-causal-episode"]},
+    {"id": "obs-journal-updater", "from": "typing-journal-v3", "relation": "observes", "to": "l4-incremental-updater", "events": ["complete-causal-episode"]},
+    {"id": "obs-updater-package", "from": "l4-incremental-updater", "relation": "observes", "to": "l4-package-v2", "events": ["complete-causal-episode"]},
+
+    {"id": "proof-corpus-evaluator", "from": "fixed-proof-corpus", "relation": "proves", "to": "l4-proof-evaluator", "events": ["fixed-proof"]},
+    {"id": "proof-evaluator-receipt", "from": "l4-proof-evaluator", "relation": "proves", "to": "l4-proof-receipt", "events": ["fixed-proof"]}
+  ],
+  "routes": [
+    {
+      "id": "candidate-execution",
+      "event": "candidate-evaluation",
+      "kind": "execution",
+      "entry": "typing-event",
+      "terminal": "text-mutator",
+      "required_roles": ["interface", "producer", "evidence_owner", "candidate_rank_owner", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [
+        {"from": "typing-event", "to": "decision-core", "min": 1, "max": 1},
+        {"from": "decision-core", "to": "text-mutator", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "candidate-authority",
+      "event": "candidate-evaluation",
+      "kind": "authority",
+      "entry": "l1-language-fields",
+      "terminal": "text-mutator",
+      "required_roles": ["producer", "evidence_owner", "candidate_rank_owner", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [
+        {"from": "transition-evidence", "to": "decision-core", "min": 1, "max": 1},
+        {"from": "verifier", "to": "text-mutator", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "causal-observation",
+      "event": "complete-causal-episode",
+      "kind": "observation",
+      "entry": "causal-outcome",
+      "terminal": "l4-package-v2",
+      "required_roles": ["interface", "observer"],
+      "path_cardinality": [
+        {"from": "causal-outcome", "to": "l4-package-v2", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "fixed-proof",
+      "event": "fixed-proof",
+      "kind": "proof",
+      "entry": "fixed-proof-corpus",
+      "terminal": "l4-proof-receipt",
+      "required_roles": ["proof_owner"],
+      "path_cardinality": [
+        {"from": "fixed-proof-corpus", "to": "l4-proof-receipt", "min": 1, "max": 1}
+      ]
+    }
+  ]
+}

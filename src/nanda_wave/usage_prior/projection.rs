@@ -30,7 +30,10 @@ pub(super) struct UsageEventProjection<'a> {
 
 impl<'a> UsageEventProjection<'a> {
     pub(super) fn from_event(event: &'a UsageEvent) -> Option<Self> {
-        if event.schema == Some(super::TYPED_EVENT_SCHEMA_V2) && !event.typed_v2_is_consistent() {
+        if (event.schema == Some(super::TYPED_EVENT_SCHEMA_V2) && !event.typed_v2_is_consistent())
+            || (event.schema == Some(super::TYPED_EVENT_SCHEMA_V3)
+                && !event.typed_v3_is_consistent())
+        {
             return None;
         }
         // An automatic apply is an observation, not user acceptance. Older

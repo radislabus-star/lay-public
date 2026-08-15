@@ -15,6 +15,9 @@ use crate::typing_memory::{
     LayoutProjectionScope, TypingMemoryEvent, TypingMemoryEventKind, TypingMemoryEvidenceSource,
     TypingMemoryOperation, TypingMemoryOutcome,
 };
+use crate::typing_scene::{
+    KeyboardGeometryId, LanguageId, LayoutId, SceneIdentityEvidence, ScriptFamily,
+};
 
 mod hot;
 mod projection;
@@ -52,6 +55,7 @@ const USAGE_PERSIST_CHANNEL_CAPACITY: usize = 8192;
 #[cfg(not(test))]
 const USAGE_PERSIST_PENDING_MAX_BYTES: usize = 64 * 1024;
 const TYPED_EVENT_SCHEMA_V2: u8 = 2;
+const TYPED_EVENT_SCHEMA_V3: u8 = 3;
 
 #[derive(Debug, serde::Deserialize)]
 struct LearningCandidate {
@@ -90,6 +94,24 @@ struct UsageEvent {
     #[serde(skip_serializing_if = "Option::is_none")]
     layout_scope: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    source_language: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    target_language: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    source_layout: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    target_layout: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    source_script: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    target_script: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    keyboard_geometry: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    identity_evidence: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    sentence_language: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     outcome: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     evidence_source_code: Option<u8>,
@@ -101,6 +123,30 @@ struct UsageEvent {
     layout_direction_code: Option<u8>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     layout_scope_code: Option<u8>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    source_language_id: Option<u64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    target_language_id: Option<u64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    source_layout_id: Option<u64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    target_layout_id: Option<u64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    source_script_code: Option<u8>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    target_script_code: Option<u8>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    keyboard_geometry_id: Option<u64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    identity_evidence_code: Option<u8>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    sentence_language_id: Option<u64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    sentence_language_support_milli: Option<u16>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    sentence_language_alternative_milli: Option<u16>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    sentence_language_observed_tokens: Option<u8>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     outcome_code: Option<u8>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -129,9 +175,11 @@ struct CorrectionFeedbackReceipt {
 
 impl UsageEvent {
     fn from_typing_memory_event(event: &TypingMemoryEvent) -> Self {
+        let scene = event.identity.scene;
+        let sentence = event.sentence_language;
         Self {
             ts: unix_timestamp(),
-            schema: Some(TYPED_EVENT_SCHEMA_V2),
+            schema: Some(TYPED_EVENT_SCHEMA_V3),
             episode_id: event.episode_id.clone(),
             kind: match event.kind {
                 TypingMemoryEventKind::Typed => UsageEventKind::Typed,
@@ -160,6 +208,15 @@ impl UsageEvent {
                 .identity
                 .layout_scope
                 .map(|scope| scope.as_str().to_string()),
+            source_language: scene.source_language.known_label().map(str::to_string),
+            target_language: scene.target_language.known_label().map(str::to_string),
+            source_layout: scene.source_layout.known_label().map(str::to_string),
+            target_layout: scene.target_layout.known_label().map(str::to_string),
+            source_script: Some(scene.source_script.as_str().to_string()),
+            target_script: Some(scene.target_script.as_str().to_string()),
+            keyboard_geometry: scene.keyboard_geometry.known_label().map(str::to_string),
+            identity_evidence: Some(scene.evidence.as_str().to_string()),
+            sentence_language: sentence.language.known_label().map(str::to_string),
             outcome: Some(event.outcome.as_str().to_string()),
             evidence_source_code: Some(event.evidence_source.code()),
             operation_code: Some(event.operation.code()),
@@ -169,6 +226,24 @@ impl UsageEvent {
                 .layout_direction
                 .map(LayoutProjectionDirection::code),
             layout_scope_code: event.identity.layout_scope.map(LayoutProjectionScope::code),
+            source_language_id: (!scene.source_language.is_unknown())
+                .then_some(scene.source_language.code()),
+            target_language_id: (!scene.target_language.is_unknown())
+                .then_some(scene.target_language.code()),
+            source_layout_id: (!scene.source_layout.is_unknown())
+                .then_some(scene.source_layout.code()),
+            target_layout_id: (!scene.target_layout.is_unknown())
+                .then_some(scene.target_layout.code()),
+            source_script_code: Some(scene.source_script.code()),
+            target_script_code: Some(scene.target_script.code()),
+            keyboard_geometry_id: (!scene.keyboard_geometry.is_unknown())
+                .then_some(scene.keyboard_geometry.code()),
+            identity_evidence_code: Some(scene.evidence.code()),
+            sentence_language_id: (!sentence.language.is_unknown())
+                .then_some(sentence.language.code()),
+            sentence_language_support_milli: Some(sentence.support_milli),
+            sentence_language_alternative_milli: Some(sentence.alternative_milli),
+            sentence_language_observed_tokens: Some(sentence.observed_tokens),
             outcome_code: Some(event.outcome.code()),
             completion_edit: event.completion_edit.clone(),
             proposal: event.proposal.clone(),
@@ -213,6 +288,73 @@ impl UsageEvent {
         if self.schema != Some(TYPED_EVENT_SCHEMA_V2) {
             return false;
         }
+        self.typed_base_is_consistent()
+    }
+
+    fn typed_v3_is_consistent(&self) -> bool {
+        if self.schema != Some(TYPED_EVENT_SCHEMA_V3) || !self.typed_base_is_consistent() {
+            return false;
+        }
+        let scene_ids_ok = typed_optional_symbol_matches(
+            self.source_language_id,
+            self.source_language.as_deref(),
+            LanguageId::from_label,
+            LanguageId::code,
+        ) && typed_optional_symbol_matches(
+            self.target_language_id,
+            self.target_language.as_deref(),
+            LanguageId::from_label,
+            LanguageId::code,
+        ) && typed_optional_symbol_matches(
+            self.source_layout_id,
+            self.source_layout.as_deref(),
+            LayoutId::from_label,
+            LayoutId::code,
+        ) && typed_optional_symbol_matches(
+            self.target_layout_id,
+            self.target_layout.as_deref(),
+            LayoutId::from_label,
+            LayoutId::code,
+        ) && typed_optional_symbol_matches(
+            self.keyboard_geometry_id,
+            self.keyboard_geometry.as_deref(),
+            KeyboardGeometryId::from_label,
+            KeyboardGeometryId::code,
+        ) && typed_optional_symbol_matches(
+            self.sentence_language_id,
+            self.sentence_language.as_deref(),
+            LanguageId::from_label,
+            LanguageId::code,
+        );
+        let typed_scene_ok = typed_optional_code_matches(
+            self.source_script_code,
+            self.source_script.as_deref(),
+            ScriptFamily::from_code,
+            ScriptFamily::from_str,
+        ) && typed_optional_code_matches(
+            self.target_script_code,
+            self.target_script.as_deref(),
+            ScriptFamily::from_code,
+            ScriptFamily::from_str,
+        ) && typed_optional_code_matches(
+            self.identity_evidence_code,
+            self.identity_evidence.as_deref(),
+            SceneIdentityEvidence::from_code,
+            SceneIdentityEvidence::from_str,
+        );
+        let sentence_evidence_ok = matches!(
+            (
+                self.sentence_language_support_milli,
+                self.sentence_language_alternative_milli,
+                self.sentence_language_observed_tokens,
+            ),
+            (Some(support), Some(alternative), Some(_))
+                if support <= 1_000 && alternative <= 1_000
+        );
+        scene_ids_ok && typed_scene_ok && sentence_evidence_ok
+    }
+
+    fn typed_base_is_consistent(&self) -> bool {
         let source_ok = match (self.evidence_source_code, self.source.as_deref()) {
             (Some(code), Some(source)) => {
                 TypingMemoryEvidenceSource::from_legacy(source).code() == code
@@ -265,6 +407,19 @@ fn typed_optional_code_matches<T: PartialEq>(
 ) -> bool {
     match (code, label) {
         (Some(code), Some(label)) => from_code(code) == from_str(label),
+        (None, None) => true,
+        _ => false,
+    }
+}
+
+fn typed_optional_symbol_matches<T: Copy>(
+    code: Option<u64>,
+    label: Option<&str>,
+    from_label: impl Fn(&str) -> Option<T>,
+    to_code: impl Fn(T) -> u64,
+) -> bool {
+    match (code, label) {
+        (Some(code), Some(label)) => from_label(label).is_some_and(|value| to_code(value) == code),
         (None, None) => true,
         _ => false,
     }
@@ -462,16 +617,15 @@ pub(crate) fn record_typed_tail_if_enabled(tail: &str) {
     let Some(event) = TypingMemoryEvent::typed_tail(tail) else {
         return;
     };
-    record_typing_memory_event_if_enabled(&event);
+    record_typing_memory_episode_if_enabled(std::slice::from_ref(&event));
 }
 
 pub(crate) fn record_accepted_fix_if_enabled(from: &str, to: &str) {
     if !usage_learning_enabled() || from == to {
         return;
     }
-    for event in TypingMemoryEvent::accepted_fix(from, to) {
-        record_typing_memory_event_if_enabled(&event);
-    }
+    let events = TypingMemoryEvent::accepted_fix(from, to);
+    record_typing_memory_episode_if_enabled(&events);
     super::llmwave::record_phrase_experience("space", to);
 }
 
@@ -484,11 +638,9 @@ pub(crate) fn record_confirmed_user_correction_if_enabled(
     if !usage_learning_enabled() || (original == accepted && proposal == accepted) {
         return;
     }
-    for event in
-        TypingMemoryEvent::confirmed_user_correction(original, proposal, accepted, operation)
-    {
-        record_typing_memory_event_if_enabled(&event);
-    }
+    let events =
+        TypingMemoryEvent::confirmed_user_correction(original, proposal, accepted, operation);
+    record_typing_memory_episode_if_enabled(&events);
     super::llmwave::record_phrase_experience("space", accepted);
 }
 
@@ -501,9 +653,8 @@ pub(crate) fn record_observed_system_apply_if_enabled(
     if !usage_learning_enabled() || from == to {
         return;
     }
-    for event in TypingMemoryEvent::observed_system_apply(from, to, source, operation) {
-        record_typing_memory_event_if_enabled(&event);
-    }
+    let events = TypingMemoryEvent::observed_system_apply(from, to, source, operation);
+    record_typing_memory_episode_if_enabled(&events);
 }
 
 pub(crate) fn record_reverted_system_apply_if_enabled(
@@ -515,27 +666,24 @@ pub(crate) fn record_reverted_system_apply_if_enabled(
     if !usage_learning_enabled() || original == rejected {
         return;
     }
-    for event in TypingMemoryEvent::reverted_system_apply(original, rejected, source, operation) {
-        record_typing_memory_event_if_enabled(&event);
-    }
+    let events = TypingMemoryEvent::reverted_system_apply(original, rejected, source, operation);
+    record_typing_memory_episode_if_enabled(&events);
 }
 
 pub(crate) fn record_accepted_layout_projection_if_enabled(from: &str, to: &str) {
     if !usage_learning_enabled() || from == to {
         return;
     }
-    for event in TypingMemoryEvent::accepted_layout_projection(from, to) {
-        record_typing_memory_event_if_enabled(&event);
-    }
+    let events = TypingMemoryEvent::accepted_layout_projection(from, to);
+    record_typing_memory_episode_if_enabled(&events);
 }
 
 pub(crate) fn record_accepted_ime_if_enabled(context_tail: &str, accepted_text: &str) {
     if !usage_learning_enabled() {
         return;
     }
-    for event in TypingMemoryEvent::accepted_ime(context_tail, accepted_text) {
-        record_typing_memory_event_if_enabled(&event);
-    }
+    let events = TypingMemoryEvent::accepted_ime(context_tail, accepted_text);
+    record_typing_memory_episode_if_enabled(&events);
     let phrase = [context_tail.trim(), accepted_text.trim()]
         .into_iter()
         .filter(|part| !part.is_empty())
@@ -563,25 +711,23 @@ pub(crate) fn record_edited_ime_if_enabled(
     ) else {
         return;
     };
-    record_typing_memory_event_if_enabled(&event);
+    record_typing_memory_episode_if_enabled(std::slice::from_ref(&event));
 }
 
 pub(crate) fn record_confirmed_ime_prediction_if_enabled(context_tail: &str, predicted_text: &str) {
     if !usage_learning_enabled() {
         return;
     }
-    for event in TypingMemoryEvent::confirmed_ime_prediction(context_tail, predicted_text) {
-        record_typing_memory_event_if_enabled(&event);
-    }
+    let events = TypingMemoryEvent::confirmed_ime_prediction(context_tail, predicted_text);
+    record_typing_memory_episode_if_enabled(&events);
 }
 
 pub(crate) fn record_rejected_ime_if_enabled(context_tail: &str, rejected_text: &str) {
     if !usage_learning_enabled() {
         return;
     }
-    for event in TypingMemoryEvent::rejected_ime(context_tail, rejected_text) {
-        record_typing_memory_event_if_enabled(&event);
-    }
+    let events = TypingMemoryEvent::rejected_ime(context_tail, rejected_text);
+    record_typing_memory_episode_if_enabled(&events);
 }
 
 pub(crate) fn record_rejected_candidate_if_enabled(
@@ -593,18 +739,41 @@ pub(crate) fn record_rejected_candidate_if_enabled(
     if !usage_learning_enabled() {
         return;
     }
-    for event in
-        TypingMemoryEvent::rejected_candidate(context_tail, rejected_text, source, operation)
-    {
-        record_typing_memory_event_if_enabled(&event);
-    }
+    let events =
+        TypingMemoryEvent::rejected_candidate(context_tail, rejected_text, source, operation);
+    record_typing_memory_episode_if_enabled(&events);
 }
 
-pub(crate) fn record_typing_memory_event_if_enabled(event: &TypingMemoryEvent) {
-    if !usage_learning_enabled() {
+fn record_typing_memory_episode_if_enabled(events: &[TypingMemoryEvent]) {
+    if !usage_learning_enabled() || events.is_empty() {
         return;
     }
-    append_usage_event(UsageEvent::from_typing_memory_event(event));
+    let usage_events = events
+        .iter()
+        .map(UsageEvent::from_typing_memory_event)
+        .collect::<Vec<_>>();
+    for event in &usage_events {
+        append_usage_event(event.clone());
+    }
+    let Some(episode_id) = usage_events
+        .first()
+        .and_then(|event| event.episode_id.as_deref())
+    else {
+        return;
+    };
+    if usage_events.iter().any(|event| {
+        event.schema != Some(TYPED_EVENT_SCHEMA_V3)
+            || event.episode_id.as_deref() != Some(episode_id)
+    }) {
+        return;
+    }
+    let rows = usage_events
+        .iter()
+        .map(serde_json::to_value)
+        .collect::<Result<Vec<_>, _>>();
+    if let Ok(rows) = rows {
+        let _ = super::l4_cross_scene::enqueue_episode(rows);
+    }
 }
 
 pub(crate) fn word_usage_prior(word: &str) -> f32 {
@@ -1398,7 +1567,8 @@ fn read_last_usage_event(path: &Path) -> Option<UsageEvent> {
 }
 
 fn usage_event_payload_eq(left: &UsageEvent, right: &UsageEvent) -> bool {
-    left.episode_id == right.episode_id
+    left.schema == right.schema
+        && left.episode_id == right.episode_id
         && left.kind == right.kind
         && left.word == right.word
         && left.context == right.context
@@ -1406,6 +1576,38 @@ fn usage_event_payload_eq(left: &UsageEvent, right: &UsageEvent) -> bool {
         && left.to == right.to
         && left.source == right.source
         && left.operation == right.operation
+        && left.surface == right.surface
+        && left.operator == right.operator
+        && left.layout_direction == right.layout_direction
+        && left.layout_scope == right.layout_scope
+        && left.source_language == right.source_language
+        && left.target_language == right.target_language
+        && left.source_layout == right.source_layout
+        && left.target_layout == right.target_layout
+        && left.source_script == right.source_script
+        && left.target_script == right.target_script
+        && left.keyboard_geometry == right.keyboard_geometry
+        && left.identity_evidence == right.identity_evidence
+        && left.sentence_language == right.sentence_language
+        && left.outcome == right.outcome
+        && left.evidence_source_code == right.evidence_source_code
+        && left.operation_code == right.operation_code
+        && left.operator_code == right.operator_code
+        && left.layout_direction_code == right.layout_direction_code
+        && left.layout_scope_code == right.layout_scope_code
+        && left.source_language_id == right.source_language_id
+        && left.target_language_id == right.target_language_id
+        && left.source_layout_id == right.source_layout_id
+        && left.target_layout_id == right.target_layout_id
+        && left.source_script_code == right.source_script_code
+        && left.target_script_code == right.target_script_code
+        && left.keyboard_geometry_id == right.keyboard_geometry_id
+        && left.identity_evidence_code == right.identity_evidence_code
+        && left.sentence_language_id == right.sentence_language_id
+        && left.sentence_language_support_milli == right.sentence_language_support_milli
+        && left.sentence_language_alternative_milli == right.sentence_language_alternative_milli
+        && left.sentence_language_observed_tokens == right.sentence_language_observed_tokens
+        && left.outcome_code == right.outcome_code
         && left.completion_edit == right.completion_edit
         && left.proposal == right.proposal
 }
@@ -1487,7 +1689,7 @@ fn compact_usage_events_if_needed(path: &Path) {
         return;
     };
     let compacted = keep_jsonl_tail_bytes(&text, USAGE_EVENTS_MAX_BYTES as usize);
-    let _ = crate::private_file::write_private_text(path, &compacted);
+    let _ = crate::private_file::write_private_bytes_atomic(path, compacted.as_bytes());
 }
 
 fn read_usage_events_text(path: &Path) -> Option<String> {
@@ -1764,16 +1966,61 @@ fn keep_jsonl_tail_bytes(content: &str, max_bytes: usize) -> String {
     if content.len() <= max_bytes {
         return content.to_string();
     }
-    let start = content.len().saturating_sub(max_bytes);
-    let start = content
-        .char_indices()
-        .find_map(|(idx, _)| (idx >= start).then_some(idx))
-        .unwrap_or(start);
-    let start = content[..start]
-        .rfind('\n')
-        .map(|idx| idx + 1)
-        .unwrap_or(start);
-    content[start..].to_string()
+    #[derive(Debug)]
+    struct EpisodeGroup {
+        start: usize,
+        end: usize,
+        episode_id: Option<String>,
+    }
+
+    let mut groups = Vec::<EpisodeGroup>::new();
+    let mut offset = 0usize;
+    for line in content.split_inclusive('\n') {
+        let start = offset;
+        offset = offset.saturating_add(line.len());
+        let episode_id = serde_json::from_str::<serde_json::Value>(line.trim())
+            .ok()
+            .and_then(|value| {
+                value
+                    .get("episode_id")
+                    .and_then(serde_json::Value::as_str)
+                    .map(str::to_string)
+            });
+        let continues_episode = episode_id.is_some()
+            && groups
+                .last()
+                .is_some_and(|group| group.episode_id == episode_id);
+        if continues_episode {
+            groups.last_mut().expect("checked group").end = offset;
+        } else {
+            groups.push(EpisodeGroup {
+                start,
+                end: offset,
+                episode_id,
+            });
+        }
+    }
+    if offset < content.len() {
+        groups.push(EpisodeGroup {
+            start: offset,
+            end: content.len(),
+            episode_id: None,
+        });
+    }
+    let mut selected_start = content.len();
+    let mut selected_bytes = 0usize;
+    for group in groups.iter().rev() {
+        let group_bytes = group.end.saturating_sub(group.start);
+        if selected_bytes > 0 && selected_bytes.saturating_add(group_bytes) > max_bytes {
+            break;
+        }
+        selected_start = group.start;
+        selected_bytes = selected_bytes.saturating_add(group_bytes);
+        if selected_bytes >= max_bytes {
+            break;
+        }
+    }
+    content[selected_start..].to_string()
 }
 
 fn context_ngram_keys(context: &[String]) -> Vec<String> {
@@ -2188,12 +2435,33 @@ mod tests {
                 operator: None,
                 layout_direction: None,
                 layout_scope: None,
+                source_language: None,
+                target_language: None,
+                source_layout: None,
+                target_layout: None,
+                source_script: None,
+                target_script: None,
+                keyboard_geometry: None,
+                identity_evidence: None,
+                sentence_language: None,
                 outcome: None,
                 evidence_source_code: None,
                 operation_code: None,
                 operator_code: None,
                 layout_direction_code: None,
                 layout_scope_code: None,
+                source_language_id: None,
+                target_language_id: None,
+                source_layout_id: None,
+                target_layout_id: None,
+                source_script_code: None,
+                target_script_code: None,
+                keyboard_geometry_id: None,
+                identity_evidence_code: None,
+                sentence_language_id: None,
+                sentence_language_support_milli: None,
+                sentence_language_alternative_milli: None,
+                sentence_language_observed_tokens: None,
                 outcome_code: None,
                 completion_edit: None,
                 proposal: None,
@@ -2525,14 +2793,14 @@ mod tests {
     }
 
     #[test]
-    fn typed_v2_event_replays_the_legacy_signed_state_exactly() {
+    fn typed_v3_event_replays_the_legacy_signed_state_exactly() {
         let event = TypingMemoryEvent::accepted_layout_projection("ltkfq", "делай")
             .into_iter()
             .next()
             .expect("layout event");
         let typed = UsageEvent::from_typing_memory_event(&event);
-        assert_eq!(typed.schema, Some(TYPED_EVENT_SCHEMA_V2));
-        assert!(typed.typed_v2_is_consistent());
+        assert_eq!(typed.schema, Some(TYPED_EVENT_SCHEMA_V3));
+        assert!(typed.typed_v3_is_consistent());
 
         let mut legacy = typed.clone();
         legacy.schema = None;
@@ -2551,7 +2819,7 @@ mod tests {
 
         let encoded = serde_json::to_string(&typed).expect("encode typed event");
         let decoded: UsageEvent = serde_json::from_str(&encoded).expect("decode typed event");
-        assert!(decoded.typed_v2_is_consistent());
+        assert!(decoded.typed_v3_is_consistent());
     }
 
     #[test]
@@ -2588,7 +2856,7 @@ mod tests {
     }
 
     #[test]
-    fn malformed_typed_v2_identity_fails_closed() {
+    fn malformed_typed_v3_identity_fails_closed() {
         let event = TypingMemoryEvent::accepted_layout_projection("ltkfq", "делай")
             .into_iter()
             .next()
@@ -2596,7 +2864,7 @@ mod tests {
         let mut persisted = UsageEvent::from_typing_memory_event(&event);
         persisted.layout_direction_code = Some(LayoutProjectionDirection::RuToEn.code());
 
-        assert!(!persisted.typed_v2_is_consistent());
+        assert!(!persisted.typed_v3_is_consistent());
         assert!(UsageEventProjection::from_event(&persisted).is_none());
     }
 
@@ -2709,12 +2977,33 @@ mod tests {
             operator: None,
             layout_direction: None,
             layout_scope: None,
+            source_language: None,
+            target_language: None,
+            source_layout: None,
+            target_layout: None,
+            source_script: None,
+            target_script: None,
+            keyboard_geometry: None,
+            identity_evidence: None,
+            sentence_language: None,
             outcome: None,
             evidence_source_code: None,
             operation_code: None,
             operator_code: None,
             layout_direction_code: None,
             layout_scope_code: None,
+            source_language_id: None,
+            target_language_id: None,
+            source_layout_id: None,
+            target_layout_id: None,
+            source_script_code: None,
+            target_script_code: None,
+            keyboard_geometry_id: None,
+            identity_evidence_code: None,
+            sentence_language_id: None,
+            sentence_language_support_milli: None,
+            sentence_language_alternative_milli: None,
+            sentence_language_observed_tokens: None,
             outcome_code: None,
             completion_edit: None,
             proposal: None,
@@ -2744,12 +3033,33 @@ mod tests {
             operator: None,
             layout_direction: None,
             layout_scope: None,
+            source_language: None,
+            target_language: None,
+            source_layout: None,
+            target_layout: None,
+            source_script: None,
+            target_script: None,
+            keyboard_geometry: None,
+            identity_evidence: None,
+            sentence_language: None,
             outcome: Some("confirmed_positive".to_string()),
             evidence_source_code: None,
             operation_code: None,
             operator_code: None,
             layout_direction_code: None,
             layout_scope_code: None,
+            source_language_id: None,
+            target_language_id: None,
+            source_layout_id: None,
+            target_layout_id: None,
+            source_script_code: None,
+            target_script_code: None,
+            keyboard_geometry_id: None,
+            identity_evidence_code: None,
+            sentence_language_id: None,
+            sentence_language_support_milli: None,
+            sentence_language_alternative_milli: None,
+            sentence_language_observed_tokens: None,
             outcome_code: None,
             completion_edit: None,
             proposal: Some("новость".to_string()),
@@ -2919,5 +3229,21 @@ mod tests {
         let compacted = keep_jsonl_tail_bytes(text, 11);
 
         assert_eq!(compacted, "three\nfour\n");
+    }
+
+    #[test]
+    fn tail_compaction_never_keeps_half_of_an_episode() {
+        let b1 = "{\"episode_id\":\"b\",\"row\":1}\n";
+        let b2 = "{\"episode_id\":\"b\",\"row\":2}\n";
+        let c = "{\"episode_id\":\"c\",\"row\":1}\n";
+        let text = format!(
+            "{{\"episode_id\":\"a\",\"row\":1}}\n{{\"episode_id\":\"a\",\"row\":2}}\n{b1}{b2}{c}"
+        );
+        let budget_that_would_split_b = b2.len() + c.len();
+
+        let compacted = keep_jsonl_tail_bytes(&text, budget_that_would_split_b);
+
+        assert_eq!(compacted, c);
+        assert!(!compacted.contains("\"episode_id\":\"b\""));
     }
 }

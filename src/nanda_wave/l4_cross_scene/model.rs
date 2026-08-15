@@ -1,6 +1,9 @@
 use super::super::phase_field::{PhaseCell, PhaseCenter};
 use crate::transition_relation::TransitionOperatorKind;
 use crate::typing_memory::{LayoutProjectionDirection, LayoutProjectionScope, TypingMemoryOutcome};
+use crate::typing_scene::{
+    LanguageId, LanguageSceneIdentity, SceneSymbol, SentenceLanguageEvidence,
+};
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord)]
 #[repr(u8)]
@@ -26,6 +29,9 @@ pub(crate) struct L4CrossSceneProfileKey {
     pub(crate) operator: TransitionOperatorKind,
     pub(crate) direction: Option<LayoutProjectionDirection>,
     pub(crate) scope: Option<LayoutProjectionScope>,
+    pub(crate) scene: LanguageSceneIdentity,
+    pub(crate) sentence_language: LanguageId,
+    pub(crate) sentence_evidence_bucket: u8,
 }
 
 impl L4CrossSceneProfileKey {
@@ -38,6 +44,40 @@ impl L4CrossSceneProfileKey {
             operator,
             direction,
             scope,
+            scene: LanguageSceneIdentity::default(),
+            sentence_language: LanguageId::UNKNOWN,
+            sentence_evidence_bucket: 0,
+        }
+    }
+
+    pub(crate) const fn with_scene(
+        mut self,
+        scene: LanguageSceneIdentity,
+        sentence_language: SentenceLanguageEvidence,
+    ) -> Self {
+        self.scene = scene;
+        self.sentence_language = sentence_language.language;
+        self.sentence_evidence_bucket = sentence_language.profile_bucket();
+        self
+    }
+
+    pub(crate) const fn legacy_v1(self) -> Self {
+        Self {
+            operator: self.operator,
+            direction: self.direction,
+            scope: self.scope,
+            scene: LanguageSceneIdentity {
+                source_language: LanguageId::UNKNOWN,
+                target_language: LanguageId::UNKNOWN,
+                source_layout: crate::typing_scene::LayoutId::UNKNOWN,
+                target_layout: crate::typing_scene::LayoutId::UNKNOWN,
+                source_script: crate::typing_scene::ScriptFamily::Unknown,
+                target_script: crate::typing_scene::ScriptFamily::Unknown,
+                keyboard_geometry: crate::typing_scene::KeyboardGeometryId::UNKNOWN,
+                evidence: crate::typing_scene::SceneIdentityEvidence::Unknown,
+            },
+            sentence_language: LanguageId::UNKNOWN,
+            sentence_evidence_bucket: 0,
         }
     }
 }
@@ -54,6 +94,7 @@ pub(crate) struct L4CrossSceneInput<'a> {
     pub(crate) l3_relation_class: u64,
     pub(crate) context_signal: L4CrossSceneContextSignal,
     pub(crate) l2_signal: L4CrossSceneL2Signal,
+    pub(crate) sentence_language: SentenceLanguageEvidence,
 }
 
 #[derive(Clone, Debug)]
@@ -78,6 +119,8 @@ pub(crate) struct L4CrossSceneObservation {
     pub(crate) l3_relation_class: u64,
     pub(crate) context_signal: L4CrossSceneContextSignal,
     pub(crate) l2_signal: L4CrossSceneL2Signal,
+    pub(crate) sentence_language: SentenceLanguageEvidence,
+    pub(crate) scene_symbols: Vec<SceneSymbol>,
     pub(crate) outcome: TypingMemoryOutcome,
 }
 
@@ -94,6 +137,7 @@ impl L4CrossSceneObservation {
             l3_relation_class: self.l3_relation_class,
             context_signal: self.context_signal,
             l2_signal: self.l2_signal,
+            sentence_language: self.sentence_language,
         }
     }
 }
@@ -127,8 +171,12 @@ pub(crate) struct L4CrossScenePairProfile {
     pub(crate) observations: u32,
 }
 
-#[derive(Clone, Debug, Default, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub(crate) struct L4CrossScenePackage {
+    pub(crate) encoder_version: u32,
+    pub(crate) encoder_hash: u64,
+    pub(crate) applied_segment: u64,
+    pub(crate) symbols: Vec<SceneSymbol>,
     pub(crate) profiles: Vec<L4CrossSceneProfile>,
     pub(crate) pair_profiles: Vec<L4CrossScenePairProfile>,
     pub(crate) source_observations: u32,
@@ -138,6 +186,26 @@ pub(crate) struct L4CrossScenePackage {
     pub(crate) reverted_observations: u32,
     pub(crate) ambiguity_observations: u32,
     pub(crate) censored_observations: u32,
+}
+
+impl Default for L4CrossScenePackage {
+    fn default() -> Self {
+        Self {
+            encoder_version: super::ENCODER_VERSION,
+            encoder_hash: super::ENCODER_HASH,
+            applied_segment: 0,
+            symbols: Vec::new(),
+            profiles: Vec::new(),
+            pair_profiles: Vec::new(),
+            source_observations: 0,
+            joined_observations: 0,
+            positive_observations: 0,
+            negative_observations: 0,
+            reverted_observations: 0,
+            ambiguity_observations: 0,
+            censored_observations: 0,
+        }
+    }
 }
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
@@ -218,6 +286,7 @@ pub(crate) struct CrossSceneCompileReport {
     pub(crate) conflict_scenes: u32,
     pub(crate) profiles: u32,
     pub(crate) pair_profiles: u32,
+    pub(crate) symbols: u32,
     pub(crate) logical_center_bytes: u64,
     pub(crate) raw_text_stored: bool,
     pub(crate) runtime_authority_changed: bool,

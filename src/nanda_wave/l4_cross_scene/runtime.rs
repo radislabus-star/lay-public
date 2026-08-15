@@ -3,7 +3,7 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, OnceLock, RwLock};
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use super::encoder::encode_scene;
+use super::encoder::encode_scene_for_version;
 use super::format::read_package;
 use super::model::{
     L4CrossSceneDisposition, L4CrossSceneInput, L4CrossScenePackage, L4CrossSceneReadout,
@@ -50,10 +50,21 @@ pub(crate) fn readout(
     package: &L4CrossScenePackage,
     input: L4CrossSceneInput<'_>,
 ) -> L4CrossSceneReadout {
-    let encoded = encode_scene(input);
+    let Some(profile_key) = profile_key_for_package(package, input.profile) else {
+        return L4CrossSceneReadout {
+            package_loaded: true,
+            ..L4CrossSceneReadout::default()
+        };
+    };
+    let Some(encoded) = encode_scene_for_version(input, package.encoder_version) else {
+        return L4CrossSceneReadout {
+            package_loaded: true,
+            ..L4CrossSceneReadout::default()
+        };
+    };
     let Some(profile) = package
         .profiles
-        .binary_search_by_key(&input.profile, |profile| profile.key)
+        .binary_search_by_key(&profile_key, |profile| profile.key)
         .ok()
         .map(|index| &package.profiles[index])
     else {
@@ -71,7 +82,7 @@ pub(crate) fn readout(
     let profile_margin = positive - destructive;
     let profile_threshold = profile.threshold_micro as f32 / 1_000_000.0;
 
-    let pair = pair_readout(package, &encoded.vector, input);
+    let pair = pair_readout(package, &encoded.vector, input, profile_key);
     let pair_blocks_support = pair.present && pair.margin < -pair.threshold;
     let pair_blocks_repel = pair.present && pair.margin > pair.threshold;
     let ambiguity_peak = ambiguity.max(pair.ambiguity);
@@ -117,6 +128,17 @@ pub(crate) fn readout(
     }
 }
 
+fn profile_key_for_package(
+    package: &L4CrossScenePackage,
+    key: super::model::L4CrossSceneProfileKey,
+) -> Option<super::model::L4CrossSceneProfileKey> {
+    match (package.encoder_version, package.encoder_hash) {
+        (super::V1_ENCODER_VERSION, super::V1_ENCODER_HASH) => Some(key.legacy_v1()),
+        (super::ENCODER_VERSION, super::ENCODER_HASH) => Some(key),
+        _ => None,
+    }
+}
+
 #[derive(Clone, Copy, Debug, Default)]
 struct PairReadout {
     present: bool,
@@ -130,13 +152,14 @@ fn pair_readout(
     package: &L4CrossScenePackage,
     vector: &[crate::nanda_wave::phase_field::PhaseCell],
     input: L4CrossSceneInput<'_>,
+    profile_key: super::model::L4CrossSceneProfileKey,
 ) -> PairReadout {
     if input.candidate_relation_id == input.keep_relation_id {
         return PairReadout::default();
     }
     let low = input.candidate_relation_id.min(input.keep_relation_id);
     let high = input.candidate_relation_id.max(input.keep_relation_id);
-    let key = (input.profile, low, high);
+    let key = (profile_key, low, high);
     let Some(pair) = package
         .pair_profiles
         .binary_search_by_key(&key, |pair| {
@@ -278,6 +301,10 @@ mod tests {
             to,
             TransitionOperatorKind::LayoutProjection,
         );
+        let identity =
+            crate::typing_memory::TypingTransitionIdentity::observed(from, to, "replacement");
+        let sentence_language =
+            crate::typing_scene::SentenceLanguageEvidence::script_only(&context, to);
         L4CrossSceneObservation {
             receipt_id,
             complete_chain: true,
@@ -285,7 +312,8 @@ mod tests {
                 TransitionOperatorKind::LayoutProjection,
                 Some(LayoutProjectionDirection::EnToRu),
                 Some(LayoutProjectionScope::CurrentToken),
-            ),
+            )
+            .with_scene(identity.scene, sentence_language),
             context: context.clone(),
             from_text: from.to_string(),
             to_text: to.to_string(),
@@ -295,6 +323,8 @@ mod tests {
             l3_relation_class: relation_class_from_context(&context, to),
             context_signal: context_signal_from_text(&context, to),
             l2_signal: L4CrossSceneL2Signal::Support,
+            sentence_language,
+            scene_symbols: identity.scene.known_symbols(),
             outcome,
         }
     }

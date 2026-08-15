@@ -1,0 +1,147 @@
+{
+  "schema": "lay.deployment-receipt.v1",
+  "task_id": "lay-l4-multilingual-scene-field-v2-shadow-deployment-2026-08-15",
+  "created_at": "2026-08-15T21:12:18+03:00",
+  "branch": "codex/l1-exact-peak-search",
+  "base_head": "b8b85281ddb45557a7ecce7c81eb7c0ca5aa5a6c",
+  "release": {
+    "version": "1.0.30",
+    "remote_build_host": "e@192.168.3.94",
+    "build_command": "scripts/cargo-guard.sh build --release --bins",
+    "build_result": "PASS",
+    "build_exit_status": 0,
+    "build_elapsed_seconds": 199.21,
+    "build_peak_rss_kib": 2499724,
+    "binary_count": 10,
+    "binary_bytes": 45963568,
+    "remote_manifest": "/home/e/build/lay-l4-v2-20260815/artifacts/l4-v2-20260815/release-1.0.30-binaries.tsv",
+    "local_staging_root": "/home/ubu/.cache/lay/release-1.0.30-l4v2-shadow-20260815-210832",
+    "manifest_sha256": "493459780792f11dc4d9b55c9332675e98bac6a6c57ccdc38d8a4f6f4fad51e6",
+    "build_log_sha256": "b1cc1c7e6d42f20f23a110067a12c324ed870e80d02d6efacfe06751b69ee6c7",
+    "installed_binary_parity_passed": 10,
+    "installed_binary_parity_total": 10
+  },
+  "package": {
+    "path": "/home/ubu/.local/share/lay/nanda_wave/l4_cross_scene_v2.bin",
+    "bytes": 21445,
+    "sha256": "1a1e926c4b4c972add54ce3235b1f1527276365abe74952abb538a3132c97e3e",
+    "encoder_version": 2,
+    "encoder_hash": "0x4c344d554c544932",
+    "profiles": 26,
+    "pair_profiles": 67,
+    "symbols": 5,
+    "reader_status": "PASS",
+    "runtime_authority": "shadow_suggest_only",
+    "automatic_apply_possible": false,
+    "negative_observations": 0
+  },
+  "source_gates": {
+    "graphify_update": "PASS",
+    "cargo_fmt": "PASS",
+    "focused_l4_tests": {
+      "passed": 27,
+      "failed": 0
+    },
+    "typing_transition_authority_contract": {
+      "passed": 20,
+      "failed": 0
+    },
+    "text_mutation_monopoly_contract": {
+      "passed": 16,
+      "failed": 0
+    },
+    "cargo_check_lib_bins": "PASS",
+    "remote_gate_log_sha256": "92391baa4c11e301c432cf90a94a67b41c6675b5408440fdf4716479b9928b26",
+    "context_route_differential": {
+      "baseline_commit": "b8b85281ddb45557a7ecce7c81eb7c0ca5aa5a6c",
+      "isolated_usage_paths": true,
+      "baseline_l3": {
+        "passed": 54,
+        "failed": 2,
+        "total": 56,
+        "log": "/home/e/build/lay-l4-v2-20260815/artifacts/l4-v2-20260815/context-differential/baseline-b8b8528-l3.log",
+        "log_sha256": "c684492ba291f831449266eb29963159690a3bc6587c531ce232d3f9f4f9b39e"
+      },
+      "current_l3": {
+        "passed": 54,
+        "failed": 2,
+        "total": 56,
+        "log": "/home/e/build/lay-l4-v2-20260815/artifacts/l4-v2-20260815/context-differential/current-1.0.30-l3.log",
+        "log_sha256": "b3e869e5f49233271aa6d8748fcd6ce1914f808a44392b85a8e305b6401898de"
+      },
+      "shared_failures": [
+        "repeated_letter_collapse_beats_suffix_expansion_competitors",
+        "typed_damage_operator_coherence_beats_morphological_drift"
+      ],
+      "current_context_phase": {
+        "passed": 88,
+        "failed": 0,
+        "log_sha256": "6aff3b6f55500a0bb35a21f0d1448df2df50c2bf5ae23ca83d604c7e9412ba7e"
+      },
+      "current_l3_phrase_gate": {
+        "passed": 8,
+        "failed": 0,
+        "log_sha256": "9c92df6314d5d092a9e6e1d46cad3bc6f1a73ba72351110af4ff434cf37885bc"
+      },
+      "current_l4_hidden_state": {
+        "passed": 4,
+        "failed": 0,
+        "log_sha256": "dc1e5333b5bd53f9fbeffd559ad64b74a9362c9887051a2db81a903ad52ce6ea"
+      },
+      "regression_verdict": "PASS_NO_REGRESSION",
+      "inherited_contract_verdict": "WATCH_2_BASELINE_FAILURES"
+    },
+    "ru_en_proof_verdict": "PASS_SHADOW",
+    "ru_en_proof_report_sha256": "50ac2bcadf09f6c033a78cdba23fa9bdba9d7809268d46b28d0d2dd0faa26f50",
+    "hot_readout_p99_us": 4.061
+  },
+  "activation": {
+    "daemon_pid_before": 150902,
+    "daemon_pid_after": 428759,
+    "daemon_version": "1.0.30",
+    "daemon_sha256": "8831f3e5ffbc082f432f8638013cc24880ac20a642a31719b65141c466fff553",
+    "daemon_active": true,
+    "daemon_restart_count": 0,
+    "package_environment": "LAY_L4_CROSS_SCENE_MEMORY=/home/ubu/.local/share/lay/nanda_wave/l4_cross_scene_v2.bin",
+    "package_dropin": "/home/ubu/.config/systemd/user/lay-daemon.service.d/l4-cross-scene-v2-shadow.conf",
+    "package_dropin_sha256": "0fceb7495d838179e9996dedf861342f7fd598b688521f819f7b56126607421e",
+    "gnome_dbus_version": "1.0.30",
+    "gnome_extension_source_runtime_parity": true,
+    "global_ibus_pid_before": 3702,
+    "global_ibus_pid_after": 3702,
+    "managed_engine_pid_before": 3719399,
+    "managed_engine_pid_after": 3719399,
+    "managed_engine_restarted": false,
+    "managed_engine_active_executable_state": "pre-deployment inode mapped as deleted",
+    "managed_engine_active_sha256": "227cd51849bb85371d4f0f4f20410d81eac4f84b822984fd7d260d0a9856b562",
+    "installed_engine_sha256": "defb5a58077b55c00fada4d2f233299d9a48126abe3ac53845a357d24448dddc"
+  },
+  "rollback": {
+    "root": "/home/ubu/.local/lib/lay/rollback/1.0.29-pre-1.0.30-l4v2-shadow-20260815-210832",
+    "previous_version": "1.0.29",
+    "bytes": 99087215,
+    "files": 32,
+    "manifest_sha256": "f70dc96d8fe1f9090c4e931e8e9b6a029f0bc41f9f347531cab7d96e5db8f0e7",
+    "verified": true
+  },
+  "not_tested": [
+    "whole live L1 to L2 to L3 to L4 phrase-route quality",
+    "whole Space contour p99",
+    "physical IME behavior after deployment",
+    "managed IBus engine with the installed 1.0.30 executable",
+    "languages beyond RU and EN",
+    "live L4 authority promotion"
+  ],
+  "known_watches": [
+    "inherited L3 ranking contract has 2 failures already present at base commit b8b8528",
+    "whole live phrase-route and physical IME behavior remain unproven"
+  ],
+  "verdict": {
+    "shadow_deployment": "PASS",
+    "changed_route_regression": "PASS_NONE_OBSERVED",
+    "inherited_l3_contract": "WATCH_2_BASELINE_FAILURES",
+    "runtime_authority_changed": false,
+    "live_authority_promotion": "WATCH_NOT_AUTHORIZED",
+    "physical_ime": "WATCH_NOT_TESTED"
+  }
+}

@@ -4,7 +4,7 @@ import GLib from 'gi://GLib';
 export const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
 export const RECENT_ACTIONS_PATH = GLib.get_home_dir() + '/.local/share/lay/recent_actions.jsonl';
 export const PROJECT_DIR = GLib.get_home_dir() + '/projects/lay';
-export const APP_VERSION = '1.0.29';
+export const APP_VERSION = '1.0.30';
 export const APP_RELEASE_DATE = '2026-08-15';
 export const APP_URL = 'https://github.com/radislabus-star/lay-public';
 export const APP_ICON_NAME = 'input-keyboard-symbolic';

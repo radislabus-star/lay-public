@@ -667,13 +667,9 @@
   "665": "Namespace",
   "666": "layout_switch_policy.rs",
   "667": "admit_l3_context_delta_with_full_proof",
-  "668": "static_models.rs",
   "669": ".process_key_event",
-  "670": "normalize_ngram_word",
-  "671": "apply_short_left_word_rule",
   "672": "prove_l1_typed_edit_phase",
   "673": "Option",
-  "674": "fuzzy_known_word_candidates",
   "675": "learning_deltas",
   "676": "PathBuf",
   "677": "Self",
@@ -695,8 +691,8 @@
   "693": "Instant",
   "694": "Mutex",
   "695": "Option",
-  "696": "ManifestWriteLock",
   "697": "l2_transition_phase_shadow_readout",
   "698": "13. Standalone Full-Neighbor V13, 2026-07-30",
-  "699": ".merge"
+  "699": ".merge",
+  "702": "Value"
 }

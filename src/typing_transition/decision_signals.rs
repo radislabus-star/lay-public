@@ -465,6 +465,10 @@ fn l4_cross_scene_shadow_readout(
     );
     let context =
         crate::typing_memory::transition_context_words(&event.original, &candidate.replacement);
+    let sentence_language = crate::typing_scene::SentenceLanguageEvidence::script_only(
+        &context,
+        &candidate.replacement,
+    );
     let l2_signal = if l2.signal > 0.0 && l2.positive_milli > l2.negative_milli {
         crate::nanda_wave::l4_cross_scene::L4CrossSceneL2Signal::Support
     } else if l2.signal < 0.0 && l2.negative_milli > l2.positive_milli {
@@ -476,7 +480,8 @@ fn l4_cross_scene_shadow_readout(
         identity.operator,
         identity.layout_direction,
         identity.layout_scope,
-    );
+    )
+    .with_scene(identity.scene, sentence_language);
     let candidate_relation_id =
         crate::nanda_wave::l4_cross_scene::candidate_relation_id(relation.atoms());
     let keep_relation_id = crate::nanda_wave::l4_cross_scene::keep_relation_id();
@@ -504,6 +509,7 @@ fn l4_cross_scene_shadow_readout(
             l3_relation_class: relation_class,
             context_signal,
             l2_signal,
+            sentence_language,
         },
     )
 }

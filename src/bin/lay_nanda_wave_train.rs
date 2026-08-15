@@ -157,6 +157,32 @@ fn main() -> io::Result<()> {
         );
         return Ok(());
     }
+    if args
+        .iter()
+        .any(|arg| arg == "--l4-cross-scene-inbox-status")
+    {
+        let inbox = optional_arg_path(&args, "--l4-cross-scene-inbox-status");
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&lay::nanda_wave::l4_cross_scene_inbox_status_json(
+                inbox.as_deref(),
+            ))
+            .map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if args.iter().any(|arg| arg == "--update-l4-cross-scene") {
+        let inbox = arg_path(&args, "--inbox")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--inbox is required"))?;
+        let package = arg_path(&args, "--package")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--package is required"))?;
+        let report = lay::nanda_wave::update_l4_cross_scene_memory_from_inbox(&inbox, &package)?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
     if let Some(cases) = arg_path(&args, "--prove-l3-sentence-context") {
         let output = arg_path(&args, "--out")
             .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--out is required"))?;
@@ -1686,6 +1712,8 @@ fn print_usage() {
            --query-live-l2-context TEXT\n\
            --l3-context-phase-status [--memory PATH]\n\
            --l4-cross-scene-status PATH\n\
+           --l4-cross-scene-inbox-status [DIR]\n\
+           --update-l4-cross-scene --inbox DIR --package PACKAGE.bin\n\
            --compile-l4-cross-scene --input EVENTS.jsonl [--corrections CORRECTIONS.jsonl] --out PACKAGE.bin\n\
            --prove-l4-cross-scene --russian-words RU --english-words EN --out PACKAGE.bin\n\
 	           --prove-l1-typed-basin-implicit-forward CORPUS --memory L1.v8.bin [--heldout-per-class N]\n\
@@ -2178,6 +2206,12 @@ fn print_summary(
 fn arg_path(args: &[String], name: &str) -> Option<PathBuf> {
     args.windows(2)
         .find_map(|pair| (pair[0] == name).then(|| PathBuf::from(&pair[1])))
+}
+
+fn optional_arg_path(args: &[String], name: &str) -> Option<PathBuf> {
+    args.windows(2).find_map(|pair| {
+        (pair[0] == name && !pair[1].starts_with("--")).then(|| PathBuf::from(&pair[1]))
+    })
 }
 
 fn arg_string(args: &[String], name: &str) -> Option<String> {

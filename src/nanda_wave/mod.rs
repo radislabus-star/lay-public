@@ -1463,12 +1463,34 @@ pub fn prove_l4_cross_scene_memory(
     l4_cross_scene::prove_cross_scene_word_lists(russian_words, english_words, output)
 }
 
+/// Applies complete immutable inbox segments to a V2 package through the cold,
+/// checkpointed updater. This does not reload runtime state or change authority.
+pub fn update_l4_cross_scene_memory_from_inbox(
+    inbox: &std::path::Path,
+    package: &std::path::Path,
+) -> std::io::Result<serde_json::Value> {
+    let report = l4_cross_scene::update_package_from_inbox(
+        inbox,
+        package,
+        l4_cross_scene::CrossSceneCompileConfig::default(),
+    )?;
+    serde_json::to_value(report).map_err(std::io::Error::other)
+}
+
+pub fn l4_cross_scene_inbox_status_json(path: Option<&std::path::Path>) -> serde_json::Value {
+    l4_cross_scene::inbox_status_json(path)
+}
+
 pub fn l4_cross_scene_status_json(path: &std::path::Path) -> serde_json::Value {
     match l4_cross_scene::read_package(path) {
         Ok(package) => serde_json::json!({
             "loaded": true,
             "path": path,
             "bytes": std::fs::metadata(path).map(|value| value.len()).unwrap_or_default(),
+            "encoder_version": package.encoder_version,
+            "encoder_hash": format!("0x{:016x}", package.encoder_hash),
+            "symbols": package.symbols.len(),
+            "applied_segment": package.applied_segment,
             "profiles": package.profiles.len(),
             "pair_profiles": package.pair_profiles.len(),
             "source_observations": package.source_observations,

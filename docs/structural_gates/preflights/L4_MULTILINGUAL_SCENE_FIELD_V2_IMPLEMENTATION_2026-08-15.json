@@ -1,0 +1,174 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-l4-multilingual-scene-field-v2-2026-08-15",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "architecture-document",
+      "kind": "file",
+      "path": "../../l4-multilingual-scene-field-v2.md",
+      "expect": {"size_bytes": 12751, "sha256": "a69d3a7fa0cdd69bc8bbe5d79b2b6115b105a773c9a7322705911bc22eb0bf19", "mode": "0664"}
+    },
+    {
+      "id": "typing-memory-source",
+      "kind": "file",
+      "path": "../../../src/typing_memory.rs",
+      "expect": {"size_bytes": 45208, "sha256": "a1d9d205534d89d66cec0fc07931f66fb72472ab07bd612a3d03f946d43c92ae", "mode": "0664"}
+    },
+    {
+      "id": "usage-prior-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/usage_prior.rs",
+      "expect": {"size_bytes": 105629, "sha256": "dde647589f91bc850c462941c971a0fd7333bdc2fc70a89196f9dab4620f1a3a", "mode": "0664"}
+    },
+    {
+      "id": "l4-model-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l4_cross_scene/model.rs",
+      "expect": {"size_bytes": 7164, "sha256": "188ee691b7ff225cd26718f1caab34189670dde5f6b413b4d309cb8066563b5e", "mode": "0664"}
+    },
+    {
+      "id": "l4-encoder-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l4_cross_scene/encoder.rs",
+      "expect": {"size_bytes": 8393, "sha256": "cc8dfa3f2a4edf263f08d4c4fa6119a00ae5b86492e54c3771352813ebfb52d5", "mode": "0664"}
+    },
+    {
+      "id": "l4-format-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l4_cross_scene/format.rs",
+      "expect": {"size_bytes": 17318, "sha256": "6f3e2cab41abd7ee1b44e7454d23b06b669ff188554eef182a37ec3dc9fe9169", "mode": "0664"}
+    },
+    {
+      "id": "l4-usage-adapter-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l4_cross_scene/usage_adapter.rs",
+      "expect": {"size_bytes": 12082, "sha256": "6e7453487c6b86d5c5770bf847c8bb64910406691d6ccdc06b4516291f6e2d7b", "mode": "0664"}
+    },
+    {
+      "id": "l4-runtime-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l4_cross_scene/runtime.rs",
+      "expect": {"size_bytes": 11396, "sha256": "9b2e65b9b71f1fe77b1ffc1d4c979667a225532c2b2ef684449455c095ae054c", "mode": "0664"}
+    },
+    {
+      "id": "l4-rebuild-script",
+      "kind": "file",
+      "path": "../../../scripts/rebuild-l4-feedback-memory.sh",
+      "expect": {"size_bytes": 3031, "sha256": "38aba64df8b22f86f9daac885335c6284c4deea1b1c13de90422d59990d02e89", "mode": "0775"}
+    },
+    {
+      "id": "installed-v1-package",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l4_cross_scene_v1.bin",
+      "expect": {"size_bytes": 13228, "sha256": "5a32cf50b94105679ec40bec7bd5c46c2937075ede864bd7961203427a6cf1b5", "mode": "0600", "prefix_hex": "4c41594c34435300"}
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "edit-typed-scene-contract", "kind": "filesystem_edit"},
+      {"id": "implement-v3-event-emission", "kind": "filesystem_edit"},
+      {"id": "write-v2-candidate-package", "kind": "private_temporary_file"},
+      {"id": "run-focused-tests", "kind": "cargo_test"},
+      {"id": "run-reference-host-proof", "kind": "remote_read_compute"},
+      {"id": "update-architecture-graph", "kind": "graph_update"}
+    ],
+    "forbidden": [
+      "literal_surface_runtime_branch",
+      "second_candidate_rank_owner",
+      "weaken_safety_or_verifier_authority",
+      "rewrite_existing_journal_prefix",
+      "synchronous_hot_path_package_rebuild",
+      "overwrite_v1_package",
+      "grant_unproved_v2_apply_authority",
+      "install_live_runtime",
+      "restart_global_ibus"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "l4-runtime-forbidden-effects",
+      "path": "../../../src/nanda_wave/l4_cross_scene/runtime.rs",
+      "sha256": "9b2e65b9b71f1fe77b1ffc1d4c979667a225532c2b2ef684449455c095ae054c",
+      "forbidden_effect_patterns": [
+        {"effect": "literal_surface_runtime_branch", "regex": "(?:\\\"Apple\\\"|\\\"посмотри\\\"|\\\"работает\\\")"},
+        {"effect": "second_candidate_rank_owner", "regex": "rank_candidates_again\\("},
+        {"effect": "weaken_safety_or_verifier_authority", "regex": "bypass_(?:safety|verifier)"},
+        {"effect": "rewrite_existing_journal_prefix", "regex": "truncate_existing_usage_journal"},
+        {"effect": "synchronous_hot_path_package_rebuild", "regex": "rebuild_l4_on_key_event"},
+        {"effect": "overwrite_v1_package", "regex": "publish_v2_as_v1"},
+        {"effect": "grant_unproved_v2_apply_authority", "regex": "automatic_apply_v2_unconditionally"},
+        {"effect": "install_live_runtime", "regex": "install_l4_v2_live_runtime"},
+        {"effect": "restart_global_ibus", "regex": "(?:restart|kill|pkill).{0,40}ibus-daemon"}
+      ]
+    }
+  ],
+  "preserved_artifacts": [
+    {"id": "architecture-baseline", "path": "../../l4-multilingual-scene-field-v2.md", "policy": "append_scoped_implementation_evidence", "rollback_policy": "restore_only_agent_owned_change", "baseline_check_id": "architecture-document"},
+    {"id": "typing-memory-baseline", "path": "../../../src/typing_memory.rs", "policy": "scoped_source_change", "rollback_policy": "restore_only_agent_owned_change", "baseline_check_id": "typing-memory-source"},
+    {"id": "usage-prior-baseline", "path": "../../../src/nanda_wave/usage_prior.rs", "policy": "scoped_source_change", "rollback_policy": "restore_only_agent_owned_change", "baseline_check_id": "usage-prior-source"},
+    {"id": "l4-model-baseline", "path": "../../../src/nanda_wave/l4_cross_scene/model.rs", "policy": "scoped_source_change", "rollback_policy": "restore_only_agent_owned_change", "baseline_check_id": "l4-model-source"},
+    {"id": "l4-encoder-baseline", "path": "../../../src/nanda_wave/l4_cross_scene/encoder.rs", "policy": "scoped_source_change", "rollback_policy": "restore_only_agent_owned_change", "baseline_check_id": "l4-encoder-source"},
+    {"id": "l4-format-baseline", "path": "../../../src/nanda_wave/l4_cross_scene/format.rs", "policy": "scoped_source_change", "rollback_policy": "restore_only_agent_owned_change", "baseline_check_id": "l4-format-source"},
+    {"id": "l4-adapter-baseline", "path": "../../../src/nanda_wave/l4_cross_scene/usage_adapter.rs", "policy": "scoped_source_change", "rollback_policy": "restore_only_agent_owned_change", "baseline_check_id": "l4-usage-adapter-source"},
+    {"id": "l4-runtime-baseline", "path": "../../../src/nanda_wave/l4_cross_scene/runtime.rs", "policy": "scoped_source_change", "rollback_policy": "restore_only_agent_owned_change", "baseline_check_id": "l4-runtime-source"},
+    {"id": "l4-script-baseline", "path": "../../../scripts/rebuild-l4-feedback-memory.sh", "policy": "scoped_source_change", "rollback_policy": "restore_only_agent_owned_change", "baseline_check_id": "l4-rebuild-script"},
+    {"id": "v1-package", "path": "/home/ubu/.local/share/lay/nanda_wave/l4_cross_scene_v1.bin", "policy": "read_only_compatibility_baseline", "rollback_policy": "never_modify", "baseline_check_id": "installed-v1-package"}
+  ],
+  "state_machine": {
+    "initial_state": "BASELINE_CAPTURED",
+    "terminal_states": ["PROOF_PASS", "SOURCE_EDIT_FAILED", "CANDIDATE_BUILD_FAILED"],
+    "steps": [
+      {
+        "id": "implement-v3-and-v2",
+        "from": "BASELINE_CAPTURED",
+        "to": "SOURCE_READY",
+        "mutates": true,
+        "failure_state": "SOURCE_EDIT_FAILED",
+        "cleanup": "do_not_install_or_restart_runtime_and_keep_v1_package_untouched",
+        "preserves": ["v1-package"],
+        "test_id": "source-failure-has-no-runtime-effect"
+      },
+      {
+        "id": "build-and-validate-v2-candidate",
+        "from": "SOURCE_READY",
+        "to": "PROOF_PASS",
+        "mutates": true,
+        "failure_state": "CANDIDATE_BUILD_FAILED",
+        "cleanup": "remove_private_temporary_candidate_and_leave_installed_packages_unchanged",
+        "preserves": ["v1-package"],
+        "test_id": "candidate-build-fault-preserves-v1"
+      }
+    ]
+  },
+  "tests": [
+    {"id": "generic-identity-roundtrip", "kind": "unit", "expected": "language layout script and geometry identities roundtrip without RU/EN-only branching"},
+    {"id": "v1-reader-parity", "kind": "parity", "expected": "installed V1 package decodes to the same profiles counters and shadow recommendation"},
+    {"id": "v2-byte-roundtrip", "kind": "parity", "expected": "V2 encode decode encode is byte deterministic and validates symbol references"},
+    {"id": "typed-v3-event-parity", "kind": "parity", "expected": "V3 event producer and L4 usage reader agree on every typed scene field"},
+    {"id": "legacy-v2-adapter-parity", "kind": "parity", "expected": "valid V2 RU/EN rows remain readable without inventing unsupported language facts"},
+    {"id": "scene-encoder-parity", "kind": "parity", "expected": "compiler and runtime produce identical compact scene vectors and fingerprints"},
+    {"id": "single-rank-owner", "kind": "parity", "expected": "L4 contributes evidence to one TransitionDecisionCore and never selects or mutates independently"},
+    {"id": "complete-episode-only", "kind": "unit", "expected": "only complete causal episodes update signed L4 banks"},
+    {"id": "source-failure-has-no-runtime-effect", "kind": "fault_injection", "expected": "failed source checks leave installed binaries services journals and V1 package unchanged"},
+    {"id": "candidate-build-fault-preserves-v1", "kind": "fault_injection", "expected": "truncated or corrupt candidate V2 package is removed and V1 stays byte-identical"},
+    {"id": "runtime-continuity", "kind": "integration", "expected": "global IBus and managed input engine remain running and V1 remains the live authority"}
+  ],
+  "invariants": [
+    {"id": "identity-domains-separate", "statement": "language layout script and physical geometry remain separate typed identities", "test_id": "generic-identity-roundtrip"},
+    {"id": "old-packages-readable", "statement": "V2 implementation preserves exact V1 read behavior", "test_id": "v1-reader-parity"},
+    {"id": "journal-prefix-immutable", "statement": "migration emits a V3 suffix and never rewrites existing V1 or V2 rows", "test_id": "typed-v3-event-parity"},
+    {"id": "one-live-decision-owner", "statement": "L4 is an evidence producer and TransitionDecisionCore remains the only candidate rank owner", "test_id": "single-rank-owner"},
+    {"id": "causal-learning-only", "statement": "censored transport and incomplete episodes never become negative or positive L4 evidence", "test_id": "complete-episode-only"},
+    {"id": "publication-is-transactional", "statement": "a later deployment must publish package state and its applied segment checkpoint in one atomic artifact", "test_id": "candidate-build-fault-preserves-v1"}
+  ],
+  "identity_contracts": [
+    {"id": "typing-event-v3-identity", "producer": "TypingMemoryEvent and UsageEvent V3 serializer", "consumer": "L4 usage adapter V1 V2 V3 reader", "comparison": "all canonical scene labels typed codes outcome and episode identity", "test_id": "typed-v3-event-parity"},
+    {"id": "scene-symbol-identity", "producer": "V2 compiler symbol registry", "consumer": "V2 runtime package reader", "comparison": "domain-separated identifier canonical label and collision validation", "test_id": "v2-byte-roundtrip"},
+    {"id": "scene-vector-identity", "producer": "V2 compiler encoder", "consumer": "V2 runtime encoder", "comparison": "encoder version hash quantized cells and fingerprint", "test_id": "scene-encoder-parity"},
+    {"id": "legacy-package-identity", "producer": "existing V1 package bytes", "consumer": "version-dispatching V2 reader", "comparison": "profile keys counters centers recommendation and checksum behavior", "test_id": "v1-reader-parity"}
+  ],
+  "runtime_comparisons": []
+}

@@ -7,6 +7,10 @@
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::{SystemTime, UNIX_EPOCH};
 
+use crate::typing_scene::{
+    KeyboardGeometryId, LanguageId, LanguageSceneIdentity, LayoutId, SentenceLanguageEvidence,
+};
+
 const CONTEXT_WORDS: usize = 5;
 static NEXT_CAUSAL_EPISODE: AtomicU64 = AtomicU64::new(1);
 
@@ -220,6 +224,7 @@ pub(crate) struct TypingTransitionIdentity {
     pub(crate) operator: crate::transition_relation::TransitionOperatorKind,
     pub(crate) layout_direction: Option<LayoutProjectionDirection>,
     pub(crate) layout_scope: Option<LayoutProjectionScope>,
+    pub(crate) scene: LanguageSceneIdentity,
 }
 
 impl TypingTransitionIdentity {
@@ -236,10 +241,41 @@ impl TypingTransitionIdentity {
             } else {
                 (None, None)
             };
+        let mut scene = LanguageSceneIdentity::observed(from, to);
+        match layout_direction {
+            Some(LayoutProjectionDirection::EnToRu) => {
+                scene = scene.with_legacy_ru_en_layout(
+                    LayoutId::XKB_US,
+                    LayoutId::XKB_RU,
+                    LanguageId::RUSSIAN,
+                );
+            }
+            Some(LayoutProjectionDirection::RuToEn) => {
+                scene = scene.with_legacy_ru_en_layout(
+                    LayoutId::XKB_RU,
+                    LayoutId::XKB_US,
+                    LanguageId::ENGLISH,
+                );
+            }
+            Some(LayoutProjectionDirection::MixedToRu) => {
+                scene.target_layout = LayoutId::XKB_RU;
+                scene.target_language = LanguageId::RUSSIAN;
+                scene.keyboard_geometry = KeyboardGeometryId::PC105;
+                scene.evidence = crate::typing_scene::SceneIdentityEvidence::LegacyRuEnAdapter;
+            }
+            Some(LayoutProjectionDirection::MixedToEn) => {
+                scene.target_layout = LayoutId::XKB_US;
+                scene.target_language = LanguageId::ENGLISH;
+                scene.keyboard_geometry = KeyboardGeometryId::PC105;
+                scene.evidence = crate::typing_scene::SceneIdentityEvidence::LegacyRuEnAdapter;
+            }
+            Some(LayoutProjectionDirection::Unknown) | None => {}
+        }
         Self {
             operator,
             layout_direction,
             layout_scope,
+            scene,
         }
     }
 
@@ -248,6 +284,7 @@ impl TypingTransitionIdentity {
             operator: crate::transition_relation::TransitionOperatorKind::Other,
             layout_direction: None,
             layout_scope: None,
+            scene: LanguageSceneIdentity::default(),
         }
     }
 
@@ -256,10 +293,11 @@ impl TypingTransitionIdentity {
             operator: crate::transition_relation::TransitionOperatorKind::Other,
             layout_direction: None,
             layout_scope: None,
+            scene: LanguageSceneIdentity::default(),
         }
     }
 
-    pub(crate) fn learning_key(self) -> String {
+    pub(crate) fn learning_key(&self) -> String {
         let mut key = self.operator.as_str().to_string();
         if let (Some(direction), Some(scope)) = (self.layout_direction, self.layout_scope) {
             key.push(':');
@@ -371,6 +409,7 @@ pub(crate) struct TypingMemoryEvent {
     pub(crate) evidence_source: TypingMemoryEvidenceSource,
     pub(crate) operation: TypingMemoryOperation,
     pub(crate) identity: TypingTransitionIdentity,
+    pub(crate) sentence_language: SentenceLanguageEvidence,
     /// Stable relation shape, intentionally independent from concrete words.
     pub(crate) surface: Option<String>,
     pub(crate) completion_edit: Option<CompletionEditTrace>,
@@ -387,6 +426,7 @@ pub(crate) struct TypingMemoryEvent {
 impl TypingMemoryEvent {
     pub(crate) fn typed_tail(tail: &str) -> Option<Self> {
         let (context, word) = context_and_last_word(tail)?;
+        let sentence_language = SentenceLanguageEvidence::script_only(&context, &word);
         Some(Self {
             kind: TypingMemoryEventKind::Typed,
             feedback: TypingMemoryFeedback::Observed,
@@ -398,6 +438,7 @@ impl TypingMemoryEvent {
             evidence_source: TypingMemoryEvidenceSource::User,
             operation: TypingMemoryOperation::Typed,
             identity: TypingTransitionIdentity::typed(),
+            sentence_language,
             surface: None,
             completion_edit: None,
             episode_id: None,
@@ -552,6 +593,10 @@ impl TypingMemoryEvent {
                 &final_word,
                 operation.as_str(),
             ),
+            sentence_language: SentenceLanguageEvidence::script_only(
+                &recent_context_words(context_tail),
+                &final_word,
+            ),
             surface: Some(transition_surface_key(
                 &suggested,
                 &final_word,
@@ -670,6 +715,7 @@ fn rejected_events(
         .filter_map(|index| {
             let word = rejected_words.get(index)?.clone();
             let context = words_before_last(&rejected_words[..index]);
+            let sentence_language = SentenceLanguageEvidence::script_only(&context, rejected);
             Some(TypingMemoryEvent {
                 kind: TypingMemoryEventKind::RejectedCandidate,
                 feedback: TypingMemoryFeedback::Rejected,
@@ -685,6 +731,7 @@ fn rejected_events(
                     rejected,
                     operation.as_str(),
                 ),
+                sentence_language,
                 surface: Some(transition_surface_key(
                     original,
                     rejected,
@@ -721,6 +768,7 @@ fn accepted_events(
         .map(|index| {
             let word = to_words[index].clone();
             let context = words_before_last(&to_words[..index]);
+            let sentence_language = SentenceLanguageEvidence::script_only(&context, to);
             TypingMemoryEvent {
                 kind,
                 feedback,
@@ -732,6 +780,7 @@ fn accepted_events(
                 evidence_source: evidence_source.clone(),
                 operation: operation.clone(),
                 identity: TypingTransitionIdentity::observed(from, to, operation.as_str()),
+                sentence_language,
                 surface: Some(transition_surface_key(
                     from,
                     to,
@@ -815,6 +864,7 @@ fn ime_events(
             evidence_source: TypingMemoryEvidenceSource::Ime,
             operation: operation.clone(),
             identity,
+            sentence_language: SentenceLanguageEvidence::script_only(&context, text),
             surface: None,
             completion_edit: None,
             episode_id: Some(episode_id.clone()),

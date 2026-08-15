@@ -256,6 +256,7 @@ pub(crate) fn add_cluster(
     if let Some((index, coherence)) = best {
         if coherence >= split_coherence || centers.len() >= max_centers {
             let center = &mut centers[index];
+            center.materialize_sum();
             add_phase_vector(&mut center.sum, vector);
             center.center = phase_center_from_sum(&center.sum);
             center.compact_center = None;
@@ -317,5 +318,35 @@ mod tests {
             .sum
             .iter()
             .all(|cell| cell.re == 9.0 && cell.im == 0.0));
+    }
+
+    #[test]
+    fn decoded_center_keeps_its_weighted_history_when_updated() {
+        let mut historical = empty_vector(64);
+        add_hashed_atom(&mut historical, 11, 17, 1.0);
+        let historical = phase_center_from_sum(&historical);
+        let mut compact = Vec::with_capacity(historical.len() * 2);
+        for cell in &historical {
+            compact.push(quantize(cell.re) as u8);
+            compact.push(quantize(cell.im) as u8);
+        }
+        let expected_history = compact.clone();
+        let mut centers = vec![PhaseCenter::from_serialized(compact.into(), 0, 3)];
+
+        let mut incoming = empty_vector(64);
+        add_hashed_atom(&mut incoming, 29, 31, 1.0);
+        let incoming = phase_center_from_sum(&incoming);
+        add_cluster(&mut centers, &incoming, 1, 1.0);
+
+        assert_eq!(centers[0].support, 4);
+        assert_eq!(centers[0].sum.len(), 64);
+        for (index, cell) in centers[0].sum.iter().enumerate() {
+            let expected_re =
+                dequantize(expected_history[index * 2] as i8) * 3.0 + incoming[index].re;
+            let expected_im =
+                dequantize(expected_history[index * 2 + 1] as i8) * 3.0 + incoming[index].im;
+            assert!((cell.re - expected_re).abs() < 1e-6);
+            assert!((cell.im - expected_im).abs() < 1e-6);
+        }
     }
 }
