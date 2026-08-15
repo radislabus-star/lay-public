@@ -1,6 +1,28 @@
 use super::*;
 
 #[test]
+fn decoded_surface_pool_preserves_terminal_utf8_bytes() {
+    let surfaces = ["alpha", "бета", ""];
+    let mut pool = DecodedSurfacePool::new(surfaces.len());
+    for surface in surfaces {
+        pool.push(Some(surface));
+    }
+
+    pool.validate(surfaces.len()).expect("complete pool");
+    for (terminal_id, expected) in surfaces.into_iter().enumerate() {
+        assert_eq!(pool.get(terminal_id as u32), Some(expected));
+    }
+    assert_eq!(pool.get(surfaces.len() as u32), None);
+}
+
+#[test]
+fn decoded_surface_pool_rejects_incomplete_terminal_materialization() {
+    let mut pool = DecodedSurfacePool::new(1);
+    pool.push(None);
+    assert!(pool.validate(1).is_err());
+}
+
+#[test]
 fn candidate_birth_keeps_a_rare_budgeted_channel_frontier() {
     let mut channels: [Vec<BirthAtom>; 12] = std::array::from_fn(|_| Vec::new());
     channels[AtomChannel::CharacterGram as usize] = (0_u32..40)
@@ -90,6 +112,8 @@ fn geometry_reserve_keeps_the_nearest_basin_and_ambiguity_shell() {
         character_anchor_atoms: anchor_sequences.into_iter().flatten().collect(),
         relations: RelationStore::Eager,
         reverse_cache: Mutex::new(ReverseCache::default()),
+        typed_basin: None,
+        decoded_surface_pool: None,
     };
     let frontier = vec![
         (

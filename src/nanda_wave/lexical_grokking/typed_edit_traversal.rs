@@ -1,30 +1,45 @@
-//! Proof-only exact typed traversal over the package decoder trie.
+//! Exact typed traversal shared by proof and the V9 runtime owner.
 
+use std::borrow::Cow;
 use std::collections::{BTreeMap, BTreeSet};
+#[cfg(any(test, feature = "lexical-compiler"))]
 use std::io;
+#[cfg(any(test, feature = "lexical-compiler"))]
 use std::path::Path;
+#[cfg(any(test, feature = "lexical-compiler"))]
 use std::thread;
+#[cfg(any(test, feature = "lexical-compiler"))]
 use std::time::Instant;
 
 use serde::Serialize;
+#[cfg(any(test, feature = "lexical-compiler"))]
 use sha2::{Digest, Sha256};
 
 use crate::dict::{detect_direction, project_char, Direction};
 
 use super::atoms::normalize_lexical_surface;
+#[cfg(any(test, feature = "lexical-compiler"))]
 use super::format;
-use super::forward_decoder_index::{file_sha256, ForwardChild, ForwardDecoderIndex};
-use super::model::{DecoderNode, LexicalGrokkingPackage};
+#[cfg(any(test, feature = "lexical-compiler"))]
+use super::forward_decoder_index::file_sha256;
+use super::forward_decoder_index::{ForwardChild, ForwardDecoderIndex};
+use super::model::DecoderNode;
+#[cfg(any(test, feature = "lexical-compiler"))]
+use super::model::LexicalGrokkingPackage;
+#[cfg(any(test, feature = "lexical-compiler"))]
 use super::proof::{
     corpus_words_from_lines, prepare_fixed_heldout_cases, proof_worker_count, FixedHeldoutCase,
 };
+#[cfg(any(test, feature = "lexical-compiler"))]
 use super::runtime::LexicalGrokkingMemory;
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 const PHASE7A_CLASSES: [&str; 3] = [
     "prefix_truncation",
     "suffix_truncation",
     "punctuation_suffix",
 ];
+#[cfg(any(test, feature = "lexical-compiler"))]
 const PHASE7B_CLASSES: [&str; 7] = [
     "missing_letter",
     "extra_letter",
@@ -34,6 +49,7 @@ const PHASE7B_CLASSES: [&str; 7] = [
     "layout_projection",
     "punctuation_suffix",
 ];
+#[cfg(any(test, feature = "lexical-compiler"))]
 const PHASE7C_CLASSES: [&str; 10] = [
     "missing_letter",
     "extra_letter",
@@ -46,6 +62,7 @@ const PHASE7C_CLASSES: [&str; 10] = [
     "non_adjacent_transposition",
     "repeated_fragment",
 ];
+#[cfg(any(test, feature = "lexical-compiler"))]
 const PHASE7D_CLASSES: [&str; 13] = [
     "missing_letter",
     "extra_letter",
@@ -385,7 +402,7 @@ impl<'a> L1TypedEditTraversal<'a> {
 
         while !frontier.is_empty() {
             reorder_states(&mut frontier, schedule);
-            let mut next = BTreeSet::new();
+            let mut next = Vec::new();
             for state in frontier.drain(..) {
                 metrics.states_expanded += 1;
                 self.record_terminal_events(query, scope, state, &mut terminals, &mut metrics);
@@ -411,7 +428,7 @@ impl<'a> L1TypedEditTraversal<'a> {
                     ),
                 }
             }
-            frontier.extend(next);
+            frontier = next;
             metrics.queue_peak = metrics.queue_peak.max(frontier.len());
         }
 
@@ -429,7 +446,7 @@ impl<'a> L1TypedEditTraversal<'a> {
         state: TraversalState,
         edit: LexicalEditState,
         seen: &mut BTreeSet<TraversalState>,
-        next: &mut BTreeSet<TraversalState>,
+        next: &mut Vec<TraversalState>,
         metrics: &mut TraversalMetrics,
     ) {
         let observed = query
@@ -488,11 +505,11 @@ impl<'a> L1TypedEditTraversal<'a> {
             let Some(observed_symbol) = observed else {
                 return;
             };
-            let mut children = self.index.children(state.decoder_node).to_vec();
-            reorder_children(&mut children, schedule);
+            let children = ordered_children(self.index.children(state.decoder_node), schedule);
             metrics.decoder_edges_examined += children.len() as u64;
             for child in children
-                .into_iter()
+                .iter()
+                .copied()
                 .filter(|child| child.symbol != observed_symbol)
             {
                 self.push_state(
@@ -513,10 +530,9 @@ impl<'a> L1TypedEditTraversal<'a> {
             return;
         }
         if let LexicalEditState::SparseMultiOmissionPending { first } = edit {
-            let mut children = self.index.children(state.decoder_node).to_vec();
-            reorder_children(&mut children, schedule);
+            let children = ordered_children(self.index.children(state.decoder_node), schedule);
             metrics.decoder_edges_examined += children.len() as u64;
-            for child in children {
+            for child in children.iter().copied() {
                 self.push_state(
                     TraversalState {
                         decoder_node: child.node_id,
@@ -570,10 +586,9 @@ impl<'a> L1TypedEditTraversal<'a> {
             return;
         }
         if let LexicalEditState::TranspositionBeforeOmission { transposed_target } = edit {
-            let mut children = self.index.children(state.decoder_node).to_vec();
-            reorder_children(&mut children, schedule);
+            let children = ordered_children(self.index.children(state.decoder_node), schedule);
             metrics.decoder_edges_examined += children.len() as u64;
-            for child in children {
+            for child in children.iter().copied() {
                 self.push_state(
                     TraversalState {
                         decoder_node: child.node_id,
@@ -692,10 +707,10 @@ impl<'a> L1TypedEditTraversal<'a> {
                 if first != second {
                     metrics.decoder_edges_examined += 1;
                     if let Some(left) = self.index.child(state.decoder_node, second) {
-                        let mut omitted_children = self.index.children(left).to_vec();
-                        reorder_children(&mut omitted_children, schedule);
+                        let omitted_children =
+                            ordered_children(self.index.children(left), schedule);
                         metrics.decoder_edges_examined += omitted_children.len() as u64;
-                        for omitted in omitted_children {
+                        for omitted in omitted_children.iter().copied() {
                             metrics.decoder_edges_examined += 1;
                             if let Some(right) = self.index.child(omitted.node_id, first) {
                                 self.push_state(
@@ -721,10 +736,9 @@ impl<'a> L1TypedEditTraversal<'a> {
             }
         }
 
-        let mut children = self.index.children(state.decoder_node).to_vec();
-        reorder_children(&mut children, schedule);
+        let children = ordered_children(self.index.children(state.decoder_node), schedule);
         metrics.decoder_edges_examined += children.len() as u64;
-        for child in children {
+        for child in children.iter().copied() {
             self.push_state(
                 TraversalState {
                     decoder_node: child.node_id,
@@ -866,7 +880,7 @@ impl<'a> L1TypedEditTraversal<'a> {
         direction: LayoutDirection,
         changed: bool,
         seen: &mut BTreeSet<TraversalState>,
-        next: &mut BTreeSet<TraversalState>,
+        next: &mut Vec<TraversalState>,
         metrics: &mut TraversalMetrics,
     ) {
         let Some(&raw_symbol) = query
@@ -902,12 +916,12 @@ impl<'a> L1TypedEditTraversal<'a> {
         &self,
         state: TraversalState,
         seen: &mut BTreeSet<TraversalState>,
-        next: &mut BTreeSet<TraversalState>,
+        next: &mut Vec<TraversalState>,
         metrics: &mut TraversalMetrics,
     ) {
         metrics.states_generated += 1;
         if seen.insert(state) {
-            next.insert(state);
+            next.push(state);
         } else {
             metrics.states_deduplicated += 1;
         }
@@ -1168,6 +1182,18 @@ fn reorder_children(children: &mut [ForwardChild], schedule: TraversalSchedule) 
     }
 }
 
+fn ordered_children(
+    children: &[ForwardChild],
+    schedule: TraversalSchedule,
+) -> Cow<'_, [ForwardChild]> {
+    if schedule == TraversalSchedule::Forward {
+        return Cow::Borrowed(children);
+    }
+    let mut ordered = children.to_vec();
+    reorder_children(&mut ordered, schedule);
+    Cow::Owned(ordered)
+}
+
 fn permutation_key(mut value: u64) -> u64 {
     value ^= value >> 30;
     value = value.wrapping_mul(0xbf58_476d_1ce4_e5b9);
@@ -1176,6 +1202,7 @@ fn permutation_key(mut value: u64) -> u64 {
     value ^ (value >> 31)
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 fn direct_typed_oracle(
     package: &LexicalGrokkingPackage,
     query: &L1TypedQueryField,
@@ -1398,6 +1425,7 @@ fn direct_typed_oracle(
     Ok(events)
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 #[derive(Clone, Debug, Default, Serialize)]
 struct ClassProof {
     cases: usize,
@@ -1418,6 +1446,7 @@ struct ClassProof {
     terminal_events_max: u64,
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 #[derive(Default)]
 struct ClassAccumulator {
     cases: usize,
@@ -1429,6 +1458,7 @@ struct ClassAccumulator {
     terminal_events: Vec<u64>,
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 impl ClassAccumulator {
     fn record(&mut self, case: &FixedHeldoutCase, forward: &TraversalResult, parity: bool) {
         let target = forward.terminals.get(&case.terminal_id);
@@ -1481,6 +1511,7 @@ impl ClassAccumulator {
     }
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 fn percentile(values: &[u64], percentile: usize) -> u64 {
     if values.is_empty() {
         return 0;
@@ -1489,6 +1520,7 @@ fn percentile(values: &[u64], percentile: usize) -> u64 {
     values[index]
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 pub fn prove_l1_typed_edit_phase7a(
     corpus_path: &Path,
     package_path: &Path,
@@ -1506,6 +1538,7 @@ pub fn prove_l1_typed_edit_phase7a(
     )
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 pub fn prove_l1_typed_edit_phase7b(
     corpus_path: &Path,
     package_path: &Path,
@@ -1523,6 +1556,7 @@ pub fn prove_l1_typed_edit_phase7b(
     )
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 pub fn prove_l1_typed_edit_phase7c(
     corpus_path: &Path,
     package_path: &Path,
@@ -1540,6 +1574,7 @@ pub fn prove_l1_typed_edit_phase7c(
     )
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 pub fn prove_l1_typed_edit_phase7d(
     corpus_path: &Path,
     package_path: &Path,
@@ -1557,6 +1592,7 @@ pub fn prove_l1_typed_edit_phase7d(
     )
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 fn prove_l1_typed_edit_phase(
     corpus_path: &Path,
     package_path: &Path,
@@ -1761,6 +1797,7 @@ fn prove_l1_typed_edit_phase(
     }))
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 fn sha256_hex(bytes: &[u8]) -> String {
     format!("{:x}", Sha256::digest(bytes))
 }

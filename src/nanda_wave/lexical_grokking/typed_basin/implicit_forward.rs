@@ -1,9 +1,10 @@
 use std::collections::BTreeMap;
+use std::sync::Arc;
 
-use super::super::atoms::{encode_wave_surface, AtomChannel};
-use super::super::format;
+use super::super::atoms::AtomChannel;
 use super::super::model::{LexicalGrokkingPackage, WaveCoupling};
 use super::super::runtime::{ForwardActivation, ObservedAtom};
+use super::exact_reverse::{exact_reverse_from_occurrences, resolve_terminal_occurrences};
 use super::support::ExactSupportField;
 
 #[derive(Clone, Debug)]
@@ -17,14 +18,8 @@ pub(super) struct ImplicitForwardRelation {
 pub(super) struct ImplicitCandidate {
     pub(super) terminal_id: u32,
     pub(super) relations: Vec<ImplicitForwardRelation>,
+    pub(super) exact_reverse: Arc<[WaveCoupling]>,
     pub(super) activation: ForwardActivation,
-}
-
-#[derive(Clone, Copy, Debug)]
-struct ResolvedOccurrence {
-    atom_id: u32,
-    position: u16,
-    channel: AtomChannel,
 }
 
 pub(super) fn reconstruct_candidate(
@@ -33,27 +28,8 @@ pub(super) fn reconstruct_candidate(
     observed: &BTreeMap<u32, ObservedAtom>,
     terminal_id: u32,
 ) -> Result<ImplicitCandidate, String> {
-    let center = *package
-        .centers
-        .get(terminal_id as usize)
-        .ok_or_else(|| format!("implicit terminal is invalid: {terminal_id}"))?;
-    let surface = format::decode_center_surface(center, &package.decoder_nodes)?;
-    let mut occurrences = encode_wave_surface(&surface)
-        .into_iter()
-        .map(|atom| {
-            let atom_id = package.graph.atom_id(atom.key).ok_or_else(|| {
-                format!(
-                    "implicit center atom is absent from NGramGraph: terminal={terminal_id} channel={:?}",
-                    atom.key.channel
-                )
-            })?;
-            Ok(ResolvedOccurrence {
-                atom_id,
-                position: atom.position,
-                channel: atom.key.channel,
-            })
-        })
-        .collect::<Result<Vec<_>, String>>()?;
+    let mut occurrences = resolve_terminal_occurrences(package, terminal_id)?;
+    let exact_reverse = exact_reverse_from_occurrences(package, support, &occurrences)?;
     occurrences.sort_unstable_by_key(|item| (item.atom_id, item.position, item.channel as u8));
 
     let mut relations = Vec::new();
@@ -98,6 +74,7 @@ pub(super) fn reconstruct_candidate(
     Ok(ImplicitCandidate {
         terminal_id,
         relations,
+        exact_reverse: exact_reverse.into(),
         activation,
     })
 }
@@ -142,6 +119,7 @@ pub(super) fn candidates_equal(left: &[ImplicitCandidate], right: &[ImplicitCand
             left.terminal_id == right.terminal_id
                 && activation_equal(left.activation, right.activation)
                 && left.relations.len() == right.relations.len()
+                && left.exact_reverse.as_ref() == right.exact_reverse.as_ref()
                 && left
                     .relations
                     .iter()

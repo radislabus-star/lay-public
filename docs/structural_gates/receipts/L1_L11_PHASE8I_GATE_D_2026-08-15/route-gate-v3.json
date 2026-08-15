@@ -1,0 +1,326 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "PASS",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": true,
+  "contract": "docs/structural_gates/receipts/L1_L11_PHASE8I_GATE_D_2026-08-15/route-design-v2.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "source_root": null,
+  "node_count": 13,
+  "edge_count": 18,
+  "routes": [
+    {
+      "id": "v9-query-execution",
+      "event": "v9_query",
+      "kind": "execution",
+      "entry": "l2_bridge",
+      "via": [
+        "persistent_lattice_client",
+        "l11_service",
+        "l11_host",
+        "v9_typed_basin",
+        "exact_support",
+        "exact_settlement"
+      ],
+      "terminal": "bounded_lattice",
+      "path_count": 1,
+      "paths": [
+        [
+          "l2_bridge",
+          "persistent_lattice_client",
+          "l11_service",
+          "l11_host",
+          "v9_typed_basin",
+          "exact_support",
+          "exact_settlement",
+          "bounded_lattice"
+        ]
+      ],
+      "role_owners": {
+        "display_rank_owner": [
+          "bounded_lattice"
+        ],
+        "candidate_rank_owner": [
+          "exact_settlement"
+        ],
+        "evidence_owner": [
+          "exact_support"
+        ],
+        "orchestrator": [
+          "l11_host"
+        ],
+        "interface": [
+          "l11_service",
+          "persistent_lattice_client"
+        ],
+        "authorization_owner": [
+          "l2_bridge"
+        ],
+        "producer": [
+          "v9_typed_basin"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "l2_bridge",
+          "to": "bounded_lattice",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "l2_bridge",
+              "persistent_lattice_client",
+              "l11_service",
+              "l11_host",
+              "v9_typed_basin",
+              "exact_support",
+              "exact_settlement",
+              "bounded_lattice"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "v9-query-authority",
+      "event": "v9_query",
+      "kind": "authority",
+      "entry": "v9_typed_basin",
+      "via": [
+        "exact_support",
+        "exact_settlement",
+        "bounded_lattice"
+      ],
+      "terminal": "l2_bridge",
+      "path_count": 1,
+      "paths": [
+        [
+          "v9_typed_basin",
+          "exact_support",
+          "exact_settlement",
+          "bounded_lattice",
+          "l2_bridge"
+        ]
+      ],
+      "role_owners": {
+        "display_rank_owner": [
+          "bounded_lattice"
+        ],
+        "candidate_rank_owner": [
+          "exact_settlement"
+        ],
+        "evidence_owner": [
+          "exact_support"
+        ],
+        "authorization_owner": [
+          "l2_bridge"
+        ],
+        "producer": [
+          "v9_typed_basin"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "v9-materialization-execution",
+      "event": "v9_materialize",
+      "kind": "execution",
+      "entry": "bounded_lattice",
+      "via": [
+        "decoded_surface_pool"
+      ],
+      "terminal": "service_response",
+      "path_count": 1,
+      "paths": [
+        [
+          "bounded_lattice",
+          "decoded_surface_pool",
+          "service_response"
+        ]
+      ],
+      "role_owners": {
+        "display_rank_owner": [
+          "bounded_lattice"
+        ],
+        "producer": [
+          "decoded_surface_pool"
+        ],
+        "interface": [
+          "service_response"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "bounded_lattice",
+          "to": "service_response",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "bounded_lattice",
+              "decoded_surface_pool",
+              "service_response"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "v8-query-execution",
+      "event": "v8_query",
+      "kind": "execution",
+      "entry": "l11_service",
+      "via": [
+        "l11_host"
+      ],
+      "terminal": "legacy_v8_readout",
+      "path_count": 1,
+      "paths": [
+        [
+          "l11_service",
+          "l11_host",
+          "legacy_v8_readout"
+        ]
+      ],
+      "role_owners": {
+        "orchestrator": [
+          "l11_host"
+        ],
+        "interface": [
+          "l11_service"
+        ],
+        "producer": [
+          "legacy_v8_readout"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "l11_service",
+          "to": "legacy_v8_readout",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "l11_service",
+              "l11_host",
+              "legacy_v8_readout"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "v8-query-authority",
+      "event": "v8_query",
+      "kind": "authority",
+      "entry": "legacy_v8_readout",
+      "via": [],
+      "terminal": "l2_bridge",
+      "path_count": 1,
+      "paths": [
+        [
+          "legacy_v8_readout",
+          "l2_bridge"
+        ]
+      ],
+      "role_owners": {
+        "authorization_owner": [
+          "l2_bridge"
+        ],
+        "producer": [
+          "legacy_v8_readout"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "gate-d-proof",
+      "event": "gate_d_measurement",
+      "kind": "proof",
+      "entry": "runtime_metrics",
+      "via": [],
+      "terminal": "gate_d",
+      "path_count": 1,
+      "paths": [
+        [
+          "runtime_metrics",
+          "gate_d"
+        ]
+      ],
+      "role_owners": {
+        "proof_owner": [
+          "gate_d"
+        ],
+        "observer": [
+          "runtime_metrics"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {
+    "v9_query": {
+      "evidence_owner": [
+        "exact_support"
+      ],
+      "display_rank_owner": [
+        "bounded_lattice"
+      ],
+      "candidate_rank_owner": [
+        "exact_settlement"
+      ],
+      "mutation_owner": [],
+      "authorization_owner": [
+        "l2_bridge"
+      ],
+      "render_owner": []
+    },
+    "v8_query": {
+      "evidence_owner": [],
+      "display_rank_owner": [],
+      "candidate_rank_owner": [],
+      "mutation_owner": [],
+      "authorization_owner": [
+        "l2_bridge"
+      ],
+      "render_owner": []
+    }
+  },
+  "source_evidence": {
+    "expected": 0,
+    "verified": 0,
+    "complete": true
+  },
+  "issues": [],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": false,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

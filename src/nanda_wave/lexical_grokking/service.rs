@@ -5,6 +5,7 @@ use std::io::{self, BufRead, BufReader, Write};
 use std::os::unix::net::UnixStream;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
+use std::sync::{Mutex, OnceLock};
 use std::time::{Duration, SystemTime};
 
 use serde::{Deserialize, Serialize};
@@ -99,6 +100,99 @@ pub enum L1ServiceResponse {
     Stats { report: L1ServiceStats },
     Reload { report: L1RestorationHostStats },
     Error { message: String },
+}
+
+struct PersistentL11LatticeClient {
+    socket_path: PathBuf,
+    reader: BufReader<UnixStream>,
+}
+
+impl PersistentL11LatticeClient {
+    fn connect(socket_path: &Path, timeout: Duration) -> io::Result<Self> {
+        let stream = UnixStream::connect(socket_path)?;
+        stream.set_read_timeout(Some(timeout))?;
+        stream.set_write_timeout(Some(timeout))?;
+        Ok(Self {
+            socket_path: socket_path.to_path_buf(),
+            reader: BufReader::new(stream),
+        })
+    }
+
+    fn request_lattice(
+        &mut self,
+        surface: &str,
+        limit: usize,
+        timeout: Duration,
+    ) -> io::Result<L1ServiceResponse> {
+        {
+            let stream = self.reader.get_mut();
+            stream.set_read_timeout(Some(timeout))?;
+            stream.set_write_timeout(Some(timeout))?;
+            serde_json::to_writer(
+                &mut *stream,
+                &L1ServiceRequest::Lattice {
+                    surface: surface.to_string(),
+                    limit,
+                },
+            )
+            .map_err(io::Error::other)?;
+            stream.write_all(b"\n")?;
+            stream.flush()?;
+        }
+
+        let mut line = String::new();
+        if self.reader.read_line(&mut line)? == 0 {
+            return Err(io::Error::new(
+                io::ErrorKind::UnexpectedEof,
+                "L1.1 service closed the persistent lattice connection",
+            ));
+        }
+        serde_json::from_str(line.trim_end()).map_err(io::Error::other)
+    }
+}
+
+static PERSISTENT_L11_LATTICE_CLIENT: OnceLock<Mutex<Option<PersistentL11LatticeClient>>> =
+    OnceLock::new();
+
+fn request_l11_lattice_persistent(
+    socket_path: &Path,
+    surface: &str,
+    limit: usize,
+    timeout: Duration,
+) -> io::Result<L1ServiceResponse> {
+    let slot = PERSISTENT_L11_LATTICE_CLIENT.get_or_init(|| Mutex::new(None));
+    let mut slot = slot.lock().unwrap_or_else(|poisoned| poisoned.into_inner());
+    request_l11_lattice_with_slot(&mut slot, socket_path, surface, limit, timeout)
+}
+
+fn request_l11_lattice_with_slot(
+    slot: &mut Option<PersistentL11LatticeClient>,
+    socket_path: &Path,
+    surface: &str,
+    limit: usize,
+    timeout: Duration,
+) -> io::Result<L1ServiceResponse> {
+    let mut last_error = None;
+    for _attempt in 0..2 {
+        if slot
+            .as_ref()
+            .is_none_or(|client| client.socket_path != socket_path)
+        {
+            *slot = Some(PersistentL11LatticeClient::connect(socket_path, timeout)?);
+        }
+        let result = slot
+            .as_mut()
+            .expect("persistent L1.1 lattice client initialized")
+            .request_lattice(surface, limit, timeout);
+        match result {
+            Ok(response) => return Ok(response),
+            Err(error) => {
+                last_error = Some(error);
+                *slot = None;
+            }
+        }
+    }
+    Err(last_error.unwrap_or_else(|| io::Error::other("L1.1 lattice request failed")))
 }
 
 pub fn default_l11_socket_path() -> PathBuf {
@@ -300,14 +394,7 @@ pub fn request_l11_seed_surfaces(
     limit: usize,
     timeout: Duration,
 ) -> io::Result<Vec<L11SeedSurface>> {
-    match send_l11_service_request_with_timeout(
-        socket_path,
-        &L1ServiceRequest::Lattice {
-            surface: surface.to_string(),
-            limit,
-        },
-        Some(timeout),
-    )? {
+    match request_l11_lattice_persistent(socket_path, surface, limit, timeout)? {
         L1ServiceResponse::Lattice { mut seeds } => {
             seeds.truncate(limit);
             Ok(seeds)
@@ -518,7 +605,6 @@ fn l11_service_binary_candidates() -> Vec<PathBuf> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::sync::{Mutex, OnceLock};
 
     fn env_lock() -> std::sync::MutexGuard<'static, ()> {
         static LOCK: OnceLock<Mutex<()>> = OnceLock::new();
@@ -650,5 +736,114 @@ mod tests {
             None => env::remove_var("LAY_L11_MODEL_DIR"),
         }
         let _ = fs::remove_dir_all(root);
+    }
+
+    fn persistent_test_socket(name: &str) -> PathBuf {
+        env::temp_dir().join(format!(
+            "lay-l11-{name}-{}-{}.sock",
+            std::process::id(),
+            SystemTime::now()
+                .duration_since(SystemTime::UNIX_EPOCH)
+                .expect("time")
+                .as_nanos()
+        ))
+    }
+
+    fn read_lattice_request(stream: &UnixStream) -> L1ServiceRequest {
+        let mut reader = BufReader::new(stream.try_clone().expect("clone stream"));
+        let mut line = String::new();
+        reader.read_line(&mut line).expect("read lattice request");
+        serde_json::from_str(line.trim_end()).expect("decode lattice request")
+    }
+
+    fn write_lattice_response(stream: &mut UnixStream, surface: String) {
+        serde_json::to_writer(
+            &mut *stream,
+            &L1ServiceResponse::Lattice {
+                seeds: vec![L11SeedSurface {
+                    terminal_id: Some(7),
+                    surface,
+                    authority: false,
+                    score_milli: 1_000,
+                }],
+            },
+        )
+        .expect("encode lattice response");
+        stream.write_all(b"\n").expect("write response newline");
+        stream.flush().expect("flush lattice response");
+    }
+
+    #[test]
+    fn persistent_lattice_client_reuses_one_accepted_connection() {
+        let socket_path = persistent_test_socket("reuse");
+        let listener = std::os::unix::net::UnixListener::bind(&socket_path).expect("bind socket");
+        let server = std::thread::spawn(move || {
+            let (mut stream, _) = listener.accept().expect("accept connection");
+            let mut reader = BufReader::new(stream.try_clone().expect("clone stream"));
+            for _ in 0..2 {
+                let mut line = String::new();
+                reader.read_line(&mut line).expect("read lattice request");
+                let request: L1ServiceRequest =
+                    serde_json::from_str(line.trim_end()).expect("decode request");
+                let L1ServiceRequest::Lattice { surface, .. } = request else {
+                    panic!("persistent route accepted a mutating request");
+                };
+                write_lattice_response(&mut stream, surface);
+            }
+        });
+
+        let mut slot = None;
+        for surface in ["alpha", "beta"] {
+            let response = request_l11_lattice_with_slot(
+                &mut slot,
+                &socket_path,
+                surface,
+                8,
+                Duration::from_secs(1),
+            )
+            .expect("persistent lattice request");
+            let L1ServiceResponse::Lattice { seeds } = response else {
+                panic!("unexpected response");
+            };
+            assert_eq!(seeds[0].surface, surface);
+        }
+        server.join().expect("server thread");
+        let _ = fs::remove_file(socket_path);
+    }
+
+    #[test]
+    fn persistent_lattice_client_reconnects_once_after_transport_failure() {
+        let socket_path = persistent_test_socket("reconnect");
+        let listener = std::os::unix::net::UnixListener::bind(&socket_path).expect("bind socket");
+        let server = std::thread::spawn(move || {
+            let (first, _) = listener.accept().expect("accept failed connection");
+            assert!(matches!(
+                read_lattice_request(&first),
+                L1ServiceRequest::Lattice { .. }
+            ));
+            drop(first);
+
+            let (mut second, _) = listener.accept().expect("accept retry connection");
+            let L1ServiceRequest::Lattice { surface, .. } = read_lattice_request(&second) else {
+                panic!("retry route accepted a mutating request");
+            };
+            write_lattice_response(&mut second, surface);
+        });
+
+        let mut slot = None;
+        let response = request_l11_lattice_with_slot(
+            &mut slot,
+            &socket_path,
+            "gamma",
+            8,
+            Duration::from_secs(1),
+        )
+        .expect("single reconnect");
+        let L1ServiceResponse::Lattice { seeds } = response else {
+            panic!("unexpected response");
+        };
+        assert_eq!(seeds[0].surface, "gamma");
+        server.join().expect("server thread");
+        let _ = fs::remove_file(socket_path);
     }
 }

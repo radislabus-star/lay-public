@@ -1,0 +1,74 @@
+{
+  "schema": "lay.l1-l11.phase8i-gate-d-deployment.v1",
+  "task_id": "L1_L11_PHASE8I_GATE_D_2026-08-15",
+  "created_at": "2026-08-15T03:12:00+03:00",
+  "verdict": "LIVE_DEPLOYED_REFERENCE_PASS_LOCAL_COLD_WATCH_USER_PHYSICAL_PENDING",
+  "runtime_authority_changed": true,
+  "release": {
+    "version": "1.0.28",
+    "binary_count": 10,
+    "staging_root": "/home/ubu/.local/lib/lay/staging/1.0.28-phase8i-20260815",
+    "sha256_manifest": "/home/ubu/.local/lib/lay/staging/1.0.28-phase8i-20260815/LOCAL_SHA256SUMS",
+    "installed_root": "/home/ubu/.local/lib/lay/bin"
+  },
+  "package": {
+    "format": "V9 phase8i-exact-typed-basin",
+    "owner": "phase8i_exact_typed_basin",
+    "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.v9.bin",
+    "bytes": 77962328,
+    "sha256": "bf5a1619a89038466ef786305cf35eda5f4af5b9f12b9140f7d3cac407e2f2a7",
+    "terminal_count": 852582,
+    "candidate_sha256": "b2f7ba7a9cf5e0f7ccd1feb76d18f7f5aa60db5dfad65ca4c12d6dba0b9b3aa0"
+  },
+  "reference_gate": {
+    "host": "e@192.168.3.94",
+    "focused_parity_passed": 23,
+    "focused_parity_total": 23,
+    "production_client_p99_ms": [4.438, 4.314, 4.042, 4.146],
+    "repeat_maximum_p99_ms": [4.326, 4.130],
+    "direct_runtime_p99_ms": [3.883, 3.883, 3.878, 3.863],
+    "cold_ready_ms": 680,
+    "steady_rss_kib": 178892,
+    "peak_rss_kib": 202360,
+    "response_failures": 0,
+    "query_failures": 0,
+    "verdict": "PASS"
+  },
+  "local_pre_activation": {
+    "host_cpu": "Intel Core i7-8650U",
+    "passive_ready_ms": [1047, 1037, 1045, 1040],
+    "steady_rss_kib_range": [178920, 179108],
+    "peak_rss_kib_range": [203244, 203528],
+    "terminal_count": 852582,
+    "query_failures": 0,
+    "cold_start_verdict": "WATCH_37_TO_47_MS_ABOVE_REFERENCE_TARGET"
+  },
+  "live_activation": {
+    "daemon_pid_before": 3719354,
+    "daemon_pid_after": 3440152,
+    "l11_service_pid_before": 3719374,
+    "l11_service_pid_after": 3440215,
+    "managed_ibus_pid_before": 3719399,
+    "managed_ibus_pid_after": 3719399,
+    "global_ibus_pid_before": 3702,
+    "global_ibus_pid_after": 3702,
+    "active_ibus_engine": "lay-ime-ru",
+    "daemon_count": 1,
+    "l11_service_count": 1,
+    "service_status": "ready",
+    "journal_errors": 0,
+    "runtime_authority": "single_live_v9_service_owner"
+  },
+  "rollback": {
+    "root": "/home/ubu/.local/lib/lay/rollback/1.0.27-pre-1.0.28-phase8i-20260815-025951",
+    "previous_version": "1.0.27",
+    "previous_package_format": "V8",
+    "complete": true
+  },
+  "not_physically_tested_by_agent": [
+    "real application typing after activation",
+    "WeChat behavior after activation",
+    "autocorrection then double-Shift rollback after activation"
+  ],
+  "architecture_document": "docs/l1-l11-phase8i-gate-d-runtime.md"
+}

@@ -5,6 +5,7 @@ use std::time::Instant;
 use sha2::{Digest, Sha256};
 
 use super::super::v8::{self, V8Artifact};
+use super::super::v9;
 use super::{GrokkingCandidate, L1RestorationHost, LexicalGrokkingMemory, ReadoutMode};
 
 pub fn query_package(
@@ -41,6 +42,22 @@ pub fn inspect_package_header(package_path: &Path) -> io::Result<serde_json::Val
     let mut file = std::fs::File::open(package_path)?;
     let mut header = [0_u8; 192];
     file.read_exact(&mut header)?;
+    if v9::is_v9(&header) {
+        let loaded = v9::load(package_path).map_err(io::Error::other)?;
+        return Ok(serde_json::json!({
+            "format": "V9",
+            "corpus_fingerprint": loaded.package.corpus_hash,
+            "terminal_count": loaded.package.terminal_count(),
+            "atom_count": loaded.package.atoms.len(),
+            "package_bytes": loaded.header.file_bytes,
+            "compact_base_bytes": loaded.header.base_bytes,
+            "exact_support_overflow_atoms": loaded.header.overflow_count,
+            "maximum_exact_support": loaded.support.metrics.maximum_exact_support,
+            "checksum": loaded.header.checksum,
+            "forward_relations": 0,
+            "reverse_relations": 0,
+        }));
+    }
     if v8::is_v8(&header) {
         let artifact = V8Artifact::load(package_path).map_err(io::Error::other)?;
         let package = artifact.decode_base().map_err(io::Error::other)?;
@@ -164,12 +181,7 @@ pub fn benchmark_diverse_restoration(
         .iter()
         .map(|surface| {
             let started = Instant::now();
-            let mut candidates = memory.readout(surface, limit, ReadoutMode::Full);
-            std::hint::black_box(memory.classify_restoration(
-                surface,
-                &mut candidates,
-                memory.package.restoration_calibration,
-            ));
+            std::hint::black_box(memory.restoration_readout(surface, limit));
             started.elapsed().as_micros() as u64
         })
         .collect::<Vec<_>>();

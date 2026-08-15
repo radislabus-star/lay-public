@@ -1,8 +1,7 @@
-//! Proof-only forward view of the package decoder trie.
+//! Forward view of the package decoder trie.
 //!
 //! The package stores parent links for compact terminal-to-root decoding. This
-//! module derives the opposite direction without changing package bytes. It is
-//! compiled only for tests or the lexical compiler proof tool.
+//! module derives the opposite direction without changing package bytes.
 
 use std::fs::File;
 use std::io::{self, Read};
@@ -207,7 +206,7 @@ impl ForwardDecoderIndex {
         Ok(stats)
     }
 
-    fn resident_bytes(&self) -> usize {
+    pub(super) fn resident_bytes(&self) -> usize {
         self.child_offsets
             .capacity()
             .saturating_mul(std::mem::size_of::<u32>())

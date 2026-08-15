@@ -1,0 +1,218 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-l11-phase8i-gate-d-physical-runtime-2026-08-15",
+  "authority_bearing": true,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "phase8i-gate-c-proof",
+      "kind": "file",
+      "path": "../L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/phase-8i-gate-c-13x20000-full-v2-bounded-projection.json",
+      "expect": {"size_bytes": 583720, "sha256": "1cc06aac0b1906e21cc307204475ae2f6f71bcb4df6dc93c768404ae2df44bef", "mode": "0600"}
+    },
+    {
+      "id": "phase8i-architecture",
+      "kind": "file",
+      "path": "../../../l1-l11-typed-basin-implicit-forward-phase8i.md",
+      "expect": {"size_bytes": 62336, "sha256": "66756c52d3b7746b6d4d36528ad5e45edaf99292cb5e345279528fc034525184", "mode": "0664"}
+    },
+    {
+      "id": "gate-d-paper",
+      "kind": "file",
+      "path": "../../../l1-l11-phase8i-gate-d-runtime.md",
+      "expect": {"prefix_hex": "23204c31", "mode": "0664"}
+    },
+    {
+      "id": "gate-d-route",
+      "kind": "file",
+      "path": "route-design-v1.json",
+      "expect": {"prefix_hex": "7b0a2020", "mode": "0664"}
+    },
+    {
+      "id": "installed-v8-package",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin",
+      "expect": {"size_bytes": 190139182, "sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9", "prefix_hex": "4c41594c31563800", "mode": "0644"}
+    },
+    {
+      "id": "installed-v8-receipt",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.installed.json",
+      "expect": {"size_bytes": 505, "sha256": "6b48dd23694edc0a5c9c63509119a4684b90d2dbde776f0abf61fb8ec82744e6", "mode": "0664"}
+    },
+    {
+      "id": "installed-l11-service",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-l1.1-serve",
+      "expect": {"size_bytes": 1965944, "sha256": "e93d0743baa063b395da57e2acc329ed5f4458cf2b8f0c833288aac9bb3317b6", "mode": "0755"}
+    },
+    {
+      "id": "installed-daemon",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+      "expect": {"size_bytes": 8210072, "sha256": "ca9a574b4d6019b98d91b76ac38246943d5792661d8e0a13c93f81291f4a38c0", "mode": "0755"}
+    },
+    {
+      "id": "runtime-owner-source",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/runtime.rs",
+      "expect": {"size_bytes": 21948, "sha256": "dfd178edb6108b1c7ea421b1ae03f54c69871ba9d8e62a1ab4865345abbcb933", "mode": "0664"}
+    },
+    {
+      "id": "service-host-source",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/runtime/host.rs",
+      "expect": {"size_bytes": 19272, "sha256": "ea8752b8fd65a3307b366eaee44fba988175686766b627c097c1a8941dfe5223", "mode": "0664"}
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "add-v9-package-codec", "kind": "filesystem_edit"},
+      {"id": "promote-typed-basin-to-shared-runtime", "kind": "filesystem_edit"},
+      {"id": "build-v9-beside-v8", "kind": "filesystem_write"},
+      {"id": "run-remote-package-runtime-gates", "kind": "test_execution"},
+      {"id": "create-rollback-pair", "kind": "filesystem_write"},
+      {"id": "install-release-binaries-and-v9-receipt", "kind": "filesystem_write"},
+      {"id": "reload-l11-service", "kind": "process_reload"},
+      {"id": "restart-lay-daemon-after-service-pass", "kind": "process_restart"}
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "installed_v8_mutation",
+      "installed_v8_deletion",
+      "corpus_crystallization",
+      "local_heavy_build",
+      "pre_gate_install",
+      "pre_gate_restart",
+      "global_ibus_restart",
+      "v9_to_v8_per_request_fallback",
+      "legacy_and_typed_candidate_union",
+      "parallel_live_l1_owner",
+      "gate_threshold_change",
+      "settlement_coefficient_change",
+      "literal_case_rule",
+      "class_specific_runtime_rule"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "runtime-no-mixed-owner-baseline",
+      "path": "../../../../src/nanda_wave/lexical_grokking/runtime.rs",
+      "sha256": "dfd178edb6108b1c7ea421b1ae03f54c69871ba9d8e62a1ab4865345abbcb933",
+      "forbidden_effect_patterns": [
+        {"effect": "legacy_and_typed_candidate_union", "regex": "legacy[^;]*(extend|chain).*typed|typed[^;]*(extend|chain).*legacy"},
+        {"effect": "v9_to_v8_per_request_fallback", "regex": "v9[^;]*(or_else|unwrap_or_else)[^;]*v8"}
+      ]
+    },
+    {
+      "id": "host-no-restart-baseline",
+      "path": "../../../../src/nanda_wave/lexical_grokking/runtime/host.rs",
+      "sha256": "ea8752b8fd65a3307b366eaee44fba988175686766b627c097c1a8941dfe5223",
+      "forbidden_effect_patterns": [
+        {"effect": "global_ibus_restart", "regex": "ibus[^;]*(restart|exit|kill)"},
+        {"effect": "pre_gate_restart", "regex": "systemctl|Command::new[^;]*(kill|pkill)"}
+      ]
+    }
+  ],
+  "state_machine": {
+    "initial_state": "PHASE8I_C_PASS",
+    "terminal_states": ["DEPLOYED", "DESIGN_REJECTED", "PACKAGE_REJECTED", "RUNTIME_REJECTED", "DEPLOY_REJECTED", "ROLLED_BACK"],
+    "steps": [
+      {
+        "id": "implement-v9-and-single-runtime-owner",
+        "from": "PHASE8I_C_PASS",
+        "to": "GATE_D_IMPLEMENTED",
+        "mutates": true,
+        "failure_state": "DESIGN_REJECTED",
+        "cleanup": "retain source diff and failed evidence; do not build or install a package",
+        "preserves": ["accepted-gate-c", "installed-v8", "installed-binaries"],
+        "test_id": "implementation-failure"
+      },
+      {
+        "id": "build-and-roundtrip-v9",
+        "from": "GATE_D_IMPLEMENTED",
+        "to": "V9_ROUNDTRIP_PASS",
+        "mutates": true,
+        "failure_state": "PACKAGE_REJECTED",
+        "cleanup": "remove only the partial V9 temporary; retain V8 and all installed files",
+        "preserves": ["accepted-gate-c", "installed-v8", "installed-binaries"],
+        "test_id": "package-failure"
+      },
+      {
+        "id": "run-parity-latency-rss-and-prefix-gates",
+        "from": "V9_ROUNDTRIP_PASS",
+        "to": "GATE_D_PASS",
+        "mutates": true,
+        "failure_state": "RUNTIME_REJECTED",
+        "cleanup": "retain rejected receipts; do not create an installed receipt or restart runtime",
+        "preserves": ["accepted-gate-c", "installed-v8", "installed-binaries"],
+        "test_id": "runtime-gate-failure"
+      },
+      {
+        "id": "install-and-atomically-flip-service",
+        "from": "GATE_D_PASS",
+        "to": "DEPLOYED",
+        "mutates": true,
+        "failure_state": "DEPLOY_REJECTED",
+        "cleanup": "restore the pinned binary and package receipt pair, start the prior daemon, and verify V8 health",
+        "preserves": ["accepted-gate-c", "installed-v8", "installed-binaries"],
+        "test_id": "deploy-failure"
+      },
+      {
+        "id": "explicit-rollback",
+        "from": "DEPLOY_REJECTED",
+        "to": "ROLLED_BACK",
+        "mutates": true,
+        "failure_state": "DEPLOY_REJECTED",
+        "cleanup": "leave rollback evidence and avoid further process mutation",
+        "preserves": ["accepted-gate-c", "installed-v8", "installed-binaries"],
+        "test_id": "rollback-failure"
+      }
+    ]
+  },
+  "preserved_artifacts": [
+    {"id": "accepted-gate-c", "path": "../L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/phase-8i-gate-c-13x20000-full-v2-bounded-projection.json", "policy": "byte_identical", "rollback_policy": "must remain byte-identical", "baseline_check_id": "phase8i-gate-c-proof"},
+    {"id": "installed-v8", "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin", "policy": "byte_identical", "rollback_policy": "remain installed and selectable", "baseline_check_id": "installed-v8-package"},
+    {"id": "installed-binaries", "path": "/home/ubu/.local/lib/lay/bin", "policy": "copy_before_replace", "rollback_policy": "restore exact pinned service and daemon bytes", "baseline_check_id": "installed-l11-service"}
+  ],
+  "identity_contracts": [
+    {"id": "support-codec-identity", "producer": "V9 package builder exact support", "consumer": "V9 runtime exact support", "comparison": "all AtomIds and u32 support values exact", "test_id": "v9-support-roundtrip"},
+    {"id": "gate-c-runtime-identity", "producer": "accepted Gate C exact typed basin", "consumer": "V9 runtime typed basin", "comparison": "candidate bytes and Winner Tied ABSTAIN readout exact", "test_id": "gate-c-runtime-parity"},
+    {"id": "remote-local-artifact-identity", "producer": "remote release and package artifacts", "consumer": "locally installed artifacts", "comparison": "SHA-256 byte identity", "test_id": "remote-local-sha-parity"}
+  ],
+  "runtime_comparisons": [
+    {
+      "id": "service-before-after",
+      "source": "lay-l1.1 service health and stats",
+      "comparison": "stable_service_contract",
+      "reason": "package owner changes while transport and cardinality remain stable",
+      "stable_fields": ["status", "terminal_count", "manifest_generation", "single_service_process"],
+      "expected_to_change_fields": ["package_path", "package_bytes", "requests_served", "uptime_ms", "pid"],
+      "observed_not_compared_fields": ["scheduler_timing", "kernel_page_residency"],
+      "test_id": "service-flip-health"
+    }
+  ],
+  "invariants": [
+    {"id": "one-v9-query-owner", "statement": "one V9 query executes exactly one typed-basin settlement and no legacy readout", "test_id": "single-owner-route"},
+    {"id": "full-authority-before-bound", "statement": "bounded transport cannot manufacture full-field authority", "test_id": "authority-projection-parity"},
+    {"id": "old-pair-preserved", "statement": "accepted V8 package and prior binaries remain rollback-capable", "test_id": "rollback-pair-parity"},
+    {"id": "gate-d-conjunctive", "statement": "deployment is admitted only after package parity latency RSS prefix and service gates pass", "test_id": "deployment-admission-gate"}
+  ],
+  "tests": [
+    {"id": "implementation-failure", "kind": "fault_injection", "expected": "DESIGN_REJECTED with no package or runtime mutation"},
+    {"id": "package-failure", "kind": "fault_injection", "expected": "PACKAGE_REJECTED and only partial V9 temporary removed"},
+    {"id": "runtime-gate-failure", "kind": "fault_injection", "expected": "RUNTIME_REJECTED with installed V8 still active"},
+    {"id": "deploy-failure", "kind": "fault_injection", "expected": "prior package and binary pair restored and healthy"},
+    {"id": "rollback-failure", "kind": "fault_injection", "expected": "DEPLOY_REJECTED retained with no repeated process mutation"},
+    {"id": "v9-support-roundtrip", "kind": "parity", "expected": "all exact support values match builder evidence"},
+    {"id": "gate-c-runtime-parity", "kind": "parity", "expected": "fixed runtime candidates and readouts match Gate C"},
+    {"id": "remote-local-sha-parity", "kind": "parity", "expected": "built and installed artifact hashes match"},
+    {"id": "service-flip-health", "kind": "integration", "expected": "one ready service exposes V9 with unchanged terminal count"},
+    {"id": "single-owner-route", "kind": "route", "expected": "one V9 execution path and no V8 fallback call"},
+    {"id": "authority-projection-parity", "kind": "safety", "expected": "bounded projection preserves full-field authority or remains non-authoritative"},
+    {"id": "rollback-pair-parity", "kind": "rollback", "expected": "old V8 and binary SHA-256 values remain recoverable"},
+    {"id": "deployment-admission-gate", "kind": "gate", "expected": "all Gate D booleans true before install"}
+  ]
+}

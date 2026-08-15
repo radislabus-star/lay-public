@@ -1,6 +1,7 @@
 use std::collections::BTreeMap;
 use std::time::Instant;
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 use sha2::{Digest, Sha256};
 
 use super::super::atoms::{normalize_lexical_surface, AtomChannel};
@@ -10,10 +11,13 @@ use super::super::runtime::{
     observed_sequence, GrokkingCandidate, LexicalGrokkingMemory, ObservedAtom, ReadoutMode,
 };
 use super::super::wave_basis::expand_atom;
-use super::exact_reverse::{ReverseBank, ReverseParityMetrics};
+use super::exact_reverse::ReverseBank;
+#[cfg(any(test, feature = "lexical-compiler"))]
+use super::exact_reverse::ReverseParityMetrics;
 use super::implicit_forward::ImplicitCandidate;
 use super::support::ExactSupportField;
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 #[derive(Clone, Debug, Default)]
 pub(super) struct SettlementAggregate {
     cases: usize,
@@ -44,6 +48,7 @@ pub(super) struct SettlementAggregate {
     v8_us: Vec<u64>,
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 #[derive(Clone, Debug)]
 pub(super) struct SettlementCaseResult {
     executed: bool,
@@ -87,6 +92,7 @@ pub(super) struct ExactSettlementResult {
     pub(super) elapsed_us: u64,
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 impl SettlementAggregate {
     pub(super) fn case_count(&self) -> usize {
         self.cases
@@ -272,6 +278,7 @@ impl SettlementAggregate {
     }
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 pub(super) fn evaluate_settlement_case(
     memory: &LexicalGrokkingMemory,
     support: &ExactSupportField,
@@ -282,7 +289,11 @@ pub(super) fn evaluate_settlement_case(
         .iter()
         .map(|candidate| candidate.terminal_id)
         .collect::<Vec<_>>();
-    let exact = ReverseBank::exact(&memory.package, support, &terminal_ids)?;
+    let exact = ReverseBank::from_precomputed(
+        implicit
+            .iter()
+            .map(|candidate| (candidate.terminal_id, candidate.exact_reverse.clone())),
+    )?;
     let compiler = ReverseBank::compiler_reference(&memory.package, support, &terminal_ids)?;
     let current_v8 = ReverseBank::current_v8(&memory.package, &terminal_ids)?;
     let exact_compiler_reverse = exact.compare(&compiler);
@@ -410,7 +421,7 @@ pub(super) fn evaluate_settlement_case(
 
 pub(super) fn settle_exact_case(
     memory: &LexicalGrokkingMemory,
-    support: &ExactSupportField,
+    _support: &ExactSupportField,
     surface: &str,
     implicit: &[ImplicitCandidate],
 ) -> Result<ExactSettlementResult, String> {
@@ -430,7 +441,11 @@ pub(super) fn settle_exact_case(
         .iter()
         .map(|candidate| candidate.terminal_id)
         .collect::<Vec<_>>();
-    let reverse = ReverseBank::exact(&memory.package, support, &terminal_ids)?;
+    let reverse = ReverseBank::from_precomputed(
+        implicit
+            .iter()
+            .map(|candidate| (candidate.terminal_id, candidate.exact_reverse.clone())),
+    )?;
     let max_forward = implicit
         .iter()
         .map(|candidate| candidate.activation.mass)
@@ -556,12 +571,14 @@ fn run_fingerprint(
     })
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 fn fingerprints_equal(left: &SettlementFingerprint, right: &SettlementFingerprint) -> bool {
     candidate_fingerprint(&left.candidates) == candidate_fingerprint(&right.candidates)
         && left.readout == right.readout
         && left.phase_noop == right.phase_noop
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 fn candidate_fingerprint(candidates: &[GrokkingCandidate]) -> String {
     let mut hasher = Sha256::new();
     hasher.update(b"lay.l11.phase8i.settled-candidates.v1");
@@ -572,6 +589,7 @@ fn candidate_fingerprint(candidates: &[GrokkingCandidate]) -> String {
     format!("{:x}", hasher.finalize())
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 fn percentile(values: &[u64], percentile: usize) -> u64 {
     if values.is_empty() {
         return 0;
@@ -581,6 +599,7 @@ fn percentile(values: &[u64], percentile: usize) -> u64 {
     sorted[(sorted.len() - 1).saturating_mul(percentile.min(100)) / 100]
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 fn maximum(values: &[u64]) -> u64 {
     values.iter().copied().max().unwrap_or_default()
 }

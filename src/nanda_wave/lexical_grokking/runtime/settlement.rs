@@ -15,6 +15,13 @@ impl LexicalGrokkingMemory {
         limit: usize,
         modes: &[ReadoutMode],
     ) -> Vec<Vec<GrokkingCandidate>> {
+        if self.typed_basin.is_some() {
+            return modes
+                .iter()
+                .copied()
+                .map(|mode| self.readout(surface, limit, mode))
+                .collect();
+        }
         if limit == 0 {
             return vec![Vec::new(); modes.len()];
         }

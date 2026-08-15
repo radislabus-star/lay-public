@@ -1,0 +1,224 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-l11-phase8i-gate-d-shared-reconstruction-closure-2026-08-15",
+  "authority_bearing": true,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "accepted-gate-c",
+      "kind": "file",
+      "path": "../L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/phase-8i-gate-c-13x20000-full-v2-bounded-projection.json",
+      "expect": {"size_bytes": 583720, "sha256": "1cc06aac0b1906e21cc307204475ae2f6f71bcb4df6dc93c768404ae2df44bef", "mode": "0600"}
+    },
+    {
+      "id": "gate-d-paper-v3",
+      "kind": "file",
+      "path": "../../../l1-l11-phase8i-gate-d-runtime.md",
+      "expect": {"size_bytes": 12667, "sha256": "22fd08ea82f72136e1c7d8b8bd08a7d87a480f584ee92387a1356aa00c90ac62", "mode": "0664"}
+    },
+    {
+      "id": "route-design-v2",
+      "kind": "file",
+      "path": "route-design-v2.json",
+      "expect": {"size_bytes": 5420, "sha256": "cfde02047ca977c4c971f52d88480afcf076dc43dfcf80c82dea9f6864b6ddfe", "mode": "0664"}
+    },
+    {
+      "id": "service-source",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/service.rs",
+      "expect": {"size_bytes": 28728, "sha256": "f6c3399c32c27205bd2543634f1b9095697471615ab19739a9506a1ef9ffe6c0", "mode": "0664"}
+    },
+    {
+      "id": "runtime-source",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/runtime.rs",
+      "expect": {"size_bytes": 29043, "sha256": "3c9f080a9ec3fad81aff9e9b0b1647281a409b3d05e68d9667329bcbd35c4669", "mode": "0664"}
+    },
+    {
+      "id": "implicit-forward-source",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/typed_basin/implicit_forward.rs",
+      "expect": {"size_bytes": 6707, "sha256": "bccd239e3035fcd3b387e33b4822d7f6706a0b339a022442498417d835d4d8fd", "mode": "0664"}
+    },
+    {
+      "id": "exact-reverse-source",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/typed_basin/exact_reverse.rs",
+      "expect": {"size_bytes": 10440, "sha256": "9a85b3ceb4dfac3758ce123b3604c6f16125c668e1613eda8642da60c5f75a4e", "mode": "0664"}
+    },
+    {
+      "id": "settlement-source",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/typed_basin/settlement.rs",
+      "expect": {"size_bytes": 23952, "sha256": "50618a07f8a066602ee2a408a0dbf36902243b654becad2da4edb213a56e2421", "mode": "0664"}
+    },
+    {
+      "id": "staged-v9",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/staging/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.v9.bin",
+      "expect": {"size_bytes": 77962328, "sha256": "bf5a1619a89038466ef786305cf35eda5f4af5b9f12b9140f7d3cac407e2f2a7", "prefix_hex": "4c41594c31563900", "mode": "0664"}
+    },
+    {
+      "id": "installed-v8",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin",
+      "expect": {"size_bytes": 190139182, "sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9", "prefix_hex": "4c41594c31563800", "mode": "0644"}
+    },
+    {
+      "id": "installed-daemon",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+      "expect": {"size_bytes": 8210072, "sha256": "ca9a574b4d6019b98d91b76ac38246943d5792661d8e0a13c93f81291f4a38c0", "mode": "0755"}
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "co-derive-candidate-local-forward-reverse", "kind": "filesystem_edit"},
+      {"id": "run-focused-parity-checks", "kind": "test_execution"},
+      {"id": "run-remote-release-gate", "kind": "test_execution"},
+      {"id": "deploy-only-after-conjunctive-pass", "kind": "process_restart"}
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "corpus_crystallization",
+      "package_byte_change",
+      "candidate_or_rank_change",
+      "authority_change",
+      "second_runtime_route",
+      "global_reverse_cache",
+      "v8_fallback",
+      "gate_threshold_change",
+      "literal_case_rule",
+      "local_heavy_build",
+      "pre_gate_install",
+      "global_ibus_restart"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "implicit-forward-baseline",
+      "path": "../../../../src/nanda_wave/lexical_grokking/typed_basin/implicit_forward.rs",
+      "sha256": "bccd239e3035fcd3b387e33b4822d7f6706a0b339a022442498417d835d4d8fd",
+      "forbidden_effect_patterns": [
+        {"effect": "literal_case_rule", "regex": "surface\\s*==\\s*\""},
+        {"effect": "global_reverse_cache", "regex": "(static|OnceLock)[^;]*Reverse"},
+        {"effect": "package_byte_change", "regex": "(File::create|fs::write)"},
+        {"effect": "authority_change", "regex": "shared[^;]*RestorationReadout"},
+        {"effect": "corpus_crystallization", "regex": "crystalli[sz]"},
+        {"effect": "generated_traffic", "regex": "(reqwest|ureq)::"},
+        {"effect": "global_ibus_restart", "regex": "ibus[^;]*(restart|exit|kill)"},
+        {"effect": "local_heavy_build", "regex": "Command::new[^;]*(cargo|rustc)"},
+        {"effect": "pre_gate_install", "regex": "(systemctl|install-release)"},
+        {"effect": "synthetic_fixture", "regex": "(write_synthetic|generate_fixture)"}
+      ]
+    },
+    {
+      "id": "exact-reverse-baseline",
+      "path": "../../../../src/nanda_wave/lexical_grokking/typed_basin/exact_reverse.rs",
+      "sha256": "9a85b3ceb4dfac3758ce123b3604c6f16125c668e1613eda8642da60c5f75a4e",
+      "forbidden_effect_patterns": [
+        {"effect": "literal_case_rule", "regex": "surface\\s*==\\s*\""},
+        {"effect": "global_reverse_cache", "regex": "(static|OnceLock)[^;]*Reverse"},
+        {"effect": "v8_fallback", "regex": "(LazyV8|current_v8)[^;]*runtime"}
+      ]
+    },
+    {
+      "id": "settlement-baseline",
+      "path": "../../../../src/nanda_wave/lexical_grokking/typed_basin/settlement.rs",
+      "sha256": "50618a07f8a066602ee2a408a0dbf36902243b654becad2da4edb213a56e2421",
+      "forbidden_effect_patterns": [
+        {"effect": "gate_threshold_change", "regex": "(5_000|95\\.0|99\\.0)"},
+        {"effect": "second_runtime_route", "regex": "settle_exact_case[^}]*(legacy|LazyV8)"},
+        {"effect": "candidate_or_rank_change", "regex": "shared[^;]*(score|authority|truncate)"}
+      ]
+    }
+  ],
+  "state_machine": {
+    "initial_state": "GATE_D_RUST_CLIENT_REJECTED",
+    "terminal_states": ["GATE_D_PASS", "DEPLOYED", "IMPLEMENTATION_REJECTED", "RUNTIME_REJECTED", "DEPLOY_REJECTED"],
+    "steps": [
+      {
+        "id": "implement-shared-candidate-reconstruction",
+        "from": "GATE_D_RUST_CLIENT_REJECTED",
+        "to": "SHARED_RECONSTRUCTION_IMPLEMENTED",
+        "mutates": true,
+        "failure_state": "IMPLEMENTATION_REJECTED",
+        "cleanup": "retain failed source diff and receipt; do not build, install, or restart",
+        "preserves": ["gate-c-proof", "v9-package", "installed-v8", "installed-binaries"],
+        "test_id": "implementation-failure"
+      },
+      {
+        "id": "prove-shared-reverse-and-candidate-identity",
+        "from": "SHARED_RECONSTRUCTION_IMPLEMENTED",
+        "to": "FOCUSED_PASS",
+        "mutates": true,
+        "failure_state": "IMPLEMENTATION_REJECTED",
+        "cleanup": "retain failed parity evidence; do not copy release binaries",
+        "preserves": ["gate-c-proof", "v9-package", "installed-v8", "installed-binaries"],
+        "test_id": "focused-gate-failure"
+      },
+      {
+        "id": "remote-release-conjunctive-gate",
+        "from": "FOCUSED_PASS",
+        "to": "GATE_D_PASS",
+        "mutates": true,
+        "failure_state": "RUNTIME_REJECTED",
+        "cleanup": "stop only the temporary V9 service; retain rejected evidence and live V8",
+        "preserves": ["gate-c-proof", "v9-package", "installed-v8", "installed-binaries"],
+        "test_id": "remote-gate-failure"
+      },
+      {
+        "id": "install-after-gate-d-pass",
+        "from": "GATE_D_PASS",
+        "to": "DEPLOYED",
+        "mutates": true,
+        "failure_state": "DEPLOY_REJECTED",
+        "cleanup": "restore pinned 1.0.27 binaries and V8 receipt, restart daemon once, verify prior health",
+        "preserves": ["gate-c-proof", "v9-package", "installed-v8", "installed-binaries"],
+        "test_id": "deploy-failure"
+      }
+    ]
+  },
+  "preserved_artifacts": [
+    {"id": "gate-c-proof", "path": "../L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/phase-8i-gate-c-13x20000-full-v2-bounded-projection.json", "policy": "byte_identical", "rollback_policy": "remain byte-identical", "baseline_check_id": "accepted-gate-c"},
+    {"id": "v9-package", "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/staging/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.v9.bin", "policy": "byte_identical", "rollback_policy": "runtime optimization must not rebuild package bytes", "baseline_check_id": "staged-v9"},
+    {"id": "installed-v8", "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin", "policy": "byte_identical", "rollback_policy": "remain installed and selectable", "baseline_check_id": "installed-v8"},
+    {"id": "installed-binaries", "path": "/home/ubu/.local/lib/lay/bin", "policy": "copy_before_replace", "rollback_policy": "restore exact pinned 1.0.27 binary set", "baseline_check_id": "installed-daemon"}
+  ],
+  "identity_contracts": [
+    {"id": "shared-reverse-identity", "producer": "candidate-local shared occurrence reconstruction", "consumer": "independent compiler-reference exact reverse", "comparison": "terminal IDs, relation records, order, strengths, positions and flags exact", "test_id": "shared-reverse-parity"},
+    {"id": "candidate-fingerprint-identity", "producer": "accepted decoded-pool V9 runtime", "consumer": "shared-reconstruction V9 runtime", "comparison": "candidate SHA-256 b2f7ba7a9cf5e0f7ccd1feb76d18f7f5aa60db5dfad65ca4c12d6dba0b9b3aa0 exact", "test_id": "candidate-fingerprint-parity"},
+    {"id": "package-byte-identity", "producer": "staged V9 package", "consumer": "rebuilt shared-reconstruction runtime", "comparison": "size and SHA-256 exact", "test_id": "package-parity"}
+  ],
+  "runtime_comparisons": [
+    {
+      "id": "rust-client-before-after",
+      "source": "fixed 520-surface Gate D production-client receipt",
+      "comparison": "exact_stable_projection",
+      "reason": "candidate-local duplicate work is removed while package and authority remain stable",
+      "stable_fields": ["package_sha256", "candidate_sha256", "surface_count", "limit", "response_failures", "terminal_count"],
+      "expected_to_change_fields": ["p50_us", "p90_us", "p99_us", "max_us", "RSS", "cold_ready_ms"],
+      "observed_not_compared_fields": ["pid", "uptime_ms", "scheduler_timing", "kernel_page_residency"],
+      "test_id": "remote-runtime-comparison"
+    }
+  ],
+  "invariants": [
+    {"id": "one-candidate-reconstruction", "statement": "each admitted V9 terminal is decoded and atomized once per query and supplies both forward and exact reverse state", "test_id": "shared-reverse-parity"},
+    {"id": "no-global-relation-bank", "statement": "shared reverse state remains candidate-local and no second persistent relation bank is introduced", "test_id": "source-route-audit"},
+    {"id": "gate-remains-conjunctive", "statement": "deployment remains blocked unless latency, cold load, RSS, parity, health, and rollback gates all pass", "test_id": "deployment-admission"}
+  ],
+  "tests": [
+    {"id": "implementation-failure", "kind": "fault_injection", "expected": "IMPLEMENTATION_REJECTED with no package or runtime mutation"},
+    {"id": "focused-gate-failure", "kind": "fault_injection", "expected": "IMPLEMENTATION_REJECTED and no release copy"},
+    {"id": "remote-gate-failure", "kind": "fault_injection", "expected": "RUNTIME_REJECTED while installed V8 remains live"},
+    {"id": "deploy-failure", "kind": "fault_injection", "expected": "pinned 1.0.27 and V8 pair restored and healthy"},
+    {"id": "shared-reverse-parity", "kind": "parity", "expected": "all candidate-local reverse records exactly match compiler-reference reconstruction"},
+    {"id": "candidate-fingerprint-parity", "kind": "parity", "expected": "fixed candidate and readout fingerprint remains exact"},
+    {"id": "package-parity", "kind": "parity", "expected": "V9 package size and SHA-256 remain exact"},
+    {"id": "source-route-audit", "kind": "parity", "expected": "one V9 runtime route and no global reverse cache or V8 fallback"},
+    {"id": "remote-runtime-comparison", "kind": "integration", "expected": "four fixed Rust-client p99 runs pass <=5 ms with cold <=1 s RSS <=250 MiB and zero failures"},
+    {"id": "deployment-admission", "kind": "parity", "expected": "all Gate D booleans true before install"}
+  ]
+}

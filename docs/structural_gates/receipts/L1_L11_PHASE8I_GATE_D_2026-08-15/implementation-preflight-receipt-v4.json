@@ -1,0 +1,154 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "accepted-gate-c",
+      "kind": "file",
+      "mode": "0600",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_GATE_D_2026-08-15/../L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/phase-8i-gate-c-13x20000-full-v2-bounded-projection.json",
+      "sha256": "1cc06aac0b1906e21cc307204475ae2f6f71bcb4df6dc93c768404ae2df44bef",
+      "size_bytes": 583720
+    },
+    {
+      "exists": true,
+      "id": "gate-d-paper-v2",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_GATE_D_2026-08-15/../../../l1-l11-phase8i-gate-d-runtime.md",
+      "sha256": "e5d76ea5485cf6047c6833b9849c7e45ec332b29c7725d05391dc5d9c3b1075d",
+      "size_bytes": 9737
+    },
+    {
+      "exists": true,
+      "id": "route-design-v2",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_GATE_D_2026-08-15/route-design-v2.json",
+      "sha256": "cfde02047ca977c4c971f52d88480afcf076dc43dfcf80c82dea9f6864b6ddfe",
+      "size_bytes": 5420
+    },
+    {
+      "exists": true,
+      "id": "service-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_GATE_D_2026-08-15/../../../../src/nanda_wave/lexical_grokking/service.rs",
+      "sha256": "19c83a5808e9131fb80a513bae394515337a97dfa441a2a8dd5087eb826accdc",
+      "size_bytes": 21594
+    },
+    {
+      "exists": true,
+      "id": "runtime-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_GATE_D_2026-08-15/../../../../src/nanda_wave/lexical_grokking/runtime.rs",
+      "sha256": "b2a32c0f258085523248c92202a0dba93652d36f14fbb3dfc9fc5e1db2ed11af",
+      "size_bytes": 25129
+    },
+    {
+      "exists": true,
+      "id": "typed-runtime-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_GATE_D_2026-08-15/../../../../src/nanda_wave/lexical_grokking/typed_basin/runtime.rs",
+      "sha256": "e772a712ac6d1f46b4f0eeae70f0db757e1184e81baa52ccefe28ff26952d95b",
+      "size_bytes": 4768
+    },
+    {
+      "exists": true,
+      "id": "staged-v9",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/staging/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.v9.bin",
+      "sha256": "bf5a1619a89038466ef786305cf35eda5f4af5b9f12b9140f7d3cac407e2f2a7",
+      "size_bytes": 77962328
+    },
+    {
+      "exists": true,
+      "id": "installed-v8",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin",
+      "sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+      "size_bytes": 190139182
+    },
+    {
+      "exists": true,
+      "id": "installed-daemon",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+      "sha256": "ca9a574b4d6019b98d91b76ac38246943d5792661d8e0a13c93f81291f4a38c0",
+      "size_bytes": 8210072
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 9,
+    "forbidden_side_effect_kinds": [
+      "authority_change",
+      "candidate_or_rank_change",
+      "corpus_crystallization",
+      "gate_threshold_change",
+      "generated_traffic",
+      "global_ibus_restart",
+      "literal_case_rule",
+      "local_heavy_build",
+      "package_byte_change",
+      "persistent_mutating_request",
+      "pre_gate_install",
+      "synthetic_fixture",
+      "thread_local_connection_fanout",
+      "unbounded_transport_retry",
+      "v8_memory_profile_change"
+    ],
+    "identity_contracts": 4,
+    "invariants": 4,
+    "planned_side_effect_kinds": [
+      "filesystem_edit",
+      "process_restart",
+      "test_execution"
+    ],
+    "preserved_artifacts": 4,
+    "runtime_comparisons": 1,
+    "source_checks": 3,
+    "tests": 11
+  },
+  "manifest_sha256": "62b317986ec0d8309cbe848a47aca8c5af418fd7b1b224b624367e1125031eb5",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "service-read-only-baseline",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_GATE_D_2026-08-15/../../../../src/nanda_wave/lexical_grokking/service.rs",
+      "sha256": "19c83a5808e9131fb80a513bae394515337a97dfa441a2a8dd5087eb826accdc",
+      "size_bytes": 21594
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "runtime-owner-baseline",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_GATE_D_2026-08-15/../../../../src/nanda_wave/lexical_grokking/runtime.rs",
+      "sha256": "b2a32c0f258085523248c92202a0dba93652d36f14fbb3dfc9fc5e1db2ed11af",
+      "size_bytes": 25129
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "typed-runtime-authority-baseline",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_GATE_D_2026-08-15/../../../../src/nanda_wave/lexical_grokking/typed_basin/runtime.rs",
+      "sha256": "e772a712ac6d1f46b4f0eeae70f0db757e1184e81baa52ccefe28ff26952d95b",
+      "size_bytes": 4768
+    }
+  ],
+  "task_id": "lay-l11-phase8i-gate-d-hot-transport-closure-2026-08-15",
+  "verdict": "READY_TO_IMPLEMENT"
+}

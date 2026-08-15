@@ -1,4 +1,4 @@
-//! Shadow-only recursive L1 lexical grokking proof.
+//! Recursive L1 lexical grokking package, runtime, and proof routes.
 //!
 //! The package stores typed atom postings and compact phase centers. It refers
 //! to decoder terminal IDs and never stores source or damaged strings.
@@ -12,7 +12,6 @@ mod composite;
 mod corruption;
 mod crystal;
 mod format;
-#[cfg(any(test, feature = "lexical-compiler"))]
 mod forward_decoder_index;
 mod model;
 mod ngram_graph;
@@ -31,11 +30,10 @@ mod runtime;
 mod service;
 mod training_budget;
 mod training_corpus;
-#[cfg(any(test, feature = "lexical-compiler"))]
 mod typed_basin;
-#[cfg(any(test, feature = "lexical-compiler"))]
 mod typed_edit_traversal;
 mod v8;
+mod v9;
 mod wave_basis;
 
 pub use behavior_fingerprint::fingerprint_l1_behavior;
@@ -82,6 +80,7 @@ pub use typed_edit_traversal::{
     prove_l1_typed_edit_phase7d,
 };
 pub use v8::{build_lazy_v8_package, build_lazy_v8_package_with_shard_size};
+pub use v9::build_exact_v9_package;
 
 #[cfg(test)]
 mod tests;

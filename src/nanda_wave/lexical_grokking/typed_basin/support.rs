@@ -8,21 +8,21 @@ const OVERFLOW_HEADER_BYTES: usize = 32;
 const OVERFLOW_ENTRY_BYTES: usize = 8;
 
 #[derive(Clone, Debug)]
-pub(super) struct ExactSupportField {
+pub(in crate::nanda_wave::lexical_grokking) struct ExactSupportField {
     values: Vec<u32>,
-    pub(super) metrics: ExactSupportMetrics,
+    pub(in crate::nanda_wave::lexical_grokking) metrics: ExactSupportMetrics,
 }
 
 #[derive(Clone, Copy, Debug, Default)]
-pub(super) struct ExactSupportMetrics {
-    pub(super) centers_decoded: usize,
-    pub(super) corpus_surface_mismatches: usize,
-    pub(super) encoded_atom_occurrences: u64,
-    pub(super) stored_saturated_atoms: usize,
-    pub(super) exact_overflow_atoms: usize,
-    pub(super) stored_support_mismatches: usize,
-    pub(super) maximum_exact_support: u32,
-    pub(super) projected_overflow_bytes: usize,
+pub(in crate::nanda_wave::lexical_grokking) struct ExactSupportMetrics {
+    pub(in crate::nanda_wave::lexical_grokking) centers_decoded: usize,
+    pub(in crate::nanda_wave::lexical_grokking) corpus_surface_mismatches: usize,
+    pub(in crate::nanda_wave::lexical_grokking) encoded_atom_occurrences: u64,
+    pub(in crate::nanda_wave::lexical_grokking) stored_saturated_atoms: usize,
+    pub(in crate::nanda_wave::lexical_grokking) exact_overflow_atoms: usize,
+    pub(in crate::nanda_wave::lexical_grokking) stored_support_mismatches: usize,
+    pub(in crate::nanda_wave::lexical_grokking) maximum_exact_support: u32,
+    pub(in crate::nanda_wave::lexical_grokking) projected_overflow_bytes: usize,
 }
 
 #[derive(Debug)]
@@ -34,19 +34,34 @@ struct SupportShard {
 }
 
 impl ExactSupportField {
-    pub(super) fn rebuild(
+    pub(in crate::nanda_wave::lexical_grokking) fn rebuild(
         package: &LexicalGrokkingPackage,
         expected_surfaces: &[String],
+    ) -> Result<Self, String> {
+        Self::rebuild_inner(package, Some(expected_surfaces))
+    }
+
+    pub(in crate::nanda_wave::lexical_grokking) fn rebuild_decoded(
+        package: &LexicalGrokkingPackage,
+    ) -> Result<Self, String> {
+        Self::rebuild_inner(package, None)
+    }
+
+    fn rebuild_inner(
+        package: &LexicalGrokkingPackage,
+        expected_surfaces: Option<&[String]>,
     ) -> Result<Self, String> {
         if package.centers.is_empty() || package.atoms.is_empty() {
             return Err("exact support requires non-empty center and atom fields".to_string());
         }
-        if expected_surfaces.len() != package.centers.len() {
-            return Err(format!(
-                "exact support corpus/package terminal count differs: {} != {}",
-                expected_surfaces.len(),
-                package.centers.len()
-            ));
+        if let Some(expected_surfaces) = expected_surfaces {
+            if expected_surfaces.len() != package.centers.len() {
+                return Err(format!(
+                    "exact support corpus/package terminal count differs: {} != {}",
+                    expected_surfaces.len(),
+                    package.centers.len()
+                ));
+            }
         }
         let workers = rayon::current_num_threads()
             .max(1)
@@ -63,9 +78,11 @@ impl ExactSupportField {
                 let start = shard_index.saturating_mul(chunk_size);
                 for (offset, center) in centers.iter().copied().enumerate() {
                     let surface = format::decode_center_surface(center, &package.decoder_nodes)?;
-                    corpus_surface_mismatches = corpus_surface_mismatches.saturating_add(
-                        usize::from(expected_surfaces.get(start + offset) != Some(&surface)),
-                    );
+                    if let Some(expected_surfaces) = expected_surfaces {
+                        corpus_surface_mismatches = corpus_surface_mismatches.saturating_add(
+                            usize::from(expected_surfaces.get(start + offset) != Some(&surface)),
+                        );
+                    }
                     for atom in encode_wave_surface(&surface) {
                         let atom_id = package.graph.atom_id(atom.key).ok_or_else(|| {
                             format!(
@@ -121,32 +138,103 @@ impl ExactSupportField {
             ));
         }
 
-        let mut metrics = ExactSupportMetrics {
+        let metrics = metrics_for_values(
+            package,
+            &values,
             centers_decoded,
             corpus_surface_mismatches,
             encoded_atom_occurrences,
-            ..ExactSupportMetrics::default()
-        };
-        for (record, exact) in package.atoms.iter().zip(&values) {
-            metrics.stored_saturated_atoms += usize::from(record.support == u16::MAX);
-            metrics.exact_overflow_atoms += usize::from(*exact > u32::from(u16::MAX));
-            metrics.maximum_exact_support = metrics.maximum_exact_support.max(*exact);
-            let stored_expected = (*exact).min(u32::from(u16::MAX)) as u16;
-            metrics.stored_support_mismatches += usize::from(record.support != stored_expected);
-        }
-        metrics.projected_overflow_bytes = OVERFLOW_HEADER_BYTES.saturating_add(
-            metrics
-                .exact_overflow_atoms
-                .saturating_mul(OVERFLOW_ENTRY_BYTES),
         );
         Ok(Self { values, metrics })
     }
 
-    pub(super) fn get(&self, atom_id: u32) -> Option<u32> {
+    pub(in crate::nanda_wave::lexical_grokking) fn from_compact_overflow(
+        package: &LexicalGrokkingPackage,
+        overflow: &[(u32, u32)],
+    ) -> Result<Self, String> {
+        if package.atoms.is_empty() {
+            return Err("exact support requires a non-empty atom field".to_string());
+        }
+        let mut values = package
+            .atoms
+            .iter()
+            .map(|record| u32::from(record.support))
+            .collect::<Vec<_>>();
+        let mut previous = None;
+        for &(atom_id, exact_support) in overflow {
+            if previous.is_some_and(|previous| atom_id <= previous) {
+                return Err("V9 exact-support AtomIds are not sorted and unique".to_string());
+            }
+            previous = Some(atom_id);
+            if exact_support <= u32::from(u16::MAX) {
+                return Err(format!(
+                    "V9 exact-support overflow is not above u16: atom={atom_id} support={exact_support}"
+                ));
+            }
+            let record = package
+                .atoms
+                .get(atom_id as usize)
+                .ok_or_else(|| format!("V9 exact-support AtomId is invalid: {atom_id}"))?;
+            if record.support != u16::MAX {
+                return Err(format!(
+                    "V9 exact-support overflow references an unsaturated atom: {atom_id}"
+                ));
+            }
+            values[atom_id as usize] = exact_support;
+        }
+        let metrics = metrics_for_values(package, &values, 0, 0, 0);
+        Ok(Self { values, metrics })
+    }
+
+    pub(in crate::nanda_wave::lexical_grokking) fn overflow_entries(&self) -> Vec<(u32, u32)> {
+        self.values
+            .iter()
+            .copied()
+            .enumerate()
+            .filter(|(_, support)| *support > u32::from(u16::MAX))
+            .map(|(atom_id, support)| (atom_id as u32, support))
+            .collect()
+    }
+
+    pub(in crate::nanda_wave::lexical_grokking) fn resident_bytes(&self) -> usize {
+        self.values
+            .capacity()
+            .saturating_mul(std::mem::size_of::<u32>())
+    }
+
+    pub(in crate::nanda_wave::lexical_grokking) fn get(&self, atom_id: u32) -> Option<u32> {
         self.values.get(atom_id as usize).copied()
     }
 
-    pub(super) fn values(&self) -> &[u32] {
+    pub(in crate::nanda_wave::lexical_grokking) fn values(&self) -> &[u32] {
         &self.values
     }
+}
+
+fn metrics_for_values(
+    package: &LexicalGrokkingPackage,
+    values: &[u32],
+    centers_decoded: usize,
+    corpus_surface_mismatches: usize,
+    encoded_atom_occurrences: u64,
+) -> ExactSupportMetrics {
+    let mut metrics = ExactSupportMetrics {
+        centers_decoded,
+        corpus_surface_mismatches,
+        encoded_atom_occurrences,
+        ..ExactSupportMetrics::default()
+    };
+    for (record, exact) in package.atoms.iter().zip(values) {
+        metrics.stored_saturated_atoms += usize::from(record.support == u16::MAX);
+        metrics.exact_overflow_atoms += usize::from(*exact > u32::from(u16::MAX));
+        metrics.maximum_exact_support = metrics.maximum_exact_support.max(*exact);
+        let stored_expected = (*exact).min(u32::from(u16::MAX)) as u16;
+        metrics.stored_support_mismatches += usize::from(record.support != stored_expected);
+    }
+    metrics.projected_overflow_bytes = OVERFLOW_HEADER_BYTES.saturating_add(
+        metrics
+            .exact_overflow_atoms
+            .saturating_mul(OVERFLOW_ENTRY_BYTES),
+    );
+    metrics
 }

@@ -66,8 +66,9 @@ pub use l2_field::{
 pub use lexical_grokking::{
     admit_l11_delta, admit_l11_tombstone, analyze_l1_forward_compression,
     authoritative_restore_surface, benchmark_l1_diverse_restoration, benchmark_l1_lexical_grokking,
-    build_lazy_v8_package, build_lazy_v8_package_with_shard_size, compact_depth0_package,
-    crystallize_l1_lexical_grokking, crystallize_l1_lexical_grokking_with_rss_budget,
+    build_exact_v9_package, build_lazy_v8_package, build_lazy_v8_package_with_shard_size,
+    compact_depth0_package, crystallize_l1_lexical_grokking,
+    crystallize_l1_lexical_grokking_with_rss_budget,
     crystallize_l1_lexical_grokking_with_surface_policy, default_l11_model_dir,
     default_l11_socket_path, discover_installed_l11_package, ensure_l11_service_started,
     export_l1_fixed_latency_surfaces, fingerprint_l1_behavior, initialize_l11_composite_manifest,

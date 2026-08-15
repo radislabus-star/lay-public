@@ -1,0 +1,211 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-l11-phase8i-gate-d-hot-transport-closure-2026-08-15",
+  "authority_bearing": true,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "accepted-gate-c",
+      "kind": "file",
+      "path": "../L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/phase-8i-gate-c-13x20000-full-v2-bounded-projection.json",
+      "expect": {"size_bytes": 583720, "sha256": "1cc06aac0b1906e21cc307204475ae2f6f71bcb4df6dc93c768404ae2df44bef", "mode": "0600"}
+    },
+    {
+      "id": "gate-d-paper-v2",
+      "kind": "file",
+      "path": "../../../l1-l11-phase8i-gate-d-runtime.md",
+      "expect": {"size_bytes": 9737, "sha256": "e5d76ea5485cf6047c6833b9849c7e45ec332b29c7725d05391dc5d9c3b1075d", "mode": "0664"}
+    },
+    {
+      "id": "route-design-v2",
+      "kind": "file",
+      "path": "route-design-v2.json",
+      "expect": {"size_bytes": 5420, "sha256": "cfde02047ca977c4c971f52d88480afcf076dc43dfcf80c82dea9f6864b6ddfe", "mode": "0664"}
+    },
+    {
+      "id": "service-source",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/service.rs",
+      "expect": {"size_bytes": 21594, "sha256": "19c83a5808e9131fb80a513bae394515337a97dfa441a2a8dd5087eb826accdc", "mode": "0664"}
+    },
+    {
+      "id": "runtime-source",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/runtime.rs",
+      "expect": {"size_bytes": 25129, "sha256": "b2a32c0f258085523248c92202a0dba93652d36f14fbb3dfc9fc5e1db2ed11af", "mode": "0664"}
+    },
+    {
+      "id": "typed-runtime-source",
+      "kind": "file",
+      "path": "../../../../src/nanda_wave/lexical_grokking/typed_basin/runtime.rs",
+      "expect": {"size_bytes": 4768, "sha256": "e772a712ac6d1f46b4f0eeae70f0db757e1184e81baa52ccefe28ff26952d95b", "mode": "0664"}
+    },
+    {
+      "id": "staged-v9",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/staging/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.v9.bin",
+      "expect": {"size_bytes": 77962328, "sha256": "bf5a1619a89038466ef786305cf35eda5f4af5b9f12b9140f7d3cac407e2f2a7", "prefix_hex": "4c41594c31563900", "mode": "0644"}
+    },
+    {
+      "id": "installed-v8",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin",
+      "expect": {"size_bytes": 190139182, "sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9", "prefix_hex": "4c41594c31563800", "mode": "0644"}
+    },
+    {
+      "id": "installed-daemon",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+      "expect": {"size_bytes": 8210072, "sha256": "ca9a574b4d6019b98d91b76ac38246943d5792661d8e0a13c93f81291f4a38c0", "mode": "0755"}
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "retain-v9-decoded-surface-pool", "kind": "filesystem_edit"},
+      {"id": "add-read-only-persistent-lattice-client", "kind": "filesystem_edit"},
+      {"id": "run-focused-local-checks", "kind": "test_execution"},
+      {"id": "run-remote-release-gate", "kind": "test_execution"},
+      {"id": "deploy-only-after-gate-pass", "kind": "process_restart"}
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "corpus_crystallization",
+      "package_byte_change",
+      "candidate_or_rank_change",
+      "authority_change",
+      "persistent_mutating_request",
+      "unbounded_transport_retry",
+      "thread_local_connection_fanout",
+      "v8_memory_profile_change",
+      "gate_threshold_change",
+      "literal_case_rule",
+      "local_heavy_build",
+      "pre_gate_install",
+      "global_ibus_restart"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "service-read-only-baseline",
+      "path": "../../../../src/nanda_wave/lexical_grokking/service.rs",
+      "sha256": "19c83a5808e9131fb80a513bae394515337a97dfa441a2a8dd5087eb826accdc",
+      "forbidden_effect_patterns": [
+        {"effect": "persistent_mutating_request", "regex": "persistent[^;]*(Reload|reload)"},
+        {"effect": "unbounded_transport_retry", "regex": "persistent[^;]*(loop\\s*\\{|while\\s|retry_count)"},
+        {"effect": "thread_local_connection_fanout", "regex": "thread_local!"},
+        {"effect": "global_ibus_restart", "regex": "ibus[^;]*(restart|exit|kill)"}
+      ]
+    },
+    {
+      "id": "runtime-owner-baseline",
+      "path": "../../../../src/nanda_wave/lexical_grokking/runtime.rs",
+      "sha256": "b2a32c0f258085523248c92202a0dba93652d36f14fbb3dfc9fc5e1db2ed11af",
+      "forbidden_effect_patterns": [
+        {"effect": "candidate_or_rank_change", "regex": "decoded_surface[^;]*(sort|truncate|score|authority)"},
+        {"effect": "v8_memory_profile_change", "regex": "LazyV8[^;]*decoded_surface"},
+        {"effect": "literal_case_rule", "regex": "surface\\s*==\\s*\""},
+        {"effect": "gate_threshold_change", "regex": "typed_basin[^;]*(95\\.0|99\\.0|5_000)"}
+      ]
+    },
+    {
+      "id": "typed-runtime-authority-baseline",
+      "path": "../../../../src/nanda_wave/lexical_grokking/typed_basin/runtime.rs",
+      "sha256": "e772a712ac6d1f46b4f0eeae70f0db757e1184e81baa52ccefe28ff26952d95b",
+      "forbidden_effect_patterns": [
+        {"effect": "candidate_or_rank_change", "regex": "(score|authority|truncate_with_reconstruction_tail)[^;]*decoded_surface"},
+        {"effect": "authority_change", "regex": "decoded_surface[^;]*RestorationReadout"}
+      ]
+    }
+  ],
+  "state_machine": {
+    "initial_state": "GATE_D_TRANSPORT_REJECTED",
+    "terminal_states": ["GATE_D_PASS", "DESIGN_REJECTED", "IMPLEMENTATION_REJECTED", "RUNTIME_REJECTED", "DEPLOY_REJECTED"],
+    "steps": [
+      {
+        "id": "implement-execution-only-latency-closure",
+        "from": "GATE_D_TRANSPORT_REJECTED",
+        "to": "LATENCY_CLOSURE_IMPLEMENTED",
+        "mutates": true,
+        "failure_state": "IMPLEMENTATION_REJECTED",
+        "cleanup": "retain failed source diff and evidence; do not build, install, or restart",
+        "preserves": ["gate-c-proof", "v9-package", "installed-v8", "installed-binaries"],
+        "test_id": "implementation-failure"
+      },
+      {
+        "id": "prove-identity-reconnect-and-focused-checks",
+        "from": "LATENCY_CLOSURE_IMPLEMENTED",
+        "to": "FOCUSED_PASS",
+        "mutates": true,
+        "failure_state": "IMPLEMENTATION_REJECTED",
+        "cleanup": "retain failed receipts; do not copy release binaries",
+        "preserves": ["gate-c-proof", "v9-package", "installed-v8", "installed-binaries"],
+        "test_id": "focused-gate-failure"
+      },
+      {
+        "id": "remote-release-latency-cold-rss-gate",
+        "from": "FOCUSED_PASS",
+        "to": "GATE_D_PASS",
+        "mutates": true,
+        "failure_state": "RUNTIME_REJECTED",
+        "cleanup": "stop only temporary standalone service; retain rejected evidence and live V8",
+        "preserves": ["gate-c-proof", "v9-package", "installed-v8", "installed-binaries"],
+        "test_id": "remote-gate-failure"
+      },
+      {
+        "id": "install-after-conjunctive-pass",
+        "from": "GATE_D_PASS",
+        "to": "DEPLOYED",
+        "mutates": true,
+        "failure_state": "DEPLOY_REJECTED",
+        "cleanup": "restore pinned 1.0.27 binaries and V8 receipt, restart daemon once, verify prior health",
+        "preserves": ["gate-c-proof", "v9-package", "installed-v8", "installed-binaries"],
+        "test_id": "deploy-failure"
+      }
+    ]
+  },
+  "preserved_artifacts": [
+    {"id": "gate-c-proof", "path": "../L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/phase-8i-gate-c-13x20000-full-v2-bounded-projection.json", "policy": "byte_identical", "rollback_policy": "remain byte-identical", "baseline_check_id": "accepted-gate-c"},
+    {"id": "v9-package", "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/staging/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.v9.bin", "policy": "byte_identical", "rollback_policy": "runtime optimization must not rebuild package bytes", "baseline_check_id": "staged-v9"},
+    {"id": "installed-v8", "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin", "policy": "byte_identical", "rollback_policy": "remain installed and selectable", "baseline_check_id": "installed-v8"},
+    {"id": "installed-binaries", "path": "/home/ubu/.local/lib/lay/bin", "policy": "copy_before_replace", "rollback_policy": "restore exact pinned 1.0.27 binary set", "baseline_check_id": "installed-daemon"}
+  ],
+  "identity_contracts": [
+    {"id": "decoded-surface-identity", "producer": "decoder parent replay", "consumer": "V9 decoded-surface pool", "comparison": "every terminal UTF-8 byte sequence exact", "test_id": "surface-pool-parity"},
+    {"id": "lattice-protocol-identity", "producer": "single-use Lattice transport", "consumer": "persistent Lattice transport", "comparison": "request and response schema and values exact", "test_id": "persistent-protocol-parity"},
+    {"id": "candidate-fingerprint-identity", "producer": "accepted optimized V9 runtime", "consumer": "latency-closed V9 runtime", "comparison": "candidate SHA-256 b2f7ba7a9cf5e0f7ccd1feb76d18f7f5aa60db5dfad65ca4c12d6dba0b9b3aa0 exact", "test_id": "candidate-fingerprint-parity"},
+    {"id": "package-byte-identity", "producer": "staged V9 package", "consumer": "rebuilt runtime", "comparison": "package SHA-256 and size unchanged", "test_id": "package-parity"}
+  ],
+  "runtime_comparisons": [
+    {
+      "id": "standalone-before-after",
+      "source": "fixed 520-surface Gate D standalone receipts",
+      "comparison": "exact_stable_projection",
+      "reason": "execution cost changes while package and authority remain stable",
+      "stable_fields": ["package_sha256", "candidate_sha256", "surface_count", "limit", "response_failures", "terminal_count"],
+      "expected_to_change_fields": ["p50_ms", "p90_ms", "p99_ms", "max_ms", "RSS", "cold_ready_ms"],
+      "observed_not_compared_fields": ["pid", "uptime_ms", "scheduler_timing", "kernel_page_residency"],
+      "test_id": "remote-runtime-comparison"
+    }
+  ],
+  "invariants": [
+    {"id": "one-live-lattice-stream", "statement": "one process-wide persistent Lattice connection is shared by callers", "test_id": "persistent-protocol-parity"},
+    {"id": "read-only-retry", "statement": "only Lattice may reconnect and retry, at most once after transport failure", "test_id": "reconnect-bound"},
+    {"id": "surface-pool-is-materialization-only", "statement": "surface pool cannot change candidates, order, score, or authority", "test_id": "candidate-fingerprint-parity"},
+    {"id": "gate-remains-conjunctive", "statement": "deployment remains blocked unless latency, cold load, RSS, parity, health, and rollback gates all pass", "test_id": "deployment-admission"}
+  ],
+  "tests": [
+    {"id": "implementation-failure", "kind": "fault_injection", "expected": "IMPLEMENTATION_REJECTED with no package or runtime mutation"},
+    {"id": "focused-gate-failure", "kind": "fault_injection", "expected": "IMPLEMENTATION_REJECTED and no release copy"},
+    {"id": "remote-gate-failure", "kind": "fault_injection", "expected": "RUNTIME_REJECTED while installed V8 remains live"},
+    {"id": "deploy-failure", "kind": "fault_injection", "expected": "pinned 1.0.27 and V8 pair restored and healthy"},
+    {"id": "surface-pool-parity", "kind": "parity", "expected": "all retained decoded terminal surfaces equal parent replay"},
+    {"id": "persistent-protocol-parity", "kind": "integration", "expected": "two sequential Lattice calls reuse one accepted connection and preserve values"},
+    {"id": "reconnect-bound", "kind": "fault_injection", "expected": "one failed read-only stream is discarded and exactly one reconnect succeeds"},
+    {"id": "candidate-fingerprint-parity", "kind": "parity", "expected": "fixed candidate fingerprint remains exact"},
+    {"id": "package-parity", "kind": "parity", "expected": "V9 package bytes remain exact"},
+    {"id": "remote-runtime-comparison", "kind": "integration", "expected": "four fixed service p99 runs pass <=5 ms with cold <=1 s RSS <=250 MiB and zero failures"},
+    {"id": "deployment-admission", "kind": "parity", "expected": "all Gate D booleans true before install"}
+  ]
+}

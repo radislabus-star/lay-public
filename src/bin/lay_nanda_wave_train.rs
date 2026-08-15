@@ -743,6 +743,16 @@ fn main() -> io::Result<()> {
         );
         return Ok(());
     }
+    if let Some(package) = arg_path(&args, "--build-l1-v9") {
+        let output = arg_path(&args, "--out")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--out is required"))?;
+        let report = lay::nanda_wave::build_exact_v9_package(&package, &output)?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
     if let Some(package) = arg_path(&args, "--fingerprint-l1-behavior") {
         let surfaces = arg_path(&args, "--surfaces")
             .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--surfaces is required"))?;

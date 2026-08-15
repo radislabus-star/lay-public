@@ -1,9 +1,13 @@
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeMap;
+#[cfg(any(test, feature = "lexical-compiler"))]
+use std::collections::BTreeSet;
 use std::sync::Arc;
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 use sha2::{Digest, Sha256};
 
 use super::super::atoms::{encode_wave_surface, AtomChannel};
+#[cfg(any(test, feature = "lexical-compiler"))]
 use super::super::compiler;
 use super::super::format;
 use super::super::model::{LexicalGrokkingPackage, WaveCoupling, COUPLING_FLAG_CHARACTER_ANCHOR};
@@ -16,6 +20,7 @@ pub(super) struct ReverseBank {
     relations: BTreeMap<u32, Arc<[WaveCoupling]>>,
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 #[derive(Clone, Copy, Debug, Default)]
 pub(super) struct ReverseParityMetrics {
     pub(super) terminals_compared: usize,
@@ -30,13 +35,32 @@ pub(super) struct ReverseParityMetrics {
 }
 
 #[derive(Clone, Copy, Debug)]
-struct ResolvedOccurrence {
-    atom_id: u32,
-    position: u16,
-    channel: AtomChannel,
+pub(super) struct ResolvedOccurrence {
+    pub(super) atom_id: u32,
+    pub(super) position: u16,
+    pub(super) channel: AtomChannel,
 }
 
 impl ReverseBank {
+    pub(super) fn from_precomputed(
+        entries: impl IntoIterator<Item = (u32, Arc<[WaveCoupling]>)>,
+    ) -> Result<Self, String> {
+        let mut relations = BTreeMap::new();
+        let mut entry_count = 0_usize;
+        for (terminal_id, value) in entries {
+            entry_count = entry_count.saturating_add(1);
+            if relations.insert(terminal_id, value).is_some() {
+                return Err(format!(
+                    "reverse bank contains duplicate terminal: {terminal_id}"
+                ));
+            }
+        }
+        if relations.len() != entry_count {
+            return Err("reverse bank terminal cardinality differs".to_string());
+        }
+        Ok(Self { relations })
+    }
+
     pub(super) fn exact(
         package: &LexicalGrokkingPackage,
         support: &ExactSupportField,
@@ -47,6 +71,7 @@ impl ReverseBank {
         })
     }
 
+    #[cfg(any(test, feature = "lexical-compiler"))]
     pub(super) fn compiler_reference(
         package: &LexicalGrokkingPackage,
         support: &ExactSupportField,
@@ -57,6 +82,7 @@ impl ReverseBank {
         })
     }
 
+    #[cfg(any(test, feature = "lexical-compiler"))]
     pub(super) fn current_v8(
         package: &LexicalGrokkingPackage,
         terminal_ids: &[u32],
@@ -100,6 +126,7 @@ impl ReverseBank {
             .sum()
     }
 
+    #[cfg(any(test, feature = "lexical-compiler"))]
     pub(super) fn fingerprint(&self) -> String {
         let mut hasher = Sha256::new();
         hasher.update(b"lay.l11.phase8i.reverse-bank.v1");
@@ -119,6 +146,7 @@ impl ReverseBank {
         format!("{:x}", hasher.finalize())
     }
 
+    #[cfg(any(test, feature = "lexical-compiler"))]
     pub(super) fn compare(&self, other: &Self) -> ReverseParityMetrics {
         let terminal_ids = self
             .relations
@@ -162,6 +190,7 @@ impl ReverseBank {
     }
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 impl ReverseParityMetrics {
     pub(super) fn mismatches(self) -> usize {
         self.terminals_missing_left
@@ -178,17 +207,25 @@ fn reconstruct_exact_reverse(
     support: &ExactSupportField,
     terminal_id: u32,
 ) -> Result<Vec<WaveCoupling>, String> {
+    let resolved = resolve_terminal_occurrences(package, terminal_id)?;
+    exact_reverse_from_occurrences(package, support, &resolved)
+}
+
+pub(super) fn resolve_terminal_occurrences(
+    package: &LexicalGrokkingPackage,
+    terminal_id: u32,
+) -> Result<Vec<ResolvedOccurrence>, String> {
     let center = *package
         .centers
         .get(terminal_id as usize)
-        .ok_or_else(|| format!("exact reverse terminal is invalid: {terminal_id}"))?;
+        .ok_or_else(|| format!("candidate terminal is invalid: {terminal_id}"))?;
     let surface = format::decode_center_surface(center, &package.decoder_nodes)?;
-    let resolved = encode_wave_surface(&surface)
+    encode_wave_surface(&surface)
         .into_iter()
         .map(|atom| {
             let atom_id = package.graph.atom_id(atom.key).ok_or_else(|| {
                 format!(
-                    "exact reverse atom is absent from NGramGraph: terminal={terminal_id} channel={:?}",
+                    "candidate atom is absent from NGramGraph: terminal={terminal_id} channel={:?}",
                     atom.key.channel
                 )
             })?;
@@ -198,16 +235,24 @@ fn reconstruct_exact_reverse(
                 channel: atom.key.channel,
             })
         })
-        .collect::<Result<Vec<_>, String>>()?;
+        .collect()
+}
+
+pub(super) fn exact_reverse_from_occurrences(
+    package: &LexicalGrokkingPackage,
+    support: &ExactSupportField,
+    resolved: &[ResolvedOccurrence],
+) -> Result<Vec<WaveCoupling>, String> {
     let mut observations = BTreeMap::<u32, u32>::new();
-    for occurrence in &resolved {
+    for occurrence in resolved {
         let entry = observations.entry(occurrence.atom_id).or_default();
         *entry = entry
             .checked_add(1)
             .ok_or_else(|| "exact reverse observation count exceeds u32".to_string())?;
     }
     let mut relations = resolved
-        .into_iter()
+        .iter()
+        .copied()
         .map(|occurrence| {
             let observation_count = observations
                 .get(&occurrence.atom_id)

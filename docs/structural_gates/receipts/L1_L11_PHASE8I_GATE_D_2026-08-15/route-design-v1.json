@@ -1,0 +1,79 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "l11_service", "role": "interface"},
+    {"id": "l11_host", "role": "orchestrator"},
+    {"id": "v9_typed_basin", "role": "producer"},
+    {"id": "exact_support", "role": "evidence_owner"},
+    {"id": "exact_settlement", "role": "candidate_rank_owner"},
+    {"id": "bounded_lattice", "role": "display_rank_owner"},
+    {"id": "legacy_v8_readout", "role": "producer"},
+    {"id": "l2_bridge", "role": "authorization_owner"},
+    {"id": "runtime_metrics", "role": "observer"},
+    {"id": "gate_d", "role": "proof_owner"}
+  ],
+  "edges": [
+    {"id": "exec-v9-service-host", "from": "l11_service", "relation": "calls", "to": "l11_host", "events": ["v9_query"]},
+    {"id": "exec-v9-host-basin", "from": "l11_host", "relation": "delegates", "to": "v9_typed_basin", "events": ["v9_query"]},
+    {"id": "exec-v9-basin-support", "from": "v9_typed_basin", "relation": "delegates", "to": "exact_support", "events": ["v9_query"]},
+    {"id": "exec-v9-support-settlement", "from": "exact_support", "relation": "delegates", "to": "exact_settlement", "events": ["v9_query"]},
+    {"id": "exec-v9-settlement-bounded", "from": "exact_settlement", "relation": "delegates", "to": "bounded_lattice", "events": ["v9_query"]},
+    {"id": "exec-v8-service-host", "from": "l11_service", "relation": "calls", "to": "l11_host", "events": ["v8_query"]},
+    {"id": "exec-v8-host-readout", "from": "l11_host", "relation": "delegates", "to": "legacy_v8_readout", "events": ["v8_query"]},
+    {"id": "authority-v9-basin-support", "from": "v9_typed_basin", "relation": "produces_for", "to": "exact_support", "events": ["v9_query"]},
+    {"id": "authority-v9-support-settlement", "from": "exact_support", "relation": "passes_to", "to": "exact_settlement", "events": ["v9_query"]},
+    {"id": "authority-v9-settlement-bounded", "from": "exact_settlement", "relation": "passes_to", "to": "bounded_lattice", "events": ["v9_query"]},
+    {"id": "authority-v9-bounded-l2", "from": "bounded_lattice", "relation": "passes_to", "to": "l2_bridge", "events": ["v9_query"]},
+    {"id": "authority-v8-readout-l2", "from": "legacy_v8_readout", "relation": "passes_to", "to": "l2_bridge", "events": ["v8_query"]},
+    {"id": "observe-v9-runtime", "from": "exact_settlement", "relation": "observes", "to": "runtime_metrics", "events": ["gate_d_measurement"]},
+    {"id": "proof-runtime-gate", "from": "runtime_metrics", "relation": "proves", "to": "gate_d", "events": ["gate_d_measurement"]}
+  ],
+  "routes": [
+    {
+      "id": "v9-query-execution",
+      "event": "v9_query",
+      "kind": "execution",
+      "entry": "l11_service",
+      "terminal": "bounded_lattice",
+      "required_roles": ["interface", "orchestrator", "producer", "evidence_owner", "candidate_rank_owner", "display_rank_owner"],
+      "via": ["l11_host", "v9_typed_basin", "exact_support", "exact_settlement"],
+      "path_cardinality": [{"from": "l11_service", "to": "bounded_lattice", "min": 1, "max": 1}]
+    },
+    {
+      "id": "v9-query-authority",
+      "event": "v9_query",
+      "kind": "authority",
+      "entry": "v9_typed_basin",
+      "terminal": "l2_bridge",
+      "required_roles": ["producer", "evidence_owner", "candidate_rank_owner", "display_rank_owner", "authorization_owner"],
+      "via": ["exact_support", "exact_settlement", "bounded_lattice"]
+    },
+    {
+      "id": "v8-query-execution",
+      "event": "v8_query",
+      "kind": "execution",
+      "entry": "l11_service",
+      "terminal": "legacy_v8_readout",
+      "required_roles": ["interface", "orchestrator", "producer"],
+      "via": ["l11_host"],
+      "path_cardinality": [{"from": "l11_service", "to": "legacy_v8_readout", "min": 1, "max": 1}]
+    },
+    {
+      "id": "v8-query-authority",
+      "event": "v8_query",
+      "kind": "authority",
+      "entry": "legacy_v8_readout",
+      "terminal": "l2_bridge",
+      "required_roles": ["producer", "authorization_owner"]
+    },
+    {
+      "id": "gate-d-proof",
+      "event": "gate_d_measurement",
+      "kind": "proof",
+      "entry": "runtime_metrics",
+      "terminal": "gate_d",
+      "required_roles": ["observer", "proof_owner"]
+    }
+  ]
+}

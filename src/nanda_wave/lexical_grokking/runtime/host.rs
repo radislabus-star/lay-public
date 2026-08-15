@@ -178,14 +178,7 @@ impl L1RestorationHost {
                 },
             });
         }
-        let mut candidates = self
-            .memory
-            .readout(surface, limit.max(1), ReadoutMode::Full);
-        let readout = self.memory.classify_restoration(
-            surface,
-            &mut candidates,
-            self.memory.package.restoration_calibration,
-        );
+        let (_candidates, readout) = self.memory.restoration_readout(surface, limit.max(1));
         let result = match readout {
             restoration::RestorationReadout::Winner { candidate } => {
                 serde_json::json!({
@@ -306,12 +299,7 @@ impl L1RestorationHost {
         }
 
         let limit = limit.max(1);
-        let mut candidates = self.memory.readout(surface, limit, ReadoutMode::Full);
-        let readout = self.memory.classify_restoration(
-            surface,
-            &mut candidates,
-            self.memory.package.restoration_calibration,
-        );
+        let (candidates, readout) = self.memory.restoration_readout(surface, limit);
         let authority_terminal = match readout {
             restoration::RestorationReadout::Winner { candidate } => Some(candidate.terminal_id),
             restoration::RestorationReadout::Tied { .. }

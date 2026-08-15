@@ -1,40 +1,65 @@
-//! Proof-only typed restoration basin with candidate-local depth-0 relations.
+//! Shared typed restoration basin with proof and physical-runtime owners.
 
 mod exact_reverse;
 mod implicit_forward;
+#[cfg(any(test, feature = "lexical-compiler"))]
 mod oracle;
+#[cfg(any(test, feature = "lexical-compiler"))]
 mod package_dependencies;
+#[cfg(any(test, feature = "lexical-compiler"))]
 mod quality;
+mod runtime;
 mod settlement;
 mod support;
+
+pub(super) use runtime::TypedBasinRuntime;
+pub(super) use support::ExactSupportField;
 
 #[cfg(feature = "lexical-compiler")]
 pub use quality::{diagnose_l1_typed_basin_quality_class, prove_l1_typed_basin_quality};
 
 use std::collections::BTreeMap;
+#[cfg(any(test, feature = "lexical-compiler"))]
 use std::fs::File;
+#[cfg(any(test, feature = "lexical-compiler"))]
 use std::io::{self, Read, Seek, SeekFrom};
+#[cfg(any(test, feature = "lexical-compiler"))]
 use std::path::Path;
+#[cfg(any(test, feature = "lexical-compiler"))]
 use std::time::Instant;
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 use sha2::{Digest, Sha256};
 
 use super::atoms::AtomChannel;
+#[cfg(any(test, feature = "lexical-compiler"))]
 use super::forward_decoder_index::ForwardDecoderIndex;
+#[cfg(any(test, feature = "lexical-compiler"))]
 use super::proof::{corpus_words_from_lines, prepare_fixed_heldout_cases, FixedHeldoutCase};
 use super::runtime::{LexicalGrokkingMemory, ObservedAtom};
+#[cfg(any(test, feature = "lexical-compiler"))]
 use super::typed_edit_traversal::phase7d_terminal_evidence;
+#[cfg(any(test, feature = "lexical-compiler"))]
 use implicit_forward::{candidates_equal, reconstruct_candidate};
+#[cfg(any(test, feature = "lexical-compiler"))]
 use oracle::{OracleParityMetrics, V8QueryOracle};
+#[cfg(any(test, feature = "lexical-compiler"))]
 use package_dependencies::PackageDependencyAudit;
+#[cfg(any(test, feature = "lexical-compiler"))]
 use settlement::{evaluate_settlement_case, SettlementAggregate, SettlementCaseResult};
-use support::{ExactSupportField, ExactSupportMetrics};
+#[cfg(any(test, feature = "lexical-compiler"))]
+use support::ExactSupportMetrics;
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 const PACKAGE_LIMIT_BYTES: u64 = 195 * 1024 * 1024;
+#[cfg(any(test, feature = "lexical-compiler"))]
 const IMPLICIT_LATENCY_LIMIT_US: u64 = 2_500;
+#[cfg(any(test, feature = "lexical-compiler"))]
 const COMBINED_LATENCY_LIMIT_US: u64 = 5_000;
+#[cfg(any(test, feature = "lexical-compiler"))]
 const FIXED_DAMAGE_CLASS_COUNT: usize = 13;
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 #[derive(Default)]
 struct ClassMetrics {
     cases: usize,
@@ -54,6 +79,7 @@ struct ClassMetrics {
     settlement: SettlementAggregate,
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 struct CaseOutcome {
     class: &'static str,
     target_retained: bool,
@@ -71,12 +97,14 @@ struct CaseOutcome {
     settlement: Option<SettlementCaseResult>,
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 #[derive(Clone, Copy)]
 struct V8Layout {
     package_bytes: u64,
     base_bytes: u64,
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 impl ClassMetrics {
     fn record(&mut self, outcome: CaseOutcome) {
         self.cases += 1;
@@ -139,6 +167,7 @@ impl ClassMetrics {
     }
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 pub fn prove_l1_typed_basin_implicit_forward(
     corpus_path: &Path,
     package_path: &Path,
@@ -346,6 +375,7 @@ pub fn prove_l1_typed_basin_implicit_forward(
     }))
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 fn evaluate_case(
     memory: &LexicalGrokkingMemory,
     decoder_index: &ForwardDecoderIndex,
@@ -423,6 +453,7 @@ fn observed_lexical_atoms(
         .collect()
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 fn add_parity(target: &mut OracleParityMetrics, value: OracleParityMetrics) {
     target.candidates_compared = target
         .candidates_compared
@@ -462,6 +493,7 @@ fn add_parity(target: &mut OracleParityMetrics, value: OracleParityMetrics) {
         .saturating_add(value.activation_keyboard_hits_mismatches);
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 fn parity_report(metrics: OracleParityMetrics) -> serde_json::Value {
     serde_json::json!({
         "candidates_compared": metrics.candidates_compared,
@@ -479,6 +511,7 @@ fn parity_report(metrics: OracleParityMetrics) -> serde_json::Value {
     })
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 fn support_report(
     metrics: ExactSupportMetrics,
     projected_package_bytes: u64,
@@ -498,10 +531,12 @@ fn support_report(
     })
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 fn elapsed_us(started: Instant) -> u64 {
     started.elapsed().as_micros().min(u128::from(u64::MAX)) as u64
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 fn percentile(values: &[u64], percentile: usize) -> u64 {
     if values.is_empty() {
         return 0;
@@ -512,10 +547,12 @@ fn percentile(values: &[u64], percentile: usize) -> u64 {
     sorted[index]
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 fn maximum(values: &[u64]) -> u64 {
     values.iter().copied().max().unwrap_or_default()
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 fn read_v8_layout(path: &Path) -> io::Result<V8Layout> {
     let mut file = File::open(path)?;
     let mut header = [0_u8; 128];
@@ -552,6 +589,7 @@ fn read_v8_layout(path: &Path) -> io::Result<V8Layout> {
     })
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 fn read_u32(bytes: &[u8], offset: usize) -> io::Result<u32> {
     let raw = bytes
         .get(offset..offset + 4)
@@ -559,6 +597,7 @@ fn read_u32(bytes: &[u8], offset: usize) -> io::Result<u32> {
     Ok(u32::from_le_bytes(raw.try_into().expect("four bytes")))
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 fn read_u64(bytes: &[u8], offset: usize) -> io::Result<u64> {
     let raw = bytes
         .get(offset..offset + 8)
@@ -566,6 +605,7 @@ fn read_u64(bytes: &[u8], offset: usize) -> io::Result<u64> {
     Ok(u64::from_le_bytes(raw.try_into().expect("eight bytes")))
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 fn file_sha256(path: &Path) -> io::Result<String> {
     let mut file = File::open(path)?;
     let mut hasher = Sha256::new();

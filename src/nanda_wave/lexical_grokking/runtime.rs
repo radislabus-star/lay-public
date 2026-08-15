@@ -82,7 +82,9 @@ use super::model::{
 use super::peak_search::{
     L1PeakSearch, L1QueryField, LegacyBirthSearch, PeakSearchResult, ReadoutRequest,
 };
+use super::typed_basin::TypedBasinRuntime;
 use super::v8::{self, V8Artifact};
+use super::v9;
 use super::wave_basis::{
     complex_coherence_milli, expand_atom, expand_word, pair_residual_atoms, positioned_atom_code,
 };
@@ -97,6 +99,65 @@ const MAX_GEOMETRY_SCAN: usize = 1_024;
 const SETTLING_ITERATIONS: u8 = 3;
 const MAX_EXACT_COLLISION_OPERATOR_CHARS: usize = 16;
 
+struct DecodedSurfacePool {
+    offsets: Vec<u32>,
+    bytes: Vec<u8>,
+    complete: bool,
+}
+
+impl DecodedSurfacePool {
+    fn new(terminal_count: usize) -> Self {
+        let mut offsets = Vec::with_capacity(terminal_count.saturating_add(1));
+        offsets.push(0);
+        Self {
+            offsets,
+            bytes: Vec::new(),
+            complete: true,
+        }
+    }
+
+    fn push(&mut self, surface: Option<&str>) {
+        let Some(surface) = surface else {
+            self.complete = false;
+            self.offsets.push(self.bytes.len() as u32);
+            return;
+        };
+        let Some(next_len) = self.bytes.len().checked_add(surface.len()) else {
+            self.complete = false;
+            self.offsets.push(self.bytes.len() as u32);
+            return;
+        };
+        let Ok(next_offset) = u32::try_from(next_len) else {
+            self.complete = false;
+            self.offsets.push(self.bytes.len() as u32);
+            return;
+        };
+        self.bytes.extend_from_slice(surface.as_bytes());
+        self.offsets.push(next_offset);
+    }
+
+    fn validate(&self, terminal_count: usize) -> Result<(), String> {
+        if !self.complete || self.offsets.len() != terminal_count.saturating_add(1) {
+            return Err("V9 decoded-surface pool is incomplete".to_string());
+        }
+        Ok(())
+    }
+
+    fn get(&self, terminal_id: u32) -> Option<&str> {
+        let index = terminal_id as usize;
+        let start = *self.offsets.get(index)? as usize;
+        let end = *self.offsets.get(index.checked_add(1)?)? as usize;
+        std::str::from_utf8(self.bytes.get(start..end)?).ok()
+    }
+
+    fn resident_bytes(&self) -> usize {
+        self.offsets
+            .capacity()
+            .saturating_mul(std::mem::size_of::<u32>())
+            .saturating_add(self.bytes.capacity())
+    }
+}
+
 pub(super) struct LexicalGrokkingMemory {
     pub(super) package: LexicalGrokkingPackage,
     exact_surface_index: HashMap<u64, u32>,
@@ -106,6 +167,8 @@ pub(super) struct LexicalGrokkingMemory {
     character_anchor_atoms: Vec<u32>,
     relations: RelationStore,
     reverse_cache: Mutex<ReverseCache>,
+    typed_basin: Option<TypedBasinRuntime>,
+    decoded_surface_pool: Option<DecodedSurfacePool>,
 }
 
 impl LexicalGrokkingMemory {
@@ -116,6 +179,7 @@ impl LexicalGrokkingMemory {
             character_anchor_by_char,
             character_anchor_offsets,
             character_anchor_atoms,
+            _,
         ) = compile_surface_indices(&package);
         Self {
             package,
@@ -126,6 +190,8 @@ impl LexicalGrokkingMemory {
             character_anchor_atoms,
             relations: RelationStore::Eager,
             reverse_cache: Mutex::new(ReverseCache::default()),
+            typed_basin: None,
+            decoded_surface_pool: None,
         }
     }
 
@@ -153,6 +219,34 @@ impl LexicalGrokkingMemory {
             file.read_exact(&mut prefix)
                 .map_err(|error| format!("{}: {error}", path.display()))?;
         }
+        if v9::is_v9(&prefix) {
+            let loaded = v9::load(path)?;
+            let package = loaded.package;
+            let (
+                exact_surface_index,
+                exact_surface_collisions,
+                character_anchor_by_char,
+                character_anchor_offsets,
+                character_anchor_atoms,
+                decoded_surface_pool,
+            ) = compile_surface_indices_with_decoded_pool(&package);
+            let decoded_surface_pool = decoded_surface_pool
+                .ok_or_else(|| "V9 decoded-surface pool was not built".to_string())?;
+            decoded_surface_pool.validate(package.centers.len())?;
+            let typed_basin = TypedBasinRuntime::new(&package, loaded.support)?;
+            return Ok(Self {
+                package,
+                exact_surface_index,
+                exact_surface_collisions,
+                character_anchor_by_char,
+                character_anchor_offsets,
+                character_anchor_atoms,
+                relations: RelationStore::Eager,
+                reverse_cache: Mutex::new(ReverseCache::default()),
+                typed_basin: Some(typed_basin),
+                decoded_surface_pool: Some(decoded_surface_pool),
+            });
+        }
         if !v8::is_v8(&prefix) {
             let bytes =
                 std::fs::read(path).map_err(|error| format!("{}: {error}", path.display()))?;
@@ -166,6 +260,7 @@ impl LexicalGrokkingMemory {
             character_anchor_by_char,
             character_anchor_offsets,
             character_anchor_atoms,
+            _,
         ) = compile_surface_indices(&package);
         Ok(Self {
             package,
@@ -176,10 +271,34 @@ impl LexicalGrokkingMemory {
             character_anchor_atoms,
             relations: RelationStore::LazyV8(artifact),
             reverse_cache: Mutex::new(ReverseCache::default()),
+            typed_basin: None,
+            decoded_surface_pool: None,
         })
     }
 
     pub(super) fn readout(
+        &self,
+        surface: &str,
+        limit: usize,
+        mode: ReadoutMode,
+    ) -> Vec<GrokkingCandidate> {
+        if let Some(runtime) = &self.typed_basin {
+            if mode != ReadoutMode::Full {
+                runtime.record_failure("non-full readout mode is not admitted for V9");
+                return Vec::new();
+            }
+            return match runtime.readout(self, surface, limit) {
+                Ok(output) => output.candidates,
+                Err(error) => {
+                    runtime.record_failure(&error);
+                    Vec::new()
+                }
+            };
+        }
+        self.legacy_readout(surface, limit, mode)
+    }
+
+    fn legacy_readout(
         &self,
         surface: &str,
         limit: usize,
@@ -196,7 +315,50 @@ impl LexicalGrokkingMemory {
         candidates
     }
 
+    pub(in crate::nanda_wave::lexical_grokking) fn restoration_readout(
+        &self,
+        surface: &str,
+        limit: usize,
+    ) -> (
+        Vec<GrokkingCandidate>,
+        super::restoration::RestorationReadout,
+    ) {
+        if let Some(runtime) = &self.typed_basin {
+            return match runtime.readout(self, surface, limit) {
+                Ok(output) => (output.candidates, output.readout),
+                Err(error) => {
+                    runtime.record_failure(&error);
+                    (
+                        Vec::new(),
+                        super::restoration::classify(&[], self.package.restoration_calibration),
+                    )
+                }
+            };
+        }
+        let mut candidates = self.legacy_readout(surface, limit, ReadoutMode::Full);
+        let readout = self.classify_restoration(
+            surface,
+            &mut candidates,
+            self.package.restoration_calibration,
+        );
+        (candidates, readout)
+    }
+
     pub(super) fn warm_first_touch(&self) -> io::Result<serde_json::Value> {
+        if let Some(runtime) = &self.typed_basin {
+            let mut stats = runtime.stats();
+            if let Some(object) = stats.as_object_mut() {
+                object.insert(
+                    "decoded_surface_pool_bytes".to_string(),
+                    self.decoded_surface_pool
+                        .as_ref()
+                        .map(DecodedSurfacePool::resident_bytes)
+                        .unwrap_or_default()
+                        .into(),
+                );
+            }
+            return Ok(stats);
+        }
         let RelationStore::LazyV8(artifact) = &self.relations else {
             return Ok(serde_json::json!({
                 "format": "eager",
@@ -309,6 +471,14 @@ impl LexicalGrokkingMemory {
     }
 
     fn birth_profile(&self, surfaces: &[String]) -> serde_json::Value {
+        if let Some(runtime) = &self.typed_basin {
+            return serde_json::json!({
+                "format": "v9",
+                "owner": "phase8i_exact_typed_basin",
+                "surface_count": surfaces.len(),
+                "runtime": runtime.stats(),
+            });
+        }
         let mut uses = BTreeMap::<u32, (usize, AtomChannel)>::new();
         let mut selected_references = 0_usize;
         let mut selected_relations = 0_usize;
@@ -482,6 +652,9 @@ impl LexicalGrokkingMemory {
     }
 
     pub(super) fn decode_terminal(&self, terminal_id: u32) -> Option<String> {
+        if let Some(pool) = &self.decoded_surface_pool {
+            return pool.get(terminal_id).map(str::to_owned);
+        }
         let center = *self.package.centers.get(terminal_id as usize)?;
         let mut node = center.decoder_terminal;
         let mut symbols = Vec::new();
@@ -516,17 +689,51 @@ fn compile_surface_indices(
     HashMap<char, u32>,
     Vec<u32>,
     Vec<u32>,
+    Option<DecodedSurfacePool>,
+) {
+    compile_surface_indices_impl(package, false)
+}
+
+fn compile_surface_indices_with_decoded_pool(
+    package: &LexicalGrokkingPackage,
+) -> (
+    HashMap<u64, u32>,
+    HashMap<u64, Vec<u32>>,
+    HashMap<char, u32>,
+    Vec<u32>,
+    Vec<u32>,
+    Option<DecodedSurfacePool>,
+) {
+    compile_surface_indices_impl(package, true)
+}
+
+fn compile_surface_indices_impl(
+    package: &LexicalGrokkingPackage,
+    retain_decoded_surfaces: bool,
+) -> (
+    HashMap<u64, u32>,
+    HashMap<u64, Vec<u32>>,
+    HashMap<char, u32>,
+    Vec<u32>,
+    Vec<u32>,
+    Option<DecodedSurfacePool>,
 ) {
     let mut index = HashMap::with_capacity(package.centers.len());
     let mut collisions = HashMap::<u64, Vec<u32>>::new();
     let mut anchor_by_char = HashMap::new();
     let mut offsets = Vec::with_capacity(package.centers.len().saturating_add(1));
     let mut atoms = Vec::new();
+    let mut decoded_surface_pool =
+        retain_decoded_surfaces.then(|| DecodedSurfacePool::new(package.centers.len()));
     offsets.push(0);
     for (terminal, center) in package.centers.iter().enumerate() {
         let mut anchors = AnchorSequence::default();
         let mut complete = false;
-        if let Ok(surface) = format::decode_center_surface(*center, &package.decoder_nodes) {
+        let decoded_surface = format::decode_center_surface(*center, &package.decoder_nodes).ok();
+        if let Some(pool) = decoded_surface_pool.as_mut() {
+            pool.push(decoded_surface.as_deref());
+        }
+        if let Some(surface) = decoded_surface.as_deref() {
             complete = true;
             for (position, ch) in surface.chars().take(MAX_ANCHOR_SEQUENCE).enumerate() {
                 let Some(atom_id) = package.graph.atom_id(NGramKey {
@@ -556,7 +763,14 @@ fn compile_surface_indices(
         }
         offsets.push(atoms.len() as u32);
     }
-    (index, collisions, anchor_by_char, offsets, atoms)
+    (
+        index,
+        collisions,
+        anchor_by_char,
+        offsets,
+        atoms,
+        decoded_surface_pool,
+    )
 }
 
 fn anchor_sequence_hash(sequence: &[u32]) -> u64 {
