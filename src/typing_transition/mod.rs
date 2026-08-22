@@ -10,6 +10,7 @@ pub(crate) mod executor_contract;
 pub(crate) mod live_candidate;
 pub(crate) mod proposal_admission;
 pub(crate) mod state;
+pub(crate) mod target_evidence;
 pub(crate) mod verifier;
 
 use crate::candidate_contract::CandidateOrigin;

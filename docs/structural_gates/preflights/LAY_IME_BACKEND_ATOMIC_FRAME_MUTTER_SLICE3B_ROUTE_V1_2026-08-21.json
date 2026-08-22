@@ -1,0 +1,114 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "Mutter Slice 3B real text-input-v3 atomic frame owner, legacy separation, replay and protocol proof",
+  "nodes": [
+    {"id": "clutter_atomic_lease", "role": "producer"},
+    {"id": "meta_profile_gate", "role": "authorization_owner"},
+    {"id": "meta_atomic_prevalidation", "role": "evidence_owner"},
+    {"id": "meta_atomic_emitter", "role": "mutation_owner"},
+    {"id": "done_submission_receipt", "role": "observer"},
+    {"id": "surrounding_postcondition", "role": "observer"},
+    {"id": "slice3b_protocol_proof", "role": "proof_owner"},
+    {"id": "marked_replay_copy", "role": "producer"},
+    {"id": "meta_replay_gate", "role": "authorization_owner"},
+    {"id": "wayland_keyboard_dispatch", "role": "mutation_owner"},
+    {"id": "replay_receipt", "role": "observer"},
+    {"id": "legacy_im_event", "role": "producer"},
+    {"id": "legacy_pending_classifier", "role": "evidence_owner"},
+    {"id": "legacy_wayland_emitter", "role": "mutation_owner"},
+    {"id": "legacy_done_receipt", "role": "observer"}
+  ],
+  "edges": [
+    {"id": "atomic-lease-profile", "from": "clutter_atomic_lease", "relation": "passes_to", "to": "meta_profile_gate", "events": ["atomic_frame_submitted", "atomic_frame_refused"]},
+    {"id": "atomic-profile-prevalidation", "from": "meta_profile_gate", "relation": "authorizes", "to": "meta_atomic_prevalidation", "events": ["atomic_frame_submitted"]},
+    {"id": "atomic-prevalidation-emitter", "from": "meta_atomic_prevalidation", "relation": "authorizes", "to": "meta_atomic_emitter", "events": ["atomic_frame_submitted"]},
+    {"id": "atomic-emitter-receipt", "from": "meta_atomic_emitter", "relation": "produces_for", "to": "done_submission_receipt", "events": ["atomic_frame_submitted"]},
+    {"id": "atomic-refusal-receipt", "from": "meta_profile_gate", "relation": "produces_for", "to": "done_submission_receipt", "events": ["atomic_frame_refused"]},
+    {"id": "atomic-observe-postcondition", "from": "done_submission_receipt", "relation": "observes", "to": "surrounding_postcondition", "events": ["atomic_frame_submitted"]},
+    {"id": "atomic-postcondition-proof", "from": "surrounding_postcondition", "relation": "proves", "to": "slice3b_protocol_proof", "events": ["atomic_frame_submitted"]},
+    {"id": "atomic-refusal-proof", "from": "meta_atomic_prevalidation", "relation": "proves", "to": "slice3b_protocol_proof", "events": ["atomic_frame_refused"]},
+    {"id": "replay-copy-gate", "from": "marked_replay_copy", "relation": "passes_to", "to": "meta_replay_gate", "events": ["native_key_replayed", "native_replay_refused"]},
+    {"id": "replay-gate-keyboard", "from": "meta_replay_gate", "relation": "authorizes", "to": "wayland_keyboard_dispatch", "events": ["native_key_replayed"]},
+    {"id": "replay-keyboard-receipt", "from": "wayland_keyboard_dispatch", "relation": "produces_for", "to": "replay_receipt", "events": ["native_key_replayed"]},
+    {"id": "replay-refusal-receipt", "from": "meta_replay_gate", "relation": "produces_for", "to": "replay_receipt", "events": ["native_replay_refused"]},
+    {"id": "replay-proof", "from": "replay_receipt", "relation": "proves", "to": "slice3b_protocol_proof", "events": ["native_key_replayed", "native_replay_refused"]},
+    {"id": "legacy-event-classifier", "from": "legacy_im_event", "relation": "passes_to", "to": "legacy_pending_classifier", "events": ["legacy_im_mutation"]},
+    {"id": "legacy-classifier-emitter", "from": "legacy_pending_classifier", "relation": "passes_to", "to": "legacy_wayland_emitter", "events": ["legacy_im_mutation"]},
+    {"id": "legacy-emitter-done", "from": "legacy_wayland_emitter", "relation": "produces_for", "to": "legacy_done_receipt", "events": ["legacy_im_mutation"]},
+    {"id": "legacy-proof", "from": "legacy_done_receipt", "relation": "proves", "to": "slice3b_protocol_proof", "events": ["legacy_im_mutation"]}
+  ],
+  "routes": [
+    {
+      "id": "atomic-frame-execution",
+      "event": "atomic_frame_submitted",
+      "kind": "execution",
+      "entry": "clutter_atomic_lease",
+      "terminal": "done_submission_receipt",
+      "required_roles": ["producer", "authorization_owner", "evidence_owner", "mutation_owner", "observer"],
+      "path_cardinality": [{"from": "clutter_atomic_lease", "to": "done_submission_receipt", "min": 1, "max": 1}]
+    },
+    {
+      "id": "atomic-frame-authority",
+      "event": "atomic_frame_submitted",
+      "kind": "authority",
+      "entry": "meta_profile_gate",
+      "terminal": "meta_atomic_emitter",
+      "required_roles": ["authorization_owner", "evidence_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "meta_profile_gate", "to": "meta_atomic_emitter", "min": 1, "max": 1}]
+    },
+    {
+      "id": "atomic-refusal-execution",
+      "event": "atomic_frame_refused",
+      "kind": "execution",
+      "entry": "clutter_atomic_lease",
+      "terminal": "done_submission_receipt",
+      "required_roles": ["producer", "authorization_owner", "observer"],
+      "path_cardinality": [{"from": "clutter_atomic_lease", "to": "done_submission_receipt", "min": 1, "max": 1}]
+    },
+    {
+      "id": "atomic-submission-observation",
+      "event": "atomic_frame_submitted",
+      "kind": "observation",
+      "entry": "done_submission_receipt",
+      "terminal": "surrounding_postcondition",
+      "required_roles": ["observer"],
+      "path_cardinality": [{"from": "done_submission_receipt", "to": "surrounding_postcondition", "min": 1, "max": 1}]
+    },
+    {
+      "id": "atomic-submission-proof",
+      "event": "atomic_frame_submitted",
+      "kind": "proof",
+      "entry": "surrounding_postcondition",
+      "terminal": "slice3b_protocol_proof",
+      "required_roles": ["observer", "proof_owner"],
+      "path_cardinality": [{"from": "surrounding_postcondition", "to": "slice3b_protocol_proof", "min": 1, "max": 1}]
+    },
+    {
+      "id": "native-replay-execution",
+      "event": "native_key_replayed",
+      "kind": "execution",
+      "entry": "marked_replay_copy",
+      "terminal": "replay_receipt",
+      "required_roles": ["producer", "authorization_owner", "mutation_owner", "observer"],
+      "path_cardinality": [{"from": "marked_replay_copy", "to": "replay_receipt", "min": 1, "max": 1}]
+    },
+    {
+      "id": "native-replay-authority",
+      "event": "native_key_replayed",
+      "kind": "authority",
+      "entry": "meta_replay_gate",
+      "terminal": "wayland_keyboard_dispatch",
+      "required_roles": ["authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "meta_replay_gate", "to": "wayland_keyboard_dispatch", "min": 1, "max": 1}]
+    },
+    {
+      "id": "legacy-im-execution",
+      "event": "legacy_im_mutation",
+      "kind": "execution",
+      "entry": "legacy_im_event",
+      "terminal": "legacy_done_receipt",
+      "required_roles": ["producer", "evidence_owner", "mutation_owner", "observer"],
+      "path_cardinality": [{"from": "legacy_im_event", "to": "legacy_done_receipt", "min": 1, "max": 1}]
+    }
+  ]
+}

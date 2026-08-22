@@ -1,0 +1,243 @@
+{
+  "authority_bearing": false,
+  "baseline_checks": [
+    {
+      "id": "slice5-full-proof",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE5_CONTOUR_BIRTH_2026-08-20/slice5-full-typed-reserve-13x100.json",
+      "expect": {
+        "mode": "0600",
+        "size_bytes": 1216056,
+        "sha256": "b4d066476650616066946b4910b5f181d15531680fee9261738e174d3502f0c7"
+      }
+    },
+    {
+      "id": "authority-paper",
+      "kind": "file",
+      "path": "../../ime-canonical-target-authority-paper-2026-08-17.md",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 183712,
+        "sha256": "8610332ef0572c5efb74eb9e4e5fa90a1b5e491636b649bb4f4931d1966fad91"
+      }
+    },
+    {
+      "id": "contour-owner",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/contour_birth.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 20522,
+        "sha256": "abe38147457cdbed40caf19b26278dc96bac3e8c999ebfd9d428a32673f29e49"
+      }
+    },
+    {
+      "id": "material-owner",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/material_frame.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 47748,
+        "sha256": "170b0d185eacab3af5a0b6d9621914712e8c844432d61ae8b6f9dda8130a4413"
+      }
+    },
+    {
+      "id": "module-owner",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/mod.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 2117,
+        "sha256": "0650eeb03f6f981e577e4891bece7d9c2d68325e883297f80921ff6efd067e18"
+      }
+    },
+    {
+      "id": "proof-owner",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/proof.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 184500,
+        "sha256": "0846cc440715124f2ed5fb8f75699141f5d1d2f4ddba077805e3378384166ee4"
+      }
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "split-composite-grounding",
+      "producer": "ordered exact identities for every split part plus exact scalar segmentation",
+      "consumer": "BoundarySplit material witness",
+      "comparison": "all emitted parts and split positions are byte-identical to the operator replay",
+      "test_id": "true-split-exact"
+    },
+    {
+      "id": "merge-composite-grounding",
+      "producer": "exact left and right source identities plus exact merged target identity and separator profile",
+      "consumer": "BoundaryMerge material witness",
+      "comparison": "separator deletion alone replays the exact target bytes",
+      "test_id": "true-merge-exact"
+    },
+    {
+      "id": "boundary-reserve-completeness",
+      "producer": "complete boundary enumeration and all-seen digest",
+      "consumer": "two-surface boundary storage reserve",
+      "comparison": "more than two novel boundary surfaces produces whole-field StorageCapacity overflow",
+      "test_id": "boundary-reserve-parity"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "fixed-envelope",
+      "statement": "MAX_TARGETS_PER_FIELD remains 74, contour reserve remains 8 and novel boundary reserve is exactly 2",
+      "test_id": "fixed-envelope"
+    },
+    {
+      "id": "two-sided-grounding",
+      "statement": "one grounded side cannot birth a split or merge target",
+      "test_id": "false-split"
+    },
+    {
+      "id": "separator-only",
+      "statement": "Slice 6 boundary operators only insert or remove the exact registered separator and never change lexical bytes",
+      "test_id": "separator-replay"
+    },
+    {
+      "id": "born-only",
+      "statement": "boundary membership remains Born and cannot grant Winner in shadow",
+      "test_id": "boundary-born-only"
+    },
+    {
+      "id": "live-unchanged",
+      "statement": "old boundary route DecisionCore verifier daemon IBus packages and installed runtime remain unchanged",
+      "test_id": "live-byte-parity"
+    },
+    {
+      "id": "systemic-only",
+      "statement": "no fixture word phrase suffix test ID or case-specific runtime branch is added",
+      "test_id": "systemic-source-scan"
+    }
+  ],
+  "preserved_artifacts": [
+    {
+      "id": "slice5-proof",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE5_CONTOUR_BIRTH_2026-08-20/slice5-full-typed-reserve-13x100.json",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "retain Slice 5 scoped PASS evidence",
+      "baseline_check_id": "slice5-full-proof"
+    }
+  ],
+  "reuses_existing_implementation": true,
+  "runtime_comparisons": [],
+  "schema": "nanda.implementation-preflight.v1",
+  "scientific_future_sensitive": true,
+  "source_checks": [
+    {
+      "id": "contour-owner-pinned",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/contour_birth.rs",
+      "sha256": "abe38147457cdbed40caf19b26278dc96bac3e8c999ebfd9d428a32673f29e49",
+      "forbidden_effect_patterns": [
+        {"effect": "literal_case_runtime_branch", "regex": "(?i)(?:observed|candidate|surface)\\s*==\\s*\""},
+        {"effect": "raise_contour_budget", "regex": "MAX_CONTOUR_(?:EXACT_LOOKUPS|OPERATOR_STEPS)\\s*[:=].*(?:32768|65536)"}
+      ]
+    },
+    {
+      "id": "material-owner-pinned",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/material_frame.rs",
+      "sha256": "170b0d185eacab3af5a0b6d9621914712e8c844432d61ae8b6f9dda8130a4413",
+      "forbidden_effect_patterns": [
+        {"effect": "raise_global_target_limit", "regex": "MAX_TARGETS_PER_FIELD\\s*[:=].*(?:75|96|128)"},
+        {"effect": "raise_boundary_reserve", "regex": "MAX_BOUNDARY_TARGETS_PER_FIELD\\s*[:=].*(?:3|4|8|16)"},
+        {"effect": "mint_boundary_authority", "regex": "Boundary(?:Split|Merge).{0,160}(?:Grounded|Winner)"}
+      ]
+    },
+    {
+      "id": "module-owner-pinned",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/mod.rs",
+      "sha256": "0650eeb03f6f981e577e4891bece7d9c2d68325e883297f80921ff6efd067e18",
+      "forbidden_effect_patterns": [
+        {"effect": "expose_live_boundary_owner", "regex": "pub\\(in crate::nanda_wave::l2_field\\) use boundary_birth"}
+      ]
+    },
+    {
+      "id": "proof-owner-pinned",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/proof.rs",
+      "sha256": "0846cc440715124f2ed5fb8f75699141f5d1d2f4ddba077805e3378384166ee4",
+      "forbidden_effect_patterns": [
+        {"effect": "runtime_deployment", "regex": "(?:systemctl|daemon-reload|lay-runtime-control)"},
+        {"effect": "synthetic_fixture", "regex": "(?:write|create|generate)_synthetic_fixture"},
+        {"effect": "generated_traffic", "regex": "(?:TcpStream|UdpSocket|reqwest|hyper::|https?://)"},
+        {"effect": "restart_lay_daemon", "regex": "(?:restart|stop|kill|pkill).{0,80}lay-daemon"},
+        {"effect": "restart_global_ibus_daemon", "regex": "(?:restart|stop|kill|pkill).{0,80}ibus-daemon"},
+        {"effect": "rewrite_any_package", "regex": "(?:File::create|OpenOptions::new).{0,300}(?:p2m|L2-RU|canonical|lexical)"},
+        {"effect": "change_live_authority", "regex": "(?:live|bridge).{0,120}(?:score|rank|authority)\\s*[+*]?="}
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "add-boundary-birth-module", "kind": "source_edit"},
+      {"id": "integrate-boundary-material-reserve", "kind": "source_edit"},
+      {"id": "add-boundary-proof-denominators", "kind": "source_edit"},
+      {"id": "run-remote-shadow-proof", "kind": "remote_test"}
+    ],
+    "forbidden": [
+      "runtime_deployment",
+      "generated_traffic",
+      "restart_lay_daemon",
+      "restart_global_ibus_daemon",
+      "rewrite_any_package",
+      "raise_global_target_limit",
+      "raise_boundary_reserve",
+      "raise_contour_budget",
+      "literal_case_runtime_branch",
+      "mint_boundary_authority",
+      "change_live_authority",
+      "expose_live_boundary_owner",
+      "synthetic_fixture"
+    ]
+  },
+  "state_machine": {
+    "initial_state": "SLICE5_SHADOW_PASS_RUNTIME_UNCHANGED",
+    "steps": [
+      {
+        "id": "implement-boundary-internalization",
+        "from": "SLICE5_SHADOW_PASS_RUNTIME_UNCHANGED",
+        "to": "SLICE6_BOUNDARY_SHADOW_READY",
+        "mutates": true,
+        "failure_state": "SLICE6_IMPLEMENTATION_REJECTED_RUNTIME_UNCHANGED",
+        "cleanup": "retain failed diff and evidence without fallback or deployment",
+        "preserves": ["slice5-proof"],
+        "test_id": "boundary-overflow"
+      },
+      {
+        "id": "run-fixed-boundary-proof",
+        "from": "SLICE6_BOUNDARY_SHADOW_READY",
+        "to": "SLICE6_BOUNDARY_SHADOW_PASS_RUNTIME_UNCHANGED",
+        "mutates": false,
+        "failure_state": "SLICE6_PROOF_FAILED_RUNTIME_UNCHANGED",
+        "cleanup": "retain exact failure receipt and stop before Slice 7",
+        "preserves": ["slice5-proof"],
+        "test_id": "fixed-boundary-proof"
+      }
+    ],
+    "terminal_states": [
+      "SLICE6_BOUNDARY_SHADOW_PASS_RUNTIME_UNCHANGED",
+      "SLICE6_IMPLEMENTATION_REJECTED_RUNTIME_UNCHANGED",
+      "SLICE6_PROOF_FAILED_RUNTIME_UNCHANGED"
+    ]
+  },
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE6_BOUNDARY_INTERNALIZATION_IMPLEMENTATION_V1_2026-08-20",
+  "tests": [
+    {"id": "true-split-exact", "kind": "parity", "expected": "all exact split parts and replay bytes agree for one typed Born boundary target"},
+    {"id": "true-merge-exact", "kind": "parity", "expected": "exact source parts merged target and replay bytes agree for one typed Born boundary target"},
+    {"id": "boundary-reserve-parity", "kind": "parity", "expected": "complete boundary enumeration and retained reserve agree through two novel surfaces"},
+    {"id": "false-split", "kind": "integration", "expected": "missing grounding on either side produces no boundary target"},
+    {"id": "separator-replay", "kind": "parity", "expected": "operator replay changes only the exact separator bytes"},
+    {"id": "boundary-overflow", "kind": "fault_injection", "expected": "third novel boundary surface yields whole-field StorageCapacity overflow and no Winner"},
+    {"id": "fixed-envelope", "kind": "integration", "expected": "global 74 contour 8 and boundary 2 capacities remain fixed"},
+    {"id": "boundary-born-only", "kind": "integration", "expected": "all boundary witnesses remain Born in shadow"},
+    {"id": "systemic-source-scan", "kind": "integration", "expected": "no fixture literal or case-specific runtime branch"},
+    {"id": "live-byte-parity", "kind": "parity", "expected": "live boundary and mutation owners are byte-identical"},
+    {"id": "fixed-boundary-proof", "kind": "integration", "expected": "true split merge overflow and false split denominators pass with zero target loss"}
+  ]
+}

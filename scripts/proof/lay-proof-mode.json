@@ -1,0 +1,9 @@
+{
+  "parentMode": "user",
+  "components": [],
+  "panel": {
+    "left": [],
+    "center": [],
+    "right": ["keyboard"]
+  }
+}

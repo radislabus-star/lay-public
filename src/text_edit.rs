@@ -17,6 +17,8 @@ mod executor;
 mod gate;
 #[path = "text_edit/mutation.rs"]
 mod mutation;
+#[path = "text_edit/output_transaction.rs"]
+pub(crate) mod output_transaction;
 #[path = "text_edit/safety.rs"]
 pub(crate) mod safety;
 #[path = "text_edit/structural_verifier.rs"]

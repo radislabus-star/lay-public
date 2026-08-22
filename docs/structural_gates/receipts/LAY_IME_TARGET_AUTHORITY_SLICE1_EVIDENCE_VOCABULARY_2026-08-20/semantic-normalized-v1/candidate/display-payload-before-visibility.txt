@@ -1,0 +1,2 @@
+test preedit::tests::preedit_publisher_installs_payload_before_showing_it ... ok
+

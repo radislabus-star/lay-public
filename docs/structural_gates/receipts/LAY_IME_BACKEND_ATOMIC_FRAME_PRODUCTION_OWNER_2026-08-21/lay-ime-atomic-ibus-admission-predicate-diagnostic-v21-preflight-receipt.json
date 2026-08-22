@@ -1,0 +1,152 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "ibus-input-context-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/bus/inputcontext.c",
+      "sha256": "4081c8277ec9308b85bdd8e32af8a36da69278bbd35de2c66cde03fb13ecf90c",
+      "size_bytes": 150019
+    },
+    {
+      "exists": true,
+      "id": "v20-proxy-pass-evidence",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/atomic-full-route-v20-proxy-call-observer.log",
+      "sha256": "7ee84dfe4afb6f885f3a5dce6dd63a8833cf3d28c2461ce82e5a19acaab8f72d",
+      "size_bytes": 7732
+    },
+    {
+      "exists": true,
+      "id": "shell-v20-observer",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/shell/atomicInputMethodRoute.js",
+      "sha256": "3ef07b32404c9e76da6e6df28eae64e1ec4c48f273ea878a1f9ba359f854c05f",
+      "size_bytes": 7784
+    },
+    {
+      "exists": true,
+      "id": "proof-runner",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh",
+      "sha256": "f86b82106f1e55100a253a20eeb5cfd861b0127827670ad6d534d81732eee83f",
+      "size_bytes": 10143
+    },
+    {
+      "exists": true,
+      "id": "architecture-paper",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/ime-backend-atomic-frame-v2-2026-08-20.md",
+      "sha256": "09eeff1136ff8543a2a5a9af0b9e7e7e57c37d6837274f56be425072a57c1291",
+      "size_bytes": 140154
+    },
+    {
+      "exists": true,
+      "id": "installed-lay-engine",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a",
+      "size_bytes": 6423488
+    }
+  ],
+  "blockers": [
+    {
+      "code": "forbidden_effect_in_reused_source",
+      "field": "source_checks[0].forbidden_effect_patterns[2]",
+      "message": "live_session_restart matched at line 772"
+    },
+    {
+      "code": "forbidden_effect_in_reused_source",
+      "field": "source_checks[0].forbidden_effect_patterns[9]",
+      "message": "local_build matched at line 2404"
+    },
+    {
+      "code": "fault_injection_missing",
+      "field": "state_machine.steps[0].test_id",
+      "message": "mutating failure requires a fault_injection test"
+    }
+  ],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 6,
+    "forbidden_side_effect_kinds": [
+      "admission_semantics_change",
+      "diagnostic_latency_promoted_to_pass",
+      "installed_file_write",
+      "live_keyboard_signal",
+      "live_session_restart",
+      "local_build",
+      "orphaned_test_process",
+      "physical_user_text_mutation",
+      "predicate_reordering",
+      "runtime_deployment",
+      "second_atomic_call",
+      "shell_mutter_lay_source_edit",
+      "uncontrolled_remote_build"
+    ],
+    "identity_contracts": 2,
+    "invariants": 4,
+    "planned_side_effect_kinds": [
+      "diagnostic_source_edit",
+      "ephemeral_process_start",
+      "filesystem_write",
+      "remote_build",
+      "remote_filesystem_write"
+    ],
+    "preserved_artifacts": 2,
+    "runtime_comparisons": 2,
+    "source_checks": 3,
+    "tests": 9
+  },
+  "manifest_sha256": "b9621657644a128cb8661280c23f4c77cd3bc33681334062eb9db83aa1e5ca65",
+  "safe_to_implement": false,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [
+        {
+          "effect": "live_session_restart",
+          "line": 772
+        },
+        {
+          "effect": "local_build",
+          "line": 2404
+        }
+      ],
+      "id": "pinned-ibus-input-context",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/bus/inputcontext.c",
+      "sha256": "4081c8277ec9308b85bdd8e32af8a36da69278bbd35de2c66cde03fb13ecf90c",
+      "size_bytes": 150019
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-proof-runner",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh",
+      "sha256": "f86b82106f1e55100a253a20eeb5cfd861b0127827670ad6d534d81732eee83f",
+      "size_bytes": 10143
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-shell-observer",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/shell/atomicInputMethodRoute.js",
+      "sha256": "3ef07b32404c9e76da6e6df28eae64e1ec4c48f273ea878a1f9ba359f854c05f",
+      "size_bytes": 7784
+    }
+  ],
+  "task_id": "LAY_IME_ATOMIC_IBUS_ADMISSION_PREDICATE_DIAGNOSTIC_V21_2026-08-21",
+  "verdict": "BLOCKED_BEFORE_CODE"
+}

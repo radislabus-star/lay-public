@@ -1,0 +1,253 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "printable_event", "role": "interface"},
+    {"id": "tab_event", "role": "interface"},
+    {"id": "committed_space_event", "role": "interface"},
+    {"id": "active_space_event", "role": "interface"},
+    {"id": "stale_publication_event", "role": "interface"},
+    {"id": "double_shift_event", "role": "interface"},
+
+    {"id": "prepared_field_producer", "role": "producer"},
+    {"id": "prepared_target_material", "role": "evidence_owner"},
+    {"id": "display_candidate_readout", "role": "candidate_rank_owner"},
+    {"id": "display_rank", "role": "display_rank_owner"},
+    {"id": "preedit_renderer", "role": "render_owner"},
+
+    {"id": "visible_target_receipt", "role": "evidence_owner"},
+    {"id": "explicit_tab_selection", "role": "candidate_rank_owner"},
+    {"id": "frame_bound_automatic_evidence", "role": "evidence_owner"},
+    {"id": "l2_winner_readout", "role": "candidate_rank_owner"},
+    {"id": "context_tie_readout", "role": "candidate_rank_owner"},
+    {"id": "compound_edit_authorization", "role": "authorization_owner"},
+    {"id": "raw_user_input_authorization", "role": "authorization_owner"},
+    {"id": "active_composition_mutator", "role": "mutation_owner"},
+    {"id": "committed_tail_mutator", "role": "mutation_owner"},
+
+    {"id": "stale_generation_guard", "role": "authorization_owner"},
+    {"id": "stale_discard_observer", "role": "observer"},
+    {"id": "rollback_receipt", "role": "evidence_owner"},
+    {"id": "rollback_snapshot_observer", "role": "observer"}
+  ],
+  "edges": [
+    {"id": "exec-printable-producer", "from": "printable_event", "relation": "calls", "to": "prepared_field_producer", "events": ["display_refresh"]},
+    {"id": "exec-producer-material", "from": "prepared_field_producer", "relation": "delegates", "to": "prepared_target_material", "events": ["display_refresh"]},
+    {"id": "exec-material-display-readout", "from": "prepared_target_material", "relation": "delegates", "to": "display_candidate_readout", "events": ["display_refresh"]},
+    {"id": "exec-display-readout-rank", "from": "display_candidate_readout", "relation": "delegates", "to": "display_rank", "events": ["display_refresh"]},
+    {"id": "exec-display-rank-render", "from": "display_rank", "relation": "delegates", "to": "preedit_renderer", "events": ["display_refresh"]},
+    {"id": "data-producer-material", "from": "prepared_field_producer", "relation": "produces_for", "to": "prepared_target_material", "events": ["display_refresh"]},
+    {"id": "data-material-display-readout", "from": "prepared_target_material", "relation": "passes_to", "to": "display_candidate_readout", "events": ["display_refresh"]},
+    {"id": "data-display-readout-rank", "from": "display_candidate_readout", "relation": "passes_to", "to": "display_rank", "events": ["display_refresh"]},
+    {"id": "data-display-rank-render", "from": "display_rank", "relation": "passes_to", "to": "preedit_renderer", "events": ["display_refresh"]},
+
+    {"id": "exec-tab-receipt", "from": "tab_event", "relation": "calls", "to": "visible_target_receipt", "events": ["tab_accept"]},
+    {"id": "exec-tab-select", "from": "visible_target_receipt", "relation": "delegates", "to": "explicit_tab_selection", "events": ["tab_accept"]},
+    {"id": "exec-tab-authorize", "from": "explicit_tab_selection", "relation": "delegates", "to": "compound_edit_authorization", "events": ["tab_accept"]},
+    {"id": "exec-tab-mutate", "from": "compound_edit_authorization", "relation": "delegates", "to": "active_composition_mutator", "events": ["tab_accept"]},
+    {"id": "data-tab-receipt-select", "from": "visible_target_receipt", "relation": "passes_to", "to": "explicit_tab_selection", "events": ["tab_accept"]},
+    {"id": "data-tab-select-authorize", "from": "explicit_tab_selection", "relation": "passes_to", "to": "compound_edit_authorization", "events": ["tab_accept"]},
+    {"id": "data-tab-authorize-mutate", "from": "compound_edit_authorization", "relation": "authorizes", "to": "active_composition_mutator", "events": ["tab_accept"]},
+
+    {"id": "exec-space-l2-evidence", "from": "committed_space_event", "relation": "calls", "to": "frame_bound_automatic_evidence", "events": ["space_l2_winner"]},
+    {"id": "exec-space-l2-readout", "from": "frame_bound_automatic_evidence", "relation": "delegates", "to": "l2_winner_readout", "events": ["space_l2_winner"]},
+    {"id": "exec-space-l2-authorize", "from": "l2_winner_readout", "relation": "delegates", "to": "compound_edit_authorization", "events": ["space_l2_winner"]},
+    {"id": "exec-space-l2-mutate", "from": "compound_edit_authorization", "relation": "delegates", "to": "committed_tail_mutator", "events": ["space_l2_winner"]},
+    {"id": "data-space-l2-evidence-readout", "from": "frame_bound_automatic_evidence", "relation": "passes_to", "to": "l2_winner_readout", "events": ["space_l2_winner"]},
+    {"id": "data-space-l2-readout-authorize", "from": "l2_winner_readout", "relation": "passes_to", "to": "compound_edit_authorization", "events": ["space_l2_winner"]},
+    {"id": "data-space-l2-authorize-mutate", "from": "compound_edit_authorization", "relation": "authorizes", "to": "committed_tail_mutator", "events": ["space_l2_winner"]},
+
+    {"id": "exec-space-context-evidence", "from": "committed_space_event", "relation": "calls", "to": "frame_bound_automatic_evidence", "events": ["space_context_tied"]},
+    {"id": "exec-space-context-readout", "from": "frame_bound_automatic_evidence", "relation": "delegates", "to": "context_tie_readout", "events": ["space_context_tied"]},
+    {"id": "exec-space-context-authorize", "from": "context_tie_readout", "relation": "delegates", "to": "compound_edit_authorization", "events": ["space_context_tied"]},
+    {"id": "exec-space-context-mutate", "from": "compound_edit_authorization", "relation": "delegates", "to": "committed_tail_mutator", "events": ["space_context_tied"]},
+    {"id": "data-space-context-evidence-readout", "from": "frame_bound_automatic_evidence", "relation": "passes_to", "to": "context_tie_readout", "events": ["space_context_tied"]},
+    {"id": "data-space-context-readout-authorize", "from": "context_tie_readout", "relation": "passes_to", "to": "compound_edit_authorization", "events": ["space_context_tied"]},
+    {"id": "data-space-context-authorize-mutate", "from": "compound_edit_authorization", "relation": "authorizes", "to": "committed_tail_mutator", "events": ["space_context_tied"]},
+
+    {"id": "exec-space-fallback-authorize", "from": "committed_space_event", "relation": "calls", "to": "raw_user_input_authorization", "events": ["space_fallback"]},
+    {"id": "exec-space-fallback-mutate", "from": "raw_user_input_authorization", "relation": "delegates", "to": "committed_tail_mutator", "events": ["space_fallback"]},
+    {"id": "data-space-fallback-mutate", "from": "raw_user_input_authorization", "relation": "authorizes", "to": "committed_tail_mutator", "events": ["space_fallback"]},
+
+    {"id": "exec-active-space-authorize", "from": "active_space_event", "relation": "calls", "to": "raw_user_input_authorization", "events": ["active_composition_space"]},
+    {"id": "exec-active-space-mutate", "from": "raw_user_input_authorization", "relation": "delegates", "to": "active_composition_mutator", "events": ["active_composition_space"]},
+    {"id": "data-active-space-mutate", "from": "raw_user_input_authorization", "relation": "authorizes", "to": "active_composition_mutator", "events": ["active_composition_space"]},
+
+    {"id": "exec-stale-guard", "from": "stale_publication_event", "relation": "calls", "to": "stale_generation_guard", "events": ["stale_publication"]},
+    {"id": "exec-stale-discard", "from": "stale_generation_guard", "relation": "delegates", "to": "stale_discard_observer", "events": ["stale_publication"]},
+    {"id": "data-stale-refusal", "from": "prepared_field_producer", "relation": "passes_to", "to": "stale_generation_guard", "events": ["stale_publication"]},
+    {"id": "observe-stale-discard", "from": "prepared_field_producer", "relation": "observes", "to": "stale_discard_observer", "events": ["stale_publication"]},
+
+    {"id": "exec-rollback-receipt", "from": "double_shift_event", "relation": "calls", "to": "rollback_receipt", "events": ["rollback_apply"]},
+    {"id": "exec-rollback-authorize", "from": "rollback_receipt", "relation": "delegates", "to": "compound_edit_authorization", "events": ["rollback_apply"]},
+    {"id": "exec-rollback-mutate", "from": "compound_edit_authorization", "relation": "delegates", "to": "committed_tail_mutator", "events": ["rollback_apply"]},
+    {"id": "data-rollback-authorize", "from": "rollback_receipt", "relation": "passes_to", "to": "compound_edit_authorization", "events": ["rollback_apply"]},
+    {"id": "data-rollback-mutate", "from": "compound_edit_authorization", "relation": "authorizes", "to": "committed_tail_mutator", "events": ["rollback_apply"]},
+
+    {"id": "exec-rollback-defer-receipt", "from": "double_shift_event", "relation": "calls", "to": "rollback_receipt", "events": ["rollback_defer"]},
+    {"id": "observe-rollback-snapshot", "from": "rollback_receipt", "relation": "observes", "to": "rollback_snapshot_observer", "events": ["rollback_defer"]}
+  ],
+  "routes": [
+    {
+      "id": "display-refresh-execution",
+      "event": "display_refresh",
+      "kind": "execution",
+      "entry": "printable_event",
+      "terminal": "preedit_renderer",
+      "required_roles": ["interface", "producer", "evidence_owner", "candidate_rank_owner", "display_rank_owner", "render_owner"],
+      "path_cardinality": [{"from": "printable_event", "to": "preedit_renderer", "min": 1, "max": 1}]
+    },
+    {
+      "id": "display-refresh-authority",
+      "event": "display_refresh",
+      "kind": "authority",
+      "entry": "prepared_field_producer",
+      "terminal": "preedit_renderer",
+      "required_roles": ["producer", "evidence_owner", "candidate_rank_owner", "display_rank_owner", "render_owner"]
+    },
+    {
+      "id": "tab-accept-execution",
+      "event": "tab_accept",
+      "kind": "execution",
+      "entry": "tab_event",
+      "terminal": "active_composition_mutator",
+      "required_roles": ["interface", "evidence_owner", "candidate_rank_owner", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "tab_event", "to": "active_composition_mutator", "min": 1, "max": 1}]
+    },
+    {
+      "id": "tab-accept-authority",
+      "event": "tab_accept",
+      "kind": "authority",
+      "entry": "visible_target_receipt",
+      "terminal": "active_composition_mutator",
+      "required_roles": ["evidence_owner", "candidate_rank_owner", "authorization_owner", "mutation_owner"]
+    },
+    {
+      "id": "space-l2-execution",
+      "event": "space_l2_winner",
+      "kind": "execution",
+      "entry": "committed_space_event",
+      "terminal": "committed_tail_mutator",
+      "required_roles": ["interface", "evidence_owner", "candidate_rank_owner", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "committed_space_event", "to": "committed_tail_mutator", "min": 1, "max": 1}]
+    },
+    {
+      "id": "space-l2-authority",
+      "event": "space_l2_winner",
+      "kind": "authority",
+      "entry": "frame_bound_automatic_evidence",
+      "terminal": "committed_tail_mutator",
+      "required_roles": ["evidence_owner", "candidate_rank_owner", "authorization_owner", "mutation_owner"]
+    },
+    {
+      "id": "space-context-execution",
+      "event": "space_context_tied",
+      "kind": "execution",
+      "entry": "committed_space_event",
+      "terminal": "committed_tail_mutator",
+      "required_roles": ["interface", "evidence_owner", "candidate_rank_owner", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "committed_space_event", "to": "committed_tail_mutator", "min": 1, "max": 1}]
+    },
+    {
+      "id": "space-context-authority",
+      "event": "space_context_tied",
+      "kind": "authority",
+      "entry": "frame_bound_automatic_evidence",
+      "terminal": "committed_tail_mutator",
+      "required_roles": ["evidence_owner", "candidate_rank_owner", "authorization_owner", "mutation_owner"]
+    },
+    {
+      "id": "space-fallback-execution",
+      "event": "space_fallback",
+      "kind": "execution",
+      "entry": "committed_space_event",
+      "terminal": "committed_tail_mutator",
+      "required_roles": ["interface", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "committed_space_event", "to": "committed_tail_mutator", "min": 1, "max": 1}]
+    },
+    {
+      "id": "space-fallback-authority",
+      "event": "space_fallback",
+      "kind": "authority",
+      "entry": "raw_user_input_authorization",
+      "terminal": "committed_tail_mutator",
+      "required_roles": ["authorization_owner", "mutation_owner"]
+    },
+    {
+      "id": "active-space-execution",
+      "event": "active_composition_space",
+      "kind": "execution",
+      "entry": "active_space_event",
+      "terminal": "active_composition_mutator",
+      "required_roles": ["interface", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "active_space_event", "to": "active_composition_mutator", "min": 1, "max": 1}]
+    },
+    {
+      "id": "active-space-authority",
+      "event": "active_composition_space",
+      "kind": "authority",
+      "entry": "raw_user_input_authorization",
+      "terminal": "active_composition_mutator",
+      "required_roles": ["authorization_owner", "mutation_owner"]
+    },
+    {
+      "id": "stale-publication-execution",
+      "event": "stale_publication",
+      "kind": "execution",
+      "entry": "stale_publication_event",
+      "terminal": "stale_discard_observer",
+      "required_roles": ["interface", "authorization_owner", "observer"],
+      "path_cardinality": [{"from": "stale_publication_event", "to": "stale_discard_observer", "min": 1, "max": 1}]
+    },
+    {
+      "id": "stale-publication-authority",
+      "event": "stale_publication",
+      "kind": "authority",
+      "entry": "prepared_field_producer",
+      "terminal": "stale_generation_guard",
+      "required_roles": ["producer", "authorization_owner"]
+    },
+    {
+      "id": "stale-publication-observation",
+      "event": "stale_publication",
+      "kind": "observation",
+      "entry": "prepared_field_producer",
+      "terminal": "stale_discard_observer",
+      "required_roles": ["producer", "observer"]
+    },
+    {
+      "id": "rollback-apply-execution",
+      "event": "rollback_apply",
+      "kind": "execution",
+      "entry": "double_shift_event",
+      "terminal": "committed_tail_mutator",
+      "required_roles": ["interface", "evidence_owner", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "double_shift_event", "to": "committed_tail_mutator", "min": 1, "max": 1}]
+    },
+    {
+      "id": "rollback-apply-authority",
+      "event": "rollback_apply",
+      "kind": "authority",
+      "entry": "rollback_receipt",
+      "terminal": "committed_tail_mutator",
+      "required_roles": ["evidence_owner", "authorization_owner", "mutation_owner"]
+    },
+    {
+      "id": "rollback-defer-execution",
+      "event": "rollback_defer",
+      "kind": "execution",
+      "entry": "double_shift_event",
+      "terminal": "rollback_receipt",
+      "required_roles": ["interface", "evidence_owner"],
+      "path_cardinality": [{"from": "double_shift_event", "to": "rollback_receipt", "min": 1, "max": 1}]
+    },
+    {
+      "id": "rollback-defer-observation",
+      "event": "rollback_defer",
+      "kind": "observation",
+      "entry": "rollback_receipt",
+      "terminal": "rollback_snapshot_observer",
+      "required_roles": ["evidence_owner", "observer"]
+    }
+  ]
+}

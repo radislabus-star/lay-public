@@ -1,0 +1,178 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "ibus-bus-inputcontext-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/bus/inputcontext.c",
+      "sha256": "d6fbaf772962153900a1bd1230df63e90d1cd37ba6020f61f1dddc8c30ab332c",
+      "size_bytes": 129694
+    },
+    {
+      "exists": true,
+      "id": "ibus-client-inputcontext-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/ibusinputcontext.c",
+      "sha256": "470a92daa5cd587c7110a744db5c19f54625f54e5bd969f1cbc1ea47450364b4",
+      "size_bytes": 63586
+    },
+    {
+      "exists": true,
+      "id": "ibus-client-inputcontext-header",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/ibusinputcontext.h",
+      "sha256": "70717bc1ea6ccb753c2c68e9ed7c0b9ca21c01ee648a9d17ec5d80c01eee49f1",
+      "size_bytes": 22909
+    },
+    {
+      "exists": true,
+      "id": "installed-ibus-daemon",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/usr/bin/ibus-daemon",
+      "sha256": "24338c0e7cfb749d2ac9b9254d7d54029e71b5ac9342aa1b8d78b1d55f5ac1b6",
+      "size_bytes": 170496
+    },
+    {
+      "exists": true,
+      "id": "installed-libibus",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/usr/lib/x86_64-linux-gnu/libibus-1.0.so.5.0.534",
+      "sha256": "e1977b9d3d84ee94b63f6c04056134c10aa51d4e0621f7abee1115da12259ec1",
+      "size_bytes": 542936
+    },
+    {
+      "exists": true,
+      "id": "installed-gtk3-ibus-module",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/usr/lib/x86_64-linux-gnu/gtk-3.0/3.0.0/immodules/im-ibus.so",
+      "sha256": "644cedf86a7b6e18d2be31afeb75007c85e6bdb0ed8a6b5c53c54621310aa3e2",
+      "size_bytes": 47288
+    },
+    {
+      "exists": true,
+      "id": "installed-gtk4-ibus-module",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/usr/lib/x86_64-linux-gnu/gtk-4.0/4.0.0/immodules/libim-ibus.so",
+      "sha256": "4e5b450fa00d51a45fbcc160e26358d81da793b39b6e04a27c749b905b3cba60",
+      "size_bytes": 47272
+    },
+    {
+      "exists": true,
+      "id": "backend-design-paper",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../ime-backend-atomic-receipt-v1-2026-08-20.md",
+      "sha256": "c5455e7df8fd33f31d6de92016f154d174b804ab16e8880b37a5e5da3296506b",
+      "size_bytes": 11089
+    },
+    {
+      "exists": true,
+      "id": "backend-route-v2",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_BACKEND_ATOMIC_RECEIPT_ROUTE_V2_2026-08-20.json",
+      "sha256": "c76ef5467aad0c09eb17736cf609fc88b2d8cae4655f3711837fa8abe9f11576",
+      "size_bytes": 8866
+    },
+    {
+      "exists": true,
+      "id": "backend-route-v2-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_BACKEND_ATOMIC_RECEIPT_V1_DESIGN_2026-08-20/route-design-v2-receipt.json",
+      "sha256": "9a8fb554eae0cae4db67cad440369858e62ac30ca843a041c5d6e811301957ec",
+      "size_bytes": 16464
+    }
+  ],
+  "blockers": [
+    {
+      "code": "test_contract_incomplete",
+      "field": "tests[0]",
+      "message": "valid kind and non-empty expected result are required"
+    },
+    {
+      "code": "test_contract_incomplete",
+      "field": "tests[1]",
+      "message": "valid kind and non-empty expected result are required"
+    },
+    {
+      "code": "test_contract_incomplete",
+      "field": "tests[14]",
+      "message": "valid kind and non-empty expected result are required"
+    }
+  ],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 10,
+    "forbidden_side_effect_kinds": [
+      "connect_live_session_bus",
+      "generated_traffic",
+      "installed_file_write",
+      "layout_mutation",
+      "old_runtime_fallback",
+      "package_install",
+      "restart_live_ibus",
+      "runtime_deployment",
+      "signal_live_ibus",
+      "synthetic_fixture",
+      "synthetic_key_output",
+      "text_mutation",
+      "threshold_relaxation"
+    ],
+    "identity_contracts": 3,
+    "invariants": 6,
+    "planned_side_effect_kinds": [
+      "filesystem_write",
+      "isolated_process_test",
+      "remote_build",
+      "source_edit"
+    ],
+    "preserved_artifacts": 5,
+    "runtime_comparisons": 0,
+    "source_checks": 3,
+    "tests": 15
+  },
+  "manifest_sha256": "835eebabc65ebdfb784dc117b2231d38cdfb23483e7e5dc670b4499a8c3a5477",
+  "safe_to_implement": false,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "ibus-frame-owner-source",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/bus/inputcontext.c",
+      "sha256": "d6fbaf772962153900a1bd1230df63e90d1cd37ba6020f61f1dddc8c30ab332c",
+      "size_bytes": 129694
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "ibus-client-frame-source",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/ibusinputcontext.c",
+      "sha256": "470a92daa5cd587c7110a744db5c19f54625f54e5bd969f1cbc1ea47450364b4",
+      "size_bytes": 63586
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "ibus-client-inputcontext-header",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/ibusinputcontext.h",
+      "sha256": "70717bc1ea6ccb753c2c68e9ed7c0b9ca21c01ee648a9d17ec5d80c01eee49f1",
+      "size_bytes": 22909
+    }
+  ],
+  "task_id": "LAY_IME_BACKEND_ATOMIC_RECEIPT_IMPLEMENTATION_V2_2026-08-20",
+  "verdict": "BLOCKED_BEFORE_CODE"
+}

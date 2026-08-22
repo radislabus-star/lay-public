@@ -1,0 +1,132 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "slice5-full-proof",
+      "kind": "file",
+      "mode": "0600",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE5_CONTOUR_BIRTH_2026-08-20/slice5-full-typed-reserve-13x100.json",
+      "sha256": "b4d066476650616066946b4910b5f181d15531680fee9261738e174d3502f0c7",
+      "size_bytes": 1216056
+    },
+    {
+      "exists": true,
+      "id": "authority-paper",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../ime-canonical-target-authority-paper-2026-08-17.md",
+      "sha256": "8610332ef0572c5efb74eb9e4e5fa90a1b5e491636b649bb4f4931d1966fad91",
+      "size_bytes": 183712
+    },
+    {
+      "exists": true,
+      "id": "contour-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/productive_v1/contour_birth.rs",
+      "sha256": "abe38147457cdbed40caf19b26278dc96bac3e8c999ebfd9d428a32673f29e49",
+      "size_bytes": 20522
+    },
+    {
+      "exists": true,
+      "id": "material-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/productive_v1/material_frame.rs",
+      "sha256": "170b0d185eacab3af5a0b6d9621914712e8c844432d61ae8b6f9dda8130a4413",
+      "size_bytes": 47748
+    },
+    {
+      "exists": true,
+      "id": "module-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/productive_v1/mod.rs",
+      "sha256": "0650eeb03f6f981e577e4891bece7d9c2d68325e883297f80921ff6efd067e18",
+      "size_bytes": 2117
+    },
+    {
+      "exists": true,
+      "id": "proof-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/productive_v1/proof.rs",
+      "sha256": "0846cc440715124f2ed5fb8f75699141f5d1d2f4ddba077805e3378384166ee4",
+      "size_bytes": 184500
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 6,
+    "forbidden_side_effect_kinds": [
+      "change_live_authority",
+      "expose_live_boundary_owner",
+      "generated_traffic",
+      "literal_case_runtime_branch",
+      "mint_boundary_authority",
+      "raise_boundary_reserve",
+      "raise_contour_budget",
+      "raise_global_target_limit",
+      "restart_global_ibus_daemon",
+      "restart_lay_daemon",
+      "rewrite_any_package",
+      "runtime_deployment",
+      "synthetic_fixture"
+    ],
+    "identity_contracts": 3,
+    "invariants": 6,
+    "planned_side_effect_kinds": [
+      "remote_test",
+      "source_edit"
+    ],
+    "preserved_artifacts": 1,
+    "runtime_comparisons": 0,
+    "source_checks": 4,
+    "tests": 11
+  },
+  "manifest_sha256": "7dacb0dde56567b7560242e9f0235f7d57614ef66f12fb64c518ab4a28bb4e26",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "contour-owner-pinned",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/productive_v1/contour_birth.rs",
+      "sha256": "abe38147457cdbed40caf19b26278dc96bac3e8c999ebfd9d428a32673f29e49",
+      "size_bytes": 20522
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "material-owner-pinned",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/productive_v1/material_frame.rs",
+      "sha256": "170b0d185eacab3af5a0b6d9621914712e8c844432d61ae8b6f9dda8130a4413",
+      "size_bytes": 47748
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "module-owner-pinned",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/productive_v1/mod.rs",
+      "sha256": "0650eeb03f6f981e577e4891bece7d9c2d68325e883297f80921ff6efd067e18",
+      "size_bytes": 2117
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "proof-owner-pinned",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/productive_v1/proof.rs",
+      "sha256": "0846cc440715124f2ed5fb8f75699141f5d1d2f4ddba077805e3378384166ee4",
+      "size_bytes": 184500
+    }
+  ],
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE6_BOUNDARY_INTERNALIZATION_IMPLEMENTATION_V1_2026-08-20",
+  "verdict": "READY_TO_IMPLEMENT"
+}

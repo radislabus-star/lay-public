@@ -1,0 +1,310 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "PASS",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": true,
+  "contract": "docs/structural_gates/preflights/LAY_IME_NONBLOCKING_PRECOGNITION_ROUTE_2026-08-16.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "source_root": "/home/ubu/projects/lay-l1-exact-peak-search",
+  "node_count": 12,
+  "edge_count": 15,
+  "routes": [
+    {
+      "id": "printable-hot-execution",
+      "event": "printable_input",
+      "kind": "execution",
+      "entry": "printable_key",
+      "via": [],
+      "terminal": "input_snapshot",
+      "path_count": 1,
+      "paths": [
+        [
+          "printable_key",
+          "visible_commit",
+          "input_snapshot"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "input_snapshot"
+        ],
+        "interface": [
+          "printable_key"
+        ],
+        "mutation_owner": [
+          "visible_commit"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "printable_key",
+          "to": "input_snapshot",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "printable_key",
+              "visible_commit",
+              "input_snapshot"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "field-materialization-execution",
+      "event": "materialize_field",
+      "kind": "execution",
+      "entry": "latest_only_scheduler",
+      "via": [],
+      "terminal": "full_candidate_field",
+      "path_count": 1,
+      "paths": [
+        [
+          "latest_only_scheduler",
+          "full_candidate_field"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "full_candidate_field",
+          "latest_only_scheduler"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "latest_only_scheduler",
+          "to": "full_candidate_field",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "latest_only_scheduler",
+              "full_candidate_field"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "field-ready-execution",
+      "event": "field_ready",
+      "kind": "execution",
+      "entry": "exact_result_mailbox",
+      "via": [],
+      "terminal": "preedit_render",
+      "path_count": 1,
+      "paths": [
+        [
+          "exact_result_mailbox",
+          "identity_gate",
+          "preedit_rank",
+          "preedit_render"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "exact_result_mailbox",
+          "identity_gate"
+        ],
+        "display_rank_owner": [
+          "preedit_rank"
+        ],
+        "render_owner": [
+          "preedit_render"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "exact_result_mailbox",
+          "to": "preedit_render",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "exact_result_mailbox",
+              "identity_gate",
+              "preedit_rank",
+              "preedit_render"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "field-ready-display-authority",
+      "event": "field_ready",
+      "kind": "authority",
+      "entry": "input_snapshot",
+      "via": [],
+      "terminal": "preedit_render",
+      "path_count": 1,
+      "paths": [
+        [
+          "input_snapshot",
+          "identity_gate",
+          "preedit_rank",
+          "preedit_render"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "identity_gate"
+        ],
+        "producer": [
+          "input_snapshot"
+        ],
+        "display_rank_owner": [
+          "preedit_rank"
+        ],
+        "render_owner": [
+          "preedit_render"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "space-prefetch-execution",
+      "event": "space_prefetch",
+      "kind": "execution",
+      "entry": "full_candidate_field",
+      "via": [],
+      "terminal": "space_decision_core",
+      "path_count": 1,
+      "paths": [
+        [
+          "full_candidate_field",
+          "space_decision_core"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "full_candidate_field"
+        ],
+        "candidate_rank_owner": [
+          "space_decision_core"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "full_candidate_field",
+          "to": "space_decision_core",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "full_candidate_field",
+              "space_decision_core"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "route-observation",
+      "event": "observation",
+      "kind": "observation",
+      "entry": "printable_key",
+      "via": [],
+      "terminal": "route_trace",
+      "path_count": 1,
+      "paths": [
+        [
+          "printable_key",
+          "route_trace"
+        ]
+      ],
+      "role_owners": {
+        "interface": [
+          "printable_key"
+        ],
+        "observer": [
+          "route_trace"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "identity-proof",
+      "event": "software_proof",
+      "kind": "proof",
+      "entry": "identity_gate",
+      "via": [],
+      "terminal": "fixed_proof",
+      "path_count": 1,
+      "paths": [
+        [
+          "identity_gate",
+          "fixed_proof"
+        ]
+      ],
+      "role_owners": {
+        "proof_owner": [
+          "fixed_proof"
+        ],
+        "evidence_owner": [
+          "identity_gate"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {
+    "field_ready": {
+      "evidence_owner": [
+        "identity_gate"
+      ],
+      "display_rank_owner": [
+        "preedit_rank"
+      ],
+      "candidate_rank_owner": [],
+      "mutation_owner": [],
+      "render_owner": [
+        "preedit_render"
+      ],
+      "authorization_owner": []
+    }
+  },
+  "source_evidence": {
+    "expected": 0,
+    "verified": 0,
+    "complete": true
+  },
+  "issues": [],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": false,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

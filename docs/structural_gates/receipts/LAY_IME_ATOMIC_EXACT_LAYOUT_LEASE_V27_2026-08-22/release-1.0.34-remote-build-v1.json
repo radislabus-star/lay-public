@@ -1,0 +1,59 @@
+{
+  "schema": "lay.architecture-experiment-receipt.v1",
+  "id": "LAY_RELEASE_1_0_34_REMOTE_BUILD_V1_2026-08-22",
+  "tested": {
+    "scope": "mechanical version bump, complete remote release build, non-zero focused test denominators and local artifact SHA parity",
+    "source_sha256": "22f6a4198d7c2aa388e58ff806dade001e7d0d0fa16d96b7810d1bee804894cf",
+    "remote_source": "/home/e/projects/lay-release-1.0.34-src-22f6a4198d7c2aa388e58ff806dade001e7d0d0fa16d96b7810d1bee804894cf",
+    "remote_stage": "/home/e/projects/lay-release-1.0.34-artifacts-22f6a4198d7c2aa388e58ff806dade001e7d0d0fa16d96b7810d1bee804894cf",
+    "local_stage": "/home/ubu/.cache/lay/releases/1.0.34-22f6a4198d7c2aa388e58ff806dade001e7d0d0fa16d96b7810d1bee804894cf"
+  },
+  "measured": {
+    "version": "1.0.34",
+    "metadata_integer": 1000034,
+    "remote_build_seconds": 208,
+    "build_jobs": 20,
+    "remote_target_bytes_before": 1424543744,
+    "remote_target_bytes_after": 1900179456,
+    "remote_target_budget_bytes": 12884901888,
+    "binary_count": 10,
+    "focused_tests": {
+      "exact_raw_known": {"passed": 1, "failed": 0},
+      "exact_full_authority": {"passed": 1, "failed": 0},
+      "exact_negative": {"passed": 1, "failed": 0},
+      "atomic_tests": {"passed": 8, "failed": 0},
+      "atomic_proof": {"passed": 5, "failed": 0},
+      "profile_tests": {"passed": 18, "failed": 0},
+      "space_prefetch": {"passed": 8, "failed": 0}
+    },
+    "stale_zero_denominator_filter_rejected": true,
+    "downloaded_sha256_manifest_pass": true,
+    "installed_runtime_preserved": true
+  },
+  "artifacts": {
+    "sha256_manifest_sha256": "607fd23b04cbdf590c37ab95e8053cd2d287f66654c3483c5ecdc93bf099eda4",
+    "release_env_sha256": "a50171e0afbc0be5d0259215c37dd08ee9d35fa2baadbdd8e9ac77736c2c5ba7",
+    "binaries": {
+      "lay": "a584375ddc31684f1fb72f0bf8a546d0c94ff98f004f496c55d7d13a87909efd",
+      "lay-daemon": "d5289fb490b9e18af9844987f60b963a817ef9753854e3e230f2c82bc9cfd356",
+      "lay-nanda-wave-eval": "d5070897c695f0c48bf6971ce53acd3fef0a8f4f8323363969719720380935ae",
+      "lay-nanda-wave-train": "395c86ae2688a02527e4ea54c7df0b497e2b44db676742eeb46274f2e0e24ece",
+      "lay-test-input": "eeab42f8c0c096533421bfb0d7981c9e03432b3f56a129bba730018f003c0cb4",
+      "lay-ngram-corpus": "ebb59308b97d71bbe3818d667414fd0771cb727c1dd27b2c870c808d604c15f3",
+      "lay-ibus-engine": "3bb009025f3bd12c676416aff637b439ccd4f4c0c2d69d4c7c34b0f49b904691",
+      "lay-memory-report": "e2404a7637b65c6801a2f39b140613324c8310919ace06cca9318e84c20475d3",
+      "lay-l11-restore": "35a05a08efed0ac9b27fd531eac5dbdf2afb626d79f5acb06aa50847da64c550",
+      "lay-l11-serve": "b7c036bc31f16ccc79644b6f172f84c151d3b03dcc9daef7c68921bfcd1c3437"
+    },
+    "focused_logs": "/home/e/projects/lay-release-1.0.34-focused-logs-20260822"
+  },
+  "not_tested": [
+    "final 1.0.34 engine physical fixed route",
+    "final 1.0.34 engine physical exact double-Shift undo",
+    "installed 1.0.34 desktop runtime",
+    "post-install RSS and PSS"
+  ],
+  "verdict": "RELEASE_BUILT_NOT_INSTALLABLE_YET",
+  "runtime_authority_changed": false,
+  "installed_runtime": "lay 1.0.33"
+}

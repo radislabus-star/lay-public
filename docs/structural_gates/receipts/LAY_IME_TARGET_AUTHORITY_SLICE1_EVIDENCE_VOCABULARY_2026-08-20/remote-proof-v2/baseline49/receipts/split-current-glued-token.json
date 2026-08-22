@@ -1,0 +1,41 @@
+{
+  "planned": {
+    "id": "split-current-glued-token",
+    "series": "baseline49",
+    "denominator": "boundary_true_split",
+    "source_test": "src/nanda_wave/l2/tests.rs::boundary_cell_repairs_and_splits_the_current_glued_token",
+    "target_kind": "lib",
+    "target": "lib",
+    "compiled_selector": "nanda_wave::l2::tests::boundary_cell_repairs_and_splits_the_current_glued_token",
+    "expected_test_count": 1,
+    "expected_assertion_status": "PASS",
+    "expected_semantic_receipt": "exact typed operator owns every changed scalar and separator",
+    "environment": {
+      "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+      "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+      "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+      "LAY_DEBUG_DECISION_CORE": "1",
+      "LAY_L2_FIELD_TRACE": "1",
+      "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+      "CARGO_BUILD_JOBS": "20"
+    },
+    "command": [
+      "scripts/cargo-guard.sh",
+      "test",
+      "--lib",
+      "nanda_wave::l2::tests::boundary_cell_repairs_and_splits_the_current_glued_token",
+      "--",
+      "--exact",
+      "--nocapture",
+      "--test-threads=1"
+    ]
+  },
+  "exit_code": 0,
+  "observed_test_count": 1,
+  "observed_status": "PASS",
+  "valid_execution": true,
+  "log": {
+    "size_bytes": 36209,
+    "sha256": "a55243f6899ff3f373ab6189957acac0fda1f3c6a57829a78d08ce1ed89e3122"
+  }
+}

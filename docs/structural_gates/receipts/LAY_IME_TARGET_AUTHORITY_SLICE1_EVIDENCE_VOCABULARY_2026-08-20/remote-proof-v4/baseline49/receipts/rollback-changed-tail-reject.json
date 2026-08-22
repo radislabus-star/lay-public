@@ -1,0 +1,42 @@
+{
+  "planned": {
+    "id": "rollback-changed-tail-reject",
+    "series": "baseline49",
+    "denominator": "rollback",
+    "source_test": "src/bin/lay_ibus_engine/tail_memory.rs::pending_ime_auto_undo_rejects_a_changed_visible_tail",
+    "target_kind": "bin",
+    "target": "lay-ibus-engine",
+    "compiled_selector": "tail_memory::tests::pending_ime_auto_undo_rejects_a_changed_visible_tail",
+    "expected_test_count": 1,
+    "expected_assertion_status": "PASS",
+    "expected_semantic_receipt": "changed visible tail invalidates rollback",
+    "environment": {
+      "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+      "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+      "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+      "LAY_DEBUG_DECISION_CORE": "1",
+      "LAY_L2_FIELD_TRACE": "1",
+      "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+      "CARGO_BUILD_JOBS": "20"
+    },
+    "command": [
+      "scripts/cargo-guard.sh",
+      "test",
+      "--bin",
+      "lay-ibus-engine",
+      "tail_memory::tests::pending_ime_auto_undo_rejects_a_changed_visible_tail",
+      "--",
+      "--exact",
+      "--nocapture",
+      "--test-threads=1"
+    ]
+  },
+  "exit_code": 0,
+  "observed_test_count": 1,
+  "observed_status": "PASS",
+  "valid_execution": true,
+  "log": {
+    "size_bytes": 60374,
+    "sha256": "d216ca46a41c86619168db9fa505cb5c4a2ee73e77219ca9b7e37cf705e2a561"
+  }
+}

@@ -1,0 +1,127 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "printable_key", "role": "interface"},
+    {"id": "canonical_token_field", "role": "evidence_owner"},
+    {"id": "deterministic_fallback", "role": "producer"},
+    {"id": "canonical_lattice", "role": "orchestrator"},
+    {"id": "fallback_lattice", "role": "orchestrator"},
+    {"id": "decision_core", "role": "candidate_rank_owner"},
+    {"id": "correction_lease", "role": "orchestrator"},
+    {"id": "transition_verifier", "role": "authorization_owner"},
+    {"id": "committed_tail_mutator", "role": "mutation_owner"},
+    {"id": "old_full_route_receipt", "role": "producer"},
+    {"id": "canonical_first_receipt", "role": "producer"},
+    {"id": "parity_comparator", "role": "observer"},
+    {"id": "route_proof", "role": "proof_owner"}
+  ],
+  "edges": [
+    {"id": "exec-ready-key-field", "from": "printable_key", "relation": "calls", "to": "canonical_token_field", "events": ["canonical_ready_prepare"]},
+    {"id": "exec-ready-field-lattice", "from": "canonical_token_field", "relation": "delegates", "to": "canonical_lattice", "events": ["canonical_ready_prepare"]},
+    {"id": "exec-ready-lattice-decision", "from": "canonical_lattice", "relation": "delegates", "to": "decision_core", "events": ["canonical_ready_prepare"]},
+    {"id": "exec-ready-decision-lease", "from": "decision_core", "relation": "delegates", "to": "correction_lease", "events": ["canonical_ready_prepare"]},
+    {"id": "data-ready-field-decision", "from": "canonical_token_field", "relation": "passes_to", "to": "decision_core", "events": ["canonical_ready_prepare"]},
+
+    {"id": "exec-fallback-key-field", "from": "printable_key", "relation": "calls", "to": "canonical_token_field", "events": ["canonical_abstain_fallback_prepare"]},
+    {"id": "exec-fallback-field-producer", "from": "canonical_token_field", "relation": "delegates", "to": "deterministic_fallback", "events": ["canonical_abstain_fallback_prepare"]},
+    {"id": "exec-fallback-producer-lattice", "from": "deterministic_fallback", "relation": "delegates", "to": "fallback_lattice", "events": ["canonical_abstain_fallback_prepare"]},
+    {"id": "exec-fallback-lattice-decision", "from": "fallback_lattice", "relation": "delegates", "to": "decision_core", "events": ["canonical_abstain_fallback_prepare"]},
+    {"id": "exec-fallback-decision-lease", "from": "decision_core", "relation": "delegates", "to": "correction_lease", "events": ["canonical_abstain_fallback_prepare"]},
+    {"id": "data-fallback-field-producer", "from": "canonical_token_field", "relation": "passes_to", "to": "deterministic_fallback", "events": ["canonical_abstain_fallback_prepare"]},
+    {"id": "data-fallback-producer-decision", "from": "deterministic_fallback", "relation": "passes_to", "to": "decision_core", "events": ["canonical_abstain_fallback_prepare"]},
+
+    {"id": "exec-space-lease-verifier", "from": "correction_lease", "relation": "delegates", "to": "transition_verifier", "events": ["space_ready_apply"]},
+    {"id": "exec-space-verifier-mutator", "from": "transition_verifier", "relation": "delegates", "to": "committed_tail_mutator", "events": ["space_ready_apply"]},
+    {"id": "authority-space-verifier-mutator", "from": "transition_verifier", "relation": "authorizes", "to": "committed_tail_mutator", "events": ["space_ready_apply"]},
+
+    {"id": "observe-old-route", "from": "old_full_route_receipt", "relation": "observes", "to": "parity_comparator", "events": ["old_full_route_observation"]},
+    {"id": "observe-new-route", "from": "canonical_first_receipt", "relation": "observes", "to": "parity_comparator", "events": ["canonical_first_observation"]},
+    {"id": "prove-parity", "from": "parity_comparator", "relation": "proves", "to": "route_proof", "events": ["route_parity_proof"]}
+  ],
+  "routes": [
+    {
+      "id": "canonical-ready-execution",
+      "event": "canonical_ready_prepare",
+      "kind": "execution",
+      "entry": "printable_key",
+      "terminal": "correction_lease",
+      "required_roles": ["interface", "evidence_owner", "orchestrator", "candidate_rank_owner"],
+      "path_cardinality": [
+        {"from": "printable_key", "to": "decision_core", "min": 1, "max": 1},
+        {"from": "printable_key", "to": "correction_lease", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "canonical-ready-authority",
+      "event": "canonical_ready_prepare",
+      "kind": "authority",
+      "entry": "canonical_token_field",
+      "terminal": "decision_core",
+      "required_roles": ["evidence_owner", "candidate_rank_owner"]
+    },
+    {
+      "id": "canonical-fallback-execution",
+      "event": "canonical_abstain_fallback_prepare",
+      "kind": "execution",
+      "entry": "printable_key",
+      "terminal": "correction_lease",
+      "required_roles": ["interface", "evidence_owner", "producer", "orchestrator", "candidate_rank_owner"],
+      "path_cardinality": [
+        {"from": "printable_key", "to": "deterministic_fallback", "min": 1, "max": 1},
+        {"from": "printable_key", "to": "correction_lease", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "canonical-fallback-authority",
+      "event": "canonical_abstain_fallback_prepare",
+      "kind": "authority",
+      "entry": "canonical_token_field",
+      "terminal": "decision_core",
+      "required_roles": ["evidence_owner", "producer", "candidate_rank_owner"]
+    },
+    {
+      "id": "space-ready-execution",
+      "event": "space_ready_apply",
+      "kind": "execution",
+      "entry": "correction_lease",
+      "terminal": "committed_tail_mutator",
+      "required_roles": ["orchestrator", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [
+        {"from": "correction_lease", "to": "committed_tail_mutator", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "space-ready-authority",
+      "event": "space_ready_apply",
+      "kind": "authority",
+      "entry": "transition_verifier",
+      "terminal": "committed_tail_mutator",
+      "required_roles": ["authorization_owner", "mutation_owner"]
+    },
+    {
+      "id": "old-route-observation",
+      "event": "old_full_route_observation",
+      "kind": "observation",
+      "entry": "old_full_route_receipt",
+      "terminal": "parity_comparator",
+      "required_roles": ["producer", "observer"]
+    },
+    {
+      "id": "canonical-first-observation",
+      "event": "canonical_first_observation",
+      "kind": "observation",
+      "entry": "canonical_first_receipt",
+      "terminal": "parity_comparator",
+      "required_roles": ["producer", "observer"]
+    },
+    {
+      "id": "route-parity-proof",
+      "event": "route_parity_proof",
+      "kind": "proof",
+      "entry": "parity_comparator",
+      "terminal": "route_proof",
+      "required_roles": ["observer", "proof_owner"]
+    }
+  ]
+}

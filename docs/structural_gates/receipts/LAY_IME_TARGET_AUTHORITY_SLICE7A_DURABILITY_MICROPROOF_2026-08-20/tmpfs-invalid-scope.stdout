@@ -1,0 +1,113 @@
+{
+  "schema": "lay.output-transaction-durability-microproof.v1",
+  "generated_unix_ms": 1787242285582,
+  "verdict": "PASS_ISOLATED_DURABILITY_STRATEGY",
+  "host": {
+    "hostname": "t480",
+    "filesystem_mount": "/tmp",
+    "filesystem_type": "tmpfs",
+    "mount_options": "rw,nosuid,nodev",
+    "device_id": 49,
+    "journal_directory": "/tmp/lay-slice7a-journal-20260820",
+    "clock": "std::time::Instant(CLOCK_MONOTONIC)",
+    "worker_nice": 0
+  },
+  "record_bytes": 256,
+  "queue_capacity": 32,
+  "tail_flush_deadline_ms": 20,
+  "warmup_samples": 64,
+  "prepare": {
+    "latency": {
+      "samples": 1000,
+      "p50_us": 6,
+      "p95_us": 12,
+      "p99_us": 24,
+      "maximum_us": 98
+    },
+    "journal": {
+      "appended_records": 2128,
+      "appended_bytes": 544768,
+      "sync_calls": 2128,
+      "sync_io_us": 0,
+      "foreground_waits": 1064,
+      "tail_flushes": 1064,
+      "co_commits": 0,
+      "owner_nice": 0
+    },
+    "records_verified": 2128
+  },
+  "co_commit": {
+    "latency": {
+      "samples": 1000,
+      "p50_us": 8,
+      "p95_us": 12,
+      "p99_us": 34,
+      "maximum_us": 64
+    },
+    "journal": {
+      "appended_records": 2130,
+      "appended_bytes": 545280,
+      "sync_calls": 1066,
+      "sync_io_us": 20,
+      "foreground_waits": 1065,
+      "tail_flushes": 1,
+      "co_commits": 1064,
+      "owner_nice": 0
+    },
+    "records_verified": 2130
+  },
+  "tail_flush": {
+    "latency": {
+      "samples": 1000,
+      "p50_us": 4,
+      "p95_us": 5,
+      "p99_us": 10,
+      "maximum_us": 59
+    },
+    "journal": {
+      "appended_records": 2128,
+      "appended_bytes": 544768,
+      "sync_calls": 2128,
+      "sync_io_us": 12,
+      "foreground_waits": 1064,
+      "tail_flushes": 1064,
+      "co_commits": 0,
+      "owner_nice": 0
+    },
+    "records_verified": 2128
+  },
+  "next_native_wait": {
+    "latency": {
+      "samples": 1000,
+      "p50_us": 4,
+      "p95_us": 5,
+      "p99_us": 10,
+      "maximum_us": 71
+    },
+    "journal": {
+      "appended_records": 2128,
+      "appended_bytes": 544768,
+      "sync_calls": 2128,
+      "sync_io_us": 0,
+      "foreground_waits": 2128,
+      "tail_flushes": 1064,
+      "co_commits": 0,
+      "owner_nice": 0
+    },
+    "records_verified": 2128
+  },
+  "fault_matrix": {
+    "checksum_damage_rejected": true,
+    "saturation_refused": true,
+    "prepare_failure_refused_before_effect": true,
+    "terminal_failure_requires_recovery": true
+  },
+  "gates": {
+    "p99_at_most_us": 2000,
+    "maximum_strictly_below_us": 8000,
+    "prepare_pass": true,
+    "co_commit_pass": true
+  },
+  "runtime_authority_changed": false,
+  "installed_runtime_touched": false
+}

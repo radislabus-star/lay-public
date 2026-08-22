@@ -1,0 +1,254 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "PASS",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": true,
+  "contract": "docs/structural_gates/preflights/LAY_IME_ATOMIC_V27_SHIFT_GESTURE_HANDOFF_ROUTE_V1_2026-08-22.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "source_root": null,
+  "node_count": 10,
+  "edge_count": 11,
+  "routes": [
+    {
+      "id": "modifier-handoff-publish-execution",
+      "event": "modifier-handoff-publish",
+      "kind": "execution",
+      "entry": "physical-modifier-interface",
+      "via": [],
+      "terminal": "committed-shift-gesture",
+      "path_count": 1,
+      "paths": [
+        [
+          "physical-modifier-interface",
+          "source-engine-modifier-observer",
+          "native-observation-committer",
+          "committed-shift-gesture"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "committed-shift-gesture"
+        ],
+        "orchestrator": [
+          "native-observation-committer"
+        ],
+        "interface": [
+          "physical-modifier-interface"
+        ],
+        "observer": [
+          "source-engine-modifier-observer"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "physical-modifier-interface",
+          "to": "committed-shift-gesture",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "physical-modifier-interface",
+              "source-engine-modifier-observer",
+              "native-observation-committer",
+              "committed-shift-gesture"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "modifier-handoff-consume-execution",
+      "event": "modifier-handoff-consume",
+      "kind": "execution",
+      "entry": "physical-modifier-interface",
+      "via": [],
+      "terminal": "atomic-frame-owner",
+      "path_count": 1,
+      "paths": [
+        [
+          "physical-modifier-interface",
+          "target-engine-handoff-reconciler",
+          "existing-auto-undo-authorizer",
+          "atomic-frame-owner"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "atomic-frame-owner"
+        ],
+        "authorization_owner": [
+          "existing-auto-undo-authorizer"
+        ],
+        "interface": [
+          "physical-modifier-interface"
+        ],
+        "orchestrator": [
+          "target-engine-handoff-reconciler"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "physical-modifier-interface",
+          "to": "atomic-frame-owner",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "physical-modifier-interface",
+              "target-engine-handoff-reconciler",
+              "existing-auto-undo-authorizer",
+              "atomic-frame-owner"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "auto-undo-authority",
+      "event": "auto-undo-authority",
+      "kind": "authority",
+      "entry": "committed-shift-gesture",
+      "via": [],
+      "terminal": "atomic-frame-owner",
+      "path_count": 1,
+      "paths": [
+        [
+          "committed-shift-gesture",
+          "bounded-handoff-evidence",
+          "existing-auto-undo-authorizer",
+          "atomic-frame-owner"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "atomic-frame-owner"
+        ],
+        "evidence_owner": [
+          "bounded-handoff-evidence"
+        ],
+        "producer": [
+          "committed-shift-gesture"
+        ],
+        "authorization_owner": [
+          "existing-auto-undo-authorizer"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "committed-shift-gesture",
+          "to": "atomic-frame-owner",
+          "via": [],
+          "graph": "authority",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "committed-shift-gesture",
+              "bounded-handoff-evidence",
+              "existing-auto-undo-authorizer",
+              "atomic-frame-owner"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "layout-engine-handoff-observation",
+      "event": "layout-engine-handoff-observation",
+      "kind": "observation",
+      "entry": "physical-modifier-interface",
+      "via": [],
+      "terminal": "layout-focus-observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "physical-modifier-interface",
+          "layout-focus-observer"
+        ]
+      ],
+      "role_owners": {
+        "observer": [
+          "layout-focus-observer"
+        ],
+        "interface": [
+          "physical-modifier-interface"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "physical-double-shift-proof",
+      "event": "physical-double-shift-proof",
+      "kind": "proof",
+      "entry": "layout-focus-observer",
+      "via": [],
+      "terminal": "physical-proof-owner",
+      "path_count": 1,
+      "paths": [
+        [
+          "layout-focus-observer",
+          "physical-proof-owner"
+        ]
+      ],
+      "role_owners": {
+        "observer": [
+          "layout-focus-observer"
+        ],
+        "proof_owner": [
+          "physical-proof-owner"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {
+    "auto-undo-authority": {
+      "candidate_rank_owner": [],
+      "display_rank_owner": [],
+      "evidence_owner": [
+        "bounded-handoff-evidence"
+      ],
+      "render_owner": [],
+      "mutation_owner": [
+        "atomic-frame-owner"
+      ],
+      "authorization_owner": [
+        "existing-auto-undo-authorizer"
+      ]
+    }
+  },
+  "source_evidence": {
+    "expected": 0,
+    "verified": 0,
+    "complete": true
+  },
+  "issues": [],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": false,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

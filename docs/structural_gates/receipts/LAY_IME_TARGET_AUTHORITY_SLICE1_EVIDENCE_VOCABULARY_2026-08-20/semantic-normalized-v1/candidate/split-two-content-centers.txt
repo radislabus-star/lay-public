@@ -1,0 +1,10 @@
+test correction_core::tests::live_canonical_l2_field_applies_verified_two_content_boundary ... l2_boundary_light_trace elapsed_us=28850 found=false
+glued_multiword_trace total_us=562988 complete_paths=0 merged_rejects=0 confidence_rejects=0 scored=0 guard_us=0 score_us=0
+l2_boundary_phrase_trace elapsed_us=780709 found=false
+l2_boundary_projection_trace context_us=23 split_us=812835 settle_us=1 candidates=1
+l2_field_trace owner=productive_v90 seeds_us=2551 productive_us=11283121 total_us=11285672 contours=1 seeds=0 candidates=0 field_cache=NotRequested field_generation=0
+candidate-lattice source=nanda count=1 replacements=["Елена просит "]
+live_ime_lexical_trace token_chars=11 reconstructed=[]
+decision-core-candidate origin=Boundary source_id=CanonicalL2FieldBoundary class=glued-words gate=Eligible rank=1.094 posterior=0.506 risk=0.000 explain=1000 opfit=1000 lost=0 field=-2 attract=0 repel=2 uncertainty=900 phase_competition=0 lexical_ready=false morphology=0 morphology_disposition=not_applicable morphology_lemma=0 morphology_slot=0 morphology_competitors=0 operator_consensus=false usage=0.000 context=0.000 l3=0 l3_disposition=not_applicable l3_pairwise=false l3_relation=0 l4=0 l4_state_specific=false l4_attract=0 l4_repel=0 l4_phase=0 l4_phase_supported=false cross_scene=unknown cross_margin=0 cross_recommendation=keep cross_auto_apply=false hidden=resolved hidden_classes=1 hidden_selected=15550062223501942296 hidden_probe=none hidden_certificate=true replacement="Елена просит "
+ok
+

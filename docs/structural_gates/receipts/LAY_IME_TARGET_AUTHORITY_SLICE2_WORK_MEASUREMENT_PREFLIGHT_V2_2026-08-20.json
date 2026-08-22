@@ -1,0 +1,120 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "paper-before-work-measurement",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../ime-canonical-target-authority-paper-2026-08-17.md",
+      "sha256": "fe4cb310e44cca20381351145d2b446c9ff19859c3aed34a8cfb7b30e787aa17",
+      "size_bytes": 163821
+    },
+    {
+      "exists": true,
+      "id": "architecture-before-work-measurement",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../l2-l11-canonical-architecture.md",
+      "sha256": "a7e6c98dd0dd69ab9283c80fcf7975b70c0e51f43f9c70276368a09a2095de51",
+      "size_bytes": 313241
+    },
+    {
+      "exists": true,
+      "id": "productive-proof-before-work-measurement",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/productive_v1/proof.rs",
+      "sha256": "d21184428530c26ead1c0d3e4dc81c9e03999a2915d87d5c85900e6c41725a85",
+      "size_bytes": 130494
+    },
+    {
+      "exists": true,
+      "id": "productive-runtime-before-work-measurement",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/productive_v1/packaged_runtime.rs",
+      "sha256": "bc77fea032b0a79ee4cf34e1d4c67d389e802112768983d9b8c054faefcae7f2",
+      "size_bytes": 176152
+    },
+    {
+      "exists": true,
+      "id": "active-v90-fixed-proof-evidence",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_2026-08-16/productive-v90-active-v9-v13-semantic-full-13x100.json",
+      "sha256": "dbc04196df45e13f5c02da4959a514da041ff3b0db6e07c72453f9e41276cabc",
+      "size_bytes": 1095164
+    },
+    {
+      "exists": true,
+      "id": "frozen-v64-hypothesis-manifest",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_2026-08-16/frozen-v64-hypothesis-manifest-v1.json",
+      "sha256": "13e2db3470006303de3d87b2f999988db1661157760fec447e54ac37d5b495ea",
+      "size_bytes": 1480754
+    }
+  ],
+  "blockers": [
+    {
+      "code": "identity_parity_missing",
+      "field": "identity_contracts[0].test_id",
+      "message": "identity contract requires a parity test"
+    }
+  ],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 6,
+    "forbidden_side_effect_kinds": [
+      "change_candidate_membership_rank_or_authority",
+      "generated_traffic",
+      "literal_surface_runtime_branch",
+      "recrystallize_l11_or_l2_packages",
+      "restart_global_ibus_daemon",
+      "restart_lay_daemon",
+      "rewrite_frozen_manifest",
+      "runtime_deployment",
+      "synthetic_fixture"
+    ],
+    "identity_contracts": 2,
+    "invariants": 4,
+    "planned_side_effect_kinds": [
+      "evidence_write",
+      "remote_quality_measurement",
+      "remote_release_build",
+      "source_edit"
+    ],
+    "preserved_artifacts": 2,
+    "runtime_comparisons": 0,
+    "source_checks": 2,
+    "tests": 8
+  },
+  "manifest_sha256": "e4708a172a9e1814398ca1401b08fa4a1af3c9908f69a096e293559d40f8da6c",
+  "safe_to_implement": false,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "existing-productive-proof-remains-read-only",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/productive_v1/proof.rs",
+      "sha256": "d21184428530c26ead1c0d3e4dc81c9e03999a2915d87d5c85900e6c41725a85",
+      "size_bytes": 130494
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "existing-productive-runtime-remains-behaviorally-identical",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/productive_v1/packaged_runtime.rs",
+      "sha256": "bc77fea032b0a79ee4cf34e1d4c67d389e802112768983d9b8c054faefcae7f2",
+      "size_bytes": 176152
+    }
+  ],
+  "task_id": "lay-ime-target-authority-slice2-work-measurement-v2-2026-08-20",
+  "verdict": "BLOCKED_BEFORE_CODE"
+}

@@ -1,0 +1,116 @@
+{
+  "schema": "lay.ime.atomic-ibus-production-profile-admission-proof.v1",
+  "task_id": "LAY_IME_ATOMIC_IBUS_PRODUCTION_PROFILE_ADMISSION_V1_2026-08-21",
+  "generated_at": "2026-08-21T14:42:39+03:00",
+  "verdict": "PASS",
+  "verdict_scope": "exact IBus production profile codec and admission predicate",
+  "preflight": {
+    "verdict": "READY_TO_IMPLEMENT",
+    "safe_to_implement": true,
+    "manifest_sha256": "58783ded70b4b4b717912902f5bd09d4c8be3ee4478f6c8df7ff10aba31d25a3",
+    "blocked_receipt_retained": "lay_ime_atomic_ibus_production_profile_admission_v1_2026-08-21-preflight-receipt.json",
+    "ready_receipt": "lay_ime_atomic_ibus_production_profile_admission_v2_2026-08-21-preflight-receipt.json"
+  },
+  "change": {
+    "producer_profile": "Mutter text-input-v3 profile from Section 21.14.2",
+    "normal_build_admission": "exact production profile only",
+    "private_build_admission": "exact production profile plus compile-time private proof profile",
+    "per_event_narrowing": "mask subset and maximum effect count at most three",
+    "wildcard_profiles": 0,
+    "wire_schema_changed": false,
+    "mutation_owner_changed": false,
+    "legacy_route_changed": false,
+    "runtime_files": [
+      "src/ibusatomicframe.c",
+      "src/ibusatomicframeprivate.h"
+    ],
+    "test_files": [
+      "src/tests/ibus-atomic-frame.c"
+    ]
+  },
+  "profile_parity": {
+    "protocol_version": 1,
+    "adapter_kind": 196609,
+    "downstream_transaction_kind": 196610,
+    "maximum_effect_mask": 15,
+    "maximum_effect_count": 3,
+    "required_guarantee_flags": 63,
+    "adapter_build_contract_digest": "85742aec30f9d1f63bef5c3963f3af325efbc5b34da74cce2a942876ea354aa7",
+    "mutter_source_unchanged_sha256": "99debf2aca19cccd22ecd7b59e0629cbbb39f76ee4b7f5924ac45aededbc38f2",
+    "result": "PASS"
+  },
+  "remote_environment": {
+    "host": "e@192.168.3.94",
+    "logical_cpus": 20,
+    "sandbox": "/home/e/projects/ibus-lay-atomic-epoch-20260821",
+    "build_jobs": 20,
+    "final_load_1_5_15": [2.35, 2.10, 1.90],
+    "available_memory_kib": 24615080,
+    "leftover_task_processes": 0
+  },
+  "builds": {
+    "normal_scoped": {
+      "result": "PASS",
+      "target": "src/tests/ibus-atomic-frame",
+      "incremental_link_elapsed_seconds": 0.01,
+      "max_rss_kib": 3200
+    },
+    "private_scoped": {
+      "result": "PASS",
+      "library_elapsed_seconds": 0.36,
+      "library_max_rss_kib": 31680,
+      "test_link_elapsed_seconds": 0.12,
+      "test_link_max_rss_kib": 11988
+    },
+    "unrelated_full_tree_attempt": {
+      "result": "NOT_A_GATE",
+      "failure": "portal/ibus-portal-dbus.c lacks gio/gunixfdlist.h in the proof sysroot",
+      "relevant_codec_and_test_objects_built_before_failure": true
+    }
+  },
+  "proofs": {
+    "normal_codec": {"passed": 19, "total": 19, "result": "PASS"},
+    "private_codec": {"passed": 19, "total": 19, "result": "PASS"},
+    "production_digest_parity": "PASS",
+    "normal_production_acceptance": "PASS",
+    "private_production_acceptance": "PASS",
+    "normal_private_profile_refusal": "PASS",
+    "private_private_profile_acceptance": "PASS",
+    "unknown_kind_digest_and_guarantee_refusal": "PASS",
+    "bounded_mask_count_narrowing": "PASS"
+  },
+  "source_parity": [
+    {
+      "path": "src/ibusatomicframe.c",
+      "local_sha256": "2a0bc6ea56285968f45f5cf60bd001e3cee78ae249223a3c252a5022df9f84ef",
+      "remote_sha256": "2a0bc6ea56285968f45f5cf60bd001e3cee78ae249223a3c252a5022df9f84ef",
+      "match": true
+    },
+    {
+      "path": "src/ibusatomicframeprivate.h",
+      "local_sha256": "2b65333555b721376213b05014b7ba1b5b39a61d4345fae60035b019dd840648",
+      "remote_sha256": "2b65333555b721376213b05014b7ba1b5b39a61d4345fae60035b019dd840648",
+      "match": true
+    },
+    {
+      "path": "src/tests/ibus-atomic-frame.c",
+      "local_sha256": "1cd9d8ed756a8f0b39942626449ac3cdcc39e586e0e4d0fc44086d53c20b97ce",
+      "remote_sha256": "1cd9d8ed756a8f0b39942626449ac3cdcc39e586e0e4d0fc44086d53c20b97ce",
+      "match": true
+    }
+  ],
+  "diagnostics_not_promoted": [
+    "A direct process binary without its isolated D-Bus harness failed before setup and is not a product regression.",
+    "The preserved private process matrix reaches its deliberately delayed engine proposal but its outer five-second test watchdog expires; no production request used this path and it is not counted as PASS."
+  ],
+  "not_tested": [
+    "production capability through the complete IBus process hop",
+    "GNOME Shell adapter",
+    "Mutter end-to-end integration",
+    "installation or session restart",
+    "physical applications and keyboard input",
+    "production latency"
+  ],
+  "runtime_authority_changed": false,
+  "deployment_authority": false
+}

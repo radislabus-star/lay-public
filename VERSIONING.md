@@ -17,7 +17,7 @@ integer metadata version remains monotonic and is encoded as
 
 Current publication branch version:
 
-- `1.0.30`
+- `1.0.34`
 
 Do not rely on commit counts. Before publishing or pushing, run the bump script
 or verify the version fields manually.
@@ -59,4 +59,4 @@ The version must be updated in:
 - `Cargo.toml`
 - `Cargo.lock`
 - `extension/lay@radislabus-star.github.io/metadata.json`
-- `extension/lay@radislabus-star.github.io/lay-impl.js`
+- `extension/lay@radislabus-star.github.io/tray_support.js`

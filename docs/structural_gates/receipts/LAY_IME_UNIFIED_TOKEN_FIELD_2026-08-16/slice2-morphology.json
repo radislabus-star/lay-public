@@ -1,0 +1,202 @@
+{
+  "all_iterations": {
+    "max_us": 2967757,
+    "mean_us": 17806,
+    "min_us": 2465,
+    "p50_us": 2854,
+    "p95_us": 3748,
+    "p99_us": 4287,
+    "samples": 200
+  },
+  "authority": {
+    "kind": "winner",
+    "surfaces": [
+      "морфология"
+    ]
+  },
+  "availability": "Ready",
+  "candidates": [
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "l2_surface_stem_truncation_low",
+      "replacement": "морфолог ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "l2_surface_stem_truncation_low",
+      "replacement": "морфолога ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "replacement": "морфологам ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "replacement": "морфологах ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "l2_surface_stem_truncation_low",
+      "replacement": "морфологе ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "extra-letter",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "known_current_word_surface_drift",
+      "replacement": "морфологи ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "replacement": "морфологией ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "replacement": "морфологиею ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "letter-substitution",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "known_current_word_surface_drift",
+      "replacement": "морфологии ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "letter-substitution",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "known_current_word_surface_drift",
+      "replacement": "морфологий ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "letter-substitution",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "known_current_word_surface_drift",
+      "replacement": "морфологию ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "missing-letter",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "known_current_word_surface_drift",
+      "replacement": "морфологиям ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "replacement": "морфологиями ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "missing-letter",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "known_current_word_surface_drift",
+      "replacement": "морфологиях ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "replacement": "морфологов ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "replacement": "морфологом ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "l2_surface_stem_truncation_low",
+      "replacement": "морфологу ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "replacement": "морфонологии ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "replacement": "морфонология ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "replacement": "морфонологиям ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "replacement": "морфонологиях ",
+      "source_id": "ProductiveL2V90Surface"
+    }
+  ],
+  "cold_us": 2967757,
+  "field_cache": {
+    "generation": 2,
+    "in_flight_entries": 0,
+    "invalidations": 1,
+    "producer_computations": 1,
+    "ready_entries": 1,
+    "ready_hits": 199,
+    "saturated_requests": 0,
+    "superseded_publications": 0,
+    "transient_failures": 0,
+    "waiter_joins": 0
+  },
+  "hot": {
+    "max_us": 5534,
+    "mean_us": 2982,
+    "min_us": 2465,
+    "p50_us": 2854,
+    "p95_us": 3748,
+    "p99_us": 4287,
+    "samples": 199
+  },
+  "kind": "productive_v90_live_owner_query",
+  "materializer_symbol": "materialize_live_productive_v1_field",
+  "outer_readout_cache_bypassed": true,
+  "owner_symbol": "prepare_live_productive_v1_field",
+  "peak_rss_kib": 316004,
+  "producer_calls": 1,
+  "producer_symbol": "canonical_owned_text_candidates",
+  "repeat": 200,
+  "resident_rss_kib": 316004,
+  "runtime_authority_changed": false,
+  "status": "ready",
+  "text": "морфология "
+}
+

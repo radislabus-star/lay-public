@@ -1,0 +1,22 @@
+test nanda_wave::l2::tests::boundary_cell_does_not_split_multi_letter_preposition_guesses ... layout-center token="поспорта" raw="gjcgjhnf" blocked=false
+english-center token="gjcgjhnf" candidates=[]
+layout-center token="поспорта" raw="gjcgjhnf" blocked=false
+english-center token="gjcgjhnf" candidates=[]
+layout-center token="заполни" raw="pfgjkyb" blocked=false
+english-center token="pfgjkyb" candidates=[]
+glued_multiword_trace total_us=TIME complete_paths=1 merged_rejects=0 confidence_rejects=0 scored=0 guard_us=TIME score_us=TIME
+boundary-shift original="заполни" "поспорта" candidate="заполнип" "оспорта" readout=HotBoundaryShiftReadout { original_left_chars: 7, original_left: HotSurfacePhaseReadout { exact_center: false, l1_refs: 17, motif_refs: 32, covered_l1_refs: 32, residual_l1_refs: 0, coherence_milli: 1882 }, original_right: HotSurfacePhaseReadout { exact_center: false, l1_refs: 19, motif_refs: 36, covered_l1_refs: 36, residual_l1_refs: 0, coherence_milli: 1894 }, original_left_form: HotWordReadout { authority: Unknown }, original_right_form: HotWordReadout { authority: Unknown }, candidate_left: HotSurfacePhaseReadout { exact_center: false, l1_refs: 19, motif_refs: 37, covered_l1_refs: 37, residual_l1_refs: 0, coherence_milli: 1947 }, candidate_right: HotSurfacePhaseReadout { exact_center: false, l1_refs: 17, motif_refs: 34, covered_l1_refs: 34, residual_l1_refs: 0, coherence_milli: 2000 }, candidate_left_form: HotWordReadout { authority: L2FormCenter }, candidate_right_form: HotWordReadout { authority: L2FormCenter } }
+l2_boundary_light_trace elapsed_us=TIME found=false
+glued_multiword_trace total_us=TIME complete_paths=1 merged_rejects=0 confidence_rejects=0 scored=0 guard_us=TIME score_us=TIME
+l2_boundary_phrase_trace elapsed_us=TIME found=false
+l2_boundary_fuzzy_trace elapsed_us=TIME candidates=32
+layout-center token="задани" raw="pflfyb" blocked=false
+english-center token="pflfyb" candidates=[]
+layout-center token="задани" raw="pflfyb" blocked=false
+english-center token="pflfyb" candidates=[]
+l2_boundary_fuzzy_trace elapsed_us=TIME candidates=32
+l2_boundary_fuzzy_trace elapsed_us=TIME candidates=32
+l2_boundary_light_trace elapsed_us=TIME found=false
+l2_boundary_phrase_trace elapsed_us=TIME found=false
+ok
+

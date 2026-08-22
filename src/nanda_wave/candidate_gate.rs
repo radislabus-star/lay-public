@@ -54,8 +54,15 @@ pub struct LiveCompletionCandidate {
     rank_score: f32,
 }
 
-/// Per-call hot-path receipt. It is thread-local because adapters need to
-/// attribute their own readout without racing concurrent daemon diagnostics.
+#[derive(Debug, Clone, PartialEq)]
+pub struct LiveCompletionReadout {
+    pub candidates: Vec<LiveCompletionCandidate>,
+    pub timing: LiveCompletionTiming,
+}
+
+/// Per-call hot-path receipt. Canonical field metrics arrive through the
+/// returned field observation; the thread-local slot only preserves the legacy
+/// diagnostics API on the caller thread.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub struct LiveCompletionTiming {
     pub recorded: bool,
@@ -65,6 +72,11 @@ pub struct LiveCompletionTiming {
     pub l3_context_us: u64,
     pub decision_us: u64,
     pub returned_candidates: u64,
+    pub l11_us: u64,
+    pub productive_v90_us: u64,
+    pub field_producer_count: u64,
+    pub field_cache_disposition: Option<&'static str>,
+    pub field_generation: u64,
 }
 
 thread_local! {
@@ -82,6 +94,15 @@ pub(crate) fn clear_live_completion_cache() {
 
 pub fn last_live_completion_timing() -> LiveCompletionTiming {
     LAST_LIVE_COMPLETION_TIMING.with(Cell::get)
+}
+
+pub fn live_completion_readout(request: LiveCompletionRequest<'_>) -> LiveCompletionReadout {
+    clear_last_live_completion_timing();
+    let candidates = live_completion_candidates(request);
+    LiveCompletionReadout {
+        candidates,
+        timing: last_live_completion_timing(),
+    }
 }
 
 pub(crate) fn warm_up_live_candidate_readout() {
@@ -193,6 +214,7 @@ pub fn live_completion_candidates(
     let material =
         live_l2_word_candidates_with_availability(request.context_prefix, &partial, request.limit);
     let material_cacheable = material.cacheable;
+    let canonical_telemetry = material.canonical_telemetry;
     let mut raw = material.candidates;
     let context_birth_candidates = live_l3_context_birth_candidates(
         &context_tokens,
@@ -459,6 +481,7 @@ pub fn live_completion_candidates(
             l2_material_us,
             l3_context_us,
             decision_us,
+            canonical_telemetry,
         },
     );
     candidates
@@ -476,6 +499,7 @@ fn live_l2_word_candidates(
 struct LiveL2Material {
     candidates: Vec<l2::L2ImeWordCandidate>,
     cacheable: bool,
+    canonical_telemetry: super::l2_field::CanonicalFieldTelemetry,
 }
 
 fn live_l2_word_candidates_with_availability(
@@ -487,6 +511,7 @@ fn live_l2_word_candidates_with_availability(
         return LiveL2Material {
             candidates: Vec::new(),
             cacheable: true,
+            canonical_telemetry: super::l2_field::CanonicalFieldTelemetry::default(),
         };
     }
     let normalized = token.to_lowercase();
@@ -495,6 +520,7 @@ fn live_l2_word_candidates_with_availability(
         return LiveL2Material {
             candidates: Vec::new(),
             cacheable: true,
+            canonical_telemetry: super::l2_field::CanonicalFieldTelemetry::default(),
         };
     }
 
@@ -503,6 +529,7 @@ fn live_l2_word_candidates_with_availability(
         return LiveL2Material {
             candidates: Vec::new(),
             cacheable: false,
+            canonical_telemetry: super::l2_field::CanonicalFieldTelemetry::default(),
         };
     }
 
@@ -530,9 +557,15 @@ fn live_l2_word_candidates_with_availability(
     bind_verified_lexical_repair_evidence(&normalized, &mut candidates);
     let lexical_us = lexical_started.elapsed().as_micros();
     let canonical_started = Instant::now();
+    let mut canonical_telemetry = super::l2_field::CanonicalFieldTelemetry::default();
     let canonical_availability = if canonical_needed {
-        let (availability, canonical) =
-            super::l2_field::canonical_ime_candidates(context_prefix, &normalized, material_limit);
+        let (availability, canonical, telemetry) =
+            super::l2_field::canonical_ime_candidates_observed(
+                context_prefix,
+                &normalized,
+                material_limit,
+            );
+        canonical_telemetry = telemetry;
         merge_live_candidate_material(&mut candidates, canonical);
         availability
     } else if plain_lexical_surface {
@@ -589,6 +622,7 @@ fn live_l2_word_candidates_with_availability(
     LiveL2Material {
         candidates,
         cacheable: !canonical_availability.is_transient(),
+        canonical_telemetry,
     }
 }
 
@@ -1380,6 +1414,11 @@ fn record_live_gate_stats(started: Instant, record: LiveGateRecord) {
             l3_context_us: record.l3_context_us,
             decision_us: record.decision_us,
             returned_candidates: record.returned_candidates,
+            l11_us: record.canonical_telemetry.l11_us,
+            productive_v90_us: record.canonical_telemetry.productive_v90_us,
+            field_producer_count: record.canonical_telemetry.field_producer_count,
+            field_cache_disposition: Some(record.canonical_telemetry.cache_disposition.as_str()),
+            field_generation: record.canonical_telemetry.field_generation,
         });
     });
     let stats = live_stats();
@@ -1539,6 +1578,7 @@ struct LiveGateRecord {
     l2_material_us: u64,
     l3_context_us: u64,
     decision_us: u64,
+    canonical_telemetry: super::l2_field::CanonicalFieldTelemetry,
 }
 
 fn live_completion_context_tail(context_prefix: &str) -> String {
@@ -2225,5 +2265,32 @@ mod tests {
             l3_memory_supported: true,
             ..ungrounded
         }));
+    }
+
+    #[test]
+    #[ignore = "diagnostic probe requires installed L1.1/L2 packages"]
+    fn warmed_live_candidate_stage_probe() {
+        let words = std::env::var("LAY_LIVE_LATENCY_WORDS")
+            .expect("LAY_LIVE_LATENCY_WORDS must contain comma-separated lexical surfaces");
+        super::super::warm_up_l2_for_ime();
+        super::super::warm_up_l3_phrase_memory();
+        let _ = live_completion_candidates(request("", "пр"));
+
+        for (index, partial) in words
+            .split(',')
+            .map(str::trim)
+            .filter(|word| !word.is_empty())
+            .enumerate()
+        {
+            clear_live_completion_cache();
+            clear_last_live_completion_timing();
+            let context = format!("latency-probe-{index} ");
+            let candidates = live_completion_candidates(request(&context, partial));
+            eprintln!(
+                "warmed_live_candidate_stage token={partial:?} timing={:?} candidates={}",
+                last_live_completion_timing(),
+                candidates.len(),
+            );
+        }
     }
 }

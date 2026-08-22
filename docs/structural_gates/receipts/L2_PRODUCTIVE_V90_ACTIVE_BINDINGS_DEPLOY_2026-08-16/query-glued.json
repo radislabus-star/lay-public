@@ -1,0 +1,318 @@
+{
+  "all_iterations": {
+    "max_us": 1879317,
+    "mean_us": 14553,
+    "min_us": 3987,
+    "p50_us": 5230,
+    "p95_us": 6682,
+    "p99_us": 7478,
+    "samples": 201
+  },
+  "authority": {
+    "kind": "tied",
+    "surfaces": [
+      "донора",
+      "доноре"
+    ]
+  },
+  "cache_mode": "bounded_prepared_frontier_lru",
+  "candidates": [
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "short_same_length_multi_edit_drift",
+      "productive": false,
+      "replacement": "донора",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "short_same_length_multi_edit_drift",
+      "productive": false,
+      "replacement": "доноре",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "short_same_length_multi_edit_drift",
+      "productive": false,
+      "replacement": "донору",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "short_same_length_multi_edit_drift",
+      "productive": false,
+      "replacement": "доноры",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "productive": false,
+      "replacement": "дав",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "productive": false,
+      "replacement": "давшая",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "canonical_l2_field_local_tie",
+      "productive": false,
+      "replacement": "давшего",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "productive": false,
+      "replacement": "давшее",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "productive": false,
+      "replacement": "давшей",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "productive": false,
+      "replacement": "давшем",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "canonical_l2_field_local_tie",
+      "productive": false,
+      "replacement": "давшему",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "productive": false,
+      "replacement": "давшею",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "productive": false,
+      "replacement": "давши",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "productive": false,
+      "replacement": "давшие",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "productive": false,
+      "replacement": "давший",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "productive": false,
+      "replacement": "давшим",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "canonical_l2_field_local_tie",
+      "productive": false,
+      "replacement": "давшими",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "productive": false,
+      "replacement": "давших",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "productive": false,
+      "replacement": "давшую",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "productive": false,
+      "replacement": "дадим",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "nanda_surface_unknown_word",
+      "productive": false,
+      "replacement": "дадимте",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "productive": false,
+      "replacement": "дадите",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "productive": false,
+      "replacement": "дадут",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "productive": false,
+      "replacement": "дай",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "productive": false,
+      "replacement": "дайте",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "productive": false,
+      "replacement": "дал",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "productive": false,
+      "replacement": "дала",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "productive": false,
+      "replacement": "дали",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "productive": false,
+      "replacement": "дало",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "productive": false,
+      "replacement": "дам",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "productive": false,
+      "replacement": "дан",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "productive": false,
+      "replacement": "дана",
+      "source_id": "CanonicalL2FieldSurface"
+    }
+  ],
+  "cold_us": 1879317,
+  "field": {
+    "max_us": 13512,
+    "mean_us": 1662,
+    "min_us": 1170,
+    "p50_us": 1583,
+    "p95_us": 2302,
+    "p99_us": 2690,
+    "samples": 201
+  },
+  "hot": {
+    "max_us": 7783,
+    "mean_us": 5229,
+    "min_us": 3987,
+    "p50_us": 5214,
+    "p95_us": 6668,
+    "p99_us": 7078,
+    "samples": 200
+  },
+  "kind": "canonical_l2_live_query",
+  "peak_rss_kib": 275400,
+  "pre_productive_surface_count": 4,
+  "prepared_cache_hits": 200,
+  "productive": {
+    "max_us": 15,
+    "mean_us": 0,
+    "min_us": 0,
+    "p50_us": 0,
+    "p95_us": 0,
+    "p99_us": 0,
+    "samples": 201
+  },
+  "productive_form_limit": 8,
+  "productive_lemma_limit": 32,
+  "productive_surfaces": [],
+  "repeat": 201,
+  "resident_rss_kib": 275464,
+  "runtime_authority_changed": false,
+  "seed_count": 4,
+  "status": "ready",
+  "text": "данорм"
+}

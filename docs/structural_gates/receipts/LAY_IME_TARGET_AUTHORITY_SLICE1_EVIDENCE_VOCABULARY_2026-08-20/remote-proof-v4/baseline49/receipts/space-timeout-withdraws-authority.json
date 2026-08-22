@@ -1,0 +1,42 @@
+{
+  "planned": {
+    "id": "space-timeout-withdraws-authority",
+    "series": "baseline49",
+    "denominator": "committed_space",
+    "source_test": "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs::timeout_withdraws_lease_but_keeps_one_material_only_job",
+    "target_kind": "bin",
+    "target": "lay-ibus-engine",
+    "compiled_selector": "space_autocorrect_prefetch::tests::timeout_withdraws_lease_but_keeps_one_material_only_job",
+    "expected_test_count": 1,
+    "expected_assertion_status": "PASS",
+    "expected_semantic_receipt": "timeout cannot cause a late edit",
+    "environment": {
+      "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+      "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+      "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+      "LAY_DEBUG_DECISION_CORE": "1",
+      "LAY_L2_FIELD_TRACE": "1",
+      "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+      "CARGO_BUILD_JOBS": "20"
+    },
+    "command": [
+      "scripts/cargo-guard.sh",
+      "test",
+      "--bin",
+      "lay-ibus-engine",
+      "space_autocorrect_prefetch::tests::timeout_withdraws_lease_but_keeps_one_material_only_job",
+      "--",
+      "--exact",
+      "--nocapture",
+      "--test-threads=1"
+    ]
+  },
+  "exit_code": 0,
+  "observed_test_count": 1,
+  "observed_status": "PASS",
+  "valid_execution": true,
+  "log": {
+    "size_bytes": 60446,
+    "sha256": "f9940b5ab7835148f7a4c9effada4982342038342f56204be670d970f24f1854"
+  }
+}

@@ -1,0 +1,6 @@
+status=1
+leftovers_before_cleanup=1
+leftovers_after_cleanup=0
+-- before cleanup --
+2875182	/lay-engine/lay-ibus-engine --ibus --managed 
+-- after cleanup --

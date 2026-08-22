@@ -1,0 +1,115 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-ime-space-boundary-layout-recovery-2026-08-15",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {"id": "ibus-state", "kind": "file", "path": "../../../src/bin/lay_ibus_engine/state.rs", "expect": {"size_bytes": 41447, "sha256": "875aab2a64dc5804bb7c033e2c4906536d8aec8dfef7f22353c3e7b02bdb70f4", "mode": "0664"}},
+    {"id": "structural-verifier", "kind": "file", "path": "../../../src/text_edit/structural_verifier.rs", "expect": {"size_bytes": 6795, "sha256": "b728f1917424b8da217c474783c4fcc41c952009bd9f50c9997e1cc79b639fed", "mode": "0664"}},
+    {"id": "text-transition", "kind": "file", "path": "../../../src/text_edit/transition.rs", "expect": {"size_bytes": 26296, "sha256": "ca27e07bfff9f1cdadc16835a7b573eca29d4874488c8686c8a9b53ba619b80f", "mode": "0664"}},
+    {"id": "composition-commit", "kind": "file", "path": "../../../src/bin/lay_ibus_engine/composition_commit.rs", "expect": {"size_bytes": 12213, "sha256": "c0888efbce11db134f5d890b30e9c0cba5b35c8bc403239d327a8246a792f49b", "mode": "0664"}},
+    {"id": "preedit-token", "kind": "file", "path": "../../../src/bin/lay_ibus_engine/preedit.rs", "expect": {"size_bytes": 26041, "sha256": "518928c41f11f81538cce126e30c44773a493072fe6e4c201bf523f1269fa993", "mode": "0664"}},
+    {"id": "candidate-sources", "kind": "file", "path": "../../../src/correction_core/candidate_sources.rs", "expect": {"size_bytes": 50598, "sha256": "2422b4fcb31122470feb540d415410e3afa0d90b4a5476afe9b1d74cb409045b", "mode": "0664"}},
+    {"id": "layout-phrase", "kind": "file", "path": "../../../src/layout_autoswitch/ascii/phrase.rs", "expect": {"size_bytes": 4630, "sha256": "ccb354b215dcc2c3d52a3c28b0fe4af57aadfd9364313833c8ed0dab36f6b56a", "mode": "0664"}},
+    {"id": "installed-ime-1-0-30", "kind": "file", "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine", "expect": {"size_bytes": 6396344, "sha256": "defb5a58077b55c00fada4d2f233299d9a48126abe3ac53845a357d24448dddc", "mode": "0755"}}
+  ],
+  "source_checks": [
+    {
+      "id": "no-case-specific-or-blocking-space-route",
+      "path": "../../../src/bin/lay_ibus_engine/committed_tail.rs",
+      "sha256": "38ec5742d89d4add8a0894aa37da52d7a081010ece82db5ac44df45ea38acdbb",
+      "forbidden_effect_patterns": [
+        {"effect": "literal_surface_runtime_branch", "regex": "(?:token|surface|replacement)\\s*==\\s*\\\"(?:вотслов|скленые|подсказкак|блять)"},
+        {"effect": "synchronous_heavy_space_decision", "regex": "autocorrect_committed_token_on_space[\\s\\S]{0,3500}decide_active_composition_autocorrect"},
+        {"effect": "global_ibus_restart", "regex": "(?:restart|kill|pkill).{0,40}ibus-daemon"}
+      ]
+    },
+    {
+      "id": "no-space-wait-budget-expansion",
+      "path": "../../../src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
+      "sha256": "baf5985e9fd403a69db4b1e3671eb0c099e6a8188740b0d4c8fb8318f2c8310b",
+      "forbidden_effect_patterns": [
+        {"effect": "blocking_space_wait_expansion", "regex": "SPACE_PREFETCH_WAIT_BUDGET[^;]{0,100}from_millis\\((?:[2-9][0-9]|[1-9][0-9]{2,})\\)"}
+      ]
+    },
+    {
+      "id": "no-structural-verifier-bypass",
+      "path": "../../../src/text_edit/structural_verifier.rs",
+      "sha256": "b728f1917424b8da217c474783c4fcc41c952009bd9f50c9997e1cc79b639fed",
+      "forbidden_effect_patterns": [
+        {"effect": "safety_gate_weakening", "regex": "(?i)(?:bypass|disable|skip).{0,64}(?:safety|structural_verifier)|(?:safety|structural_verifier).{0,64}(?:bypass|disable|skip)"}
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "preserve-selected-boundary-authority", "kind": "filesystem_edit"},
+      {"id": "serialize-readout-before-prefetch", "kind": "filesystem_edit"},
+      {"id": "project-punctuation-keys-as-one-token", "kind": "filesystem_edit"},
+      {"id": "run-focused-remote-proof", "kind": "cargo_test"},
+      {"id": "deploy-only-after-proof", "kind": "service_activation"}
+    ],
+    "forbidden": [
+      "literal_surface_runtime_branch",
+      "synchronous_heavy_space_decision",
+      "blocking_space_wait_expansion",
+      "safety_gate_weakening",
+      "global_ibus_restart"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "installed-ime-baseline",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "policy": "leave_unchanged_until_remote_software_proof_passes",
+      "rollback_policy": "restore_exact_1_0_30_binary",
+      "baseline_check_id": "installed-ime-1-0-30"
+    }
+  ],
+  "state_machine": {
+    "initial_state": "LIVE_1_0_30_BOUNDARY_PROOF_LOST_AND_LAYOUT_TOKEN_SPLIT",
+    "terminal_states": ["REMOTE_PROOF_PASS_RUNTIME_UNCHANGED", "PROOF_FAILED_RUNTIME_UNCHANGED"],
+    "steps": [
+      {
+        "id": "implement-systemic-route-fix",
+        "from": "LIVE_1_0_30_BOUNDARY_PROOF_LOST_AND_LAYOUT_TOKEN_SPLIT",
+        "to": "SOURCE_FIXED_RUNTIME_UNCHANGED",
+        "mutates": true,
+        "failure_state": "PROOF_FAILED_RUNTIME_UNCHANGED",
+        "cleanup": "do not install and retain live 1.0.30",
+        "preserves": ["installed-ime-baseline"],
+        "test_id": "proof-failure-preserves-runtime"
+      },
+      {
+        "id": "run-focused-remote-proof",
+        "from": "SOURCE_FIXED_RUNTIME_UNCHANGED",
+        "to": "REMOTE_PROOF_PASS_RUNTIME_UNCHANGED",
+        "mutates": false,
+        "failure_state": "PROOF_FAILED_RUNTIME_UNCHANGED",
+        "cleanup": "do not install and retain live 1.0.30",
+        "preserves": ["installed-ime-baseline"],
+        "test_id": "space-boundary-layout-contract"
+      }
+    ]
+  },
+  "tests": [
+    {"id": "selected-action-structural-parity", "kind": "parity", "expected": "a DecisionCore winner is executable only when its from/to/plan match the current snapshot exactly; mismatches fail closed"},
+    {"id": "space-boundary-layout-contract", "kind": "integration", "expected": "verified glued-word boundaries apply on Space and exact punctuation-key layout projection outranks partial projection"},
+    {"id": "prefetch-stale-epoch", "kind": "fault_injection", "expected": "not-ready, stale generation, stale focus and stale tail never apply a cached decision"},
+    {"id": "prefetch-identity-parity", "kind": "parity", "expected": "the stored prefetch key and the Space lookup key compare engine path, tail epoch, complete tail and active layout without fallback"},
+    {"id": "space-hot-path-budget", "kind": "integration", "expected": "Space contains no synchronous candidate generation and retains the existing 8 ms maximum wait"},
+    {"id": "proof-failure-preserves-runtime", "kind": "fault_injection", "expected": "any failed proof leaves installed 1.0.30 and global ibus-daemon unchanged"}
+  ],
+  "invariants": [
+    {"id": "winner-proof-survives-adapter", "statement": "the selected BoundaryMergeSplit/Boundary action crosses the committed-tail adapter without reclassification as VisibleTail/VisibleState", "test_id": "selected-action-structural-parity"},
+    {"id": "display-does-not-authorize", "statement": "a visible IME suggestion may warm material but only the Space DecisionCore receipt plus verifier can authorize mutation", "test_id": "space-boundary-layout-contract"},
+    {"id": "physical-layout-token-is-atomic", "statement": "ASCII punctuation keys that encode Russian letters remain part of one physical layout token and cannot be preserved by a partial projection", "test_id": "space-boundary-layout-contract"},
+    {"id": "space-remains-bounded", "statement": "Space never performs heavy L1/L2/L3/L4 candidate generation synchronously", "test_id": "space-hot-path-budget"}
+  ],
+  "identity_contracts": [
+    {"id": "decision-winner-to-committed-tail", "producer": "InputGate DecisionCore selected EditAction", "consumer": "committed-tail structural verifier", "comparison": "from text plus to text plus TextReplacement plus immutable tail epoch", "test_id": "selected-action-structural-parity"},
+    {"id": "prefetch-to-space", "producer": "background Space decision", "consumer": "physical Space exact lookup", "comparison": "engine path plus tail epoch plus complete tail plus active layout", "test_id": "prefetch-identity-parity"}
+  ],
+  "runtime_comparisons": []
+}

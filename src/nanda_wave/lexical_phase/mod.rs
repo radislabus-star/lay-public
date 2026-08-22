@@ -10,4 +10,6 @@ mod runtime;
 mod compiler;
 
 pub(crate) use compiler::compile_words;
-pub(crate) use runtime::{default_memory, LexicalPhaseCandidate, LexicalPhaseMemory};
+pub(crate) use runtime::{
+    default_memory, default_memory_if_warm, LexicalPhaseCandidate, LexicalPhaseMemory,
+};

@@ -1,0 +1,48 @@
+{
+  "schema": "lay.architecture-experiment-receipt.v1",
+  "id": "LAY_IME_ATOMIC_V27_PHYSICAL_SHIFT_GESTURE_HANDOFF_UNDO_V1_DENOMINATOR_FAIL_2026-08-22",
+  "tested": {
+    "scope": "isolated physical GNOME Shell and Mutter atomic double-Shift undo after typed cross-engine gesture handoff",
+    "run_id": "v27-shift-gesture-handoff-undo-v1",
+    "proof_source_sha256": "3f2d38ae86e5a984c055bb04837e299aee7aa41bcdf78d964670676fdb62e4bd",
+    "engine_sha256": "01033e4b02fe39e57f229946063a68cb9c36a4d960466acd060cf5e43a7d43b9",
+    "source_aggregate_sha256": "e8474ee0fa14142bc1e0839f85df0b821fd5715d3ddd0c7ddab6a9fece6ca3f0"
+  },
+  "measured": {
+    "autocorrect_visible": true,
+    "exact_original_restored_before_outer_assertion": true,
+    "physical_modifier_event_delta": 4,
+    "paired_printable_releases": 7,
+    "shift_release_atomic_rpcs": 2,
+    "shift_release_native_replays": 1,
+    "paired_release_ledger_entries": 0,
+    "legacy_key_calls": 0,
+    "leftovers_before_cleanup": 0,
+    "leftovers_after_cleanup": 0,
+    "process_status": 1,
+    "failure_owner": "proof denominator"
+  },
+  "expected_corrected_denominator": {
+    "paired_printable_releases": 7,
+    "shift_release_atomic_rpcs": 2,
+    "shift_release_native_replays": 1,
+    "paired_release_ledger_entries": 0
+  },
+  "artifacts": {
+    "remote_log": "/home/e/projects/lay-atomic-full-route-20260821/logs/atomic-full-route-v27-shift-gesture-handoff-undo-v1.log",
+    "remote_log_sha256": "f9366d951e493b6323f5577e406ce9d8fcb198a09f52846d4c4cec4a57894679",
+    "remote_metrics": "/home/e/projects/lay-atomic-full-route-20260821/output/atomic-full-route-v27-shift-gesture-handoff-undo-v1.metrics",
+    "remote_metrics_sha256": "5154d2bd3fd1d3686652306c519614d922b06712c09bec884b44c56d716bc250",
+    "remote_cleanup": "/home/e/projects/lay-atomic-full-route-20260821/output/atomic-full-route-v27-shift-gesture-handoff-undo-v1.cleanup",
+    "remote_cleanup_sha256": "aff09ee5f1f50dcfae1d77ac81261b5b86ace8f374a8dc10d0f5e23c9f3b62df"
+  },
+  "not_tested": [
+    "corrected proof parser rerun",
+    "installed Lay 1.0.34 runtime",
+    "post-install live double-Shift",
+    "post-install RSS and PSS"
+  ],
+  "verdict": "PRODUCT_UNDO_PASS_PROOF_DENOMINATOR_FAIL",
+  "runtime_authority_changed": false,
+  "installed_runtime": "lay 1.0.33"
+}

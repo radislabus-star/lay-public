@@ -1,0 +1,124 @@
+{
+  "receipt_id": "LAY_IME_NONBLOCKING_PRECOGNITION_SOFTWARE_PROOF_2026-08-16",
+  "date": "2026-08-16",
+  "release_candidate": "1.0.32",
+  "verdict": "PASS_SCOPED_SOFTWARE_GATE_LIVE_INSTALL_PENDING",
+  "root_cause": {
+    "symptom": "multi-second IME stalls while typing a token that requests correction candidates",
+    "first_shared_mechanism": "failed productive V90 package admission was retried after uncached printable input",
+    "package_state": "V90 fingerprint does not match active L1.1 V9 and canonical L2 V13",
+    "not_root_cause": "ordinary warmed L3 traversal"
+  },
+  "baseline_local_trace": {
+    "path": "/home/ubu/.local/share/lay/ibus_engine_debug.jsonl",
+    "valid_precognition_timing_records": 339,
+    "p50_us": 2508,
+    "p90_us": 94499,
+    "p99_us": 2408008,
+    "max_us": 2823807,
+    "events_at_least_100ms": 34,
+    "events_at_least_1s": 30
+  },
+  "implementation": {
+    "printable_path": "visible character first, exact snapshot second, latest-only background materialization third",
+    "worker_threads": 1,
+    "pending_work_capacity": 1,
+    "stale_generation_policy": "discard",
+    "identity_dimensions": [
+      "engine_path",
+      "focus_receipt",
+      "tail_epoch",
+      "context_prefix",
+      "partial_token",
+      "active_composition"
+    ],
+    "productive_admission_failure": "cached until explicit reload",
+    "candidate_sources_removed": 0,
+    "candidate_limits_narrowed": 0,
+    "ranking_owner_changed": false,
+    "space_mutation_owner_changed": false,
+    "verifier_authority_changed": false
+  },
+  "remote_proof": {
+    "host": "e@192.168.3.94",
+    "logical_cpus": 20,
+    "worktree": "/home/e/build/lay-ime-boundary-layout-proof-20260815",
+    "log": "/tmp/lay-1.0.32-final-changed-gate.log",
+    "ime_tests": {
+      "passed": 195,
+      "failed": 0
+    },
+    "authority_contract": {
+      "passed": 20,
+      "failed": 0
+    },
+    "mutation_monopoly": {
+      "passed": 16,
+      "failed": 0
+    },
+    "input_gate": {
+      "passed": 6,
+      "failed": 0
+    },
+    "warmed_candidate_materialization": {
+      "samples": 140,
+      "p50_us": 11,
+      "p90_us": 18,
+      "p99_us": 18,
+      "max_us": 18
+    },
+    "largest_observed_cold_readout_stage_us": 310643,
+    "transition_replay": {
+      "records": 200,
+      "selected_apply": 90,
+      "false_apply_candidates": 0,
+      "missed_good_candidates": 0,
+      "unsafe_multiword": 0,
+      "unverified_transitions": 0,
+      "verdict": "PASS-shadow"
+    },
+    "unsafe_edit_scoreboard": {
+      "records": 200,
+      "gate_failures": 0,
+      "observed_risk": 0,
+      "slow_output": 0,
+      "verdict": "PASS"
+    },
+    "changed_gate": "PASS"
+  },
+  "tested": [
+    "cached failed admission",
+    "superseded generation rejection",
+    "exact live identity rejection",
+    "renderer and readout ownership separation",
+    "full IME tests",
+    "authority and mutation contracts",
+    "transition replay",
+    "unsafe edit scoreboard",
+    "remote warmed candidate latency"
+  ],
+  "not_tested": [
+    "release binary build",
+    "installation",
+    "physical GUI typing",
+    "live printable-key p99 and maximum",
+    "live Space autocorrection latency",
+    "physical double-Shift rollback",
+    "productive V90 compatibility",
+    "aggregate L1.1 quality, package-size, and RSS contracts"
+  ],
+  "runtime": {
+    "source_route_changed": true,
+    "installed_runtime_changed": false,
+    "installed_runtime_before_release": "lay-ibus-engine 1.0.31",
+    "global_ibus_restarted": false
+  },
+  "preflight": {
+    "route_packet": "docs/structural_gates/preflights/LAY_IME_NONBLOCKING_PRECOGNITION_ROUTE_2026-08-16.json",
+    "route_receipt": "docs/structural_gates/receipts/LAY_IME_NONBLOCKING_PRECOGNITION_ROUTE_DESIGN_2026-08-16.json",
+    "route_verdict": "PASS",
+    "implementation_packet": "docs/structural_gates/preflights/LAY_IME_NONBLOCKING_PRECOGNITION_IMPLEMENTATION_2026-08-16.json",
+    "implementation_receipt": "docs/structural_gates/receipts/LAY_IME_NONBLOCKING_PRECOGNITION_IMPLEMENTATION_PREFLIGHT_2026-08-16.json",
+    "implementation_verdict": "READY_TO_IMPLEMENT"
+  }
+}

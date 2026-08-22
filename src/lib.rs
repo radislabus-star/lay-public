@@ -18,6 +18,7 @@ pub mod desktop;
 pub mod dict;
 pub mod engine;
 pub mod eval_cases;
+pub mod exact_layout_authority;
 pub mod hot_field;
 pub mod ime_correction;
 pub mod input_gate;

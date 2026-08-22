@@ -1,0 +1,137 @@
+{
+  "schema": "lay.output-transaction-direct-slot-microproof.v2",
+  "generated_unix_ms": 1787251055300,
+  "verdict": "FAIL_ISOLATED_DURABILITY_STRATEGY",
+  "host": {
+    "hostname": "t480",
+    "filesystem_mount": "/",
+    "filesystem_type": "ext4",
+    "mount_options": "rw,relatime",
+    "device_id": 66306,
+    "journal_directory": "/home/ubu/.cache/lay/output-transaction-slice7a-direct-final-20260820-2140/journal",
+    "clock": "std::time::Instant(CLOCK_MONOTONIC)",
+    "worker_nice": 0
+  },
+  "record_bytes": 256,
+  "slot_bytes": 4096,
+  "slot_capacity": 2048,
+  "sync_primitive": "aligned pwrite on O_DIRECT|O_DSYNC; no buffered fallback",
+  "journal_capacity_bytes": 8388608,
+  "queue_capacity": 32,
+  "tail_flush_deadline_ms": 20,
+  "warmup_samples": 64,
+  "prepare": {
+    "cold_owner_startup_us": 81218,
+    "latency": {
+      "samples": 1000,
+      "p50_us": 702,
+      "p95_us": 1289,
+      "p99_us": 1657,
+      "maximum_us": 330324
+    },
+    "journal": {
+      "appended_records": 2128,
+      "appended_bytes": 544768,
+      "sync_calls": 2128,
+      "sync_io_us": 2284146,
+      "physical_write_calls": 2128,
+      "physical_bytes": 8716288,
+      "direct_dsync_units": 2128,
+      "foreground_waits": 1064,
+      "tail_flushes": 1064,
+      "co_commits": 0,
+      "owner_nice": 0
+    },
+    "records_verified": 2048
+  },
+  "co_commit": {
+    "cold_owner_startup_us": 1088,
+    "latency": {
+      "samples": 1000,
+      "p50_us": 694,
+      "p95_us": 1228,
+      "p99_us": 1575,
+      "maximum_us": 162240
+    },
+    "journal": {
+      "appended_records": 2130,
+      "appended_bytes": 545280,
+      "sync_calls": 1066,
+      "sync_io_us": 1255036,
+      "physical_write_calls": 1066,
+      "physical_bytes": 4366336,
+      "direct_dsync_units": 1066,
+      "foreground_waits": 1065,
+      "tail_flushes": 1,
+      "co_commits": 1064,
+      "owner_nice": 0
+    },
+    "records_verified": 2130
+  },
+  "tail_flush": {
+    "cold_owner_startup_us": 923,
+    "latency": {
+      "samples": 1000,
+      "p50_us": 702,
+      "p95_us": 1220,
+      "p99_us": 1483,
+      "maximum_us": 154736
+    },
+    "journal": {
+      "appended_records": 2128,
+      "appended_bytes": 544768,
+      "sync_calls": 2128,
+      "sync_io_us": 1747037,
+      "physical_write_calls": 2128,
+      "physical_bytes": 8716288,
+      "direct_dsync_units": 2128,
+      "foreground_waits": 1064,
+      "tail_flushes": 1064,
+      "co_commits": 0,
+      "owner_nice": 0
+    },
+    "records_verified": 2048
+  },
+  "next_native_wait": {
+    "cold_owner_startup_us": 949,
+    "latency": {
+      "samples": 1000,
+      "p50_us": 695,
+      "p95_us": 1306,
+      "p99_us": 1593,
+      "maximum_us": 14571
+    },
+    "journal": {
+      "appended_records": 2128,
+      "appended_bytes": 544768,
+      "sync_calls": 2128,
+      "sync_io_us": 1594718,
+      "physical_write_calls": 2128,
+      "physical_bytes": 8716288,
+      "direct_dsync_units": 2128,
+      "foreground_waits": 2128,
+      "tail_flushes": 1064,
+      "co_commits": 0,
+      "owner_nice": 0
+    },
+    "records_verified": 2048
+  },
+  "fault_matrix": {
+    "checksum_damage_rejected": true,
+    "direct_slot_checksum_damage_rejected": true,
+    "direct_slot_torn_write_rejected": true,
+    "direct_slot_foreign_generation_rejected": true,
+    "direct_slot_wrap_chain_preserved": true,
+    "saturation_refused": true,
+    "prepare_failure_refused_before_effect": true,
+    "terminal_failure_requires_recovery": true
+  },
+  "gates": {
+    "p99_at_most_us": 2000,
+    "maximum_strictly_below_us": 8000,
+    "prepare_pass": false,
+    "co_commit_pass": false
+  },
+  "runtime_authority_changed": false,
+  "installed_runtime_touched": false
+}

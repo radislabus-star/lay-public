@@ -2,6 +2,7 @@ use sha2::{Digest, Sha256};
 
 use super::types::{MorphologySlotKeyV1, AXIS_INAPPLICABLE};
 use super::L2_SCENE_PHASE_CELLS;
+use crate::typing_transition::target_evidence::NormalizationLayoutProfileIdV1;
 
 const L2_SCENE_V1_SEED: u64 = 0x4c32_5343_454e_4531;
 
@@ -74,6 +75,12 @@ pub(super) struct L2LocalSceneV1 {
 }
 
 impl L2LocalSceneV1 {
+    pub(super) const fn common_normalization_layout_profile_id(
+        &self,
+    ) -> NormalizationLayoutProfileIdV1 {
+        NormalizationLayoutProfileIdV1(1)
+    }
+
     pub(super) fn validate(&self) -> Result<(), &'static str> {
         if self.current_token.len() > u32::MAX as usize
             || self.current_normalized_scalars.len() > u32::MAX as usize
@@ -577,5 +584,14 @@ mod tests {
         assert_eq!(encode_scene_wave(&left), encode_scene_wave(&right));
         left.morphology.push(left.morphology[0]);
         assert_eq!(encode_scene_wave(&left), encode_scene_wave(&right));
+    }
+
+    #[test]
+    fn scene_uses_the_canonical_material_normalization_profile() {
+        let scene = L2LocalSceneV1::default();
+        assert_eq!(
+            scene.common_normalization_layout_profile_id(),
+            NormalizationLayoutProfileIdV1(1)
+        );
     }
 }

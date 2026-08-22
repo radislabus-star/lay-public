@@ -1,0 +1,27 @@
+{
+  "schema": "lay.ime-target-authority-slice1-remote-proof.v1",
+  "created_at": "2026-08-20T10:49:08Z",
+  "verdict": "PASS",
+  "source_allowlist": "PASS",
+  "builds": "4/4 PASS",
+  "focused_contract_groups": "5/5 PASS",
+  "baseline49": {
+    "valid": 49,
+    "pass": 46,
+    "fail": 3,
+    "status_differences": 0
+  },
+  "rss": {
+    "selector": "typing_transition::live_candidate::tests::decision_core_is_the_live_completion_sort_owner",
+    "runs_per_binary": 9,
+    "baseline_median_kib": 12480,
+    "candidate_median_kib": 13920,
+    "baseline_max_kib": 12800,
+    "candidate_max_kib": 14400,
+    "median_delta_kib": 1440,
+    "limit_kib": 5120,
+    "verdict": "PASS"
+  },
+  "runtime_authority_changed": false,
+  "deployment_actions": 0
+}

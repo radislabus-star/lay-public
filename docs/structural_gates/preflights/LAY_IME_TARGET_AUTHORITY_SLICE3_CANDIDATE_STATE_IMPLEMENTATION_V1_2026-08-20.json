@@ -1,0 +1,294 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-ime-target-authority-slice3-candidate-state-implementation-v1-2026-08-20",
+  "authority_bearing": true,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "authority-paper-after-slice2",
+      "kind": "file",
+      "path": "../../ime-canonical-target-authority-paper-2026-08-17.md",
+      "expect": {"mode": "0664", "size_bytes": 171680, "sha256": "872b115c95b7545d3782ceb6013fcec16a71b895376171012f5f9a0973192bdb"}
+    },
+    {
+      "id": "slice2-final-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE2_MATERIAL_FRAME_2026-08-20/final-receipt.json",
+      "expect": {"mode": "0664", "size_bytes": 4680, "sha256": "b3043e4a56277984a6b849316f0af4ebc3554496b7a6ced3db48ea514fe408be"}
+    },
+    {
+      "id": "target-evidence-before-slice3",
+      "kind": "file",
+      "path": "../../../src/typing_transition/target_evidence.rs",
+      "expect": {"mode": "0664", "size_bytes": 49748, "sha256": "0f896ee6683b2c86ce575a58c7110b0c8a944308ebb4b9007be39da1aa82f598"}
+    },
+    {
+      "id": "material-frame-before-slice3",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/material_frame.rs",
+      "expect": {"mode": "0664", "size_bytes": 36034, "sha256": "5fecb57c3f9a4b4c6fc6ac48dcd3155715a1a9892f25245575df1481eee36e53"}
+    },
+    {
+      "id": "productive-mod-before-slice3",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/mod.rs",
+      "expect": {"mode": "0664", "size_bytes": 2056, "sha256": "a4352f93e79f6a219b9195b467d24e433f53a69d8a441fcf04b64ca7cedf573e"}
+    },
+    {
+      "id": "productive-proof-before-slice3",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/proof.rs",
+      "expect": {"mode": "0664", "size_bytes": 159732, "sha256": "97ec30d66b0827d9995f47f5380a2cb71c1de20a10cda01d1e66741b16f077da"}
+    },
+    {
+      "id": "live-cache-preserved",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/cache.rs",
+      "expect": {"mode": "0664", "size_bytes": 23664, "sha256": "9da969bfff12dba0217954647b1ba8e21302365770abaa82178953fcf63fec07"}
+    },
+    {
+      "id": "live-bridge-preserved",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/bridge.rs",
+      "expect": {"mode": "0664", "size_bytes": 109138, "sha256": "bf47a5a7b4ae33541efc15a8de91fa406abd69044653f89aff0a6bfd4f143708"}
+    },
+    {
+      "id": "decision-owner-preserved",
+      "kind": "file",
+      "path": "../../../src/typing_transition/decision.rs",
+      "expect": {"mode": "0664", "size_bytes": 27803, "sha256": "f4ba3c3554650b19e178458818a11b165586a3ab86ff54fd106cd2d1d7054f1e"}
+    },
+    {
+      "id": "verifier-preserved",
+      "kind": "file",
+      "path": "../../../src/text_edit/structural_verifier.rs",
+      "expect": {"mode": "0664", "size_bytes": 7730, "sha256": "19201157bc09df5cca617132d67a242474aaa331ca58dc18acb0152818b7b826"}
+    },
+    {
+      "id": "installed-engine-preserved",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "expect": {"mode": "0755", "size_bytes": 6423488, "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a"}
+    },
+    {
+      "id": "installed-productive-preserved",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2m",
+      "expect": {"mode": "0644", "size_bytes": 17309944, "sha256": "40fb6a9f0d92c3c7502e47f9c70230d9b86020f622b08a5c799342f13e09ce44", "prefix_hex": "4c41595032563100"}
+    }
+  ],
+  "source_checks": [
+    {
+      "id": "target-evidence-remains-vocabulary-only",
+      "path": "../../../src/typing_transition/target_evidence.rs",
+      "sha256": "0f896ee6683b2c86ce575a58c7110b0c8a944308ebb4b9007be39da1aa82f598",
+      "forbidden_effect_patterns": [
+        {"effect": "runtime_deployment", "regex": "(?i)(?:systemctl|daemon-reload|lay-runtime-control)"},
+        {"effect": "restart_lay_daemon", "regex": "(?i)(?:restart|stop|kill|pkill).{0,80}lay-daemon"},
+        {"effect": "restart_global_ibus_daemon", "regex": "(?i)(?:restart|stop|kill|pkill).{0,80}ibus-daemon"},
+        {"effect": "weaken_verifier_authority", "regex": "(?i)(?:bypass|skip|disable).{0,100}(?:verifier|SafetyGate)"},
+        {"effect": "change_double_shift_contract", "regex": "(?i)(?:double.?shift|auto.?undo).{0,120}(?:disable|remove|skip|ignore)"},
+        {"effect": "context_changes_candidate_state", "regex": "(?s)(?:context|left_context).{0,300}CandidateStateV1"},
+        {"effect": "incomplete_namespace_rejects_target", "regex": "(?s)(?:Overflow|Failed|UpstreamIncomplete).{0,300}TargetRejectionReasonV1"},
+        {"effect": "witness_failure_rejects_target", "regex": "(?s)WitnessRejectionReasonV1.{0,300}CandidateStateV1::Rejected"},
+        {"effect": "literal_surface_runtime_branch", "regex": "(?i)(?:observed|surface|target)\\s*==\\s*\""}
+      ]
+    },
+    {
+      "id": "material-frame-remains-shadow-only",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/material_frame.rs",
+      "sha256": "5fecb57c3f9a4b4c6fc6ac48dcd3155715a1a9892f25245575df1481eee36e53",
+      "forbidden_effect_patterns": [
+        {"effect": "change_live_candidate_membership_rank_or_authority", "regex": "(?:AuthorizedEdit|CandidateGateAction::Eligible|selected_winner)"},
+        {"effect": "rewrite_productive_package", "regex": "(?s)(?:File::create|OpenOptions::new).{0,300}(?:p2m|PRODUCTIVE)"},
+        {"effect": "literal_surface_runtime_branch", "regex": "(?i)(?:observed|surface|target)\\s*==\\s*\""}
+      ]
+    },
+    {
+      "id": "proof-remains-proof-only",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/proof.rs",
+      "sha256": "97ec30d66b0827d9995f47f5380a2cb71c1de20a10cda01d1e66741b16f077da",
+      "forbidden_effect_patterns": [
+        {"effect": "generated_traffic", "regex": "(?i)(?:TcpStream|UdpSocket|reqwest|hyper::|https?://)"},
+        {"effect": "synthetic_fixture", "regex": "(?i)(?:synthetic|fixture).{0,80}(?:write|create|generate)"},
+        {"effect": "runtime_deployment", "regex": "(?i)(?:systemctl|daemon-reload|lay-runtime-control)"}
+      ]
+    },
+    {
+      "id": "live-cache-stays-byte-identical",
+      "path": "../../../src/nanda_wave/l2_field/cache.rs",
+      "sha256": "9da969bfff12dba0217954647b1ba8e21302365770abaa82178953fcf63fec07",
+      "forbidden_effect_patterns": [
+        {"effect": "cache_candidate_state_or_frame_rejection", "regex": "(?:CandidateStateV1|TargetRejectionReasonV1|FrameInvalidationReasonV1)"},
+        {"effect": "change_live_candidate_membership_rank_or_authority", "regex": "(?:AuthorizedEdit|AuthorityCertificateV1|selected_winner)"}
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "create-candidate-state-shadow-owner", "kind": "source_file_create"},
+      {"id": "complete-candidate-state-vocabulary", "kind": "source_edit"},
+      {"id": "attach-proof-only-state-denominator", "kind": "source_edit"},
+      {"id": "run-focused-and-fixed-proof", "kind": "remote_test"},
+      {"id": "update-architecture-receipts-and-graph", "kind": "documentation_edit"}
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "literal_surface_runtime_branch",
+      "runtime_deployment",
+      "restart_lay_daemon",
+      "restart_global_ibus_daemon",
+      "rewrite_productive_package",
+      "change_live_candidate_membership_rank_or_authority",
+      "cache_candidate_state_or_frame_rejection",
+      "context_changes_candidate_state",
+      "witness_failure_rejects_target",
+      "incomplete_namespace_rejects_target",
+      "weaken_verifier_authority",
+      "change_double_shift_contract"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "slice2-result",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE2_MATERIAL_FRAME_2026-08-20/final-receipt.json",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "retain Slice 2 proof and its 877 explicit incomplete fields unchanged",
+      "baseline_check_id": "slice2-final-receipt"
+    },
+    {
+      "id": "current-live-cache",
+      "path": "../../../src/nanda_wave/l2_field/cache.rs",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "no candidate state or frame rejection enters the live cache in Slice 3",
+      "baseline_check_id": "live-cache-preserved"
+    },
+    {
+      "id": "decision-and-verifier",
+      "path": "../../../src/typing_transition/decision.rs",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "no live admission, mutation or verifier change in Slice 3",
+      "baseline_check_id": "decision-owner-preserved"
+    },
+    {
+      "id": "installed-runtime",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "no install or process restart in Slice 3",
+      "baseline_check_id": "installed-engine-preserved"
+    }
+  ],
+  "state_machine": {
+    "initial_state": "SLICE2_SHADOW_PASS_RUNTIME_UNCHANGED",
+    "terminal_states": [
+      "SLICE3_SHADOW_PASS_RUNTIME_UNCHANGED",
+      "SLICE3_IMPLEMENTATION_REJECTED_RUNTIME_UNCHANGED",
+      "SLICE3_PROOF_FAILED_RUNTIME_UNCHANGED"
+    ],
+    "steps": [
+      {
+        "id": "derive-frame-bound-candidate-state",
+        "from": "SLICE2_SHADOW_PASS_RUNTIME_UNCHANGED",
+        "to": "CANDIDATE_STATE_SHADOW_READY",
+        "mutates": true,
+        "failure_state": "SLICE3_IMPLEMENTATION_REJECTED_RUNTIME_UNCHANGED",
+        "cleanup": "retain failing isolated diff and evidence; do not add a fallback owner or change live output",
+        "preserves": ["slice2-result", "current-live-cache", "decision-and-verifier", "installed-runtime"],
+        "test_id": "candidate-state-failure-fault"
+      },
+      {
+        "id": "derive-original-preservation-outside-target-set",
+        "from": "CANDIDATE_STATE_SHADOW_READY",
+        "to": "ORIGINAL_PRESERVATION_SHADOW_READY",
+        "mutates": true,
+        "failure_state": "SLICE3_IMPLEMENTATION_REJECTED_RUNTIME_UNCHANGED",
+        "cleanup": "discard frame verdict; preserve original observable state and live route",
+        "preserves": ["slice2-result", "current-live-cache", "decision-and-verifier", "installed-runtime"],
+        "test_id": "original-preservation-fault"
+      },
+      {
+        "id": "run-fixed-candidate-state-shadow-proof",
+        "from": "ORIGINAL_PRESERVATION_SHADOW_READY",
+        "to": "SLICE3_SHADOW_PASS_RUNTIME_UNCHANGED",
+        "mutates": false,
+        "failure_state": "SLICE3_PROOF_FAILED_RUNTIME_UNCHANGED",
+        "cleanup": "retain failed receipt, stop after one causal analysis and make no deployment or authority change",
+        "preserves": ["slice2-result", "current-live-cache", "decision-and-verifier", "installed-runtime"],
+        "test_id": "fixed-candidate-state-shadow-proof"
+      }
+    ]
+  },
+  "identity_contracts": [
+    {
+      "id": "candidate-state-is-frame-bound",
+      "producer": "exact material target plus live PreparedMaterialLeaseV1 and ExactInputFrameV1",
+      "consumer": "CandidateValidityShadowV1",
+      "comparison": "exact material target reference, projected target bytes, replacement span and frame identity",
+      "test_id": "candidate-state-frame-parity"
+    },
+    {
+      "id": "witness-root-independence",
+      "producer": "all exact witness roots for one material target",
+      "consumer": "candidate validity derivation",
+      "comparison": "one local witness rejection cannot erase another independently valid grounded root",
+      "test_id": "witness-root-parity"
+    },
+    {
+      "id": "complete-namespace-required-for-rejection",
+      "producer": "target-specific grounding namespace settlement",
+      "consumer": "Rejected(reason) transition",
+      "comparison": "only complete exact target absence, complete no-valid-geometry or unsupported identity may reject",
+      "test_id": "namespace-completeness-parity"
+    },
+    {
+      "id": "original-is-not-a-candidate",
+      "producer": "PreparedOriginalMaterialV1 plus exact frame",
+      "consumer": "FrameOriginalPreservationV1",
+      "comparison": "preservation verdict has no material target index and cannot be truncated with candidates",
+      "test_id": "original-separation-parity"
+    }
+  ],
+  "runtime_comparisons": [
+    {
+      "id": "live-route-remains-unchanged",
+      "source": "current context-shaped L2 route before and after proof-only Slice 3",
+      "comparison": "exact_stable_projection",
+      "reason": "candidate validity remains shadow-only",
+      "stable_fields": ["candidate surfaces", "rank", "verdict", "authority", "mutation count"],
+      "expected_to_change_fields": ["proof-only candidate-state counters"],
+      "observed_not_compared_fields": ["instrumented proof latency"],
+      "test_id": "live-route-semantic-parity"
+    }
+  ],
+  "invariants": [
+    {"id": "state-after-frame", "statement": "Born Grounded or Rejected is derived only after exact frame binding", "test_id": "candidate-state-stale-frame-matrix"},
+    {"id": "local-witness-failure", "statement": "a witness-local failure never rejects the target while an independent grounded witness survives", "test_id": "witness-local-rejection"},
+    {"id": "incomplete-remains-born", "statement": "overflow failed lookup or incomplete namespace retains Born and an absolute authority blocker", "test_id": "incomplete-remains-born"},
+    {"id": "complete-rejection-only", "statement": "Rejected always carries one complete target-level reason", "test_id": "candidate-state-truth-table"},
+    {"id": "original-outside-target-set", "statement": "original preservation is frame-bound and never occupies the bounded replacement target set", "test_id": "original-preservation-separation"},
+    {"id": "contradictions-before-truncation", "statement": "integrity and upstream completeness blockers survive target and display truncation", "test_id": "blocker-propagation"},
+    {"id": "context-cannot-change-state", "statement": "context values are absent from candidate-state inputs", "test_id": "candidate-state-input-scan"},
+    {"id": "no-runtime-authority-change", "statement": "Slice 3 cannot rank display authorize mutate teach install or restart runtime", "test_id": "live-route-semantic-parity"},
+    {"id": "no-case-specific-branch", "statement": "no literal word phrase suffix test id or source id enters runtime conditions", "test_id": "systemic-runtime-source-scan"}
+  ],
+  "tests": [
+    {"id": "candidate-state-failure-fault", "kind": "fault_injection", "expected": "invalid frame or state input aborts shadow settlement without live output"},
+    {"id": "original-preservation-fault", "kind": "fault_injection", "expected": "stale original frame cannot issue a preservation or replacement verdict"},
+    {"id": "candidate-state-frame-parity", "kind": "parity", "expected": "identical material lease and frame identity derive identical candidate state"},
+    {"id": "witness-root-parity", "kind": "parity", "expected": "semantic root aliases do not add votes and an independent valid root survives local rejection"},
+    {"id": "namespace-completeness-parity", "kind": "parity", "expected": "complete and incomplete namespace states map exactly to Rejected and Born contracts"},
+    {"id": "original-separation-parity", "kind": "parity", "expected": "original preservation identity is stable and absent from candidate target storage"},
+    {"id": "candidate-state-truth-table", "kind": "unit", "expected": "all complete and incomplete state transitions match the paper contract"},
+    {"id": "candidate-state-stale-frame-matrix", "kind": "fault_injection", "expected": "every frame mismatch aborts settlement globally without per-target rejection"},
+    {"id": "witness-local-rejection", "kind": "fault_injection", "expected": "one rejected alias plus one independent grounded witness yields Grounded"},
+    {"id": "incomplete-remains-born", "kind": "fault_injection", "expected": "overflow failed work or incomplete grounding cannot become Rejected"},
+    {"id": "original-preservation-separation", "kind": "unit", "expected": "original frame verdict remains outside candidate storage and survives target overflow"},
+    {"id": "blocker-propagation", "kind": "parity", "expected": "upstream and evidence-integrity blockers are preserved before any readout truncation"},
+    {"id": "candidate-state-input-scan", "kind": "integration", "expected": "candidate-state derivation accepts no context rank or score input"},
+    {"id": "fixed-candidate-state-shadow-proof", "kind": "integration", "expected": "fixed 13x100 proof reports source-neutral states zero false grounding and zero cached frame rejection"},
+    {"id": "live-route-semantic-parity", "kind": "parity", "expected": "shadow-disabled live semantic output and authority remain exact"},
+    {"id": "systemic-runtime-source-scan", "kind": "integration", "expected": "changed source has no literal fixture branch deployment call package write or live owner callsite"}
+  ]
+}

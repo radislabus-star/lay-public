@@ -7,6 +7,7 @@ use crate::word_reader::is_cyrillic_word;
 
 use super::extra::correct_extra_letters;
 use super::hard_sign::correct_hard_sign_typo;
+use super::memo::{memoized_bool, WordMaterialKind};
 use super::missing::{correct_missing_letter, safe_missing_letter_candidates};
 use super::repeated::correct_repeated_letter;
 use super::substitution::correct_single_letter_substitution;
@@ -16,6 +17,12 @@ use super::verb::correct_verb_ending_confusion;
 use super::vowel::correct_vowel_confusion;
 
 pub(crate) fn has_plausible_russian_typo_candidate(lower: &str) -> bool {
+    memoized_bool(WordMaterialKind::Plausible, lower, || {
+        has_plausible_russian_typo_candidate_uncached(lower)
+    })
+}
+
+fn has_plausible_russian_typo_candidate_uncached(lower: &str) -> bool {
     if lower.chars().count() < 5 || !is_cyrillic_word(lower) || is_known_russian_word_or_form(lower)
     {
         return false;

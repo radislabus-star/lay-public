@@ -1,0 +1,387 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_CAPABILITY_HOPS_V3_2026-08-21",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "ibus-source-root",
+      "kind": "directory",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof",
+      "expect": {"mode": "0775"}
+    },
+    {
+      "id": "atomic-frame-source",
+      "kind": "file",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/ibusatomicframe.c",
+      "expect": {"mode": "0664", "size_bytes": 34587, "sha256": "b47a319ac1103926b10f23101a7b22908e2b67b74cd45d1fa36af6e48bd5997c"}
+    },
+    {
+      "id": "atomic-frame-header",
+      "kind": "file",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/ibusatomicframeprivate.h",
+      "expect": {"mode": "0664", "size_bytes": 8479, "sha256": "cb29c9dee3ef89d4a42069804c5a57346853603014fb3de560a843dc32485822"}
+    },
+    {
+      "id": "atomic-frame-tests",
+      "kind": "file",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/ibus-atomic-frame.c",
+      "expect": {"mode": "0664", "size_bytes": 37698, "sha256": "b1aaf69e4c0f4f685bfa1a8b9fea11d427f05645824bb84d3ad5af1e0e853ba8"}
+    },
+    {
+      "id": "daemon-input-context-source",
+      "kind": "file",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/bus/inputcontext.c",
+      "expect": {"mode": "0664", "size_bytes": 129694, "sha256": "d6fbaf772962153900a1bd1230df63e90d1cd37ba6020f61f1dddc8c30ab332c"}
+    },
+    {
+      "id": "daemon-input-context-header",
+      "kind": "file",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/bus/inputcontext.h",
+      "expect": {"mode": "0664", "size_bytes": 15751, "sha256": "13f91c7827b15abf6a35cb122f8aca11954dd5310e55c16e6b7049d138702255"}
+    },
+    {
+      "id": "engine-proxy-source",
+      "kind": "file",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/bus/engineproxy.c",
+      "expect": {"mode": "0664", "size_bytes": 58906, "sha256": "883ea4ee7925d030389ac3ccac58c00612558a22e11ae91ea1a5f265bb742a29"}
+    },
+    {
+      "id": "engine-proxy-header",
+      "kind": "file",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/bus/engineproxy.h",
+      "expect": {"mode": "0664", "size_bytes": 13378, "sha256": "31677becf08c0ce42ab1afe1b3c518904140f57d4d115d346ca89cc85b1408d4"}
+    },
+    {
+      "id": "source-makefile",
+      "kind": "file",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/Makefile.am",
+      "expect": {"mode": "0664", "size_bytes": 15448, "sha256": "2839fcab725c6be3d5a3bc40cc581c7e1ca2e523b0639064955d2397ff5e2c07"}
+    },
+    {
+      "id": "tests-makefile",
+      "kind": "file",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/Makefile.am",
+      "expect": {"mode": "0664", "size_bytes": 8184, "sha256": "aed467fa580a6889c50803fbebebc8a125feaf6798659213e662f4bd2512a7d7"}
+    },
+    {
+      "id": "atomic-hop-test-absent",
+      "kind": "absent",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/ibus-atomic-process.c",
+      "expect": {}
+    },
+    {
+      "id": "architecture-paper",
+      "kind": "file",
+      "path": "../../ime-backend-atomic-frame-v2-2026-08-20.md",
+      "expect": {"mode": "0664", "size_bytes": 42409, "sha256": "60d279b160bb24bb97b3b76e4f18b2d597bd5310b26585e8efe1455e463bd6bd"}
+    },
+    {
+      "id": "slice2-preflight-v1-manifest",
+      "kind": "file",
+      "path": "LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_CAPABILITY_HOPS_V1_2026-08-21.json",
+      "expect": {"mode": "0664", "size_bytes": 24406, "sha256": "e450444075e4536caf15c749d4b4e9c1b323e3bc51b953f76d2f79eb0bc4bee8"}
+    },
+    {
+      "id": "slice2-preflight-v1-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/implementation-preflight-receipt-v1.json",
+      "expect": {"mode": "0664", "size_bytes": 7967, "sha256": "72425e6617af434148836e18bbe47346020410f790cb934a232571027c11d435"}
+    },
+    {
+      "id": "slice2-preflight-v2-manifest",
+      "kind": "file",
+      "path": "LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_CAPABILITY_HOPS_V2_2026-08-21.json",
+      "expect": {"mode": "0664", "size_bytes": 25977, "sha256": "20afe2e26a8682efb82f5da60760177fe921fd86604f406cd59da8f924fca932"}
+    },
+    {
+      "id": "slice2-preflight-v2-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/implementation-preflight-receipt-v2.json",
+      "expect": {"mode": "0664", "size_bytes": 8796, "sha256": "a2e3a6f95da437a5804f46cf4b3a36cff1ab94085576f80e96356f4ba2a1169d"}
+    },
+    {
+      "id": "slice2-route-v9",
+      "kind": "file",
+      "path": "LAY_IME_BACKEND_ATOMIC_FRAME_SLICE2_ROUTE_V9_2026-08-21.json",
+      "expect": {"mode": "0664", "size_bytes": 8788, "sha256": "2d63c779271c94101efbd972caeadb0f10683e9c415d84905c60e51863858f2e"}
+    },
+    {
+      "id": "slice2-route-v9-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_DESIGN_2026-08-20/slice2-route-v9-receipt.json",
+      "expect": {"mode": "0664", "size_bytes": 14007, "sha256": "f30c1b0b27507dee043678696e0036526c3b6ebc4cd38f23b24e368a2a98948c"}
+    },
+    {
+      "id": "slice2-route-v7-veto-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_DESIGN_2026-08-20/slice2-route-v7-receipt.json",
+      "expect": {"mode": "0664", "size_bytes": 15805, "sha256": "bc78d13656b2a0692f3535a419b47d2734cd5748d457c8cfb7ff6e0f5887e47e"}
+    },
+    {
+      "id": "slice2-route-v8-veto-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_DESIGN_2026-08-20/slice2-route-v8-receipt.json",
+      "expect": {"mode": "0664", "size_bytes": 17916, "sha256": "9b03671dec6988b5eebe317ce2e7625db45f427f2ec78b7ba6d56b4120606850"}
+    },
+    {
+      "id": "route-v6",
+      "kind": "file",
+      "path": "LAY_IME_BACKEND_ATOMIC_FRAME_ROUTE_V6_2026-08-21.json",
+      "expect": {"mode": "0664", "size_bytes": 9043, "sha256": "f52076089a71c95d0747a781f8aac7b4f0ffd1fa499de7fb0ffe7c01ba7b9a0e"}
+    },
+    {
+      "id": "route-v6-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_DESIGN_2026-08-20/route-design-v6-receipt.json",
+      "expect": {"mode": "0664", "size_bytes": 13696, "sha256": "4dfc6820a0d225c2ce55484712a9e6cd7e51f091c4c49590a7dccc2e65d789b5"}
+    },
+    {
+      "id": "current-observed-veto",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_DESIGN_2026-08-20/current-observed-v5-receipt.json",
+      "expect": {"mode": "0664", "size_bytes": 7097, "sha256": "79e783d58d76e06d4316edc1ff8907fb7c7cff35ab37c4b19bc3143114aa322e"}
+    },
+    {
+      "id": "installed-ibus-daemon",
+      "kind": "file",
+      "path": "/usr/bin/ibus-daemon",
+      "expect": {"mode": "0755", "size_bytes": 170496, "sha256": "24338c0e7cfb749d2ac9b9254d7d54029e71b5ac9342aa1b8d78b1d55f5ac1b6"}
+    },
+    {
+      "id": "installed-libibus",
+      "kind": "file",
+      "path": "/usr/lib/x86_64-linux-gnu/libibus-1.0.so.5.0.534",
+      "expect": {"mode": "0644", "size_bytes": 542936, "sha256": "e1977b9d3d84ee94b63f6c04056134c10aa51d4e0621f7abee1115da12259ec1"}
+    },
+    {
+      "id": "installed-gtk3-module",
+      "kind": "file",
+      "path": "/usr/lib/x86_64-linux-gnu/gtk-3.0/3.0.0/immodules/im-ibus.so",
+      "expect": {"mode": "0644", "size_bytes": 47288, "sha256": "644cedf86a7b6e18d2be31afeb75007c85e6bdb0ed8a6b5c53c54621310aa3e2"}
+    },
+    {
+      "id": "installed-gtk4-module",
+      "kind": "file",
+      "path": "/usr/lib/x86_64-linux-gnu/gtk-4.0/4.0.0/immodules/libim-ibus.so",
+      "expect": {"mode": "0644", "size_bytes": 47272, "sha256": "4e5b450fa00d51a45fbcc160e26358d81da793b39b6e04a27c749b905b3cba60"}
+    },
+    {
+      "id": "installed-lay-daemon",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+      "expect": {"mode": "0755", "size_bytes": 8342624, "sha256": "f0821f3b1dbf87fb83db1119534d3e4a1aef489dd6d5588ca8a8f9b86a19194c"}
+    }
+  ],
+  "source_checks": [
+    {
+      "id": "reused-atomic-codec",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/ibusatomicframe.c",
+      "sha256": "b47a319ac1103926b10f23101a7b22908e2b67b74cd45d1fa36af6e48bd5997c",
+      "forbidden_effect_patterns": [
+        {"effect": "runtime_deployment", "regex": "systemctl|ibus-daemon\\s+--replace"},
+        {"effect": "installed_file_write", "regex": "/usr/bin|/usr/lib|[.]local/lib/lay/bin"},
+        {"effect": "host_package_database_mutation", "regex": "apt-get\\s+install|dpkg\\s+-i"},
+        {"effect": "sudo_or_privilege_escalation", "regex": "\\bsudo\\b"},
+        {"effect": "restart_live_ibus", "regex": "ibus\\s+restart|ibus-daemon\\s+--replace"},
+        {"effect": "signal_live_ibus", "regex": "killall\\s+ibus|pkill\\s+ibus"},
+        {"effect": "connect_live_session_bus", "regex": "DBUS_SESSION_BUS_ADDRESS|G_BUS_TYPE_SESSION"},
+        {"effect": "input_device_access", "regex": "/dev/uinput|/dev/input|XTestFakeKeyEvent|ydotool"},
+        {"effect": "text_mutation", "regex": "zwp_input_method_v2_commit_string|XTestFakeKeyEvent"},
+        {"effect": "layout_mutation", "regex": "setxkbmap|XkbLockGroup"},
+        {"effect": "synthetic_key_output", "regex": "EV_KEY|XTestFakeKeyEvent|ydotool"},
+        {"effect": "local_build", "regex": "cargo\\s+build|make\\s+-j"},
+        {"effect": "legacy_method_semantic_change", "regex": "g_strcmp0[^\\n]+\\\"ProcessKeyEvent\\\""},
+        {"effect": "legacy_same_event_fallback", "regex": "fallback[^\\n]+ProcessKeyEvent"},
+        {"effect": "engine_mutation_signal_capture", "regex": "g_signal_(connect|emit)"},
+        {"effect": "second_frame_fetch_rpc", "regex": "TakeFrame|PostProcessKeyEvent"},
+        {"effect": "retained_sealed_frame", "regex": "SEALED_REPLY|sealed_frame|take_frame"},
+        {"effect": "runtime_quality_claim", "regex": "runtime[_ -]quality[_ -]pass"}
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "extend-capability-codec", "kind": "source_edit"},
+      {"id": "add-daemon-atomic-method", "kind": "source_edit"},
+      {"id": "add-engine-proxy-atomic-method", "kind": "source_edit"},
+      {"id": "add-isolated-fake-hop-test", "kind": "source_edit"},
+      {"id": "sync-remote-task-sandbox", "kind": "remote_filesystem_write"},
+      {"id": "download-sandbox-build-dependencies", "kind": "remote_dependency_download"},
+      {"id": "compile-isolated-ibus-targets-remotely", "kind": "remote_build"},
+      {"id": "run-private-dbus-proof", "kind": "isolated_process_test"},
+      {"id": "write-paper-and-proof-receipts", "kind": "filesystem_write"},
+      {"id": "refresh-knowledge-graph", "kind": "graph_update"}
+    ],
+    "forbidden": [
+      "runtime_deployment",
+      "installed_file_write",
+      "host_package_database_mutation",
+      "sudo_or_privilege_escalation",
+      "restart_live_ibus",
+      "signal_live_ibus",
+      "connect_live_session_bus",
+      "input_device_access",
+      "text_mutation",
+      "layout_mutation",
+      "synthetic_key_output",
+      "local_build",
+      "legacy_method_semantic_change",
+      "legacy_same_event_fallback",
+      "engine_mutation_signal_capture",
+      "second_frame_fetch_rpc",
+      "retained_sealed_frame",
+      "runtime_quality_claim"
+    ]
+  },
+  "preserved_artifacts": [
+    {"id": "installed-daemon", "path": "/usr/bin/ibus-daemon", "policy": "read_only_exact_bytes", "rollback_policy": "never modify replace or restart", "baseline_check_id": "installed-ibus-daemon"},
+    {"id": "installed-library", "path": "/usr/lib/x86_64-linux-gnu/libibus-1.0.so.5.0.534", "policy": "read_only_exact_bytes", "rollback_policy": "never modify or replace", "baseline_check_id": "installed-libibus"},
+    {"id": "installed-gtk3", "path": "/usr/lib/x86_64-linux-gnu/gtk-3.0/3.0.0/immodules/im-ibus.so", "policy": "read_only_exact_bytes", "rollback_policy": "never modify or replace", "baseline_check_id": "installed-gtk3-module"},
+    {"id": "installed-gtk4", "path": "/usr/lib/x86_64-linux-gnu/gtk-4.0/4.0.0/immodules/libim-ibus.so", "policy": "read_only_exact_bytes", "rollback_policy": "never modify or replace", "baseline_check_id": "installed-gtk4-module"},
+    {"id": "installed-lay", "path": "/home/ubu/.local/lib/lay/bin/lay-daemon", "policy": "read_only_exact_bytes", "rollback_policy": "never modify replace or restart", "baseline_check_id": "installed-lay-daemon"},
+    {"id": "architecture-contract", "path": "../../ime-backend-atomic-frame-v2-2026-08-20.md", "policy": "read_only_during_implementation_then_append_measured_result", "rollback_policy": "never weaken schema or gates after failure", "baseline_check_id": "architecture-paper"},
+    {"id": "slice2-preflight-v1-manifest", "path": "LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_CAPABILITY_HOPS_V1_2026-08-21.json", "policy": "read_only_exact_bytes", "rollback_policy": "retain the consumed V1 authorization as historical evidence", "baseline_check_id": "slice2-preflight-v1-manifest"},
+    {"id": "slice2-preflight-v1-receipt", "path": "../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/implementation-preflight-receipt-v1.json", "policy": "read_only_exact_bytes", "rollback_policy": "retain the V1 READY receipt and its original claim boundary", "baseline_check_id": "slice2-preflight-v1-receipt"},
+    {"id": "slice2-preflight-v2-manifest", "path": "LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_CAPABILITY_HOPS_V2_2026-08-21.json", "policy": "read_only_exact_bytes", "rollback_policy": "retain the incomplete V2 authorization as historical evidence", "baseline_check_id": "slice2-preflight-v2-manifest"},
+    {"id": "slice2-preflight-v2-receipt", "path": "../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/implementation-preflight-receipt-v2.json", "policy": "read_only_exact_bytes", "rollback_policy": "retain the V2 READY receipt with its invalidated claim boundary", "baseline_check_id": "slice2-preflight-v2-receipt"},
+    {"id": "slice2-route-contract", "path": "LAY_IME_BACKEND_ATOMIC_FRAME_SLICE2_ROUTE_V9_2026-08-21.json", "policy": "read_only_exact_bytes", "rollback_policy": "retain the single-owner Slice 2 route", "baseline_check_id": "slice2-route-v9"},
+    {"id": "slice2-route-receipt", "path": "../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_DESIGN_2026-08-20/slice2-route-v9-receipt.json", "policy": "read_only_exact_bytes", "rollback_policy": "retain the passing Slice 2 route receipt", "baseline_check_id": "slice2-route-v9-receipt"},
+    {"id": "slice2-route-v7-veto", "path": "../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_DESIGN_2026-08-20/slice2-route-v7-receipt.json", "policy": "read_only_exact_bytes", "rollback_policy": "retain the multiple-owner VETO", "baseline_check_id": "slice2-route-v7-veto-receipt"},
+    {"id": "slice2-route-v8-veto", "path": "../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_DESIGN_2026-08-20/slice2-route-v8-receipt.json", "policy": "read_only_exact_bytes", "rollback_policy": "retain the impossible-required-role VETO", "baseline_check_id": "slice2-route-v8-veto-receipt"},
+    {"id": "route-contract", "path": "LAY_IME_BACKEND_ATOMIC_FRAME_ROUTE_V6_2026-08-21.json", "policy": "read_only_exact_bytes", "rollback_policy": "retain the passing design route", "baseline_check_id": "route-v6"},
+    {"id": "route-receipt", "path": "../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_DESIGN_2026-08-20/route-design-v6-receipt.json", "policy": "read_only_exact_bytes", "rollback_policy": "retain the passing design receipt", "baseline_check_id": "route-v6-receipt"},
+    {"id": "legacy-veto-evidence", "path": "../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_DESIGN_2026-08-20/current-observed-v5-receipt.json", "policy": "read_only_exact_bytes", "rollback_policy": "retain the observed legacy VETO", "baseline_check_id": "current-observed-veto"},
+    {"id": "legacy-process-key-event-contract", "path": "/home/ubu/projects/ibus-lay-atomic-proof/bus/inputcontext.c", "policy": "atomic additions only; legacy ProcessKeyEvent behavior remains parity-tested", "rollback_policy": "on failure retain evidence and forbid build promotion or deployment", "baseline_check_id": "daemon-input-context-source"}
+  ],
+  "state_machine": {
+    "initial_state": "PAPER_ROUTE_PASSED",
+    "steps": [
+      {
+        "id": "write-isolated-capability-hops",
+        "from": "PAPER_ROUTE_PASSED",
+        "to": "ISOLATED_SOURCE_READY",
+        "mutates": true,
+        "failure_state": "SOURCE_EDIT_FAILED_RETAINED",
+        "cleanup": "retain the isolated diff and failure evidence; do not build install restart or touch a live bus",
+        "preserves": ["installed-daemon", "installed-library", "installed-gtk3", "installed-gtk4", "installed-lay", "architecture-contract", "slice2-preflight-v1-manifest", "slice2-preflight-v1-receipt", "slice2-preflight-v2-manifest", "slice2-preflight-v2-receipt", "slice2-route-contract", "slice2-route-receipt", "slice2-route-v7-veto", "slice2-route-v8-veto", "route-contract", "route-receipt", "legacy-veto-evidence"],
+        "test_id": "source-edit-fault-policy"
+      },
+      {
+        "id": "check-remote-capacity",
+        "from": "ISOLATED_SOURCE_READY",
+        "to": "REMOTE_CAPACITY_READY",
+        "mutates": false,
+        "failure_state": "REMOTE_BUSY_BLOCKED",
+        "cleanup": "start no build when the 20-CPU host has a competing task or excessive pre-existing load",
+        "preserves": ["installed-daemon", "installed-library", "installed-gtk3", "installed-gtk4", "installed-lay"],
+        "test_id": "remote-capacity-gate"
+      },
+      {
+        "id": "sync-remote-sandbox",
+        "from": "REMOTE_CAPACITY_READY",
+        "to": "REMOTE_SOURCE_READY",
+        "mutates": true,
+        "failure_state": "REMOTE_SYNC_FAILED_RETAINED",
+        "cleanup": "remove only task-owned partial remote files or retain them with hashes and an error log",
+        "preserves": ["installed-daemon", "installed-library", "installed-gtk3", "installed-gtk4", "installed-lay", "architecture-contract", "slice2-preflight-v1-manifest", "slice2-preflight-v1-receipt", "slice2-preflight-v2-manifest", "slice2-preflight-v2-receipt", "slice2-route-contract", "slice2-route-receipt", "slice2-route-v7-veto", "slice2-route-v8-veto", "route-contract", "route-receipt", "legacy-veto-evidence"],
+        "test_id": "remote-sync-fault-policy"
+      },
+      {
+        "id": "build-isolated-targets",
+        "from": "REMOTE_SOURCE_READY",
+        "to": "REMOTE_BUILD_PASSED",
+        "mutates": true,
+        "failure_state": "REMOTE_BUILD_FAILED_RETAINED",
+        "cleanup": "terminate only the task build process group and retain compiler logs; never fall back to local compilation or installation",
+        "preserves": ["installed-daemon", "installed-library", "installed-gtk3", "installed-gtk4", "installed-lay", "architecture-contract", "slice2-preflight-v1-manifest", "slice2-preflight-v1-receipt", "slice2-preflight-v2-manifest", "slice2-preflight-v2-receipt", "slice2-route-contract", "slice2-route-receipt", "slice2-route-v7-veto", "slice2-route-v8-veto", "route-contract", "route-receipt", "legacy-veto-evidence"],
+        "test_id": "remote-build-fault-policy"
+      },
+      {
+        "id": "run-isolated-dbus-proof",
+        "from": "REMOTE_BUILD_PASSED",
+        "to": "ISOLATED_DBUS_PROOF_PASSED",
+        "mutates": true,
+        "failure_state": "ISOLATED_PROOF_FAILED_RETAINED",
+        "cleanup": "terminate only private dbus-run-session processes and retain all failure logs; never connect to the desktop session bus",
+        "preserves": ["installed-daemon", "installed-library", "installed-gtk3", "installed-gtk4", "installed-lay", "architecture-contract", "slice2-preflight-v1-manifest", "slice2-preflight-v1-receipt", "slice2-preflight-v2-manifest", "slice2-preflight-v2-receipt", "slice2-route-contract", "slice2-route-receipt", "slice2-route-v7-veto", "slice2-route-v8-veto", "route-contract", "route-receipt", "legacy-veto-evidence"],
+        "test_id": "isolated-proof-fault-policy"
+      },
+      {
+        "id": "record-slice-result",
+        "from": "ISOLATED_DBUS_PROOF_PASSED",
+        "to": "SLICE2_RECEIPT_RECORDED",
+        "mutates": true,
+        "failure_state": "EVIDENCE_WRITE_FAILED_RETAINED",
+        "cleanup": "retain raw proof logs and refuse a PASS claim until paper receipt and graph update both succeed",
+        "preserves": ["installed-daemon", "installed-library", "installed-gtk3", "installed-gtk4", "installed-lay", "slice2-preflight-v1-manifest", "slice2-preflight-v1-receipt", "slice2-preflight-v2-manifest", "slice2-preflight-v2-receipt", "slice2-route-contract", "slice2-route-receipt", "slice2-route-v7-veto", "slice2-route-v8-veto", "route-contract", "route-receipt", "legacy-veto-evidence"],
+        "test_id": "evidence-write-fault-policy"
+      }
+    ],
+    "terminal_states": ["SLICE2_RECEIPT_RECORDED", "SOURCE_EDIT_FAILED_RETAINED", "REMOTE_BUSY_BLOCKED", "REMOTE_SYNC_FAILED_RETAINED", "REMOTE_BUILD_FAILED_RETAINED", "ISOLATED_PROOF_FAILED_RETAINED", "EVIDENCE_WRITE_FAILED_RETAINED"]
+  },
+  "identity_contracts": [
+    {"id": "paper-schema-code-identity", "producer": "V3 architecture exact wire ABI", "consumer": "C capability request engine request proposal reply and receipt codecs", "comparison": "type strings fields digest domains sizes enum values guarantee bits and absence encodings are exact", "test_id": "schema-constant-parity"},
+    {"id": "private-proof-profile-identity", "producer": "V3 private proof profile descriptor", "consumer": "compile-time daemon admission entry", "comparison": "the exact 133 descriptor bytes produce SHA-256 a463a8dc3a1a7676009e30e3b5f70c1cef2334fd28285ace1ef663f09e154260", "test_id": "private-proof-profile-digest"},
+    {"id": "client-daemon-record-identity", "producer": "fake client normal-form capability record", "consumer": "daemon admitted capability record", "comparison": "normal-form bytes and aggregate SHA-256 are exact", "test_id": "client-daemon-capability-parity"},
+    {"id": "daemon-engine-record-identity", "producer": "daemon admitted record and envelope", "consumer": "fake engine atomic request", "comparison": "record bytes digest event context focus engine and capability identities are exact", "test_id": "daemon-engine-capability-parity"},
+    {"id": "snapshot-identity", "producer": "client exact normal-form surrounding tuple", "consumer": "daemon and engine cached surrounding identity", "comparison": "SHA-256 over IBusBackendAtomicSurroundingSnapshotV1 NUL type (suu) NUL and exact tuple bytes is equal", "test_id": "surrounding-snapshot-parity"},
+    {"id": "engine-daemon-effect-identity", "producer": "fake engine direct typed proposal", "consumer": "daemon sealed AtomicProcessReplyV1", "comparison": "ordered effect bytes and effect digest are exact with no signal source", "test_id": "engine-proposal-frame-parity"},
+    {"id": "prior-receipt-identity", "producer": "client previous terminal result", "consumer": "daemon pending metadata and next engine request", "comparison": "numeric result compatibility transaction and effect digest are exact and accepted once", "test_id": "prior-receipt-parity"},
+    {"id": "lease-counter-identity", "producer": "client event capability and native transaction counters", "consumer": "daemon per-context monotonic frontier", "comparison": "all are non-zero and strictly greater than the last admitted value", "test_id": "identity-monotonicity-matrix"},
+    {"id": "local-remote-source-identity", "producer": "local isolated source after edit", "consumer": "remote compiler inputs", "comparison": "SHA-256 is equal for every changed or added source and build file", "test_id": "remote-source-hash-parity"},
+    {"id": "legacy-route-parity", "producer": "baseline legacy ProcessKeyEvent scenarios", "consumer": "post-edit legacy ProcessKeyEvent scenarios", "comparison": "same calls replies and signal order for legacy method; no atomic fallback enters it", "test_id": "legacy-process-key-event-parity"}
+  ],
+  "runtime_comparisons": [],
+  "invariants": [
+    {"id": "full-record-before-decision", "statement": "daemon and engine receive the same complete admitted profile and event lease before Lay-equivalent decision code runs", "test_id": "daemon-engine-capability-parity"},
+    {"id": "known-profile-only", "statement": "an unknown build-contract digest transaction kind flag mask or count produces zero engine calls and zero effects", "test_id": "unknown-profile-refusal"},
+    {"id": "proof-profile-never-normal", "statement": "a build without IBUS_ATOMIC_PRIVATE_PROOF_PROFILE has an empty admission table and rejects the private profile", "test_id": "normal-build-empty-admission"},
+    {"id": "strict-event-frontiers", "statement": "equal or lower event capability and native transaction counters never reach the engine", "test_id": "identity-monotonicity-matrix"},
+    {"id": "snapshot-bound-delete", "statement": "DeleteSurrounding is impossible without exact client daemon and engine surrounding-snapshot digest parity", "test_id": "surrounding-snapshot-parity"},
+    {"id": "early-refusal-cardinality", "statement": "receipt capability and snapshot refusals terminate before EngineProxy with zero legacy and atomic engine calls", "test_id": "early-refusal-engine-cardinality"},
+    {"id": "direct-proposal-only", "statement": "the atomic engine method returns one typed vector and any legacy mutation signal aborts rather than entering the frame", "test_id": "zero-engine-mutation-signals"},
+    {"id": "single-flight", "statement": "one input context has at most one atomic call and one pending receipt identity", "test_id": "single-flight-fault-matrix"},
+    {"id": "receipt-mismatch-poisons-atomic-only", "statement": "a mismatch while pending discards metadata and refuses atomic calls until a real focus cycle without changing legacy ProcessKeyEvent", "test_id": "receipt-poison-reset-matrix"},
+    {"id": "no-frame-retention", "statement": "daemon retains only prior transaction identity and digests, never an effect vector take object or retry state", "test_id": "no-frame-retention"},
+    {"id": "stale-lineage-fails-closed", "statement": "context focus engine capability native transaction or snapshot change discards the proposal with zero external effects", "test_id": "stale-lineage-matrix"},
+    {"id": "no-same-event-legacy-fallback", "statement": "an atomic refusal returns native-unhandled to the client without invoking legacy ProcessKeyEvent for that event", "test_id": "no-legacy-fallback"},
+    {"id": "legacy-method-preserved", "statement": "legacy ProcessKeyEvent behavior remains unchanged for legacy callers", "test_id": "legacy-process-key-event-parity"},
+    {"id": "remote-build-only", "statement": "all compilation and executable proofs run on the checked 20-CPU remote host, never on this workstation", "test_id": "remote-capacity-gate"},
+    {"id": "installed-runtime-immutable", "statement": "installed IBus GTK and Lay binaries remain byte-identical and no live process is touched", "test_id": "installed-runtime-parity"}
+  ],
+  "tests": [
+    {"id": "source-edit-fault-policy", "kind": "fault_injection", "expected": "an interrupted edit leaves only isolated source changes and cannot start a build deployment or live D-Bus call"},
+    {"id": "remote-capacity-gate", "kind": "integration", "expected": "host reports 20 logical CPUs, no prior task process, recorded load and no competing process that blocks a 20-way build"},
+    {"id": "remote-sync-fault-policy", "kind": "fault_injection", "expected": "partial sync affects only the named remote sandbox and cannot alter installed or unrelated files"},
+    {"id": "remote-build-fault-policy", "kind": "fault_injection", "expected": "compile failure retains exact logs and never falls back to a local build host install or threshold weakening"},
+    {"id": "isolated-proof-fault-policy", "kind": "fault_injection", "expected": "a failed private D-Bus proof terminates only task-owned processes and records the first failing transition"},
+    {"id": "evidence-write-fault-policy", "kind": "fault_injection", "expected": "missing paper receipt or graph update prevents a PASS claim while raw proof remains retained"},
+    {"id": "schema-constant-parity", "kind": "parity", "expected": "C constants exactly match every V3 type string numeric disposition proposal receipt effect preedit guarantee mask digest domain and absent-value encoding"},
+    {"id": "private-proof-profile-digest", "kind": "parity", "expected": "the exact 133-byte descriptor yields a463a8dc3a1a7676009e30e3b5f70c1cef2334fd28285ace1ef663f09e154260 and only the compile-time proof table admits it"},
+    {"id": "normal-build-empty-admission", "kind": "fault_injection", "expected": "the same source built without IBUS_ATOMIC_PRIVATE_PROOF_PROFILE admits zero profiles and returns native-unhandled before any engine call"},
+    {"id": "capability-record-roundtrip", "kind": "unit", "expected": "the exact normal-form profile and lease encode decode and re-encode byte-identically"},
+    {"id": "capability-record-malformed-matrix", "kind": "unit", "expected": "wrong tuple types digest lengths zero identities unknown flags masks counts noncanonical absence and inconsistent snapshot presence all fail closed"},
+    {"id": "client-daemon-capability-parity", "kind": "parity", "expected": "the daemon observes exactly the fake client's record bytes and independently recomputes the same aggregate digest"},
+    {"id": "daemon-engine-capability-parity", "kind": "parity", "expected": "the fake engine observes exactly the admitted record plus daemon transaction event context focus engine and capability envelope"},
+    {"id": "surrounding-snapshot-parity", "kind": "parity", "expected": "the exact domain type and (suu) bytes match daemon cache before and after the engine call while one-byte text cursor anchor absent or stale changes issue zero effects"},
+    {"id": "identity-monotonicity-matrix", "kind": "fault_injection", "expected": "zero equal lower reordered and duplicate event capability and native transaction identities all stop before the engine; strictly greater values advance once"},
+    {"id": "engine-proposal-disposition-matrix", "kind": "unit", "expected": "proposal bytes 0 1 2 accept only their exact empty or canonical vector grammar and bytes 3 through 255 fail closed"},
+    {"id": "engine-proposal-frame-parity", "kind": "parity", "expected": "the daemon seals only the direct engine proposal and preserves exact ordered effect bytes and digest"},
+    {"id": "prior-receipt-parity", "kind": "parity", "expected": "None and numeric results 1 through 5 validate exact disposition compatibility transaction and digest once; result 6 through 255 mismatch duplicate and stale receipt fail closed"},
+    {"id": "receipt-poison-reset-matrix", "kind": "fault_injection", "expected": "missing mismatched or incompatible settlement while pending discards metadata poisons only atomic calls and a real focus out plus focus in clears the poison"},
+    {"id": "early-refusal-engine-cardinality", "kind": "integration", "expected": "receipt capability and snapshot refusal cases each record zero ProcessKeyEventAtomicV1 calls and zero legacy ProcessKeyEvent calls"},
+    {"id": "unknown-profile-refusal", "kind": "fault_injection", "expected": "unknown or enlarged profile returns native-unhandled with zero fake-engine calls and zero retained effects"},
+    {"id": "zero-engine-mutation-signals", "kind": "fault_injection", "expected": "commit delete forward update show or hide signal during an atomic call is suppressed aborts the proposal and poisons only the atomic lineage"},
+    {"id": "single-flight-fault-matrix", "kind": "fault_injection", "expected": "overlapping call missing prior receipt engine cancellation disconnect and timeout leave at most one cleared pending identity"},
+    {"id": "no-frame-retention", "kind": "fault_injection", "expected": "no second method property or retry can retrieve an earlier effect vector; only bounded prior identity metadata exists"},
+    {"id": "stale-lineage-matrix", "kind": "fault_injection", "expected": "context focus engine capability native epoch and snapshot changes at every call boundary all produce zero-effect terminal outcomes"},
+    {"id": "no-legacy-fallback", "kind": "integration", "expected": "every atomic refusal leaves the legacy engine method call counter at zero for that event"},
+    {"id": "legacy-process-key-event-parity", "kind": "parity", "expected": "fixed legacy scenarios preserve exact boolean replies signal order and engine call count"},
+    {"id": "remote-source-hash-parity", "kind": "parity", "expected": "local and remote SHA-256 values match for every compiler and test input"},
+    {"id": "remote-isolated-build", "kind": "integration", "expected": "the checked remote host builds warnings-as-errors normal-empty-admission and private-proof codec daemon proxy and fake-hop targets using 20 jobs"},
+    {"id": "remote-private-dbus-proof", "kind": "integration", "expected": "all registered cases pass under a private dbus-run-session with no desktop bus address and zero skipped cases"},
+    {"id": "installed-runtime-parity", "kind": "parity", "expected": "installed IBus daemon libibus GTK modules and Lay daemon hashes remain exact and their process identities are untouched"}
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "proof-mode",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/lay-proof-mode.json",
+      "sha256": "c1246bd66f730ec55ecc57cd5e44086473834e68373d27fa96eb7b16067088af",
+      "size_bytes": 115
+    },
+    {
+      "exists": true,
+      "id": "shell-proof",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/shell/atomicInputMethodRoute.js",
+      "sha256": "932af7eddb7eb0c931a590ced704a4ee960ffdcb5a0601a318598371bba38b92",
+      "size_bytes": 16911
+    },
+    {
+      "exists": true,
+      "id": "mutter-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-text-input.c",
+      "sha256": "b8a439a1ab9375016e899b9799b8272b24e00001f3edb928543e0db83531ad46",
+      "size_bytes": 52775
+    },
+    {
+      "exists": true,
+      "id": "installed-engine",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a",
+      "size_bytes": 6423488
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 4,
+    "forbidden_side_effect_kinds": [
+      "add_audio_panel",
+      "production_session_change",
+      "restore_quick_settings"
+    ],
+    "identity_contracts": 1,
+    "invariants": 3,
+    "planned_side_effect_kinds": [
+      "ephemeral_process_start",
+      "remote_filesystem_write",
+      "source_edit"
+    ],
+    "preserved_artifacts": 3,
+    "runtime_comparisons": 0,
+    "source_checks": 1,
+    "tests": 5
+  },
+  "manifest_sha256": "d340bd1d786f05eb2157f8191d6bffc0d187fbb6e681998ad6671b5063a9401d",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-proof-mode",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/lay-proof-mode.json",
+      "sha256": "c1246bd66f730ec55ecc57cd5e44086473834e68373d27fa96eb7b16067088af",
+      "size_bytes": 115
+    }
+  ],
+  "task_id": "LAY_IME_ATOMIC_PROOF_KEYBOARD_ONLY_SESSION_MODE_IMPLEMENTATION_V25_V5_2026-08-22",
+  "verdict": "READY_TO_IMPLEMENT"
+}

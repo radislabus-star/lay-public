@@ -1,0 +1,95 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_IMPLEMENTATION_V26_2026-08-22",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {"id": "ascii-layout-candidate", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/layout_autoswitch/ascii/candidate.rs", "expect": {"mode": "0664", "size_bytes": 4672, "sha256": "e1f680badb0ec05e74ed5feeca0d8f8fe1597f073e972e637bc55fa126bad0d9"}},
+    {"id": "ascii-layout-word", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/layout_autoswitch/ascii/word.rs", "expect": {"mode": "0664", "size_bytes": 3712, "sha256": "39fc8e064cc03176e7ef77139b9aebbec27eb0ff34c28108505ffa18424c3864"}},
+    {"id": "correction-core", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/correction_core.rs", "expect": {"mode": "0664", "size_bytes": 43198, "sha256": "9da88d899c4c41486e72b6b84ab11a852b086d4ea549b6c8ab17dd7a6a650120"}},
+    {"id": "candidate-sources", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/correction_core/candidate_sources.rs", "expect": {"mode": "0664", "size_bytes": 53409, "sha256": "b0ca017fc545f90283f20841ce40ef552ce295a1be5e35b60f8003e8478b50e0"}},
+    {"id": "ime-correction", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/ime_correction.rs", "expect": {"mode": "0664", "size_bytes": 30218, "sha256": "477d0b74c0560ca8438b32aa9458215727fcdb2e561d8e23f302f7fc6b61579c"}},
+    {"id": "space-prefetch", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs", "expect": {"mode": "0664", "size_bytes": 19054, "sha256": "aadf3825838230627b3f050c9308a8c2f957801ac67e4168011531e7b55aac1a"}},
+    {"id": "committed-tail", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/committed_tail.rs", "expect": {"mode": "0664", "size_bytes": 24983, "sha256": "49cdf4b73d845d16d1580a979f849c3aff7fbb45ca478a1f8fbb84d209886403"}},
+    {"id": "installed-engine", "kind": "file", "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine", "expect": {"mode": "0755", "size_bytes": 6423488, "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a"}},
+    {"id": "shell-atomic-adapter", "kind": "file", "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/js/misc/inputMethodAtomic.js", "expect": {"mode": "0664", "size_bytes": 17418, "sha256": "aa070fd5cff62ae2794b082d7dcfb042f1c714e411cec8328e3d5f19cf44bb07"}}
+  ],
+  "source_checks": [
+    {"id": "pinned-space-prefetch", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs", "sha256": "aadf3825838230627b3f050c9308a8c2f957801ac67e4168011531e7b55aac1a", "forbidden_effect_patterns": [
+      {"effect": "second_mutation_owner", "regex": "exactLayoutDirectCommit|legacyExactLayoutApply"},
+      {"effect": "unbounded_wait", "regex": "SPACE_PREFETCH_WAIT_BUDGET.*from_millis\\(([9]|[1-9][0-9]+)\\)"},
+      {"effect": "word_specific_runtime_branch", "regex": "ghbdtn.*привет|привет.*ghbdtn"}
+    ]},
+    {"id": "pinned-candidate-sources", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/correction_core/candidate_sources.rs", "sha256": "b0ca017fc545f90283f20841ce40ef552ce295a1be5e35b60f8003e8478b50e0", "forbidden_effect_patterns": [
+      {"effect": "layout_typo_fast_authority", "regex": "ExactLayout.*LayoutThenTypo|LayoutThenTypo.*ExactLayout"},
+      {"effect": "verifier_bypass", "regex": "exactLayoutBypassVerifier|skipTransitionDecisionCore"}
+    ]},
+    {"id": "pinned-full-route-driver", "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh", "sha256": "cb89bcdd3f16b53a9bf97d68113743484ea23fa7ee9b93159dbfe845497f9168", "forbidden_effect_patterns": [
+      {"effect": "local_heavy_build", "regex": "localCargoBuild|buildOnDesktop"},
+      {"effect": "runtime_deployment_before_full_proof", "regex": "installBeforeFullProof|deployUnprovenV26"}
+    ]},
+    {"id": "pinned-shell-timeout", "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/js/misc/inputMethodAtomic.js", "sha256": "aa070fd5cff62ae2794b082d7dcfb042f1c714e411cec8328e3d5f19cf44bb07", "forbidden_effect_patterns": [
+      {"effect": "rpc_timeout_increase", "regex": "RPC_TIMEOUT_MSEC = (9|[1-9][0-9]+)"}
+    ]}
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "add-exact-layout-candidate-scope", "kind": "source_edit"},
+      {"id": "add-bounded-space-fallback-lease", "kind": "source_edit"},
+      {"id": "add-focused-parity-and-state-tests", "kind": "source_edit"},
+      {"id": "remote-focused-build-and-proof", "kind": "remote_build"},
+      {"id": "write-v26-receipts", "kind": "filesystem_write"}
+    ],
+    "forbidden": [
+      "second_mutation_owner",
+      "unbounded_wait",
+      "layout_typo_fast_authority",
+      "verifier_bypass",
+      "word_specific_runtime_branch",
+      "rpc_timeout_increase",
+      "local_heavy_build",
+      "runtime_deployment_before_full_proof"
+    ]
+  },
+  "preserved_artifacts": [
+    {"id": "installed-engine-preserved", "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine", "policy": "immutable_before_deployment", "cursor_policy": "none", "rollback_policy": "preserve_exact_bytes", "baseline_check_id": "installed-engine"}
+  ],
+  "identity_contracts": [
+    {"id": "exact-lease-frame-identity", "producer": "current Space InputFrameIdentity and correction-affecting config", "consumer": "space lease arbiter", "comparison": "path focus tail epoch committed tail active layout and config remain exactly equal", "test_id": "exact-lease-identity-parity"},
+    {"id": "fast-full-layout-parity", "producer": "bounded exact-layout candidate scope", "consumer": "existing full correction route", "comparison": "for exact known layout projections replacement transition proof allow_apply and source role agree", "test_id": "exact-full-decision-parity"}
+  ],
+  "runtime_comparisons": [
+    {"id": "atomic-space-latency", "source": "V25 undo-v7 engine trace and V26 composite trace", "comparison": "exact_stable_projection", "reason": "the old internal wait consumed the complete external RPC deadline", "stable_fields": ["input", "target", "transition_proof", "legacy_key_calls", "leftovers_after_cleanup"], "expected_to_change_fields": ["space_lookup_wait_us", "space_total_us", "process_status", "autocorrect_visible"], "observed_not_compared_fields": ["headless compositor startup time"], "test_id": "atomic-undo-composite"}
+  ],
+  "invariants": [
+    {"id": "one-decision-owner", "statement": "both full and exact scopes produce candidates through the same L2CandidateLattice and TransitionDecisionCore", "test_id": "single-decision-owner-source-contract"},
+    {"id": "exact-only-fallback", "statement": "the bounded fallback accepts only a raw keyboard projection with independent target surface authority and never layout-then-typo", "test_id": "exact-scope-negative-cases"},
+    {"id": "ready-full-precedence", "statement": "an identity-matched completed full lease is consumed before the exact fallback", "test_id": "full-lease-precedence"},
+    {"id": "stale-fail-closed", "statement": "identity material generation or config mismatch cannot publish either lease", "test_id": "exact-lease-identity-parity"},
+    {"id": "runtime-unmodified", "statement": "installed Lay 1.0.33 remains byte-identical until deployment preflight", "test_id": "installed-runtime-parity"}
+  ],
+  "state_machine": {
+    "initial_state": "V26_PAPER_APPROVED",
+    "steps": [
+      {"id": "edit-exact-scope-and-lease", "from": "V26_PAPER_APPROVED", "to": "SOURCE_EDITED", "mutates": true, "failure_state": "SOURCE_EDIT_FAILED", "cleanup": "revert only V26 scoped hunks from the pinned source baselines", "preserves": ["installed-engine-preserved"], "test_id": "source-edit-fault"},
+      {"id": "run-focused-tests-remote", "from": "SOURCE_EDITED", "to": "FOCUSED_PROVEN", "mutates": true, "failure_state": "FOCUSED_PROOF_FAILED", "cleanup": "discard partial remote build output and retain test logs", "preserves": ["installed-engine-preserved"], "test_id": "focused-proof-fault"},
+      {"id": "stage-immutable-engine", "from": "FOCUSED_PROVEN", "to": "ENGINE_STAGED", "mutates": true, "failure_state": "ENGINE_STAGE_FAILED", "cleanup": "reject incomplete or hash-mismatched immutable engine directory", "preserves": ["installed-engine-preserved"], "test_id": "engine-stage-fault"},
+      {"id": "run-atomic-undo-composite", "from": "ENGINE_STAGED", "to": "SPACE_ROUTE_PROVEN", "mutates": true, "failure_state": "ATOMIC_UNDO_FAILED", "cleanup": "terminate proof-owned processes and retain complete failed evidence", "preserves": ["installed-engine-preserved"], "test_id": "atomic-undo-fault"}
+    ],
+    "terminal_states": ["SPACE_ROUTE_PROVEN", "SOURCE_EDIT_FAILED", "FOCUSED_PROOF_FAILED", "ENGINE_STAGE_FAILED", "ATOMIC_UNDO_FAILED"]
+  },
+  "tests": [
+    {"id": "source-edit-fault", "kind": "fault_injection", "expected": "failed edit leaves the installed engine unchanged"},
+    {"id": "focused-proof-fault", "kind": "fault_injection", "expected": "failed remote test retains logs and does not install runtime"},
+    {"id": "engine-stage-fault", "kind": "fault_injection", "expected": "partial or hash-mismatched engine is rejected before proof"},
+    {"id": "atomic-undo-fault", "kind": "fault_injection", "expected": "failed composite terminates proof-owned processes retains logs and does not install runtime"},
+    {"id": "single-decision-owner-source-contract", "kind": "parity", "expected": "exact and full scopes both enter L2CandidateLattice and TransitionDecisionCore"},
+    {"id": "exact-full-decision-parity", "kind": "parity", "expected": "fixed exact-layout corpus has equal replacement proof and apply authority in exact and full scopes"},
+    {"id": "exact-scope-negative-cases", "kind": "integration", "expected": "known English protected tokens unknown projections and layout-then-typo return no exact lease"},
+    {"id": "full-lease-precedence", "kind": "unit", "expected": "ready current full lease wins without evaluating fallback readiness"},
+    {"id": "exact-lease-identity-parity", "kind": "parity", "expected": "stale identity config or material generation refuses exact lease"},
+    {"id": "atomic-undo-composite", "kind": "integration", "expected": "ghbdtn autocorrect appears below the 8 ms RPC deadline before atomic double Shift proof"},
+    {"id": "installed-runtime-parity", "kind": "parity", "expected": "installed engine SHA-256 remains dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a"}
+  ]
+}

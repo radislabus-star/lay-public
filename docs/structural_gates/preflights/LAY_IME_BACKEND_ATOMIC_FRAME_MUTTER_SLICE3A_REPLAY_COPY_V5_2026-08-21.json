@@ -1,0 +1,330 @@
+{
+  "authority_bearing": true,
+  "baseline_checks": [
+    {
+      "id": "input-method-source",
+      "kind": "file",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/clutter/clutter/clutter-input-method.c",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 27304,
+        "sha256": "2e122f55a8a4d62e4cdad94a97ea840dd342d10f61645c51e53f832b5432f2d1"
+      }
+    },
+    {
+      "id": "atomic-frame-test-source",
+      "kind": "file",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/tests/wayland-atomic-input-frame-tests.c",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 40712,
+        "sha256": "9c042481d100b737bbec7425b1eaef89f387e1ecd064bbd7ae7a9f27657a1100"
+      }
+    },
+    {
+      "id": "wayland-owner-source",
+      "kind": "file",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-text-input.c",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 32623,
+        "sha256": "8a388a0be267c5d0744920f862e36ff09f595589573bbfc2efd53177a336f4cb"
+      }
+    },
+    {
+      "id": "architecture-paper",
+      "kind": "file",
+      "path": "../../ime-backend-atomic-frame-v2-2026-08-20.md",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 81548,
+        "sha256": "d92da2dc81ab7d60890c6da67296733c6b9247ddf966da16d3293ab0b9023942"
+      }
+    },
+    {
+      "id": "slice3a-proof",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/mutter-slice3a-implementation-proof-v1.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 9348,
+        "sha256": "dabe8497ca0b6e6d18756291cf07827c99ddc189076d3fb534ca3541caff9152"
+      }
+    },
+    {
+      "id": "installed-mutter",
+      "kind": "file",
+      "path": "/usr/lib/x86_64-linux-gnu/libmutter-18.so.0.0.0",
+      "expect": {
+        "mode": "0644",
+        "size_bytes": 2755048,
+        "sha256": "fec9023139ac8eff93fcc1af90413613cdb526e7f02389dc9d8fe90f7abc81e5"
+      }
+    },
+    {
+      "id": "installed-gnome-shell",
+      "kind": "file",
+      "path": "/usr/lib/gnome-shell/libshell-18.so",
+      "expect": {
+        "mode": "0644",
+        "size_bytes": 3107408,
+        "sha256": "94e81e3ff3820b3f8454d596c3a9ee7fa437b770b899098db85f15640a7abb73"
+      }
+    },
+    {
+      "id": "installed-libibus",
+      "kind": "file",
+      "path": "/usr/lib/x86_64-linux-gnu/libibus-1.0.so.5.0.534",
+      "expect": {
+        "mode": "0644",
+        "size_bytes": 542936,
+        "sha256": "e1977b9d3d84ee94b63f6c04056134c10aa51d4e0621f7abee1115da12259ec1"
+      }
+    },
+    {
+      "id": "installed-lay-engine",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 6423488,
+        "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a"
+      }
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "replay-event-identity",
+      "producer": "caller-owned intercepted Clutter key event",
+      "consumer": "one synchronous ClutterInputFocus replay vfunc",
+      "comparison": "owned copy preserves type existing flags time source device raw modifiers state keysym event code keycode and Unicode while adding only INPUT_METHOD",
+      "test_id": "replay-copy-parity"
+    },
+    {
+      "id": "lease-lineage-identity",
+      "producer": "active one-shot lease and current focus profile",
+      "consumer": "replay admission and post-vfunc completion",
+      "comparison": "exact lease and same focus lineage before and after vfunc",
+      "test_id": "lease-lineage-parity"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "base-method-owns-copy",
+      "statement": "ClutterInputMethod alone constructs frees and marks the replay copy before any focus subclass sees it",
+      "test_id": "replay-copy-parity"
+    },
+    {
+      "id": "non-key-zero-effect",
+      "statement": "an active valid lease with a non-key event invokes no vfunc returns INVALID_ARGUMENT consumes the lease and permits a fresh lease",
+      "test_id": "non-key-rejection"
+    },
+    {
+      "id": "identity-precedence",
+      "statement": "a stale or foreign lease is rejected as IDENTITY_MISMATCH before event-kind validation",
+      "test_id": "lease-lineage-parity"
+    },
+    {
+      "id": "production-preserved",
+      "statement": "native Wayland owner and installed Mutter Shell IBus and Lay remain byte-identical",
+      "test_id": "production-byte-parity"
+    },
+    {
+      "id": "remote-only-proof",
+      "statement": "all compilation and dynamic proof run only on e@192.168.3.94",
+      "test_id": "remote-only-build"
+    }
+  ],
+  "preserved_artifacts": [
+    {
+      "id": "wayland-native-owner",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-text-input.c",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "defer native owner implementation to Slice 3B",
+      "baseline_check_id": "wayland-owner-source"
+    },
+    {
+      "id": "architecture-contract",
+      "path": "../../ime-backend-atomic-frame-v2-2026-08-20.md",
+      "policy": "read_only_during_implementation_then_append_measured_result",
+      "rollback_policy": "never weaken the correction gate after failure",
+      "baseline_check_id": "architecture-paper"
+    },
+    {
+      "id": "prior-slice3a-proof",
+      "path": "../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/mutter-slice3a-implementation-proof-v1.json",
+      "policy": "retain_then_replace_only_after_new_proof",
+      "rollback_policy": "retain prior receipt and disclose the replay-copy gap until corrected",
+      "baseline_check_id": "slice3a-proof"
+    },
+    {
+      "id": "installed-mutter-library",
+      "path": "/usr/lib/x86_64-linux-gnu/libmutter-18.so.0.0.0",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "never modify or restart in Slice 3A",
+      "baseline_check_id": "installed-mutter"
+    },
+    {
+      "id": "installed-shell-library",
+      "path": "/usr/lib/gnome-shell/libshell-18.so",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "never modify or restart in Slice 3A",
+      "baseline_check_id": "installed-gnome-shell"
+    },
+    {
+      "id": "installed-ibus-library",
+      "path": "/usr/lib/x86_64-linux-gnu/libibus-1.0.so.5.0.534",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "never modify or restart in Slice 3A",
+      "baseline_check_id": "installed-libibus"
+    },
+    {
+      "id": "installed-lay",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "never modify or restart in Slice 3A",
+      "baseline_check_id": "installed-lay-engine"
+    }
+  ],
+  "reuses_existing_implementation": true,
+  "runtime_comparisons": [],
+  "schema": "nanda.implementation-preflight.v1",
+  "scientific_future_sensitive": false,
+  "side_effects": {
+    "forbidden": [
+      "local_build",
+      "runtime_deployment",
+      "installed_file_write",
+      "restart_gnome_shell",
+      "restart_or_signal_ibus",
+      "connect_live_session_bus",
+      "physical_input_or_text_mutation",
+      "input_device_access",
+      "edit_meta_wayland_text_input_owner",
+      "advertise_a_live_atomic_profile",
+      "second_replay_owner"
+    ],
+    "planned": [
+      {
+        "id": "edit-base-replay-copy",
+        "kind": "source_edit"
+      },
+      {
+        "id": "extend-isolated-proof",
+        "kind": "source_edit"
+      },
+      {
+        "id": "sync-two-files-to-remote-sandbox",
+        "kind": "remote_filesystem_write"
+      },
+      {
+        "id": "compile-and-test-remotely",
+        "kind": "remote_build"
+      },
+      {
+        "id": "record-proof-and-update-graph",
+        "kind": "filesystem_write"
+      }
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "reused-input-method-source",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/clutter/clutter/clutter-input-method.c",
+      "sha256": "2e122f55a8a4d62e4cdad94a97ea840dd342d10f61645c51e53f832b5432f2d1",
+      "forbidden_effect_patterns": [
+        {"effect": "local_build", "regex": "(?:system|popen|g_spawn)\\s*\\("},
+        {"effect": "runtime_deployment", "regex": "(?:systemctl|gnome-shell.{0,80}--replace|ibus-daemon.{0,80}--replace)"},
+        {"effect": "installed_file_write", "regex": "(?:fopen|open|g_file_(?:set|replace)_contents).{0,120}(?:/usr|[.]local/lib/lay)"},
+        {"effect": "restart_gnome_shell", "regex": "(?:(?:restart|kill|pkill|signal).{0,80}gnome-shell|gnome-shell.{0,80}(?:restart|replace))"},
+        {"effect": "restart_or_signal_ibus", "regex": "(?:(?:restart|kill|pkill|signal).{0,80}ibus(?:-daemon)?|ibus-daemon.{0,80}(?:restart|replace))"},
+        {"effect": "connect_live_session_bus", "regex": "G_BUS_TYPE_SESSION|DBUS_SESSION_BUS_ADDRESS|g_bus_(?:get|watch_name|own_name)\\s*\\("},
+        {"effect": "physical_input_or_text_mutation", "regex": "/dev/(?:input|uinput)|(?:ydotool|xdotool|wtype)\\b"},
+        {"effect": "input_device_access", "regex": "/dev/(?:input|uinput)"},
+        {"effect": "edit_meta_wayland_text_input_owner", "regex": "meta-wayland-text-input[.]c"},
+        {"effect": "advertise_a_live_atomic_profile", "regex": "atomic_profile.{0,80}(?:advertise|supported|TRUE)"},
+        {"effect": "second_replay_owner", "regex": "clutter_event_key_new.{0,240}replay_native_key.{0,240}clutter_event_key_new"}
+      ]
+    },
+    {
+      "id": "reused-atomic-frame-test-source",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/tests/wayland-atomic-input-frame-tests.c",
+      "sha256": "9c042481d100b737bbec7425b1eaef89f387e1ecd064bbd7ae7a9f27657a1100",
+      "forbidden_effect_patterns": [
+        {"effect": "input_device_access", "regex": "/dev/(?:input|uinput)"}
+      ]
+    },
+    {
+      "id": "preserved-wayland-owner-source",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-text-input.c",
+      "sha256": "8a388a0be267c5d0744920f862e36ff09f595589573bbfc2efd53177a336f4cb",
+      "forbidden_effect_patterns": [
+        {"effect": "advertise_a_live_atomic_profile", "regex": "atomic_(?:profile|frame|transaction)"}
+      ]
+    }
+  ],
+  "state_machine": {
+    "initial_state": "REPLAY_COPY_GAP_FROZEN",
+    "steps": [
+      {
+        "id": "edit-owned-copy-and-tests",
+        "from": "REPLAY_COPY_GAP_FROZEN",
+        "to": "SOURCE_READY",
+        "mutates": true,
+        "failure_state": "SOURCE_EDIT_FAILED_RETAINED",
+        "cleanup": "retain the isolated diff and failure evidence; change no other source",
+        "preserves": ["wayland-native-owner", "architecture-contract", "prior-slice3a-proof", "installed-mutter-library", "installed-shell-library", "installed-ibus-library", "installed-lay"],
+        "test_id": "source-scope-fault"
+      },
+      {
+        "id": "sync-and-build-remotely",
+        "from": "SOURCE_READY",
+        "to": "REMOTE_BUILD_READY",
+        "mutates": true,
+        "failure_state": "REMOTE_BUILD_FAILED_RETAINED",
+        "cleanup": "terminate only task-owned remote processes and retain logs; never build locally",
+        "preserves": ["wayland-native-owner", "architecture-contract", "prior-slice3a-proof", "installed-mutter-library", "installed-shell-library", "installed-ibus-library", "installed-lay"],
+        "test_id": "remote-build-fault"
+      },
+      {
+        "id": "run-normal-and-sanitized-proof",
+        "from": "REMOTE_BUILD_READY",
+        "to": "DYNAMIC_PROOF_PASSED",
+        "mutates": true,
+        "failure_state": "DYNAMIC_PROOF_FAILED_RETAINED",
+        "cleanup": "retain exact binary and logs; reject on any test failure warning or sanitizer diagnostic",
+        "preserves": ["wayland-native-owner", "architecture-contract", "prior-slice3a-proof", "installed-mutter-library", "installed-shell-library", "installed-ibus-library", "installed-lay"],
+        "test_id": "dynamic-proof-fault"
+      },
+      {
+        "id": "record-corrected-proof",
+        "from": "DYNAMIC_PROOF_PASSED",
+        "to": "CORRECTED_SLICE3A_RECORDED",
+        "mutates": true,
+        "failure_state": "EVIDENCE_WRITE_FAILED_RETAINED",
+        "cleanup": "retain raw proof logs and refuse PASS until paper receipt and graph agree",
+        "preserves": ["wayland-native-owner", "installed-mutter-library", "installed-shell-library", "installed-ibus-library", "installed-lay"],
+        "test_id": "evidence-write-fault"
+      }
+    ],
+    "terminal_states": [
+      "CORRECTED_SLICE3A_RECORDED",
+      "SOURCE_EDIT_FAILED_RETAINED",
+      "REMOTE_BUILD_FAILED_RETAINED",
+      "DYNAMIC_PROOF_FAILED_RETAINED",
+      "EVIDENCE_WRITE_FAILED_RETAINED"
+    ]
+  },
+  "task_id": "LAY_IME_BACKEND_ATOMIC_FRAME_MUTTER_SLICE3A_REPLAY_COPY_V5_2026-08-21",
+  "tests": [
+    {"id": "source-scope-fault", "kind": "fault_injection", "expected": "only the declared two source files may change"},
+    {"id": "remote-build-fault", "kind": "fault_injection", "expected": "build failure stays remote and cannot trigger deployment or local compilation"},
+    {"id": "dynamic-proof-fault", "kind": "fault_injection", "expected": "any normal sanitizer warning or stale-binary ambiguity rejects the correction"},
+    {"id": "evidence-write-fault", "kind": "fault_injection", "expected": "missing paper receipt or graph blocks the corrected Slice 3A PASS"},
+    {"id": "replay-copy-parity", "kind": "parity", "expected": "the focus sees one distinct owned key event with every identity field preserved and INPUT_METHOD added"},
+    {"id": "non-key-rejection", "kind": "unit", "expected": "non-key replay returns REFUSED_ZERO_EFFECT plus INVALID_ARGUMENT with zero vfunc calls and no stranded lease"},
+    {"id": "lease-lineage-parity", "kind": "parity", "expected": "foreign and stale leases retain identity-mismatch precedence and same-focus one-shot semantics"},
+    {"id": "production-byte-parity", "kind": "parity", "expected": "Wayland owner and installed Mutter Shell IBus and Lay hashes remain exact"},
+    {"id": "remote-only-build", "kind": "parity", "expected": "receipt binds all compilation and dynamic tests to e@192.168.3.94"}
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "schema": "lay.ime-target-authority.slice6-boundary-internalization.final.v1",
+  "date": "2026-08-20",
+  "scope": "shadow-only exact boundary birth internalization inside context-neutral prepared material",
+  "verdict": "PASS_SCOPED_BOUNDARY_SHADOW_WITH_GLOBAL_LATENCY_BLOCKER",
+  "runtime_authority_changed": false,
+  "deployment_performed": false,
+  "installed_version": "1.0.33",
+  "remote_host": "e@192.168.3.94",
+  "workers": 20,
+  "proof_environment": {
+    "LAY_PRODUCTIVE_WORK_MEASUREMENT": "1",
+    "LAY_PRODUCTIVE_MATERIAL_FRAME_PROOF": "1",
+    "LAY_PRODUCTIVE_CONTOUR_BIRTH_PROOF": "1",
+    "LAY_PRODUCTIVE_BOUNDARY_PROOF": "1"
+  },
+  "measured": {
+    "evaluated": 2600,
+    "sampled_h": 1280,
+    "sampled_b": 1280,
+    "sampled_s0": 1280,
+    "h_to_b_losses": 0,
+    "b_to_s0_losses": 0,
+    "false_singleton": 0,
+    "integrity_errors": 0,
+    "boundary_shadow_pass": true,
+    "boundary_births": 423,
+    "material_work_budget_respected": 1300,
+    "hypothesis_target_members": 1280,
+    "contour_birth_hits": 8,
+    "contour_retention_hits": 8,
+    "boundary_authority_grants": 0,
+    "maximum_class_p99_us": 11238,
+    "latency_gate_us": 5000,
+    "wall_seconds": 34.21,
+    "cpu_percent": 1026,
+    "peak_rss_kib": 650852
+  },
+  "focused_tests": {
+    "boundary": "3/3 PASS",
+    "material_frame": "10/10 PASS"
+  },
+  "legacy_live_route_observation": {
+    "split_exact_match": false,
+    "merge_exact_match": false,
+    "parity_is_not_a_promotion_gate": true,
+    "authority_changed": false
+  },
+  "global_gate": {
+    "verdict": "FAIL_measured_shadow_gates",
+    "promotion_eligible": false,
+    "blocker": "maximum class p99 11.238 ms exceeds 5 ms"
+  },
+  "not_tested": [
+    "live authority transfer",
+    "event transaction durability",
+    "automatic mutation",
+    "queue-inclusive daemon and IBus latency",
+    "physical WeChat and Telegram behavior",
+    "deployment"
+  ],
+  "artifacts": {
+    "smoke_json": "slice6-boundary-smoke-13x1.json",
+    "smoke_time": "slice6-boundary-smoke-13x1.time.txt",
+    "full_json": "slice6-full-13x100.json",
+    "full_time": "slice6-full-13x100.time.txt",
+    "boundary_test_log": "slice6-boundary-tests.log",
+    "boundary_test_time": "slice6-boundary-tests.time.txt",
+    "material_frame_test_log": "slice6-material-frame-tests.log",
+    "material_frame_test_time": "slice6-material-frame-tests.time.txt",
+    "full_json_sha256": "2d25172caae6dc06f4317096c9e3e58e63d4c2f4ec57745c06e30146a85fe981",
+    "proof_binary_sha256": "ad08379489f08428e1c320c0c26fc327b9bd4be70f54f4590109fcc9e2eec92c"
+  },
+  "next_gate": "Slice 7A isolated durability-strategy microproof; no live promotion while latency remains above 5 ms"
+}

@@ -1,0 +1,287 @@
+{
+  "authority_bearing": true,
+  "baseline_checks": [
+    {
+      "id": "bridge-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/bridge.rs",
+      "expect": {"size_bytes": 87314, "sha256": "f34a0109fc18d7b65bd6b56fb526bc5b5e631086bc1c904ad0486d80c0ac25eb", "mode": "0664"}
+    },
+    {
+      "id": "productive-live-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/live.rs",
+      "expect": {"size_bytes": 29783, "sha256": "fece1a4634de1a1f39cb235aa9a99ef8fb2af340848d2b933f8c095fa09b20da", "mode": "0664"}
+    },
+    {
+      "id": "layout-symbol-classifier-source",
+      "kind": "file",
+      "path": "../../../src/layout_autoswitch/ascii/symbols.rs",
+      "expect": {"size_bytes": 1975, "sha256": "104d34062200d889c6f723761cd4c7725b8ca0b2b309ecdb102f0538e9d62cfa", "mode": "0664"}
+    },
+    {
+      "id": "technical-token-classifier-source",
+      "kind": "file",
+      "path": "../../../src/word_recognizer/technical.rs",
+      "expect": {"size_bytes": 4722, "sha256": "9fcaf6932bc6b8220bc6d8972a7cb72614ea1cc9f6828373b422fe69c6437714", "mode": "0664"}
+    },
+    {
+      "id": "verifier-source",
+      "kind": "file",
+      "path": "../../../src/text_edit/structural_verifier.rs",
+      "expect": {"size_bytes": 7730, "sha256": "19201157bc09df5cca617132d67a242474aaa331ca58dc18acb0152818b7b826", "mode": "0664"}
+    },
+    {
+      "id": "double-shift-source",
+      "kind": "file",
+      "path": "../../../src/bin/lay_ibus_engine/committed_tail.rs",
+      "expect": {"size_bytes": 25042, "sha256": "72e567392a1790467ecb1797b1a031949bf61e8615742eead57a8c5ecfbfa753", "mode": "0664"}
+    },
+    {
+      "id": "architecture-document",
+      "kind": "file",
+      "path": "../../../docs/l2-l11-canonical-architecture.md",
+      "expect": {"size_bytes": 287741, "sha256": "a25d57e18b72af6b72a9edcd0141c2c76a67a63969fe6c2b5247f706e87aee58", "mode": "0664"}
+    },
+    {
+      "id": "route-contract",
+      "kind": "file",
+      "path": "LAY_IME_CANONICAL_LAYOUT_TOKEN_OWNERSHIP_ROUTE_V1_2026-08-16.json",
+      "expect": {"size_bytes": 5960, "sha256": "2dc6e73eccb758c674f1b3e984d9d01c5c26e46b6434fe375848c9016c2a6cad", "mode": "0664"}
+    },
+    {
+      "id": "route-design-pass",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_CANONICAL_LAYOUT_TOKEN_OWNERSHIP_2026-08-16/design-route-v1.json",
+      "expect": {"size_bytes": 9428, "sha256": "08666d223bc15e6946e75049bb1abce83683ce4beffc4003bdf26f83a561745b", "mode": "0664"}
+    },
+    {
+      "id": "direct-v9-probe",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_CANONICAL_LAYOUT_TOKEN_OWNERSHIP_2026-08-16/direct-v9-token-probe.json",
+      "expect": {"size_bytes": 1819, "sha256": "39b9540ca961478e8bf7fad9f1f09f39cdf49be738f0df8434d6d2efd1eae6c0", "mode": "0664"}
+    },
+    {
+      "id": "installed-engine",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "expect": {"size_bytes": 6423488, "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a", "mode": "0755"}
+    },
+    {
+      "id": "installed-productive-v90",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2m",
+      "expect": {"size_bytes": 17309944, "sha256": "40fb6a9f0d92c3c7502e47f9c70230d9b86020f622b08a5c799342f13e09ce44", "mode": "0644", "prefix_hex": "4c41595032563100"}
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "extractor-to-l11-token-identity",
+      "producer": "canonical token extractor",
+      "consumer": "L1.1 lattice request",
+      "comparison": "exact token bytes including physical layout-letter punctuation",
+      "test_id": "canonical-token-parity"
+    },
+    {
+      "id": "l11-layout-seed-to-v90-origin",
+      "producer": "bounded L1.1 layout-derived seed lattice",
+      "consumer": "Productive V90 candidate materialization",
+      "comparison": "layout query identity produces typed CandidateOrigin::Layout candidates without a deterministic side producer",
+      "test_id": "layout-origin-parity"
+    },
+    {
+      "id": "active-source-to-runtime-route",
+      "producer": "NandaOnly correction source",
+      "consumer": "remote correction trace",
+      "comparison": "one extractor, one L1.1 request, one Productive V90 field and zero deterministic candidate births",
+      "test_id": "canonical-route-parity"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "one-physical-token-owner",
+      "statement": "the exact accepted token is reused by L1.1, Productive V90 preparation, cache identity and materialization",
+      "test_id": "canonical-token-parity"
+    },
+    {
+      "id": "protected-ascii-fails-closed",
+      "statement": "URL, CLI option, technical, protected and known-English surfaces do not call L1.1 and cannot gain layout authority",
+      "test_id": "protected-ascii-negative-proof"
+    },
+    {
+      "id": "no-deterministic-fallback",
+      "statement": "unsupported input, unavailable package and empty L1.1 lattice return typed abstention without executing deterministic_text_candidates",
+      "test_id": "canonical-route-parity"
+    },
+    {
+      "id": "verifier-and-rollback-preserved",
+      "statement": "the verifier remains the only authorization owner and double Shift restores the exact pre-autocorrection token",
+      "test_id": "rollback-and-verifier-proof"
+    },
+    {
+      "id": "conjunctive-promotion",
+      "statement": "layout recovery cannot hide lexical, boundary, clean-preservation, false-authority, false-split, latency or rollback regressions",
+      "test_id": "remote-systemic-proof"
+    }
+  ],
+  "preserved_artifacts": [
+    {
+      "id": "installed-engine-runtime",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "policy": "read_only_until_conjunctive_software_pass",
+      "rollback_policy": "retain exact installed 1.0.33 bytes",
+      "baseline_check_id": "installed-engine"
+    },
+    {
+      "id": "productive-v90-package",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2m",
+      "policy": "read_only_runtime_input",
+      "rollback_policy": "never rewrite the accepted package for a token-adapter defect",
+      "baseline_check_id": "installed-productive-v90"
+    },
+    {
+      "id": "structural-verifier-authority",
+      "path": "../../../src/text_edit/structural_verifier.rs",
+      "policy": "read_only_authorization_boundary",
+      "rollback_policy": "never weaken verifier checks to admit layout candidates",
+      "baseline_check_id": "verifier-source"
+    },
+    {
+      "id": "double-shift-contract",
+      "path": "../../../src/bin/lay_ibus_engine/committed_tail.rs",
+      "policy": "read_only_rollback_boundary",
+      "rollback_policy": "preserve exact original-token restoration",
+      "baseline_check_id": "double-shift-source"
+    }
+  ],
+  "reuses_existing_implementation": true,
+  "runtime_comparisons": [
+    {
+      "id": "pre-extractor-to-canonical-token-owner",
+      "source": "fixed remote layout, lexical, boundary and rollback proof",
+      "comparison": "exact_stable_projection",
+      "stable_fields": [
+        "input_surface",
+        "l11_package_sha256",
+        "productive_package_sha256",
+        "selected_surface",
+        "selected_gate_action",
+        "selected_transition_operator",
+        "verifier_effect",
+        "double_shift_restored_surface",
+        "late_edit_count"
+      ],
+      "expected_to_change_fields": [
+        "extracted_token",
+        "l11_seed_surfaces",
+        "candidate_origin",
+        "candidate_source_id",
+        "candidate_surfaces",
+        "correction_total_us",
+        "binary_sha256"
+      ],
+      "observed_not_compared_fields": [
+        "wall_clock_timestamp",
+        "trace_line_number",
+        "managed_process_pid",
+        "online_learning_generation"
+      ],
+      "reason": "repair token ownership without changing safety or adding a fallback producer",
+      "test_id": "canonical-route-parity"
+    }
+  ],
+  "schema": "nanda.implementation-preflight.v1",
+  "scientific_future_sensitive": false,
+  "side_effects": {
+    "forbidden": [
+      "literal_surface_runtime_branch",
+      "deterministic_fallback",
+      "weaken_verifier_authority",
+      "change_double_shift_contract",
+      "rewrite_productive_package",
+      "deploy_before_conjunctive_pass"
+    ],
+    "planned": [
+      {"id": "add-canonical-token-extractor", "kind": "source_edit"},
+      {"id": "preserve-layout-origin-through-v90", "kind": "source_edit"},
+      {"id": "add-systemic-positive-and-negative-tests", "kind": "source_edit"},
+      {"id": "run-remote-focused-and-systemic-proof", "kind": "remote_test"},
+      {"id": "update-architecture-and-graph", "kind": "documentation_edit"}
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "bridge-source-guard",
+      "path": "../../../src/nanda_wave/l2_field/bridge.rs",
+      "sha256": "f34a0109fc18d7b65bd6b56fb526bc5b5e631086bc1c904ad0486d80c0ac25eb",
+      "forbidden_effect_patterns": [
+        {"effect": "literal_surface_runtime_branch", "regex": "(?i)(?:if|match)[^\\n]{0,160}\\\"(?:данорм|еленапросит|докуентыдля|врмея|ytn|cj,frf|звгрузи)\\\""},
+        {"effect": "deterministic_fallback", "regex": "(?s)canonical_owned_text_candidates_observed.{0,8000}deterministic_text_candidates"}
+      ]
+    },
+    {
+      "id": "productive-live-source-guard",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/live.rs",
+      "sha256": "fece1a4634de1a1f39cb235aa9a99ef8fb2af340848d2b933f8c095fa09b20da",
+      "forbidden_effect_patterns": [
+        {"effect": "literal_surface_runtime_branch", "regex": "(?i)(?:if|match)[^\\n]{0,160}\\\"(?:врмея|ytn|cj,frf|звгрузи)\\\""},
+        {"effect": "deterministic_fallback", "regex": "deterministic_text_candidates"}
+      ]
+    },
+    {
+      "id": "verifier-source-guard",
+      "path": "../../../src/text_edit/structural_verifier.rs",
+      "sha256": "19201157bc09df5cca617132d67a242474aaa331ca58dc18acb0152818b7b826",
+      "forbidden_effect_patterns": [
+        {"effect": "weaken_verifier_authority", "regex": "(?i)(?:allow|eligible|authorized).{0,100}(?:without|bypass|skip).{0,100}(?:proof|plan|verif)"}
+      ]
+    },
+    {
+      "id": "double-shift-source-guard",
+      "path": "../../../src/bin/lay_ibus_engine/committed_tail.rs",
+      "sha256": "72e567392a1790467ecb1797b1a031949bf61e8615742eead57a8c5ecfbfa753",
+      "forbidden_effect_patterns": [
+        {"effect": "change_double_shift_contract", "regex": "(?i)(?:double.?shift|auto.?undo).{0,120}(?:disable|remove|skip|ignore)"}
+      ]
+    }
+  ],
+  "state_machine": {
+    "initial_state": "TOKEN_ROUTE_DESIGN_PASS_RUNTIME_1_0_33",
+    "steps": [
+      {
+        "cleanup": "retain scoped source diff and failure evidence; do not alter installed runtime or packages",
+        "failure_state": "BLOCKED_BEFORE_DEPLOY_RUNTIME_1_0_33_UNCHANGED",
+        "from": "TOKEN_ROUTE_DESIGN_PASS_RUNTIME_1_0_33",
+        "id": "implement-canonical-token-owner",
+        "mutates": true,
+        "preserves": ["installed-engine-runtime", "productive-v90-package", "structural-verifier-authority", "double-shift-contract"],
+        "test_id": "source-edit-fault",
+        "to": "CANONICAL_TOKEN_SOURCE_READY"
+      },
+      {
+        "cleanup": "retain failing receipts and reject deployment; terminate temporary proof service and remove its socket",
+        "failure_state": "BLOCKED_BEFORE_DEPLOY_RUNTIME_1_0_33_UNCHANGED",
+        "from": "CANONICAL_TOKEN_SOURCE_READY",
+        "id": "run-remote-conjunctive-proof",
+        "mutates": false,
+        "preserves": ["installed-engine-runtime", "productive-v90-package", "structural-verifier-authority", "double-shift-contract"],
+        "test_id": "remote-systemic-proof",
+        "to": "CANONICAL_TOKEN_SOFTWARE_PASS_RUNTIME_1_0_33_UNCHANGED"
+      }
+    ],
+    "terminal_states": [
+      "CANONICAL_TOKEN_SOFTWARE_PASS_RUNTIME_1_0_33_UNCHANGED",
+      "BLOCKED_BEFORE_DEPLOY_RUNTIME_1_0_33_UNCHANGED"
+    ]
+  },
+  "task_id": "lay-ime-canonical-layout-token-ownership-v1-2026-08-16",
+  "tests": [
+    {"id": "source-edit-fault", "kind": "fault_injection", "expected": "an incomplete extractor migration fails focused tests or the observed route audit while installed 1.0.33 stays unchanged"},
+    {"id": "canonical-token-parity", "kind": "parity", "expected": "Cyrillic and accepted physical-layout token bytes remain identical from extraction through L1.1 and Productive V90 cache/materialization"},
+    {"id": "layout-origin-parity", "kind": "parity", "expected": "layout-derived L1.1 seeds materialize as CandidateOrigin::Layout and typed WrongLayout transitions"},
+    {"id": "protected-ascii-negative-proof", "kind": "integration", "expected": "URL, CLI, technical, protected and known-English tokens return unsupported abstention without an L1.1 request"},
+    {"id": "canonical-route-parity", "kind": "integration", "expected": "Nanda-enabled input executes exactly one canonical producer chain and zero deterministic candidate births"},
+    {"id": "rollback-and-verifier-proof", "kind": "integration", "expected": "the existing verifier authorizes the exact plan and double Shift restores the original token after layout autocorrection"},
+    {"id": "remote-systemic-proof", "kind": "integration", "expected": "remote guarded checks pass lexical, boundary, layout, mixed-script, clean-preservation, false-authority, false-split, latency and rollback gates"}
+  ]
+}

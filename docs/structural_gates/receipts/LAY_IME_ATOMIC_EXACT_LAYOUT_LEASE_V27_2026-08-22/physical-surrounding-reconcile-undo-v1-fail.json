@@ -1,0 +1,39 @@
+{
+  "schema": "lay.architecture-experiment-receipt.v1",
+  "id": "LAY_IME_ATOMIC_V27_PHYSICAL_SURROUNDING_RECONCILE_UNDO_V1_FAIL_2026-08-22",
+  "tested": {
+    "scope": "isolated physical GNOME Shell and Mutter atomic double-Shift undo route",
+    "run_id": "v27-surrounding-reconcile-undo-v1",
+    "proof_source_sha256": "3f2d38ae86e5a984c055bb04837e299aee7aa41bcdf78d964670676fdb62e4bd",
+    "engine_sha256": "57b132b5d4936df62e74944f3fbacd03cf63296fdb5d4ba413560dd19823f0a9",
+    "source_aggregate_sha256": "989fc83d554d13ffdd09d2ba3c2701da6a496efe844897e30c20bb7b50c55663"
+  },
+  "measured": {
+    "autocorrect_visible": true,
+    "physical_modifier_event_delta": 4,
+    "exact_original_restored": false,
+    "legacy_key_calls": 0,
+    "leftovers_before_cleanup": 0,
+    "leftovers_after_cleanup": 0,
+    "process_status": 1,
+    "engine_trace_lines": 81,
+    "engine_key_trace_records": 7
+  },
+  "artifacts": {
+    "remote_log": "/home/e/projects/lay-atomic-full-route-20260821/logs/atomic-full-route-v27-surrounding-reconcile-undo-v1.log",
+    "remote_log_sha256": "510ca794c56f3aba75d0da3308b38e1e073584ac00937aabc9f80046f5e65b90",
+    "remote_metrics": "/home/e/projects/lay-atomic-full-route-20260821/output/atomic-full-route-v27-surrounding-reconcile-undo-v1.metrics",
+    "remote_metrics_sha256": "474171e9cbe0b2373e23ec018259d258cd17d6e044c05edfa464b92b2b0776d8",
+    "remote_trace": "/home/e/projects/lay-atomic-full-route-20260821/output/atomic-full-route-v27-surrounding-reconcile-undo-v1.engine-trace.jsonl",
+    "remote_trace_sha256": "d8a47de602c6c443871a5bf8d5477c4093542e4c802ef8b117d1910eaf0b7d9d"
+  },
+  "not_tested": [
+    "typed cross-engine Shift gesture handoff",
+    "corrected physical exact restore",
+    "installed Lay 1.0.34 runtime",
+    "post-install RSS and PSS"
+  ],
+  "verdict": "FAIL_GESTURE_HANDOFF_ROOT_CAUSE_PAPERED",
+  "runtime_authority_changed": false,
+  "installed_runtime": "lay 1.0.33"
+}

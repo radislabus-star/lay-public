@@ -1,0 +1,5 @@
+1 elapsed_s=3.18 max_rss_kib=62764 major_faults=0
+2 elapsed_s=2.58 max_rss_kib=62760 major_faults=0
+3 elapsed_s=2.01 max_rss_kib=62956 major_faults=0
+4 elapsed_s=2.10 max_rss_kib=62460 major_faults=0
+5 elapsed_s=2.53 max_rss_kib=62844 major_faults=0

@@ -1,0 +1,268 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_PAIRED_RELEASE_OWNERSHIP_IMPLEMENTATION_V24_2026-08-22",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "shell-atomic-adapter",
+      "kind": "file",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/js/misc/inputMethodAtomic.js",
+      "expect": {"mode": "0664", "size_bytes": 15841, "sha256": "d40801329973da6c3e96f35edc2f478ad82c7752f4e245cb01f69904a24e19c0"}
+    },
+    {
+      "id": "shell-atomic-unit-proof",
+      "kind": "file",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/unit/inputMethodAtomic.js",
+      "expect": {"mode": "0664", "size_bytes": 5737, "sha256": "9f8224e735e38bdd64600a9313b9f14540df671dbb086c48d91ce2015c314bb1"}
+    },
+    {
+      "id": "shell-atomic-integrated-proof",
+      "kind": "file",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/shell/atomicInputMethodRoute.js",
+      "expect": {"mode": "0664", "size_bytes": 9703, "sha256": "b5d085eb6cdc75f1ffed50ebcb4dddeb64d92bf0f1103685aa0024658b8fb2b3"}
+    },
+    {
+      "id": "lay-atomic-settlement-owner",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic.rs",
+      "expect": {"mode": "0664", "size_bytes": 17211, "sha256": "0ac32eef663638c826f95a0e0293e9da8eb99377bca30d326b297e4febd73188"}
+    },
+    {
+      "id": "remote-full-route-driver",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh",
+      "expect": {"mode": "0755", "size_bytes": 10143, "sha256": "f86b82106f1e55100a253a20eeb5cfd861b0127827670ad6d534d81732eee83f"}
+    },
+    {
+      "id": "shell-input-owner",
+      "kind": "file",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/js/misc/inputMethod.js",
+      "expect": {"mode": "0664", "size_bytes": 15192, "sha256": "7e84931650ccee7920428d22287da6e99763db7f08783a48fdda55fd459e3b37"}
+    },
+    {
+      "id": "lay-engine-owner",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/engine.rs",
+      "expect": {"mode": "0664", "size_bytes": 13826, "sha256": "34d6a194a47066bfffe8b5710ee64f4a8bc6328a718453c9ecdecb3dfc41cc0b"}
+    },
+    {
+      "id": "lay-ibus-event-owner",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/ibus_interface.rs",
+      "expect": {"mode": "0664", "size_bytes": 15396, "sha256": "000fa5e72c4f7e72fb689bed48cc348fd5dc09e63ff9bfab8dc663ee2af05a57"}
+    },
+    {
+      "id": "mutter-atomic-profile-owner",
+      "kind": "file",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-text-input.c",
+      "expect": {"mode": "0664", "size_bytes": 52566, "sha256": "5d50a3a9becc31374c52f238729d1874b1cb9c5bfe46e5b90d053cc0cf2d29ca"}
+    },
+    {
+      "id": "installed-lay-engine",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "expect": {"mode": "0755", "size_bytes": 6423488, "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a"}
+    },
+    {
+      "id": "installed-mutter",
+      "kind": "file",
+      "path": "/usr/lib/x86_64-linux-gnu/libmutter-18.so.0.0.0",
+      "expect": {"mode": "0644", "size_bytes": 2755048, "sha256": "fec9023139ac8eff93fcc1af90413613cdb526e7f02389dc9d8fe90f7abc81e5"}
+    },
+    {
+      "id": "installed-shell",
+      "kind": "file",
+      "path": "/usr/lib/gnome-shell/libshell-18.so",
+      "expect": {"mode": "0644", "size_bytes": 3107408, "sha256": "94e81e3ff3820b3f8454d596c3a9ee7fa437b770b899098db85f15640a7abb73"}
+    }
+  ],
+  "source_checks": [
+    {
+      "id": "pinned-shell-atomic-adapter",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/js/misc/inputMethodAtomic.js",
+      "sha256": "d40801329973da6c3e96f35edc2f478ad82c7752f4e245cb01f69904a24e19c0",
+      "forbidden_effect_patterns": [
+        {"effect": "second_release_rpc", "regex": "invokeAtomicForPairedRelease|pairedReleaseRpc"},
+        {"effect": "native_paired_release", "regex": "replayNativePairedRelease|nativePairedRelease"},
+        {"effect": "unbounded_release_ledger", "regex": "unboundedPairedReleaseLedger"},
+        {"effect": "modifier_release_capture", "regex": "captureModifierRelease|pairModifierRelease"}
+      ]
+    },
+    {
+      "id": "pinned-lay-atomic-settlement",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic.rs",
+      "sha256": "0ac32eef663638c826f95a0e0293e9da8eb99377bca30d326b297e4febd73188",
+      "forbidden_effect_patterns": [
+        {"effect": "second_mutation_owner", "regex": "secondNativeMutationOwner|legacySameEventFallback"},
+        {"effect": "global_handled_marker_clear", "regex": "clearAllHandledPressesForPairedRelease"},
+        {"effect": "unbound_paired_receipt", "regex": "acceptPairedReceiptWithoutTransaction"}
+      ]
+    },
+    {
+      "id": "pinned-full-route-driver",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh",
+      "sha256": "f86b82106f1e55100a253a20eeb5cfd861b0127827670ad6d534d81732eee83f",
+      "forbidden_effect_patterns": [
+        {"effect": "local_build", "regex": "(?:cargo|meson|ninja|make)\\s"},
+        {"effect": "runtime_deployment", "regex": "(?:systemctl|dpkg|apt-get)\\s"},
+        {"effect": "installed_file_write", "regex": "(?:/usr/lib|/home/ubu/[.]local/lib/lay)"},
+        {"effect": "live_session_restart", "regex": "(?:kill|signal|restart).{0,80}(?:gnome-shell|ibus)"},
+        {"effect": "live_keyboard_signal", "regex": "(?:ydotool|xdotool|wtype|/dev/(?:input|uinput))"},
+        {"effect": "historical_receipt_rewrite", "regex": "rewriteHistoricalReceipt|truncateHistoricalEvidence"},
+        {"effect": "unbounded_remote_build", "regex": "(?:--jobs\\s+0|-j\\s*0|unboundedRemoteBuild)"}
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "edit-shell-release-owner", "kind": "source_edit"},
+      {"id": "edit-lay-settlement-owner", "kind": "source_edit"},
+      {"id": "edit-paired-release-proofs", "kind": "source_edit"},
+      {"id": "sync-approved-sources-remote", "kind": "remote_filesystem_write"},
+      {"id": "build-proof-artifacts-remote", "kind": "remote_build"},
+      {"id": "run-focused-proofs", "kind": "ephemeral_process_start"},
+      {"id": "run-isolated-full-route", "kind": "ephemeral_process_start"},
+      {"id": "write-v24-evidence", "kind": "filesystem_write"}
+    ],
+    "forbidden": [
+      "second_release_rpc",
+      "native_paired_release",
+      "unbounded_release_ledger",
+      "modifier_release_capture",
+      "second_mutation_owner",
+      "global_handled_marker_clear",
+      "unbound_paired_receipt",
+      "local_build",
+      "runtime_deployment",
+      "installed_file_write",
+      "live_session_restart",
+      "live_keyboard_signal",
+      "historical_receipt_rewrite",
+      "unbounded_remote_build"
+    ]
+  },
+  "preserved_artifacts": [
+    {"id": "shell-input-owner-bytes", "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/js/misc/inputMethod.js", "baseline_check_id": "shell-input-owner", "policy": "immutable", "cursor_policy": "none", "rollback_policy": "preserve_exact_bytes"},
+    {"id": "lay-engine-owner-bytes", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/engine.rs", "baseline_check_id": "lay-engine-owner", "policy": "immutable", "cursor_policy": "none", "rollback_policy": "preserve_exact_bytes"},
+    {"id": "lay-ibus-event-owner-bytes", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/ibus_interface.rs", "baseline_check_id": "lay-ibus-event-owner", "policy": "immutable", "cursor_policy": "none", "rollback_policy": "preserve_exact_bytes"},
+    {"id": "mutter-profile-owner-bytes", "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-text-input.c", "baseline_check_id": "mutter-atomic-profile-owner", "policy": "immutable", "cursor_policy": "none", "rollback_policy": "preserve_exact_bytes"},
+    {"id": "installed-lay-preserved", "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine", "baseline_check_id": "installed-lay-engine", "policy": "immutable_before_deployment", "cursor_policy": "none", "rollback_policy": "preserve_exact_bytes"},
+    {"id": "installed-mutter-preserved", "path": "/usr/lib/x86_64-linux-gnu/libmutter-18.so.0.0.0", "baseline_check_id": "installed-mutter", "policy": "immutable_before_deployment", "cursor_policy": "none", "rollback_policy": "preserve_exact_bytes"},
+    {"id": "installed-shell-preserved", "path": "/usr/lib/gnome-shell/libshell-18.so", "baseline_check_id": "installed-shell", "policy": "immutable_before_deployment", "cursor_policy": "none", "rollback_policy": "preserve_exact_bytes"}
+  ],
+  "identity_contracts": [
+    {
+      "id": "paired-release-keycode-identity",
+      "producer": "Shell SUBMITTED FRAME_READY press keycode stored in the bounded release ledger",
+      "consumer": "the next matching physical release consumed at the Shell event boundary",
+      "comparison": "the release keycode equals the stored press keycode and consumes exactly one entry",
+      "test_id": "paired-release-keycode-parity"
+    },
+    {
+      "id": "paired-receipt-transaction-identity",
+      "producer": "Shell paired-submitted prior receipt transaction identity",
+      "consumer": "Lay pending FRAME_READY transition and exact speculative handled marker",
+      "comparison": "receipt transaction equals pending transaction before only that pending keycode marker is removed",
+      "test_id": "paired-receipt-transaction-parity"
+    },
+    {
+      "id": "modifier-route-separation",
+      "producer": "physical modifier press and release events",
+      "consumer": "unchanged Lay atomic modifier route",
+      "comparison": "modifier events never enter the Shell paired ledger and retain exact press/release cardinality",
+      "test_id": "modifier-route-parity"
+    },
+    {
+      "id": "remote-source-parity",
+      "producer": "local approved Shell, Lay and proof source bytes",
+      "consumer": "20-CPU remote proof build inputs",
+      "comparison": "exact SHA-256 equality before build",
+      "test_id": "remote-source-parity"
+    }
+  ],
+  "runtime_comparisons": [],
+  "invariants": [
+    {"id": "single-release-owner", "statement": "a paired FRAME_READY non-modifier release is consumed once in Shell with zero Lay RPC and zero native replay", "test_id": "single-release-owner-proof"},
+    {"id": "ledger-bounded-and-invalidated", "statement": "the release ledger is bounded by the queue/keycode budget and clears on context or focus invalidation", "test_id": "ledger-boundary-proof"},
+    {"id": "receipt-bound-marker-cleanup", "statement": "Lay removes only the exact pending handled marker after a transaction-matched paired-submitted receipt", "test_id": "paired-receipt-transaction-parity"},
+    {"id": "modifier-semantics-preserved", "statement": "modifier events bypass the paired ledger so double Shift remains owned by Lay", "test_id": "double-shift-undo-proof"},
+    {"id": "mutter-profile-preserved", "statement": "Mutter awaiting-surrounding admission and atomic profile bytes remain unchanged", "test_id": "mutter-profile-parity"},
+    {"id": "full-route-contract", "statement": "514 exact press commits and 514 local paired releases pass with zero release RPCs, zero native paired releases, zero legacy mutation calls, p99 at most 5 ms, max below 8 ms and zero leftovers", "test_id": "integrated-v24-full-route"},
+    {"id": "runtime-unmodified", "statement": "installed Lay, Mutter and Shell remain byte-identical before deployment preflight", "test_id": "installed-runtime-parity"}
+  ],
+  "state_machine": {
+    "initial_state": "PAPER_APPROVED",
+    "steps": [
+      {
+        "id": "edit-proof-sources",
+        "from": "PAPER_APPROVED",
+        "to": "SOURCE_EDITED",
+        "mutates": true,
+        "failure_state": "SOURCE_EDIT_FAILED",
+        "cleanup": "restore only the four scoped source/proof files from their pinned baselines",
+        "preserves": ["shell-input-owner-bytes", "lay-engine-owner-bytes", "lay-ibus-event-owner-bytes", "mutter-profile-owner-bytes", "installed-lay-preserved", "installed-mutter-preserved", "installed-shell-preserved"],
+        "test_id": "source-edit-fault"
+      },
+      {
+        "id": "sync-remote-sources",
+        "from": "SOURCE_EDITED",
+        "to": "REMOTE_SOURCE_SYNCED",
+        "mutates": true,
+        "failure_state": "REMOTE_SYNC_FAILED",
+        "cleanup": "reject partial or hash-mismatched remote files before any build",
+        "preserves": ["mutter-profile-owner-bytes", "installed-lay-preserved", "installed-mutter-preserved", "installed-shell-preserved"],
+        "test_id": "remote-sync-fault"
+      },
+      {
+        "id": "build-remote-proof-artifacts",
+        "from": "REMOTE_SOURCE_SYNCED",
+        "to": "REMOTE_BUILT",
+        "mutates": true,
+        "failure_state": "REMOTE_BUILD_FAILED",
+        "cleanup": "discard only partial remote build outputs and retain source hashes and failure logs",
+        "preserves": ["installed-lay-preserved", "installed-mutter-preserved", "installed-shell-preserved"],
+        "test_id": "remote-build-fault"
+      },
+      {
+        "id": "run-focused-proofs",
+        "from": "REMOTE_BUILT",
+        "to": "FOCUSED_PROVEN",
+        "mutates": true,
+        "failure_state": "FOCUSED_PROOF_FAILED",
+        "cleanup": "terminate proof-owned processes and retain complete failed output",
+        "preserves": ["installed-lay-preserved", "installed-mutter-preserved", "installed-shell-preserved"],
+        "test_id": "focused-proof-fault"
+      },
+      {
+        "id": "run-v24-full-route",
+        "from": "FOCUSED_PROVEN",
+        "to": "V24_AGGREGATE_PROVEN",
+        "mutates": true,
+        "failure_state": "FULL_ROUTE_FAILED",
+        "cleanup": "terminate proof-owned processes, remove only the proof socket and retain the complete denominator",
+        "preserves": ["installed-lay-preserved", "installed-mutter-preserved", "installed-shell-preserved"],
+        "test_id": "full-route-fault"
+      }
+    ],
+    "terminal_states": ["V24_AGGREGATE_PROVEN", "SOURCE_EDIT_FAILED", "REMOTE_SYNC_FAILED", "REMOTE_BUILD_FAILED", "FOCUSED_PROOF_FAILED", "FULL_ROUTE_FAILED"]
+  },
+  "tests": [
+    {"id": "source-edit-fault", "kind": "fault_injection", "expected": "failed scoped edit changes no preserved owner or installed runtime"},
+    {"id": "remote-sync-fault", "kind": "fault_injection", "expected": "partial or hash-mismatched remote sources are refused before build"},
+    {"id": "remote-build-fault", "kind": "fault_injection", "expected": "failed guarded remote build grants no proof or deployment authority"},
+    {"id": "focused-proof-fault", "kind": "fault_injection", "expected": "failed focused proof leaves no proof-owned process and retains evidence"},
+    {"id": "full-route-fault", "kind": "fault_injection", "expected": "failed full route cleans proof-owned processes and preserves the failed denominator"},
+    {"id": "paired-release-keycode-parity", "kind": "parity", "expected": "only an exact matching keycode consumes one ledger entry; a mismatch, duplicate or absent entry consumes none"},
+    {"id": "paired-receipt-transaction-parity", "kind": "parity", "expected": "only a transaction-matched paired-submitted receipt removes the exact pending keycode marker before commit"},
+    {"id": "modifier-route-parity", "kind": "parity", "expected": "Shift, Control, Alt, Meta, Super, Hyper and lock key events never populate or consume the paired ledger"},
+    {"id": "single-release-owner-proof", "kind": "unit", "expected": "a submitted FRAME_READY press consumes its matching release locally with no RPC or native replay"},
+    {"id": "ledger-boundary-proof", "kind": "unit", "expected": "ledger capacity is bounded, duplicate press keycodes do not grow it and invalidation clears it"},
+    {"id": "double-shift-undo-proof", "kind": "integration", "expected": "autocorrect followed immediately by physical double Shift restores the exact original token"},
+    {"id": "mutter-profile-parity", "kind": "parity", "expected": "Mutter atomic profile and awaiting-surrounding owner bytes remain unchanged"},
+    {"id": "remote-source-parity", "kind": "parity", "expected": "local and remote approved Shell, Lay and proof source hashes match before guarded builds"},
+    {"id": "integrated-v24-full-route", "kind": "integration", "expected": "514 commits, 514 paired local releases, zero release RPCs, zero native paired releases, zero legacy calls, p99 at most 5 ms, max below 8 ms and leftovers 0/0"},
+    {"id": "installed-runtime-parity", "kind": "parity", "expected": "installed Lay, Mutter and Shell hashes remain byte-identical before deployment preflight"}
+  ]
+}

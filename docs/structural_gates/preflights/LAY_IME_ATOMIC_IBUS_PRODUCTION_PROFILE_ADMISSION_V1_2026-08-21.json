@@ -1,0 +1,202 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_ATOMIC_IBUS_PRODUCTION_PROFILE_ADMISSION_V1_2026-08-21",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "ibus-codec-source",
+      "kind": "file",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/ibusatomicframe.c",
+      "expect": {"mode": "0664", "size_bytes": 59091, "sha256": "c489cbbf189b67642877d7eca9ab05b1936fb38acad85d06c9e36d49e7e15b05"}
+    },
+    {
+      "id": "ibus-codec-header",
+      "kind": "file",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/ibusatomicframeprivate.h",
+      "expect": {"mode": "0664", "size_bytes": 15556, "sha256": "33d6a5f09c75302381d7ac415b07cedbc5e2c75c83d6167d18cfc173bea6c90d"}
+    },
+    {
+      "id": "ibus-codec-proof",
+      "kind": "file",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/ibus-atomic-frame.c",
+      "expect": {"mode": "0664", "size_bytes": 58924, "sha256": "8c3ffcd9e72012d6196ef1cf524c5102efad585cddb74406ce78b6deb5e25f14"}
+    },
+    {
+      "id": "mutter-profile-producer",
+      "kind": "file",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-text-input.c",
+      "expect": {"mode": "0664", "size_bytes": 52566, "sha256": "99debf2aca19cccd22ecd7b59e0629cbbb39f76ee4b7f5924ac45aededbc38f2"}
+    },
+    {
+      "id": "architecture-paper",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/ime-backend-atomic-frame-v2-2026-08-20.md",
+      "expect": {"mode": "0664", "size_bytes": 115740, "sha256": "de636fba901d6f690f935088a7e7e7ed017babc548e4dc9c7ff1e494c7e85393"}
+    },
+    {
+      "id": "mutter-owner-proof",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/mutter-slice3b-implementation-proof-v1.json",
+      "expect": {"mode": "0664", "size_bytes": 7273, "sha256": "7a935e8fc62577b0a22cb44d307675ec3a199244fa6baa5fce010ae2f2863716"}
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "add-production-profile-constants", "kind": "source_edit"},
+      {"id": "admit-exact-production-profile", "kind": "source_edit"},
+      {"id": "add-normal-private-admission-proof", "kind": "source_edit"},
+      {"id": "sync-ibus-source-remotely", "kind": "remote_filesystem_write"},
+      {"id": "build-normal-private-proof-remotely", "kind": "remote_build"},
+      {"id": "record-admission-result", "kind": "filesystem_write"}
+    ],
+    "forbidden": [
+      "local_build",
+      "runtime_deployment",
+      "installed_file_write",
+      "restart_or_signal_ibus",
+      "restart_gnome_shell",
+      "physical_input_or_text_mutation",
+      "wildcard_profile_admission",
+      "private_profile_in_normal_build",
+      "second_mutation_owner",
+      "legacy_fallback_change"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "pinned-ibus-codec-source",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/ibusatomicframe.c",
+      "sha256": "c489cbbf189b67642877d7eca9ab05b1936fb38acad85d06c9e36d49e7e15b05",
+      "forbidden_effect_patterns": [
+        {"effect": "wildcard_profile_admission", "regex": "return\\s+TRUE\\s*;.{0,120}(?:profile|record)"},
+        {"effect": "installed_file_write", "regex": "(?:replace_contents|set_contents).{0,100}/(?:usr|home/ubu/[.]local)"},
+        {"effect": "legacy_fallback_change", "regex": "atomicProductionFallbackToLegacy|legacyFallbackForProductionAtomic"},
+        {"effect": "local_build", "regex": "(?:cargo|meson|ninja|make)\\s"},
+        {"effect": "private_profile_in_normal_build", "regex": "admitPrivateProfileInNormalBuild|privateProfileWithoutProofFlag"},
+        {"effect": "restart_gnome_shell", "regex": "(?:restart|kill|signal).{0,80}gnome-shell"},
+        {"effect": "second_mutation_owner", "regex": "ibusAtomicNativeMutator|ibusAtomicReplayOwner"},
+        {"effect": "runtime_deployment", "regex": "(?:systemctl|dpkg\\s+-i|apt(?:-get)?\\s+install)"},
+        {"effect": "physical_input_or_text_mutation", "regex": "/dev/(?:input|uinput)|(?:ydotool|xdotool|wtype)\\b"},
+        {"effect": "restart_or_signal_ibus", "regex": "(?:restart|kill|signal).{0,80}ibus(?:-daemon)?"}
+      ]
+    },
+    {
+      "id": "pinned-ibus-codec-header",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/ibusatomicframeprivate.h",
+      "sha256": "33d6a5f09c75302381d7ac415b07cedbc5e2c75c83d6167d18cfc173bea6c90d",
+      "forbidden_effect_patterns": [
+        {"effect": "runtime_deployment", "regex": "(?:systemctl|dpkg\\s+-i|apt(?:-get)?\\s+install)"}
+      ]
+    },
+    {
+      "id": "pinned-ibus-codec-proof",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/ibus-atomic-frame.c",
+      "sha256": "8c3ffcd9e72012d6196ef1cf524c5102efad585cddb74406ce78b6deb5e25f14",
+      "forbidden_effect_patterns": [
+        {"effect": "runtime_deployment", "regex": "(?:systemctl|dpkg\\s+-i|apt(?:-get)?\\s+install)"}
+      ]
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "production-profile-identity",
+      "producer": "MetaWaylandTextInputFocus production profile",
+      "consumer": "IBus production admission table",
+      "comparison": "protocol, adapter kind, transaction kind, build digest, maximum mask/count and guarantee flags",
+      "test_id": "production-profile-parity"
+    },
+    {
+      "id": "private-profile-isolation",
+      "producer": "IBus private proof build flag",
+      "consumer": "IBus private admission branch",
+      "comparison": "private profile accepted only when the compile-time private proof flag is present",
+      "test_id": "normal-private-matrix"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "exact-production-only",
+      "statement": "normal IBus admits the exact production profile and no private, unknown or enlarged profile",
+      "test_id": "normal-private-matrix"
+    },
+    {
+      "id": "producer-consumer-parity",
+      "statement": "IBus production constants and digest equal the unchanged Mutter producer vocabulary",
+      "test_id": "production-profile-parity"
+    },
+    {
+      "id": "no-authority-expansion",
+      "statement": "admission recognizes a profile but adds no effect, replay or mutation owner",
+      "test_id": "source-scope"
+    }
+  ],
+  "preserved_artifacts": [
+    {
+      "id": "mutter-profile-source",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-text-input.c",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "IBus admission cannot rewrite the producer profile",
+      "baseline_check_id": "mutter-profile-producer"
+    },
+    {
+      "id": "mutter-slice3b-proof",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/mutter-slice3b-implementation-proof-v1.json",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "retain the isolated Mutter proof without broadening its verdict",
+      "baseline_check_id": "mutter-owner-proof"
+    },
+    {
+      "id": "architecture-contract",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/ime-backend-atomic-frame-v2-2026-08-20.md",
+      "policy": "read_only_during_code_then_append_measured_result",
+      "rollback_policy": "retain the mismatch finding and every measured result",
+      "baseline_check_id": "architecture-paper"
+    }
+  ],
+  "runtime_comparisons": [],
+  "state_machine": {
+    "initial_state": "PREFLIGHT_REQUIRED",
+    "terminal_states": ["RECORDED", "EDIT_FAILED_RETAINED", "REMOTE_BUILD_FAILED_RETAINED", "EVIDENCE_FAILED_RETAINED"],
+    "steps": [
+      {
+        "id": "implement-exact-admission",
+        "from": "PREFLIGHT_REQUIRED",
+        "to": "SOURCE_READY",
+        "mutates": true,
+        "failure_state": "EDIT_FAILED_RETAINED",
+        "cleanup": "retain scoped source diff; touch no installed file or process",
+        "preserves": ["mutter-profile-source", "mutter-slice3b-proof", "architecture-contract"],
+        "test_id": "source-scope"
+      },
+      {
+        "id": "remote-build-normal-private",
+        "from": "SOURCE_READY",
+        "to": "PROOF_PASSED",
+        "mutates": true,
+        "failure_state": "REMOTE_BUILD_FAILED_RETAINED",
+        "cleanup": "terminate only task-owned remote jobs and retain logs; install nothing",
+        "preserves": ["mutter-profile-source", "mutter-slice3b-proof", "architecture-contract"],
+        "test_id": "remote-build-fault"
+      },
+      {
+        "id": "record-production-admission-proof",
+        "from": "PROOF_PASSED",
+        "to": "RECORDED",
+        "mutates": true,
+        "failure_state": "EVIDENCE_FAILED_RETAINED",
+        "cleanup": "retain raw logs and reject Shell dependency until receipt and paper agree",
+        "preserves": ["mutter-profile-source", "mutter-slice3b-proof"],
+        "test_id": "evidence-write-fault"
+      }
+    ]
+  },
+  "tests": [
+    {"id": "source-scope", "kind": "fault_injection", "expected": "only IBus profile constants, exact admission predicate and focused codec proof change"},
+    {"id": "production-profile-parity", "kind": "parity", "expected": "production profile bytes equal the unchanged Mutter Section 21.14.2 producer"},
+    {"id": "normal-private-matrix", "kind": "parity", "expected": "normal accepts production and rejects private; private accepts production and private; both reject unknown or enlarged records"},
+    {"id": "remote-build-fault", "kind": "fault_injection", "expected": "remote build failure stops before Shell implementation and changes no installed runtime"},
+    {"id": "evidence-write-fault", "kind": "fault_injection", "expected": "missing receipt or architecture result blocks recorded dependency authority"}
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "full-route-driver",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh",
+      "sha256": "fe108c02538b9f532eb24dd3cf12bb432ed9bafc3a51c1ce10a46f62b3ffa028",
+      "size_bytes": 13406
+    },
+    {
+      "exists": true,
+      "id": "shell-proof",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/shell/atomicInputMethodRoute.js",
+      "sha256": "932af7eddb7eb0c931a590ced704a4ee960ffdcb5a0601a318598371bba38b92",
+      "size_bytes": 16911
+    },
+    {
+      "exists": true,
+      "id": "mutter-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-text-input.c",
+      "sha256": "b8a439a1ab9375016e899b9799b8272b24e00001f3edb928543e0db83531ad46",
+      "size_bytes": 52775
+    },
+    {
+      "exists": true,
+      "id": "installed-engine",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a",
+      "size_bytes": 6423488
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 4,
+    "forbidden_side_effect_kinds": [
+      "installed_runtime_mutation",
+      "production_session_mode_change",
+      "skip_input_denominator",
+      "weaken_engine_admission"
+    ],
+    "identity_contracts": 2,
+    "invariants": 3,
+    "planned_side_effect_kinds": [
+      "ephemeral_process_start",
+      "remote_filesystem_write",
+      "source_edit"
+    ],
+    "preserved_artifacts": 3,
+    "runtime_comparisons": 0,
+    "source_checks": 1,
+    "tests": 6
+  },
+  "manifest_sha256": "17258e7ca56f3e4f7f6116a2e5bf7ae39bf638948ccb601be665fd383b70fbed",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-driver",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh",
+      "sha256": "fe108c02538b9f532eb24dd3cf12bb432ed9bafc3a51c1ce10a46f62b3ffa028",
+      "size_bytes": 13406
+    }
+  ],
+  "task_id": "LAY_IME_ATOMIC_PROOF_MINIMAL_SESSION_MODE_IMPLEMENTATION_V25_V4_2026-08-22",
+  "verdict": "READY_TO_IMPLEMENT"
+}

@@ -1,0 +1,111 @@
+{
+  "schema": "lay.ime.atomic-exact-layout-lease.post-resource-proof-receipt.v1",
+  "task_id": "LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_V27_2026-08-22",
+  "created_at": "2026-08-22",
+  "remote": "e@192.168.3.94:/home/e/projects/lay-v27-proof",
+  "verdict": "P2B_P3_POST_RESOURCE_P7_COMPONENT_RESOURCE_PASS_NOT_PROMOTED",
+  "runtime_authority_changed": false,
+  "installed_runtime": "Lay 1.0.33",
+  "implementation": {
+    "english_bank": "sorted Box<[Box<str>]>",
+    "lookup": "binary_search",
+    "corpus_reduced": false,
+    "probabilistic_membership": false,
+    "english_entries": 139370,
+    "protection_entries": 266,
+    "logical_resident_bytes": 3430872,
+    "authority_fingerprint": 343338190052183766
+  },
+  "rejected_variants": [
+    {
+      "representation": "HashSet<String>",
+      "rss_delta_kib": 16136,
+      "rss_budget_kib": 14336,
+      "verdict": "REJECTED_RESOURCE_FAIL"
+    },
+    {
+      "representation": "HashSet<Box<str>>",
+      "maximum_rss_delta_kib": 14408,
+      "rss_budget_kib": 14336,
+      "verdict": "REJECTED_RESOURCE_FAIL"
+    }
+  ],
+  "release_resource": {
+    "proof_binary": {
+      "path": "/home/e/projects/lay-v27-proof/target/release/deps/lay-55e4e3b70c5534ce",
+      "sha256": "ea9a7675e30f8f7057209756ef72c11f4135fc90eb354dd02dbcba73f9615792"
+    },
+    "rss_budget_kib": 14336,
+    "single_owner_pss_budget_kib": 16384,
+    "repeat_initialization_pss_anon_budget_kib": 256,
+    "compile_run": {
+      "rss_delta_kib": 9480,
+      "pss_delta_kib": 9484,
+      "pss_anon_delta_kib": 7952,
+      "repeat_pss_anon_delta_kib": 4
+    },
+    "isolated_repeat_deltas_kib": [
+      { "rss": 9260, "pss": 9264, "pss_anon": 7952, "repeat_pss_anon": 4 },
+      { "rss": 9200, "pss": 9203, "pss_anon": 7952, "repeat_pss_anon": 4 },
+      { "rss": 9100, "pss": 9104, "pss_anon": 7952, "repeat_pss_anon": 4 },
+      { "rss": 9144, "pss": 9147, "pss_anon": 7952, "repeat_pss_anon": 4 },
+      { "rss": 9144, "pss": 9143, "pss_anon": 7952, "repeat_pss_anon": 4 }
+    ],
+    "maximum_observed_kib": {
+      "rss": 9480,
+      "pss": 9484,
+      "pss_anon": 7952,
+      "repeat_pss_anon": 4
+    },
+    "verdict": "PASS"
+  },
+  "post_resource_oracle": {
+    "scope": "full",
+    "rows": 243748,
+    "divergences": 0,
+    "baseline_rows": "/home/e/projects/lay-v27-proof/output/oracle-v27/baseline.rows.tsv",
+    "runtime_rows": "/home/e/projects/lay-v27-proof/output/oracle-v27/runtime-full-post-resource.rows.tsv",
+    "baseline_sha256": "194fe17aea00cf11129a3be838b3255f921db09d1608fa16facbc017867ef47a",
+    "runtime_sha256": "194fe17aea00cf11129a3be838b3255f921db09d1608fa16facbc017867ef47a",
+    "byte_identical": true,
+    "verdict": "PASS"
+  },
+  "post_resource_component_latency": {
+    "proof_binary": {
+      "path": "/home/e/projects/lay-v27-proof/target/release/deps/lay_ibus_engine-f685c25f01df2389",
+      "sha256": "416d3c07e738ebbef044b2c28ceb0bd6bf588be71ae5f09fb5bfdf836d83cab2"
+    },
+    "printable_exact_miss": { "n": 2048, "p99_us": 5, "budget_us": 250 },
+    "printable_exact_hit": { "n": 2048, "p99_us": 11, "budget_us": 2000 },
+    "space_exact_lookup": { "n": 2048, "p99_us": 0, "budget_us": 1000 },
+    "space_full_timeout": { "n": 128, "p99_us": 3692 },
+    "space_full_completion": { "n": 128, "p99_us": 620 },
+    "space_full_wait": { "n": 256, "p99_us": 3692, "budget_us": 4000 },
+    "concurrently_busy_stale_full_worker": true,
+    "verdict": "PASS"
+  },
+  "source_sha256": {
+    "src/word_recognizer/lexicon.rs": "af6de473d016cef0714c005e31fdd4e37b75aaa6c9448cdafed900079dee6f19",
+    "src/exact_layout_authority/proof.rs": "c64e6eb8ba744dfa758a6d23b5c90c72ebf096a2d3f5a687b2e9a60f943e66d9",
+    "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs": "d9459e914c9decb84355ba2c2ba32f5a64794b1e157beae262a01e1bf651baa9",
+    "src/bin/lay_ibus_engine/space_autocorrect_prefetch/proof.rs": "fc918e095a202ac207814924e79c65cedb988297263b0978d3e3d61a61910e48"
+  },
+  "commands": [
+    "scripts/cargo-guard.sh test --release --lib v27_exact_en_guard_controlled_resource_budget -- --nocapture --test-threads=1",
+    "target/release/deps/lay-55e4e3b70c5534ce exact_layout_authority::proof::v27_exact_en_guard_controlled_resource_budget --exact --nocapture --test-threads=1 (five isolated repeats)",
+    "LAY_V27_RUNTIME_SCOPE=full target/release/deps/lay-55e4e3b70c5534ce exact_layout_authority::proof::v27_independent_oracle_runtime_parity --exact --ignored --nocapture --test-threads=1",
+    "cmp output/oracle-v27/baseline.rows.tsv output/oracle-v27/runtime-full-post-resource.rows.tsv",
+    "scripts/cargo-guard.sh test --release --bin lay-ibus-engine v27_component_latency_denominators -- --nocapture --test-threads=1"
+  ],
+  "tested": [
+    "exact EN guard release memory delta and repeat allocation stability",
+    "post-resource full runtime parity against the independent 243748-row oracle",
+    "post-resource component latency with a concurrently busy stale FullField worker"
+  ],
+  "not_tested": [
+    "fixed staged 514-event RPC route",
+    "physical compositor double-Shift undo",
+    "installed desktop runtime",
+    "post-install aggregate active-Lay PSS"
+  ]
+}

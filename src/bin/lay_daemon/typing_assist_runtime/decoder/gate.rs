@@ -68,7 +68,7 @@ fn decode_input_gate_tail(
 
 fn word_boundary_correction_mode(nanda_autocorrect: bool) -> lay::correction_core::CorrectionMode {
     if nanda_autocorrect {
-        lay::correction_core::CorrectionMode::DeterministicThenNanda
+        lay::correction_core::CorrectionMode::NandaOnly
     } else {
         lay::correction_core::CorrectionMode::DeterministicOnly
     }

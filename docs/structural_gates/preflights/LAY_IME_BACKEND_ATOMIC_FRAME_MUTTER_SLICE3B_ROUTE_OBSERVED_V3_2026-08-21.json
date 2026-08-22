@@ -1,0 +1,663 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "observed_source",
+  "nodes": [
+    {
+      "id": "clutter_atomic_lease",
+      "role": "producer",
+      "evidence": {
+        "path": "clutter/clutter/clutter-input-method.c",
+        "line": 625,
+        "contains": "priv->active_atomic_lease = frozen;"
+      }
+    },
+    {
+      "id": "meta_profile_gate",
+      "role": "authorization_owner",
+      "evidence": {
+        "path": "src/wayland/meta-wayland-text-input.c",
+        "line": 579,
+        "contains": "if (!atomic_context_is_admitted (text_input, NULL))"
+      }
+    },
+    {
+      "id": "meta_atomic_prevalidation",
+      "role": "evidence_owner",
+      "evidence": {
+        "path": "src/wayland/meta-wayland-text-input.c",
+        "line": 626,
+        "contains": "prepare_atomic_frame (MetaWaylandTextInput"
+      }
+    },
+    {
+      "id": "meta_atomic_emitter",
+      "role": "mutation_owner",
+      "evidence": {
+        "path": "src/wayland/meta-wayland-text-input.c",
+        "line": 769,
+        "contains": "zwp_text_input_v3_send_delete_surrounding_text ("
+      }
+    },
+    {
+      "id": "done_submission_receipt",
+      "role": "observer",
+      "evidence": {
+        "path": "src/wayland/meta-wayland-text-input.c",
+        "line": 788,
+        "contains": "zwp_text_input_v3_send_done (prepared.resource,"
+      }
+    },
+    {
+      "id": "surrounding_postcondition",
+      "role": "observer",
+      "evidence": {
+        "path": "src/tests/wayland-text-input-atomic-frame-tests.c",
+        "line": 303,
+        "contains": "if (case_has_commit (test_case))"
+      }
+    },
+    {
+      "id": "slice3b_protocol_proof",
+      "role": "proof_owner",
+      "evidence": {
+        "path": "src/tests/wayland-text-input-atomic-frame-tests.c",
+        "line": 273,
+        "contains": "test_canonical_vectors (void)"
+      }
+    },
+    {
+      "id": "marked_replay_copy",
+      "role": "producer",
+      "evidence": {
+        "path": "clutter/clutter/clutter-input-method.c",
+        "line": 780,
+        "contains": "copy = clutter_event_key_new (event_type,"
+      }
+    },
+    {
+      "id": "meta_replay_gate",
+      "role": "authorization_owner",
+      "evidence": {
+        "path": "src/wayland/meta-wayland-text-input.c",
+        "line": 815,
+        "contains": "if ((event_type != CLUTTER_KEY_PRESS &&"
+      }
+    },
+    {
+      "id": "wayland_keyboard_dispatch",
+      "role": "mutation_owner",
+      "evidence": {
+        "path": "src/wayland/meta-wayland-text-input.c",
+        "line": 821,
+        "contains": "if (!meta_wayland_seat_handle_event (text_input->seat, event))"
+      }
+    },
+    {
+      "id": "replay_receipt",
+      "role": "observer",
+      "evidence": {
+        "path": "src/wayland/meta-wayland-text-input.c",
+        "line": 824,
+        "contains": "return CLUTTER_INPUT_ATOMIC_REPLAY_REPLAYED_TO_SAME_FOCUS;"
+      }
+    },
+    {
+      "id": "legacy_im_event",
+      "role": "producer",
+      "evidence": {
+        "path": "src/wayland/meta-wayland-text-input.c",
+        "line": 521,
+        "contains": "meta_wayland_text_input_focus_commit_text (ClutterInputFocus *focus,"
+      }
+    },
+    {
+      "id": "legacy_pending_classifier",
+      "role": "evidence_owner",
+      "evidence": {
+        "path": "src/wayland/meta-wayland-text-input.c",
+        "line": 233,
+        "contains": "pending_output_has_legacy_mutation (MetaWaylandTextInput *text_input)"
+      }
+    },
+    {
+      "id": "legacy_wayland_emitter",
+      "role": "mutation_owner",
+      "evidence": {
+        "path": "src/wayland/meta-wayland-text-input.c",
+        "line": 534,
+        "contains": "zwp_text_input_v3_send_commit_string (resource, text);"
+      }
+    },
+    {
+      "id": "legacy_done_receipt",
+      "role": "observer",
+      "evidence": {
+        "path": "src/wayland/meta-wayland-text-input.c",
+        "line": 415,
+        "contains": "zwp_text_input_v3_send_done (resource,"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "exec-atomic-lease-profile",
+      "from": "clutter_atomic_lease",
+      "relation": "delegates",
+      "to": "meta_profile_gate",
+      "events": [
+        "atomic_frame_submitted",
+        "atomic_frame_refused"
+      ],
+      "evidence": {
+        "path": "clutter/clutter/clutter-input-method.c",
+        "line": 611,
+        "contains": "!clutter_input_focus_query_atomic_profile (priv->focus, &frozen))"
+      }
+    },
+    {
+      "id": "exec-atomic-profile-prevalidation",
+      "from": "meta_profile_gate",
+      "relation": "delegates",
+      "to": "meta_atomic_prevalidation",
+      "events": [
+        "atomic_frame_submitted"
+      ],
+      "evidence": {
+        "path": "src/wayland/meta-wayland-text-input.c",
+        "line": 762,
+        "contains": "if (!prepare_atomic_frame (text_input, lease, frame, &prepared))"
+      }
+    },
+    {
+      "id": "exec-atomic-prevalidation-emitter",
+      "from": "meta_atomic_prevalidation",
+      "relation": "delegates",
+      "to": "meta_atomic_emitter",
+      "events": [
+        "atomic_frame_submitted"
+      ],
+      "evidence": {
+        "path": "src/wayland/meta-wayland-text-input.c",
+        "line": 769,
+        "contains": "zwp_text_input_v3_send_delete_surrounding_text ("
+      }
+    },
+    {
+      "id": "exec-atomic-emitter-receipt",
+      "from": "meta_atomic_emitter",
+      "relation": "delegates",
+      "to": "done_submission_receipt",
+      "events": [
+        "atomic_frame_submitted"
+      ],
+      "evidence": {
+        "path": "src/wayland/meta-wayland-text-input.c",
+        "line": 788,
+        "contains": "zwp_text_input_v3_send_done (prepared.resource,"
+      }
+    },
+    {
+      "id": "exec-atomic-refusal-receipt",
+      "from": "meta_profile_gate",
+      "relation": "delegates",
+      "to": "done_submission_receipt",
+      "events": [
+        "atomic_frame_refused"
+      ],
+      "evidence": {
+        "path": "src/wayland/meta-wayland-text-input.c",
+        "line": 748,
+        "contains": "return CLUTTER_INPUT_ATOMIC_SUBMIT_REFUSED_ZERO_EFFECT;"
+      }
+    },
+    {
+      "id": "authority-atomic-evidence-profile",
+      "from": "meta_atomic_prevalidation",
+      "relation": "passes_to",
+      "to": "meta_profile_gate",
+      "events": [
+        "atomic_frame_submitted"
+      ],
+      "evidence": {
+        "path": "src/wayland/meta-wayland-text-input.c",
+        "line": 638,
+        "contains": "if (!lease_matches_current_atomic_profile (text_input,"
+      }
+    },
+    {
+      "id": "authority-atomic-profile-emitter",
+      "from": "meta_profile_gate",
+      "relation": "authorizes",
+      "to": "meta_atomic_emitter",
+      "events": [
+        "atomic_frame_submitted"
+      ],
+      "evidence": {
+        "path": "src/wayland/meta-wayland-text-input.c",
+        "line": 762,
+        "contains": "if (!prepare_atomic_frame (text_input, lease, frame, &prepared))"
+      }
+    },
+    {
+      "id": "observe-atomic-postcondition",
+      "from": "done_submission_receipt",
+      "relation": "observes",
+      "to": "surrounding_postcondition",
+      "events": [
+        "atomic_frame_submitted"
+      ],
+      "evidence": {
+        "path": "src/tests/wayland-text-input-atomic-frame-tests.c",
+        "line": 303,
+        "contains": "if (case_has_commit (test_case))"
+      }
+    },
+    {
+      "id": "proof-atomic-submission",
+      "from": "surrounding_postcondition",
+      "relation": "proves",
+      "to": "slice3b_protocol_proof",
+      "events": [
+        "atomic_frame_submitted"
+      ],
+      "evidence": {
+        "path": "src/tests/wayland-text-input-atomic-frame-tests.c",
+        "line": 293,
+        "contains": "g_assert_cmpint (clutter_input_method_submit_atomic_frame ("
+      }
+    },
+    {
+      "id": "proof-atomic-refusal",
+      "from": "done_submission_receipt",
+      "relation": "proves",
+      "to": "slice3b_protocol_proof",
+      "events": [
+        "atomic_frame_refused"
+      ],
+      "evidence": {
+        "path": "src/tests/wayland-text-input-atomic-frame-tests.c",
+        "line": 350,
+        "contains": "g_assert_false (clutter_input_method_freeze_atomic_lease ("
+      }
+    },
+    {
+      "id": "exec-replay-copy-gate",
+      "from": "marked_replay_copy",
+      "relation": "delegates",
+      "to": "meta_replay_gate",
+      "events": [
+        "native_key_replayed"
+      ],
+      "evidence": {
+        "path": "clutter/clutter/clutter-input-method.c",
+        "line": 794,
+        "contains": "result = clutter_input_focus_replay_native_key (focus, lease, copy);"
+      }
+    },
+    {
+      "id": "exec-replay-gate-keyboard",
+      "from": "meta_replay_gate",
+      "relation": "delegates",
+      "to": "wayland_keyboard_dispatch",
+      "events": [
+        "native_key_replayed"
+      ],
+      "evidence": {
+        "path": "src/wayland/meta-wayland-text-input.c",
+        "line": 821,
+        "contains": "if (!meta_wayland_seat_handle_event (text_input->seat, event))"
+      }
+    },
+    {
+      "id": "exec-replay-keyboard-receipt",
+      "from": "wayland_keyboard_dispatch",
+      "relation": "delegates",
+      "to": "replay_receipt",
+      "events": [
+        "native_key_replayed"
+      ],
+      "evidence": {
+        "path": "src/wayland/meta-wayland-text-input.c",
+        "line": 824,
+        "contains": "return CLUTTER_INPUT_ATOMIC_REPLAY_REPLAYED_TO_SAME_FOCUS;"
+      }
+    },
+    {
+      "id": "authority-replay-gate-keyboard",
+      "from": "meta_replay_gate",
+      "relation": "authorizes",
+      "to": "wayland_keyboard_dispatch",
+      "events": [
+        "native_key_replayed"
+      ],
+      "evidence": {
+        "path": "src/wayland/meta-wayland-text-input.c",
+        "line": 821,
+        "contains": "if (!meta_wayland_seat_handle_event (text_input->seat, event))"
+      }
+    },
+    {
+      "id": "proof-replay",
+      "from": "replay_receipt",
+      "relation": "proves",
+      "to": "slice3b_protocol_proof",
+      "events": [
+        "native_key_replayed"
+      ],
+      "evidence": {
+        "path": "src/tests/wayland-text-input-atomic-frame-tests.c",
+        "line": 503,
+        "contains": "g_assert_cmpint (clutter_input_method_replay_native_key ("
+      }
+    },
+    {
+      "id": "exec-legacy-event-classifier",
+      "from": "legacy_im_event",
+      "relation": "delegates",
+      "to": "legacy_pending_classifier",
+      "events": [
+        "legacy_im_mutation"
+      ],
+      "evidence": {
+        "path": "src/wayland/meta-wayland-text-input.c",
+        "line": 528,
+        "contains": "mark_pending_output (text_input,"
+      }
+    },
+    {
+      "id": "exec-legacy-classifier-emitter",
+      "from": "legacy_pending_classifier",
+      "relation": "delegates",
+      "to": "legacy_wayland_emitter",
+      "events": [
+        "legacy_im_mutation"
+      ],
+      "evidence": {
+        "path": "src/wayland/meta-wayland-text-input.c",
+        "line": 534,
+        "contains": "zwp_text_input_v3_send_commit_string (resource, text);"
+      }
+    },
+    {
+      "id": "exec-legacy-emitter-done",
+      "from": "legacy_wayland_emitter",
+      "relation": "delegates",
+      "to": "legacy_done_receipt",
+      "events": [
+        "legacy_im_mutation"
+      ],
+      "evidence": {
+        "path": "src/wayland/meta-wayland-text-input.c",
+        "line": 537,
+        "contains": "meta_wayland_text_input_focus_defer_done (focus);"
+      }
+    },
+    {
+      "id": "authority-legacy-classifier-emitter",
+      "from": "legacy_pending_classifier",
+      "relation": "passes_to",
+      "to": "legacy_wayland_emitter",
+      "events": [
+        "legacy_im_mutation"
+      ],
+      "evidence": {
+        "path": "src/wayland/meta-wayland-text-input.c",
+        "line": 528,
+        "contains": "mark_pending_output (text_input,"
+      }
+    },
+    {
+      "id": "proof-legacy",
+      "from": "legacy_done_receipt",
+      "relation": "proves",
+      "to": "slice3b_protocol_proof",
+      "events": [
+        "legacy_im_mutation"
+      ],
+      "evidence": {
+        "path": "src/tests/wayland-text-input-atomic-frame-tests.c",
+        "line": 420,
+        "contains": "g_assert_false (clutter_input_method_freeze_atomic_lease ("
+      }
+    }
+  ],
+  "routes": [
+    {
+      "id": "atomic-frame-execution",
+      "event": "atomic_frame_submitted",
+      "kind": "execution",
+      "entry": "clutter_atomic_lease",
+      "terminal": "done_submission_receipt",
+      "required_roles": [
+        "producer",
+        "authorization_owner",
+        "evidence_owner",
+        "mutation_owner",
+        "observer"
+      ],
+      "path_cardinality": [
+        {
+          "from": "clutter_atomic_lease",
+          "to": "done_submission_receipt",
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "atomic-frame-authority",
+      "event": "atomic_frame_submitted",
+      "kind": "authority",
+      "entry": "meta_atomic_prevalidation",
+      "terminal": "meta_atomic_emitter",
+      "required_roles": [
+        "evidence_owner",
+        "authorization_owner",
+        "mutation_owner"
+      ],
+      "path_cardinality": [
+        {
+          "from": "meta_atomic_prevalidation",
+          "to": "meta_atomic_emitter",
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "atomic-refusal-execution",
+      "event": "atomic_frame_refused",
+      "kind": "execution",
+      "entry": "clutter_atomic_lease",
+      "terminal": "done_submission_receipt",
+      "required_roles": [
+        "producer",
+        "authorization_owner",
+        "observer"
+      ],
+      "path_cardinality": [
+        {
+          "from": "clutter_atomic_lease",
+          "to": "done_submission_receipt",
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "atomic-submission-observation",
+      "event": "atomic_frame_submitted",
+      "kind": "observation",
+      "entry": "done_submission_receipt",
+      "terminal": "surrounding_postcondition",
+      "required_roles": [
+        "observer"
+      ],
+      "path_cardinality": [
+        {
+          "from": "done_submission_receipt",
+          "to": "surrounding_postcondition",
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "atomic-submission-proof",
+      "event": "atomic_frame_submitted",
+      "kind": "proof",
+      "entry": "surrounding_postcondition",
+      "terminal": "slice3b_protocol_proof",
+      "required_roles": [
+        "observer",
+        "proof_owner"
+      ],
+      "path_cardinality": [
+        {
+          "from": "surrounding_postcondition",
+          "to": "slice3b_protocol_proof",
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "atomic-refusal-proof",
+      "event": "atomic_frame_refused",
+      "kind": "proof",
+      "entry": "done_submission_receipt",
+      "terminal": "slice3b_protocol_proof",
+      "required_roles": [
+        "observer",
+        "proof_owner"
+      ],
+      "path_cardinality": [
+        {
+          "from": "done_submission_receipt",
+          "to": "slice3b_protocol_proof",
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "native-replay-execution",
+      "event": "native_key_replayed",
+      "kind": "execution",
+      "entry": "marked_replay_copy",
+      "terminal": "replay_receipt",
+      "required_roles": [
+        "producer",
+        "authorization_owner",
+        "mutation_owner",
+        "observer"
+      ],
+      "path_cardinality": [
+        {
+          "from": "marked_replay_copy",
+          "to": "replay_receipt",
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "native-replay-authority",
+      "event": "native_key_replayed",
+      "kind": "authority",
+      "entry": "meta_replay_gate",
+      "terminal": "wayland_keyboard_dispatch",
+      "required_roles": [
+        "authorization_owner",
+        "mutation_owner"
+      ],
+      "path_cardinality": [
+        {
+          "from": "meta_replay_gate",
+          "to": "wayland_keyboard_dispatch",
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "native-replay-proof",
+      "event": "native_key_replayed",
+      "kind": "proof",
+      "entry": "replay_receipt",
+      "terminal": "slice3b_protocol_proof",
+      "required_roles": [
+        "observer",
+        "proof_owner"
+      ],
+      "path_cardinality": [
+        {
+          "from": "replay_receipt",
+          "to": "slice3b_protocol_proof",
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "legacy-im-execution",
+      "event": "legacy_im_mutation",
+      "kind": "execution",
+      "entry": "legacy_im_event",
+      "terminal": "legacy_done_receipt",
+      "required_roles": [
+        "producer",
+        "evidence_owner",
+        "mutation_owner",
+        "observer"
+      ],
+      "path_cardinality": [
+        {
+          "from": "legacy_im_event",
+          "to": "legacy_done_receipt",
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "legacy-im-authority",
+      "event": "legacy_im_mutation",
+      "kind": "authority",
+      "entry": "legacy_pending_classifier",
+      "terminal": "legacy_wayland_emitter",
+      "required_roles": [
+        "evidence_owner",
+        "mutation_owner"
+      ],
+      "path_cardinality": [
+        {
+          "from": "legacy_pending_classifier",
+          "to": "legacy_wayland_emitter",
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "legacy-im-proof",
+      "event": "legacy_im_mutation",
+      "kind": "proof",
+      "entry": "legacy_done_receipt",
+      "terminal": "slice3b_protocol_proof",
+      "required_roles": [
+        "observer",
+        "proof_owner"
+      ],
+      "path_cardinality": [
+        {
+          "from": "legacy_done_receipt",
+          "to": "slice3b_protocol_proof",
+          "min": 1,
+          "max": 1
+        }
+      ]
+    }
+  ],
+  "source_root": "/home/ubu/projects/mutter-lay-atomic-proof"
+}

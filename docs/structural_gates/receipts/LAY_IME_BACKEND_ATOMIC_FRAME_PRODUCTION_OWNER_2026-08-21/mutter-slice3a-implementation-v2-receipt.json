@@ -1,0 +1,234 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "mutter-source-root",
+      "kind": "directory",
+      "mode": "0775",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof"
+    },
+    {
+      "exists": true,
+      "id": "input-focus-header",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/clutter/clutter/clutter-input-focus.h",
+      "sha256": "232f4106c2d6f27df779a32d4d7d9f6044a696cc588f4de71006dcdb8fa514dd",
+      "size_bytes": 3434
+    },
+    {
+      "exists": true,
+      "id": "input-focus-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/clutter/clutter/clutter-input-focus.c",
+      "sha256": "55726d45d7d2835b4aa9793191de3fe04083e92165655e828d1f7dd376ad09fa",
+      "size_bytes": 10227
+    },
+    {
+      "exists": true,
+      "id": "input-method-header",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/clutter/clutter/clutter-input-method.h",
+      "sha256": "133910d1af582c03436987e2c74d0a7fbe540746ae17ca86e94b72d07a6c5127",
+      "size_bytes": 3905
+    },
+    {
+      "exists": true,
+      "id": "input-method-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/clutter/clutter/clutter-input-method.c",
+      "sha256": "89093206273858d7c419000667ad32dd7469d8343db3f12e40d49d7bdcf11a2b",
+      "size_bytes": 16178
+    },
+    {
+      "exists": true,
+      "id": "wayland-owner-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-text-input.c",
+      "sha256": "8a388a0be267c5d0744920f862e36ff09f595589573bbfc2efd53177a336f4cb",
+      "size_bytes": 32623
+    },
+    {
+      "exists": true,
+      "id": "clutter-meson",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/clutter/clutter/meson.build",
+      "sha256": "d86af636054fd7518ea0c1b40063772577f5c8e315793887539e706805e8fb88",
+      "size_bytes": 10244
+    },
+    {
+      "exists": true,
+      "id": "tests-meson",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/tests/meson.build",
+      "sha256": "a9250a5f05ba7bbcf964de564a9c49ce6f739bd72da7ee82eb77c37433f98451",
+      "size_bytes": 34525
+    },
+    {
+      "exists": false,
+      "id": "atomic-frame-header-absent",
+      "kind": "absent",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/clutter/clutter/clutter-input-atomic-frame.h"
+    },
+    {
+      "exists": false,
+      "id": "atomic-frame-source-absent",
+      "kind": "absent",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/clutter/clutter/clutter-input-atomic-frame.c"
+    },
+    {
+      "exists": false,
+      "id": "atomic-frame-test-absent",
+      "kind": "absent",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/tests/wayland-atomic-input-frame-tests.c"
+    },
+    {
+      "exists": true,
+      "id": "architecture-paper",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../ime-backend-atomic-frame-v2-2026-08-20.md",
+      "sha256": "cf2b791ab3610f741bb56e370971e36745bb470ce7d98e36b351e907a498512e",
+      "size_bytes": 69421
+    },
+    {
+      "exists": true,
+      "id": "production-route",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_ROUTE_V2_2026-08-21.json",
+      "sha256": "d8f03bd513ad7248fbfd0e8b7857e0b9a98dd99c20e9abd81c7e2fd1b350e55e",
+      "size_bytes": 8978
+    },
+    {
+      "exists": true,
+      "id": "production-route-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/production-owner-route-v2-pass-receipt.json",
+      "sha256": "25dd28ded27b010806c550171b41848a2e514e2b57c5ba880d48c1c81b6a8942",
+      "size_bytes": 12983
+    },
+    {
+      "exists": true,
+      "id": "owner-analysis",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/gnome-mutter-owner-analysis-v2.json",
+      "sha256": "2c138d69e404b5e562bc708f5b459f1e7b55cdf184470d3cbaa51a10dc765923",
+      "size_bytes": 7566
+    },
+    {
+      "exists": true,
+      "id": "installed-mutter",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/usr/lib/x86_64-linux-gnu/libmutter-18.so.0.0.0",
+      "sha256": "fec9023139ac8eff93fcc1af90413613cdb526e7f02389dc9d8fe90f7abc81e5",
+      "size_bytes": 2755048
+    },
+    {
+      "exists": true,
+      "id": "installed-gnome-shell",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/usr/lib/gnome-shell/libshell-18.so",
+      "sha256": "94e81e3ff3820b3f8454d596c3a9ee7fa437b770b899098db85f15640a7abb73",
+      "size_bytes": 3107408
+    },
+    {
+      "exists": true,
+      "id": "installed-libibus",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/usr/lib/x86_64-linux-gnu/libibus-1.0.so.5.0.534",
+      "sha256": "e1977b9d3d84ee94b63f6c04056134c10aa51d4e0621f7abee1115da12259ec1",
+      "size_bytes": 542936
+    },
+    {
+      "exists": true,
+      "id": "installed-lay-engine",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a",
+      "size_bytes": 6423488
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 19,
+    "forbidden_side_effect_kinds": [
+      "advertise_a_live_atomic_profile",
+      "application_name_or_gtype_string_heuristic",
+      "change_legacy_commit_delete_semantics",
+      "connect_live_session_bus",
+      "edit_gnome_shell_source",
+      "edit_ibus_source",
+      "edit_lay_source",
+      "edit_meta_wayland_text_input_owner",
+      "generic_default_atomic_profile",
+      "host_package_database_mutation",
+      "input_device_access",
+      "installed_file_write",
+      "local_build",
+      "physical_input_or_text_mutation",
+      "queue_two_effects_as_one_frame",
+      "restart_gnome_shell",
+      "restart_or_signal_ibus",
+      "runtime_deployment",
+      "runtime_quality_claim",
+      "second_mutation_route",
+      "sudo_or_privilege_escalation"
+    ],
+    "identity_contracts": 4,
+    "invariants": 9,
+    "planned_side_effect_kinds": [
+      "filesystem_write",
+      "graph_update",
+      "isolated_process_test",
+      "remote_build",
+      "remote_filesystem_write",
+      "source_edit"
+    ],
+    "preserved_artifacts": 9,
+    "runtime_comparisons": 0,
+    "source_checks": 2,
+    "tests": 18
+  },
+  "manifest_sha256": "e4e10fe3c3de0555fdfd6675f3d43e7ac45343867205c52bf4ea11b973f7f504",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "reused-input-method-source",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/clutter/clutter/clutter-input-method.c",
+      "sha256": "89093206273858d7c419000667ad32dd7469d8343db3f12e40d49d7bdcf11a2b",
+      "size_bytes": 16178
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "preserved-wayland-owner-source",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-text-input.c",
+      "sha256": "8a388a0be267c5d0744920f862e36ff09f595589573bbfc2efd53177a336f4cb",
+      "size_bytes": 32623
+    }
+  ],
+  "task_id": "LAY_IME_BACKEND_ATOMIC_FRAME_MUTTER_SLICE3A_IMPLEMENTATION_V2_2026-08-21",
+  "verdict": "READY_TO_IMPLEMENT"
+}

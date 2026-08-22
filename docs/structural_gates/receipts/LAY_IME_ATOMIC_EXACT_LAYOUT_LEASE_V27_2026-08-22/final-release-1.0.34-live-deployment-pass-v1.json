@@ -1,0 +1,80 @@
+{
+  "schema": "lay.live-deployment-receipt.v1",
+  "id": "LAY_RELEASE_1_0_34_FINAL_LIVE_DEPLOYMENT_PASS_V1_2026-08-22",
+  "tested": {
+    "scope": "rollback-protected promotion of the fixed 1.0.34 release into the live GNOME/IBus runtime",
+    "transaction": "LIVE_INSTALL_V5_START",
+    "started_at": "2026-08-22T12:10:10+03:00",
+    "verified_at": "2026-08-22T12:13:32+03:00",
+    "source_manifest_sha256": "22f6a4198d7c2aa388e58ff806dade001e7d0d0fa16d96b7810d1bee804894cf",
+    "engine_sha256": "3bb009025f3bd12c676416aff637b439ccd4f4c0c2d69d4c7c34b0f49b904691",
+    "preflight_manifest_sha256": "5e8f9f0931aa2d1fba7ef21411bf1efc02e7a1af1a68ae4f5ccf87c602178932"
+  },
+  "measured": {
+    "installed_version": "1.0.34",
+    "extension_version": "1.0.34",
+    "active_ibus_engine": "lay-ime-ru",
+    "global_ibus_pid_before": 2076194,
+    "global_ibus_pid_after": 2076194,
+    "owner_topology": {
+      "lay_daemon": 1,
+      "lay_l11_serve": 0,
+      "lay_ibus_engine": 1,
+      "lay_l3_online": 1
+    },
+    "owner_pids": {
+      "lay_daemon": 745096,
+      "lay_ibus_engine": 745158,
+      "lay_l3_online": 745100
+    },
+    "loaded_executable_sha256": {
+      "lay_daemon": "d5289fb490b9e18af9844987f60b963a817ef9753854e3e230f2c82bc9cfd356",
+      "lay_ibus_engine": "3bb009025f3bd12c676416aff637b439ccd4f4c0c2d69d4c7c34b0f49b904691",
+      "lay_l3_online": "395c86ae2688a02527e4ea54c7df0b497e2b44db676742eeb46274f2e0e24ece"
+    },
+    "memory_kib": {
+      "engine_samples": [249033, 249033, 249033, 250481, 250481],
+      "engine_max": 250481,
+      "engine_gate": 447384,
+      "engine_headroom": 196903,
+      "total_owner_samples": [255218, 255218, 255218, 256690, 256694],
+      "total_owner_max": 256694,
+      "total_owner_gate": 736062,
+      "total_owner_headroom": 479368
+    },
+    "live_pass_marker_present": true,
+    "recovery_watchdog_active": false,
+    "recovery_watchdog_installed": false
+  },
+  "promotion_gates": {
+    "preflight": "PASS",
+    "installed_bytes": "PASS",
+    "extension": "PASS",
+    "owner_topology": "PASS",
+    "loaded_executable_sha": "PASS",
+    "global_ibus_continuity": "PASS",
+    "memory": "PASS",
+    "rollback_snapshot": "PASS"
+  },
+  "rollback": {
+    "path": "/home/ubu/.local/lib/lay/rollback/1.0.33-pre-1.0.34-v27-20260822-1116",
+    "bytes": 186671333,
+    "files_manifest_sha256": "abab1c3ed60c92e65cb90918c766272bc7c9c3225a6bf60720d151b64fd42a41"
+  },
+  "artifacts": {
+    "live_install_log_sha256": "891757f1c1b5f874fae1f3d8d21013026a963049f59d2c7d60fe8909d42aaead",
+    "preflight_receipt_sha256": "b70f0c840c84883236b05c334e9980d89425694648ed870c30701447415e28d8",
+    "memory_correction_sha256": "70e28796117a2d27961f6a1799cce79d3c8804ec58c3ce876c5f8c54fbe4f4d5",
+    "release_sha256s_sha256": "607fd23b04cbdf590c37ab95e8053cd2d287f66654c3483c5ecdc93bf099eda4",
+    "physical_proof_receipt": "final-release-1.0.34-physical-pass-v1.json"
+  },
+  "not_tested": [
+    "human confirmation of double-Shift undo in an arbitrary desktop application after this install",
+    "long-duration post-install RSS drift",
+    "application-specific behavior outside the fixed 514-event physical proof"
+  ],
+  "verdict": "FINAL_RELEASE_1_0_34_LIVE_DEPLOYMENT_PASS",
+  "runtime_authority_changed": true,
+  "previous_runtime": "lay 1.0.33",
+  "installed_runtime": "lay 1.0.34"
+}

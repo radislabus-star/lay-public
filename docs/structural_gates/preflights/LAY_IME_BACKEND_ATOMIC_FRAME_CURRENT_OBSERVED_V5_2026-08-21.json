@@ -1,0 +1,266 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "observed_source",
+  "source_root": "/home/ubu/projects",
+  "nodes": [
+    {
+      "id": "wayland_key_event",
+      "role": "interface",
+      "evidence": {"path": "ibus-lay-atomic-proof/client/wayland/ibuswaylandim.c", "line": 1650, "contains": "input_method_keyboard_key ("}
+    },
+    {
+      "id": "libibus_legacy_request",
+      "role": "orchestrator",
+      "evidence": {"path": "ibus-lay-atomic-proof/src/ibusinputcontext.c", "line": 1024, "contains": "ibus_input_context_process_key_event_async ("}
+    },
+    {
+      "id": "daemon_legacy_dispatch",
+      "role": "orchestrator",
+      "evidence": {"path": "ibus-lay-atomic-proof/bus/inputcontext.c", "line": 1077, "contains": "_ic_process_key_event ("}
+    },
+    {
+      "id": "engine_proxy_legacy_call",
+      "role": "orchestrator",
+      "evidence": {"path": "ibus-lay-atomic-proof/bus/engineproxy.c", "line": 1132, "contains": "bus_engine_proxy_process_key_event ("}
+    },
+    {
+      "id": "lay_legacy_process",
+      "role": "producer",
+      "evidence": {"path": "lay-l1-exact-peak-search/src/bin/lay_ibus_engine/ibus_interface.rs", "line": 13, "contains": "async fn process_key_event("}
+    },
+    {
+      "id": "delete_signal",
+      "role": "producer",
+      "evidence": {"path": "lay-l1-exact-peak-search/src/bin/lay_ibus_engine/state.rs", "line": 555, "contains": "Self::delete_surrounding_text("}
+    },
+    {
+      "id": "commit_signal",
+      "role": "producer",
+      "evidence": {"path": "lay-l1-exact-peak-search/src/bin/lay_ibus_engine/state.rs", "line": 568, "contains": "Self::commit_text(emitter, make_ibus_text(commit_text))"}
+    },
+    {
+      "id": "daemon_delete_forward",
+      "role": "evidence_owner",
+      "evidence": {"path": "ibus-lay-atomic-proof/bus/inputcontext.c", "line": 2666, "contains": "_engine_delete_surrounding_text_cb ("}
+    },
+    {
+      "id": "daemon_commit_forward",
+      "role": "evidence_owner",
+      "evidence": {"path": "ibus-lay-atomic-proof/bus/inputcontext.c", "line": 2614, "contains": "_engine_commit_text_cb ("}
+    },
+    {
+      "id": "wayland_delete_callback",
+      "role": "authorization_owner",
+      "evidence": {"path": "ibus-lay-atomic-proof/client/wayland/ibuswaylandim.c", "line": 734, "contains": "_context_delete_surrounding_text_cb ("}
+    },
+    {
+      "id": "wayland_commit_callback",
+      "role": "authorization_owner",
+      "evidence": {"path": "ibus-lay-atomic-proof/client/wayland/ibuswaylandim.c", "line": 410, "contains": "_context_commit_text_cb ("}
+    },
+    {
+      "id": "wayland_delete_transaction",
+      "role": "mutation_owner",
+      "evidence": {"path": "ibus-lay-atomic-proof/client/wayland/ibuswaylandim.c", "line": 774, "contains": "zwp_input_method_v2_delete_surrounding_text ("}
+    },
+    {
+      "id": "wayland_commit_transaction",
+      "role": "mutation_owner",
+      "evidence": {"path": "ibus-lay-atomic-proof/client/wayland/ibuswaylandim.c", "line": 337, "contains": "zwp_input_method_v2_commit_string ("}
+    },
+    {
+      "id": "external_visible_effect",
+      "role": "observer",
+      "evidence": {"path": "ibus-lay-atomic-proof/client/wayland/ibuswaylandim.c", "line": 338, "contains": "zwp_input_method_v2_commit ("}
+    }
+  ],
+  "edges": [
+    {
+      "id": "exec-key-libibus",
+      "from": "wayland_key_event",
+      "relation": "calls",
+      "to": "libibus_legacy_request",
+      "events": ["legacy_wayland_replace"],
+      "evidence": {"path": "ibus-lay-atomic-proof/client/wayland/ibuswaylandim.c", "line": 1415, "contains": "ibus_input_context_process_key_event_async ("}
+    },
+    {
+      "id": "exec-libibus-daemon",
+      "from": "libibus_legacy_request",
+      "relation": "delegates",
+      "to": "daemon_legacy_dispatch",
+      "events": ["legacy_wayland_replace"],
+      "evidence": {"path": "ibus-lay-atomic-proof/src/ibusinputcontext.c", "line": 1036, "contains": "\"ProcessKeyEvent\""}
+    },
+    {
+      "id": "exec-daemon-engine-proxy",
+      "from": "daemon_legacy_dispatch",
+      "relation": "delegates",
+      "to": "engine_proxy_legacy_call",
+      "events": ["legacy_wayland_replace"],
+      "evidence": {"path": "ibus-lay-atomic-proof/bus/inputcontext.c", "line": 1150, "contains": "bus_engine_proxy_process_key_event (context->engine,"}
+    },
+    {
+      "id": "exec-engine-proxy-lay",
+      "from": "engine_proxy_legacy_call",
+      "relation": "delegates",
+      "to": "lay_legacy_process",
+      "events": ["legacy_wayland_replace"],
+      "evidence": {"path": "ibus-lay-atomic-proof/bus/engineproxy.c", "line": 1158, "contains": "\"ProcessKeyEvent\""}
+    },
+    {
+      "id": "exec-lay-delete",
+      "from": "lay_legacy_process",
+      "relation": "delegates",
+      "to": "delete_signal",
+      "events": ["legacy_wayland_replace"],
+      "evidence": {"path": "lay-l1-exact-peak-search/src/bin/lay_ibus_engine/state.rs", "line": 555, "contains": "Self::delete_surrounding_text("}
+    },
+    {
+      "id": "exec-lay-commit",
+      "from": "lay_legacy_process",
+      "relation": "delegates",
+      "to": "commit_signal",
+      "events": ["legacy_wayland_replace"],
+      "evidence": {"path": "lay-l1-exact-peak-search/src/bin/lay_ibus_engine/state.rs", "line": 568, "contains": "Self::commit_text(emitter, make_ibus_text(commit_text))"}
+    },
+    {
+      "id": "exec-delete-daemon",
+      "from": "delete_signal",
+      "relation": "delegates",
+      "to": "daemon_delete_forward",
+      "events": ["legacy_wayland_replace"],
+      "evidence": {"path": "ibus-lay-atomic-proof/bus/inputcontext.c", "line": 2681, "contains": "bus_input_context_emit_signal (context,"}
+    },
+    {
+      "id": "exec-commit-daemon",
+      "from": "commit_signal",
+      "relation": "delegates",
+      "to": "daemon_commit_forward",
+      "events": ["legacy_wayland_replace"],
+      "evidence": {"path": "ibus-lay-atomic-proof/bus/inputcontext.c", "line": 2624, "contains": "bus_input_context_commit_text (context, text);"}
+    },
+    {
+      "id": "exec-daemon-delete-callback",
+      "from": "daemon_delete_forward",
+      "relation": "delegates",
+      "to": "wayland_delete_callback",
+      "events": ["legacy_wayland_replace"],
+      "evidence": {"path": "ibus-lay-atomic-proof/client/wayland/ibuswaylandim.c", "line": 1984, "contains": "g_signal_connect (priv->ibuscontext, \"delete-surrounding-text\","}
+    },
+    {
+      "id": "exec-daemon-commit-callback",
+      "from": "daemon_commit_forward",
+      "relation": "delegates",
+      "to": "wayland_commit_callback",
+      "events": ["legacy_wayland_replace"],
+      "evidence": {"path": "ibus-lay-atomic-proof/client/wayland/ibuswaylandim.c", "line": 1966, "contains": "g_signal_connect (priv->ibuscontext, \"commit-text\","}
+    },
+    {
+      "id": "exec-delete-callback-mutation",
+      "from": "wayland_delete_callback",
+      "relation": "delegates",
+      "to": "wayland_delete_transaction",
+      "events": ["legacy_wayland_replace"],
+      "evidence": {"path": "ibus-lay-atomic-proof/client/wayland/ibuswaylandim.c", "line": 774, "contains": "zwp_input_method_v2_delete_surrounding_text ("}
+    },
+    {
+      "id": "exec-commit-callback-mutation",
+      "from": "wayland_commit_callback",
+      "relation": "delegates",
+      "to": "wayland_commit_transaction",
+      "events": ["legacy_wayland_replace"],
+      "evidence": {"path": "ibus-lay-atomic-proof/client/wayland/ibuswaylandim.c", "line": 414, "contains": "ibus_wayland_im_commit_text (wlim, text->text);"}
+    },
+    {
+      "id": "exec-delete-visible",
+      "from": "wayland_delete_transaction",
+      "relation": "delegates",
+      "to": "external_visible_effect",
+      "events": ["legacy_wayland_replace"],
+      "evidence": {"path": "ibus-lay-atomic-proof/client/wayland/ibuswaylandim.c", "line": 778, "contains": "zwp_input_method_v2_commit (priv->seat->input_method_v2,"}
+    },
+    {
+      "id": "exec-commit-visible",
+      "from": "wayland_commit_transaction",
+      "relation": "delegates",
+      "to": "external_visible_effect",
+      "events": ["legacy_wayland_replace"],
+      "evidence": {"path": "ibus-lay-atomic-proof/client/wayland/ibuswaylandim.c", "line": 338, "contains": "zwp_input_method_v2_commit (priv->seat->input_method_v2,"}
+    },
+    {
+      "id": "authority-delete-daemon",
+      "from": "delete_signal",
+      "relation": "produces_for",
+      "to": "daemon_delete_forward",
+      "events": ["legacy_wayland_replace"],
+      "evidence": {"path": "ibus-lay-atomic-proof/bus/inputcontext.c", "line": 2666, "contains": "_engine_delete_surrounding_text_cb ("}
+    },
+    {
+      "id": "authority-daemon-delete-client",
+      "from": "daemon_delete_forward",
+      "relation": "passes_to",
+      "to": "wayland_delete_callback",
+      "events": ["legacy_wayland_replace"],
+      "evidence": {"path": "ibus-lay-atomic-proof/client/wayland/ibuswaylandim.c", "line": 734, "contains": "_context_delete_surrounding_text_cb ("}
+    },
+    {
+      "id": "authority-delete-mutation",
+      "from": "wayland_delete_callback",
+      "relation": "authorizes",
+      "to": "wayland_delete_transaction",
+      "events": ["legacy_wayland_replace"],
+      "evidence": {"path": "ibus-lay-atomic-proof/client/wayland/ibuswaylandim.c", "line": 774, "contains": "zwp_input_method_v2_delete_surrounding_text ("}
+    },
+    {
+      "id": "authority-commit-daemon",
+      "from": "commit_signal",
+      "relation": "produces_for",
+      "to": "daemon_commit_forward",
+      "events": ["legacy_wayland_replace"],
+      "evidence": {"path": "ibus-lay-atomic-proof/bus/inputcontext.c", "line": 2614, "contains": "_engine_commit_text_cb ("}
+    },
+    {
+      "id": "authority-daemon-commit-client",
+      "from": "daemon_commit_forward",
+      "relation": "passes_to",
+      "to": "wayland_commit_callback",
+      "events": ["legacy_wayland_replace"],
+      "evidence": {"path": "ibus-lay-atomic-proof/client/wayland/ibuswaylandim.c", "line": 410, "contains": "_context_commit_text_cb ("}
+    },
+    {
+      "id": "authority-commit-mutation",
+      "from": "wayland_commit_callback",
+      "relation": "authorizes",
+      "to": "wayland_commit_transaction",
+      "events": ["legacy_wayland_replace"],
+      "evidence": {"path": "ibus-lay-atomic-proof/client/wayland/ibuswaylandim.c", "line": 337, "contains": "zwp_input_method_v2_commit_string ("}
+    }
+  ],
+  "routes": [
+    {
+      "id": "legacy-multi-effect-execution",
+      "event": "legacy_wayland_replace",
+      "kind": "execution",
+      "entry": "lay_legacy_process",
+      "terminal": "external_visible_effect",
+      "required_roles": ["producer", "evidence_owner", "authorization_owner", "mutation_owner", "observer"],
+      "path_cardinality": [{"from": "lay_legacy_process", "to": "external_visible_effect", "min": 1, "max": 1}]
+    },
+    {
+      "id": "legacy-delete-authority",
+      "event": "legacy_wayland_replace",
+      "kind": "authority",
+      "entry": "delete_signal",
+      "terminal": "wayland_delete_transaction",
+      "required_roles": ["producer", "evidence_owner", "authorization_owner", "mutation_owner"]
+    },
+    {
+      "id": "legacy-commit-authority",
+      "event": "legacy_wayland_replace",
+      "kind": "authority",
+      "entry": "commit_signal",
+      "terminal": "wayland_commit_transaction",
+      "required_roles": ["producer", "evidence_owner", "authorization_owner", "mutation_owner"]
+    }
+  ]
+}

@@ -3,7 +3,7 @@ use super::{
     proposal_admission::{self, CandidateGateAction, CandidateGateDecision},
     verifier, TypingTransition,
 };
-use crate::candidate_contract::{CandidateOrigin, CorrectionSourceRole};
+use crate::candidate_contract::{CandidateOrigin, CandidateReadoutRoute, CorrectionSourceRole};
 use crate::candidate_explanation::CandidateExplanation;
 use crate::correction_bayes::BayesCandidateScore;
 use crate::correction_core::{
@@ -25,6 +25,13 @@ use rayon::prelude::*;
 use std::cmp::Ordering;
 
 pub(crate) struct TransitionDecisionCore;
+
+#[derive(Clone, Copy)]
+pub(crate) enum DecisionEvidenceMode<'a> {
+    FullField(Option<&'a crate::nanda_wave::l2_wave_peak::L2CorrectionPeakContext>),
+    ClosedExact(&'a crate::exact_layout_authority::ExactLayoutContourCertificate),
+    ClosedExactAbsent,
+}
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub(crate) struct TransitionDecisionPolicy {
@@ -52,16 +59,21 @@ impl TransitionDecisionCore {
         event: &TypingErrorEvent,
         candidates: &[UnifiedCorrectionCandidate],
         policy: TransitionDecisionPolicy,
-        prepared_l2_peak_context: Option<&crate::nanda_wave::l2_wave_peak::L2CorrectionPeakContext>,
+        mode: DecisionEvidenceMode<'_>,
     ) -> CandidateDecisionBatch {
         let timing_enabled = std::env::var_os("LAY_DECISION_CORE_TIMING").is_some();
         let started = std::time::Instant::now();
+        match mode {
+            DecisionEvidenceMode::ClosedExact(certificate) => {
+                return evaluate_closed_exact(event, candidates, certificate, started);
+            }
+            DecisionEvidenceMode::ClosedExactAbsent => {
+                return CandidateDecisionBatch::no_selection_with_started(started);
+            }
+            DecisionEvidenceMode::FullField(_) => {}
+        }
         if candidates.is_empty() {
-            return CandidateDecisionBatch {
-                evaluations: Vec::new(),
-                selected_index: None,
-                selected_transition: None,
-            };
+            return CandidateDecisionBatch::no_selection_with_started(started);
         }
         let usage = crate::nanda_wave::cached_usage_prior_snapshot();
         let usage_ready = std::time::Instant::now();
@@ -77,6 +89,9 @@ impl TransitionDecisionCore {
         );
         let l3_ready = std::time::Instant::now();
         let owned_l2_peak_context;
+        let DecisionEvidenceMode::FullField(prepared_l2_peak_context) = mode else {
+            unreachable!("closed exact modes returned above")
+        };
         let l2_peak_context = if let Some(context) = prepared_l2_peak_context {
             context
         } else {
@@ -162,7 +177,7 @@ impl TransitionDecisionCore {
                 );
             }
         }
-        let selected_index = candidates
+        let ranked_selected_index = candidates
             .iter()
             .enumerate()
             .filter(|(index, candidate)| {
@@ -183,6 +198,11 @@ impl TransitionDecisionCore {
                 compare_candidate_decision_order(*left, *right, candidates, &evaluations)
             })
             .map(|(index, _)| index);
+        let selected_index = match retained_exact_disposition(event, candidates, &evaluations) {
+            RetainedExactDisposition::Absent => ranked_selected_index,
+            RetainedExactDisposition::Valid(index) => Some(index),
+            RetainedExactDisposition::Invalid => None,
+        };
         let selection_ready = std::time::Instant::now();
 
         let selected_transition = selected_index.map(|index| {
@@ -192,8 +212,8 @@ impl TransitionDecisionCore {
                 &evaluations[index],
             )
         });
+        let finished = std::time::Instant::now();
         if timing_enabled {
-            let finished = std::time::Instant::now();
             eprintln!(
                 "lay_decision_core_timing usage_us={} morphology_us={} l3_us={} peak_us={} evaluations_us={} interference_us={} hidden_us={} selection_us={} receipt_us={} total_us={} candidates={}",
                 usage_ready.duration_since(started).as_micros(),
@@ -214,7 +234,425 @@ impl TransitionDecisionCore {
             evaluations,
             selected_index,
             selected_transition,
+            timing: CandidateDecisionTiming {
+                l3_us: elapsed_us(l3_ready.duration_since(morphology_ready)),
+                total_us: elapsed_us(finished.duration_since(started)),
+            },
         }
+    }
+}
+
+enum RetainedExactDisposition {
+    Absent,
+    Valid(usize),
+    Invalid,
+}
+
+fn retained_exact_disposition(
+    event: &TypingErrorEvent,
+    candidates: &[UnifiedCorrectionCandidate],
+    evaluations: &[CandidateDecisionEvaluation],
+) -> RetainedExactDisposition {
+    let mut retained = None;
+    for (index, candidate) in candidates.iter().enumerate() {
+        match &candidate.authority_evidence {
+            crate::correction_core::CandidateAuthorityEvidence::None => {}
+            crate::correction_core::CandidateAuthorityEvidence::Conflict => {
+                return RetainedExactDisposition::Invalid;
+            }
+            crate::correction_core::CandidateAuthorityEvidence::ClosedExactLayout(certificate) => {
+                if retained.is_some()
+                    || !certificate.matches_candidate(&event.original, &candidate.replacement)
+                    || !evaluations.get(index).is_some_and(|evaluation| {
+                        closed_exact_candidate_is_verified(candidate, evaluation.action)
+                    })
+                {
+                    return RetainedExactDisposition::Invalid;
+                }
+                retained = Some(index);
+            }
+        }
+    }
+    retained.map_or(
+        RetainedExactDisposition::Absent,
+        RetainedExactDisposition::Valid,
+    )
+}
+
+fn evaluate_closed_exact(
+    event: &TypingErrorEvent,
+    candidates: &[UnifiedCorrectionCandidate],
+    certificate: &crate::exact_layout_authority::ExactLayoutContourCertificate,
+    started: std::time::Instant,
+) -> CandidateDecisionBatch {
+    let [candidate] = candidates else {
+        return CandidateDecisionBatch::no_selection_with_started(started);
+    };
+    if candidate.closed_exact_layout_certificate() != Some(certificate)
+        || !certificate.matches_candidate(&event.original, &candidate.replacement)
+    {
+        return CandidateDecisionBatch::no_selection_with_started(started);
+    }
+    let action = action::verify_action_operator(
+        &event.original,
+        &candidate.replacement,
+        candidate.error_class,
+        candidate.origin,
+    );
+    if !closed_exact_candidate_is_verified(candidate, action) {
+        return CandidateDecisionBatch::no_selection_with_started(started);
+    }
+    CandidateDecisionBatch {
+        evaluations: Vec::new(),
+        selected_index: Some(0),
+        selected_transition: Some(DecisionTransitionReceipt::from_verified_action(
+            event, candidate, action,
+        )),
+        timing: CandidateDecisionTiming {
+            total_us: elapsed_us(started.elapsed()),
+            ..CandidateDecisionTiming::default()
+        },
+    }
+}
+
+fn closed_exact_candidate_is_verified(
+    candidate: &UnifiedCorrectionCandidate,
+    action: action::CorrectionActionOperatorReport,
+) -> bool {
+    let target_evidence = candidate.common_target_evidence();
+    exact_candidate_authority(&candidate.authority_evidence)
+        && exact_source(candidate.source)
+        && exact_origin(candidate.origin)
+        && exact_source_role(candidate.origin.source_role())
+        && exact_live_candidate_lane(live_candidate_lane_for_origin(candidate.origin))
+        && exact_typing_candidate_family(typing_candidate_family_for_origin(candidate.origin))
+        && exact_replacement_target_evidence(replacement_target_evidence_for_candidate(candidate))
+        && exact_error_class(candidate.error_class)
+        && exact_gate_action(candidate.gate.action)
+        && exact_action_operator(action.operator)
+        && exact_action_proof(action.proof)
+        && exact_transition_operator(action.edit_operator)
+        && exact_action_proof(action.edit_proof)
+        && exact_transition_proof(action.edit_proof.into())
+        && exact_transition_operator_kind(
+            crate::transition_relation::TransitionOperatorKind::from_action_operator(
+                action.operator.as_str(),
+            ),
+        )
+        && exact_target_evidence_is_complete(&target_evidence)
+        && action.verifier_required
+        && action.verifier_passed
+        && !action.left_context_changed
+        && action.changed_tokens == 1
+        && !candidate.has_authority_conflict()
+}
+
+pub(crate) const fn closed_exact_readout_route_preserves_retained_target(
+    route: CandidateReadoutRoute,
+) -> bool {
+    match route {
+        CandidateReadoutRoute::CanonicalL2Field | CandidateReadoutRoute::FullWave => true,
+    }
+}
+
+fn exact_candidate_authority(
+    authority: &crate::correction_core::CandidateAuthorityEvidence,
+) -> bool {
+    match authority {
+        crate::correction_core::CandidateAuthorityEvidence::ClosedExactLayout(_) => true,
+        crate::correction_core::CandidateAuthorityEvidence::None
+        | crate::correction_core::CandidateAuthorityEvidence::Conflict => false,
+    }
+}
+
+fn live_candidate_lane_for_origin(
+    origin: CandidateOrigin,
+) -> crate::typing_transition::live_candidate::LiveCandidateLane {
+    use crate::typing_transition::live_candidate::LiveCandidateLane;
+    match origin {
+        CandidateOrigin::Layout | CandidateOrigin::LayoutThenTypo => {
+            LiveCandidateLane::LayoutReplacement
+        }
+        CandidateOrigin::Boundary => LiveCandidateLane::BoundaryReplacement,
+        CandidateOrigin::Completion => LiveCandidateLane::ExactCompletion,
+        CandidateOrigin::L2Surface => LiveCandidateLane::LexicalRepairReplacement,
+        CandidateOrigin::DeterministicTypo => LiveCandidateLane::CorrectedPrefixReplacement,
+        CandidateOrigin::L3Context | CandidateOrigin::Technical => {
+            LiveCandidateLane::GeneralReplacement
+        }
+    }
+}
+
+fn exact_live_candidate_lane(
+    lane: crate::typing_transition::live_candidate::LiveCandidateLane,
+) -> bool {
+    use crate::typing_transition::live_candidate::LiveCandidateLane;
+    match lane {
+        LiveCandidateLane::LayoutReplacement => true,
+        LiveCandidateLane::ExactCompletion
+        | LiveCandidateLane::LexicalRepairReplacement
+        | LiveCandidateLane::CorrectedPrefixReplacement
+        | LiveCandidateLane::GeneralReplacement
+        | LiveCandidateLane::BoundaryReplacement => false,
+    }
+}
+
+fn typing_candidate_family_for_origin(
+    origin: CandidateOrigin,
+) -> crate::typing_candidate::TypingCandidateFamily {
+    use crate::typing_candidate::TypingCandidateFamily;
+    match origin {
+        CandidateOrigin::Layout | CandidateOrigin::LayoutThenTypo => TypingCandidateFamily::Layout,
+        CandidateOrigin::Boundary => TypingCandidateFamily::Structural,
+        CandidateOrigin::Completion => TypingCandidateFamily::Exact,
+        CandidateOrigin::DeterministicTypo => TypingCandidateFamily::Typo,
+        CandidateOrigin::L2Surface | CandidateOrigin::L3Context => TypingCandidateFamily::Visual,
+        CandidateOrigin::Technical => TypingCandidateFamily::Cleanup,
+    }
+}
+
+fn exact_typing_candidate_family(family: crate::typing_candidate::TypingCandidateFamily) -> bool {
+    use crate::typing_candidate::TypingCandidateFamily;
+    match family {
+        TypingCandidateFamily::Layout => true,
+        TypingCandidateFamily::Exact
+        | TypingCandidateFamily::Visual
+        | TypingCandidateFamily::Structural
+        | TypingCandidateFamily::Typo
+        | TypingCandidateFamily::Cleanup
+        | TypingCandidateFamily::Unknown => false,
+    }
+}
+
+fn replacement_target_evidence_for_candidate(
+    candidate: &UnifiedCorrectionCandidate,
+) -> crate::typing_transition::target_evidence::ReplacementTargetEvidence {
+    use crate::correction_core::CandidateAuthorityEvidence;
+    use crate::typing_transition::target_evidence::ReplacementTargetEvidence;
+    match &candidate.authority_evidence {
+        CandidateAuthorityEvidence::ClosedExactLayout(_) => {
+            ReplacementTargetEvidence::ExactLayoutProjection
+        }
+        CandidateAuthorityEvidence::None | CandidateAuthorityEvidence::Conflict => {
+            ReplacementTargetEvidence::None
+        }
+    }
+}
+
+fn exact_replacement_target_evidence(
+    evidence: crate::typing_transition::target_evidence::ReplacementTargetEvidence,
+) -> bool {
+    use crate::typing_transition::target_evidence::ReplacementTargetEvidence;
+    match evidence {
+        ReplacementTargetEvidence::ExactLayoutProjection => true,
+        ReplacementTargetEvidence::None
+        | ReplacementTargetEvidence::VerifiedLexicalEdit
+        | ReplacementTargetEvidence::ContextBoundLexicalEdit
+        | ReplacementTargetEvidence::VerifiedBoundary => false,
+    }
+}
+
+fn exact_target_evidence_is_complete(
+    evidence: &crate::typing_transition::target_evidence::TargetEvidenceSetV1,
+) -> bool {
+    exact_enumeration_state(evidence.state())
+        && exact_completeness_scope_kind(evidence.scope().kind())
+        && exact_incompleteness_reason(evidence.reason())
+        && evidence.logical_count() == evidence.retained_count()
+}
+
+fn exact_enumeration_state(
+    state: crate::typing_transition::target_evidence::EnumerationStateV1,
+) -> bool {
+    use crate::typing_transition::target_evidence::EnumerationStateV1;
+    match state {
+        EnumerationStateV1::Complete => true,
+        EnumerationStateV1::Overflow | EnumerationStateV1::Failed => false,
+    }
+}
+
+fn exact_completeness_scope_kind(
+    scope: crate::typing_transition::target_evidence::CompletenessScopeKindV1,
+) -> bool {
+    use crate::typing_transition::target_evidence::CompletenessScopeKindV1;
+    match scope {
+        CompletenessScopeKindV1::WholePreparedField => true,
+        CompletenessScopeKindV1::EditFootprintPartition
+        | CompletenessScopeKindV1::RelationPartition => false,
+    }
+}
+
+fn exact_incompleteness_reason(
+    reason: crate::typing_transition::target_evidence::IncompletenessReasonV1,
+) -> bool {
+    use crate::typing_transition::target_evidence::IncompletenessReasonV1;
+    match reason {
+        IncompletenessReasonV1::None => true,
+        IncompletenessReasonV1::StorageCapacity
+        | IncompletenessReasonV1::WorkBudgetExceeded
+        | IncompletenessReasonV1::UpstreamIncomplete
+        | IncompletenessReasonV1::IntegrityFailure => false,
+    }
+}
+
+fn exact_transition_proof(proof: crate::text_edit::TransitionProof) -> bool {
+    use crate::text_edit::TransitionProof;
+    match proof {
+        TransitionProof::Layout => true,
+        TransitionProof::Typo
+        | TransitionProof::Boundary
+        | TransitionProof::Completion
+        | TransitionProof::Context
+        | TransitionProof::Grammar
+        | TransitionProof::VisibleState
+        | TransitionProof::DecoderPlan
+        | TransitionProof::ManualIntent
+        | TransitionProof::UndoRecord
+        | TransitionProof::NativeIntent
+        | TransitionProof::Invariant => false,
+    }
+}
+
+fn exact_transition_operator_kind(
+    operator: crate::transition_relation::TransitionOperatorKind,
+) -> bool {
+    use crate::transition_relation::TransitionOperatorKind;
+    match operator {
+        TransitionOperatorKind::LayoutProjection => true,
+        TransitionOperatorKind::AdjacentTransposition
+        | TransitionOperatorKind::MissingLetterRepair
+        | TransitionOperatorKind::RepeatedLetterRepair
+        | TransitionOperatorKind::ExtraLetterRepair
+        | TransitionOperatorKind::LetterSubstitution
+        | TransitionOperatorKind::BoundarySplit
+        | TransitionOperatorKind::BoundaryMerge
+        | TransitionOperatorKind::AcceptCompletion
+        | TransitionOperatorKind::CompositeTypo
+        | TransitionOperatorKind::ContextChoice
+        | TransitionOperatorKind::ManualToggle
+        | TransitionOperatorKind::Other => false,
+    }
+}
+
+fn exact_source(source: CorrectionDecisionSource) -> bool {
+    match source {
+        CorrectionDecisionSource::Deterministic => true,
+        CorrectionDecisionSource::Nanda => false,
+    }
+}
+
+fn exact_origin(origin: CandidateOrigin) -> bool {
+    match origin {
+        CandidateOrigin::Layout => true,
+        CandidateOrigin::LayoutThenTypo
+        | CandidateOrigin::Boundary
+        | CandidateOrigin::Completion
+        | CandidateOrigin::L2Surface
+        | CandidateOrigin::L3Context
+        | CandidateOrigin::DeterministicTypo
+        | CandidateOrigin::Technical => false,
+    }
+}
+
+fn exact_source_role(role: CorrectionSourceRole) -> bool {
+    match role {
+        CorrectionSourceRole::Layout => true,
+        CorrectionSourceRole::Boundary
+        | CorrectionSourceRole::Completion
+        | CorrectionSourceRole::L2Surface
+        | CorrectionSourceRole::L3Context
+        | CorrectionSourceRole::DeterministicTypo
+        | CorrectionSourceRole::Technical => false,
+    }
+}
+
+fn exact_error_class(error_class: TypingErrorClass) -> bool {
+    match error_class {
+        TypingErrorClass::WrongLayout => true,
+        TypingErrorClass::PartialLayout
+        | TypingErrorClass::MixedScript
+        | TypingErrorClass::MissingLetter
+        | TypingErrorClass::SparseInternalMultiOmission
+        | TypingErrorClass::ExtraLetter
+        | TypingErrorClass::RepeatedLetter
+        | TypingErrorClass::AdjacentTransposition
+        | TypingErrorClass::LetterSubstitution
+        | TypingErrorClass::CompositeTypo
+        | TypingErrorClass::BoundaryShift
+        | TypingErrorClass::SplitWord
+        | TypingErrorClass::GluedWords
+        | TypingErrorClass::CaseNoise
+        | TypingErrorClass::GrammarAgreement
+        | TypingErrorClass::CompletionOnly
+        | TypingErrorClass::TechnicalToken
+        | TypingErrorClass::ProtectedToken
+        | TypingErrorClass::Unknown => false,
+    }
+}
+
+fn exact_gate_action(gate: CandidateGateAction) -> bool {
+    match gate {
+        CandidateGateAction::Eligible => true,
+        CandidateGateAction::SuggestOnly
+        | CandidateGateAction::KeepOriginal
+        | CandidateGateAction::Veto => false,
+    }
+}
+
+fn exact_action_operator(operator: crate::language_action::LanguageActionOperator) -> bool {
+    use crate::language_action::LanguageActionOperator;
+    match operator {
+        LanguageActionOperator::FlipLayout => true,
+        LanguageActionOperator::KeepOriginal
+        | LanguageActionOperator::SuggestOnly
+        | LanguageActionOperator::FixTypo
+        | LanguageActionOperator::FixTransposition
+        | LanguageActionOperator::ReplaceLetter
+        | LanguageActionOperator::RemoveExtraLetter
+        | LanguageActionOperator::RestoreMissingLetter
+        | LanguageActionOperator::NormalizeCase
+        | LanguageActionOperator::FixGrammarForm
+        | LanguageActionOperator::FixMixedLayout
+        | LanguageActionOperator::CompleteWord
+        | LanguageActionOperator::ShiftWordBoundary
+        | LanguageActionOperator::SplitGluedWords
+        | LanguageActionOperator::JoinBrokenWord
+        | LanguageActionOperator::ApplyContextChoice => false,
+    }
+}
+
+fn exact_action_proof(proof: crate::language_action::LanguageActionProof) -> bool {
+    use crate::language_action::LanguageActionProof;
+    match proof {
+        LanguageActionProof::Layout => true,
+        LanguageActionProof::None
+        | LanguageActionProof::Typo
+        | LanguageActionProof::Boundary
+        | LanguageActionProof::Completion
+        | LanguageActionProof::Context
+        | LanguageActionProof::Grammar
+        | LanguageActionProof::SafetyVeto => false,
+    }
+}
+
+fn exact_transition_operator(operator: crate::text_edit::TransitionOperator) -> bool {
+    use crate::text_edit::TransitionOperator;
+    match operator {
+        TransitionOperator::LayoutProjection => true,
+        TransitionOperator::ReplaceCurrentWord
+        | TransitionOperator::BoundaryShift
+        | TransitionOperator::BoundaryMergeSplit
+        | TransitionOperator::PhraseTokenRepair
+        | TransitionOperator::SplitPreviousGluedAndRepairTail
+        | TransitionOperator::Completion
+        | TransitionOperator::VisibleTail
+        | TransitionOperator::DecoderTail
+        | TransitionOperator::ManualReplace
+        | TransitionOperator::Undo
+        | TransitionOperator::EnterAutocorrect
+        | TransitionOperator::NativeReplace
+        | TransitionOperator::Protected
+        | TransitionOperator::Unknown => false,
     }
 }
 
@@ -361,6 +799,38 @@ pub(crate) struct CandidateDecisionBatch {
     pub(crate) evaluations: Vec<CandidateDecisionEvaluation>,
     pub(crate) selected_index: Option<usize>,
     pub(crate) selected_transition: Option<DecisionTransitionReceipt>,
+    pub(crate) timing: CandidateDecisionTiming,
+}
+
+impl CandidateDecisionBatch {
+    pub(crate) fn no_selection() -> Self {
+        Self {
+            evaluations: Vec::new(),
+            selected_index: None,
+            selected_transition: None,
+            timing: CandidateDecisionTiming::default(),
+        }
+    }
+
+    fn no_selection_with_started(started: std::time::Instant) -> Self {
+        Self {
+            timing: CandidateDecisionTiming {
+                total_us: elapsed_us(started.elapsed()),
+                ..CandidateDecisionTiming::default()
+            },
+            ..Self::no_selection()
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub(crate) struct CandidateDecisionTiming {
+    pub(crate) l3_us: u64,
+    pub(crate) total_us: u64,
+}
+
+fn elapsed_us(duration: std::time::Duration) -> u64 {
+    duration.as_micros().min(u128::from(u64::MAX)) as u64
 }
 
 mod admission;

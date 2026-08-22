@@ -10,11 +10,12 @@ const IBUS_CAP_SURROUNDING_TEXT: u32 = 1 << 5;
 #[path = "engine/types.rs"]
 mod types;
 pub(super) use types::{
-    ManualToggleAuthority, PendingImeCompletionLearning, PendingSystemOutcomeFeedback,
-    PendingVisiblePostcondition, RecentCommittedTailReplace, SurroundingTextSnapshot,
-    SystemOutcomeKind, WordInputMode,
+    DeferredLayoutAction, DeferredLearningAction, InputFrameIdentity, ManualToggleAuthority,
+    PendingImeCompletionLearning, PendingSystemOutcomeFeedback, PendingVisiblePostcondition,
+    RecentCommittedTailReplace, SurroundingTextSnapshot, SystemOutcomeKind, WordInputMode,
 };
 
+#[derive(Clone)]
 pub(crate) struct LayIbusEngine {
     pub(super) path: String,
     pub(super) shared: Shared,
@@ -29,13 +30,17 @@ pub(crate) struct LayIbusEngine {
     pub(super) preedit_candidate_index: usize,
     pub(super) preedit_fast: PreeditFastState,
     pub(super) preedit_dirty: bool,
+    pub(super) pending_display_frame: Option<InputFrameIdentity>,
     pub(super) pending_passthrough_preedit_clear: bool,
     pub(super) cursor_cell_width: i32,
     pub(super) surrounding_text_supported: bool,
     pub(super) surrounding_text_snapshot: Option<SurroundingTextSnapshot>,
+    pub(super) surrounding_observation_revision: u64,
+    pub(super) factory_engine_profile: lay::exact_layout_authority::FactoryEngineProfile,
     pub(super) layout_is_ru: bool,
     pub(super) shift_active: bool,
     pub(super) shift_used_as_modifier: bool,
+    pub(super) shift_pressed_at: Option<Instant>,
     pub(super) alt_completion_active: bool,
     pub(super) alt_used_as_modifier: bool,
     pub(super) handled_press_keycodes: BTreeSet<u32>,
@@ -49,6 +54,10 @@ pub(crate) struct LayIbusEngine {
     pub(super) word_input_mode: Option<WordInputMode>,
     pub(super) managed_input: bool,
     pub(super) config: LayConfig,
+    pub(super) atomic_route_active: bool,
+    pub(super) atomic_speculation: bool,
+    pub(super) deferred_layout_actions: Vec<DeferredLayoutAction>,
+    pub(super) deferred_learning_actions: Vec<DeferredLearningAction>,
 }
 
 impl LayIbusEngine {
@@ -117,6 +126,7 @@ impl LayIbusEngine {
                     state.suppress_next_committed_tail_autocorrect = false;
                     state.pending_auto_undo = None;
                     state.pending_auto_undo_retry = None;
+                    state.shift_gesture_handoff = None;
                 }
                 (true, handoff)
             }
@@ -163,6 +173,10 @@ impl LayIbusEngine {
         self.managed_input && self.config.active_text_backend().should_try_ime()
     }
 
+    pub(super) const fn legacy_key_route_allowed(&self) -> bool {
+        !self.atomic_route_active
+    }
+
     pub(super) fn has_live_composition_state(&self) -> bool {
         !self.buffer.is_empty()
             || !self.preedit_suffix.is_empty()
@@ -177,11 +191,15 @@ impl LayIbusEngine {
         self.preedit_candidate_index = 0;
         self.preedit_fast.clear_candidate_tracking();
         self.preedit_dirty = false;
+        self.pending_display_frame = None;
     }
 
     pub(super) fn set_client_capabilities(&mut self, caps: u32) {
         let surrounding_text_was_supported = self.surrounding_text_supported;
         self.surrounding_text_supported = caps & IBUS_CAP_SURROUNDING_TEXT != 0;
+        if surrounding_text_was_supported != self.surrounding_text_supported {
+            self.advance_surrounding_observation_revision();
+        }
         if !surrounding_text_was_supported
             && self.surrounding_text_supported
             && self.word_input_mode == Some(WordInputMode::TerminalPassthrough)
@@ -192,6 +210,20 @@ impl LayIbusEngine {
         if !self.surrounding_text_supported {
             self.surrounding_text_snapshot = None;
         }
+    }
+
+    pub(super) fn observe_external_surrounding_text(
+        &mut self,
+        snapshot: Option<SurroundingTextSnapshot>,
+    ) {
+        self.advance_surrounding_observation_revision();
+        self.surrounding_text_supported = true;
+        self.surrounding_text_snapshot = snapshot;
+    }
+
+    fn advance_surrounding_observation_revision(&mut self) {
+        self.surrounding_observation_revision =
+            self.surrounding_observation_revision.saturating_add(1);
     }
 
     pub(super) fn remember_handled_press(&mut self, keycode: u32, handled: bool) {
@@ -332,10 +364,25 @@ mod tests {
         engine.set_client_capabilities(1 << 5);
         assert!(engine.surrounding_text_supported);
         assert!(engine.surrounding_text_snapshot.is_some());
+        assert_eq!(engine.surrounding_observation_revision, 1);
 
         engine.set_client_capabilities(1 | 1 << 3);
         assert!(!engine.surrounding_text_supported);
         assert!(engine.surrounding_text_snapshot.is_none());
+        assert_eq!(engine.surrounding_observation_revision, 2);
+    }
+
+    #[test]
+    fn acquired_atomic_route_blocks_legacy_key_mutation_for_focus() {
+        let mut engine = engine(LayConfig {
+            text_backend: "ime".to_string(),
+            ..LayConfig::default()
+        });
+        assert!(engine.legacy_key_route_allowed());
+
+        engine.atomic_route_active = true;
+
+        assert!(!engine.legacy_key_route_allowed());
     }
 
     #[test]
@@ -347,6 +394,7 @@ mod tests {
         engine.push_tail_char('x');
 
         assert!(engine.surrounding_text_snapshot.is_none());
+        assert_eq!(engine.surrounding_observation_revision, 0);
         assert_eq!(engine.tail_buffer, "x");
     }
 

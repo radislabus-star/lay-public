@@ -1,0 +1,326 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "wayland-owner-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-text-input.c",
+      "sha256": "99debf2aca19cccd22ecd7b59e0629cbbb39f76ee4b7f5924ac45aededbc38f2",
+      "size_bytes": 52566
+    },
+    {
+      "exists": true,
+      "id": "input-focus-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/clutter/clutter/clutter-input-focus.c",
+      "sha256": "1dd4b9e15baa32289cb18f3eb16ffda1ef2dc0c8f00674df6b292f690b300397",
+      "size_bytes": 14519
+    },
+    {
+      "exists": true,
+      "id": "input-focus-private-header",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/clutter/clutter/clutter-input-focus-private.h",
+      "sha256": "42338949e3cd0892bd07320190652dc23626654fcd1f181e7a546ec71047988d",
+      "size_bytes": 1814
+    },
+    {
+      "exists": true,
+      "id": "server-tests-meson",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/tests/meson.build",
+      "sha256": "b40cfe6cf2602ca87aa75f241710b23630a023f81e2fa0070cb3904aa4c0a982",
+      "size_bytes": 35408
+    },
+    {
+      "exists": true,
+      "id": "client-tests-meson",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/tests/wayland-test-clients/meson.build",
+      "sha256": "f0c68a917920c71a4564867d0670f08c0ef7575224ff3eaf2ec56e6f69a0a2a2",
+      "size_bytes": 3544
+    },
+    {
+      "exists": true,
+      "id": "slice3a-input-method-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/clutter/clutter/clutter-input-method.c",
+      "sha256": "01f5f24eb86267c9ca61dd57d7a33924600dff97062a29ada47b8ff47deb4708",
+      "size_bytes": 29243
+    },
+    {
+      "exists": true,
+      "id": "slice3a-atomic-test-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/tests/wayland-atomic-input-frame-tests.c",
+      "sha256": "52989a5f4eee08fc69be966d1754d40ea6da16d13320dab27757ad673a0e1b6e",
+      "size_bytes": 46413
+    },
+    {
+      "exists": true,
+      "id": "wayland-seat-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-seat.c",
+      "sha256": "d846200fafb61acd9d2ff97b06f087c6703d782b90ab1e39003c6e7ab3739f76",
+      "size_bytes": 22717
+    },
+    {
+      "exists": true,
+      "id": "wayland-input-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-input.c",
+      "sha256": "f859fca1ed0f1cfb410a2d429bbfcfc32dcff3cadd01ff9f2cd30c686d3c9166",
+      "size_bytes": 13351
+    },
+    {
+      "exists": true,
+      "id": "architecture-paper",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../ime-backend-atomic-frame-v2-2026-08-20.md",
+      "sha256": "34dd7ce13df319123c57d39b95b2bd30c49256f89cf120406d2dcd91ad35b032",
+      "size_bytes": 103224
+    },
+    {
+      "exists": true,
+      "id": "slice3b-route-manifest",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_BACKEND_ATOMIC_FRAME_MUTTER_SLICE3B_ROUTE_V2_2026-08-21.json",
+      "sha256": "dd366b839118c6a61954ac96552bea53f505515a5f495c8c7e015c5454c4c65c",
+      "size_bytes": 8922
+    },
+    {
+      "exists": true,
+      "id": "slice3b-route-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/mutter-slice3b-route-v2-receipt.json",
+      "sha256": "c01eae0377a16845eb700d1c763059be4f70acea3a2680fc654b202d9f90493b",
+      "size_bytes": 14974
+    },
+    {
+      "exists": true,
+      "id": "slice3a-proof",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/mutter-slice3a-implementation-proof-v2.json",
+      "sha256": "89be278e7be04a0befab78fb87c17d0959020d6267df73fe8078201f970d596d",
+      "size_bytes": 7439
+    },
+    {
+      "exists": true,
+      "id": "installed-mutter",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/usr/lib/x86_64-linux-gnu/libmutter-18.so.0.0.0",
+      "sha256": "fec9023139ac8eff93fcc1af90413613cdb526e7f02389dc9d8fe90f7abc81e5",
+      "size_bytes": 2755048
+    },
+    {
+      "exists": true,
+      "id": "installed-gnome-shell",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/usr/lib/gnome-shell/libshell-18.so",
+      "sha256": "94e81e3ff3820b3f8454d596c3a9ee7fa437b770b899098db85f15640a7abb73",
+      "size_bytes": 3107408
+    },
+    {
+      "exists": true,
+      "id": "installed-libibus",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/usr/lib/x86_64-linux-gnu/libibus-1.0.so.5.0.534",
+      "sha256": "e1977b9d3d84ee94b63f6c04056134c10aa51d4e0621f7abee1115da12259ec1",
+      "size_bytes": 542936
+    },
+    {
+      "exists": true,
+      "id": "installed-lay-engine",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a",
+      "size_bytes": 6423488
+    },
+    {
+      "exists": true,
+      "id": "wrapper-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/backends/native/meta-thread.c",
+      "sha256": "ab676757a4071f58aff5c54a71e4d83b0d121ca0bf9e9ea202eee26aba094c0a",
+      "size_bytes": 43097
+    },
+    {
+      "exists": true,
+      "id": "slice3b-server-test-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/tests/wayland-text-input-atomic-frame-tests.c",
+      "sha256": "668e3580cad1a199904c06d4891d137440f07faf4aac35dc80c4f1dbe031c2da",
+      "size_bytes": 20466
+    },
+    {
+      "exists": true,
+      "id": "slice3b-client-test-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/tests/wayland-test-clients/text-input-atomic-frame.c",
+      "sha256": "8b306b72b6a9525980bf5830787f15572be6b221addb0ebbcdb1ebcfedf618e7",
+      "size_bytes": 14755
+    },
+    {
+      "exists": true,
+      "id": "slice3b-v3-ready-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/mutter-slice3b-implementation-v3-preflight-receipt.json",
+      "sha256": "1c3c276fa7e166abac5f288d4f2b40582aa4d595a7e71a50f80730c233585659",
+      "size_bytes": 8497
+    },
+    {
+      "exists": true,
+      "id": "slice3b-v4-blocked-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/mutter-slice3b-implementation-v4-preflight-receipt.json",
+      "sha256": "fc9c5df39d16468366af1144f4178ebaac7d7abf900012ea08cdc73d31a7b430",
+      "size_bytes": 10839
+    },
+    {
+      "exists": true,
+      "id": "wayland-client-utils-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/tests/wayland-test-clients/wayland-test-client-utils.c",
+      "sha256": "bafc1b674db776361e8cd2f51c8b376c2a3d9ae603db3abe2b086aa38c11cbb8",
+      "size_bytes": 59946
+    },
+    {
+      "exists": true,
+      "id": "slice3b-v5-ready-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/mutter-slice3b-implementation-v5-preflight-receipt.json",
+      "sha256": "7487b5100c47da851541300bd81b8b47dc1d78c44125f2ca0cc971d8a1e8d54c",
+      "size_bytes": 10712
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 24,
+    "forbidden_side_effect_kinds": [
+      "connect_live_session_bus",
+      "edit_wayland_seat_or_input",
+      "input_device_access",
+      "installed_file_write",
+      "local_build",
+      "physical_input_or_text_mutation",
+      "restart_gnome_shell",
+      "restart_or_signal_ibus",
+      "runtime_deployment",
+      "second_atomic_mutation_owner",
+      "second_replay_owner"
+    ],
+    "identity_contracts": 6,
+    "invariants": 13,
+    "planned_side_effect_kinds": [
+      "filesystem_write",
+      "remote_build",
+      "remote_filesystem_write",
+      "source_edit"
+    ],
+    "preserved_artifacts": 15,
+    "runtime_comparisons": 0,
+    "source_checks": 8,
+    "tests": 22
+  },
+  "manifest_sha256": "52b41ff8ae74e00d68cf9bde9f8b74589d7c82608bda21a0c3d82979ccb5ac7e",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "reused-wayland-owner",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-text-input.c",
+      "sha256": "99debf2aca19cccd22ecd7b59e0629cbbb39f76ee4b7f5924ac45aededbc38f2",
+      "size_bytes": 52566
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "reused-input-focus",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/clutter/clutter/clutter-input-focus.c",
+      "sha256": "1dd4b9e15baa32289cb18f3eb16ffda1ef2dc0c8f00674df6b292f690b300397",
+      "size_bytes": 14519
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "reused-slice3a-finalizer",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/clutter/clutter/clutter-input-method.c",
+      "sha256": "01f5f24eb86267c9ca61dd57d7a33924600dff97062a29ada47b8ff47deb4708",
+      "size_bytes": 29243
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "preserved-wayland-seat",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-seat.c",
+      "sha256": "d846200fafb61acd9d2ff97b06f087c6703d782b90ab1e39003c6e7ab3739f76",
+      "size_bytes": 22717
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "preserved-wayland-input",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-input.c",
+      "sha256": "f859fca1ed0f1cfb410a2d429bbfcfc32dcff3cadd01ff9f2cd30c686d3c9166",
+      "size_bytes": 13351
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "wrapper-zero-bound-correction",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/backends/native/meta-thread.c",
+      "sha256": "ab676757a4071f58aff5c54a71e4d83b0d121ca0bf9e9ea202eee26aba094c0a",
+      "size_bytes": 43097
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "shared-wayland-client-teardown",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/tests/wayland-test-clients/wayland-test-client-utils.c",
+      "sha256": "bafc1b674db776361e8cd2f51c8b376c2a3d9ae603db3abe2b086aa38c11cbb8",
+      "size_bytes": 59946
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "slice3b-wayland-client-teardown",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/tests/wayland-test-clients/text-input-atomic-frame.c",
+      "sha256": "8b306b72b6a9525980bf5830787f15572be6b221addb0ebbcdb1ebcfedf618e7",
+      "size_bytes": 14755
+    }
+  ],
+  "task_id": "LAY_IME_BACKEND_ATOMIC_FRAME_MUTTER_SLICE3B_IMPLEMENTATION_V6_2026-08-21",
+  "verdict": "READY_TO_IMPLEMENT"
+}

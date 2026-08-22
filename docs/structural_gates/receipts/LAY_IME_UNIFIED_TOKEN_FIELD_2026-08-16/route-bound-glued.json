@@ -1,0 +1,72 @@
+{
+  "all_iterations": {
+    "max_us": 3221897,
+    "mean_us": 18707,
+    "min_us": 2080,
+    "p50_us": 2495,
+    "p95_us": 3616,
+    "p99_us": 4046,
+    "samples": 200
+  },
+  "authority": {
+    "kind": "tied",
+    "surfaces": [
+      "донора",
+      "доноре",
+      "донору",
+      "доноры"
+    ]
+  },
+  "availability": "Ready",
+  "candidates": [
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "short_same_length_multi_edit_drift",
+      "replacement": "донора ",
+      "source_id": "ProductiveL2V90Grounded"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "short_same_length_multi_edit_drift",
+      "replacement": "доноре ",
+      "source_id": "ProductiveL2V90Grounded"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "short_same_length_multi_edit_drift",
+      "replacement": "донору ",
+      "source_id": "ProductiveL2V90Grounded"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "short_same_length_multi_edit_drift",
+      "replacement": "доноры ",
+      "source_id": "ProductiveL2V90Grounded"
+    }
+  ],
+  "cold_us": 3221897,
+  "hot": {
+    "max_us": 4125,
+    "mean_us": 2610,
+    "min_us": 2080,
+    "p50_us": 2495,
+    "p95_us": 3616,
+    "p99_us": 4046,
+    "samples": 199
+  },
+  "kind": "productive_v90_live_owner_query",
+  "outer_readout_cache_bypassed": true,
+  "owner_symbol": "live_productive_v1_readout",
+  "peak_rss_kib": 319264,
+  "producer_calls": 200,
+  "producer_symbol": "canonical_owned_text_candidates",
+  "repeat": 200,
+  "resident_rss_kib": 319264,
+  "runtime_authority_changed": false,
+  "status": "ready",
+  "text": "данорм "
+}

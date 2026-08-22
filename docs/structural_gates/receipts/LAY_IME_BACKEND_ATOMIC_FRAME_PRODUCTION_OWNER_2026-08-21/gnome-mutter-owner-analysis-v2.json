@@ -1,0 +1,145 @@
+{
+  "schema": "lay.ime.backend-atomic-frame.gnome-mutter-owner-analysis.v2",
+  "task_id": "LAY_IME_BACKEND_ATOMIC_FRAME_GNOME_MUTTER_OWNER_ANALYSIS_V2_2026-08-21",
+  "observed_at": "2026-08-21T05:29:44+03:00",
+  "scope": "paper-only source analysis and production-owner selection",
+  "runtime_authority_changed": false,
+  "installed_files_changed": false,
+  "services_restarted": false,
+  "code_compiled": false,
+  "production_code_edited": false,
+  "installed_baseline": {
+    "gnome_shell": {
+      "version": "50.1-0ubuntu1.1",
+      "library": "/usr/lib/gnome-shell/libshell-18.so",
+      "sha256": "94e81e3ff3820b3f8454d596c3a9ee7fa437b770b899098db85f15640a7abb73",
+      "build_id": "36a08634e0b6c9bbde7645a0bc1d558f901df623",
+      "input_method_resource": "/org/gnome/shell/misc/inputMethod.js",
+      "input_method_resource_sha256": "f835a1eae1d1ff7340d7a9017ca18e76a5437e921d32fe9b3c94904c020c2fb0"
+    },
+    "mutter": {
+      "version": "50.1-0ubuntu2.2",
+      "library": "/usr/lib/x86_64-linux-gnu/libmutter-18.so.0.0.0",
+      "sha256": "fec9023139ac8eff93fcc1af90413613cdb526e7f02389dc9d8fe90f7abc81e5",
+      "build_id": "25d36850030c8329363d10f1fc32e90baf7e14c1"
+    },
+    "ibus": {
+      "version": "1.5.34~rc2-1",
+      "library": "/usr/lib/x86_64-linux-gnu/libibus-1.0.so.5.0.534",
+      "sha256": "e1977b9d3d84ee94b63f6c04056134c10aa51d4e0621f7abee1115da12259ec1"
+    }
+  },
+  "source_baselines": [
+    {
+      "source": "mutter 50.1-0ubuntu2.2",
+      "path": "src/wayland/meta-wayland-text-input.c",
+      "sha256": "8a388a0be267c5d0744920f862e36ff09f595589573bbfc2efd53177a336f4cb"
+    },
+    {
+      "source": "mutter 50.1-0ubuntu2.2",
+      "path": "clutter/clutter/clutter-input-method.c",
+      "sha256": "89093206273858d7c419000667ad32dd7469d8343db3f12e40d49d7bdcf11a2b"
+    },
+    {
+      "source": "mutter 50.1-0ubuntu2.2",
+      "path": "clutter/clutter/clutter-input-focus.c",
+      "sha256": "55726d45d7d2835b4aa9793191de3fe04083e92165655e828d1f7dd376ad09fa"
+    },
+    {
+      "source": "mutter 50.1-0ubuntu2.2",
+      "path": "clutter/clutter/clutter-event.c",
+      "sha256": "992a0667b80f188a1122a0d69af82b10520de1bbcf87a35b032223874ecee405"
+    },
+    {
+      "source": "qt6-base 6.10.2+dfsg-7",
+      "path": "src/plugins/platforms/wayland/qwaylandtextinputv3.cpp",
+      "sha256": "58870338c88e5538b0aecdcd6c13a6dc5e4c29d0e75ebd0462089364f4cfc5f8"
+    },
+    {
+      "source": "wayland text-input unstable v3 protocol copy in qt6-base",
+      "path": "src/3rdparty/wayland/protocols/text-input/v3/text-input-unstable-v3.xml",
+      "sha256": "49048087a67011a8840bca889cd2b0ba374382be1ed54ec98adf7837fdca1982"
+    }
+  ],
+  "measured_source_facts": [
+    "GNOME Shell creates one IBus input context named gnome-shell and reuses it across ClutterInputFocus changes.",
+    "GNOME Shell handles commit-text and delete-surrounding-text as separate callbacks and calls Clutter.InputMethod.commit() and delete_surrounding() independently.",
+    "Each current Clutter commit or delete call creates one separate CLUTTER_IM event and calls clutter_event_put().",
+    "Each clutter_event_put() acquires and releases the GAsyncQueue lock independently; there is no batch marker spanning delete and commit.",
+    "MetaWaylandTextInputFocus defers text-input-v3 done at CLUTTER_PRIORITY_EVENTS + 1 and groups only events seen so far.",
+    "Pending done is forcibly flushed on focus reset, an unfiltered key event, and selected button or touch transitions.",
+    "A queue sequence of IM_DELETE, unfiltered key or focus reset, IM_COMMIT can therefore expose two text-input-v3 done boundaries.",
+    "Wayland text-input-v3 requires preedit, delete and commit events to remain pending until one done event applies them in the specified order.",
+    "Qt 6 text-input-v3 stores delete and commit as pending state and creates one QInputMethodEvent replacement only from done().",
+    "The current Lay managed GUI path commits the first printable character while the active-composition buffer is empty, so normal Space correction usually targets already committed text."
+  ],
+  "rejected_designs": [
+    {
+      "design": "transparent libibus-only multi-effect callback batch",
+      "reason": "libibus has neither exact per-focus backend identity nor a native downstream transaction boundary"
+    },
+    {
+      "design": "GNOME Shell calls existing Clutter delete and commit methods synchronously",
+      "reason": "the methods still enqueue two separately locked events and an intervening event can flush done"
+    },
+    {
+      "design": "current-host ibus-wayland input-method-v2 owner",
+      "reason": "the executable is absent, the route is inactive, and Mutter 50.1 source does not expose that owner for the observed GNOME path"
+    },
+    {
+      "design": "active-composition-only",
+      "reason": "it reduces committed-tail edits but cannot by itself cover post-commit double-Shift rollback or later corrections"
+    }
+  ],
+  "selected_design": {
+    "name": "GNOME Shell profile bridge plus synchronous Mutter text-input-v3 composite frame",
+    "native_transaction_owner": "MetaWaylandTextInputFocus",
+    "profile_owner": "the current ClutterInputFocus through a typed Mutter virtual capability, not a client-name or product heuristic",
+    "submission_contract": [
+      "validate exact focus lineage, native transaction epoch, surrounding snapshot and complete canonical vector before output",
+      "complete any prior non-mutating pending done boundary before the new frame",
+      "emit preedit clear when required, delete, commit, optional new preedit and exactly one done without returning to the main loop",
+      "return SubmittedAtomic only after done is queued; otherwise RefusedZeroEffect",
+      "finish a refused event through focus-bound synchronous native replay before starting the next RPC",
+      "remove delete authority for password, PIN, hidden, sensitive and terminal content profiles",
+      "never retry after uncertain submission and never fall through to legacy delete plus commit"
+    ],
+    "separate_optimization_slice": "active-composition-first from the first alphabetic character, proved independently"
+  },
+  "profile_matrix": [
+    {
+      "focus_or_client": "patched MetaWaylandTextInputFocus using text-input-v3",
+      "commit_only": "candidate",
+      "delete_plus_commit": "candidate after composite-frame implementation proof",
+      "current_runtime_authority": false
+    },
+    {
+      "focus_or_client": "ClutterTextInputFocus",
+      "commit_only": "candidate",
+      "delete_plus_commit": "not admitted in the first production profile",
+      "current_runtime_authority": false
+    },
+    {
+      "focus_or_client": "direct GTK, direct Qt IBus, XIM, terminal or unknown",
+      "commit_only": "requires an independent profile proof",
+      "delete_plus_commit": "suggestion-only or native-unhandled",
+      "current_runtime_authority": false
+    },
+    {
+      "focus_or_client": "IBus Wayland input-method-v2",
+      "commit_only": "future independent profile",
+      "delete_plus_commit": "future independent profile",
+      "current_runtime_authority": false
+    }
+  ],
+  "not_tested": [
+    "no Mutter, GNOME Shell, libibus or Lay implementation",
+    "no build or package installation",
+    "no physical client route identity",
+    "no interprocess or integrated latency",
+    "no failure injection or compositor crash proof",
+    "no active-composition behavior proof",
+    "no deployment or runtime-quality promotion"
+  ],
+  "verdict": "DESIGN_SELECTED_PREFLIGHT_REQUIRED"
+}

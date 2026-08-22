@@ -1,0 +1,429 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_BACKEND_ATOMIC_FRAME_MUTTER_SLICE3A_IMPLEMENTATION_V1_2026-08-21",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "mutter-source-root",
+      "kind": "directory",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof",
+      "expect": {"mode": "0775"}
+    },
+    {
+      "id": "input-focus-header",
+      "kind": "file",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/clutter/clutter/clutter-input-focus.h",
+      "expect": {"mode": "0664", "size_bytes": 3434, "sha256": "232f4106c2d6f27df779a32d4d7d9f6044a696cc588f4de71006dcdb8fa514dd"}
+    },
+    {
+      "id": "input-focus-source",
+      "kind": "file",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/clutter/clutter/clutter-input-focus.c",
+      "expect": {"mode": "0664", "size_bytes": 10227, "sha256": "55726d45d7d2835b4aa9793191de3fe04083e92165655e828d1f7dd376ad09fa"}
+    },
+    {
+      "id": "input-method-header",
+      "kind": "file",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/clutter/clutter/clutter-input-method.h",
+      "expect": {"mode": "0664", "size_bytes": 3905, "sha256": "133910d1af582c03436987e2c74d0a7fbe540746ae17ca86e94b72d07a6c5127"}
+    },
+    {
+      "id": "input-method-source",
+      "kind": "file",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/clutter/clutter/clutter-input-method.c",
+      "expect": {"mode": "0664", "size_bytes": 16178, "sha256": "89093206273858d7c419000667ad32dd7469d8343db3f12e40d49d7bdcf11a2b"}
+    },
+    {
+      "id": "wayland-owner-source",
+      "kind": "file",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-text-input.c",
+      "expect": {"mode": "0664", "size_bytes": 32623, "sha256": "8a388a0be267c5d0744920f862e36ff09f595589573bbfc2efd53177a336f4cb"}
+    },
+    {
+      "id": "clutter-meson",
+      "kind": "file",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/clutter/clutter/meson.build",
+      "expect": {"mode": "0664", "size_bytes": 10244, "sha256": "d86af636054fd7518ea0c1b40063772577f5c8e315793887539e706805e8fb88"}
+    },
+    {
+      "id": "tests-meson",
+      "kind": "file",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/tests/meson.build",
+      "expect": {"mode": "0664", "size_bytes": 34525, "sha256": "a9250a5f05ba7bbcf964de564a9c49ce6f739bd72da7ee82eb77c37433f98451"}
+    },
+    {
+      "id": "atomic-frame-header-absent",
+      "kind": "absent",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/clutter/clutter/clutter-input-atomic-frame.h",
+      "expect": {}
+    },
+    {
+      "id": "atomic-frame-source-absent",
+      "kind": "absent",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/clutter/clutter/clutter-input-atomic-frame.c",
+      "expect": {}
+    },
+    {
+      "id": "atomic-frame-test-absent",
+      "kind": "absent",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/tests/wayland-atomic-input-frame-tests.c",
+      "expect": {}
+    },
+    {
+      "id": "architecture-paper",
+      "kind": "file",
+      "path": "../../ime-backend-atomic-frame-v2-2026-08-20.md",
+      "expect": {"mode": "0664", "size_bytes": 69421, "sha256": "cf2b791ab3610f741bb56e370971e36745bb470ce7d98e36b351e907a498512e"}
+    },
+    {
+      "id": "production-route",
+      "kind": "file",
+      "path": "LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_ROUTE_V2_2026-08-21.json",
+      "expect": {"mode": "0664", "size_bytes": 8978, "sha256": "d8f03bd513ad7248fbfd0e8b7857e0b9a98dd99c20e9abd81c7e2fd1b350e55e"}
+    },
+    {
+      "id": "production-route-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/production-owner-route-v2-pass-receipt.json",
+      "expect": {"mode": "0664", "size_bytes": 12983, "sha256": "25dd28ded27b010806c550171b41848a2e514e2b57c5ba880d48c1c81b6a8942"}
+    },
+    {
+      "id": "owner-analysis",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/gnome-mutter-owner-analysis-v2.json",
+      "expect": {"mode": "0664", "size_bytes": 7566, "sha256": "2c138d69e404b5e562bc708f5b459f1e7b55cdf184470d3cbaa51a10dc765923"}
+    },
+    {
+      "id": "installed-mutter",
+      "kind": "file",
+      "path": "/usr/lib/x86_64-linux-gnu/libmutter-18.so.0.0.0",
+      "expect": {"mode": "0644", "size_bytes": 2755048, "sha256": "fec9023139ac8eff93fcc1af90413613cdb526e7f02389dc9d8fe90f7abc81e5"}
+    },
+    {
+      "id": "installed-gnome-shell",
+      "kind": "file",
+      "path": "/usr/lib/gnome-shell/libshell-18.so",
+      "expect": {"mode": "0644", "size_bytes": 3107408, "sha256": "94e81e3ff3820b3f8454d596c3a9ee7fa437b770b899098db85f15640a7abb73"}
+    },
+    {
+      "id": "installed-libibus",
+      "kind": "file",
+      "path": "/usr/lib/x86_64-linux-gnu/libibus-1.0.so.5.0.534",
+      "expect": {"mode": "0644", "size_bytes": 542936, "sha256": "e1977b9d3d84ee94b63f6c04056134c10aa51d4e0621f7abee1115da12259ec1"}
+    },
+    {
+      "id": "installed-lay-engine",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "expect": {"mode": "0755", "size_bytes": 6423488, "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a"}
+    }
+  ],
+  "source_checks": [
+    {
+      "id": "reused-input-method-source",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/clutter/clutter/clutter-input-method.c",
+      "sha256": "89093206273858d7c419000667ad32dd7469d8343db3f12e40d49d7bdcf11a2b",
+      "forbidden_effect_patterns": [
+        {"effect": "external_process", "regex": "(?:system|popen|g_spawn)\\s*\\("},
+        {"effect": "live_bus_connection", "regex": "G_BUS_TYPE_SESSION|DBUS_SESSION_BUS_ADDRESS"},
+        {"effect": "installed_path_write", "regex": "(?:/usr/lib|/usr/bin|[.]local/lib/lay)"},
+        {"effect": "input_device_access", "regex": "/dev/(?:input|uinput)"}
+      ]
+    },
+    {
+      "id": "preserved-wayland-owner-source",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-text-input.c",
+      "sha256": "8a388a0be267c5d0744920f862e36ff09f595589573bbfc2efd53177a336f4cb",
+      "forbidden_effect_patterns": [
+        {"effect": "slice3a_profile_promotion", "regex": "atomic_(?:profile|frame|transaction)"},
+        {"effect": "lay_specific_runtime_branch", "regex": "(?i)\\blay\\b"}
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "add-pure-frame-types-and-validator", "kind": "source_edit"},
+      {"id": "add-focus-profile-and-epoch-api", "kind": "source_edit"},
+      {"id": "add-fake-focus-proof", "kind": "source_edit"},
+      {"id": "register-isolated-tests", "kind": "source_edit"},
+      {"id": "sync-remote-task-sandbox", "kind": "remote_filesystem_write"},
+      {"id": "compile-isolated-mutter-remotely", "kind": "remote_build"},
+      {"id": "run-isolated-normal-and-sanitized-tests", "kind": "isolated_process_test"},
+      {"id": "write-proof-receipts", "kind": "filesystem_write"},
+      {"id": "refresh-architecture-graph", "kind": "graph_update"}
+    ],
+    "forbidden": [
+      "local_build",
+      "runtime_deployment",
+      "installed_file_write",
+      "host_package_database_mutation",
+      "sudo_or_privilege_escalation",
+      "restart_gnome_shell",
+      "restart_or_signal_ibus",
+      "connect_live_session_bus",
+      "physical_input_or_text_mutation",
+      "input_device_access",
+      "edit_gnome_shell_source",
+      "edit_ibus_source",
+      "edit_lay_source",
+      "edit_meta_wayland_text_input_owner",
+      "change_legacy_commit_delete_semantics",
+      "advertise_a_live_atomic_profile",
+      "second_mutation_route",
+      "queue_two_effects_as_one_frame",
+      "generic_default_atomic_profile",
+      "application_name_or_gtype_string_heuristic",
+      "runtime_quality_claim"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "installed-mutter-library",
+      "path": "/usr/lib/x86_64-linux-gnu/libmutter-18.so.0.0.0",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "never modify install or restart in Slice 3A",
+      "baseline_check_id": "installed-mutter"
+    },
+    {
+      "id": "installed-shell-library",
+      "path": "/usr/lib/gnome-shell/libshell-18.so",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "never modify install or restart in Slice 3A",
+      "baseline_check_id": "installed-gnome-shell"
+    },
+    {
+      "id": "installed-ibus-library",
+      "path": "/usr/lib/x86_64-linux-gnu/libibus-1.0.so.5.0.534",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "never modify install or restart in Slice 3A",
+      "baseline_check_id": "installed-libibus"
+    },
+    {
+      "id": "installed-lay",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "never modify install or restart in Slice 3A",
+      "baseline_check_id": "installed-lay-engine"
+    },
+    {
+      "id": "wayland-native-owner",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-text-input.c",
+      "policy": "read_only_exact_bytes_in_slice3a",
+      "rollback_policy": "defer all native profile and protocol effects to Slice 3B",
+      "baseline_check_id": "wayland-owner-source"
+    },
+    {
+      "id": "architecture-contract",
+      "path": "../../ime-backend-atomic-frame-v2-2026-08-20.md",
+      "policy": "read_only_during_implementation_then_append_measured_result",
+      "rollback_policy": "never weaken gates after an implementation failure",
+      "baseline_check_id": "architecture-paper"
+    },
+    {
+      "id": "production-route-contract",
+      "path": "LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_ROUTE_V2_2026-08-21.json",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "retain the passing design route",
+      "baseline_check_id": "production-route"
+    },
+    {
+      "id": "production-route-pass",
+      "path": "../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/production-owner-route-v2-pass-receipt.json",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "retain the design-only claim boundary",
+      "baseline_check_id": "production-route-receipt"
+    },
+    {
+      "id": "production-source-analysis",
+      "path": "../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/gnome-mutter-owner-analysis-v2.json",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "retain measured source facts and rejected routes",
+      "baseline_check_id": "owner-analysis"
+    }
+  ],
+  "state_machine": {
+    "initial_state": "DESIGN_ROUTE_PASSED",
+    "steps": [
+      {
+        "id": "write-pure-mutter-slice",
+        "from": "DESIGN_ROUTE_PASSED",
+        "to": "ISOLATED_SOURCE_READY",
+        "mutates": true,
+        "failure_state": "SOURCE_EDIT_FAILED_RETAINED",
+        "cleanup": "retain the isolated diff and failure evidence; do not edit the native Wayland owner or any installed file",
+        "preserves": ["installed-mutter-library", "installed-shell-library", "installed-ibus-library", "installed-lay", "wayland-native-owner", "architecture-contract", "production-route-contract", "production-route-pass", "production-source-analysis"],
+        "test_id": "source-scope-fault-policy"
+      },
+      {
+        "id": "check-remote-capacity",
+        "from": "ISOLATED_SOURCE_READY",
+        "to": "REMOTE_CAPACITY_READY",
+        "mutates": false,
+        "failure_state": "REMOTE_BUSY_BLOCKED",
+        "cleanup": "start no build when the 20-CPU host has a competing task or excessive pre-existing load",
+        "preserves": ["installed-mutter-library", "installed-shell-library", "installed-ibus-library", "installed-lay", "wayland-native-owner"],
+        "test_id": "remote-capacity-gate"
+      },
+      {
+        "id": "sync-remote-sandbox",
+        "from": "REMOTE_CAPACITY_READY",
+        "to": "REMOTE_SOURCE_READY",
+        "mutates": true,
+        "failure_state": "REMOTE_SYNC_FAILED_RETAINED",
+        "cleanup": "remove only task-owned partial remote files or retain them with exact hashes and an error log",
+        "preserves": ["installed-mutter-library", "installed-shell-library", "installed-ibus-library", "installed-lay", "wayland-native-owner", "architecture-contract"],
+        "test_id": "remote-sync-fault-policy"
+      },
+      {
+        "id": "build-remote-isolated-targets",
+        "from": "REMOTE_SOURCE_READY",
+        "to": "REMOTE_BUILD_PASSED",
+        "mutates": true,
+        "failure_state": "REMOTE_BUILD_FAILED_RETAINED",
+        "cleanup": "terminate only the task build process group and retain logs; never fall back to local compilation",
+        "preserves": ["installed-mutter-library", "installed-shell-library", "installed-ibus-library", "installed-lay", "wayland-native-owner", "architecture-contract"],
+        "test_id": "remote-build-fault-policy"
+      },
+      {
+        "id": "run-normal-fake-focus-proof",
+        "from": "REMOTE_BUILD_PASSED",
+        "to": "NORMAL_PROOF_PASSED",
+        "mutates": true,
+        "failure_state": "NORMAL_PROOF_FAILED_RETAINED",
+        "cleanup": "terminate only task test processes and retain all failing seeds and logs",
+        "preserves": ["installed-mutter-library", "installed-shell-library", "installed-ibus-library", "installed-lay", "wayland-native-owner", "architecture-contract"],
+        "test_id": "normal-proof-fault-policy"
+      },
+      {
+        "id": "run-sanitized-fake-focus-proof",
+        "from": "NORMAL_PROOF_PASSED",
+        "to": "SANITIZED_PROOF_PASSED",
+        "mutates": true,
+        "failure_state": "SANITIZED_PROOF_FAILED_RETAINED",
+        "cleanup": "retain sanitizer output and reject Slice 3A on any finding",
+        "preserves": ["installed-mutter-library", "installed-shell-library", "installed-ibus-library", "installed-lay", "wayland-native-owner", "architecture-contract"],
+        "test_id": "sanitized-proof-fault-policy"
+      },
+      {
+        "id": "record-slice3a-result",
+        "from": "SANITIZED_PROOF_PASSED",
+        "to": "SLICE3A_RECEIPT_RECORDED",
+        "mutates": true,
+        "failure_state": "EVIDENCE_WRITE_FAILED_RETAINED",
+        "cleanup": "retain raw proof logs and refuse PASS until the owning paper and receipt both exist",
+        "preserves": ["installed-mutter-library", "installed-shell-library", "installed-ibus-library", "installed-lay", "wayland-native-owner", "production-route-contract", "production-route-pass", "production-source-analysis"],
+        "test_id": "evidence-write-fault-policy"
+      }
+    ],
+    "terminal_states": [
+      "SLICE3A_RECEIPT_RECORDED",
+      "SOURCE_EDIT_FAILED_RETAINED",
+      "REMOTE_BUSY_BLOCKED",
+      "REMOTE_SYNC_FAILED_RETAINED",
+      "REMOTE_BUILD_FAILED_RETAINED",
+      "NORMAL_PROOF_FAILED_RETAINED",
+      "SANITIZED_PROOF_FAILED_RETAINED",
+      "EVIDENCE_WRITE_FAILED_RETAINED"
+    ]
+  },
+  "identity_contracts": [
+    {
+      "id": "effect-wire-identity",
+      "producer": "isolated IBus V2 normal-form a(yv) fixture corpus",
+      "consumer": "Mutter pure frame decoder",
+      "comparison": "exact type bytes enum values canonical order UTF-8 and digest result",
+      "test_id": "ibus-mutter-wire-parity"
+    },
+    {
+      "id": "profile-focus-identity",
+      "producer": "current ClutterInputFocus profile and focus lineage",
+      "consumer": "ClutterInputMethod frame admission",
+      "comparison": "same object identity and exact non-zero focus lineage",
+      "test_id": "focus-lineage-parity"
+    },
+    {
+      "id": "native-epoch-identity",
+      "producer": "ClutterInputMethod one-shot native transaction epoch",
+      "consumer": "fake focus frame submission",
+      "comparison": "exact current epoch accepted once and stale duplicate refused",
+      "test_id": "native-epoch-parity"
+    },
+    {
+      "id": "native-replay-event-identity",
+      "producer": "owned copy of the intercepted key and focus lineage",
+      "consumer": "fake focus synchronous replay",
+      "comparison": "event fields and focus lineage are exact and replay occurs at most once",
+      "test_id": "focus-bound-replay-parity"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "default-focus-unsupported",
+      "statement": "the base ClutterInputFocus and all existing subclasses advertise no live atomic profile in Slice 3A",
+      "test_id": "default-profile-unsupported"
+    },
+    {
+      "id": "complete-vector-before-vfunc",
+      "statement": "unknown malformed reordered duplicate or oversized effects fail before one fake focus vfunc call",
+      "test_id": "complete-vector-admission"
+    },
+    {
+      "id": "one-call-per-admitted-frame",
+      "statement": "one valid frame reaches exactly one fake focus apply call and one terminal result",
+      "test_id": "single-frame-call"
+    },
+    {
+      "id": "focus-change-zero-effect",
+      "statement": "focus loss replacement or stale lineage before submit produces zero apply and replay calls",
+      "test_id": "focus-change-fault-matrix"
+    },
+    {
+      "id": "epoch-one-shot",
+      "statement": "an admitted native transaction epoch cannot be submitted or replayed twice",
+      "test_id": "native-epoch-parity"
+    },
+    {
+      "id": "replay-is-focus-bound",
+      "statement": "native replay is synchronous exact and impossible after focus lineage replacement",
+      "test_id": "focus-bound-replay-parity"
+    },
+    {
+      "id": "legacy-semantics-preserved",
+      "statement": "existing commit delete preedit focus and notify-key APIs retain baseline behavior",
+      "test_id": "legacy-clutter-parity"
+    },
+    {
+      "id": "native-owner-not-implemented",
+      "statement": "MetaWaylandTextInputFocus source bytes remain unchanged and runtime authority remains false",
+      "test_id": "slice3a-source-allowlist"
+    },
+    {
+      "id": "no-local-build",
+      "statement": "all compilation and dynamic tests run only on e@192.168.3.94 after the capacity gate",
+      "test_id": "remote-only-build-receipt"
+    }
+  ],
+  "runtime_comparisons": [],
+  "tests": [
+    {"id": "source-scope-fault-policy", "kind": "fault_injection", "expected": "partial source failure is retained without editing native owner or installed files"},
+    {"id": "remote-capacity-gate", "kind": "runtime_health", "expected": "20 logical CPUs are visible and no competing heavy task is present before build"},
+    {"id": "remote-sync-fault-policy", "kind": "fault_injection", "expected": "sync failure affects only the task-owned remote sandbox"},
+    {"id": "remote-build-fault-policy", "kind": "fault_injection", "expected": "build failure terminates only the remote task group and never triggers local build"},
+    {"id": "normal-proof-fault-policy", "kind": "fault_injection", "expected": "any normal proof failure retains logs and blocks promotion"},
+    {"id": "sanitized-proof-fault-policy", "kind": "fault_injection", "expected": "any ASan UBSan or LSan finding blocks promotion"},
+    {"id": "evidence-write-fault-policy", "kind": "fault_injection", "expected": "missing paper or receipt prevents a Slice 3A PASS claim"},
+    {"id": "ibus-mutter-wire-parity", "kind": "parity", "expected": "IBus-produced canonical and malformed fixtures receive exact matching Mutter decode verdicts"},
+    {"id": "focus-lineage-parity", "kind": "parity", "expected": "query and submit bind the exact current focus identity and lineage"},
+    {"id": "native-epoch-parity", "kind": "fault_injection", "expected": "current epoch is accepted once; stale duplicate future and zero epochs emit zero fake effects"},
+    {"id": "focus-bound-replay-parity", "kind": "parity", "expected": "same-focus replay preserves the copied key exactly once and stale-focus replay is refused"},
+    {"id": "default-profile-unsupported", "kind": "unit", "expected": "base and production focus classes expose no atomic profile in Slice 3A"},
+    {"id": "complete-vector-admission", "kind": "exhaustive_unit", "expected": "only frozen canonical vectors reach the fake focus and every malformed vector emits zero fake effects"},
+    {"id": "single-frame-call", "kind": "unit", "expected": "each admitted frame invokes one fake focus apply call and returns one terminal result"},
+    {"id": "focus-change-fault-matrix", "kind": "fault_injection", "expected": "focus change at every validation boundary yields zero frame and replay effects"},
+    {"id": "legacy-clutter-parity", "kind": "regression", "expected": "existing Clutter input method tests and focused baseline cases remain PASS"},
+    {"id": "slice3a-source-allowlist", "kind": "static", "expected": "only declared Clutter API validator test and Meson files differ; MetaWayland GNOME Shell IBus Lay and installed bytes are unchanged"},
+    {"id": "remote-only-build-receipt", "kind": "parity", "expected": "receipt names e@192.168.3.94 compiler commands source hashes and zero local build process"}
+  ]
+}

@@ -79,6 +79,13 @@ impl TextBackendPreference {
     pub fn should_try_ime(self) -> bool {
         matches!(self, Self::Ime | Self::Auto)
     }
+
+    /// The daemon can mutate text only when uinput is selected explicitly.
+    /// IME/auto events belong to the focused input-method transaction and must
+    /// never fall back to daemon replay for the same physical event.
+    pub const fn daemon_owns_text_mutation(self) -> bool {
+        matches!(self, Self::Uinput)
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

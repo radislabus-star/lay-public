@@ -1,0 +1,91 @@
+{
+  "schema": "lay.ime.real-lay-engine-process-proof.v1",
+  "task_id": "LAY_IME_REAL_ENGINE_ATOMIC_PROCESS_PROOF_V1_2026-08-21",
+  "generated_at": "2026-08-21T17:15:34+03:00",
+  "verdict": "PASS",
+  "verdict_scope": "isolated production IBus daemon to real release lay-ibus-engine atomic process hop",
+  "rejected_assumptions": [
+    {
+      "assumption": "IBus daemon focus_epoch must numerically equal Mutter focus_lineage_identity",
+      "reason": "the values belong to independent non-zero identity namespaces",
+      "correction": "pending engine state names daemon_focus_epoch; Mutter lineage is validated independently"
+    },
+    {
+      "assumption": "AtomicProfile maximum_effect_count is a u32",
+      "reason": "the frozen production ABI defines maximum_effect_count as u8",
+      "wrong_signature": "((uuayuuuu)(tttttbay))",
+      "production_signature": "((uuayuuyu)(tttttbay))"
+    }
+  ],
+  "production_source": {
+    "path": "src/bin/lay_ibus_engine/atomic.rs",
+    "size_bytes": 16640,
+    "sha256": "45b06512eb69f04a967ae40ac7f30438f523d197d8d3e46a23df586016340319"
+  },
+  "release_engine": {
+    "path": "/home/e/build/lay-immediate-space-material-reuse-20260816-v1/target/release/lay-ibus-engine",
+    "sha256": "67eeaa5db09f8d7539fdefd9b76c977ff7439e25860c49199248b1ab9ef8e6e3"
+  },
+  "remote_environment": {
+    "host": "e@192.168.3.94",
+    "logical_cpus": 20,
+    "sandbox": "/home/e/projects/ibus-lay-atomic-epoch-20260821",
+    "proof_root": "/home/e/projects/ibus-lay-atomic-epoch-20260821/proof-real-lay-engine-v1",
+    "leftover_task_processes": 0
+  },
+  "measured": {
+    "real_atomic_replies": {
+      "passed": 514,
+      "total": 514,
+      "result": "PASS"
+    },
+    "first_real_commits": [
+      "ф",
+      "ы"
+    ],
+    "continuous_receipt_settlement": {
+      "passed": 513,
+      "total": 513,
+      "result": "PASS"
+    },
+    "legacy_mutation_signals": 0,
+    "atomic_rpc_latency_ms": {
+      "p50": 0.276,
+      "p99": 0.633,
+      "max": 0.707,
+      "p99_contract_max": 2.0,
+      "max_contract_exclusive": 8.0,
+      "result": "PASS"
+    },
+    "test_rss_kib": 9440,
+    "test_elapsed_seconds": 3.28,
+    "fake_engine_regression": {
+      "passed": 1,
+      "total": 1,
+      "result": "PASS"
+    }
+  },
+  "evidence": {
+    "final_test_log": {
+      "path": "/home/e/projects/ibus-lay-atomic-epoch-20260821/proof-real-lay-engine-v1/final-test.log",
+      "sha256": "49cc07a48d69da81c53d9ca7825790c572e75b2f2caac075d815f5b67772a80d"
+    },
+    "final_metrics": {
+      "path": "/home/e/projects/ibus-lay-atomic-epoch-20260821/proof-real-lay-engine-v1/final-metrics.txt",
+      "sha256": "89097d6659bd04c0f3962f047cd395bef718f5af76aaadb945db85b3990f2bfe"
+    },
+    "fake_regression_log": {
+      "path": "/home/e/projects/ibus-lay-atomic-epoch-20260821/proof-real-lay-engine-v1/fake-regression.log",
+      "sha256": "4f5bccbe2e56d261f70f4ebde3ee68ae81c64e391db93ba4da8828a31bb7e904"
+    }
+  },
+  "not_tested": [
+    "GNOME Shell to IBus to real Lay to Mutter to text-input-v3 isolated round trip",
+    "integrated hot-path latency",
+    "rollbackable package installation",
+    "GNOME session restart",
+    "physical application typing"
+  ],
+  "runtime_authority_changed": false,
+  "deployment_authority": false
+}

@@ -1,0 +1,258 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "VETO",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": false,
+  "contract": "docs/structural_gates/preflights/LAY_IME_BACKEND_ATOMIC_FRAME_CURRENT_OBSERVED_V5_2026-08-21.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "observed_source",
+  "source_root": "/home/ubu/projects",
+  "node_count": 14,
+  "edge_count": 20,
+  "routes": [
+    {
+      "id": "legacy-multi-effect-execution",
+      "event": "legacy_wayland_replace",
+      "kind": "execution",
+      "entry": "lay_legacy_process",
+      "via": [],
+      "terminal": "external_visible_effect",
+      "path_count": 2,
+      "paths": [
+        [
+          "lay_legacy_process",
+          "delete_signal",
+          "daemon_delete_forward",
+          "wayland_delete_callback",
+          "wayland_delete_transaction",
+          "external_visible_effect"
+        ],
+        [
+          "lay_legacy_process",
+          "commit_signal",
+          "daemon_commit_forward",
+          "wayland_commit_callback",
+          "wayland_commit_transaction",
+          "external_visible_effect"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "commit_signal",
+          "delete_signal",
+          "lay_legacy_process"
+        ],
+        "evidence_owner": [
+          "daemon_commit_forward",
+          "daemon_delete_forward"
+        ],
+        "observer": [
+          "external_visible_effect"
+        ],
+        "authorization_owner": [
+          "wayland_commit_callback",
+          "wayland_delete_callback"
+        ],
+        "mutation_owner": [
+          "wayland_commit_transaction",
+          "wayland_delete_transaction"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "lay_legacy_process",
+          "to": "external_visible_effect",
+          "via": [],
+          "graph": "execution",
+          "count": 2,
+          "minimum_count": 2,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "lay_legacy_process",
+              "delete_signal",
+              "daemon_delete_forward",
+              "wayland_delete_callback",
+              "wayland_delete_transaction",
+              "external_visible_effect"
+            ],
+            [
+              "lay_legacy_process",
+              "commit_signal",
+              "daemon_commit_forward",
+              "wayland_commit_callback",
+              "wayland_commit_transaction",
+              "external_visible_effect"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "legacy-delete-authority",
+      "event": "legacy_wayland_replace",
+      "kind": "authority",
+      "entry": "delete_signal",
+      "via": [],
+      "terminal": "wayland_delete_transaction",
+      "path_count": 1,
+      "paths": [
+        [
+          "delete_signal",
+          "daemon_delete_forward",
+          "wayland_delete_callback",
+          "wayland_delete_transaction"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "daemon_delete_forward"
+        ],
+        "producer": [
+          "delete_signal"
+        ],
+        "authorization_owner": [
+          "wayland_delete_callback"
+        ],
+        "mutation_owner": [
+          "wayland_delete_transaction"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "legacy-commit-authority",
+      "event": "legacy_wayland_replace",
+      "kind": "authority",
+      "entry": "commit_signal",
+      "via": [],
+      "terminal": "wayland_commit_transaction",
+      "path_count": 1,
+      "paths": [
+        [
+          "commit_signal",
+          "daemon_commit_forward",
+          "wayland_commit_callback",
+          "wayland_commit_transaction"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "commit_signal"
+        ],
+        "evidence_owner": [
+          "daemon_commit_forward"
+        ],
+        "authorization_owner": [
+          "wayland_commit_callback"
+        ],
+        "mutation_owner": [
+          "wayland_commit_transaction"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {
+    "legacy_wayland_replace": {
+      "evidence_owner": [
+        "daemon_commit_forward",
+        "daemon_delete_forward"
+      ],
+      "authorization_owner": [
+        "wayland_commit_callback",
+        "wayland_delete_callback"
+      ],
+      "render_owner": [],
+      "display_rank_owner": [],
+      "mutation_owner": [
+        "wayland_commit_transaction",
+        "wayland_delete_transaction"
+      ],
+      "candidate_rank_owner": []
+    }
+  },
+  "source_evidence": {
+    "expected": 26,
+    "verified": 26,
+    "complete": true
+  },
+  "issues": [
+    {
+      "code": "path_cardinality_violation",
+      "message": "event reaches the endpoint through the wrong number of same-kind paths",
+      "route": "legacy-multi-effect-execution",
+      "event": "legacy_wayland_replace",
+      "graph": "execution",
+      "source": "lay_legacy_process",
+      "target": "external_visible_effect",
+      "count": 2,
+      "minimum": 1,
+      "maximum": 1,
+      "paths": [
+        [
+          "lay_legacy_process",
+          "delete_signal",
+          "daemon_delete_forward",
+          "wayland_delete_callback",
+          "wayland_delete_transaction",
+          "external_visible_effect"
+        ],
+        [
+          "lay_legacy_process",
+          "commit_signal",
+          "daemon_commit_forward",
+          "wayland_commit_callback",
+          "wayland_commit_transaction",
+          "external_visible_effect"
+        ]
+      ]
+    },
+    {
+      "code": "multiple_event_authority_owners",
+      "message": "authority lanes in one event disagree on a singleton owner",
+      "event": "legacy_wayland_replace",
+      "role": "authorization_owner",
+      "owners": [
+        "wayland_commit_callback",
+        "wayland_delete_callback"
+      ]
+    },
+    {
+      "code": "multiple_event_authority_owners",
+      "message": "authority lanes in one event disagree on a singleton owner",
+      "event": "legacy_wayland_replace",
+      "role": "evidence_owner",
+      "owners": [
+        "daemon_commit_forward",
+        "daemon_delete_forward"
+      ]
+    },
+    {
+      "code": "multiple_event_authority_owners",
+      "message": "authority lanes in one event disagree on a singleton owner",
+      "event": "legacy_wayland_replace",
+      "role": "mutation_owner",
+      "owners": [
+        "wayland_commit_transaction",
+        "wayland_delete_transaction"
+      ]
+    }
+  ],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": true,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

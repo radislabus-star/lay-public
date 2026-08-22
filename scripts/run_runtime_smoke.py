@@ -52,6 +52,11 @@ def main() -> int:
     parser.add_argument("--daemon-debug", action="store_true")
     parser.add_argument("--no-build", action="store_true")
     parser.add_argument(
+        "--json-out",
+        type=Path,
+        help="write exact per-case GTK output for a fail-closed proof consumer",
+    )
+    parser.add_argument(
         "--ime-engine",
         action="store_true",
         help="use lay-ime-ru/lay-ime-us IBus engines as the start layout",
@@ -76,6 +81,7 @@ def main() -> int:
 
     selected = [CASES[name] for name in (args.case or sorted(CASES))]
     failures = 0
+    results: list[dict[str, object]] = []
     ime_context = (
         managed_ime_session(ROOT, ibus_engine_bin) if args.ime_managed else nullcontext()
     )
@@ -95,8 +101,25 @@ def main() -> int:
             print(f"{status} {case.name}: got={got!r} expected={case.expected!r}")
             if detail:
                 print(indent(detail.rstrip()))
+            results.append(
+                {
+                    "name": case.name,
+                    "ok": ok,
+                    "got": got,
+                    "expected": case.expected,
+                }
+            )
             failures += 0 if ok else 1
 
+    if args.json_out is not None:
+        write_json_atomic(
+            args.json_out,
+            {
+                "schema": "lay.runtime-smoke-receipt.v1",
+                "all_passed": failures == 0,
+                "cases": results,
+            },
+        )
     return 1 if failures else 0
 
 
@@ -135,6 +158,21 @@ def ensure_binary(path: Path, bin_name: str, no_build: bool) -> Path:
     if not path.exists():
         raise SystemExit(f"{bin_name} binary was not built: {path}")
     return path
+
+
+def write_json_atomic(path: Path, value: dict[str, object]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    handle, temp_name = tempfile.mkstemp(prefix=f".{path.name}.", dir=path.parent)
+    try:
+        with os.fdopen(handle, "w", encoding="utf-8") as output:
+            json.dump(value, output, ensure_ascii=False, indent=2, sort_keys=True)
+            output.write("\n")
+            output.flush()
+            os.fsync(output.fileno())
+        os.replace(temp_name, path)
+    except BaseException:
+        Path(temp_name).unlink(missing_ok=True)
+        raise
 
 
 def run_case(

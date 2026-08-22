@@ -80,6 +80,30 @@ fn double_shift_exact_auto_undo_is_a_protected_first_priority_contract() {
 }
 
 #[test]
+fn physical_double_shift_has_one_daemon_to_ime_event_bridge() {
+    let event = read("src/bin/lay_daemon/manual_trigger_runtime/event.rs");
+    let fire = read("src/bin/lay_daemon/manual_trigger_runtime/fire.rs");
+    let dispatch = read("src/bin/lay_daemon/manual_trigger_runtime/ime.rs");
+    let controller = read("src/bin/lay_daemon/layout_controller/ime_manual_toggle.rs");
+    let daemon_bridge = read("src/bin/lay_daemon/layout_controller/ime_bridge.rs");
+    let ime_bridge = read("src/bin/lay_ibus_engine/bridge.rs");
+
+    assert!(
+        event.contains("handle_confirmed_double_shift(ctx, now)")
+            && event.contains("fire_configured_manual_trigger(ctx.fire_context())")
+            && fire.contains("dispatch_ime_manual_toggle(ctx.buffer)"),
+        "the physical p-r-p-r sequence must enter the single IME dispatch adapter"
+    );
+    assert!(
+        dispatch.contains("Some(run_ime_manual_toggle())")
+            && controller.contains("ime_bridge::manual_toggle()")
+            && daemon_bridge.contains("call_ime_noarg(\"ManualToggleV2\")")
+            && ime_bridge.contains("#[zbus(name = \"ManualToggleV2\")]"),
+        "the daemon trigger must reach the focused IME through one ManualToggleV2 call"
+    );
+}
+
+#[test]
 fn ime_target_continuity_and_bridge_replay_share_state_transition_contracts() {
     let preedit = read("src/bin/lay_ibus_engine/preedit.rs");
     let engine = read("src/bin/lay_ibus_engine/engine.rs");
@@ -158,9 +182,12 @@ fn ime_preedit_uses_shared_candidate_readout_for_ranking() {
     let live_core = read("src/typing_transition/live_candidate.rs");
 
     assert!(
-        preedit.contains("select_ime_candidate_proposals(ImeCandidateReadoutRequest")
+        !preedit.contains("select_ime_candidate_proposals(ImeCandidateReadoutRequest")
+            && preedit_readout
+                .contains("select_ime_candidate_proposals(ImeCandidateReadoutRequest")
+            && preedit_readout.contains("pub(crate) fn materialize_precognition_candidates(")
             && !preedit.contains("preedit_suffix_bayes_score"),
-        "IME adapter must delegate suffix selection to the transition core"
+        "IME renderer must leave material acquisition and ranking in its readout adapter"
     );
     assert!(
         readout.contains("pub fn select_ime_candidate_suffixes")
@@ -219,11 +246,11 @@ fn daemon_uses_typing_cpu_as_its_nanda_runtime_front_door() {
 fn input_gate_has_no_shadow_pipeline_or_duplicate_trace_types() {
     let gate = read("src/input_gate.rs");
     assert!(
-        gate.contains("fn decide_space_autocorrect")
-            && gate.contains("resolve_text_correction(CorrectionRequest")
+        gate.contains("fn decide_space_autocorrect_observed")
+            && gate.contains("resolve_text_correction_observed(CorrectionRequest")
             && gate.contains("type InputGateCandidateScoreTrace = CorrectionCandidateScoreTrace")
             && gate.contains("type InputGateScoreboard = CorrectionScoreboard"),
-        "InputGate must reuse the canonical correction resolution and traces"
+        "InputGate must reuse the canonical observed correction resolution and traces"
     );
     assert!(
         !std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
@@ -358,16 +385,18 @@ fn input_gate_logs_candidate_admission_separately_from_final_outcome() {
 }
 
 #[test]
-fn live_canonical_l2_uses_the_l2_owned_short_layout_candidates() {
+fn live_canonical_l2_owns_layout_as_a_typed_contour_without_a_side_donor() {
     let l2 = read("src/nanda_wave/l2.rs");
     let bridge = read("src/nanda_wave/l2_field/bridge.rs");
     let layout = read("src/nanda_wave/l2/layout_adapter.rs");
 
     assert!(
-        l2.contains("pub(crate) fn hot_short_layout_candidates")
-            && l2.contains("layout_adapter::short_token_candidates")
-            && bridge.contains("crate::nanda_wave::l2::hot_short_layout_candidates(original)"),
-        "canonical L2 must keep short layout candidate production inside the shared L2 owner"
+        !l2.contains("pub(crate) fn hot_short_layout_candidates")
+            && !bridge.contains("hot_short_layout_candidates")
+            && bridge.contains("CanonicalInputTokenKind::PhysicalLayout")
+            && bridge.contains("CanonicalContourRelation::ExactLayout")
+            && bridge.contains("live_l11_contour_results("),
+        "the canonical field must represent layout evidence as a typed contour instead of calling a side donor"
     );
     assert!(
         !layout.contains("TransitionDecisionCore")

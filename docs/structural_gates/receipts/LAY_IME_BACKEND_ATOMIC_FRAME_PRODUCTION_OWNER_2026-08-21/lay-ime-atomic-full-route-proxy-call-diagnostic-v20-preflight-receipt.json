@@ -1,0 +1,151 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "proof-runner-v17",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh",
+      "sha256": "f86b82106f1e55100a253a20eeb5cfd861b0127827670ad6d534d81732eee83f",
+      "size_bytes": 10143
+    },
+    {
+      "exists": true,
+      "id": "v19-shell-admission-evidence",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/atomic-full-route-v19-test-observer.log",
+      "sha256": "cac3bd2fed460fef9463fc1dddad122744ccb610c998238d2e1f866f38c2257c",
+      "size_bytes": 7511
+    },
+    {
+      "exists": true,
+      "id": "shell-input-method-production-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/js/misc/inputMethod.js",
+      "sha256": "7e84931650ccee7920428d22287da6e99763db7f08783a48fdda55fd459e3b37",
+      "size_bytes": 15192
+    },
+    {
+      "exists": true,
+      "id": "shell-atomic-adapter-production-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/js/misc/inputMethodAtomic.js",
+      "sha256": "d40801329973da6c3e96f35edc2f478ad82c7752f4e245cb01f69904a24e19c0",
+      "size_bytes": 15841
+    },
+    {
+      "exists": true,
+      "id": "mutter-text-input-production-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-text-input.c",
+      "sha256": "99debf2aca19cccd22ecd7b59e0629cbbb39f76ee4b7f5924ac45aededbc38f2",
+      "size_bytes": 52566
+    },
+    {
+      "exists": true,
+      "id": "mutter-input-method-production-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/clutter/clutter/clutter-input-method.c",
+      "sha256": "01f5f24eb86267c9ca61dd57d7a33924600dff97062a29ada47b8ff47deb4708",
+      "size_bytes": 29243
+    },
+    {
+      "exists": true,
+      "id": "shell-physical-route-test",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/shell/atomicInputMethodRoute.js",
+      "sha256": "d08e0e0c161fa95c7c8813046c608cac5318870600f60e534bb97b74b17a4c2b",
+      "size_bytes": 5498
+    },
+    {
+      "exists": true,
+      "id": "installed-lay-engine",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a",
+      "size_bytes": 6423488
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 8,
+    "forbidden_side_effect_kinds": [
+      "diagnostic_latency_promoted_to_pass",
+      "installed_file_write",
+      "live_keyboard_signal",
+      "live_session_restart",
+      "local_build",
+      "orphaned_test_process",
+      "physical_user_text_mutation",
+      "production_source_edit",
+      "remote_build",
+      "route_semantics_change",
+      "runtime_deployment",
+      "uncontrolled_remote_load"
+    ],
+    "identity_contracts": 2,
+    "invariants": 4,
+    "planned_side_effect_kinds": [
+      "ephemeral_process_start",
+      "filesystem_write",
+      "remote_filesystem_write",
+      "test_source_edit"
+    ],
+    "preserved_artifacts": 3,
+    "runtime_comparisons": 2,
+    "source_checks": 4,
+    "tests": 10
+  },
+  "manifest_sha256": "6a91edf134d35860b6fa5cbb33ee8eef789681c8419ff02f1a7f75cf5235940d",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-v17-proof-runner",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh",
+      "sha256": "f86b82106f1e55100a253a20eeb5cfd861b0127827670ad6d534d81732eee83f",
+      "size_bytes": 10143
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-v19-shell-test-observer",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/shell/atomicInputMethodRoute.js",
+      "sha256": "d08e0e0c161fa95c7c8813046c608cac5318870600f60e534bb97b74b17a4c2b",
+      "size_bytes": 5498
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-shell-route",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/js/misc/inputMethod.js",
+      "sha256": "7e84931650ccee7920428d22287da6e99763db7f08783a48fdda55fd459e3b37",
+      "size_bytes": 15192
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-mutter-route",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-text-input.c",
+      "sha256": "99debf2aca19cccd22ecd7b59e0629cbbb39f76ee4b7f5924ac45aededbc38f2",
+      "size_bytes": 52566
+    }
+  ],
+  "task_id": "LAY_IME_ATOMIC_FULL_ROUTE_PROXY_CALL_DIAGNOSTIC_V20_2026-08-21",
+  "verdict": "READY_TO_IMPLEMENT"
+}

@@ -1,0 +1,68 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "atomic-key-interface", "role": "interface"},
+    {"id": "pending-speculative-state", "role": "producer"},
+    {"id": "surrounding-freshness-evidence", "role": "evidence_owner"},
+    {"id": "atomic-receipt-validator", "role": "authorization_owner"},
+    {"id": "state-reconciler", "role": "orchestrator"},
+    {"id": "committed-engine-state", "role": "mutation_owner"},
+    {"id": "set-surrounding-interface", "role": "interface"},
+    {"id": "visible-postcondition-observer", "role": "observer"},
+    {"id": "physical-route-observer", "role": "observer"},
+    {"id": "physical-undo-receipt", "role": "proof_owner"}
+  ],
+  "edges": [
+    {"id": "settlement-input-validator", "from": "atomic-key-interface", "relation": "calls", "to": "atomic-receipt-validator", "events": ["receipt-settlement"]},
+    {"id": "settlement-validator-pending", "from": "atomic-receipt-validator", "relation": "delegates", "to": "pending-speculative-state", "events": ["receipt-settlement"]},
+    {"id": "settlement-pending-reconciler", "from": "pending-speculative-state", "relation": "delegates", "to": "state-reconciler", "events": ["receipt-settlement"]},
+    {"id": "settlement-reconciler-state", "from": "state-reconciler", "relation": "delegates", "to": "committed-engine-state", "events": ["receipt-settlement"]},
+
+    {"id": "authority-pending-evidence", "from": "pending-speculative-state", "relation": "produces_for", "to": "surrounding-freshness-evidence", "events": ["atomic-state-authority"]},
+    {"id": "authority-evidence-validator", "from": "surrounding-freshness-evidence", "relation": "passes_to", "to": "atomic-receipt-validator", "events": ["atomic-state-authority"]},
+    {"id": "authority-validator-state", "from": "atomic-receipt-validator", "relation": "authorizes", "to": "committed-engine-state", "events": ["atomic-state-authority"]},
+
+    {"id": "observation-interface-evidence", "from": "set-surrounding-interface", "relation": "calls", "to": "surrounding-freshness-evidence", "events": ["fresh-surrounding-observation"]},
+    {"id": "observation-evidence-postcondition", "from": "surrounding-freshness-evidence", "relation": "delegates", "to": "visible-postcondition-observer", "events": ["fresh-surrounding-observation"]},
+
+    {"id": "proof-observer-receipt", "from": "physical-route-observer", "relation": "proves", "to": "physical-undo-receipt", "events": ["physical-double-shift-proof"]}
+  ],
+  "routes": [
+    {
+      "id": "receipt-settlement-execution",
+      "event": "receipt-settlement",
+      "kind": "execution",
+      "entry": "atomic-key-interface",
+      "terminal": "committed-engine-state",
+      "required_roles": ["interface", "authorization_owner", "producer", "orchestrator", "mutation_owner"],
+      "path_cardinality": [{"from": "atomic-key-interface", "to": "committed-engine-state", "min": 1, "max": 1}]
+    },
+    {
+      "id": "atomic-state-authority",
+      "event": "atomic-state-authority",
+      "kind": "authority",
+      "entry": "pending-speculative-state",
+      "terminal": "committed-engine-state",
+      "required_roles": ["producer", "evidence_owner", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "pending-speculative-state", "to": "committed-engine-state", "min": 1, "max": 1}]
+    },
+    {
+      "id": "fresh-surrounding-observation",
+      "event": "fresh-surrounding-observation",
+      "kind": "observation",
+      "entry": "set-surrounding-interface",
+      "terminal": "visible-postcondition-observer",
+      "required_roles": ["interface", "evidence_owner", "observer"],
+      "path_cardinality": [{"from": "set-surrounding-interface", "to": "visible-postcondition-observer", "min": 1, "max": 1}]
+    },
+    {
+      "id": "physical-double-shift-proof",
+      "event": "physical-double-shift-proof",
+      "kind": "proof",
+      "entry": "physical-route-observer",
+      "terminal": "physical-undo-receipt",
+      "required_roles": ["observer", "proof_owner"]
+    }
+  ]
+}

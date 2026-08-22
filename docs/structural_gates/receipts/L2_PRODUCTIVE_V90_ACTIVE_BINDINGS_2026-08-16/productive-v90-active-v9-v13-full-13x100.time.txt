@@ -1,0 +1,23 @@
+	Command being timed: "/home/e/build/lay-ime-boundary-layout-proof-20260815/target/release/lay-nanda-wave-train --prove-productive-paradigm-v1 /home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m --memory /home/e/build/lay-productive-v90-active-20260816/input/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.v9.bin --l2-package /home/e/.local/share/lay/nanda_wave/l2/LAY-L2-RU-FULL-v13.bin --axis-schema /home/e/build/lay-productive-v90-active-20260816/source/data/morphology/productive_v1_ru_axis_schema.json --work-dir /home/e/build/lay-productive-v90-active-20260816/work/full-v1-v90-active-v9-v13 --heldout-per-class 100 --workers 20 --receipt /home/e/build/lay-productive-v90-active-20260816/receipts/productive-v90-active-v9-v13-full-13x100.json"
+	User time (seconds): 536.87
+	System time (seconds): 0.59
+	Percent of CPU this job got: 1218%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:44.12
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 396848
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 60744
+	Voluntary context switches: 319
+	Involuntary context switches: 58998
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 2096
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

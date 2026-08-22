@@ -105,6 +105,31 @@ pub(crate) fn verify_visible_text_transition(
             move_right: 0,
         }
     };
+
+    if let Some(selected_action) = candidate.selected_action {
+        let mismatch_reason = if !selected_action.allow_apply() {
+            Some("selected_action_not_executable")
+        } else if selected_action.from_text() != original_text {
+            Some("selected_action_from_mismatch")
+        } else if selected_action.to_text() != candidate.insert_text {
+            Some("selected_action_to_mismatch")
+        } else if selected_action.plan() != Some(&plan) {
+            Some("selected_action_plan_mismatch")
+        } else {
+            None
+        };
+        if let Some(reason) = mismatch_reason {
+            return TextTransitionDecision::Reject {
+                rejection: TextTransitionRejection::UnsafeEdit { reason },
+                action: Some(selected_action),
+            };
+        }
+        return TextTransitionDecision::Apply {
+            plan,
+            action: selected_action,
+        };
+    }
+
     let receipt = DecisionTransitionReceipt::for_visible_tail(
         original_text.clone(),
         candidate.insert_text.clone(),

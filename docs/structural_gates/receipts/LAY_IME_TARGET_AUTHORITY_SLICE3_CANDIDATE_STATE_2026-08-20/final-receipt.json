@@ -1,0 +1,110 @@
+{
+  "schema": "lay.ime-target-authority-slice3-candidate-state-final-receipt.v1",
+  "created_at": "2026-08-20T13:28:00Z",
+  "verdict": "PASS_SLICE3_CANDIDATE_STATE_SHADOW_RUNTIME_UNCHANGED",
+  "claim_scope": "frame-bound candidate validity and separate original-preservation shadow",
+  "preflight": {
+    "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE3_CANDIDATE_STATE_IMPLEMENTATION_PREFLIGHT_V3_2026-08-20.json",
+    "sha256": "893b8d45822915b766275f3093eac93af8586388843a599fc85ae84392b3a63a",
+    "verdict": "READY_TO_IMPLEMENT",
+    "safe_to_implement": true
+  },
+  "implementation": {
+    "source_sha256": {
+      "src/nanda_wave/l2_field/productive_v1/candidate_state.rs": "1cedca478e3ee64f8b9a414b6014544747600ec15f1374a4331f778992cf6b59",
+      "src/nanda_wave/l2_field/productive_v1/material_frame.rs": "f5babdbd43d2e1d50a1d2a4e9d6021097183c902323f79c596ac9a7d30db538c",
+      "src/nanda_wave/l2_field/productive_v1/mod.rs": "d818d4491e0108ee3c51b9bf3ace1d485e6cd66be77c1620feebefb74a5fa0e7",
+      "src/nanda_wave/l2_field/productive_v1/proof.rs": "22a7a52bf6804febe27c8fdd87df1e7b487f06c1fe2fb30d9ff4e52c0dcadd93",
+      "src/typing_transition/target_evidence.rs": "28c62b4ff746ab34506906102620d5f9ad57de1b5946a30aa6f9894fe456b7da"
+    },
+    "candidate_state_unit_tests": "7/7 PASS",
+    "material_frame_unit_tests": "6/6 PASS",
+    "target_evidence_unit_tests": "16/16 PASS",
+    "local_format": "scripts/cargo-guard.sh fmt --all -- --check PASS",
+    "local_check": "scripts/cargo-guard.sh check --lib PASS"
+  },
+  "proofs": {
+    "smoke": {
+      "receipt": "slice3-candidate-state-smoke-13x1.json",
+      "sha256": "a26380d4c461247f7fa3fd37f135044a625b925fdcf85dd2bba9e48684014c74",
+      "derivations": 39,
+      "expected_derivations": 39,
+      "false_grounding": 0,
+      "cross_context_mismatches": 0,
+      "stale_frame_accepts": 0
+    },
+    "fixed": {
+      "receipt": "slice3-candidate-state-fixed-13x100.json",
+      "sha256": "d99c2c764aff843d85c2e01c3062718c417bb3e82f0cb892f07855007f3ce35f",
+      "time_receipt": "slice3-candidate-state-fixed-13x100.time.txt",
+      "time_sha256": "be9d678ae29fda50feeaae06713fe4d6d6b4bd05bda62b8a4949c52a3e1e28cc",
+      "evaluated": 2600,
+      "material_pairs": 1300,
+      "context_comparisons": 3900,
+      "candidate_state_derivations": 3864,
+      "expected_candidate_state_derivations": 3864,
+      "born": 0,
+      "grounded": 3864,
+      "rejected": 0,
+      "false_grounding": 0,
+      "cross_context_mismatches": 0,
+      "stale_frame_accepts": 0
+    }
+  },
+  "completeness_scope": {
+    "complete_material": 423,
+    "upstream_incomplete_material": 877,
+    "rule": "field-level upstream incompleteness blocks authority but does not erase an independently complete exact grounding for a retained target",
+    "target_namespace_rule": "an incomplete target-grounding namespace remains Born; Rejected requires a complete target namespace",
+    "authority_from_incomplete_material": 0
+  },
+  "original_preservation": {
+    "outside_target_set": true,
+    "comparisons": 3900,
+    "preserve": 48,
+    "replace_permitted": 1080,
+    "unresolved": 2772,
+    "sum_matches_comparisons": true
+  },
+  "safety": {
+    "manifest_h": 1280,
+    "h_to_b_losses": 0,
+    "b_to_s0_losses": 0,
+    "probe_parity": "2600/2600 exact",
+    "false_singleton": 0,
+    "integrity_errors": 0,
+    "runtime_authority_changed": false
+  },
+  "resource_observation": {
+    "workers": 20,
+    "wall_seconds": 19.77,
+    "cpu_percent": 674,
+    "peak_rss_kib": 392048,
+    "maximum_class_p99_us": 16181,
+    "latency_gate_us": 5000,
+    "latency_promotion_claimed": false,
+    "causal_scope": "the historical aggregate verdict remains FAIL because productive traversal p99 exceeds 5 ms; CandidateState is a post-frame shadow and Slice 3 makes no live latency or promotion claim"
+  },
+  "tested": [
+    "Born Grounded and Rejected truth table after exact frame binding",
+    "witness-local rejection with independent grounded-witness survival",
+    "incomplete target namespace remaining Born",
+    "field-level incompleteness propagation as an absolute authority blocker",
+    "stale frame and lease rejection",
+    "source-neutral original preservation outside the replacement target set",
+    "fixed 13x100 candidate-state and original-preservation counters"
+  ],
+  "not_tested": [
+    "conflict cohort construction or Winner Tied ABSTAIN settlement",
+    "authority transfer into live L2 L3 L4 DecisionCore or verifier",
+    "queue-inclusive daemon or IBus latency",
+    "physical application behavior",
+    "automatic mutation rollback package rebuild or deployment"
+  ],
+  "source_report_verdict": "FAIL_measured_shadow_gates",
+  "source_report_verdict_explanation": "the historical aggregate includes the pre-existing productive traversal latency gate; all Slice 3 candidate-state, completeness, frame, safety and parity conditions pass",
+  "runtime_authority_changed": false,
+  "deployment_actions": 0,
+  "installed_version_changed": false,
+  "next_gate": "Slice 4 conflict cohort and Winner Tied ABSTAIN verdict shadow preflight"
+}

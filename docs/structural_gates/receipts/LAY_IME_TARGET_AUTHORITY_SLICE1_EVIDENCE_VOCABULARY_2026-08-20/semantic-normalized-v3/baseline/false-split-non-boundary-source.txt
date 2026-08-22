@@ -1,0 +1,13 @@
+test correction_core::tests::boundary_gate_rejects_known_word_split_from_non_boundary_candidate ... 
+thread 'correction_core::tests::boundary_gate_rejects_known_word_split_from_non_boundary_candidate' (PID) panicked at src/correction_core/tests.rs:1697:9:
+assertion `left == right` failed
+  left: SuggestOnly
+ right: KeepOriginal
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+FAILED
+
+failures:
+
+failures:
+    correction_core::tests::boundary_gate_rejects_known_word_split_from_non_boundary_candidate
+

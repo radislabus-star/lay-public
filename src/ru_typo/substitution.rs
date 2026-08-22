@@ -3,8 +3,15 @@ use crate::text_case::apply_word_case;
 use crate::word_reader::is_cyrillic_word;
 
 use super::keyboard::are_ru_keyboard_neighbors;
+use super::memo::{memoized_text, WordMaterialKind};
 
 pub(crate) fn correct_single_letter_substitution(word: &str) -> Option<String> {
+    memoized_text(WordMaterialKind::SingleLetterSubstitution, word, || {
+        correct_single_letter_substitution_uncached(word)
+    })
+}
+
+fn correct_single_letter_substitution_uncached(word: &str) -> Option<String> {
     if word.chars().count() < 5 || !is_cyrillic_word(word) {
         return None;
     }

@@ -1,0 +1,12 @@
+process_status=1
+integrated_marker_count=0
+registry_ready_count=1
+reuse_count=2
+process_exit_zero_count=0
+forbidden_marker_count=1
+engine_trace_lines=9
+engine_key_events=0
+legacy_key_calls=0
+leftovers_before_cleanup=1
+leftovers_after_cleanup=0
+

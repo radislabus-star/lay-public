@@ -1,0 +1,313 @@
+{
+  "authority_bearing": false,
+  "baseline_checks": [
+    {
+      "id": "ibus-bus-inputcontext-source",
+      "kind": "file",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/bus/inputcontext.c",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 129694,
+        "sha256": "d6fbaf772962153900a1bd1230df63e90d1cd37ba6020f61f1dddc8c30ab332c"
+      }
+    },
+    {
+      "id": "ibus-client-inputcontext-source",
+      "kind": "file",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/ibusinputcontext.c",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 63586,
+        "sha256": "470a92daa5cd587c7110a744db5c19f54625f54e5bd969f1cbc1ea47450364b4"
+      }
+    },
+    {
+      "id": "ibus-client-inputcontext-header",
+      "kind": "file",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/ibusinputcontext.h",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 22909,
+        "sha256": "70717bc1ea6ccb753c2c68e9ed7c0b9ca21c01ee648a9d17ec5d80c01eee49f1"
+      }
+    },
+    {
+      "id": "installed-ibus-daemon",
+      "kind": "file",
+      "path": "/usr/bin/ibus-daemon",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 170496,
+        "sha256": "24338c0e7cfb749d2ac9b9254d7d54029e71b5ac9342aa1b8d78b1d55f5ac1b6"
+      }
+    },
+    {
+      "id": "installed-libibus",
+      "kind": "file",
+      "path": "/usr/lib/x86_64-linux-gnu/libibus-1.0.so.5.0.534",
+      "expect": {
+        "mode": "0644",
+        "size_bytes": 542936,
+        "sha256": "e1977b9d3d84ee94b63f6c04056134c10aa51d4e0621f7abee1115da12259ec1"
+      }
+    },
+    {
+      "id": "installed-gtk3-ibus-module",
+      "kind": "file",
+      "path": "/usr/lib/x86_64-linux-gnu/gtk-3.0/3.0.0/immodules/im-ibus.so",
+      "expect": {
+        "mode": "0644",
+        "size_bytes": 47288,
+        "sha256": "644cedf86a7b6e18d2be31afeb75007c85e6bdb0ed8a6b5c53c54621310aa3e2"
+      }
+    },
+    {
+      "id": "installed-gtk4-ibus-module",
+      "kind": "file",
+      "path": "/usr/lib/x86_64-linux-gnu/gtk-4.0/4.0.0/immodules/libim-ibus.so",
+      "expect": {
+        "mode": "0644",
+        "size_bytes": 47272,
+        "sha256": "4e5b450fa00d51a45fbcc160e26358d81da793b39b6e04a27c749b905b3cba60"
+      }
+    },
+    {
+      "id": "backend-design-paper",
+      "kind": "file",
+      "path": "../../ime-backend-atomic-receipt-v1-2026-08-20.md",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 11089,
+        "sha256": "c5455e7df8fd33f31d6de92016f154d174b804ab16e8880b37a5e5da3296506b"
+      }
+    },
+    {
+      "id": "backend-route-v2",
+      "kind": "file",
+      "path": "LAY_IME_BACKEND_ATOMIC_RECEIPT_ROUTE_V2_2026-08-20.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 8866,
+        "sha256": "c76ef5467aad0c09eb17736cf609fc88b2d8cae4655f3711837fa8abe9f11576"
+      }
+    },
+    {
+      "id": "backend-route-v2-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_BACKEND_ATOMIC_RECEIPT_V1_DESIGN_2026-08-20/route-design-v2-receipt.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 16464,
+        "sha256": "9a8fb554eae0cae4db67cad440369858e62ac30ca843a041c5d6e811301957ec"
+      }
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "input-event-frame-identity",
+      "producer": "ibus-daemon ProcessKeyEvent frame owner",
+      "consumer": "client atomic frame take",
+      "comparison": "transaction id, input-context identity and event identity are byte-identical",
+      "test_id": "frame-identity-parity"
+    },
+    {
+      "id": "effect-vector-digest",
+      "producer": "sealed daemon post-process frame",
+      "consumer": "single client batch apply owner",
+      "comparison": "operation count, ordered serialized bytes and digest are byte-identical before apply",
+      "test_id": "effect-vector-parity"
+    },
+    {
+      "id": "handled-disposition-binding",
+      "producer": "complete frame take/apply receipt",
+      "consumer": "client key-event handled return",
+      "comparison": "handled true exists only for the same successfully taken complete frame identity",
+      "test_id": "handled-binding-parity"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "no-prefix-delivery",
+      "statement": "engine error cancellation or queue overflow exposes zero operation prefixes to the client",
+      "test_id": "engine-prefix-kill-matrix"
+    },
+    {
+      "id": "one-frame-owner",
+      "statement": "one ProcessKeyEvent has at most one collecting or sealed frame and one successful take",
+      "test_id": "single-take-state-machine"
+    },
+    {
+      "id": "fetch-failure-is-unhandled",
+      "statement": "frame fetch failure applies zero operations and forces the original event unhandled",
+      "test_id": "fetch-failure-disposition"
+    },
+    {
+      "id": "whole-frame-overflow",
+      "statement": "operation 31 invalidates and discards the complete frame rather than forwarding or truncating it",
+      "test_id": "bounded-overflow"
+    },
+    {
+      "id": "installed-runtime-immutable",
+      "statement": "all installed IBus and Lay runtime bytes and running processes remain untouched",
+      "test_id": "installed-runtime-parity"
+    },
+    {
+      "id": "isolated-session-only",
+      "statement": "the proof uses a private dbus-run-session and cannot connect to the live desktop session bus or emit real input",
+      "test_id": "isolation-scan"
+    }
+  ],
+  "preserved_artifacts": [
+    {
+      "id": "installed-daemon",
+      "path": "/usr/bin/ibus-daemon",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "never modify or replace",
+      "baseline_check_id": "installed-ibus-daemon"
+    },
+    {
+      "id": "installed-library",
+      "path": "/usr/lib/x86_64-linux-gnu/libibus-1.0.so.5.0.534",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "never modify or replace",
+      "baseline_check_id": "installed-libibus"
+    },
+    {
+      "id": "installed-gtk3-module",
+      "path": "/usr/lib/x86_64-linux-gnu/gtk-3.0/3.0.0/immodules/im-ibus.so",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "never modify or replace",
+      "baseline_check_id": "installed-gtk3-ibus-module"
+    },
+    {
+      "id": "installed-gtk4-module",
+      "path": "/usr/lib/x86_64-linux-gnu/gtk-4.0/4.0.0/immodules/libim-ibus.so",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "never modify or replace",
+      "baseline_check_id": "installed-gtk4-ibus-module"
+    },
+    {
+      "id": "design-paper",
+      "path": "../../ime-backend-atomic-receipt-v1-2026-08-20.md",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "retain design and rejected strategies",
+      "baseline_check_id": "backend-design-paper"
+    }
+  ],
+  "reuses_existing_implementation": true,
+  "runtime_comparisons": [],
+  "schema": "nanda.implementation-preflight.v1",
+  "scientific_future_sensitive": true,
+  "side_effects": {
+    "forbidden": [
+      "runtime_deployment",
+      "installed_file_write",
+      "package_install",
+      "restart_live_ibus",
+      "signal_live_ibus",
+      "connect_live_session_bus",
+      "text_mutation",
+      "layout_mutation",
+      "synthetic_key_output",
+      "generated_traffic",
+      "threshold_relaxation",
+      "old_runtime_fallback"
+    ],
+    "planned": [
+      {"id": "edit-isolated-ibus-frame-owner", "kind": "source_edit"},
+      {"id": "edit-isolated-client-frame-api", "kind": "source_edit"},
+      {"id": "add-isolated-killpoint-tests", "kind": "source_edit"},
+      {"id": "remote-sandbox-build", "kind": "remote_build"},
+      {"id": "private-dbus-session-proof", "kind": "isolated_process_test"},
+      {"id": "write-proof-receipts", "kind": "filesystem_write"}
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "ibus-frame-owner-source",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/bus/inputcontext.c",
+      "sha256": "d6fbaf772962153900a1bd1230df63e90d1cd37ba6020f61f1dddc8c30ab332c",
+      "forbidden_effect_patterns": [
+        {"effect": "runtime_deployment", "regex": "(?:systemctl|pkill|killall|/usr/bin/ibus-daemon)"},
+        {"effect": "installed_file_write", "regex": "(?:open|rename|write).{0,120}/usr/(?:bin|lib)"},
+        {"effect": "threshold_relaxation", "regex": "MAX_SYNC_DATA\\s+(?:3[1-9]|[4-9][0-9])"}
+      ]
+    },
+    {
+      "id": "ibus-client-frame-source",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/ibusinputcontext.c",
+      "sha256": "470a92daa5cd587c7110a744db5c19f54625f54e5bd969f1cbc1ea47450364b4",
+      "forbidden_effect_patterns": [
+        {"effect": "runtime_deployment", "regex": "(?:systemctl|pkill|killall|/usr/bin/ibus-daemon)"},
+        {"effect": "connect_live_session_bus", "regex": "g_bus_get_sync\\s*\\(\\s*G_BUS_TYPE_SESSION"},
+        {"effect": "installed_file_write", "regex": "(?:open|rename|write).{0,120}/usr/(?:bin|lib)"}
+      ]
+    }
+  ],
+  "state_machine": {
+    "initial_state": "BASELINE_PINNED",
+    "steps": [
+      {
+        "id": "implement-daemon-frame-owner",
+        "from": "BASELINE_PINNED",
+        "to": "FRAME_OWNER_IMPLEMENTED",
+        "mutates": true,
+        "failure_state": "SOURCE_FAILED_RETAINED",
+        "cleanup": "retain isolated source diff and failure receipt; do not build or install",
+        "preserves": ["installed-daemon", "installed-library", "installed-gtk3-module", "installed-gtk4-module", "design-paper"],
+        "test_id": "frame-owner-static-contract"
+      },
+      {
+        "id": "implement-client-frame-take",
+        "from": "FRAME_OWNER_IMPLEMENTED",
+        "to": "CLIENT_TAKE_IMPLEMENTED",
+        "mutates": true,
+        "failure_state": "SOURCE_FAILED_RETAINED",
+        "cleanup": "retain isolated source diff and failure receipt; do not build or install",
+        "preserves": ["installed-daemon", "installed-library", "installed-gtk3-module", "installed-gtk4-module", "design-paper"],
+        "test_id": "client-take-static-contract"
+      },
+      {
+        "id": "build-isolated-source",
+        "from": "CLIENT_TAKE_IMPLEMENTED",
+        "to": "ISOLATED_BUILD_READY",
+        "mutates": true,
+        "failure_state": "BUILD_FAILED_RETAINED",
+        "cleanup": "retain build log outside installed paths and stop; do not install",
+        "preserves": ["installed-daemon", "installed-library", "installed-gtk3-module", "installed-gtk4-module", "design-paper"],
+        "test_id": "isolated-build"
+      },
+      {
+        "id": "run-killpoint-proof",
+        "from": "ISOLATED_BUILD_READY",
+        "to": "PROOF_COMPLETE",
+        "mutates": true,
+        "failure_state": "PROOF_FAILED_RETAINED",
+        "cleanup": "terminate only private dbus-run-session children and retain exact logs; never signal live IBus",
+        "preserves": ["installed-daemon", "installed-library", "installed-gtk3-module", "installed-gtk4-module", "design-paper"],
+        "test_id": "engine-prefix-kill-matrix"
+      }
+    ],
+    "terminal_states": [
+      "PROOF_COMPLETE",
+      "SOURCE_FAILED_RETAINED",
+      "BUILD_FAILED_RETAINED",
+      "PROOF_FAILED_RETAINED"
+    ]
+  },
+  "task_id": "LAY_IME_BACKEND_ATOMIC_RECEIPT_IMPLEMENTATION_V1_2026-08-20",
+  "tests": [
+    {"id": "frame-owner-static-contract", "kind": "source_contract", "expected": "engine error and operation overflow discard a whole private frame"},
+    {"id": "client-take-static-contract", "kind": "source_contract", "expected": "complete frame take result controls handled disposition"},
+    {"id": "frame-identity-parity", "kind": "parity", "expected": "daemon and client frame identities match for every case"},
+    {"id": "effect-vector-parity", "kind": "parity", "expected": "ordered effect bytes and digest match before apply"},
+    {"id": "handled-binding-parity", "kind": "parity", "expected": "handled true has one matching complete apply receipt"},
+    {"id": "engine-prefix-kill-matrix", "kind": "fault_injection", "expected": "every engine kill prefix yields zero client effects and one unhandled original event"},
+    {"id": "single-take-state-machine", "kind": "fault_injection", "expected": "duplicate and stale frame take are rejected"},
+    {"id": "fetch-failure-disposition", "kind": "fault_injection", "expected": "fetch failure yields zero effects and unhandled original event"},
+    {"id": "bounded-overflow", "kind": "boundary", "expected": "30 operations are bounded; operation 31 discards the complete frame"},
+    {"id": "isolated-build", "kind": "build", "expected": "exact Ubuntu source builds outside installed paths"},
+    {"id": "installed-runtime-parity", "kind": "parity", "expected": "all installed IBus artifact hashes remain byte-identical"},
+    {"id": "isolation-scan", "kind": "source_contract", "expected": "proof contains no live session bus, runtime restart, installed write or synthetic input route"}
+  ]
+}

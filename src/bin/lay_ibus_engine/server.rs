@@ -41,6 +41,13 @@ pub(crate) async fn run(args: &Args) -> zbus::Result<()> {
     // Publish the IBus factory and bridge before touching lexical memory. GNOME
     // may select the configured engine immediately during login; registration
     // must remain available while compact L2 memory warms in the background.
+    super::space_autocorrect_prefetch::initialize();
+    std::thread::Builder::new()
+        .name("lay-exact-layout-warmup".to_string())
+        .spawn(|| {
+            let _ = lay::exact_layout_authority::warm_up_exact_layout_authority_for_ibus();
+        })
+        .map_err(|error| zbus::Error::Failure(error.to_string()))?;
     lay::typing_cpu::TypingCpu::ensure_ime_warmup_started();
 
     std::future::pending::<()>().await;

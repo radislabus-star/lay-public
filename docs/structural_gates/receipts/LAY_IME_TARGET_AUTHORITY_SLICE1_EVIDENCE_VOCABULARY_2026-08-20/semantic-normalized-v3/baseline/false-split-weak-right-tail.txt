@@ -1,0 +1,11 @@
+test nanda_wave::l2::tests::boundary_cell_does_not_birth_short_fragment_split_from_weak_right_tail ... layout-center token="абри" raw="f,hb" blocked=false
+l2_boundary_fuzzy_trace elapsed_us=TIME candidates=32
+l2_boundary_light_trace elapsed_us=TIME found=false
+layout-center token="абра" raw="f,hf" blocked=false
+l2_boundary_fuzzy_trace elapsed_us=TIME candidates=5
+l2_boundary_light_trace elapsed_us=TIME found=false
+layout-center token="абор" raw="f,jh" blocked=false
+l2_boundary_fuzzy_trace elapsed_us=TIME candidates=32
+l2_boundary_light_trace elapsed_us=TIME found=false
+ok
+

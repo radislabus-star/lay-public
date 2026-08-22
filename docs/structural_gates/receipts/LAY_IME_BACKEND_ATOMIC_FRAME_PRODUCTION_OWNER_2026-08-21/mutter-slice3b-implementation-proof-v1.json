@@ -1,0 +1,179 @@
+{
+  "schema": "lay.ime-backend-atomic-frame-slice3b-proof.v1",
+  "task_id": "LAY_IME_BACKEND_ATOMIC_FRAME_MUTTER_SLICE3B_IMPLEMENTATION_2026-08-21",
+  "verdict": "SLICE3B_IMPLEMENTATION_PROOF_PASS",
+  "measured_on": {
+    "host": "e@192.168.3.94",
+    "logical_cpus": 20,
+    "sandbox": "/home/e/lay-proof/mutter-slice3a-20260821",
+    "build_jobs": 20,
+    "local_compilation": false
+  },
+  "authority": {
+    "runtime_authority_changed": false,
+    "deployment_authority": false,
+    "live_session_touched": false,
+    "installed_files_changed": false,
+    "next_gate": "isolated Shell/IBus capability-hop integration"
+  },
+  "preflight": {
+    "manifest_path": "docs/structural_gates/preflights/LAY_IME_BACKEND_ATOMIC_FRAME_MUTTER_SLICE3B_IMPLEMENTATION_V6_2026-08-21.json",
+    "manifest_sha256": "d5cfc8c1073375191a98e8d70461ba10d255360af5bec56dd82befc5d1c67d05",
+    "receipt_path": "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/mutter-slice3b-implementation-v6-preflight-receipt.json",
+    "receipt_sha256": "d32f19a4791ec21ff184dfd1123b8d91d0f2968680c5243824d64ee55bf1680d",
+    "verdict": "READY_TO_IMPLEMENT",
+    "blockers": 0
+  },
+  "observed_route": {
+    "manifest_path": "docs/structural_gates/preflights/LAY_IME_BACKEND_ATOMIC_FRAME_MUTTER_SLICE3B_ROUTE_OBSERVED_V3_2026-08-21.json",
+    "manifest_sha256": "2ad91a0acada2e66503bc56359f9a11427662d677d584bad179f42ee9eb44fa9",
+    "receipt_path": "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/mutter-slice3b-route-observed-v3-receipt.json",
+    "receipt_sha256": "32c4df47ff0e84fbb5e5761f068f9799b8b26d2125e6525b6fe700fab4eb2623",
+    "verdict": "PASS",
+    "source_evidence_verified": "35/35",
+    "exact_single_paths": "12/12",
+    "issues": 0,
+    "warnings": 0
+  },
+  "source_parity": {
+    "local_root": "/home/ubu/projects/mutter-lay-atomic-proof",
+    "remote_root": "/home/e/lay-proof/mutter-slice3a-20260821/source",
+    "exact_sha256_matches": "11/11",
+    "files": [
+      {
+        "path": "clutter/clutter/clutter-input-method.c",
+        "sha256": "01f5f24eb86267c9ca61dd57d7a33924600dff97062a29ada47b8ff47deb4708"
+      },
+      {
+        "path": "clutter/clutter/clutter-input-focus.c",
+        "sha256": "1dd4b9e15baa32289cb18f3eb16ffda1ef2dc0c8f00674df6b292f690b300397"
+      },
+      {
+        "path": "clutter/clutter/clutter-input-focus-private.h",
+        "sha256": "42338949e3cd0892bd07320190652dc23626654fcd1f181e7a546ec71047988d"
+      },
+      {
+        "path": "src/backends/native/meta-thread.c",
+        "sha256": "ab676757a4071f58aff5c54a71e4d83b0d121ca0bf9e9ea202eee26aba094c0a"
+      },
+      {
+        "path": "src/wayland/meta-wayland-text-input.c",
+        "sha256": "99debf2aca19cccd22ecd7b59e0629cbbb39f76ee4b7f5924ac45aededbc38f2"
+      },
+      {
+        "path": "src/tests/wayland-text-input-atomic-frame-tests.c",
+        "sha256": "668e3580cad1a199904c06d4891d137440f07faf4aac35dc80c4f1dbe031c2da"
+      },
+      {
+        "path": "src/tests/wayland-atomic-input-frame-tests.c",
+        "sha256": "52989a5f4eee08fc69be966d1754d40ea6da16d13320dab27757ad673a0e1b6e"
+      },
+      {
+        "path": "src/tests/wayland-test-clients/text-input-atomic-frame.c",
+        "sha256": "c81a9596db3063ec75367c18695c0bc257085168f549b1dacac0cd7c81f49f2a"
+      },
+      {
+        "path": "src/tests/wayland-test-clients/wayland-test-client-utils.c",
+        "sha256": "fc30043f6514e8e0e8eec7e5db0a5545209025f0128c3e529aaf7001b7d0f9c0"
+      },
+      {
+        "path": "src/tests/wayland-test-clients/meson.build",
+        "sha256": "f0c68a917920c71a4564867d0670f08c0ef7575224ff3eaf2ec56e6f69a0a2a2"
+      },
+      {
+        "path": "src/tests/meson.build",
+        "sha256": "b40cfe6cf2602ca87aa75f241710b23630a023f81e2fa0070cb3904aa4c0a982"
+      }
+    ]
+  },
+  "proof": {
+    "normal_real_wayland": {
+      "internal_groups": "5/5",
+      "meson_tests": "1/1",
+      "test_time_ms": 1480,
+      "log_path": "/home/e/lay-proof/mutter-slice3a-20260821/logs/final-wayland-text-input-atomic-frame-normal-verbose.log",
+      "log_sha256": "1f8638cd813e430e03bdd89919250a54c5886e3ee176973a2ca87797f3406036"
+    },
+    "sanitized_real_wayland": {
+      "internal_groups": "5/5",
+      "meson_tests": "1/1",
+      "test_time_ms": 2210,
+      "asan": true,
+      "ubsan": true,
+      "lsan_detect_leaks": true,
+      "fatal_glib": true,
+      "diagnostics": 0,
+      "log_path": "/home/e/lay-proof/mutter-slice3a-20260821/logs/final-wayland-text-input-atomic-frame-sanitized-verbose.log",
+      "log_sha256": "24e7ec0fec7c17a8e33ac01241cbb527134678a575a41b53bff36467abe8ffc2"
+    },
+    "preserved_slice3a": {
+      "normal": "1/1 PASS at 0.91 s",
+      "sanitized": "1/1 PASS at 0.94 s"
+    },
+    "broad_wayland_regression": {
+      "passed": 17,
+      "total": 17,
+      "wall_ms": 64683,
+      "log_path": "/home/e/lay-proof/mutter-slice3a-20260821/logs/slice3b-wayland-17-after-cleanup.log",
+      "log_sha256": "d061cc40dea64c9a8ffc214675f5a0c8bc13f8cf4fa8e91933bcdd728c1996a2"
+    }
+  },
+  "corrections": [
+    {
+      "mechanism": "zero-bound variable length array in wrapper_source_prepare",
+      "result": "fixed at existing 256 descriptor capacity",
+      "runtime_route_changed": false
+    },
+    {
+      "mechanism": "stale preedit changed flag cleared inside resource loop",
+      "result": "snapshot broadcast then one clear after loop",
+      "runtime_route_changed": false
+    },
+    {
+      "mechanism": "Wayland test client ownership-incomplete teardown",
+      "result": "all owned proxies and dmabuf modifiers destroyed",
+      "runtime_route_changed": false
+    }
+  ],
+  "wire_size_scope": {
+    "attempted_bytes": 65537,
+    "owner_reached": false,
+    "result": "Wayland wire rejected malformed string before Mutter",
+    "production_limit_changed": false
+  },
+  "artifacts": {
+    "normal_libmutter": {
+      "bytes": 16689760,
+      "sha256": "de5f8b5c8e27f785ef32f912f1709c8f5751610f6dec9e306f0c7e57910924e7"
+    },
+    "normal_server_test": {
+      "bytes": 299360,
+      "sha256": "cc9a4cdcbcff5e388b47ddeba7a724945e98ea1b0adced1b28d920673ce843eb"
+    },
+    "sanitized_libmutter": {
+      "bytes": 45913544,
+      "sha256": "691084255b33d46063f7157da62ebb8c5dd618186ce3987a9a74f6f3ae9a94f1"
+    },
+    "sanitized_server_test": {
+      "bytes": 684456,
+      "sha256": "c089403548c5818ab7d7db84594dd84fa20810e907e219f72d4d8b45aa55a35d"
+    },
+    "build_normal_disk": "216 MiB",
+    "build_sanitized_disk": "207 MiB"
+  },
+  "installed_baseline_unchanged": {
+    "libmutter": "fec9023139ac8eff93fcc1af90413613cdb526e7f02389dc9d8fe90f7abc81e5",
+    "gnome_shell": "94e81e3ff3820b3f8454d596c3a9ee7fa437b770b899098db85f15640a7abb73",
+    "libibus": "e1977b9d3d84ee94b63f6c04056134c10aa51d4e0621f7abee1115da12259ec1",
+    "lay_engine": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a"
+  },
+  "not_tested": [
+    "GNOME Shell to Mutter capability hop",
+    "IBus to Shell atomic frame submission",
+    "installed package rollback",
+    "desktop session restart",
+    "physical application typing",
+    "production hot-path latency"
+  ],
+  "architecture_document": "/home/ubu/projects/lay-l1-exact-peak-search/docs/ime-backend-atomic-frame-v2-2026-08-20.md"
+}

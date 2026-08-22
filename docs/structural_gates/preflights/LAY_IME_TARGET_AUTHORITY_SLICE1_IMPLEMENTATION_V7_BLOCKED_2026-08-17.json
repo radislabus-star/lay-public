@@ -1,0 +1,235 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-ime-target-authority-slice1-evidence-vocabulary-v7-2026-08-17",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {"id": "paper-contract", "kind": "file", "path": "../../ime-canonical-target-authority-paper-2026-08-17.md", "expect": {"size_bytes": 151680, "sha256": "302b5201348c613e539f6d702a5dcaf7847774fe3567edd05b649dfb47a5bbac", "mode": "0664"}},
+    {"id": "architecture-contract", "kind": "file", "path": "../../l2-l11-canonical-architecture.md", "expect": {"size_bytes": 306318, "sha256": "5afafc46540ae85f4a7096adfa982ed1dbd21485df97807b9e9f58290e07fd20", "mode": "0664"}},
+    {"id": "target-event-route", "kind": "file", "path": "LAY_IME_TARGET_AUTHORITY_EVENTS_ROUTE_V4_2026-08-17.json", "expect": {"size_bytes": 15382, "sha256": "4ad49b1193cb905d58c12802ffdcea31980e7eed18472a6a8d8e5baf1ca8eaf9", "mode": "0664"}},
+    {"id": "target-event-route-pass", "kind": "file", "path": "../receipts/LAY_IME_TARGET_AUTHORITY_EVENTS_ROUTE_DESIGN_PASS_V4_2026-08-17.json", "expect": {"size_bytes": 19977, "sha256": "798149642db05d63edab4b5e05cb4d9f0aa802a2d8840a58dd4698ccc117090a", "mode": "0664"}},
+    {"id": "target-material-frame-route", "kind": "file", "path": "LAY_IME_TARGET_MATERIAL_FRAME_ROUTE_V6_2026-08-17.json", "expect": {"size_bytes": 11625, "sha256": "a66dcb293858c4f22ec50685bec49c8a451e35d96a8448687aa0709ba10c214f", "mode": "0664"}},
+    {"id": "target-material-frame-route-pass", "kind": "file", "path": "../receipts/LAY_IME_TARGET_MATERIAL_FRAME_ROUTE_DESIGN_PASS_V6_2026-08-17.json", "expect": {"size_bytes": 11845, "sha256": "e09b8382f1c2a0502b1ada5a2d7430e790d31f889e5040a92bac89097996b928", "mode": "0664"}},
+    {"id": "target-output-transaction-route", "kind": "file", "path": "LAY_IME_TARGET_OUTPUT_TRANSACTION_ROUTE_V8_2026-08-17.json", "expect": {"size_bytes": 45017, "sha256": "4f0080ab5cb8ebfaeb6b67e9704c5b3ec6966e78eb94d1eb3efd8173d7201fe1", "mode": "0664"}},
+    {"id": "target-output-transaction-route-pass", "kind": "file", "path": "../receipts/LAY_IME_TARGET_OUTPUT_TRANSACTION_ROUTE_DESIGN_PASS_V8_2026-08-17.json", "expect": {"size_bytes": 93945, "sha256": "85929091ae72840c09c2e676936d776b06b86c4b86ec351404a0fb00045e8996", "mode": "0664"}},
+    {"id": "current-route-veto", "kind": "file", "path": "../receipts/LAY_IME_TARGET_AUTHORITY_CURRENT_OBSERVED_VETO_2026-08-17.json", "expect": {"size_bytes": 6449, "sha256": "02b2fcea3409cb1dda0426e2150e8e9aa047a537856ed8a5023e0cb53a4c18cb", "mode": "0664"}},
+    {"id": "durable-diagnostic-manifest", "kind": "file", "path": "../receipts/LAY_IME_TARGET_AUTHORITY_BASELINE_2026-08-17/manifest.json", "expect": {"size_bytes": 7838, "sha256": "816e9f146b0c7151c8ee74a48e070e6e9be118807a898d24476719d126eebca6", "mode": "0664"}},
+    {"id": "execution-source-snapshot", "kind": "file", "path": "../receipts/LAY_IME_TARGET_AUTHORITY_BASELINE_2026-08-17/immutable-rerun/source-at-execution.sha256-manifest.json", "expect": {"size_bytes": 1, "sha256": "0000000000000000000000000000000000000000000000000000000000000000", "prefix_hex": "7b", "mode": "0664"}},
+    {"id": "immutable-rerun-results", "kind": "file", "path": "../receipts/LAY_IME_TARGET_AUTHORITY_BASELINE_2026-08-17/immutable-rerun/results-manifest.json", "expect": {"size_bytes": 1, "sha256": "0000000000000000000000000000000000000000000000000000000000000000", "prefix_hex": "7b", "mode": "0664"}},
+    {"id": "frozen-event-case-manifest", "kind": "file", "path": "../receipts/LAY_IME_TARGET_AUTHORITY_BASELINE_2026-08-17/event-and-boundary-cases-v7.json", "expect": {"size_bytes": 43134, "sha256": "4bb3772bde5c81f5ca13d66bf37f9ef833d84881d1ce0e3eb36507d72aaefe68", "mode": "0664"}},
+    {"id": "l2-ime-evidence-source", "kind": "file", "path": "../../../src/nanda_wave/l2.rs", "expect": {"size_bytes": 18385, "sha256": "fae4844e2113ce082418dfbd389dc2060ca0c755984cac66057433e352eb3908", "mode": "0664"}},
+    {"id": "l2-ime-readout-source", "kind": "file", "path": "../../../src/nanda_wave/l2/ime_readout.rs", "expect": {"size_bytes": 32011, "sha256": "c82d7b490883d5aa828bed9af36147931051b6e765a37f77d189b9cc0ddf3664", "mode": "0664"}},
+    {"id": "l2-field-bridge-source", "kind": "file", "path": "../../../src/nanda_wave/l2_field/bridge.rs", "expect": {"size_bytes": 109138, "sha256": "bf47a5a7b4ae33541efc15a8de91fa406abd69044653f89aff0a6bfd4f143708", "mode": "0664"}},
+    {"id": "productive-live-source", "kind": "file", "path": "../../../src/nanda_wave/l2_field/productive_v1/live.rs", "expect": {"size_bytes": 40220, "sha256": "e88694537541b82100996e468efa06a8476591474eb626f3328cb1ace1dbeb20", "mode": "0664"}},
+    {"id": "productive-composite-source", "kind": "file", "path": "../../../src/nanda_wave/l2_field/productive_v1/composite.rs", "expect": {"size_bytes": 17121, "sha256": "8f85a89b84f5e4c77a986569766454a0f177fa3edd94ad1126ddb2fa302ef392", "mode": "0664"}},
+    {"id": "productive-scene-source", "kind": "file", "path": "../../../src/nanda_wave/l2_field/productive_v1/scene.rs", "expect": {"size_bytes": 19580, "sha256": "2ca77940d10c4e9fc4ed44f80448eebdcfb21a597afa5a13ed73cdca862050bb", "mode": "0664"}},
+    {"id": "l11-restoration-source", "kind": "file", "path": "../../../src/nanda_wave/lexical_grokking/restoration.rs", "expect": {"size_bytes": 17793, "sha256": "a9f79690117131a8634cd8e5fce189e426ca388cd19b2fd723f11843ab756211", "mode": "0664"}},
+    {"id": "live-candidate-evidence-source", "kind": "file", "path": "../../../src/typing_transition/live_candidate.rs", "expect": {"size_bytes": 20491, "sha256": "068cfee219e4b5943b80c8a9e1c9bd7a5be9c282d4cd0395d2360bffd914bcdf", "mode": "0664"}},
+    {"id": "typing-transition-module-source", "kind": "file", "path": "../../../src/typing_transition/mod.rs", "expect": {"size_bytes": 6454, "sha256": "292f6888544858e99352617c8532a4d921fb3dccc0f0ea2b9fd2a82e7de2c953", "mode": "0664"}},
+    {"id": "typing-transition-candidate-source", "kind": "file", "path": "../../../src/typing_transition/candidate.rs", "expect": {"size_bytes": 2906, "sha256": "4d053d57328eb79be127ab2649be83c4e3d47b8fb6c9e54e5a942cd096547319", "mode": "0664"}},
+    {"id": "correction-candidate-source", "kind": "file", "path": "../../../src/correction_core.rs", "expect": {"size_bytes": 39794, "sha256": "7de1ed9a64b8b891c3944e4d2460dfdb7f11530fafc5838199410ee55119b5a9", "mode": "0664"}},
+    {"id": "correction-adapter-source", "kind": "file", "path": "../../../src/correction_core/candidate_sources.rs", "expect": {"size_bytes": 53409, "sha256": "b0ca017fc545f90283f20841ce40ef552ce295a1be5e35b60f8003e8478b50e0", "mode": "0664"}},
+    {"id": "decision-source", "kind": "file", "path": "../../../src/typing_transition/decision.rs", "expect": {"size_bytes": 27803, "sha256": "f4ba3c3554650b19e178458818a11b165586a3ab86ff54fd106cd2d1d7054f1e", "mode": "0664"}},
+    {"id": "display-source", "kind": "file", "path": "../../../src/bin/lay_ibus_engine/preedit_readout.rs", "expect": {"size_bytes": 9730, "sha256": "c9526311cd7a99f9f027d7d2c8161c981e9d4a492ba12786c3ba0486feebf0ae", "mode": "0664"}},
+    {"id": "frame-identity-source", "kind": "file", "path": "../../../src/bin/lay_ibus_engine/engine/types.rs", "expect": {"size_bytes": 9288, "sha256": "0fbd2fe1f22ed7c7926073e3c94bbefc90b7b716c1fb0d37e71fadbaa2c9dc05", "mode": "0664"}},
+    {"id": "space-lease-source", "kind": "file", "path": "../../../src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs", "expect": {"size_bytes": 19054, "sha256": "aadf3825838230627b3f050c9308a8c2f957801ac67e4168011531e7b55aac1a", "mode": "0664"}},
+    {"id": "tail-receipt-source", "kind": "file", "path": "../../../src/bin/lay_ibus_engine/tail_memory.rs", "expect": {"size_bytes": 56066, "sha256": "edfc902ab15b7d9cf309995d1812868224d61430f055033e7cda5d25b160006b", "mode": "0664"}},
+    {"id": "active-composition-source", "kind": "file", "path": "../../../src/bin/lay_ibus_engine/composition_commit.rs", "expect": {"size_bytes": 14086, "sha256": "0005503245603ff4632912a2b5f0107a5299648532c5478f9a989afa82eeaae3", "mode": "0664"}},
+    {"id": "managed-event-source", "kind": "file", "path": "../../../src/bin/lay_ibus_engine/managed.rs", "expect": {"size_bytes": 11774, "sha256": "288c83cefbd98dccfcd9ad6c379ccbe1e8824be3ff170fb928ba4459d1567339", "mode": "0664"}},
+    {"id": "preedit-event-source", "kind": "file", "path": "../../../src/bin/lay_ibus_engine/preedit.rs", "expect": {"size_bytes": 30862, "sha256": "220c3b8b166a79468402a88d0ec21c3da9a276fe6b7a8a44eca4ab59c088a609", "mode": "0664"}},
+    {"id": "mutation-and-rollback-source", "kind": "file", "path": "../../../src/bin/lay_ibus_engine/committed_tail.rs", "expect": {"size_bytes": 25042, "sha256": "72e567392a1790467ecb1797b1a031949bf61e8615742eead57a8c5ecfbfa753", "mode": "0664"}},
+    {"id": "cache-source", "kind": "file", "path": "../../../src/nanda_wave/l2_field/cache.rs", "expect": {"size_bytes": 23664, "sha256": "9da969bfff12dba0217954647b1ba8e21302365770abaa82178953fcf63fec07", "mode": "0664"}},
+    {"id": "structural-verifier-source", "kind": "file", "path": "../../../src/text_edit/structural_verifier.rs", "expect": {"size_bytes": 7730, "sha256": "19201157bc09df5cca617132d67a242474aaa331ca58dc18acb0152818b7b826", "mode": "0664"}},
+    {"id": "release-installer-source", "kind": "file", "path": "../../../scripts/install-release-binaries.sh", "expect": {"size_bytes": 2333, "sha256": "259850478a99bb32b1aaffa863ff72138f018b7ce1231611a05fad706d7ffd02", "mode": "0775"}},
+    {"id": "installed-engine", "kind": "file", "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine", "expect": {"size_bytes": 6423488, "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a", "mode": "0755"}},
+    {"id": "installed-productive-v90", "kind": "file", "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2m", "expect": {"size_bytes": 17309944, "sha256": "40fb6a9f0d92c3c7502e47f9c70230d9b86020f622b08a5c799342f13e09ce44", "mode": "0644", "prefix_hex": "4c41595032563100"}}
+  ],
+  "source_checks": [
+    {
+      "id": "evidence-adapters-do-not-gain-authority",
+      "path": "../../../src/correction_core.rs",
+      "sha256": "7de1ed9a64b8b891c3944e4d2460dfdb7f11530fafc5838199410ee55119b5a9",
+      "forbidden_effect_patterns": [
+        {"effect": "literal_surface_runtime_branch", "regex": "(?i)(?:if|match)[^\\n]{0,180}(?:fixture|test_name|expected_target)[^\\n]{0,180}(?:eligible|apply|winner)"},
+        {"effect": "authority_behavior_change", "regex": "(?s)TargetEvidence.{0,300}CandidateGateAction::Eligible"},
+        {"effect": "unbounded_target_evidence", "regex": "(?s)(?:TargetEvidence|TargetWitness).{0,200}(?:usize::MAX|Vec::with_capacity\\([^)]{3,}\\))"}
+      ]
+    },
+    {
+      "id": "decision-ranking-remains-byte-pinned",
+      "path": "../../../src/typing_transition/decision.rs",
+      "sha256": "f4ba3c3554650b19e178458818a11b165586a3ab86ff54fd106cd2d1d7054f1e",
+      "forbidden_effect_patterns": [
+        {"effect": "ranking_behavior_change", "regex": "(?s)TargetEvidence.{0,300}(?:rank_score|decision_rank|sort_by)"}
+      ]
+    },
+    {
+      "id": "display-remains-byte-pinned",
+      "path": "../../../src/bin/lay_ibus_engine/preedit_readout.rs",
+      "sha256": "c9526311cd7a99f9f027d7d2c8161c981e9d4a492ba12786c3ba0486feebf0ae",
+      "forbidden_effect_patterns": [
+        {"effect": "display_behavior_change", "regex": "(?s)TargetEvidence.{0,300}(?:preedit|candidate_index|replacement)"}
+      ]
+    },
+    {
+      "id": "mutation-remains-byte-pinned",
+      "path": "../../../src/bin/lay_ibus_engine/committed_tail.rs",
+      "sha256": "72e567392a1790467ecb1797b1a031949bf61e8615742eead57a8c5ecfbfa753",
+      "forbidden_effect_patterns": [
+        {"effect": "mutation_behavior_change", "regex": "(?s)TargetEvidence.{0,300}(?:commit_text|replace_committed_tail|auto_undo)"}
+      ]
+    },
+    {
+      "id": "cache-schema-remains-byte-pinned",
+      "path": "../../../src/nanda_wave/l2_field/cache.rs",
+      "sha256": "9da969bfff12dba0217954647b1ba8e21302365770abaa82178953fcf63fec07",
+      "forbidden_effect_patterns": [
+        {"effect": "cache_schema_change", "regex": "(?s)TARGET_EVIDENCE.{0,300}(?:CanonicalTokenKey|SingleFlightCache)"}
+      ]
+    },
+    {
+      "id": "slice1-cannot-emit-context-certificate",
+      "path": "../../../src/typing_transition/decision.rs",
+      "sha256": "f4ba3c3554650b19e178458818a11b165586a3ab86ff54fd106cd2d1d7054f1e",
+      "forbidden_effect_patterns": [
+        {"effect": "context_certificate_live_emission", "regex": "(?s)ContextCertified.{0,400}(?:Eligible|allow_apply|authorize|AuthorizedEdit)"}
+      ]
+    },
+    {
+      "id": "slice1-cannot-shape-new-material-with-context",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/live.rs",
+      "sha256": "e88694537541b82100996e468efa06a8476591474eb626f3328cb1ace1dbeb20",
+      "forbidden_effect_patterns": [
+        {"effect": "context_changes_material_membership", "regex": "(?s)PreparedTargetMaterialV1.{0,600}(?:context_prefix|scene_bytes|context_score|usage_overlay)"}
+      ]
+    },
+    {
+      "id": "slice1-cannot-cache-frame-values",
+      "path": "../../../src/nanda_wave/l2_field/cache.rs",
+      "sha256": "9da969bfff12dba0217954647b1ba8e21302365770abaa82178953fcf63fec07",
+      "forbidden_effect_patterns": [
+        {"effect": "frame_value_cached_as_material", "regex": "(?s)PreparedTargetMaterialV1.{0,600}(?:focus_receipt|tail_epoch|replacement_span|FrameTargetIdentity|ContextCertified|AuthorizedEdit)"}
+      ]
+    },
+    {
+      "id": "verifier-remains-fail-closed",
+      "path": "../../../src/text_edit/structural_verifier.rs",
+      "sha256": "19201157bc09df5cca617132d67a242474aaa331ca58dc18acb0152818b7b826",
+      "forbidden_effect_patterns": [
+        {"effect": "verifier_weakening", "regex": "(?i)(?:allow|eligible|authorized).{0,100}(?:without|bypass|skip).{0,100}(?:proof|plan|verif)"}
+      ]
+    },
+    {
+      "id": "release-remains-blocked",
+      "path": "../../../scripts/install-release-binaries.sh",
+      "sha256": "259850478a99bb32b1aaffa863ff72138f018b7ce1231611a05fad706d7ffd02",
+      "forbidden_effect_patterns": [
+        {"effect": "deployment_or_runtime_restart", "regex": "(?i)(?:skip|bypass).{0,100}(?:proof|gate|sha|rollback)"}
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "create-target-evidence-owner-module", "kind": "source_edit", "path": "../../../src/typing_transition/target_evidence.rs"},
+      {"id": "export-target-evidence-owner", "kind": "source_edit", "path": "../../../src/typing_transition/mod.rs"},
+      {"id": "adapt-live-candidate-evidence", "kind": "source_edit", "path": "../../../src/typing_transition/live_candidate.rs"},
+      {"id": "adapt-l2-candidate-evidence", "kind": "source_edit", "path": "../../../src/typing_transition/candidate.rs"},
+      {"id": "adapt-l2-evidence-vocabulary", "kind": "source_edit", "path": "../../../src/nanda_wave/l2.rs"},
+      {"id": "adapt-l2-ime-readout-evidence", "kind": "source_edit", "path": "../../../src/nanda_wave/l2/ime_readout.rs"},
+      {"id": "adapt-l2-field-bridge-evidence", "kind": "source_edit", "path": "../../../src/nanda_wave/l2_field/bridge.rs"},
+      {"id": "adapt-productive-live-evidence", "kind": "source_edit", "path": "../../../src/nanda_wave/l2_field/productive_v1/live.rs"},
+      {"id": "adapt-productive-composite-evidence", "kind": "source_edit", "path": "../../../src/nanda_wave/l2_field/productive_v1/composite.rs"},
+      {"id": "adapt-productive-scene-identity", "kind": "source_edit", "path": "../../../src/nanda_wave/l2_field/productive_v1/scene.rs"},
+      {"id": "adapt-unified-correction-evidence", "kind": "source_edit", "path": "../../../src/correction_core.rs"},
+      {"id": "adapt-correction-source-evidence", "kind": "source_edit", "path": "../../../src/correction_core/candidate_sources.rs"},
+      {"id": "write-slice1-parity-receipt", "kind": "proof_artifact"}
+    ],
+    "forbidden": [
+      "literal_surface_runtime_branch",
+      "authority_behavior_change",
+      "ranking_behavior_change",
+      "display_behavior_change",
+      "mutation_behavior_change",
+      "cache_schema_change",
+      "frame_value_cached_as_material",
+      "context_changes_material_membership",
+      "context_certificate_live_emission",
+      "unbounded_target_evidence",
+      "verifier_weakening",
+      "deployment_or_runtime_restart"
+    ]
+  },
+  "preserved_artifacts": [
+    {"id": "installed-engine-runtime", "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine", "policy": "read_only", "rollback_policy": "retain exact installed bytes", "baseline_check_id": "installed-engine"},
+    {"id": "productive-v90-package", "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2m", "policy": "read_only", "rollback_policy": "never rewrite package bytes", "baseline_check_id": "installed-productive-v90"},
+    {"id": "live-ranking", "path": "../../../src/typing_transition/decision.rs", "policy": "byte_identical_in_slice1", "rollback_policy": "restore exact baseline bytes", "baseline_check_id": "decision-source"},
+    {"id": "display-projection", "path": "../../../src/bin/lay_ibus_engine/preedit_readout.rs", "policy": "byte_identical_in_slice1", "rollback_policy": "restore exact baseline bytes", "baseline_check_id": "display-source"},
+    {"id": "mutation-and-rollback", "path": "../../../src/bin/lay_ibus_engine/committed_tail.rs", "policy": "byte_identical_in_slice1", "rollback_policy": "restore exact baseline bytes", "baseline_check_id": "mutation-and-rollback-source"},
+    {"id": "cache-schema", "path": "../../../src/nanda_wave/l2_field/cache.rs", "policy": "byte_identical_in_slice1", "rollback_policy": "restore exact baseline bytes", "baseline_check_id": "cache-source"},
+    {"id": "structural-verifier", "path": "../../../src/text_edit/structural_verifier.rs", "policy": "byte_identical_in_slice1", "rollback_policy": "never weaken verifier", "baseline_check_id": "structural-verifier-source"}
+  ],
+  "state_machine": {
+    "initial_state": "SLICE0_IMMUTABLE_BASELINE_PINNED_RUNTIME_UNCHANGED",
+    "terminal_states": ["SLICE1_EVIDENCE_PARITY_READY_RUNTIME_UNCHANGED", "BLOCKED_BEFORE_CODE_RUNTIME_UNCHANGED"],
+    "steps": [
+      {
+        "id": "introduce-evidence-vocabulary-only",
+        "from": "SLICE0_IMMUTABLE_BASELINE_PINNED_RUNTIME_UNCHANGED",
+        "to": "SLICE1_EVIDENCE_PARITY_READY_RUNTIME_UNCHANGED",
+        "mutates": true,
+        "failure_state": "BLOCKED_BEFORE_CODE_RUNTIME_UNCHANGED",
+        "cleanup": "work only in a dedicated Slice 1 worktree; retain the failing receipt, touched-file manifest and isolated diff; remove no user data, run no broad revert, and leave the dirty parent worktree, installed runtime and packages unchanged",
+        "preserves": ["installed-engine-runtime", "productive-v90-package", "live-ranking", "display-projection", "mutation-and-rollback", "cache-schema", "structural-verifier"],
+        "test_id": "partial-adapter-migration-fault"
+      }
+    ]
+  },
+  "tests": [
+    {"id": "partial-adapter-migration-fault", "kind": "fault_injection", "expected": "inside a dedicated worktree, a missing or lossy adapter fails compile/parity while the dirty parent worktree, installed runtime, rank, display, cache, mutation and verifier remain byte-identical"},
+    {"id": "slice1-new-owner-path-baseline", "kind": "parity", "expected": "the immutable Slice 0 source manifest records src/typing_transition/target_evidence.rs as absent before Slice 1; any pre-existing bytes block implementation and require a new plan"},
+    {"id": "target-evidence-layout-budget", "kind": "integration", "expected": "TargetWitnessV1 is at most 24 bytes, TargetEvidenceSetV1 and PreparedMaterialLeaseV1 are each at most 128 bytes, targets are at most 74, witnesses at most 4, active lease metadata is at most 4096 bytes, new retained evidence at most 12288 bytes per field, 160-entry delta at most 1966080 bytes and process RSS delta at most 5 MiB"},
+    {"id": "witness-merge-permutation-parity", "kind": "parity", "expected": "all producer orders, provenance aliases and package-generation aliases of one derivation lineage produce the same semantic evidence roots, bounded provenance annotations, overflow digest and evidence hash"},
+    {"id": "package-generation-alias-not-independent", "kind": "parity", "expected": "package generation remains in material/cache/staleness identity but cannot create a second independent witness for the same relation, canonical grounding, operator and derivation lineage"},
+    {"id": "legacy-evidence-roundtrip", "kind": "parity", "expected": "every value in the exact legacy singleton domain maps to the common type and back without changing None, relation, grounding, provenance annotation or display projection"},
+    {"id": "legacy-reverse-projection-fail-closed", "kind": "fault_injection", "expected": "multi-witness, composite-boundary, Overflow or Failed common evidence cannot be projected to one legacy witness or complete legacy evidence"},
+    {"id": "slice1-semantic-output-parity", "kind": "integration", "expected": "fixed diagnostics and event manifests preserve exact candidate surfaces, order, gate actions, verdicts, mutations and feedback because Slice 1 changes vocabulary only"},
+    {"id": "slice1-route-parity", "kind": "parity", "expected": "current observed source route cardinality and every display, Tab, Space, stale and rollback owner remain unchanged in Slice 1"},
+    {"id": "slice1-touched-file-allowlist", "kind": "parity", "expected": "only the twelve preregistered source paths may change; cache, DecisionCore, display, mutation, rollback, verifier and every unlisted source file remain byte-identical"},
+    {"id": "prepared-material-identity-parity", "kind": "parity", "expected": "producer and every adapter agree on normalization profile, material target, semantic root, package generation, completeness and schema identities"},
+    {"id": "frame-values-not-cacheable", "kind": "parity", "expected": "replacement span, focus, tail epoch, context, frame rejection, selected winner and authority certificate cannot be constructed inside PreparedTargetMaterialV1"},
+    {"id": "completeness-roundtrip", "kind": "parity", "expected": "Complete, Overflow and Failed states plus counts and order-independent digests survive every Slice 1 adapter without changing current behavior"}
+  ],
+  "invariants": [
+    {"id": "one-common-evidence-owner", "statement": "src/typing_transition/target_evidence.rs is the only owner of the new vocabulary", "test_id": "legacy-evidence-roundtrip"},
+    {"id": "new-owner-path-starts-absent", "statement": "the planned new vocabulary owner path is absent in the immutable pre-edit source snapshot", "test_id": "slice1-new-owner-path-baseline"},
+    {"id": "slice1-has-no-behavior-change", "statement": "rank, display, automatic authority, mutation, cache schema and rollback remain unchanged", "test_id": "slice1-semantic-output-parity"},
+    {"id": "bounded-evidence", "statement": "74 stored targets, four witnesses, compact type and retained-memory ceilings are fail-closed", "test_id": "target-evidence-layout-budget"},
+    {"id": "merge-is-deterministic", "statement": "producer order, provenance aliases and package-generation aliases cannot alter semantic evidence roots", "test_id": "witness-merge-permutation-parity"},
+    {"id": "generation-is-validity-not-independence", "statement": "package generation binds material validity and staleness but does not manufacture independent relation evidence", "test_id": "package-generation-alias-not-independent"},
+    {"id": "material-and-frame-are-disjoint", "statement": "no frame-bound value or decision can enter cacheable material", "test_id": "frame-values-not-cacheable"},
+    {"id": "overflow-survives-adapters", "statement": "no retained prefix can be relabeled complete by a compatibility adapter", "test_id": "completeness-roundtrip"},
+    {"id": "legacy-reverse-projection-is-fail-closed", "statement": "new multi-witness, composite or incomplete evidence cannot be truncated into the legacy singleton domain", "test_id": "legacy-reverse-projection-fail-closed"},
+    {"id": "route-owners-unchanged", "statement": "Slice 1 introduces data vocabulary only and no new execution or authority path", "test_id": "slice1-route-parity"}
+    ,{"id": "source-edits-stay-in-allowlist", "statement": "the Slice 1 diff contains no source path outside the twelve preregistered paths", "test_id": "slice1-touched-file-allowlist"}
+  ],
+  "identity_contracts": [
+    {"id": "legacy-l2-to-common-evidence", "producer": "L2ImeTargetEvidence adapter", "consumer": "typing_transition::target_evidence", "comparison": "exact legacy-domain relation, material target and semantic evidence-root identity; unsupported reverse projection fails closed", "test_id": "legacy-evidence-roundtrip"},
+    {"id": "legacy-live-to-common-evidence", "producer": "ReplacementTargetEvidence adapter", "consumer": "typing_transition::target_evidence", "comparison": "exact legacy-domain relation and display authority projection; unsupported reverse projection fails closed", "test_id": "legacy-evidence-roundtrip"},
+    {"id": "correction-to-common-evidence", "producer": "UnifiedCorrectionCandidate evidence adapter", "consumer": "typing_transition::target_evidence", "comparison": "exact legacy-domain material target, non-authoritative provenance annotation and unchanged gate projection; unsupported reverse projection fails closed", "test_id": "legacy-evidence-roundtrip"},
+    {"id": "prepared-material-schema", "producer": "bounded target evidence builder", "consumer": "all compatibility adapters", "comparison": "exact normalization profile, schema, package-generation validity binding, material target, generation-independent semantic evidence root, completeness and evidence hash", "test_id": "prepared-material-identity-parity"},
+    {"id": "frame-material-boundary", "producer": "PreparedTargetMaterialV1", "consumer": "future FrameTargetIdentityV1 binder", "comparison": "Slice 1 type-level separation only; no span/context/certificate stored in material", "test_id": "frame-values-not-cacheable"}
+  ],
+  "runtime_comparisons": [
+    {
+      "id": "slice1-vocabulary-only-parity",
+      "source": "immutable aggregate/deep rerun plus the 49 executed baseline-parity Boundary/event cases; 59 frozen future-contract cases are explicitly deferred to their first-required slices and are not counted as PASS",
+      "comparison": "exact_stable_projection",
+      "stable_fields": ["case_identity", "candidate_surfaces", "candidate_order", "gate_actions", "cohort_or_current_verdict", "selected_surface", "edit_plan", "mutation_count", "visible_output", "feedback_effect", "route_cardinality"],
+      "expected_to_change_fields": ["internal_evidence_type_name", "internal_evidence_hash", "binary_sha256", "source_sha256"],
+      "observed_not_compared_fields": ["wall_clock_timestamp", "pid", "trace_line_number", "timing_noise"],
+      "reason": "Slice 1 introduces a common bounded vocabulary without changing live behavior, context-shaped cache membership or any event owner",
+      "test_id": "slice1-semantic-output-parity"
+    }
+  ]
+}

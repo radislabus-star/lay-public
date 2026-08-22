@@ -1,0 +1,112 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "glued_token", "role": "interface"},
+    {"id": "boundary_enumerator", "role": "producer"},
+    {"id": "split_center_evidence", "role": "evidence_owner"},
+    {"id": "bounded_l2_boundary_lattice", "role": "producer"},
+    {"id": "l3_context_field", "role": "producer"},
+    {"id": "decision_core", "role": "candidate_rank_owner"},
+    {"id": "prefetch_snapshot", "role": "producer"},
+    {"id": "space_key", "role": "interface"},
+    {"id": "exact_prefetch_take", "role": "producer"},
+    {"id": "boundary_verifier", "role": "authorization_owner"},
+    {"id": "committed_tail", "role": "mutation_owner"},
+    {"id": "route_outcome", "role": "producer"},
+    {"id": "route_trace", "role": "observer"},
+    {"id": "focused_contract_tests", "role": "proof_owner"}
+  ],
+  "edges": [
+    {"id": "exec-token-enumerator", "from": "glued_token", "relation": "calls", "to": "boundary_enumerator", "events": ["boundary_candidate_generation"]},
+    {"id": "exec-enumerator-evidence", "from": "boundary_enumerator", "relation": "delegates", "to": "split_center_evidence", "events": ["boundary_candidate_generation"]},
+    {"id": "exec-evidence-lattice", "from": "split_center_evidence", "relation": "delegates", "to": "bounded_l2_boundary_lattice", "events": ["boundary_candidate_generation"]},
+    {"id": "authority-enumerator-evidence", "from": "boundary_enumerator", "relation": "produces_for", "to": "split_center_evidence", "events": ["boundary_candidate_generation"]},
+
+    {"id": "exec-lattice-context", "from": "bounded_l2_boundary_lattice", "relation": "delegates", "to": "l3_context_field", "events": ["background_decision"]},
+    {"id": "exec-context-decision", "from": "l3_context_field", "relation": "delegates", "to": "decision_core", "events": ["background_decision"]},
+    {"id": "exec-decision-snapshot", "from": "decision_core", "relation": "delegates", "to": "prefetch_snapshot", "events": ["background_decision"]},
+    {"id": "authority-lattice-context", "from": "bounded_l2_boundary_lattice", "relation": "passes_to", "to": "l3_context_field", "events": ["background_decision"]},
+    {"id": "authority-context-decision", "from": "l3_context_field", "relation": "passes_to", "to": "decision_core", "events": ["background_decision"]},
+
+    {"id": "exec-space-take", "from": "space_key", "relation": "calls", "to": "exact_prefetch_take", "events": ["space_apply"]},
+    {"id": "exec-take-verifier", "from": "exact_prefetch_take", "relation": "delegates", "to": "boundary_verifier", "events": ["space_apply"]},
+    {"id": "exec-verifier-commit", "from": "boundary_verifier", "relation": "delegates", "to": "committed_tail", "events": ["space_apply"]},
+    {"id": "authority-snapshot-take", "from": "prefetch_snapshot", "relation": "passes_to", "to": "exact_prefetch_take", "events": ["space_apply"]},
+    {"id": "authority-take-verifier", "from": "exact_prefetch_take", "relation": "passes_to", "to": "boundary_verifier", "events": ["space_apply"]},
+    {"id": "authority-verifier-commit", "from": "boundary_verifier", "relation": "authorizes", "to": "committed_tail", "events": ["space_apply"]},
+
+    {"id": "observe-outcome-trace", "from": "route_outcome", "relation": "observes", "to": "route_trace", "events": ["space_apply"]},
+    {"id": "prove-evidence-contract", "from": "split_center_evidence", "relation": "proves", "to": "focused_contract_tests", "events": ["software_proof"]},
+    {"id": "prove-verifier-contract", "from": "boundary_verifier", "relation": "proves", "to": "focused_contract_tests", "events": ["software_proof"]}
+  ],
+  "routes": [
+    {
+      "id": "boundary-generation-execution",
+      "event": "boundary_candidate_generation",
+      "kind": "execution",
+      "entry": "glued_token",
+      "terminal": "bounded_l2_boundary_lattice",
+      "required_roles": ["interface", "producer", "evidence_owner"],
+      "path_cardinality": [{"from": "glued_token", "to": "bounded_l2_boundary_lattice", "min": 1, "max": 1}]
+    },
+    {
+      "id": "boundary-generation-authority",
+      "event": "boundary_candidate_generation",
+      "kind": "authority",
+      "entry": "boundary_enumerator",
+      "terminal": "split_center_evidence",
+      "required_roles": ["producer", "evidence_owner"]
+    },
+    {
+      "id": "background-decision-execution",
+      "event": "background_decision",
+      "kind": "execution",
+      "entry": "bounded_l2_boundary_lattice",
+      "terminal": "prefetch_snapshot",
+      "required_roles": ["producer", "candidate_rank_owner"],
+      "path_cardinality": [{"from": "bounded_l2_boundary_lattice", "to": "prefetch_snapshot", "min": 1, "max": 1}]
+    },
+    {
+      "id": "background-decision-authority",
+      "event": "background_decision",
+      "kind": "authority",
+      "entry": "bounded_l2_boundary_lattice",
+      "terminal": "decision_core",
+      "required_roles": ["producer", "candidate_rank_owner"]
+    },
+    {
+      "id": "space-apply-execution",
+      "event": "space_apply",
+      "kind": "execution",
+      "entry": "space_key",
+      "terminal": "committed_tail",
+      "required_roles": ["interface", "producer", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "space_key", "to": "committed_tail", "min": 1, "max": 1}]
+    },
+    {
+      "id": "space-apply-authority",
+      "event": "space_apply",
+      "kind": "authority",
+      "entry": "prefetch_snapshot",
+      "terminal": "committed_tail",
+      "required_roles": ["producer", "authorization_owner", "mutation_owner"]
+    },
+    {
+      "id": "space-observation",
+      "event": "space_apply",
+      "kind": "observation",
+      "entry": "route_outcome",
+      "terminal": "route_trace",
+      "required_roles": ["producer", "observer"]
+    },
+    {
+      "id": "boundary-proof",
+      "event": "software_proof",
+      "kind": "proof",
+      "entry": "split_center_evidence",
+      "terminal": "focused_contract_tests",
+      "required_roles": ["evidence_owner", "proof_owner"]
+    }
+  ]
+}

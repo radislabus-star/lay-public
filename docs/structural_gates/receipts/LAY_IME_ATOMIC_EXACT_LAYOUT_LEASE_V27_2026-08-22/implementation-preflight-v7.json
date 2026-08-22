@@ -1,0 +1,865 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "lexical-phase-runtime",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/nanda_wave/lexical_phase/runtime.rs",
+      "sha256": "d67008a65a4e878f754774bb4a4f8ca57532f4cffe97024d9189eedfaead98cf",
+      "size_bytes": 75523
+    },
+    {
+      "exists": true,
+      "id": "lexical-phase-mod",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/nanda_wave/lexical_phase/mod.rs",
+      "sha256": "a1fb8313f4df4896aa57545438b1f835344f1308f91dd5946a6b610aa0a19193",
+      "size_bytes": 419
+    },
+    {
+      "exists": true,
+      "id": "word-recognizer-root",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/word_recognizer.rs",
+      "sha256": "85ace5980553df859fe9590b83065e784557cf712f2cf5fe752063e14a311dce",
+      "size_bytes": 953
+    },
+    {
+      "exists": true,
+      "id": "word-recognizer-lexicon",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/word_recognizer/lexicon.rs",
+      "sha256": "9697189b23c98b16ac0b76303dffa2834fac2c9b1ce5a1af7b815513d517aee6",
+      "size_bytes": 2846
+    },
+    {
+      "exists": true,
+      "id": "lexicon-root",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/lexicon.rs",
+      "sha256": "1dc65564adaac3dea32a15be1a7b46680b89b4bdb0e7e6c816a2425c2ae1b2f2",
+      "size_bytes": 12443
+    },
+    {
+      "exists": true,
+      "id": "ascii-layout-candidate",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/layout_autoswitch/ascii/candidate.rs",
+      "sha256": "fab983c7412b5ec831afa4fdb89f95d0dd332114396b3d12c1184ebb6a67663f",
+      "size_bytes": 5117
+    },
+    {
+      "exists": true,
+      "id": "ascii-layout-word",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/layout_autoswitch/ascii/word.rs",
+      "sha256": "5ebbabd22d148202570a435d383ab5e3e91cfd15904fa21181f9d586eaa70d37",
+      "size_bytes": 5036
+    },
+    {
+      "exists": true,
+      "id": "layout-autoswitch-english",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/layout_autoswitch/english.rs",
+      "sha256": "659d93e6a449dd6bfcfc1a3124e0f0f342c08e802d241e0f2ebc6c17c856044e",
+      "size_bytes": 687
+    },
+    {
+      "exists": true,
+      "id": "layout-autoswitch-root",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/layout_autoswitch.rs",
+      "sha256": "ad724c920b2913e3a67b3fe6ff399eea21ef2559ebd6efa84cd5d479ee36b36c",
+      "size_bytes": 8155
+    },
+    {
+      "exists": true,
+      "id": "correction-core",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/correction_core.rs",
+      "sha256": "b26df818637c7ff4a139add18c7e9e527705582828157363faac7817d67a4629",
+      "size_bytes": 43215
+    },
+    {
+      "exists": true,
+      "id": "candidate-sources",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/correction_core/candidate_sources.rs",
+      "sha256": "c2972cd97ebbeff1089528a3647bb77e0bf64f29205d209c7eb670fd7e3f2a7b",
+      "size_bytes": 54854
+    },
+    {
+      "exists": true,
+      "id": "ime-correction",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/ime_correction.rs",
+      "sha256": "b7e9e47bb5275c14fd64ad65904c371082e5b75439d68da29a4907d18bd79e78",
+      "size_bytes": 32354
+    },
+    {
+      "exists": true,
+      "id": "engine-types",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/engine/types.rs",
+      "sha256": "3cc43d6b2aea784a7d1a0d6bce39ae790a86f0f1faea2b645febc62e3b67db62",
+      "size_bytes": 9927
+    },
+    {
+      "exists": true,
+      "id": "engine-preedit",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/preedit.rs",
+      "sha256": "50a7a3940e923c40175d140bd70db2201104ddef4250cdf66db4914478b99edc",
+      "size_bytes": 31059
+    },
+    {
+      "exists": true,
+      "id": "space-prefetch",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
+      "sha256": "baf4c570b8f14a53d74b59f66031ca36aff43c17c5f12799de54e1e54fb466f2",
+      "size_bytes": 24869
+    },
+    {
+      "exists": true,
+      "id": "committed-tail",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/committed_tail.rs",
+      "sha256": "2b233dece8ce78a2f2c356681d2c02d2828476d1a245e43e297384a63134c8a1",
+      "size_bytes": 25068
+    },
+    {
+      "exists": true,
+      "id": "engine-state",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/state.rs",
+      "sha256": "4bfd3264c8e2dab30729247e91795f2d48a632a03b8a8368759f30109f7f5947",
+      "size_bytes": 41384
+    },
+    {
+      "exists": true,
+      "id": "structural-verifier",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/text_edit/structural_verifier.rs",
+      "sha256": "19201157bc09df5cca617132d67a242474aaa331ca58dc18acb0152818b7b826",
+      "size_bytes": 7730
+    },
+    {
+      "exists": true,
+      "id": "transition-decision",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/typing_transition/decision.rs",
+      "sha256": "f4ba3c3554650b19e178458818a11b165586a3ab86ff54fd106cd2d1d7054f1e",
+      "size_bytes": 27803
+    },
+    {
+      "exists": true,
+      "id": "transition-candidate",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/typing_transition/candidate.rs",
+      "sha256": "4d053d57328eb79be127ab2649be83c4e3d47b8fb6c9e54e5a942cd096547319",
+      "size_bytes": 2906
+    },
+    {
+      "exists": true,
+      "id": "action-log",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/action_log.rs",
+      "sha256": "7ef5ec06c79a3252a481d6eb51978e29250c83f962d933c2921c4235e33e91d2",
+      "size_bytes": 28793
+    },
+    {
+      "exists": true,
+      "id": "corpus-common-ru",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/data/lexicon/common_ru.txt",
+      "sha256": "911e415c517168f876d766d9de1be71edc76ef0b6f370a69242efff6ab154bc3",
+      "size_bytes": 1450
+    },
+    {
+      "exists": true,
+      "id": "corpus-foundation-ru",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/data/lexicon/l2_surface_foundation_ru_100k.txt",
+      "sha256": "b6055c489332e85f903dd8981beeaed8201303a05c24b6300ca415c808d67bc1",
+      "size_bytes": 1831639
+    },
+    {
+      "exists": true,
+      "id": "corpus-hot-ru",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/data/lexicon/l2_surface_hot_ru.txt",
+      "sha256": "3130c6e6c8e38a952c4fa46f55cc00cc7b4e71616792ab02bbfc384cd1a9997f",
+      "size_bytes": 233314
+    },
+    {
+      "exists": true,
+      "id": "corpus-technical-en",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/data/lexicon/common_en_technical.txt",
+      "sha256": "a21acf2a731e7842ea877b599dc54eb9841f3ddfdc50230b4bea68d3e19b1871",
+      "size_bytes": 1761
+    },
+    {
+      "exists": true,
+      "id": "corpus-hunspell-en",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/usr/share/hunspell/en_US.dic",
+      "sha256": "829a043cf078d1e80e886289a13823454977f442a239a859d2133ea61944aa60",
+      "size_bytes": 860381
+    },
+    {
+      "exists": true,
+      "id": "corpus-system-words",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/usr/share/dict/words",
+      "sha256": "9e66281f7e51445eab6857488ff6e3d768afffadb7fb1adbef5e4617bee4a53b",
+      "size_bytes": 985084
+    },
+    {
+      "exists": true,
+      "id": "remote-stage-driver",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/stage-atomic-proof-engine-remote.sh",
+      "sha256": "eba9abefcde44e6657de8ffe4eac89f7bdc9de9477b6b2268f1e21800df1adbc",
+      "size_bytes": 4615
+    },
+    {
+      "exists": true,
+      "id": "full-route-driver",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh",
+      "sha256": "cb89bcdd3f16b53a9bf97d68113743484ea23fa7ee9b93159dbfe845497f9168",
+      "size_bytes": 13954
+    },
+    {
+      "exists": true,
+      "id": "installed-engine",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a",
+      "size_bytes": 6423488
+    },
+    {
+      "exists": true,
+      "id": "shell-atomic-adapter",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/js/misc/inputMethodAtomic.js",
+      "sha256": "aa070fd5cff62ae2794b082d7dcfb042f1c714e411cec8328e3d5f19cf44bb07",
+      "size_bytes": 17418
+    },
+    {
+      "exists": true,
+      "id": "failed-v26-preflight",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_IMPLEMENTATION_V26_2026-08-22.json",
+      "sha256": "735ba71de5c41dbdc145852541ce63ec80f3989670bcca87d683adbadb65398c",
+      "size_bytes": 10782
+    },
+    {
+      "exists": true,
+      "id": "blocked-v27-v1-manifest",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_IMPLEMENTATION_V27_2026-08-22.json",
+      "sha256": "2a905143130411ee02c9b7845a6728264942d4ec2c9bb02d5c0549495dfea282",
+      "size_bytes": 17517
+    },
+    {
+      "exists": true,
+      "id": "blocked-v27-v1-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_V27_2026-08-22/implementation-preflight-v1.json",
+      "sha256": "18e7e7df0ae3bce4a4217ab3652ee99953a0df47a1a13408dc84a2dee1c6a0f8",
+      "size_bytes": 12460
+    },
+    {
+      "exists": true,
+      "id": "superseded-route-v4-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_V27_2026-08-22/route-design-v4.json",
+      "sha256": "327685d2d6f356b3733fd3d2cc03a5e1f4c42885c4fb6c700b132113226b7952",
+      "size_bytes": 10631
+    },
+    {
+      "exists": true,
+      "id": "superseded-route-v2-manifest",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_ROUTE_V27_V2_2026-08-22.json",
+      "sha256": "8e21cb4509b1d55153828330e687905a21744d2fa89a87b69cea2f64f9992333",
+      "size_bytes": 8333
+    },
+    {
+      "exists": true,
+      "id": "superseded-route-v5-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_V27_2026-08-22/route-design-v5.json",
+      "sha256": "878411e415eaf2a9f31400b7f48c4db9742c08cad3b965056ffd21300439e0e2",
+      "size_bytes": 11806
+    },
+    {
+      "exists": true,
+      "id": "superseded-v27-v2-manifest",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_IMPLEMENTATION_V27_V2_2026-08-22.json",
+      "sha256": "c54e67a91c0e0e5a96019366228e17a068b98ad65452febe2b578e10e3b8e3b8",
+      "size_bytes": 31295
+    },
+    {
+      "exists": true,
+      "id": "superseded-v27-v2-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_V27_2026-08-22/implementation-preflight-v2.json",
+      "sha256": "60fe65232194adf3812d411531b32e6dd10703063bf9f84743c21cc17d340e45",
+      "size_bytes": 14232
+    },
+    {
+      "exists": true,
+      "id": "final-route-v3-manifest",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_ROUTE_V27_V3_2026-08-22.json",
+      "sha256": "9afed2e23b29ef9523c7b1d6f2eb73232dd1a01f2b3abf837049d9679ec338a1",
+      "size_bytes": 9757
+    },
+    {
+      "exists": true,
+      "id": "final-route-v6-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_V27_2026-08-22/route-design-v6.json",
+      "sha256": "686a760463807369c26c4e6752a794eb0402a0bb75d13841cbf8e33301a8920a",
+      "size_bytes": 15090
+    },
+    {
+      "exists": true,
+      "id": "superseded-v27-v3-manifest",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_IMPLEMENTATION_V27_V3_2026-08-22.json",
+      "sha256": "ca003f066dff1fb878ceb6c0a61a93e6e8c0bd065f0e5d04db31209f457fbb3b",
+      "size_bytes": 36641
+    },
+    {
+      "exists": true,
+      "id": "superseded-v27-v3-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_V27_2026-08-22/implementation-preflight-v3.json",
+      "sha256": "2ab4073d234c52fe5c5fb7d8e1e8885105d1ccbdcbf978e24dbb17e163d350ae",
+      "size_bytes": 16333
+    },
+    {
+      "exists": true,
+      "id": "final-route-v4-manifest",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_ROUTE_V27_V4_2026-08-22.json",
+      "sha256": "a9a8747ae65eca8f22cb783f6a4805e82478a2f0bf07f15d64ab42706ef68694",
+      "size_bytes": 10472
+    },
+    {
+      "exists": true,
+      "id": "final-route-v7-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_V27_2026-08-22/route-design-v7.json",
+      "sha256": "d455e7086ab508ee0f1c3ee2c90af86fadff9ea44d8127a20f66d2de0a458917",
+      "size_bytes": 16360
+    },
+    {
+      "exists": true,
+      "id": "blocked-v27-v4-manifest",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_IMPLEMENTATION_V27_V4_2026-08-22.json",
+      "sha256": "c61f6a696949fd064236b30b96676bde19526c11ef39c06f170a05487f8db1f1",
+      "size_bytes": 39310
+    },
+    {
+      "exists": true,
+      "id": "blocked-v27-v4-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_V27_2026-08-22/implementation-preflight-v4-draft-blocked.json",
+      "sha256": "24bd6c8a7dc279224ec54dd087fc2c3b332c2f9947fd7d4985b87185cda97b24",
+      "size_bytes": 17739
+    },
+    {
+      "exists": true,
+      "id": "cargo-manifest",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/Cargo.toml",
+      "sha256": "91a3c72265db548d6190f16a0059bcd27174a80b3403302ce1b7ee9b7cb9cc8c",
+      "size_bytes": 2399
+    },
+    {
+      "exists": true,
+      "id": "cargo-lock",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/Cargo.lock",
+      "sha256": "34cbaa577bdfed3f352a59e443573372f7a2635011d147d23379e022c369d6d9",
+      "size_bytes": 70770
+    },
+    {
+      "exists": true,
+      "id": "ibus-factory",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/factory.rs",
+      "sha256": "a1c3e68f03ed2ca164482a691bf83da1b3f23d7d7577891be658b8a75058d653",
+      "size_bytes": 1728
+    },
+    {
+      "exists": true,
+      "id": "ibus-component-xml-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/xml.rs",
+      "sha256": "3e8f82c914b2c05de3bdb6d24dfa934d58f404f7b37447e34d8b7514d18d0608",
+      "size_bytes": 1453
+    },
+    {
+      "exists": true,
+      "id": "ibus-engine-root",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/engine.rs",
+      "sha256": "34d6a194a47066bfffe8b5710ee64f4a8bc6328a718453c9ecdecb3dfc41cc0b",
+      "size_bytes": 13826
+    },
+    {
+      "exists": true,
+      "id": "ibus-layout-sync",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/layout_sync.rs",
+      "sha256": "1dd60b5f67f387bce4e14362c6fbca120ef34b5e8c681164d608e82f89d83162",
+      "size_bytes": 12103
+    },
+    {
+      "exists": true,
+      "id": "candidate-contract",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/candidate_contract.rs",
+      "sha256": "40150dbf396fb38d8eca0f6de9e9deb1b2b4e26e7c679b23a1925c8d9458a04b",
+      "size_bytes": 2489
+    },
+    {
+      "exists": true,
+      "id": "live-candidate",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/typing_transition/live_candidate.rs",
+      "sha256": "d55a04a0521a76cc78f43898e34285d7e58b8c0452ea88ebed3a042cf4fbcfa6",
+      "size_bytes": 20948
+    },
+    {
+      "exists": true,
+      "id": "target-evidence",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/typing_transition/target_evidence.rs",
+      "sha256": "af909f2a5a1abe5908f11ea87f2594d27663b8b19ec3a2faa8bb9402c30eb158",
+      "size_bytes": 51805
+    },
+    {
+      "exists": true,
+      "id": "candidate-resolution",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/typing_transition/candidate_resolution.rs",
+      "sha256": "6ff63d967cd672b0fe12e3b8daa5889dc5a471b6009fa172ad541bf8072f4780",
+      "size_bytes": 3812
+    },
+    {
+      "exists": true,
+      "id": "proposal-admission",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/typing_transition/proposal_admission.rs",
+      "sha256": "dd4a37a8c0430c9ff145f9ae9cbbbc735164ece833a143a19af644ac7ad835ca",
+      "size_bytes": 70639
+    },
+    {
+      "exists": true,
+      "id": "transition-verifier",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/typing_transition/verifier.rs",
+      "sha256": "d0f1baa88214eeb18dff2ab98b103397faa5b8f996f53615661d6985963a12c9",
+      "size_bytes": 19011
+    },
+    {
+      "exists": true,
+      "id": "decision-admission",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/typing_transition/decision/admission.rs",
+      "sha256": "c373334ce2d1b7fb44d16ad6c78ec37c646c66c77b26e80e24169611cba5fe20",
+      "size_bytes": 44930
+    },
+    {
+      "exists": true,
+      "id": "decision-apply-policy",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/typing_transition/decision/apply_policy.rs",
+      "sha256": "ba0bb8f6ad92c2847c8417de12ff34694de2f883f1533ce706bf83d60816836c",
+      "size_bytes": 725
+    },
+    {
+      "exists": true,
+      "id": "decision-calibration",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/typing_transition/decision/calibration.rs",
+      "sha256": "dcf039315505f90cdf00790fb9170b133b28a2ddcf5844cfb164d17642f77023",
+      "size_bytes": 1994
+    },
+    {
+      "exists": true,
+      "id": "decision-hard-veto",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/typing_transition/decision/hard_structural_veto.rs",
+      "sha256": "51bf84b67bba20b21b619a294edd77cc3ed7a9b91853f78bbd7150b02b9063c1",
+      "size_bytes": 6433
+    },
+    {
+      "exists": true,
+      "id": "decision-interference",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/typing_transition/decision/interference.rs",
+      "sha256": "da72de7dbc0d7f4230e86491051ed5a3676092d580a25b5b64fefeaf240253c3",
+      "size_bytes": 6416
+    },
+    {
+      "exists": true,
+      "id": "decision-live-field",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/typing_transition/decision/live_field.rs",
+      "sha256": "a14a854d1a02d1be87add3743d3c2118cafe4ec666a527b1c194cb05f2cbed73",
+      "size_bytes": 14683
+    },
+    {
+      "exists": true,
+      "id": "decision-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/typing_transition/decision/receipt.rs",
+      "sha256": "b1fdcf24278b44e28ce3123c5bd749a39788641bfac0c74f3ffa27c4f3df6e1f",
+      "size_bytes": 5442
+    },
+    {
+      "exists": true,
+      "id": "text-edit-mutation",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/text_edit/mutation.rs",
+      "sha256": "4741cf90f5a5e65833a41f471f34eb0c6252ce26fd773035741493eb6436dde6",
+      "size_bytes": 5175
+    },
+    {
+      "exists": true,
+      "id": "language-action",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/language_action.rs",
+      "sha256": "7653696478ba7bb3df2f25c46fa9084d375c10865f78dc7f6ee3ec9c4dd9ceb8",
+      "size_bytes": 7077
+    },
+    {
+      "exists": true,
+      "id": "transition-relation",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/transition_relation.rs",
+      "sha256": "33f1207a320c71426659b349dff8201e14e343457ea425ff5a122351b74575dd",
+      "size_bytes": 28337
+    },
+    {
+      "exists": true,
+      "id": "typing-candidate-types",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/typing_candidate/types.rs",
+      "sha256": "612b9eb444a201844f28f771fd57f635c5be4dc424b561ec9bf19725099a42ff",
+      "size_bytes": 1021
+    },
+    {
+      "exists": true,
+      "id": "installed-user-component-xml",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/.local/share/ibus/component/lay-ime.xml",
+      "sha256": "82f12974331b4c4b391bc4d2f7edcc8a152ac49390f2e67e298aac8312e84a05",
+      "size_bytes": 1104
+    },
+    {
+      "exists": true,
+      "id": "installed-system-component-xml",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/usr/share/ibus/component/lay-ime.xml",
+      "sha256": "82f12974331b4c4b391bc4d2f7edcc8a152ac49390f2e67e298aac8312e84a05",
+      "size_bytes": 1104
+    },
+    {
+      "exists": true,
+      "id": "superseded-v27-v5-manifest",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_IMPLEMENTATION_V27_V5_2026-08-22.json",
+      "sha256": "5ef92a4cd886cc79ac2bc620ebbe4c9688f9b7e68f7b02e1f41b90615b8302ec",
+      "size_bytes": 49309
+    },
+    {
+      "exists": true,
+      "id": "superseded-v27-v5-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_V27_2026-08-22/implementation-preflight-v5.json",
+      "sha256": "b7df76e19e1a3675caa81f9f74cd47fdaf0cb2a424469b6167bc05f2652b024c",
+      "size_bytes": 21393
+    },
+    {
+      "exists": true,
+      "id": "blocked-v27-v6-manifest",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_IMPLEMENTATION_V27_V6_2026-08-22.json",
+      "sha256": "b2bb79731865d0c1e9b73d2868daccc364fa7c654fe186d51fd2c8de75859541",
+      "size_bytes": 69101
+    },
+    {
+      "exists": true,
+      "id": "blocked-v27-v6-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_V27_2026-08-22/implementation-preflight-v6.json",
+      "sha256": "f47d2678f72d0f1e6ea962d47872026f560dfeab1a4c2aee0578e9f30e48eda8",
+      "size_bytes": 31927
+    },
+    {
+      "exists": true,
+      "id": "paper-contract-v7-candidate",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/ime-atomic-exact-layout-lease-v27-paper-contract-2026-08-22.md",
+      "sha256": "7fd379c08f60d5df417733302d5573e8a93acc613f803bc6e9e7df1aca3cff51",
+      "size_bytes": 66359
+    },
+    {
+      "exists": true,
+      "id": "owning-architecture-v7-candidate",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/ime-backend-atomic-frame-v2-2026-08-20.md",
+      "sha256": "b4c58008955f7c80645048553602b09b7a35b256ed928d4b13fced2b500d835e",
+      "size_bytes": 206931
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 78,
+    "forbidden_side_effect_kinds": [
+      "atomic_failure_space_loss",
+      "certificate_erased_by_merge",
+      "certificate_inherited_across_target",
+      "cold_package_load_on_printable_or_space",
+      "edge_symbol_fast_authority",
+      "exact_job_queue",
+      "full_noapply_elision",
+      "generated_form_as_exact_authority",
+      "layout_typo_fast_authority",
+      "learning_from_prepared_or_expired_lease",
+      "local_heavy_build",
+      "lost_or_duplicate_space",
+      "mixed_case_fast_authority",
+      "mutable_context_in_exact_fast_path",
+      "mutable_exact_terminal_owner",
+      "mutable_layout_mints_profile_authority",
+      "mutable_scores_downgrade_closed_exact",
+      "ngram_coherence_as_exact_authority",
+      "non_atomic_decision_publication",
+      "none_means_closed_exact",
+      "normalized_token_span_substitution",
+      "rank_noapply_through_authorization",
+      "rpc_timeout_increase",
+      "ru_to_en_fast_authority",
+      "runtime_deployment_before_full_proof",
+      "second_candidate_rank_owner",
+      "second_mutation_owner",
+      "second_verifier",
+      "separate_exact_undo_owner",
+      "shared_oracle_runtime_helper",
+      "synchronous_exact_computation_on_space",
+      "synchronous_trace_io_hot_path",
+      "unadmitted_source_layout_profile",
+      "unbound_identity_material",
+      "unbounded_context_slot_map",
+      "unbounded_wait",
+      "unknown_engine_mints_us_profile",
+      "unobserved_source_route_staging",
+      "verifier_bypass",
+      "wildcard_candidate_taxonomy",
+      "word_specific_runtime_branch"
+    ],
+    "identity_contracts": 10,
+    "invariants": 35,
+    "planned_side_effect_kinds": [
+      "filesystem_write",
+      "remote_build",
+      "source_edit"
+    ],
+    "preserved_artifacts": 15,
+    "runtime_comparisons": 5,
+    "source_checks": 11,
+    "tests": 49
+  },
+  "manifest_sha256": "59712208003c70746bdbb7719b0405c06d2e3f25e6ca6d5c5a43839d69ce22a3",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-lexical-phase-runtime",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/nanda_wave/lexical_phase/runtime.rs",
+      "sha256": "d67008a65a4e878f754774bb4a4f8ca57532f4cffe97024d9189eedfaead98cf",
+      "size_bytes": 75523
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-layout-candidate",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/layout_autoswitch/ascii/candidate.rs",
+      "sha256": "fab983c7412b5ec831afa4fdb89f95d0dd332114396b3d12c1184ebb6a67663f",
+      "size_bytes": 5117
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-correction-core",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/correction_core.rs",
+      "sha256": "b26df818637c7ff4a139add18c7e9e527705582828157363faac7817d67a4629",
+      "size_bytes": 43215
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-space-prefetch",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
+      "sha256": "baf4c570b8f14a53d74b59f66031ca36aff43c17c5f12799de54e1e54fb466f2",
+      "size_bytes": 24869
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-committed-tail",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/committed_tail.rs",
+      "sha256": "2b233dece8ce78a2f2c356681d2c02d2828476d1a245e43e297384a63134c8a1",
+      "size_bytes": 25068
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-engine-types",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/engine/types.rs",
+      "sha256": "3cc43d6b2aea784a7d1a0d6bce39ae790a86f0f1faea2b645febc62e3b67db62",
+      "size_bytes": 9927
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-ibus-factory",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/factory.rs",
+      "sha256": "a1c3e68f03ed2ca164482a691bf83da1b3f23d7d7577891be658b8a75058d653",
+      "size_bytes": 1728
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-candidate-authority-merge",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/correction_core.rs",
+      "sha256": "b26df818637c7ff4a139add18c7e9e527705582828157363faac7817d67a4629",
+      "size_bytes": 43215
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-decision-mode",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/typing_transition/decision.rs",
+      "sha256": "f4ba3c3554650b19e178458818a11b165586a3ab86ff54fd106cd2d1d7054f1e",
+      "size_bytes": 27803
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-full-route-driver",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh",
+      "sha256": "cb89bcdd3f16b53a9bf97d68113743484ea23fa7ee9b93159dbfe845497f9168",
+      "size_bytes": 13954
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-shell-timeout",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/js/misc/inputMethodAtomic.js",
+      "sha256": "aa070fd5cff62ae2794b082d7dcfb042f1c714e411cec8328e3d5f19cf44bb07",
+      "size_bytes": 17418
+    }
+  ],
+  "task_id": "LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_IMPLEMENTATION_V27_V7_2026-08-22",
+  "verdict": "READY_TO_IMPLEMENT"
+}

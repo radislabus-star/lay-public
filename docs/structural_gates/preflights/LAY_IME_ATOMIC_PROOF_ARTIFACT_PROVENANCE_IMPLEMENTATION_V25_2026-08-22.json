@@ -1,0 +1,132 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_ATOMIC_PROOF_ARTIFACT_PROVENANCE_IMPLEMENTATION_V25_2026-08-22",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "full-route-driver",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh",
+      "expect": {"mode": "0755", "size_bytes": 12197, "sha256": "8139ab8b5620551c08bcee2fcee55b3200b0c65b902efa076db0446912991361"}
+    },
+    {
+      "id": "atomic-engine-owner",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic.rs",
+      "expect": {"mode": "0664", "size_bytes": 19621, "sha256": "456762f0185b598605950f4954ec5bb5267f8e1049ed6eb05d33e718fa04f3f2"}
+    },
+    {
+      "id": "installed-lay-engine",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "expect": {"mode": "0755", "size_bytes": 6423488, "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a"}
+    }
+  ],
+  "source_checks": [
+    {
+      "id": "pinned-full-route-driver",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh",
+      "sha256": "8139ab8b5620551c08bcee2fcee55b3200b0c65b902efa076db0446912991361",
+      "forbidden_effect_patterns": [
+        {"effect": "mutable_target_engine", "regex": "engine=.*/target/release/lay-ibus-engine"},
+        {"effect": "proof_without_engine_hash", "regex": "skipAtomicEngineHashAdmission"},
+        {"effect": "proof_without_atomic_method", "regex": "skipAtomicMethodAdmission"},
+        {"effect": "installed_runtime_mutation", "regex": "installAtomicProofIntoLiveRuntime"}
+      ]
+    },
+    {
+      "id": "pinned-atomic-engine-owner",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic.rs",
+      "sha256": "456762f0185b598605950f4954ec5bb5267f8e1049ed6eb05d33e718fa04f3f2",
+      "forbidden_effect_patterns": [
+        {"effect": "request_validation_weakening", "regex": "acceptAnyAtomicRequest|skipAtomicRequestValidation"},
+        {"effect": "profile_digest_wildcard", "regex": "acceptAnyAtomicProfile|atomicProfileDigestWildcard"},
+        {"effect": "focus_lineage_weakening", "regex": "ignoreAtomicFocusMismatch|skipAtomicFocusValidation"}
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "write-artifact-provenance-contract", "kind": "filesystem_write"},
+      {"id": "create-remote-stage-driver", "kind": "source_edit"},
+      {"id": "make-full-route-driver-fail-closed", "kind": "source_edit"},
+      {"id": "sync-current-build-inputs", "kind": "remote_filesystem_write"},
+      {"id": "build-focused-atomic-engine", "kind": "remote_build"},
+      {"id": "stage-immutable-engine-and-manifests", "kind": "remote_filesystem_write"},
+      {"id": "run-v25-undo-and-route-proofs", "kind": "ephemeral_process_start"},
+      {"id": "write-proof-receipts", "kind": "filesystem_write"}
+    ],
+    "forbidden": [
+      "mutable_target_engine",
+      "proof_without_engine_hash",
+      "proof_without_atomic_method",
+      "installed_runtime_mutation",
+      "request_validation_weakening",
+      "profile_digest_wildcard",
+      "focus_lineage_weakening",
+      "historical_receipt_rewrite",
+      "local_heavy_build"
+    ]
+  },
+  "preserved_artifacts": [
+    {"id": "atomic-engine-owner-preserved", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic.rs", "policy": "immutable", "cursor_policy": "none", "rollback_policy": "preserve_exact_bytes", "baseline_check_id": "atomic-engine-owner"},
+    {"id": "installed-lay-preserved", "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine", "policy": "immutable_before_deployment", "cursor_policy": "none", "rollback_policy": "preserve_exact_bytes", "baseline_check_id": "installed-lay-engine"}
+  ],
+  "identity_contracts": [
+    {
+      "id": "local-remote-source-parity",
+      "producer": "current local Cargo, src, data/lexicon and data/test_input build inputs",
+      "consumer": "dedicated remote V25 source mirror",
+      "comparison": "same sorted relative-path SHA-256 aggregate before Cargo starts",
+      "test_id": "source-parity"
+    },
+    {
+      "id": "built-staged-engine-parity",
+      "producer": "cargo-guard release lay-ibus-engine output",
+      "consumer": "immutable proof/runtime/bin/lay-ibus-engine",
+      "comparison": "exact SHA-256 and byte-size equality plus ProcessKeyEventAtomicV1 presence",
+      "test_id": "engine-artifact-parity"
+    },
+    {
+      "id": "staged-executed-engine-parity",
+      "producer": "immutable engine manifest",
+      "consumer": "full-route bwrap engine bind",
+      "comparison": "sha256sum check succeeds before GNOME Shell starts and the same hash is recorded in the run receipt",
+      "test_id": "driver-admission"
+    }
+  ],
+  "runtime_comparisons": [],
+  "invariants": [
+    {"id": "no-mutable-target-proof-owner", "statement": "the full-route proof never executes an engine directly from a Cargo target directory", "test_id": "driver-static-route"},
+    {"id": "bad-artifact-fails-before-input", "statement": "a missing manifest, wrong hash or missing atomic method terminates before GNOME Shell and client input", "test_id": "driver-admission-fault"},
+    {"id": "installed-runtime-unchanged", "statement": "installed Lay 1.0.33 remains byte-identical until the later deployment preflight", "test_id": "installed-runtime-parity"},
+    {"id": "historical-receipts-preserved", "statement": "failed V24 and V25 receipts remain unchanged and new runs use new IDs", "test_id": "receipt-suffix-parity"}
+  ],
+  "state_machine": {
+    "initial_state": "V25_ARTIFACT_PROVENANCE_PAPER_READY",
+    "steps": [
+      {"id": "edit-proof-staging-owners", "from": "V25_ARTIFACT_PROVENANCE_PAPER_READY", "to": "PROOF_SOURCE_EDITED", "mutates": true, "failure_state": "PROOF_SOURCE_EDIT_FAILED", "cleanup": "restore only the new staging script and full-route driver from the pinned driver baseline", "preserves": ["atomic-engine-owner-preserved", "installed-lay-preserved"], "test_id": "source-edit-fault"},
+      {"id": "sync-remote-build-inputs", "from": "PROOF_SOURCE_EDITED", "to": "REMOTE_SOURCE_PARITY", "mutates": true, "failure_state": "REMOTE_SOURCE_PARITY_FAILED", "cleanup": "reject the dedicated remote mirror before Cargo and retain the mismatch receipt", "preserves": ["atomic-engine-owner-preserved", "installed-lay-preserved"], "test_id": "source-parity-fault"},
+      {"id": "build-and-stage-engine", "from": "REMOTE_SOURCE_PARITY", "to": "IMMUTABLE_ENGINE_STAGED", "mutates": true, "failure_state": "ENGINE_STAGE_FAILED", "cleanup": "leave the prior staged engine selected and retain failed build output; never copy a partial artifact", "preserves": ["atomic-engine-owner-preserved", "installed-lay-preserved"], "test_id": "engine-stage-fault"},
+      {"id": "run-undo-proof", "from": "IMMUTABLE_ENGINE_STAGED", "to": "UNDO_PROVEN", "mutates": true, "failure_state": "UNDO_PROOF_FAILED", "cleanup": "terminate proof-owned processes and retain the complete failed denominator", "preserves": ["atomic-engine-owner-preserved", "installed-lay-preserved"], "test_id": "undo-proof-fault"},
+      {"id": "run-route-proof", "from": "UNDO_PROVEN", "to": "V25_COMPOSITE_PROVEN", "mutates": true, "failure_state": "ROUTE_PROOF_FAILED", "cleanup": "terminate proof-owned processes and retain the complete failed denominator", "preserves": ["atomic-engine-owner-preserved", "installed-lay-preserved"], "test_id": "route-proof-fault"}
+    ],
+    "terminal_states": ["V25_COMPOSITE_PROVEN", "PROOF_SOURCE_EDIT_FAILED", "REMOTE_SOURCE_PARITY_FAILED", "ENGINE_STAGE_FAILED", "UNDO_PROOF_FAILED", "ROUTE_PROOF_FAILED"]
+  },
+  "tests": [
+    {"id": "source-edit-fault", "kind": "fault_injection", "expected": "a partial local edit changes no runtime validator or installed artifact"},
+    {"id": "source-parity-fault", "kind": "fault_injection", "expected": "a remote byte mismatch stops before Cargo starts"},
+    {"id": "engine-stage-fault", "kind": "fault_injection", "expected": "a failed build or copy never replaces the selected staged engine"},
+    {"id": "undo-proof-fault", "kind": "fault_injection", "expected": "failed undo proof leaves zero proof-owned processes and retains logs"},
+    {"id": "route-proof-fault", "kind": "fault_injection", "expected": "failed route proof leaves zero proof-owned processes and retains logs"},
+    {"id": "source-parity", "kind": "parity", "expected": "local and remote build-input aggregate SHA-256 values match"},
+    {"id": "engine-artifact-parity", "kind": "parity", "expected": "built and staged engine bytes match and expose ProcessKeyEventAtomicV1"},
+    {"id": "driver-admission", "kind": "parity", "expected": "the exact staged hash is admitted and recorded before execution"},
+    {"id": "driver-static-route", "kind": "static", "expected": "full-route engine path is under proof/runtime/bin and contains no target/release reference"},
+    {"id": "driver-admission-fault", "kind": "fault_injection", "expected": "wrong hash and missing method are refused before desktop startup"},
+    {"id": "installed-runtime-parity", "kind": "parity", "expected": "installed lay-ibus-engine remains dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a"},
+    {"id": "receipt-suffix-parity", "kind": "parity", "expected": "historical receipts retain bytes and new proof IDs append evidence"}
+  ]
+}

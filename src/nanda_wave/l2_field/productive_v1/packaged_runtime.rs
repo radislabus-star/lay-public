@@ -37,6 +37,9 @@ use super::score::{
 use super::semantic_estimator::SemanticExecutionIndexV1;
 use super::types::MorphologySlotKeyV1;
 use super::types::{LemmaParadigmBindingV1, ProductiveCandidateIdentityV1};
+use crate::typing_transition::target_evidence::{
+    EnumerationWorkBudgetV1, EnumerationWorkCountersV1,
+};
 
 const PRODUCTIVE_HEAP_WITH_OVERFLOW_SENTINEL: usize = super::runtime::PRODUCTIVE_PHYSICAL_TOP_K + 1;
 
@@ -138,6 +141,7 @@ pub(super) struct ColdBindingDerivationDiagnosticsV1 {
     pub(super) source_pos_domain_count: usize,
     pub(super) observed_slot_count: usize,
     pub(super) posting_lookup_count: usize,
+    pub(super) posting_visit_count: usize,
     pub(super) posting_miss_count: usize,
     pub(super) posting_paradigm_count: usize,
     pub(super) slot_compatible_paradigm_count: usize,
@@ -156,6 +160,7 @@ pub(super) struct ColdBindingDerivationDiagnosticsV1 {
     pub(super) recovery_max_independent_source_count: usize,
     pub(super) identity_bridge_candidate_count: usize,
     pub(super) exact_replay_program_execution_count: usize,
+    pub(super) operator_step_count: u64,
     pub(super) shared_hypothesis_observation_count: usize,
     pub(super) shared_hypothesis_unique_count: usize,
     pub(super) shared_hypothesis_join_attempt_count: usize,
@@ -406,6 +411,19 @@ pub(super) struct PackagedProductiveReadoutV1 {
     pub(super) integrity_error: Option<String>,
 }
 
+fn empty_productive_readout() -> PackagedProductiveReadoutV1 {
+    PackagedProductiveReadoutV1 {
+        verdict: ProductiveCalibratedVerdictV1::Abstain {
+            suggestions: Vec::new(),
+            productive_overflow: false,
+        },
+        candidates: Vec::new(),
+        logical_terminal_count: 0,
+        logical_surface_basin_count: 0,
+        integrity_error: None,
+    }
+}
+
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, serde::Serialize)]
 pub(super) struct ProductiveEvaluationTelemetryV1 {
     pub(super) setup_us: u64,
@@ -417,7 +435,79 @@ pub(super) struct ProductiveEvaluationTelemetryV1 {
     pub(super) logical_terminal_count: u64,
     pub(super) logical_surface_basin_count: u64,
     pub(super) selected_candidate_count: u64,
+    pub(super) relation_replay_count: u64,
+    pub(super) operator_step_count: u64,
 }
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum ProductiveEvaluationModeV1 {
+    ContextShaped,
+    ContextNeutralMaterial,
+}
+
+#[derive(Clone, Debug)]
+pub(super) struct ContextNeutralProductiveEnumerationV1 {
+    pub(super) readout: PackagedProductiveReadoutV1,
+    pub(super) productive_work: EnumerationWorkCountersV1,
+    pub(super) aggregate_work: EnumerationWorkCountersV1,
+    pub(super) work_budget_exceeded: bool,
+}
+
+struct ProductiveWorkLimiterV1 {
+    productive_ceiling: EnumerationWorkCountersV1,
+    aggregate_ceiling: EnumerationWorkCountersV1,
+    preparatory_work: EnumerationWorkCountersV1,
+    productive_work: EnumerationWorkCountersV1,
+}
+
+impl ProductiveWorkLimiterV1 {
+    fn new(
+        budget: EnumerationWorkBudgetV1,
+        preparatory_work: EnumerationWorkCountersV1,
+    ) -> Result<Self, String> {
+        if !preparatory_work.within(budget.aggregate) {
+            return Err(WORK_BUDGET_EXCEEDED.to_string());
+        }
+        Ok(Self {
+            productive_ceiling: budget.productive_traversal,
+            aggregate_ceiling: budget.aggregate,
+            preparatory_work,
+            productive_work: EnumerationWorkCountersV1::default(),
+        })
+    }
+
+    fn consume(&mut self, delta: EnumerationWorkCountersV1) -> Result<(), String> {
+        let next_productive = self
+            .productive_work
+            .checked_add(delta)
+            .ok_or_else(|| WORK_BUDGET_EXCEEDED.to_string())?;
+        let next_aggregate = self
+            .preparatory_work
+            .checked_add(next_productive)
+            .ok_or_else(|| WORK_BUDGET_EXCEEDED.to_string())?;
+        if !next_productive.within(self.productive_ceiling)
+            || !next_aggregate.within(self.aggregate_ceiling)
+        {
+            return Err(WORK_BUDGET_EXCEEDED.to_string());
+        }
+        self.productive_work = next_productive;
+        Ok(())
+    }
+
+    fn aggregate_work(&self) -> EnumerationWorkCountersV1 {
+        self.preparatory_work
+            .checked_add(self.productive_work)
+            .unwrap_or(EnumerationWorkCountersV1 {
+                posting_visits: u64::MAX,
+                relation_replays: u64::MAX,
+                grounding_lookups: u64::MAX,
+                generated_logical_targets: u64::MAX,
+                operator_steps: u64::MAX,
+            })
+    }
+}
+
+const WORK_BUDGET_EXCEEDED: &str = "productive context-neutral work budget exceeded";
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(super) struct ProductiveTargetProbeIdentityV1 {
@@ -891,6 +981,14 @@ impl BindingCandidateFrontierV1 {
 impl PackagedProductiveRuntimeV1 {
     pub(in crate::nanda_wave::l2_field) fn package_sha256(&self) -> [u8; 32] {
         self.package.package_sha256()
+    }
+
+    pub(in crate::nanda_wave::l2_field) fn l11_package_sha256(&self) -> [u8; 32] {
+        self.package.header.l11_package_sha256
+    }
+
+    pub(in crate::nanda_wave::l2_field) fn canonical_l2_package_sha256(&self) -> [u8; 32] {
+        self.package.header.canonical_l2_package_sha256
     }
 
     pub(super) fn load(
@@ -1415,6 +1513,7 @@ impl PackagedProductiveRuntimeV1 {
                 diagnostics.posting_lookup_count += 1;
                 let compatible =
                     self.compatible_paradigms(source.pos_domain, source.source_slot_id)?;
+                diagnostics.posting_visit_count += compatible.len();
                 diagnostics.posting_miss_count += usize::from(compatible.is_empty());
                 for paradigm_id in compatible {
                     paradigm_flags.mark(paradigm_id, PARADIGM_FLAG_POSTING)?;
@@ -1430,6 +1529,7 @@ impl PackagedProductiveRuntimeV1 {
                 let paths =
                     anchor_recovery.recovery_paths(source.pos_domain, source.source_slot_id)?;
                 diagnostics.recovery_path_count += paths.len();
+                diagnostics.posting_visit_count += paths.len();
                 let source_scalars = source.normalized_source.chars().collect::<Vec<_>>();
                 let mut recovered_anchor = String::new();
                 let mut group_start = 0_usize;
@@ -1460,6 +1560,7 @@ impl PackagedProductiveRuntimeV1 {
                         continue;
                     };
                     diagnostics.recovery_program_execution_count += 1;
+                    diagnostics.operator_step_count += u64::from(execution_path.program.op_count);
                     if anchor_recovery
                         .recover_path_into(execution_path, &source_scalars, &mut recovered_anchor)
                         .is_err()
@@ -1613,13 +1714,15 @@ impl PackagedProductiveRuntimeV1 {
                     for class in classes {
                         let mut shared_source = hypothesis.source.clone();
                         shared_source.normalized_source = recovered_surface.clone();
-                        let (reconstructs, executed) = self.paradigm_reconstructs_exposed_forms(
-                            class.representative,
-                            &shared_source,
-                            exposed,
-                        )?;
+                        let (reconstructs, executed, operator_steps) = self
+                            .paradigm_reconstructs_exposed_forms(
+                                class.representative,
+                                &shared_source,
+                                exposed,
+                            )?;
                         diagnostics.transition_equivalence_representative_replay_count += 1;
                         diagnostics.exact_replay_program_execution_count += executed;
+                        diagnostics.operator_step_count += operator_steps;
                         diagnostics.shared_hypothesis_replay_execution_count += executed;
                         if !reconstructs {
                             continue;
@@ -1691,9 +1794,10 @@ impl PackagedProductiveRuntimeV1 {
             for (paradigm_id, candidate_sources) in direct_sources {
                 let paradigm = self.paradigm(paradigm_id)?;
                 for source in candidate_sources {
-                    let (reconstructs, executed) =
+                    let (reconstructs, executed, operator_steps) =
                         self.paradigm_reconstructs_exposed_forms(paradigm, source, exposed)?;
                     diagnostics.exact_replay_program_execution_count += executed;
+                    diagnostics.operator_step_count += operator_steps;
                     if !reconstructs {
                         continue;
                     }
@@ -1805,8 +1909,8 @@ impl PackagedProductiveRuntimeV1 {
                 if paradigm_flags.contains(candidate.paradigm_id, PARADIGM_FLAG_DIRECT_SELECTED) {
                     continue;
                 }
-                let (reconstructs, executed) = if candidate.exact_certified {
-                    (true, 0)
+                let (reconstructs, executed, operator_steps) = if candidate.exact_certified {
+                    (true, 0, 0)
                 } else {
                     self.paradigm_reconstructs_exposed_forms(
                         candidate.paradigm,
@@ -1815,6 +1919,7 @@ impl PackagedProductiveRuntimeV1 {
                     )?
                 };
                 diagnostics.exact_replay_program_execution_count += executed;
+                diagnostics.operator_step_count += operator_steps;
                 if !reconstructs {
                     continue;
                 }
@@ -2014,10 +2119,11 @@ impl PackagedProductiveRuntimeV1 {
         paradigm: ParadigmCenterRecordV1,
         source: &ColdLemmaSourceV1,
         exposed: &ExposedFormConstraintsV1,
-    ) -> Result<(bool, usize), String> {
+    ) -> Result<(bool, usize, u64), String> {
         let mut matched = vec![0_u8; exposed.surface_count];
         let mut matched_count = 0_usize;
         let mut executed = 0_usize;
+        let mut operator_steps = 0_u64;
         let source_scalars = source.normalized_source.chars().collect::<Vec<_>>();
         let mut surface = String::new();
         for offset in 0..paradigm.program_count as usize {
@@ -2029,6 +2135,9 @@ impl PackagedProductiveRuntimeV1 {
                 continue;
             };
             executed += 1;
+            operator_steps = operator_steps
+                .checked_add(u64::from(program.record.op_count))
+                .ok_or_else(|| "productive replay operator-step count overflow".to_string())?;
             if !self.execute_packaged_program_into(program, &source_scalars, &mut surface)? {
                 continue;
             }
@@ -2044,7 +2153,11 @@ impl PackagedProductiveRuntimeV1 {
                 matched_count += 1;
             }
         }
-        Ok((matched_count == exposed.surface_count, executed))
+        Ok((
+            matched_count == exposed.surface_count,
+            executed,
+            operator_steps,
+        ))
     }
 
     pub(super) fn identity_anchor_reconstructs_exposed_forms(
@@ -2071,7 +2184,7 @@ impl PackagedProductiveRuntimeV1 {
             constraints.insert(target.source_slot_id, &target.normalized_source);
         }
         self.paradigm_reconstructs_exposed_forms(paradigm, &source, &constraints)
-            .map(|(reconstructs, _)| reconstructs)
+            .map(|(reconstructs, _, _)| reconstructs)
     }
 
     fn execute_packaged_program_into(
@@ -2308,6 +2421,8 @@ impl PackagedProductiveRuntimeV1 {
             grounded_winner_conflict,
             None,
             None,
+            ProductiveEvaluationModeV1::ContextShaped,
+            None,
         ) {
             Ok(readout) => readout,
             Err(error) => PackagedProductiveReadoutV1 {
@@ -2340,6 +2455,8 @@ impl PackagedProductiveRuntimeV1 {
             grounded_winner_conflict,
             None,
             Some(&mut telemetry),
+            ProductiveEvaluationModeV1::ContextShaped,
+            None,
         ) {
             Ok(readout) => readout,
             Err(error) => PackagedProductiveReadoutV1 {
@@ -2373,6 +2490,8 @@ impl PackagedProductiveRuntimeV1 {
             grounded_winner_conflict,
             Some(target_probe),
             None,
+            ProductiveEvaluationModeV1::ContextShaped,
+            None,
         ) {
             Ok(readout) => readout,
             Err(error) => PackagedProductiveReadoutV1 {
@@ -2388,6 +2507,60 @@ impl PackagedProductiveRuntimeV1 {
         }
     }
 
+    pub(super) fn enumerate_context_neutral_material(
+        &self,
+        observed_surface: &str,
+        grounded_lemmas: &[PackagedGroundedLemmaV1],
+        cold_bindings: &[ColdLemmaBindingV1],
+        preparatory_work: EnumerationWorkCountersV1,
+        budget: EnumerationWorkBudgetV1,
+    ) -> ContextNeutralProductiveEnumerationV1 {
+        let scene = L2LocalSceneV1 {
+            current_token: observed_surface.to_string(),
+            current_normalized_scalars: observed_surface.chars().map(u32::from).collect(),
+            ..L2LocalSceneV1::default()
+        };
+        let mut limiter = match ProductiveWorkLimiterV1::new(budget, preparatory_work) {
+            Ok(limiter) => limiter,
+            Err(_) => {
+                return ContextNeutralProductiveEnumerationV1 {
+                    readout: empty_productive_readout(),
+                    productive_work: EnumerationWorkCountersV1::default(),
+                    aggregate_work: preparatory_work,
+                    work_budget_exceeded: true,
+                };
+            }
+        };
+        let result = self.evaluate_checked(
+            observed_surface,
+            &scene,
+            grounded_lemmas,
+            cold_bindings,
+            false,
+            None,
+            None,
+            ProductiveEvaluationModeV1::ContextNeutralMaterial,
+            Some(&mut limiter),
+        );
+        let work_budget_exceeded = result
+            .as_ref()
+            .is_err_and(|error| error == WORK_BUDGET_EXCEEDED);
+        let readout = match result {
+            Ok(readout) => readout,
+            Err(error) if error == WORK_BUDGET_EXCEEDED => empty_productive_readout(),
+            Err(error) => PackagedProductiveReadoutV1 {
+                integrity_error: Some(error),
+                ..empty_productive_readout()
+            },
+        };
+        ContextNeutralProductiveEnumerationV1 {
+            readout,
+            productive_work: limiter.productive_work,
+            aggregate_work: limiter.aggregate_work(),
+            work_budget_exceeded,
+        }
+    }
+
     fn evaluate_checked(
         &self,
         observed_surface: &str,
@@ -2397,6 +2570,8 @@ impl PackagedProductiveRuntimeV1 {
         grounded_winner_conflict: bool,
         mut target_probe: Option<&mut ProductiveTargetProbeV1>,
         mut telemetry: Option<&mut ProductiveEvaluationTelemetryV1>,
+        mode: ProductiveEvaluationModeV1,
+        mut work_limiter: Option<&mut ProductiveWorkLimiterV1>,
     ) -> Result<PackagedProductiveReadoutV1, String> {
         let stage_started = telemetry.as_ref().map(|_| Instant::now());
         scene.validate().map_err(str::to_string)?;
@@ -2404,13 +2579,20 @@ impl PackagedProductiveRuntimeV1 {
         if observed.characters.len() > usize::from(self.package.header.maximum_observed_scalars) {
             return Err("productive observation exceeds the package scalar bound".to_string());
         }
-        let wave = encode_scene_wave(scene);
-        let scene_key = directional_scene_key(scene).map_err(str::to_string)?;
+        let (wave, scene_key) = match mode {
+            ProductiveEvaluationModeV1::ContextShaped => (
+                encode_scene_wave(scene),
+                directional_scene_key(scene).map_err(str::to_string)?,
+            ),
+            ProductiveEvaluationModeV1::ContextNeutralMaterial => (SceneWaveV1::default(), 0),
+        };
         let lemmas = self.select_grounded_lemmas(grounded_lemmas)?;
         let mut base_surface_basins = BTreeMap::<SurfaceBasinKeyV1, SurfaceBasinV1>::new();
         let mut recovered_surface_basins = BTreeMap::<SurfaceBasinKeyV1, SurfaceBasinV1>::new();
         let coalesce_slots = self.shared_replay_mode == SharedReplayModeV1::SemanticProofAuthority;
         let mut logical_terminal_count = 0_u64;
+        let mut relation_replay_count = 0_u64;
+        let mut operator_step_count = 0_u64;
         let mut batch_geometry =
             BatchGeometryEvaluatorV1::new(&observed).map_err(str::to_string)?;
         if let (Some(telemetry), Some(stage_started)) = (telemetry.as_deref_mut(), stage_started) {
@@ -2532,7 +2714,11 @@ impl PackagedProductiveRuntimeV1 {
                 &execution_source_scalars,
                 &mut execution_output,
                 &mut logical_terminal_count,
+                &mut relation_replay_count,
+                &mut operator_step_count,
                 target_probe.as_deref_mut(),
+                mode,
+                work_limiter.as_deref_mut(),
             )?;
             for candidate in binding_candidates {
                 match candidate.output.rank_origin {
@@ -2550,6 +2736,8 @@ impl PackagedProductiveRuntimeV1 {
         if let (Some(telemetry), Some(stage_started)) = (telemetry.as_deref_mut(), stage_started) {
             telemetry.traversal_us = stage_started.elapsed().as_micros() as u64;
             telemetry.logical_terminal_count = logical_terminal_count;
+            telemetry.relation_replay_count = relation_replay_count;
+            telemetry.operator_step_count = operator_step_count;
         }
 
         let stage_started = telemetry.as_ref().map(|_| Instant::now());
@@ -2759,6 +2947,8 @@ impl PackagedProductiveRuntimeV1 {
         let mut batch_geometry =
             BatchGeometryEvaluatorV1::new(&observed).map_err(str::to_string)?;
         let mut direct_count = 0;
+        let mut direct_relation_replay_count = 0;
+        let mut direct_operator_step_count = 0;
         let mut execution_lane = self
             .semantic_transducer
             .as_ref()
@@ -2778,6 +2968,10 @@ impl PackagedProductiveRuntimeV1 {
             &source_scalars,
             &mut execution_output,
             &mut direct_count,
+            &mut direct_relation_replay_count,
+            &mut direct_operator_step_count,
+            None,
+            ProductiveEvaluationModeV1::ContextShaped,
             None,
         )?;
         for candidate in &mut direct {
@@ -2786,6 +2980,8 @@ impl PackagedProductiveRuntimeV1 {
                 .map_err(str::to_string)?;
         }
         let mut complete_count = 0;
+        let mut complete_relation_replay_count = 0;
+        let mut complete_operator_step_count = 0;
         let complete = self.traverse_binding_complete_trie(
             &observed,
             &wave,
@@ -2794,6 +2990,10 @@ impl PackagedProductiveRuntimeV1 {
             paradigm,
             &selected_slots,
             &mut complete_count,
+            &mut complete_relation_replay_count,
+            &mut complete_operator_step_count,
+            None,
+            ProductiveEvaluationModeV1::ContextShaped,
             None,
         )?;
         if direct_count != complete_count || direct != complete {
@@ -3028,7 +3228,11 @@ impl PackagedProductiveRuntimeV1 {
         source_scalars: &[char],
         normalized_surface: &mut String,
         logical_terminal_count: &mut u64,
+        relation_replay_count: &mut u64,
+        operator_step_count: &mut u64,
         mut target_probe: Option<&mut ProductiveTargetProbeV1>,
+        mode: ProductiveEvaluationModeV1,
+        mut work_limiter: Option<&mut ProductiveWorkLimiterV1>,
     ) -> Result<Vec<RankedCandidateV1>, String> {
         // Keep the sidecar-disabled runtime as the independent V64 trie oracle.
         // The validated V66 runtime executes the same packaged programs directly.
@@ -3041,12 +3245,22 @@ impl PackagedProductiveRuntimeV1 {
                 paradigm,
                 selected_slots,
                 logical_terminal_count,
+                relation_replay_count,
+                operator_step_count,
                 target_probe,
+                mode,
+                work_limiter,
             );
         }
 
-        let prepared_slots =
-            self.prepare_slot_evaluations(binding, paradigm, selected_slots, wave, scene_key)?;
+        let prepared_slots = self.prepare_slot_evaluations(
+            binding,
+            paradigm,
+            selected_slots,
+            wave,
+            scene_key,
+            mode,
+        )?;
         let mut frontier = BindingCandidateFrontierV1::new(
             prepared_slots.iter().map(|slot| slot.profile.slot_id),
         )?;
@@ -3065,6 +3279,15 @@ impl PackagedProductiveRuntimeV1 {
             else {
                 continue;
             };
+            if let Some(limiter) = work_limiter.as_deref_mut() {
+                limiter.consume(EnumerationWorkCountersV1 {
+                    relation_replays: 1,
+                    ..EnumerationWorkCountersV1::default()
+                })?;
+            }
+            *relation_replay_count = relation_replay_count
+                .checked_add(1)
+                .ok_or_else(|| "productive relation-replay count overflow".to_string())?;
             let execution_class_id = execution_lane
                 .as_ref()
                 .map(|_| {
@@ -3083,6 +3306,15 @@ impl PackagedProductiveRuntimeV1 {
             let execution = if let Some(execution) = cached_execution {
                 execution
             } else {
+                if let Some(limiter) = work_limiter.as_deref_mut() {
+                    limiter.consume(EnumerationWorkCountersV1 {
+                        operator_steps: u64::from(program.record.op_count),
+                        ..EnumerationWorkCountersV1::default()
+                    })?;
+                }
+                *operator_step_count = operator_step_count
+                    .checked_add(u64::from(program.record.op_count))
+                    .ok_or_else(|| "productive operator-step count overflow".to_string())?;
                 let execution = if self.execute_packaged_program_into(
                     program,
                     source_scalars,
@@ -3136,6 +3368,12 @@ impl PackagedProductiveRuntimeV1 {
                 normalized_surface_id: terminal.stable_identity_hash,
                 variant_id: terminal.variant_id,
             };
+            if let Some(limiter) = work_limiter.as_deref_mut() {
+                limiter.consume(EnumerationWorkCountersV1 {
+                    generated_logical_targets: 1,
+                    ..EnumerationWorkCountersV1::default()
+                })?;
+            }
             *logical_terminal_count = logical_terminal_count
                 .checked_add(1)
                 .ok_or_else(|| "productive logical terminal count overflow".to_string())?;
@@ -3199,10 +3437,20 @@ impl PackagedProductiveRuntimeV1 {
         paradigm: ParadigmCenterRecordV1,
         selected_slots: &[SlotPhaseProfileRecordV1],
         logical_terminal_count: &mut u64,
+        relation_replay_count: &mut u64,
+        operator_step_count: &mut u64,
         mut target_probe: Option<&mut ProductiveTargetProbeV1>,
+        mode: ProductiveEvaluationModeV1,
+        mut work_limiter: Option<&mut ProductiveWorkLimiterV1>,
     ) -> Result<Vec<RankedCandidateV1>, String> {
-        let prepared_slots =
-            self.prepare_slot_evaluations(binding, paradigm, selected_slots, wave, scene_key)?;
+        let prepared_slots = self.prepare_slot_evaluations(
+            binding,
+            paradigm,
+            selected_slots,
+            wave,
+            scene_key,
+            mode,
+        )?;
         let source = binding.lemma.normalized_source.chars().collect::<Vec<_>>();
         let mut trace_arena = ScalarTraceArenaV1::default();
         let mut frontier = BindingCandidateFrontierV1::new(
@@ -3285,6 +3533,12 @@ impl PackagedProductiveRuntimeV1 {
                         normalized_surface_id: terminal.stable_identity_hash,
                         variant_id: terminal.variant_id,
                     };
+                    if let Some(limiter) = work_limiter.as_deref_mut() {
+                        limiter.consume(EnumerationWorkCountersV1 {
+                            generated_logical_targets: 1,
+                            ..EnumerationWorkCountersV1::default()
+                        })?;
+                    }
                     *logical_terminal_count = logical_terminal_count
                         .checked_add(1)
                         .ok_or_else(|| "productive logical terminal count overflow".to_string())?;
@@ -3320,6 +3574,19 @@ impl PackagedProductiveRuntimeV1 {
                 }
             }
             for offset in (0..usize::from(node.arc_count)).rev() {
+                if let Some(limiter) = work_limiter.as_deref_mut() {
+                    limiter.consume(EnumerationWorkCountersV1 {
+                        relation_replays: 1,
+                        operator_steps: 1,
+                        ..EnumerationWorkCountersV1::default()
+                    })?;
+                }
+                *relation_replay_count = relation_replay_count
+                    .checked_add(1)
+                    .ok_or_else(|| "productive trie relation count overflow".to_string())?;
+                *operator_step_count = operator_step_count
+                    .checked_add(1)
+                    .ok_or_else(|| "productive trie operator-step count overflow".to_string())?;
                 let arc = self.package.record::<ProductiveTrieArcRecordV1>(
                     ProductiveSectionKindV1::TrieArcs,
                     node.arc_start as usize + offset,
@@ -3431,6 +3698,7 @@ impl PackagedProductiveRuntimeV1 {
         selected_slots: &[SlotPhaseProfileRecordV1],
         wave: &SceneWaveV1,
         scene_key: u32,
+        mode: ProductiveEvaluationModeV1,
     ) -> Result<Vec<PreparedSlotEvaluationV1>, String> {
         selected_slots
             .iter()
@@ -3443,6 +3711,7 @@ impl PackagedProductiveRuntimeV1 {
                     GeometryTerminalEvidenceV1::default(),
                     wave,
                     scene_key,
+                    mode,
                 )?)
                 .map_err(str::to_string)?
                 .quantize()
@@ -3450,14 +3719,17 @@ impl PackagedProductiveRuntimeV1 {
                 Ok(PreparedSlotEvaluationV1 {
                     profile,
                     invariant_features,
-                    ambiguity_center_cosine: self
-                        .maximum_phase_coherence(
-                            ProductiveSectionKindV1::AmbiguityPhaseCenters,
-                            profile.ambiguity_start,
-                            profile.ambiguity_count,
-                            wave,
-                        )?
-                        .unwrap_or_default(),
+                    ambiguity_center_cosine: match mode {
+                        ProductiveEvaluationModeV1::ContextShaped => self
+                            .maximum_phase_coherence(
+                                ProductiveSectionKindV1::AmbiguityPhaseCenters,
+                                profile.ambiguity_start,
+                                profile.ambiguity_count,
+                                wave,
+                            )?
+                            .unwrap_or_default(),
+                        ProductiveEvaluationModeV1::ContextNeutralMaterial => 0,
+                    },
                     minimum_independent_support: minimum_nonzero_support([
                         binding.positive_support(),
                         paradigm.support,
@@ -3476,9 +3748,14 @@ impl PackagedProductiveRuntimeV1 {
         geometry: GeometryTerminalEvidenceV1,
         wave: &SceneWaveV1,
         scene_key: u32,
+        mode: ProductiveEvaluationModeV1,
     ) -> Result<TerminalFeatureInputV1, String> {
-        let directional =
-            self.directional_residual(scene_key, binding.lemma.source_slot_id, profile.slot_id)?;
+        let directional = match mode {
+            ProductiveEvaluationModeV1::ContextShaped => {
+                self.directional_residual(scene_key, binding.lemma.source_slot_id, profile.slot_id)?
+            }
+            ProductiveEvaluationModeV1::ContextNeutralMaterial => None,
+        };
         let stability = match (binding.stability(), paradigm.stability) {
             (binding, paradigm) if binding != 0 && paradigm != 0 => Some(binding.min(paradigm)),
             _ => None,
@@ -3494,24 +3771,33 @@ impl PackagedProductiveRuntimeV1 {
             directional: directional.and_then(|record| {
                 self.count_evidence(3, record.positive_support, record.explicit_anti_support)
             }),
-            positive_center_cosine: self.maximum_phase_coherence(
-                ProductiveSectionKindV1::PositivePhaseCenters,
-                profile.positive_start,
-                profile.positive_count,
-                wave,
-            )?,
-            anti_center_cosine: self.maximum_phase_coherence(
-                ProductiveSectionKindV1::AntiPhaseCenters,
-                profile.anti_start,
-                profile.anti_count,
-                wave,
-            )?,
-            hard_negative_center_cosine: self.maximum_phase_coherence(
-                ProductiveSectionKindV1::HardNegativePhaseCenters,
-                profile.hard_negative_start,
-                profile.hard_negative_count,
-                wave,
-            )?,
+            positive_center_cosine: match mode {
+                ProductiveEvaluationModeV1::ContextShaped => self.maximum_phase_coherence(
+                    ProductiveSectionKindV1::PositivePhaseCenters,
+                    profile.positive_start,
+                    profile.positive_count,
+                    wave,
+                )?,
+                ProductiveEvaluationModeV1::ContextNeutralMaterial => None,
+            },
+            anti_center_cosine: match mode {
+                ProductiveEvaluationModeV1::ContextShaped => self.maximum_phase_coherence(
+                    ProductiveSectionKindV1::AntiPhaseCenters,
+                    profile.anti_start,
+                    profile.anti_count,
+                    wave,
+                )?,
+                ProductiveEvaluationModeV1::ContextNeutralMaterial => None,
+            },
+            hard_negative_center_cosine: match mode {
+                ProductiveEvaluationModeV1::ContextShaped => self.maximum_phase_coherence(
+                    ProductiveSectionKindV1::HardNegativePhaseCenters,
+                    profile.hard_negative_start,
+                    profile.hard_negative_count,
+                    wave,
+                )?,
+                ProductiveEvaluationModeV1::ContextNeutralMaterial => None,
+            },
             geometry,
             support: (profile.support != 0).then_some(profile.support),
             stability,

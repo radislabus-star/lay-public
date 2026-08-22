@@ -980,7 +980,7 @@ fn canonical_replay_resolution(
         nanda_autocorrect: true,
         nanda_candidate_route: lay::correction_core::CandidateReadoutRoute::FullWave,
         nanda_wave_options: options.clone(),
-        mode: CorrectionMode::DeterministicThenNanda,
+        mode: CorrectionMode::NandaOnly,
     })
 }
 

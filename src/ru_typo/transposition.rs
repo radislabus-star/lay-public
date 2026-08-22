@@ -4,9 +4,16 @@ use crate::text_case::apply_word_case;
 use crate::word_reader::is_cyrillic_word;
 
 use super::guards::looks_like_known_word_plus_one_letter_function_suffix;
+use super::memo::{memoized_text, WordMaterialKind};
 use super::thresholds::NGRAM_TRANSPOSE_MARGIN;
 
 pub(crate) fn correct_adjacent_transposition(word: &str) -> Option<String> {
+    memoized_text(WordMaterialKind::AdjacentTransposition, word, || {
+        correct_adjacent_transposition_uncached(word)
+    })
+}
+
+fn correct_adjacent_transposition_uncached(word: &str) -> Option<String> {
     if word.chars().count() < 5 || !is_cyrillic_word(word) {
         return None;
     }

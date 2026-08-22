@@ -1,0 +1,33 @@
+{
+  "schema": "lay.release-install-attempt-correction.v1",
+  "supersedes_interpretation": "failed-live-install-attempt-v1.json",
+  "verdict": "INSTALL_GATE_EXPECTED_OBSOLETE_SIDECAR_TOPOLOGY",
+  "measured": {
+    "installed_binary_parity": "10/10 PASS",
+    "extension_version": "1.0.34 PASS",
+    "managed_engine_rotation": "PASS",
+    "global_ibus_continuity": "PASS",
+    "observed_lay_l1_1_serve_count": 0,
+    "readiness_deadline_seconds": 90,
+    "rollback": "PASS"
+  },
+  "first_mechanism": {
+    "source": "src/bin/lay_daemon/startup_runtime/warmup.rs",
+    "condition": "daemon_owns_text_mutation is false for ime and auto",
+    "effect": "daemon warm_l11_service is false and no duplicate L1.1 sidecar is spawned",
+    "direct_owner": "lay-ibus-engine"
+  },
+  "independent_proof": {
+    "receipt": "ime-owner-topology-proof-v1.json",
+    "remote_tests": "4/4 PASS"
+  },
+  "correct_live_topology": {
+    "lay-daemon": 1,
+    "lay-l1.1-serve": 0,
+    "lay-ibus-engine": 1,
+    "lay-l3-online": 1,
+    "global-ibus-daemon": "same PID"
+  },
+  "runtime_defect_proven": false,
+  "required_change": "repair deployment acceptance topology only; do not change V27 production code"
+}

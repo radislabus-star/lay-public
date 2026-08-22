@@ -1,0 +1,21 @@
+{
+  "all_iterations": {
+    "max_us": 1944,
+    "mean_us": 1944,
+    "min_us": 1944,
+    "p50_us": 1944,
+    "p95_us": 1944,
+    "p99_us": 1944,
+    "samples": 1
+  },
+  "availability": "EmptyL11Lattice",
+  "completed_iterations": 1,
+  "kind": "productive_v90_live_owner_query",
+  "outer_readout_cache_bypassed": true,
+  "owner_symbol": "live_productive_v1_readout",
+  "producer_symbol": "canonical_owned_text_candidates",
+  "repeat": 200,
+  "runtime_authority_changed": false,
+  "status": "unavailable",
+  "text": "рабоатют "
+}

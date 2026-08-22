@@ -1,0 +1,227 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "PASS",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": true,
+  "contract": "docs/structural_gates/preflights/LAY_IME_ATOMIC_V27_SURROUNDING_OBSERVATION_RECONCILIATION_ROUTE_V3_2026-08-22.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "source_root": "/home/ubu/projects/lay-l1-exact-peak-search",
+  "node_count": 11,
+  "edge_count": 10,
+  "routes": [
+    {
+      "id": "receipt-settlement-execution",
+      "event": "receipt-settlement",
+      "kind": "execution",
+      "entry": "atomic-key-interface",
+      "via": [],
+      "terminal": "committed-engine-state",
+      "path_count": 1,
+      "paths": [
+        [
+          "atomic-key-interface",
+          "atomic-receipt-validator",
+          "pending-speculative-state",
+          "state-reconciler",
+          "committed-engine-state"
+        ]
+      ],
+      "role_owners": {
+        "interface": [
+          "atomic-key-interface"
+        ],
+        "authorization_owner": [
+          "atomic-receipt-validator"
+        ],
+        "mutation_owner": [
+          "committed-engine-state"
+        ],
+        "producer": [
+          "pending-speculative-state"
+        ],
+        "orchestrator": [
+          "state-reconciler"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "atomic-key-interface",
+          "to": "committed-engine-state",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "atomic-key-interface",
+              "atomic-receipt-validator",
+              "pending-speculative-state",
+              "state-reconciler",
+              "committed-engine-state"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "atomic-state-authority",
+      "event": "atomic-state-authority",
+      "kind": "authority",
+      "entry": "pending-speculative-state",
+      "via": [],
+      "terminal": "committed-engine-state",
+      "path_count": 1,
+      "paths": [
+        [
+          "pending-speculative-state",
+          "surrounding-freshness-evidence",
+          "atomic-receipt-validator",
+          "committed-engine-state"
+        ]
+      ],
+      "role_owners": {
+        "authorization_owner": [
+          "atomic-receipt-validator"
+        ],
+        "mutation_owner": [
+          "committed-engine-state"
+        ],
+        "producer": [
+          "pending-speculative-state"
+        ],
+        "evidence_owner": [
+          "surrounding-freshness-evidence"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "pending-speculative-state",
+          "to": "committed-engine-state",
+          "via": [],
+          "graph": "authority",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "pending-speculative-state",
+              "surrounding-freshness-evidence",
+              "atomic-receipt-validator",
+              "committed-engine-state"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fresh-surrounding-observation",
+      "event": "fresh-surrounding-observation",
+      "kind": "observation",
+      "entry": "set-surrounding-interface",
+      "via": [],
+      "terminal": "visible-postcondition-observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "set-surrounding-interface",
+          "external-surrounding-observer",
+          "visible-postcondition-observer"
+        ]
+      ],
+      "role_owners": {
+        "observer": [
+          "external-surrounding-observer",
+          "visible-postcondition-observer"
+        ],
+        "interface": [
+          "set-surrounding-interface"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "set-surrounding-interface",
+          "to": "visible-postcondition-observer",
+          "via": [],
+          "graph": "observation",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "set-surrounding-interface",
+              "external-surrounding-observer",
+              "visible-postcondition-observer"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "physical-double-shift-proof",
+      "event": "physical-double-shift-proof",
+      "kind": "proof",
+      "entry": "physical-route-observer",
+      "via": [],
+      "terminal": "physical-undo-receipt",
+      "path_count": 1,
+      "paths": [
+        [
+          "physical-route-observer",
+          "physical-undo-receipt"
+        ]
+      ],
+      "role_owners": {
+        "observer": [
+          "physical-route-observer"
+        ],
+        "proof_owner": [
+          "physical-undo-receipt"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {
+    "atomic-state-authority": {
+      "authorization_owner": [
+        "atomic-receipt-validator"
+      ],
+      "candidate_rank_owner": [],
+      "render_owner": [],
+      "evidence_owner": [
+        "surrounding-freshness-evidence"
+      ],
+      "display_rank_owner": [],
+      "mutation_owner": [
+        "committed-engine-state"
+      ]
+    }
+  },
+  "source_evidence": {
+    "expected": 0,
+    "verified": 0,
+    "complete": true
+  },
+  "issues": [],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": false,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

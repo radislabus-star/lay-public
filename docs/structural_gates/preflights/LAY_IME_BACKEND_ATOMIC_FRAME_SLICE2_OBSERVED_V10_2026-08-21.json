@@ -1,0 +1,639 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "observed_source",
+  "nodes": [
+    {
+      "id": "fake_client_event",
+      "role": "interface",
+      "evidence": {
+        "path": "ibus-lay-atomic-proof/src/tests/ibus-atomic-process.c",
+        "line": 637,
+        "contains": "start_atomic ("
+      }
+    },
+    {
+      "id": "frozen_request",
+      "role": "producer",
+      "evidence": {
+        "path": "ibus-lay-atomic-proof/src/tests/ibus-atomic-process.c",
+        "line": 607,
+        "contains": "capability_variant = ibus_atomic_capability_record_v1_encode ("
+      }
+    },
+    {
+      "id": "input_context_atomic_rpc",
+      "role": "orchestrator",
+      "evidence": {
+        "path": "ibus-lay-atomic-proof/bus/inputcontext.c",
+        "line": 1297,
+        "contains": "_ic_process_key_event_atomic_v1 ("
+      }
+    },
+    {
+      "id": "daemon_receipt_gate",
+      "role": "orchestrator",
+      "evidence": {
+        "path": "ibus-lay-atomic-proof/bus/inputcontext.c",
+        "line": 1110,
+        "contains": "atomic_consume_prior_receipt ("
+      }
+    },
+    {
+      "id": "daemon_capability_gate",
+      "role": "orchestrator",
+      "evidence": {
+        "path": "ibus-lay-atomic-proof/bus/inputcontext.c",
+        "line": 1373,
+        "contains": "!ibus_atomic_capability_record_v1_is_admitted (&capability) ||"
+      }
+    },
+    {
+      "id": "daemon_snapshot_gate",
+      "role": "orchestrator",
+      "evidence": {
+        "path": "ibus-lay-atomic-proof/bus/inputcontext.c",
+        "line": 1388,
+        "contains": "!atomic_snapshot_matches (context, &capability)) {"
+      }
+    },
+    {
+      "id": "engine_proxy_atomic_rpc",
+      "role": "orchestrator",
+      "evidence": {
+        "path": "ibus-lay-atomic-proof/bus/engineproxy.c",
+        "line": 1169,
+        "contains": "bus_engine_proxy_process_key_event_atomic_v1 ("
+      }
+    },
+    {
+      "id": "fake_engine_proposal",
+      "role": "producer",
+      "evidence": {
+        "path": "ibus-lay-atomic-proof/src/tests/ibus-atomic-process.c",
+        "line": 143,
+        "contains": "proposal_reply (FakeProposalMode mode)"
+      }
+    },
+    {
+      "id": "daemon_proposal_validator",
+      "role": "evidence_owner",
+      "evidence": {
+        "path": "ibus-lay-atomic-proof/bus/inputcontext.c",
+        "line": 1250,
+        "contains": "ibus_atomic_engine_proposal_v1_decode ("
+      }
+    },
+    {
+      "id": "daemon_reply_admission",
+      "role": "authorization_owner",
+      "evidence": {
+        "path": "ibus-lay-atomic-proof/bus/inputcontext.c",
+        "line": 1284,
+        "contains": "context->atomic_pending_receipt = TRUE;"
+      }
+    },
+    {
+      "id": "daemon_reply_emitter",
+      "role": "mutation_owner",
+      "evidence": {
+        "path": "ibus-lay-atomic-proof/bus/inputcontext.c",
+        "line": 1134,
+        "contains": "atomic_return_frame (GDBusMethodInvocation"
+      }
+    },
+    {
+      "id": "atomic_reply",
+      "role": "observer",
+      "evidence": {
+        "path": "ibus-lay-atomic-proof/src/tests/ibus-atomic-process.c",
+        "line": 651,
+        "contains": "decode_atomic_reply (GVariant *reply)"
+      }
+    },
+    {
+      "id": "native_unhandled",
+      "role": "observer",
+      "evidence": {
+        "path": "ibus-lay-atomic-proof/bus/inputcontext.c",
+        "line": 1182,
+        "contains": "atomic_return_native_unhandled (GDBusMethodInvocation"
+      }
+    },
+    {
+      "id": "lineage_terminated",
+      "role": "observer",
+      "evidence": {
+        "path": "ibus-lay-atomic-proof/bus/inputcontext.c",
+        "line": 1248,
+        "contains": "disposition = IBUS_ATOMIC_DISPOSITION_FOCUS_LINEAGE_TERMINATED;"
+      }
+    },
+    {
+      "id": "private_dbus_fault_matrix",
+      "role": "proof_owner",
+      "evidence": {
+        "path": "ibus-lay-atomic-proof/src/tests/ibus-atomic-process.c",
+        "line": 831,
+        "contains": "test_atomic_process_matrix (void)"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "exec-event-freeze",
+      "from": "fake_client_event",
+      "relation": "delegates",
+      "to": "frozen_request",
+      "events": [
+        "proposal_returned",
+        "receipt_refused",
+        "capability_refused",
+        "snapshot_refused",
+        "proposal_refused",
+        "lineage_changed"
+      ],
+      "evidence": {
+        "path": "ibus-lay-atomic-proof/src/tests/ibus-atomic-process.c",
+        "line": 607,
+        "contains": "capability_variant = ibus_atomic_capability_record_v1_encode ("
+      }
+    },
+    {
+      "id": "exec-freeze-input-context",
+      "from": "frozen_request",
+      "relation": "delegates",
+      "to": "input_context_atomic_rpc",
+      "events": [
+        "proposal_returned",
+        "receipt_refused",
+        "capability_refused",
+        "snapshot_refused",
+        "proposal_refused",
+        "lineage_changed"
+      ],
+      "evidence": {
+        "path": "ibus-lay-atomic-proof/src/tests/ibus-atomic-process.c",
+        "line": 643,
+        "contains": "\"ProcessKeyEventAtomicV1\","
+      }
+    },
+    {
+      "id": "exec-input-context-receipt",
+      "from": "input_context_atomic_rpc",
+      "relation": "delegates",
+      "to": "daemon_receipt_gate",
+      "events": [
+        "proposal_returned",
+        "receipt_refused",
+        "capability_refused",
+        "snapshot_refused",
+        "proposal_refused",
+        "lineage_changed"
+      ],
+      "evidence": {
+        "path": "ibus-lay-atomic-proof/bus/inputcontext.c",
+        "line": 1372,
+        "contains": "!atomic_consume_prior_receipt (context, &prior_receipt) ||"
+      }
+    },
+    {
+      "id": "exec-receipt-capability",
+      "from": "daemon_receipt_gate",
+      "relation": "delegates",
+      "to": "daemon_capability_gate",
+      "events": [
+        "proposal_returned",
+        "capability_refused",
+        "snapshot_refused",
+        "proposal_refused",
+        "lineage_changed"
+      ],
+      "evidence": {
+        "path": "ibus-lay-atomic-proof/bus/inputcontext.c",
+        "line": 1373,
+        "contains": "!ibus_atomic_capability_record_v1_is_admitted (&capability) ||"
+      }
+    },
+    {
+      "id": "exec-receipt-native",
+      "from": "daemon_receipt_gate",
+      "relation": "delegates",
+      "to": "native_unhandled",
+      "events": [
+        "receipt_refused"
+      ],
+      "evidence": {
+        "path": "ibus-lay-atomic-proof/bus/inputcontext.c",
+        "line": 1389,
+        "contains": "atomic_return_native_unhandled (invocation, &identity);"
+      }
+    },
+    {
+      "id": "exec-capability-snapshot",
+      "from": "daemon_capability_gate",
+      "relation": "delegates",
+      "to": "daemon_snapshot_gate",
+      "events": [
+        "proposal_returned",
+        "snapshot_refused",
+        "proposal_refused",
+        "lineage_changed"
+      ],
+      "evidence": {
+        "path": "ibus-lay-atomic-proof/bus/inputcontext.c",
+        "line": 1388,
+        "contains": "!atomic_snapshot_matches (context, &capability)) {"
+      }
+    },
+    {
+      "id": "exec-capability-native",
+      "from": "daemon_capability_gate",
+      "relation": "delegates",
+      "to": "native_unhandled",
+      "events": [
+        "capability_refused"
+      ],
+      "evidence": {
+        "path": "ibus-lay-atomic-proof/bus/inputcontext.c",
+        "line": 1389,
+        "contains": "atomic_return_native_unhandled (invocation, &identity);"
+      }
+    },
+    {
+      "id": "exec-snapshot-engine-proxy",
+      "from": "daemon_snapshot_gate",
+      "relation": "delegates",
+      "to": "engine_proxy_atomic_rpc",
+      "events": [
+        "proposal_returned",
+        "proposal_refused",
+        "lineage_changed"
+      ],
+      "evidence": {
+        "path": "ibus-lay-atomic-proof/bus/inputcontext.c",
+        "line": 1450,
+        "contains": "bus_engine_proxy_process_key_event_atomic_v1 ("
+      }
+    },
+    {
+      "id": "exec-snapshot-native",
+      "from": "daemon_snapshot_gate",
+      "relation": "delegates",
+      "to": "native_unhandled",
+      "events": [
+        "snapshot_refused"
+      ],
+      "evidence": {
+        "path": "ibus-lay-atomic-proof/bus/inputcontext.c",
+        "line": 1389,
+        "contains": "atomic_return_native_unhandled (invocation, &identity);"
+      }
+    },
+    {
+      "id": "exec-engine-proxy-fake-engine",
+      "from": "engine_proxy_atomic_rpc",
+      "relation": "delegates",
+      "to": "fake_engine_proposal",
+      "events": [
+        "proposal_returned",
+        "proposal_refused",
+        "lineage_changed"
+      ],
+      "evidence": {
+        "path": "ibus-lay-atomic-proof/bus/engineproxy.c",
+        "line": 1184,
+        "contains": "\"ProcessKeyEventAtomicV1\","
+      }
+    },
+    {
+      "id": "exec-fake-engine-validator",
+      "from": "fake_engine_proposal",
+      "relation": "delegates",
+      "to": "daemon_proposal_validator",
+      "events": [
+        "proposal_returned",
+        "proposal_refused",
+        "lineage_changed"
+      ],
+      "evidence": {
+        "path": "ibus-lay-atomic-proof/bus/inputcontext.c",
+        "line": 1250,
+        "contains": "ibus_atomic_engine_proposal_v1_decode ("
+      }
+    },
+    {
+      "id": "exec-validator-admission",
+      "from": "daemon_proposal_validator",
+      "relation": "delegates",
+      "to": "daemon_reply_admission",
+      "events": [
+        "proposal_returned"
+      ],
+      "evidence": {
+        "path": "ibus-lay-atomic-proof/bus/inputcontext.c",
+        "line": 1277,
+        "contains": "if (atomic_return_frame (data->invocation,"
+      }
+    },
+    {
+      "id": "exec-admission-emitter",
+      "from": "daemon_reply_admission",
+      "relation": "delegates",
+      "to": "daemon_reply_emitter",
+      "events": [
+        "proposal_returned"
+      ],
+      "evidence": {
+        "path": "ibus-lay-atomic-proof/bus/inputcontext.c",
+        "line": 1277,
+        "contains": "if (atomic_return_frame (data->invocation,"
+      }
+    },
+    {
+      "id": "exec-emitter-reply",
+      "from": "daemon_reply_emitter",
+      "relation": "delegates",
+      "to": "atomic_reply",
+      "events": [
+        "proposal_returned"
+      ],
+      "evidence": {
+        "path": "ibus-lay-atomic-proof/bus/inputcontext.c",
+        "line": 1160,
+        "contains": "reply = ibus_atomic_frame_v1_encode (&frame, &error);"
+      }
+    },
+    {
+      "id": "exec-validator-native",
+      "from": "daemon_proposal_validator",
+      "relation": "delegates",
+      "to": "native_unhandled",
+      "events": [
+        "proposal_refused"
+      ],
+      "evidence": {
+        "path": "ibus-lay-atomic-proof/bus/inputcontext.c",
+        "line": 1277,
+        "contains": "if (atomic_return_frame (data->invocation,"
+      }
+    },
+    {
+      "id": "exec-validator-lineage",
+      "from": "daemon_proposal_validator",
+      "relation": "delegates",
+      "to": "lineage_terminated",
+      "events": [
+        "lineage_changed"
+      ],
+      "evidence": {
+        "path": "ibus-lay-atomic-proof/bus/inputcontext.c",
+        "line": 1248,
+        "contains": "disposition = IBUS_ATOMIC_DISPOSITION_FOCUS_LINEAGE_TERMINATED;"
+      }
+    },
+    {
+      "id": "authority-request-proposal",
+      "from": "frozen_request",
+      "relation": "produces_for",
+      "to": "fake_engine_proposal",
+      "events": [
+        "proposal_returned"
+      ],
+      "evidence": {
+        "path": "ibus-lay-atomic-proof/bus/inputcontext.c",
+        "line": 1445,
+        "contains": "engine_request = g_variant_ref_sink ("
+      }
+    },
+    {
+      "id": "authority-proposal-validator",
+      "from": "fake_engine_proposal",
+      "relation": "passes_to",
+      "to": "daemon_proposal_validator",
+      "events": [
+        "proposal_returned"
+      ],
+      "evidence": {
+        "path": "ibus-lay-atomic-proof/bus/inputcontext.c",
+        "line": 1250,
+        "contains": "ibus_atomic_engine_proposal_v1_decode ("
+      }
+    },
+    {
+      "id": "authority-validator-admission",
+      "from": "daemon_proposal_validator",
+      "relation": "passes_to",
+      "to": "daemon_reply_admission",
+      "events": [
+        "proposal_returned"
+      ],
+      "evidence": {
+        "path": "ibus-lay-atomic-proof/bus/inputcontext.c",
+        "line": 1284,
+        "contains": "context->atomic_pending_receipt = TRUE;"
+      }
+    },
+    {
+      "id": "authority-admission-emitter",
+      "from": "daemon_reply_admission",
+      "relation": "authorizes",
+      "to": "daemon_reply_emitter",
+      "events": [
+        "proposal_returned"
+      ],
+      "evidence": {
+        "path": "ibus-lay-atomic-proof/bus/inputcontext.c",
+        "line": 1277,
+        "contains": "if (atomic_return_frame (data->invocation,"
+      }
+    },
+    {
+      "id": "proof-validator-faults",
+      "from": "daemon_proposal_validator",
+      "relation": "proves",
+      "to": "private_dbus_fault_matrix",
+      "events": [
+        "proposal_refused"
+      ],
+      "evidence": {
+        "path": "ibus-lay-atomic-proof/src/tests/ibus-atomic-process.c",
+        "line": 831,
+        "contains": "test_atomic_process_matrix (void)"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "id": "proposal-returned-execution",
+      "event": "proposal_returned",
+      "kind": "execution",
+      "entry": "fake_client_event",
+      "terminal": "atomic_reply",
+      "required_roles": [
+        "interface",
+        "producer",
+        "orchestrator",
+        "evidence_owner",
+        "authorization_owner",
+        "mutation_owner",
+        "observer"
+      ],
+      "path_cardinality": [
+        {
+          "from": "fake_client_event",
+          "to": "atomic_reply",
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "proposal-returned-authority",
+      "event": "proposal_returned",
+      "kind": "authority",
+      "entry": "frozen_request",
+      "terminal": "daemon_reply_emitter",
+      "required_roles": [
+        "producer",
+        "evidence_owner",
+        "authorization_owner",
+        "mutation_owner"
+      ],
+      "path_cardinality": [
+        {
+          "from": "frozen_request",
+          "to": "daemon_reply_emitter",
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "receipt-refusal-execution",
+      "event": "receipt_refused",
+      "kind": "execution",
+      "entry": "fake_client_event",
+      "terminal": "native_unhandled",
+      "required_roles": [
+        "interface",
+        "producer",
+        "orchestrator",
+        "observer"
+      ],
+      "path_cardinality": [
+        {
+          "from": "fake_client_event",
+          "to": "native_unhandled",
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "capability-refusal-execution",
+      "event": "capability_refused",
+      "kind": "execution",
+      "entry": "fake_client_event",
+      "terminal": "native_unhandled",
+      "required_roles": [
+        "interface",
+        "producer",
+        "orchestrator",
+        "observer"
+      ],
+      "path_cardinality": [
+        {
+          "from": "fake_client_event",
+          "to": "native_unhandled",
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "snapshot-refusal-execution",
+      "event": "snapshot_refused",
+      "kind": "execution",
+      "entry": "fake_client_event",
+      "terminal": "native_unhandled",
+      "required_roles": [
+        "interface",
+        "producer",
+        "orchestrator",
+        "observer"
+      ],
+      "path_cardinality": [
+        {
+          "from": "fake_client_event",
+          "to": "native_unhandled",
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "proposal-refusal-execution",
+      "event": "proposal_refused",
+      "kind": "execution",
+      "entry": "fake_client_event",
+      "terminal": "native_unhandled",
+      "required_roles": [
+        "interface",
+        "producer",
+        "orchestrator",
+        "evidence_owner",
+        "observer"
+      ],
+      "path_cardinality": [
+        {
+          "from": "fake_client_event",
+          "to": "native_unhandled",
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "lineage-change-execution",
+      "event": "lineage_changed",
+      "kind": "execution",
+      "entry": "fake_client_event",
+      "terminal": "lineage_terminated",
+      "required_roles": [
+        "interface",
+        "producer",
+        "orchestrator",
+        "evidence_owner",
+        "observer"
+      ],
+      "path_cardinality": [
+        {
+          "from": "fake_client_event",
+          "to": "lineage_terminated",
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "proposal-fault-proof",
+      "event": "proposal_refused",
+      "kind": "proof",
+      "entry": "daemon_proposal_validator",
+      "terminal": "private_dbus_fault_matrix",
+      "required_roles": [
+        "evidence_owner",
+        "proof_owner"
+      ],
+      "path_cardinality": [
+        {
+          "from": "daemon_proposal_validator",
+          "to": "private_dbus_fault_matrix",
+          "min": 1,
+          "max": 1
+        }
+      ]
+    }
+  ],
+  "source_root": "/home/ubu/projects"
+}

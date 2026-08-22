@@ -19,6 +19,20 @@ pub(super) fn ascii_to_russian_layout_candidate(
     token: &str,
     allow_shift_fallback: bool,
 ) -> Option<AsciiToRussianLayoutCandidate> {
+    ascii_to_russian_layout_candidate_inner(token, allow_shift_fallback, true)
+}
+
+pub(super) fn exact_ascii_to_russian_layout_candidate(
+    token: &str,
+) -> Option<AsciiToRussianLayoutCandidate> {
+    ascii_to_russian_layout_candidate_inner(token, false, false)
+}
+
+fn ascii_to_russian_layout_candidate_inner(
+    token: &str,
+    allow_shift_fallback: bool,
+    allow_polish: bool,
+) -> Option<AsciiToRussianLayoutCandidate> {
     if is_blocked_ascii_layout_token(token) {
         return None;
     }
@@ -56,7 +70,7 @@ pub(super) fn ascii_to_russian_layout_candidate(
         || l2_phase_covers_raw_projection(&converted_lower)
         || crate::hot_field::HotFieldSnapshot::current()
             .layout_projection_has_phase_authority(&converted_lower);
-    if !(raw_projection_stable || allow_shift_fallback && shift_letter_signal) {
+    if allow_polish && !(raw_projection_stable || allow_shift_fallback && shift_letter_signal) {
         if let Some(replacement) = polish_converted_russian_layout_token(&converted) {
             let (_, replacement_word, _) = split_word_punctuation(&replacement);
             let word = replacement_word.to_string();

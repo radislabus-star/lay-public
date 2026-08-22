@@ -1,0 +1,315 @@
+{
+  "all_iterations": {
+    "max_us": 1951342,
+    "mean_us": 16236,
+    "min_us": 5637,
+    "p50_us": 6297,
+    "p95_us": 8136,
+    "p99_us": 9899,
+    "samples": 201
+  },
+  "authority": {
+    "kind": "tied",
+    "surfaces": [
+      "проварка",
+      "проверкам",
+      "проверках",
+      "проверке",
+      "проверки",
+      "проверку",
+      "прочерка"
+    ]
+  },
+  "cache_mode": "bounded_prepared_frontier_lru",
+  "candidates": [
+    {
+      "error_class": "letter-substitution",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "known_current_word_surface_drift",
+      "productive": false,
+      "replacement": "проварка",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "letter-substitution",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "known_current_word_surface_drift",
+      "productive": false,
+      "replacement": "проверке",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "letter-substitution",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "known_current_word_surface_drift",
+      "productive": false,
+      "replacement": "проверки",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "letter-substitution",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "known_current_word_surface_drift",
+      "productive": false,
+      "replacement": "проверку",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "missing-letter",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "known_current_word_surface_drift",
+      "productive": false,
+      "replacement": "проверкам",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "missing-letter",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "known_current_word_surface_drift",
+      "productive": false,
+      "replacement": "проверках",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "letter-substitution",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "known_current_word_surface_drift",
+      "productive": false,
+      "replacement": "прочерка",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "productive": false,
+      "replacement": "пароварка",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "extra-letter",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "known_current_word_surface_drift",
+      "productive": false,
+      "replacement": "поверка",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "productive": false,
+      "replacement": "поверками",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "productive": false,
+      "replacement": "поверкой",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "productive": false,
+      "replacement": "поверкою",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "productive": false,
+      "replacement": "поверок",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "productive": false,
+      "replacement": "проварками",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "productive": false,
+      "replacement": "проваркой",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "productive": false,
+      "replacement": "проваркою",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "productive": false,
+      "replacement": "проварок",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "productive": false,
+      "replacement": "прочерк",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "productive": false,
+      "replacement": "прочерками",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "productive": false,
+      "replacement": "прочерке",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "productive": false,
+      "replacement": "прочерки",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "productive": false,
+      "replacement": "прочерков",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "productive": false,
+      "replacement": "прочерком",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "productive": false,
+      "replacement": "прочерку",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "productive": false,
+      "replacement": "проверок",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "productive": false,
+      "replacement": "проверками",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "productive": false,
+      "replacement": "проверщика",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "productive": false,
+      "replacement": "иноверка",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "productive": false,
+      "replacement": "прожарка",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "productive": false,
+      "replacement": "проводка",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "productive": false,
+      "replacement": "проварке",
+      "source_id": "CanonicalL2FieldSurface"
+    }
+  ],
+  "cold_us": 1951342,
+  "field": {
+    "max_us": 10161,
+    "mean_us": 554,
+    "min_us": 439,
+    "p50_us": 475,
+    "p95_us": 706,
+    "p99_us": 799,
+    "samples": 201
+  },
+  "hot": {
+    "max_us": 10871,
+    "mean_us": 6561,
+    "min_us": 5637,
+    "p50_us": 6294,
+    "p95_us": 8034,
+    "p99_us": 9431,
+    "samples": 200
+  },
+  "kind": "canonical_l2_live_query",
+  "peak_rss_kib": 284428,
+  "pre_productive_surface_count": 16,
+  "prepared_cache_hits": 200,
+  "productive": {
+    "max_us": 15,
+    "mean_us": 0,
+    "min_us": 0,
+    "p50_us": 0,
+    "p95_us": 0,
+    "p99_us": 0,
+    "samples": 201
+  },
+  "productive_form_limit": 8,
+  "productive_lemma_limit": 32,
+  "productive_surfaces": [],
+  "repeat": 201,
+  "resident_rss_kib": 284428,
+  "runtime_authority_changed": false,
+  "seed_count": 16,
+  "status": "ready",
+  "text": "проверка"
+}

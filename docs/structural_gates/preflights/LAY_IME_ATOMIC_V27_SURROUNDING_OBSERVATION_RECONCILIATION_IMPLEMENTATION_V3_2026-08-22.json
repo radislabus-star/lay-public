@@ -1,0 +1,263 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_ATOMIC_V27_SURROUNDING_OBSERVATION_RECONCILIATION_IMPLEMENTATION_V3_2026-08-22",
+  "authority_bearing": true,
+  "reuses_existing_implementation": true,
+  "scientific_future_sensitive": false,
+  "baseline_checks": [
+    {
+      "id": "atomic-settlement-source",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic.rs",
+      "expect": {"mode": "0664", "size_bytes": 19638, "sha256": "c447765a6a7d3ddeafdebc122b664946611f69619035e4fd5c186c67a2472554"}
+    },
+    {
+      "id": "engine-state-source",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/engine.rs",
+      "expect": {"mode": "0664", "size_bytes": 13916, "sha256": "062dc51111ba34ae98c40a5bcee69a0b19562c2c5af7645e5b918969b0b7c748"}
+    },
+    {
+      "id": "engine-constructor-source",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/state.rs",
+      "expect": {"mode": "0664", "size_bytes": 42444, "sha256": "20f0ace194c3170838fcd675a105cd89290abab336b7f301f070b052dad6e896"}
+    },
+    {
+      "id": "external-surrounding-interface-source",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/ibus_interface.rs",
+      "expect": {"mode": "0664", "size_bytes": 15396, "sha256": "000fa5e72c4f7e72fb689bed48cc348fd5dc09e63ff9bfab8dc663ee2af05a57"}
+    },
+    {
+      "id": "atomic-proof-source",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic/proof.rs",
+      "expect": {"mode": "0664", "size_bytes": 5185, "sha256": "07569593ad30fb94fca0f2a241fc5338e33ca93e71f95954fcdd4e6ebd92c08c"}
+    },
+    {
+      "id": "paper-contract",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/ime-atomic-exact-layout-lease-v27-paper-contract-2026-08-22.md",
+      "expect": {"mode": "0664", "size_bytes": 100321, "sha256": "bb6d670ed6ee9634af34b1099bca837a9ae75341d71bc738a8ef4e72376b01a0"}
+    },
+    {
+      "id": "route-contract",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_ATOMIC_V27_SURROUNDING_OBSERVATION_RECONCILIATION_ROUTE_V3_2026-08-22.json",
+      "expect": {"mode": "0664", "size_bytes": 4096, "sha256": "ec3bb19399370c876a102fd5002e26b836df9025bf9ded26b701418202560d24"}
+    },
+    {
+      "id": "route-receipt",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_V27_2026-08-22/surrounding-observation-reconciliation-route-v3.json",
+      "expect": {"mode": "0664", "size_bytes": 6006, "sha256": "67b5c7ac39de455e32764b4ae02445438d196b0b0bdf139d46086f0a031b69e1"}
+    },
+    {
+      "id": "installed-engine-preserved",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "expect": {"mode": "0755", "size_bytes": 6423488, "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a"}
+    },
+    {
+      "id": "physical-proof-preserved",
+      "kind": "file",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/shell/atomicInputMethodRoute.js",
+      "expect": {"mode": "0664", "size_bytes": 16680, "sha256": "3f2d38ae86e5a984c055bb04837e299aee7aa41bcdf78d964670676fdb62e4bd"}
+    }
+  ],
+  "source_checks": [
+    {
+      "id": "pinned-atomic-settlement-route",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic.rs",
+      "sha256": "c447765a6a7d3ddeafdebc122b664946611f69619035e4fd5c186c67a2472554",
+      "forbidden_effect_patterns": [
+        {"effect": "legacy_mutation_bridge", "regex": "ManualToggleV2|EngineOutput::legacy"},
+        {"effect": "unconditional_snapshot_authority", "regex": "preserve_surrounding_unconditionally|force_surrounding_snapshot_authority"},
+        {"effect": "receipt_bypass", "regex": "bypass_atomic_receipt|ignore_receipt_identity"},
+        {"effect": "installed_runtime_mutation", "regex": "install_lay|/\\.local/lib/lay|restart_installed_lay"},
+        {"effect": "local_cargo_build", "regex": "Command::new\\(\"cargo\"\\)|cargo (build|test|check)"},
+        {"effect": "historical_receipt_rewrite", "regex": "rewrite_historical_receipt|truncate_historical_evidence"}
+      ]
+    },
+    {
+      "id": "pinned-engine-state-route",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/engine.rs",
+      "sha256": "062dc51111ba34ae98c40a5bcee69a0b19562c2c5af7645e5b918969b0b7c748",
+      "forbidden_effect_patterns": [
+        {"effect": "fixture_surface_in_runtime", "regex": "(if|match)\\s+.*(ghbdtn|привет)"},
+        {"effect": "candidate_rank_change", "regex": "surrounding_revision_rank_weight|snapshot_candidate_boost"},
+        {"effect": "verifier_or_safety_gate_weakening", "regex": "bypass_(undo_)?verifier|disable_(undo_)?safety_gate"}
+      ]
+    },
+    {
+      "id": "pinned-physical-proof-route",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/shell/atomicInputMethodRoute.js",
+      "sha256": "3f2d38ae86e5a984c055bb04837e299aee7aa41bcdf78d964670676fdb62e4bd",
+      "forbidden_effect_patterns": [
+        {"effect": "manual_toggle_in_atomic_proof", "regex": "ManualToggleV2|manualToggleV2|callManualToggle"},
+        {"effect": "legacy_mutation_acceptance", "regex": "ignoreLegacyMutationCount|acceptLegacyTextMutation"},
+        {"effect": "physical_proof_source_edit", "regex": "editPhysicalProofSourceFromRuntime|rewriteAtomicInputMethodRoute"}
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "add-surrounding-observation-revision", "kind": "source_edit"},
+      {"id": "reconcile-newer-observation-at-receipt-settlement", "kind": "source_edit"},
+      {"id": "add-systemic-atomic-state-tests", "kind": "source_edit"},
+      {"id": "update-architecture-evidence", "kind": "filesystem_write"},
+      {"id": "sync-source-to-remote-proof-tree", "kind": "remote_filesystem_write"},
+      {"id": "run-remote-focused-and-route-gates", "kind": "ephemeral_process_start"}
+    ],
+    "forbidden": [
+      "installed_runtime_mutation",
+      "physical_proof_source_edit",
+      "legacy_mutation_bridge",
+      "unconditional_snapshot_authority",
+      "receipt_bypass",
+      "fixture_surface_in_runtime",
+      "candidate_rank_change",
+      "manual_toggle_in_atomic_proof",
+      "legacy_mutation_acceptance",
+      "verifier_or_safety_gate_weakening",
+      "local_cargo_build",
+      "historical_receipt_rewrite"
+    ]
+  },
+  "state_machine": {
+    "initial_state": "ROOT_CAUSE_MEASURED_ROUTE_V3_PASS",
+    "steps": [
+      {
+        "id": "introduce-observation-revision",
+        "from": "ROOT_CAUSE_MEASURED_ROUTE_V3_PASS",
+        "to": "OBSERVATION_REVISION_WIRED",
+        "mutates": true,
+        "failure_state": "OBSERVATION_REVISION_EDIT_FAILED",
+        "cleanup": "retain the scoped worktree diff for diagnosis and do not alter installed runtime or physical proof source",
+        "preserves": ["installed-engine", "physical-proof-source"],
+        "test_id": "observation-revision-edit-fault"
+      },
+      {
+        "id": "implement-receipt-reconciliation",
+        "from": "OBSERVATION_REVISION_WIRED",
+        "to": "RECONCILIATION_IMPLEMENTED",
+        "mutates": true,
+        "failure_state": "RECONCILIATION_EDIT_FAILED",
+        "cleanup": "retain the scoped worktree diff and block remote staging",
+        "preserves": ["installed-engine", "physical-proof-source"],
+        "test_id": "reconciliation-edit-fault"
+      },
+      {
+        "id": "add-systemic-proof-cases",
+        "from": "RECONCILIATION_IMPLEMENTED",
+        "to": "SYSTEMIC_TESTS_MAPPED",
+        "mutates": true,
+        "failure_state": "TEST_MAPPING_FAILED",
+        "cleanup": "retain failed test evidence without changing runtime authority",
+        "preserves": ["installed-engine", "physical-proof-source"],
+        "test_id": "test-mapping-fault"
+      },
+      {
+        "id": "remote-build-and-focused-proof",
+        "from": "SYSTEMIC_TESTS_MAPPED",
+        "to": "REMOTE_FOCUSED_GATES_PASS",
+        "mutates": true,
+        "failure_state": "REMOTE_FOCUSED_GATES_FAILED",
+        "cleanup": "stop proof-owned processes keep failed logs and leave local installed runtime unchanged",
+        "preserves": ["installed-engine", "physical-proof-source"],
+        "test_id": "remote-proof-fault"
+      }
+    ],
+    "terminal_states": [
+      "REMOTE_FOCUSED_GATES_PASS",
+      "OBSERVATION_REVISION_EDIT_FAILED",
+      "RECONCILIATION_EDIT_FAILED",
+      "TEST_MAPPING_FAILED",
+      "REMOTE_FOCUSED_GATES_FAILED"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "installed-engine",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "policy": "immutable_before_all_promotion_gates_pass",
+      "cursor_policy": "none",
+      "rollback_policy": "preserve_exact_bytes",
+      "baseline_check_id": "installed-engine-preserved"
+    },
+    {
+      "id": "physical-proof-source",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/shell/atomicInputMethodRoute.js",
+      "policy": "immutable_during_runtime_reconciliation",
+      "cursor_policy": "none",
+      "rollback_policy": "preserve_exact_bytes",
+      "baseline_check_id": "physical-proof-preserved"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "external-observation-revision-parity",
+      "producer": "SetSurroundingText and surrounding capability transitions",
+      "consumer": "commit_atomic_speculation freshness comparison",
+      "comparison": "the consumer preserves support snapshot and revision iff the live revision is strictly newer than the speculative revision",
+      "test_id": "observation-revision-parity"
+    },
+    {
+      "id": "local-remote-source-parity",
+      "producer": "scoped local Lay source aggregate",
+      "consumer": "remote V27 proof build tree",
+      "comparison": "exact aggregate SHA-256 before every remote build and proof",
+      "test_id": "remote-source-parity"
+    },
+    {
+      "id": "atomic-receipt-identity-preserved",
+      "producer": "pending atomic transaction identity and disposition",
+      "consumer": "settle_atomic_pending",
+      "comparison": "existing focus epoch transaction identity digest and compatible disposition checks remain unchanged",
+      "test_id": "receipt-guard-parity"
+    }
+  ],
+  "runtime_comparisons": [],
+  "invariants": [
+    {
+      "id": "newer-observation-survives",
+      "statement": "a post-proposal external surrounding snapshot survives successful receipt settlement and evaluates the committed visible postcondition",
+      "test_id": "newer-observation-settlement"
+    },
+    {
+      "id": "stale-observation-does-not-survive",
+      "statement": "a pre-proposal snapshot at the same revision remains invalidated by speculative key processing",
+      "test_id": "stale-observation-invalidation"
+    },
+    {
+      "id": "capability-observation-is-monotonic",
+      "statement": "external surrounding capability changes advance freshness and an older clone cannot resurrect unsupported snapshot authority",
+      "test_id": "capability-observation-transition"
+    },
+    {
+      "id": "atomic-double-shift-remains-single-owner",
+      "statement": "exact Space correction and four atomic Shift events restore the exact source without a legacy mutation bridge",
+      "test_id": "atomic-double-shift-round-trip"
+    },
+    {
+      "id": "unchanged-full-route",
+      "statement": "the fixed 514 event route remains 514 of 514 with zero legacy calls and zero leftovers",
+      "test_id": "fixed-full-route-regression"
+    }
+  ],
+  "tests": [
+    {"id": "observation-revision-edit-fault", "kind": "fault_injection", "expected": "partial field or producer wiring cannot compile and changes no installed artifact"},
+    {"id": "reconciliation-edit-fault", "kind": "fault_injection", "expected": "receipt mismatch or merge failure performs no state promotion and no legacy mutation"},
+    {"id": "test-mapping-fault", "kind": "fault_injection", "expected": "missing freshness or stale-invalidation proof blocks remote staging"},
+    {"id": "remote-proof-fault", "kind": "fault_injection", "expected": "failed remote build or proof leaves complete logs zero proof-owned processes and the installed 1.0.33 engine unchanged"},
+    {"id": "observation-revision-parity", "kind": "parity", "expected": "external producers and settlement consumer use one strictly-greater revision contract"},
+    {"id": "remote-source-parity", "kind": "parity", "expected": "local and remote scoped source aggregates are byte-identical"},
+    {"id": "receipt-guard-parity", "kind": "parity", "expected": "receipt focus transaction digest and disposition predicates remain byte-identical"},
+    {"id": "newer-observation-settlement", "kind": "integration", "expected": "newer visible correction snapshot remains present after Space receipt settlement and consumes the matching visible postcondition"},
+    {"id": "stale-observation-invalidation", "kind": "unit", "expected": "same-revision live snapshot is not restored over speculative None"},
+    {"id": "capability-observation-transition", "kind": "unit", "expected": "supported to unsupported and unsupported to supported transitions advance observation revision"},
+    {"id": "atomic-double-shift-round-trip", "kind": "integration", "expected": "ghbdtn Space becomes привет Space and four Shift events restore exactly ghbdtn Space through an atomic frame"},
+    {"id": "fixed-full-route-regression", "kind": "integration", "expected": "514 of 514 fixed events pass with zero legacy calls and zero leftovers"}
+  ]
+}

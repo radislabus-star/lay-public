@@ -1,0 +1,238 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "VETO",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": false,
+  "contract": "docs/structural_gates/preflights/LAY_IME_TARGET_AUTHORITY_CURRENT_OBSERVED_2026-08-17.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "observed_source",
+  "source_root": "/home/ubu/projects/lay-l1-exact-peak-search",
+  "node_count": 10,
+  "edge_count": 13,
+  "routes": [
+    {
+      "id": "current-competing-producer-execution",
+      "event": "canonical_correction",
+      "kind": "execution",
+      "entry": "canonical_bridge",
+      "via": [],
+      "terminal": "merged_candidate_lattice",
+      "path_count": 2,
+      "paths": [
+        [
+          "canonical_bridge",
+          "canonical_v90_producer",
+          "field_wide_authority",
+          "merged_candidate_lattice"
+        ],
+        [
+          "canonical_bridge",
+          "legacy_boundary_producer",
+          "legacy_boundary_split",
+          "merged_candidate_lattice"
+        ]
+      ],
+      "role_owners": {
+        "orchestrator": [
+          "canonical_bridge"
+        ],
+        "producer": [
+          "canonical_v90_producer",
+          "legacy_boundary_producer",
+          "legacy_boundary_split"
+        ],
+        "evidence_owner": [
+          "field_wide_authority",
+          "merged_candidate_lattice"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "canonical_bridge",
+          "to": "merged_candidate_lattice",
+          "via": [],
+          "graph": "execution",
+          "count": 2,
+          "minimum_count": 2,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "canonical_bridge",
+              "canonical_v90_producer",
+              "field_wide_authority",
+              "merged_candidate_lattice"
+            ],
+            [
+              "canonical_bridge",
+              "legacy_boundary_producer",
+              "legacy_boundary_split",
+              "merged_candidate_lattice"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "current-v90-authority",
+      "event": "canonical_correction",
+      "kind": "authority",
+      "entry": "canonical_v90_producer",
+      "via": [],
+      "terminal": "committed_tail_mutator",
+      "path_count": 1,
+      "paths": [
+        [
+          "canonical_v90_producer",
+          "field_wide_authority",
+          "merged_candidate_lattice",
+          "decision_core",
+          "transition_and_backend_verifier",
+          "committed_tail_mutator"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "canonical_v90_producer"
+        ],
+        "mutation_owner": [
+          "committed_tail_mutator"
+        ],
+        "candidate_rank_owner": [
+          "decision_core"
+        ],
+        "evidence_owner": [
+          "field_wide_authority",
+          "merged_candidate_lattice"
+        ],
+        "authorization_owner": [
+          "transition_and_backend_verifier"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "current-boundary-authority",
+      "event": "canonical_correction",
+      "kind": "authority",
+      "entry": "legacy_boundary_split",
+      "via": [],
+      "terminal": "committed_tail_mutator",
+      "path_count": 1,
+      "paths": [
+        [
+          "legacy_boundary_split",
+          "merged_candidate_lattice",
+          "decision_core",
+          "transition_and_backend_verifier",
+          "committed_tail_mutator"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "committed_tail_mutator"
+        ],
+        "candidate_rank_owner": [
+          "decision_core"
+        ],
+        "producer": [
+          "legacy_boundary_split"
+        ],
+        "evidence_owner": [
+          "merged_candidate_lattice"
+        ],
+        "authorization_owner": [
+          "transition_and_backend_verifier"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {
+    "canonical_correction": {
+      "display_rank_owner": [],
+      "render_owner": [],
+      "authorization_owner": [
+        "transition_and_backend_verifier"
+      ],
+      "candidate_rank_owner": [
+        "decision_core"
+      ],
+      "evidence_owner": [
+        "field_wide_authority",
+        "merged_candidate_lattice"
+      ],
+      "mutation_owner": [
+        "committed_tail_mutator"
+      ]
+    }
+  },
+  "source_evidence": {
+    "expected": 21,
+    "verified": 21,
+    "complete": true
+  },
+  "issues": [
+    {
+      "code": "path_cardinality_violation",
+      "message": "event reaches the endpoint through the wrong number of same-kind paths",
+      "route": "current-competing-producer-execution",
+      "event": "canonical_correction",
+      "graph": "execution",
+      "source": "canonical_bridge",
+      "target": "merged_candidate_lattice",
+      "count": 2,
+      "minimum": 1,
+      "maximum": 1,
+      "paths": [
+        [
+          "canonical_bridge",
+          "canonical_v90_producer",
+          "field_wide_authority",
+          "merged_candidate_lattice"
+        ],
+        [
+          "canonical_bridge",
+          "legacy_boundary_producer",
+          "legacy_boundary_split",
+          "merged_candidate_lattice"
+        ]
+      ]
+    },
+    {
+      "code": "multiple_authority_owners",
+      "message": "route has more than one owner for a singleton authority role",
+      "route": "current-v90-authority",
+      "role": "evidence_owner",
+      "owners": [
+        "field_wide_authority",
+        "merged_candidate_lattice"
+      ]
+    },
+    {
+      "code": "multiple_event_authority_owners",
+      "message": "authority lanes in one event disagree on a singleton owner",
+      "event": "canonical_correction",
+      "role": "evidence_owner",
+      "owners": [
+        "field_wide_authority",
+        "merged_candidate_lattice"
+      ]
+    }
+  ],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": true,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

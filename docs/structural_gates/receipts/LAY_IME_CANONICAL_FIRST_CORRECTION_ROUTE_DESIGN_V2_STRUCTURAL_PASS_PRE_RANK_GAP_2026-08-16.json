@@ -1,0 +1,421 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "PASS",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": true,
+  "contract": "docs/structural_gates/preflights/LAY_IME_CANONICAL_FIRST_CORRECTION_ROUTE_2026-08-16.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "source_root": null,
+  "node_count": 13,
+  "edge_count": 18,
+  "routes": [
+    {
+      "id": "canonical-ready-execution",
+      "event": "canonical_ready_prepare",
+      "kind": "execution",
+      "entry": "printable_key",
+      "via": [],
+      "terminal": "correction_lease",
+      "path_count": 1,
+      "paths": [
+        [
+          "printable_key",
+          "canonical_token_field",
+          "canonical_lattice",
+          "decision_core",
+          "correction_lease"
+        ]
+      ],
+      "role_owners": {
+        "orchestrator": [
+          "canonical_lattice",
+          "correction_lease"
+        ],
+        "evidence_owner": [
+          "canonical_token_field"
+        ],
+        "candidate_rank_owner": [
+          "decision_core"
+        ],
+        "interface": [
+          "printable_key"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "printable_key",
+          "to": "decision_core",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "printable_key",
+              "canonical_token_field",
+              "canonical_lattice",
+              "decision_core"
+            ]
+          ]
+        },
+        {
+          "from": "printable_key",
+          "to": "correction_lease",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "printable_key",
+              "canonical_token_field",
+              "canonical_lattice",
+              "decision_core",
+              "correction_lease"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "canonical-ready-authority",
+      "event": "canonical_ready_prepare",
+      "kind": "authority",
+      "entry": "canonical_token_field",
+      "via": [],
+      "terminal": "decision_core",
+      "path_count": 1,
+      "paths": [
+        [
+          "canonical_token_field",
+          "decision_core"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "canonical_token_field"
+        ],
+        "candidate_rank_owner": [
+          "decision_core"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "canonical-fallback-execution",
+      "event": "canonical_abstain_fallback_prepare",
+      "kind": "execution",
+      "entry": "printable_key",
+      "via": [],
+      "terminal": "correction_lease",
+      "path_count": 1,
+      "paths": [
+        [
+          "printable_key",
+          "canonical_token_field",
+          "deterministic_fallback",
+          "fallback_lattice",
+          "decision_core",
+          "correction_lease"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "canonical_token_field"
+        ],
+        "orchestrator": [
+          "correction_lease",
+          "fallback_lattice"
+        ],
+        "candidate_rank_owner": [
+          "decision_core"
+        ],
+        "producer": [
+          "deterministic_fallback"
+        ],
+        "interface": [
+          "printable_key"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "printable_key",
+          "to": "deterministic_fallback",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "printable_key",
+              "canonical_token_field",
+              "deterministic_fallback"
+            ]
+          ]
+        },
+        {
+          "from": "printable_key",
+          "to": "correction_lease",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "printable_key",
+              "canonical_token_field",
+              "deterministic_fallback",
+              "fallback_lattice",
+              "decision_core",
+              "correction_lease"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "canonical-fallback-authority",
+      "event": "canonical_abstain_fallback_prepare",
+      "kind": "authority",
+      "entry": "deterministic_fallback",
+      "via": [],
+      "terminal": "decision_core",
+      "path_count": 1,
+      "paths": [
+        [
+          "deterministic_fallback",
+          "canonical_token_field",
+          "decision_core"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "canonical_token_field"
+        ],
+        "candidate_rank_owner": [
+          "decision_core"
+        ],
+        "producer": [
+          "deterministic_fallback"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "space-ready-execution",
+      "event": "space_ready_apply",
+      "kind": "execution",
+      "entry": "correction_lease",
+      "via": [],
+      "terminal": "committed_tail_mutator",
+      "path_count": 1,
+      "paths": [
+        [
+          "correction_lease",
+          "transition_verifier",
+          "committed_tail_mutator"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "committed_tail_mutator"
+        ],
+        "orchestrator": [
+          "correction_lease"
+        ],
+        "authorization_owner": [
+          "transition_verifier"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "correction_lease",
+          "to": "committed_tail_mutator",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "correction_lease",
+              "transition_verifier",
+              "committed_tail_mutator"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "space-ready-authority",
+      "event": "space_ready_apply",
+      "kind": "authority",
+      "entry": "transition_verifier",
+      "via": [],
+      "terminal": "committed_tail_mutator",
+      "path_count": 1,
+      "paths": [
+        [
+          "transition_verifier",
+          "committed_tail_mutator"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "committed_tail_mutator"
+        ],
+        "authorization_owner": [
+          "transition_verifier"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "old-route-observation",
+      "event": "old_full_route_observation",
+      "kind": "observation",
+      "entry": "old_full_route_receipt",
+      "via": [],
+      "terminal": "parity_comparator",
+      "path_count": 1,
+      "paths": [
+        [
+          "old_full_route_receipt",
+          "parity_comparator"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "old_full_route_receipt"
+        ],
+        "observer": [
+          "parity_comparator"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "canonical-first-observation",
+      "event": "canonical_first_observation",
+      "kind": "observation",
+      "entry": "canonical_first_receipt",
+      "via": [],
+      "terminal": "parity_comparator",
+      "path_count": 1,
+      "paths": [
+        [
+          "canonical_first_receipt",
+          "parity_comparator"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "canonical_first_receipt"
+        ],
+        "observer": [
+          "parity_comparator"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "route-parity-proof",
+      "event": "route_parity_proof",
+      "kind": "proof",
+      "entry": "parity_comparator",
+      "via": [],
+      "terminal": "route_proof",
+      "path_count": 1,
+      "paths": [
+        [
+          "parity_comparator",
+          "route_proof"
+        ]
+      ],
+      "role_owners": {
+        "observer": [
+          "parity_comparator"
+        ],
+        "proof_owner": [
+          "route_proof"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {
+    "canonical_ready_prepare": {
+      "render_owner": [],
+      "mutation_owner": [],
+      "display_rank_owner": [],
+      "authorization_owner": [],
+      "evidence_owner": [
+        "canonical_token_field"
+      ],
+      "candidate_rank_owner": [
+        "decision_core"
+      ]
+    },
+    "canonical_abstain_fallback_prepare": {
+      "render_owner": [],
+      "mutation_owner": [],
+      "display_rank_owner": [],
+      "authorization_owner": [],
+      "evidence_owner": [
+        "canonical_token_field"
+      ],
+      "candidate_rank_owner": [
+        "decision_core"
+      ]
+    },
+    "space_ready_apply": {
+      "render_owner": [],
+      "mutation_owner": [
+        "committed_tail_mutator"
+      ],
+      "display_rank_owner": [],
+      "authorization_owner": [
+        "transition_verifier"
+      ],
+      "evidence_owner": [],
+      "candidate_rank_owner": []
+    }
+  },
+  "source_evidence": {
+    "expected": 0,
+    "verified": 0,
+    "complete": true
+  },
+  "issues": [],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": false,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

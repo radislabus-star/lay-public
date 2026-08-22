@@ -1,0 +1,156 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_CONCURRENT_PREEDIT_LEASE_COMPATIBILITY_IMPLEMENTATION_V25_2026-08-22",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "mutter-text-input-owner",
+      "kind": "file",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-text-input.c",
+      "expect": {"mode": "0664", "size_bytes": 52566, "sha256": "5d50a3a9becc31374c52f238729d1874b1cb9c5bfe46e5b90d053cc0cf2d29ca"}
+    },
+    {
+      "id": "mutter-text-input-proof",
+      "kind": "file",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/tests/wayland-text-input-atomic-frame-tests.c",
+      "expect": {"mode": "0664", "size_bytes": 21510, "sha256": "73bace5c114ddf6c2ededfb4492aabe67541bbf5957161967c2e5c6588893746"}
+    },
+    {
+      "id": "mutter-proof-client",
+      "kind": "file",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/tests/wayland-test-clients/text-input-atomic-frame.c",
+      "expect": {"mode": "0664", "size_bytes": 15276, "sha256": "aa9c4cbe5c18da22232c6c6b238290d0f464714ee38321bc874fb0bfe365fa05"}
+    },
+    {
+      "id": "full-route-driver",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh",
+      "expect": {"mode": "0755", "size_bytes": 12197, "sha256": "8139ab8b5620551c08bcee2fcee55b3200b0c65b902efa076db0446912991361"}
+    },
+    {
+      "id": "installed-lay-engine",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "expect": {"mode": "0755", "size_bytes": 6423488, "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a"}
+    },
+    {
+      "id": "installed-mutter",
+      "kind": "file",
+      "path": "/usr/lib/x86_64-linux-gnu/libmutter-18.so.0.0.0",
+      "expect": {"mode": "0644", "size_bytes": 2755048, "sha256": "fec9023139ac8eff93fcc1af90413613cdb526e7f02389dc9d8fe90f7abc81e5"}
+    },
+    {
+      "id": "installed-shell",
+      "kind": "file",
+      "path": "/usr/lib/gnome-shell/libshell-18.so",
+      "expect": {"mode": "0644", "size_bytes": 3107408, "sha256": "94e81e3ff3820b3f8454d596c3a9ee7fa437b770b899098db85f15640a7abb73"}
+    }
+  ],
+  "source_checks": [
+    {
+      "id": "pinned-mutter-text-input-owner",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-text-input.c",
+      "sha256": "5d50a3a9becc31374c52f238729d1874b1cb9c5bfe46e5b90d053cc0cf2d29ca",
+      "forbidden_effect_patterns": [
+        {"effect": "legacy_commit_lease_compatibility", "regex": "legacyCommitLeaseCompatible|leaseCompatibleLegacyCommit"},
+        {"effect": "legacy_delete_lease_compatibility", "regex": "legacyDeleteLeaseCompatible|leaseCompatibleLegacyDelete"},
+        {"effect": "snapshot_validation_weakening", "regex": "skipAtomicSnapshotValidation|ignoreAtomicSnapshotMismatch"},
+        {"effect": "focus_lineage_validation_weakening", "regex": "skipAtomicFocusValidation|ignoreAtomicFocusMismatch"},
+        {"effect": "second_output_route", "regex": "secondPreeditOutputRoute|fallbackLegacyOutputOwner"}
+      ]
+    },
+    {
+      "id": "pinned-mutter-text-input-proof",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/tests/wayland-text-input-atomic-frame-tests.c",
+      "sha256": "73bace5c114ddf6c2ededfb4492aabe67541bbf5957161967c2e5c6588893746",
+      "forbidden_effect_patterns": [
+        {"effect": "fixture_delay_repair", "regex": "sleepToAvoidPreeditRace|delayUntilLeaseExpires"}
+      ]
+    },
+    {
+      "id": "pinned-full-route-driver",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh",
+      "sha256": "8139ab8b5620551c08bcee2fcee55b3200b0c65b902efa076db0446912991361",
+      "forbidden_effect_patterns": [
+        {"effect": "local_heavy_build", "regex": "localMutterBuild|buildMutterOnDesktop"},
+        {"effect": "runtime_deployment_before_proof", "regex": "deployBeforeV25Pass|installUnprovenV25"},
+        {"effect": "historical_receipt_rewrite", "regex": "rewriteHistoricalV24Receipt|truncateHistoricalV24Evidence"}
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "edit-preedit-capability-classifier", "kind": "source_edit"},
+      {"id": "edit-ordered-regression-proof", "kind": "source_edit"},
+      {"id": "sync-two-mutter-files-remote", "kind": "remote_filesystem_write"},
+      {"id": "build-focused-mutter-proof-remote", "kind": "remote_build"},
+      {"id": "run-focused-and-full-route-proofs", "kind": "ephemeral_process_start"},
+      {"id": "write-v25-evidence", "kind": "filesystem_write"}
+    ],
+    "forbidden": [
+      "legacy_commit_lease_compatibility",
+      "legacy_delete_lease_compatibility",
+      "snapshot_validation_weakening",
+      "focus_lineage_validation_weakening",
+      "fixture_delay_repair",
+      "second_output_route",
+      "local_heavy_build",
+      "runtime_deployment_before_proof",
+      "historical_receipt_rewrite"
+    ]
+  },
+  "preserved_artifacts": [
+    {"id": "proof-client-bytes", "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/tests/wayland-test-clients/text-input-atomic-frame.c", "policy": "immutable", "cursor_policy": "none", "rollback_policy": "preserve_exact_bytes", "baseline_check_id": "mutter-proof-client"},
+    {"id": "full-route-driver-bytes", "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh", "policy": "immutable", "cursor_policy": "none", "rollback_policy": "preserve_exact_bytes", "baseline_check_id": "full-route-driver"},
+    {"id": "installed-lay-preserved", "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine", "policy": "immutable_before_deployment", "cursor_policy": "none", "rollback_policy": "preserve_exact_bytes", "baseline_check_id": "installed-lay-engine"},
+    {"id": "installed-mutter-preserved", "path": "/usr/lib/x86_64-linux-gnu/libmutter-18.so.0.0.0", "policy": "immutable_before_deployment", "cursor_policy": "none", "rollback_policy": "preserve_exact_bytes", "baseline_check_id": "installed-mutter"},
+    {"id": "installed-shell-preserved", "path": "/usr/lib/gnome-shell/libshell-18.so", "policy": "immutable_before_deployment", "cursor_policy": "none", "rollback_policy": "preserve_exact_bytes", "baseline_check_id": "installed-shell"}
+  ],
+  "identity_contracts": [
+    {
+      "id": "preedit-does-not-change-profile-identity",
+      "producer": "Mutter frozen profile, focus lineage, capability epoch and surrounding digest",
+      "consumer": "Mutter atomic submit after a same-focus pending preedit arrives",
+      "comparison": "all frozen identity fields remain equal and submit succeeds",
+      "test_id": "preedit-frozen-profile-parity"
+    },
+    {
+      "id": "remote-source-parity",
+      "producer": "two locally approved Mutter source files",
+      "consumer": "remote Mutter proof build inputs",
+      "comparison": "exact SHA-256 equality before build",
+      "test_id": "remote-source-parity"
+    }
+  ],
+  "runtime_comparisons": [],
+  "invariants": [
+    {"id": "display-only-compatibility", "statement": "only pending preedit display output is compatible with an already frozen atomic lease", "test_id": "preedit-between-freeze-and-submit"},
+    {"id": "legacy-mutations-still-terminate", "statement": "legacy commit and delete still invalidate or refuse the lease with zero atomic effect", "test_id": "legacy-mutation-refusal-parity"},
+    {"id": "final-frame-wins", "statement": "the older pending preedit is flushed once and the submitted atomic preedit is the final client frame", "test_id": "final-preedit-order-parity"},
+    {"id": "runtime-unmodified", "statement": "installed Lay, Mutter and Shell remain byte-identical before deployment preflight", "test_id": "installed-runtime-parity"}
+  ],
+  "state_machine": {
+    "initial_state": "V25_PAPER_APPROVED",
+    "steps": [
+      {"id": "edit-scoped-classifier-and-proof", "from": "V25_PAPER_APPROVED", "to": "SOURCE_EDITED", "mutates": true, "failure_state": "SOURCE_EDIT_FAILED", "cleanup": "restore only the two scoped Mutter files from pinned baselines", "preserves": ["proof-client-bytes", "full-route-driver-bytes", "installed-lay-preserved", "installed-mutter-preserved", "installed-shell-preserved"], "test_id": "source-edit-fault"},
+      {"id": "sync-remote-sources", "from": "SOURCE_EDITED", "to": "REMOTE_SYNCED", "mutates": true, "failure_state": "REMOTE_SYNC_FAILED", "cleanup": "reject partial or hash-mismatched remote files before build", "preserves": ["proof-client-bytes", "full-route-driver-bytes", "installed-lay-preserved", "installed-mutter-preserved", "installed-shell-preserved"], "test_id": "remote-sync-fault"},
+      {"id": "build-and-run-focused-proof", "from": "REMOTE_SYNCED", "to": "FOCUSED_PROVEN", "mutates": true, "failure_state": "FOCUSED_PROOF_FAILED", "cleanup": "discard partial build outputs, terminate proof-owned processes and retain logs", "preserves": ["installed-lay-preserved", "installed-mutter-preserved", "installed-shell-preserved"], "test_id": "focused-proof-fault"},
+      {"id": "run-v24-composite-and-route", "from": "FOCUSED_PROVEN", "to": "V25_AGGREGATE_PROVEN", "mutates": true, "failure_state": "FULL_ROUTE_FAILED", "cleanup": "terminate proof-owned processes and retain the complete failed denominator", "preserves": ["installed-lay-preserved", "installed-mutter-preserved", "installed-shell-preserved"], "test_id": "full-route-fault"}
+    ],
+    "terminal_states": ["V25_AGGREGATE_PROVEN", "SOURCE_EDIT_FAILED", "REMOTE_SYNC_FAILED", "FOCUSED_PROOF_FAILED", "FULL_ROUTE_FAILED"]
+  },
+  "tests": [
+    {"id": "source-edit-fault", "kind": "fault_injection", "expected": "failed scoped edit changes no preserved owner or installed runtime"},
+    {"id": "remote-sync-fault", "kind": "fault_injection", "expected": "partial or hash-mismatched remote files are refused before build"},
+    {"id": "focused-proof-fault", "kind": "fault_injection", "expected": "failed focused proof leaves no proof-owned process and retains logs"},
+    {"id": "full-route-fault", "kind": "fault_injection", "expected": "failed full route cleans proof-owned processes and preserves its denominator"},
+    {"id": "preedit-between-freeze-and-submit", "kind": "integration", "expected": "freeze then pending same-focus preedit then submit succeeds without capability mismatch"},
+    {"id": "preedit-frozen-profile-parity", "kind": "parity", "expected": "the profile, focus lineage, capability epoch and surrounding digest frozen before preedit remain accepted at submit"},
+    {"id": "legacy-mutation-refusal-parity", "kind": "parity", "expected": "legacy commit and delete remain unsupported while pending and cannot be combined with an atomic frame"},
+    {"id": "final-preedit-order-parity", "kind": "parity", "expected": "client observes old preedit done followed by final atomic preedit done exactly once each"},
+    {"id": "remote-source-parity", "kind": "parity", "expected": "local and remote scoped Mutter source hashes match before build"},
+    {"id": "installed-runtime-parity", "kind": "parity", "expected": "installed Lay, Mutter and Shell hashes remain byte-identical before deployment preflight"}
+  ]
+}

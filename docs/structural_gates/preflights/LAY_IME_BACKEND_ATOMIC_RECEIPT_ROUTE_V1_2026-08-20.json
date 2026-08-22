@@ -1,0 +1,217 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "input_event", "role": "interface"},
+    {"id": "atomic_batch_material", "role": "evidence_owner"},
+    {"id": "backend_batch_admission", "role": "authorization_owner"},
+    {"id": "lay_process_key_handler", "role": "orchestrator"},
+    {"id": "ibus_daemon_frame_owner", "role": "orchestrator"},
+    {"id": "client_batch_apply", "role": "mutation_owner"},
+    {"id": "frame_discard", "role": "orchestrator"},
+    {"id": "backend_receipt_observer", "role": "observer"},
+    {"id": "native_unhandled_observer", "role": "observer"},
+    {"id": "killpoint_proof", "role": "proof_owner"}
+  ],
+  "edges": [
+    {
+      "id": "exec-event-admission",
+      "from": "input_event",
+      "relation": "delegates",
+      "to": "backend_batch_admission",
+      "events": ["active_commit_success", "committed_replace_success", "tab_accept_success", "rollback_success", "capability_refusal", "engine_failure", "queue_overflow", "frame_fetch_failure", "delete_refusal"]
+    },
+    {
+      "id": "authority-material-admission",
+      "from": "atomic_batch_material",
+      "relation": "produces_for",
+      "to": "backend_batch_admission",
+      "events": ["active_commit_success", "committed_replace_success", "tab_accept_success", "rollback_success"]
+    },
+    {
+      "id": "exec-admission-engine",
+      "from": "backend_batch_admission",
+      "relation": "delegates",
+      "to": "lay_process_key_handler",
+      "events": ["active_commit_success", "committed_replace_success", "tab_accept_success", "rollback_success", "engine_failure", "queue_overflow", "frame_fetch_failure", "delete_refusal"]
+    },
+    {
+      "id": "exec-engine-frame",
+      "from": "lay_process_key_handler",
+      "relation": "delegates",
+      "to": "ibus_daemon_frame_owner",
+      "events": ["active_commit_success", "committed_replace_success", "tab_accept_success", "rollback_success", "engine_failure", "queue_overflow", "frame_fetch_failure", "delete_refusal"]
+    },
+    {
+      "id": "exec-frame-client",
+      "from": "ibus_daemon_frame_owner",
+      "relation": "delegates",
+      "to": "client_batch_apply",
+      "events": ["active_commit_success", "committed_replace_success", "tab_accept_success", "rollback_success", "delete_refusal"]
+    },
+    {
+      "id": "authority-admission-client",
+      "from": "backend_batch_admission",
+      "relation": "authorizes",
+      "to": "client_batch_apply",
+      "events": ["active_commit_success", "committed_replace_success", "tab_accept_success", "rollback_success", "delete_refusal"]
+    },
+    {
+      "id": "exec-client-receipt",
+      "from": "client_batch_apply",
+      "relation": "delegates",
+      "to": "backend_receipt_observer",
+      "events": ["active_commit_success", "committed_replace_success", "tab_accept_success", "rollback_success"]
+    },
+    {
+      "id": "observe-client-receipt",
+      "from": "client_batch_apply",
+      "relation": "observes",
+      "to": "backend_receipt_observer",
+      "events": ["active_commit_success", "committed_replace_success", "tab_accept_success", "rollback_success"]
+    },
+    {
+      "id": "exec-admission-native",
+      "from": "backend_batch_admission",
+      "relation": "delegates",
+      "to": "native_unhandled_observer",
+      "events": ["capability_refusal"]
+    },
+    {
+      "id": "exec-frame-discard",
+      "from": "ibus_daemon_frame_owner",
+      "relation": "delegates",
+      "to": "frame_discard",
+      "events": ["engine_failure", "queue_overflow", "frame_fetch_failure"]
+    },
+    {
+      "id": "exec-discard-native",
+      "from": "frame_discard",
+      "relation": "delegates",
+      "to": "native_unhandled_observer",
+      "events": ["engine_failure", "queue_overflow", "frame_fetch_failure"]
+    },
+    {
+      "id": "exec-delete-refusal-native",
+      "from": "client_batch_apply",
+      "relation": "delegates",
+      "to": "native_unhandled_observer",
+      "events": ["delete_refusal"]
+    },
+    {
+      "id": "proof-killpoint-frame",
+      "from": "killpoint_proof",
+      "relation": "proves",
+      "to": "ibus_daemon_frame_owner",
+      "events": ["engine_failure", "queue_overflow", "frame_fetch_failure"]
+    },
+    {
+      "id": "proof-killpoint-client",
+      "from": "killpoint_proof",
+      "relation": "proves",
+      "to": "client_batch_apply",
+      "events": ["active_commit_success", "committed_replace_success", "tab_accept_success", "rollback_success", "delete_refusal"]
+    }
+  ],
+  "routes": [
+    {
+      "id": "active-commit-success-execution",
+      "event": "active_commit_success",
+      "kind": "execution",
+      "entry": "input_event",
+      "terminal": "backend_receipt_observer",
+      "required_roles": ["interface", "authorization_owner", "orchestrator", "mutation_owner", "observer"],
+      "path_cardinality": [{"from": "input_event", "to": "backend_receipt_observer", "min": 1, "max": 1}]
+    },
+    {
+      "id": "committed-replace-success-execution",
+      "event": "committed_replace_success",
+      "kind": "execution",
+      "entry": "input_event",
+      "terminal": "backend_receipt_observer",
+      "required_roles": ["interface", "authorization_owner", "orchestrator", "mutation_owner", "observer"],
+      "path_cardinality": [{"from": "input_event", "to": "backend_receipt_observer", "min": 1, "max": 1}]
+    },
+    {
+      "id": "tab-accept-success-execution",
+      "event": "tab_accept_success",
+      "kind": "execution",
+      "entry": "input_event",
+      "terminal": "backend_receipt_observer",
+      "required_roles": ["interface", "authorization_owner", "orchestrator", "mutation_owner", "observer"],
+      "path_cardinality": [{"from": "input_event", "to": "backend_receipt_observer", "min": 1, "max": 1}]
+    },
+    {
+      "id": "rollback-success-execution",
+      "event": "rollback_success",
+      "kind": "execution",
+      "entry": "input_event",
+      "terminal": "backend_receipt_observer",
+      "required_roles": ["interface", "authorization_owner", "orchestrator", "mutation_owner", "observer"],
+      "path_cardinality": [{"from": "input_event", "to": "backend_receipt_observer", "min": 1, "max": 1}]
+    },
+    {
+      "id": "success-authority",
+      "event": "committed_replace_success",
+      "kind": "authority",
+      "entry": "atomic_batch_material",
+      "terminal": "client_batch_apply",
+      "required_roles": ["evidence_owner", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "atomic_batch_material", "to": "client_batch_apply", "min": 1, "max": 1}]
+    },
+    {
+      "id": "capability-refusal-execution",
+      "event": "capability_refusal",
+      "kind": "execution",
+      "entry": "input_event",
+      "terminal": "native_unhandled_observer",
+      "required_roles": ["interface", "authorization_owner", "observer"],
+      "path_cardinality": [{"from": "input_event", "to": "native_unhandled_observer", "min": 1, "max": 1}]
+    },
+    {
+      "id": "engine-failure-execution",
+      "event": "engine_failure",
+      "kind": "execution",
+      "entry": "input_event",
+      "terminal": "native_unhandled_observer",
+      "required_roles": ["interface", "authorization_owner", "orchestrator", "observer"],
+      "path_cardinality": [{"from": "input_event", "to": "native_unhandled_observer", "min": 1, "max": 1}]
+    },
+    {
+      "id": "queue-overflow-execution",
+      "event": "queue_overflow",
+      "kind": "execution",
+      "entry": "input_event",
+      "terminal": "native_unhandled_observer",
+      "required_roles": ["interface", "authorization_owner", "orchestrator", "observer"],
+      "path_cardinality": [{"from": "input_event", "to": "native_unhandled_observer", "min": 1, "max": 1}]
+    },
+    {
+      "id": "frame-fetch-failure-execution",
+      "event": "frame_fetch_failure",
+      "kind": "execution",
+      "entry": "input_event",
+      "terminal": "native_unhandled_observer",
+      "required_roles": ["interface", "authorization_owner", "orchestrator", "observer"],
+      "path_cardinality": [{"from": "input_event", "to": "native_unhandled_observer", "min": 1, "max": 1}]
+    },
+    {
+      "id": "delete-refusal-execution",
+      "event": "delete_refusal",
+      "kind": "execution",
+      "entry": "input_event",
+      "terminal": "native_unhandled_observer",
+      "required_roles": ["interface", "authorization_owner", "orchestrator", "mutation_owner", "observer"],
+      "path_cardinality": [{"from": "input_event", "to": "native_unhandled_observer", "min": 1, "max": 1}]
+    },
+    {
+      "id": "failure-proof",
+      "event": "engine_failure",
+      "kind": "proof",
+      "entry": "killpoint_proof",
+      "terminal": "ibus_daemon_frame_owner",
+      "required_roles": ["proof_owner", "orchestrator"],
+      "path_cardinality": [{"from": "killpoint_proof", "to": "ibus_daemon_frame_owner", "min": 1, "max": 1}]
+    }
+  ]
+}

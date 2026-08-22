@@ -1,0 +1,42 @@
+{
+  "planned": {
+    "id": "space-take-before-display-close",
+    "series": "baseline49",
+    "denominator": "committed_space",
+    "source_test": "src/bin/lay_ibus_engine/managed.rs::managed_space_takes_lease_before_closing_display_generation",
+    "target_kind": "bin",
+    "target": "lay-ibus-engine",
+    "compiled_selector": "managed::word_boundary_route_contract::managed_space_takes_lease_before_closing_display_generation",
+    "expected_test_count": 1,
+    "expected_assertion_status": "PASS",
+    "expected_semantic_receipt": "event ordering cannot invalidate its own matching lease",
+    "environment": {
+      "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+      "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+      "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+      "LAY_DEBUG_DECISION_CORE": "1",
+      "LAY_L2_FIELD_TRACE": "1",
+      "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+      "CARGO_BUILD_JOBS": "20"
+    },
+    "command": [
+      "scripts/cargo-guard.sh",
+      "test",
+      "--bin",
+      "lay-ibus-engine",
+      "managed::word_boundary_route_contract::managed_space_takes_lease_before_closing_display_generation",
+      "--",
+      "--exact",
+      "--nocapture",
+      "--test-threads=1"
+    ]
+  },
+  "exit_code": 0,
+  "observed_test_count": 1,
+  "observed_status": "PASS",
+  "valid_execution": true,
+  "log": {
+    "size_bytes": 58144,
+    "sha256": "9a693943a0c64e973dbf1508ab3987e8bb1dbc766949575a358dbe540880774d"
+  }
+}

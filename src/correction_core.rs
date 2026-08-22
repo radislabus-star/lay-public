@@ -31,7 +31,7 @@ use crate::typing_transition::{
 };
 use crate::word_reader::{
     cyrillic_word_splits, is_cyrillic_letters_only, last_text_word, replace_last_text_word,
-    split_edge_whitespace, split_word_punctuation,
+    split_edge_whitespace, split_last_trimmed_ws_token, split_word_punctuation,
 };
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::OnceLock;
@@ -53,7 +53,6 @@ use crate::typing_transition::proposal_admission::{
 pub enum CorrectionMode {
     DeterministicOnly,
     NandaOnly,
-    DeterministicThenNanda,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -129,6 +128,30 @@ pub struct UnifiedCorrectionCandidate {
     pub gate: CandidateGateDecision,
     pub(crate) evidence: Vec<CandidateEvidence>,
     pub(crate) morphology_slot_evidence: Vec<MorphologySlotEvidence>,
+    pub(crate) authority_evidence: CandidateAuthorityEvidence,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) enum CandidateAuthorityEvidence {
+    None,
+    ClosedExactLayout(crate::exact_layout_authority::ExactLayoutContourCertificate),
+    Conflict,
+}
+
+impl CandidateAuthorityEvidence {
+    fn merge(self, incoming: Self) -> Self {
+        match (self, incoming) {
+            (Self::Conflict, _) | (_, Self::Conflict) => Self::Conflict,
+            (Self::None, evidence) | (evidence, Self::None) => evidence,
+            (Self::ClosedExactLayout(left), Self::ClosedExactLayout(right)) => {
+                if left == right {
+                    Self::ClosedExactLayout(left)
+                } else {
+                    Self::Conflict
+                }
+            }
+        }
+    }
 }
 
 /// Stable identity used only to preserve morphology diversity in bounded
@@ -173,6 +196,42 @@ pub(crate) struct CandidateEvidence {
     pub(crate) gate: CandidateGateDecision,
 }
 
+fn common_correction_target_evidence(
+    replacement: &str,
+    origin: CandidateOrigin,
+    error_class: TypingErrorClass,
+) -> crate::typing_transition::target_evidence::TargetEvidenceSetV1 {
+    use crate::typing_transition::target_evidence::{
+        stable_bytes_ref, target_relation_from_error_class_tag, GroundingNamespaceV1,
+        TargetEvidenceSetV1, TargetWitnessV1, VerdictMembershipV1,
+    };
+
+    let relation = target_relation_from_error_class_tag(error_class.as_str());
+    let target_ref = stable_bytes_ref(replacement.as_bytes());
+    let operator_ref = stable_bytes_ref(error_class.as_str().as_bytes());
+    let provenance_annotations = match origin {
+        CandidateOrigin::Layout => 1 << 0,
+        CandidateOrigin::LayoutThenTypo => 1 << 1,
+        CandidateOrigin::Boundary => 1 << 2,
+        CandidateOrigin::Completion => 1 << 3,
+        CandidateOrigin::L2Surface => 1 << 4,
+        CandidateOrigin::L3Context => 1 << 5,
+        CandidateOrigin::DeterministicTypo => 1 << 6,
+        CandidateOrigin::Technical => 1 << 7,
+    };
+    TargetEvidenceSetV1::from_one(TargetWitnessV1::new(
+        relation,
+        GroundingNamespaceV1::LegacyCorrectionCandidate,
+        VerdictMembershipV1::Born,
+        u8::from(origin == CandidateOrigin::Boundary),
+        operator_ref,
+        target_ref,
+        target_ref,
+        0,
+        provenance_annotations,
+    ))
+}
+
 impl UnifiedCorrectionCandidate {
     pub(crate) fn new(
         replacement: impl Into<String>,
@@ -182,9 +241,10 @@ impl UnifiedCorrectionCandidate {
         error_class: TypingErrorClass,
         gate: CandidateGateDecision,
     ) -> Self {
+        let replacement = replacement.into();
         let source_id = source_id.into();
         Self {
-            replacement: replacement.into(),
+            replacement,
             source,
             origin,
             source_id: source_id.clone(),
@@ -198,10 +258,25 @@ impl UnifiedCorrectionCandidate {
                 gate,
             }],
             morphology_slot_evidence: Vec::new(),
+            authority_evidence: CandidateAuthorityEvidence::None,
         }
     }
 
+    pub(crate) fn with_closed_exact_layout_authority(
+        mut self,
+        certificate: crate::exact_layout_authority::ExactLayoutContourCertificate,
+    ) -> Self {
+        self.authority_evidence = CandidateAuthorityEvidence::ClosedExactLayout(certificate);
+        self
+    }
+
     pub(crate) fn merge_evidence(&mut self, candidate: Self) {
+        let retains_closed_exact_identity = self.closed_exact_layout_certificate().is_some();
+        self.authority_evidence = std::mem::replace(
+            &mut self.authority_evidence,
+            CandidateAuthorityEvidence::None,
+        )
+        .merge(candidate.authority_evidence.clone());
         let promote_verified_same_replacement = candidate.gate.action
             == CandidateGateAction::Eligible
             && self.gate.action == CandidateGateAction::SuggestOnly;
@@ -241,11 +316,12 @@ impl UnifiedCorrectionCandidate {
                 self.gate.action,
                 CandidateGateAction::KeepOriginal | CandidateGateAction::Veto
             );
-        if promote_verified_same_replacement
-            || promote_verified_layout
-            || promote_wave_layout_owner
-            || promote_wave_owner
-            || promote_wave_boundary_owner
+        if !retains_closed_exact_identity
+            && (promote_verified_same_replacement
+                || promote_verified_layout
+                || promote_wave_layout_owner
+                || promote_wave_owner
+                || promote_wave_boundary_owner)
         {
             self.source = candidate.source;
             self.origin = candidate.origin;
@@ -266,6 +342,34 @@ impl UnifiedCorrectionCandidate {
             }
         }
         self.extend_morphology_slot_evidence(candidate.morphology_slot_evidence);
+    }
+
+    pub(crate) fn closed_exact_layout_certificate(
+        &self,
+    ) -> Option<&crate::exact_layout_authority::ExactLayoutContourCertificate> {
+        match &self.authority_evidence {
+            CandidateAuthorityEvidence::ClosedExactLayout(certificate) => Some(certificate),
+            CandidateAuthorityEvidence::None | CandidateAuthorityEvidence::Conflict => None,
+        }
+    }
+
+    pub(crate) fn has_authority_conflict(&self) -> bool {
+        self.authority_evidence == CandidateAuthorityEvidence::Conflict
+    }
+
+    pub(crate) fn common_target_evidence(
+        &self,
+    ) -> crate::typing_transition::target_evidence::TargetEvidenceSetV1 {
+        self.evidence.iter().fold(
+            crate::typing_transition::target_evidence::TargetEvidenceSetV1::complete_empty(),
+            |merged, evidence| {
+                merged.merge(common_correction_target_evidence(
+                    &self.replacement,
+                    evidence.origin,
+                    evidence.error_class,
+                ))
+            },
+        )
     }
 
     pub(crate) fn has_origin(&self, origin: CandidateOrigin) -> bool {
@@ -306,6 +410,19 @@ pub struct CorrectionResolution {
     pub(crate) candidate_scores: Vec<CorrectionCandidateScoreTrace>,
     pub(crate) selected_transition:
         Option<crate::typing_transition::decision::DecisionTransitionReceipt>,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub(crate) struct CorrectionRouteTelemetry {
+    pub(crate) canonical_field: crate::nanda_wave::l2_field::CanonicalFieldTelemetry,
+    pub(crate) correction_l3_us: u64,
+    pub(crate) decision_total_us: u64,
+    pub(crate) total_us: u64,
+}
+
+pub(crate) struct ObservedCorrectionResolution {
+    pub(crate) resolution: CorrectionResolution,
+    pub(crate) telemetry: CorrectionRouteTelemetry,
 }
 
 #[derive(Debug, Clone)]
@@ -453,6 +570,45 @@ pub fn decide_text_correction(req: CorrectionRequest<'_>) -> Option<CorrectionDe
 }
 
 pub fn resolve_text_correction(req: CorrectionRequest<'_>) -> CorrectionResolution {
+    resolve_text_correction_observed(req).resolution
+}
+
+pub(crate) fn resolve_text_correction_observed(
+    req: CorrectionRequest<'_>,
+) -> ObservedCorrectionResolution {
+    resolve_text_correction_observed_internal(req, CorrectionEvidenceScope::FullField(None))
+}
+
+pub(crate) fn resolve_text_correction_observed_with_exact(
+    req: CorrectionRequest<'_>,
+    certificate: &crate::exact_layout_authority::ExactLayoutContourCertificate,
+) -> ObservedCorrectionResolution {
+    resolve_text_correction_observed_internal(
+        req,
+        CorrectionEvidenceScope::FullField(Some(certificate)),
+    )
+}
+
+pub(crate) fn resolve_closed_exact_text_correction_observed(
+    req: CorrectionRequest<'_>,
+    certificate: Option<&crate::exact_layout_authority::ExactLayoutContourCertificate>,
+) -> ObservedCorrectionResolution {
+    resolve_text_correction_observed_internal(
+        req,
+        CorrectionEvidenceScope::ClosedExact(certificate),
+    )
+}
+
+#[derive(Clone, Copy)]
+enum CorrectionEvidenceScope<'a> {
+    FullField(Option<&'a crate::exact_layout_authority::ExactLayoutContourCertificate>),
+    ClosedExact(Option<&'a crate::exact_layout_authority::ExactLayoutContourCertificate>),
+}
+
+fn resolve_text_correction_observed_internal(
+    req: CorrectionRequest<'_>,
+    scope: CorrectionEvidenceScope<'_>,
+) -> ObservedCorrectionResolution {
     let started = Instant::now();
     let timing_enabled = std::env::var_os("LAY_CORRECTION_CORE_TIMING").is_some();
     let mut l2_peak_context = None;
@@ -461,20 +617,49 @@ pub fn resolve_text_correction(req: CorrectionRequest<'_>) -> CorrectionResoluti
         TypingErrorEvent::from_text(req.text),
         &req.nanda_wave_options,
     );
+    let mut canonical_telemetry = crate::nanda_wave::l2_field::CanonicalFieldTelemetry::default();
 
-    for source in L2CandidateSource::for_mode(req.mode) {
-        source.push_candidates(&req, &mut lattice, l2_peak_context.as_ref());
+    let exact_certificate = match scope {
+        CorrectionEvidenceScope::FullField(certificate)
+        | CorrectionEvidenceScope::ClosedExact(certificate) => certificate,
+    };
+    if let Some(certificate) = exact_certificate {
+        match retained_exact_layout_candidate(&req, certificate) {
+            Some(candidate) => lattice.retain_exact(candidate),
+            None => lattice.reject_exact_authority(),
+        }
     }
-    if L2CandidateSource::for_mode(req.mode).contains(&L2CandidateSource::Deterministic) {
-        lattice.push_source(short_cyrillic_layout_suggestion_candidate(&req));
+
+    if matches!(scope, CorrectionEvidenceScope::FullField(_)) {
+        for source in L2CandidateSource::for_mode(req.mode) {
+            source.push_candidates(
+                &req,
+                &mut lattice,
+                l2_peak_context.as_ref(),
+                &mut canonical_telemetry,
+            );
+        }
+        if L2CandidateSource::for_mode(req.mode).contains(&L2CandidateSource::Deterministic) {
+            lattice.push_source(short_cyrillic_layout_suggestion_candidate(&req));
+        }
     }
     let candidates_ready = Instant::now();
 
-    if !lattice.is_empty() && l2_peak_context.is_none() {
+    if matches!(scope, CorrectionEvidenceScope::FullField(_))
+        && !lattice.is_empty()
+        && l2_peak_context.is_none()
+    {
         l2_peak_context =
             Some(crate::nanda_wave::l2_wave_peak::prepare_correction_peak_context(req.text));
     }
-    let resolution = lattice.into_resolution_with_peak_context(l2_peak_context.as_ref());
+    let (resolution, decision_timing) = match scope {
+        CorrectionEvidenceScope::FullField(_) => {
+            lattice.into_observed_resolution_with_peak_context(l2_peak_context.as_ref())
+        }
+        CorrectionEvidenceScope::ClosedExact(certificate) => {
+            lattice.into_closed_exact_resolution(certificate)
+        }
+    };
     if timing_enabled {
         let decision_ready = Instant::now();
         eprintln!(
@@ -487,7 +672,15 @@ pub fn resolve_text_correction(req: CorrectionRequest<'_>) -> CorrectionResoluti
         );
     }
     record_correction_gate_stats(started, &resolution);
-    resolution
+    ObservedCorrectionResolution {
+        resolution,
+        telemetry: CorrectionRouteTelemetry {
+            canonical_field: canonical_telemetry,
+            correction_l3_us: decision_timing.l3_us,
+            decision_total_us: decision_timing.total_us,
+            total_us: started.elapsed().as_micros().min(u128::from(u64::MAX)) as u64,
+        },
+    }
 }
 
 pub fn correction_gate_stats_json() -> serde_json::Value {
@@ -868,5 +1061,48 @@ impl TypingErrorEvent {
         L1SurfaceSignal::from_text(text).into_event()
     }
 }
+
+#[cfg(test)]
+mod target_evidence_adapter_tests {
+    use super::*;
+    use crate::typing_transition::target_evidence::{GroundingNamespaceV1, TargetRelationV1};
+
+    #[test]
+    fn correction_candidate_merges_producer_aliases_without_extra_votes() {
+        let gate = CandidateGateDecision {
+            action: CandidateGateAction::SuggestOnly,
+            reason: "adapter-test",
+        };
+        let mut candidate = UnifiedCorrectionCandidate::new(
+            "candidate",
+            CorrectionDecisionSource::Nanda,
+            CandidateOrigin::L2Surface,
+            "l2",
+            TypingErrorClass::MissingLetter,
+            gate.clone(),
+        );
+        candidate.merge_evidence(UnifiedCorrectionCandidate::new(
+            "candidate",
+            CorrectionDecisionSource::Nanda,
+            CandidateOrigin::L3Context,
+            "l3",
+            TypingErrorClass::MissingLetter,
+            gate,
+        ));
+
+        let common = candidate.common_target_evidence();
+        assert_eq!(common.logical_count(), 1);
+        let [witness] = common.witnesses() else {
+            panic!("producer aliases must retain one semantic witness");
+        };
+        assert_eq!(witness.relation, TargetRelationV1::MissingLetter);
+        assert_eq!(
+            witness.grounding_namespace,
+            GroundingNamespaceV1::LegacyCorrectionCandidate
+        );
+        assert_eq!(witness.provenance_annotations, (1 << 4) | (1 << 5));
+    }
+}
+
 include!("correction_core/candidate_sources.rs");
 include!("correction_core/tests.rs");

@@ -1,0 +1,388 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_ATOMIC_FULL_ROUTE_EVENT_ADMISSION_DIAGNOSTIC_V18_2026-08-21",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "proof-runner-v17",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 10094,
+        "sha256": "9640c2f46c5b75d3ce5ddc5b9a50a7c492d6d3b3d5b407727592779371006195"
+      }
+    },
+    {
+      "id": "v17-first-event-evidence",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/atomic-full-route-v17-bwrap-full-route.metrics",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 245,
+        "sha256": "03c3ce02c7e98027070a28ca739b37a45eb8904b9751527a37de6b90a8c10acc"
+      }
+    },
+    {
+      "id": "shell-input-method-production-source",
+      "kind": "file",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/js/misc/inputMethod.js",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 15192,
+        "sha256": "7e84931650ccee7920428d22287da6e99763db7f08783a48fdda55fd459e3b37"
+      }
+    },
+    {
+      "id": "shell-atomic-adapter-production-source",
+      "kind": "file",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/js/misc/inputMethodAtomic.js",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 15841,
+        "sha256": "d40801329973da6c3e96f35edc2f478ad82c7752f4e245cb01f69904a24e19c0"
+      }
+    },
+    {
+      "id": "mutter-text-input-production-source",
+      "kind": "file",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-text-input.c",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 52566,
+        "sha256": "99debf2aca19cccd22ecd7b59e0629cbbb39f76ee4b7f5924ac45aededbc38f2"
+      }
+    },
+    {
+      "id": "mutter-input-method-production-source",
+      "kind": "file",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/clutter/clutter/clutter-input-method.c",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 29243,
+        "sha256": "01f5f24eb86267c9ca61dd57d7a33924600dff97062a29ada47b8ff47deb4708"
+      }
+    },
+    {
+      "id": "shell-physical-route-test",
+      "kind": "file",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/shell/atomicInputMethodRoute.js",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 3775,
+        "sha256": "479011e3b65e42db4c5878d42d86d991279f533e933f60331ec04c78846a13a"
+      }
+    },
+    {
+      "id": "installed-lay-engine",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 6423488,
+        "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a"
+      }
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {
+        "id": "enable-bounded-mutter-debug-topics",
+        "kind": "proof_harness_edit"
+      },
+      {
+        "id": "start-isolated-remote-route",
+        "kind": "ephemeral_process_start"
+      },
+      {
+        "id": "write-diagnostic-logs",
+        "kind": "remote_filesystem_write"
+      },
+      {
+        "id": "preserve-v18-receipt",
+        "kind": "filesystem_write"
+      }
+    ],
+    "forbidden": [
+      "production_source_edit",
+      "local_build",
+      "remote_build",
+      "runtime_deployment",
+      "installed_file_write",
+      "live_session_restart",
+      "live_keyboard_signal",
+      "physical_user_text_mutation",
+      "route_semantics_change",
+      "diagnostic_latency_promoted_to_pass",
+      "orphaned_test_process",
+      "uncontrolled_remote_load"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "pinned-v17-proof-runner",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh",
+      "sha256": "9640c2f46c5b75d3ce5ddc5b9a50a7c492d6d3b3d5b407727592779371006195",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "production_source_edit",
+          "regex": "(?:scp|cp|install).{0,160}(?:inputMethod[.]js|inputMethodAtomic[.]js|meta-wayland-text-input[.]c|clutter-input-method[.]c)"
+        },
+        {
+          "effect": "local_build",
+          "regex": "(?:cargo|meson|ninja|make).{0,80}(?:build|compile|test)"
+        },
+        {
+          "effect": "remote_build",
+          "regex": "(?:meson compile|ninja|make -j)"
+        },
+        {
+          "effect": "runtime_deployment",
+          "regex": "(?:systemctl|dpkg|apt-get|gnome-extensions).{0,80}(?:install|enable|restart|reload)"
+        },
+        {
+          "effect": "installed_file_write",
+          "regex": "(?:cp|install|rsync).{0,120}/(?:usr|home/ubu/[.]local)/(?:bin|lib|share)"
+        },
+        {
+          "effect": "live_session_restart",
+          "regex": "(?:gnome-session-quit|loginctl.{0,40}terminate|systemctl.{0,40}restart.{0,40}(?:gnome|ibus))"
+        },
+        {
+          "effect": "live_keyboard_signal",
+          "regex": "(?:kill|signal|restart).{0,100}(?:live[-_ ]?(?:ibus|gnome|mutter)|user[-_ ]?session)"
+        },
+        {
+          "effect": "physical_user_text_mutation",
+          "regex": "/dev/(?:input|uinput)|(?:ydotool|xdotool|wtype)\\b"
+        },
+        {
+          "effect": "route_semantics_change",
+          "regex": "diagnostic_changes_event_result_or_fallback"
+        },
+        {
+          "effect": "diagnostic_latency_promoted_to_pass",
+          "regex": "diagnostic_run_grants_latency_pass"
+        },
+        {
+          "effect": "orphaned_test_process",
+          "regex": "leave_task_owned_process_running"
+        },
+        {
+          "effect": "uncontrolled_remote_load",
+          "regex": "(?:ninja|meson compile).{0,80}(?:-j ?20|--jobs=20)"
+        }
+      ]
+    },
+    {
+      "id": "pinned-shell-route",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/js/misc/inputMethod.js",
+      "sha256": "7e84931650ccee7920428d22287da6e99763db7f08783a48fdda55fd459e3b37",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "route_semantics_change",
+          "regex": "diagnostic_changes_event_result_or_fallback"
+        }
+      ]
+    },
+    {
+      "id": "pinned-mutter-route",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-text-input.c",
+      "sha256": "99debf2aca19cccd22ecd7b59e0629cbbb39f76ee4b7f5924ac45aededbc38f2",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "route_semantics_change",
+          "regex": "diagnostic_changes_event_result_or_fallback"
+        }
+      ]
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "production-source-byte-parity",
+      "producer": "local frozen Shell and Mutter proof sources",
+      "consumer": "remote V18 Shell and Mutter binaries",
+      "comparison": "exact source and binary SHA-256 evidence with no production source transfer in V18",
+      "test_id": "production-source-parity"
+    },
+    {
+      "id": "first-event-observation-parity",
+      "producer": "Mutter input and input-events debug topics plus existing Shell and engine traces",
+      "consumer": "V18 first-false-predicate classifier",
+      "comparison": "one physical key event classified at the first missing or false hop without changing its return value",
+      "test_id": "first-false-predicate"
+    }
+  ],
+  "runtime_comparisons": [
+    {
+      "id": "isolated-process-cleanup",
+      "source": "task-owned remote proof processes before and after V18",
+      "comparison": "exact_stable_projection",
+      "reason": "diagnosis cannot leave a compositor, bus or Lay engine alive",
+      "stable_fields": [
+        "leftover_process_count"
+      ],
+      "expected_to_change_fields": [
+        "ephemeral_pid",
+        "temporary_bus_address"
+      ],
+      "observed_not_compared_fields": [
+        "system_load",
+        "page_cache"
+      ],
+      "test_id": "process-cleanup"
+    },
+    {
+      "id": "remote-load-admission",
+      "source": "remote host load average and per-process CPU immediately before proof",
+      "comparison": "bounded_admission",
+      "reason": "V18 is a no-build one-event diagnostic and must not compete with a saturated host",
+      "stable_fields": [
+        "logical_cpu_count"
+      ],
+      "expected_to_change_fields": [
+        "load_average",
+        "process_cpu_percent"
+      ],
+      "observed_not_compared_fields": [
+        "unrelated_service_rss"
+      ],
+      "test_id": "remote-load-check"
+    }
+  ],
+  "state_machine": {
+    "initial_state": "V17_EVIDENCE_PINNED",
+    "steps": [
+      {
+        "id": "edit-proof-runner-only",
+        "from": "V17_EVIDENCE_PINNED",
+        "to": "DIAGNOSTIC_READY",
+        "mutates": true,
+        "failure_state": "HARNESS_FAILED",
+        "cleanup": "retain the failed proof-runner diff and do not transfer or edit production sources",
+        "preserves": [
+          "shell-production-source",
+          "mutter-production-source",
+          "installed-runtime"
+        ],
+        "test_id": "proof-scope-parity"
+      },
+      {
+        "id": "run-one-event-diagnostic",
+        "from": "DIAGNOSTIC_READY",
+        "to": "OBSERVED",
+        "mutates": true,
+        "failure_state": "ROUTE_UNRESOLVED",
+        "cleanup": "terminate the exact isolated process lineage and retain the bounded log",
+        "preserves": [
+          "shell-production-source",
+          "mutter-production-source",
+          "installed-runtime"
+        ],
+        "test_id": "first-false-predicate"
+      },
+      {
+        "id": "record-and-clean",
+        "from": "OBSERVED",
+        "to": "PASS",
+        "mutates": true,
+        "failure_state": "TEARDOWN_FAILED",
+        "cleanup": "kill only task-owned descendants and refuse PASS while any remain",
+        "preserves": [
+          "shell-production-source",
+          "mutter-production-source",
+          "installed-runtime"
+        ],
+        "test_id": "process-cleanup"
+      }
+    ],
+    "terminal_states": [
+      "PASS",
+      "HARNESS_FAILED",
+      "ROUTE_UNRESOLVED",
+      "TEARDOWN_FAILED"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "shell-production-source",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/js/misc/inputMethod.js",
+      "baseline_check_id": "shell-input-method-production-source",
+      "policy": "byte_exact",
+      "cursor_policy": "not_applicable",
+      "rollback_policy": "no edit permitted in V18"
+    },
+    {
+      "id": "mutter-production-source",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-text-input.c",
+      "baseline_check_id": "mutter-text-input-production-source",
+      "policy": "byte_exact",
+      "cursor_policy": "not_applicable",
+      "rollback_policy": "no edit permitted in V18"
+    },
+    {
+      "id": "installed-runtime",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "baseline_check_id": "installed-lay-engine",
+      "policy": "observed_only_no_write",
+      "cursor_policy": "not_applicable",
+      "rollback_policy": "installation is forbidden in V18"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "diagnosis-only",
+      "statement": "V18 changes logging configuration only and cannot change event handling, mutation, fallback or authority",
+      "test_id": "proof-scope-parity"
+    },
+    {
+      "id": "first-false-hop",
+      "statement": "the receipt names the first observed false or missing condition before ProcessKeyEventAtomicV1, otherwise remains unresolved",
+      "test_id": "first-false-predicate"
+    },
+    {
+      "id": "diagnostic-latency-not-authoritative",
+      "statement": "debug-enabled V18 cannot satisfy or modify the integrated latency gate",
+      "test_id": "latency-claim-boundary"
+    },
+    {
+      "id": "no-leftovers",
+      "statement": "all isolated task-owned processes terminate",
+      "test_id": "process-cleanup"
+    }
+  ],
+  "tests": [
+    {
+      "id": "proof-scope-parity",
+      "kind": "parity",
+      "expected": "only run-atomic-full-route-remote.sh adds bounded debug environment; frozen Shell Mutter test and installed Lay bytes remain exact"
+    },
+    {
+      "id": "production-source-parity",
+      "kind": "parity",
+      "expected": "local and remote frozen Shell Mutter test and Lay source or binary hashes match the V17 inputs"
+    },
+    {
+      "id": "remote-load-check",
+      "kind": "integration",
+      "expected": "the 20-CPU remote host has capacity for one no-build 90-second-bounded proof before launch"
+    },
+    {
+      "id": "first-false-predicate",
+      "kind": "integration",
+      "expected": "existing Mutter debug events Shell state and engine trace identify the first missing or false event-admission hop; absence of decisive evidence is ROUTE_UNRESOLVED"
+    },
+    {
+      "id": "latency-claim-boundary",
+      "kind": "parity",
+      "expected": "V18 reports no integrated latency PASS even if timing markers are emitted"
+    },
+    {
+      "id": "process-cleanup",
+      "kind": "fault_injection",
+      "expected": "normal or failed V18 leaves zero task-owned remote processes after runner cleanup"
+    }
+  ]
+}

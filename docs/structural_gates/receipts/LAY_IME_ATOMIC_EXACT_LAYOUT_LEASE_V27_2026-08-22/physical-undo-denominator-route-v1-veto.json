@@ -1,0 +1,140 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "VETO",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": false,
+  "contract": "docs/structural_gates/preflights/LAY_IME_ATOMIC_V27_PHYSICAL_UNDO_DENOMINATOR_ROUTE_V1_2026-08-22.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "source_root": null,
+  "node_count": 5,
+  "edge_count": 4,
+  "routes": [
+    {
+      "id": "physical-undo-observation",
+      "event": "physical-undo-observation",
+      "kind": "observation",
+      "entry": "physical-undo-input",
+      "via": [],
+      "terminal": "composite-undo-observation",
+      "path_count": 1,
+      "paths": [
+        [
+          "physical-undo-input",
+          "composite-undo-observation"
+        ]
+      ],
+      "role_owners": {
+        "observer": [
+          "composite-undo-observation"
+        ],
+        "interface": [
+          "physical-undo-input"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "physical-undo-input",
+          "to": "composite-undo-observation",
+          "via": [],
+          "graph": "observation",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "physical-undo-input",
+              "composite-undo-observation"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "physical-undo-proof",
+      "event": "physical-undo-proof",
+      "kind": "proof",
+      "entry": "composite-undo-observation",
+      "via": [],
+      "terminal": "shell-proof-verdict",
+      "path_count": 1,
+      "paths": [
+        [
+          "composite-undo-observation",
+          "accepted-v24-release-denominator",
+          "javascript-composite-pass-marker",
+          "shell-proof-verdict"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "accepted-v24-release-denominator"
+        ],
+        "observer": [
+          "composite-undo-observation"
+        ],
+        "producer": [
+          "javascript-composite-pass-marker"
+        ],
+        "proof_owner": [
+          "shell-proof-verdict"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "composite-undo-observation",
+          "to": "shell-proof-verdict",
+          "via": [],
+          "graph": "proof",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "composite-undo-observation",
+              "accepted-v24-release-denominator",
+              "javascript-composite-pass-marker",
+              "shell-proof-verdict"
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {},
+  "source_evidence": {
+    "expected": 0,
+    "verified": 0,
+    "complete": true
+  },
+  "issues": [
+    {
+      "code": "proof_relation_role_mismatch",
+      "message": "proves must terminate at a proof_owner",
+      "edge": "prove-observation-denominator",
+      "target_role": "evidence_owner"
+    },
+    {
+      "code": "proof_relation_role_mismatch",
+      "message": "proves must terminate at a proof_owner",
+      "edge": "prove-denominator-marker",
+      "target_role": "producer"
+    }
+  ],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": false,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

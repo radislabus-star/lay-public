@@ -1,0 +1,8 @@
+{
+  "id": "build-ibus-tests",
+  "exit_code": 0,
+  "log": {
+    "size_bytes": 60063,
+    "sha256": "6c9eed25c964fb825075f340e547e10008afb6a29177c087ba3f6987d302f0e3"
+  }
+}

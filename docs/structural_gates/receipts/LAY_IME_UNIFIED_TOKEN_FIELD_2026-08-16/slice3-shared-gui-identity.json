@@ -1,0 +1,59 @@
+{
+  "schema": "lay.ime.unified-token-field.slice3.v1",
+  "generated_at": "2026-08-16T08:39:29+03:00",
+  "worktree": "/home/ubu/projects/lay-l1-exact-peak-search",
+  "branch": "codex/l1-exact-peak-search",
+  "baseline_head": "8b8f66bbf0f8a24b7edda670c67023083aa49e00",
+  "verdict": "PASS_SCOPED_GUI_IDENTITY_AND_ORDER_RUNTIME_UNCHANGED",
+  "runtime_authority_changed": false,
+  "installed_version": "1.0.33",
+  "implemented": [
+    "one typed InputFrameIdentity binds path, focus receipt, tail epoch, exact committed tail, canonical context and token, composition state, layout and effective input config",
+    "managed printable input captures one frame after the committed tail epoch is published",
+    "Space correction is scheduled before display projection and both carry the same structural identity",
+    "display cancellation is separate from correction-lease invalidation",
+    "managed Space takes the exact matching correction lease before display generation is closed",
+    "the correction lease is single-consumer and stale or absent work fails closed to one literal Space",
+    "focus, reset, Backspace, layout and config transitions invalidate stale background work",
+    "multi-token boundary replacements remain in the verified correction lattice but are excluded from passive IME display by operation shape"
+  ],
+  "measured": {
+    "remote_host": "e@192.168.3.94",
+    "remote_logical_cpus": 20,
+    "remote_load_average_before_compile": [3.47, 2.95, 3.04],
+    "remote_source_root": "/home/e/build/lay-unified-token-field-20260816",
+    "remote_target_root": "/home/e/build/lay-ime-boundary-layout-proof-20260815/target",
+    "remote_source_parity": "rsync checksum dry-run returned no differences",
+    "source_manifest_sha256": "f88ba06386ba655b3890875333edb0454c5492f65b92a3664b1571a5202c8b35",
+    "lay_ibus_engine_tests": {
+      "passed": 202,
+      "failed": 0,
+      "ignored": 0,
+      "duration_seconds": 11.23,
+      "log": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice3/lay-ibus-engine-tests.log",
+      "log_bytes": 60059,
+      "log_sha256": "85e0e1cb6e56b6584b4cd99fbfbfe03f588abed748870735990b116ed53c8c09"
+    }
+  },
+  "initial_failure": {
+    "tests_passed": 201,
+    "tests_failed": 1,
+    "failed_test": "preedit::tests::repeated_current_token_does_not_leak_a_full_replacement_into_completion_preedit",
+    "first_shared_mechanism": "the IBus display adapter projected every full replacement, including a whitespace-bearing Boundary edit, as a passive arrow candidate",
+    "repair_scope": "filter multi-token replacements only at the passive display adapter; preserve the candidate in L2 and the verified Space correction route",
+    "literal_runtime_condition_added": false,
+    "source_id_runtime_condition_added": false,
+    "log": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice3/lay-ibus-engine-tests-initial-fail.log",
+    "log_bytes": 60822,
+    "log_sha256": "bd86d113323406f5854bd8e549cbde75e863a0d53ea662da8a5c8b1219bc1999"
+  },
+  "not_tested": [
+    "fixed immediate-Space replay denominator and NotReady rate",
+    "physical WeChat, Telegram and browser input",
+    "Space and printable p50, p90, p99 and maximum latency",
+    "full aggregate L1.1 and 13-class restoration proof",
+    "glued-word recall and false-split aggregate proof",
+    "release build, installation, service activation and rollback"
+  ],
+  "promotion_scope": "permits Slice 4 observability and route proof only; does not authorize build deployment or runtime promotion"
+}

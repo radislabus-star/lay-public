@@ -1,0 +1,161 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "atomic-settlement-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic.rs",
+      "sha256": "c447765a6a7d3ddeafdebc122b664946611f69619035e4fd5c186c67a2472554",
+      "size_bytes": 19638
+    },
+    {
+      "exists": true,
+      "id": "engine-state-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/engine.rs",
+      "sha256": "062dc51111ba34ae98c40a5bcee69a0b19562c2c5af7645e5b918969b0b7c748",
+      "size_bytes": 13916
+    },
+    {
+      "exists": true,
+      "id": "engine-constructor-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/state.rs",
+      "sha256": "20f0ace194c3170838fcd675a105cd89290abab336b7f301f070b052dad6e896",
+      "size_bytes": 42444
+    },
+    {
+      "exists": true,
+      "id": "external-surrounding-interface-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/ibus_interface.rs",
+      "sha256": "000fa5e72c4f7e72fb689bed48cc348fd5dc09e63ff9bfab8dc663ee2af05a57",
+      "size_bytes": 15396
+    },
+    {
+      "exists": true,
+      "id": "atomic-proof-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic/proof.rs",
+      "sha256": "07569593ad30fb94fca0f2a241fc5338e33ca93e71f95954fcdd4e6ebd92c08c",
+      "size_bytes": 5185
+    },
+    {
+      "exists": true,
+      "id": "paper-contract",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/ime-atomic-exact-layout-lease-v27-paper-contract-2026-08-22.md",
+      "sha256": "bb6d670ed6ee9634af34b1099bca837a9ae75341d71bc738a8ef4e72376b01a0",
+      "size_bytes": 100321
+    },
+    {
+      "exists": true,
+      "id": "route-contract",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_ATOMIC_V27_SURROUNDING_OBSERVATION_RECONCILIATION_ROUTE_V3_2026-08-22.json",
+      "sha256": "ec3bb19399370c876a102fd5002e26b836df9025bf9ded26b701418202560d24",
+      "size_bytes": 4096
+    },
+    {
+      "exists": true,
+      "id": "route-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_V27_2026-08-22/surrounding-observation-reconciliation-route-v3.json",
+      "sha256": "67b5c7ac39de455e32764b4ae02445438d196b0b0bdf139d46086f0a031b69e1",
+      "size_bytes": 6006
+    },
+    {
+      "exists": true,
+      "id": "installed-engine-preserved",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a",
+      "size_bytes": 6423488
+    },
+    {
+      "exists": true,
+      "id": "physical-proof-preserved",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/shell/atomicInputMethodRoute.js",
+      "sha256": "3f2d38ae86e5a984c055bb04837e299aee7aa41bcdf78d964670676fdb62e4bd",
+      "size_bytes": 16680
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 10,
+    "forbidden_side_effect_kinds": [
+      "candidate_rank_change",
+      "fixture_surface_in_runtime",
+      "historical_receipt_rewrite",
+      "installed_runtime_mutation",
+      "legacy_mutation_acceptance",
+      "legacy_mutation_bridge",
+      "local_cargo_build",
+      "manual_toggle_in_atomic_proof",
+      "physical_proof_source_edit",
+      "receipt_bypass",
+      "unconditional_snapshot_authority",
+      "verifier_or_safety_gate_weakening"
+    ],
+    "identity_contracts": 3,
+    "invariants": 5,
+    "planned_side_effect_kinds": [
+      "ephemeral_process_start",
+      "filesystem_write",
+      "remote_filesystem_write",
+      "source_edit"
+    ],
+    "preserved_artifacts": 2,
+    "runtime_comparisons": 0,
+    "source_checks": 3,
+    "tests": 12
+  },
+  "manifest_sha256": "1c74a52b151946d3af795744524981a8be1939b4f972de21667220fd05280e2c",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-atomic-settlement-route",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic.rs",
+      "sha256": "c447765a6a7d3ddeafdebc122b664946611f69619035e4fd5c186c67a2472554",
+      "size_bytes": 19638
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-engine-state-route",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/engine.rs",
+      "sha256": "062dc51111ba34ae98c40a5bcee69a0b19562c2c5af7645e5b918969b0b7c748",
+      "size_bytes": 13916
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-physical-proof-route",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/shell/atomicInputMethodRoute.js",
+      "sha256": "3f2d38ae86e5a984c055bb04837e299aee7aa41bcdf78d964670676fdb62e4bd",
+      "size_bytes": 16680
+    }
+  ],
+  "task_id": "LAY_IME_ATOMIC_V27_SURROUNDING_OBSERVATION_RECONCILIATION_IMPLEMENTATION_V3_2026-08-22",
+  "verdict": "READY_TO_IMPLEMENT"
+}

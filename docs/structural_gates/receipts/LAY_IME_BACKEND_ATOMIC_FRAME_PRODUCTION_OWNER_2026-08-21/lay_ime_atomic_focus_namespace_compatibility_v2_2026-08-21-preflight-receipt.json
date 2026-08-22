@@ -1,0 +1,69 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "atomic-engine",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic.rs",
+      "sha256": "73e31b0d17225bd7c91e3038fa8b3009989ed43cf04f74694eef2ad4aa5b3c8b",
+      "size_bytes": 15915
+    },
+    {
+      "exists": true,
+      "id": "architecture-paper",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/ime-backend-atomic-frame-v2-2026-08-20.md",
+      "sha256": "102c218ac1610c93c19aeb4a118390d47220fa59e518fa6a4ede518c430c503e",
+      "size_bytes": 122495
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 2,
+    "forbidden_side_effect_kinds": [
+      "cross_focus_receipt_commit",
+      "identity_zero_acceptance",
+      "installed_file_write",
+      "keyboard_or_session_restart",
+      "local_rust_build",
+      "runtime_deployment",
+      "same_event_legacy_fallback",
+      "second_native_mutation_owner"
+    ],
+    "identity_contracts": 2,
+    "invariants": 3,
+    "planned_side_effect_kinds": [
+      "filesystem_write",
+      "isolated_test",
+      "remote_build",
+      "source_edit"
+    ],
+    "preserved_artifacts": 1,
+    "runtime_comparisons": 0,
+    "source_checks": 1,
+    "tests": 8
+  },
+  "manifest_sha256": "b8c24c4165ff53417a37a006ca45594e04c971f4b4885bed1070c3accea8ff1f",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "atomic-engine-source",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic.rs",
+      "sha256": "73e31b0d17225bd7c91e3038fa8b3009989ed43cf04f74694eef2ad4aa5b3c8b",
+      "size_bytes": 15915
+    }
+  ],
+  "task_id": "LAY_IME_ATOMIC_FOCUS_NAMESPACE_COMPATIBILITY_V2_2026-08-21",
+  "verdict": "READY_TO_IMPLEMENT"
+}

@@ -2,6 +2,9 @@ from __future__ import annotations
 
 
 def make_ime_cases(Case):
+    immediate_space_expected = " ".join(
+        ["да норм"] * 10 + ["мне сбросили"] * 5 + ["Елена просит"] * 5
+    )
     return {
         "ime_worked_nj_space_enter": Case("ime_worked_nj_space_enter", "worked это"),
         "ime_sleduyuschiy_next_enter": Case(
@@ -66,5 +69,15 @@ def make_ime_cases(Case):
         ),
         "ime_backspace_after_shift_commit_enter": Case(
             "ime_backspace_after_shift_commit_enter", "проверк"
+        ),
+        "ime_immediate_space_warmup": Case(
+            "ime_immediate_space_warmup",
+            "да норм мне сбросили Елена просит коде",
+            start_layout="ru",
+        ),
+        "ime_immediate_space_replay": Case(
+            "ime_immediate_space_replay",
+            immediate_space_expected,
+            start_layout="ru",
         ),
     }

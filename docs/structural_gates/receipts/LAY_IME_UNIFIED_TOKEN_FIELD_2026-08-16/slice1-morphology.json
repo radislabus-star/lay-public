@@ -1,0 +1,188 @@
+{
+  "all_iterations": {
+    "max_us": 3124223,
+    "mean_us": 388585,
+    "min_us": 80976,
+    "p50_us": 82144,
+    "p95_us": 3124223,
+    "p99_us": 3124223,
+    "samples": 10
+  },
+  "authority": {
+    "kind": "winner",
+    "surfaces": [
+      "морфология"
+    ]
+  },
+  "availability": "Ready",
+  "candidates": [
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "l2_surface_stem_truncation_low",
+      "replacement": "морфолог ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "l2_surface_stem_truncation_low",
+      "replacement": "морфолога ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "replacement": "морфологам ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "replacement": "морфологах ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "l2_surface_stem_truncation_low",
+      "replacement": "морфологе ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "extra-letter",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "known_current_word_surface_drift",
+      "replacement": "морфологи ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "replacement": "морфологией ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "replacement": "морфологиею ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "letter-substitution",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "known_current_word_surface_drift",
+      "replacement": "морфологии ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "letter-substitution",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "known_current_word_surface_drift",
+      "replacement": "морфологий ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "letter-substitution",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "known_current_word_surface_drift",
+      "replacement": "морфологию ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "missing-letter",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "known_current_word_surface_drift",
+      "replacement": "морфологиям ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "replacement": "морфологиями ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "missing-letter",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "known_current_word_surface_drift",
+      "replacement": "морфологиях ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "replacement": "морфологов ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "replacement": "морфологом ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "l2_surface_stem_truncation_low",
+      "replacement": "морфологу ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "replacement": "морфонологии ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "replacement": "морфонология ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "replacement": "морфонологиям ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "replacement": "морфонологиях ",
+      "source_id": "ProductiveL2V90Surface"
+    }
+  ],
+  "cold_us": 3124223,
+  "hot": {
+    "max_us": 100773,
+    "mean_us": 84626,
+    "min_us": 80976,
+    "p50_us": 82144,
+    "p95_us": 100773,
+    "p99_us": 100773,
+    "samples": 9
+  },
+  "kind": "productive_v90_live_owner_query",
+  "outer_readout_cache_bypassed": true,
+  "owner_symbol": "live_productive_v1_readout",
+  "peak_rss_kib": 316048,
+  "producer_calls": 10,
+  "producer_symbol": "canonical_owned_text_candidates",
+  "repeat": 10,
+  "resident_rss_kib": 316048,
+  "runtime_authority_changed": false,
+  "status": "ready",
+  "text": "морфология "
+}

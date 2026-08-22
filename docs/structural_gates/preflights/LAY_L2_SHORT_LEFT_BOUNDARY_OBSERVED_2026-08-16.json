@@ -1,0 +1,446 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "observed_source",
+  "source_root": "../../..",
+  "nodes": [
+    {
+      "id": "glued_token",
+      "role": "interface",
+      "evidence": {
+        "path": "src/correction_core/candidate_sources.rs",
+        "line": 20,
+        "contains": "fn push_candidates"
+      }
+    },
+    {
+      "id": "boundary_enumerator",
+      "role": "producer",
+      "evidence": {
+        "path": "src/nanda_wave/l2/tail_scan_adapter.rs",
+        "line": 83,
+        "contains": "pub(super) fn boundary_split_candidates"
+      }
+    },
+    {
+      "id": "split_center_evidence",
+      "role": "evidence_owner",
+      "evidence": {
+        "path": "src/nanda_wave/l2/tail_scan_adapter.rs",
+        "line": 75,
+        "contains": "pub(super) fn strong_short_left_field_boundary"
+      }
+    },
+    {
+      "id": "bounded_l2_boundary_lattice",
+      "role": "producer",
+      "evidence": {
+        "path": "src/nanda_wave/l2_field/bridge.rs",
+        "line": 163,
+        "contains": "const MAX_BOUNDARY_CANDIDATES: usize = 2"
+      }
+    },
+    {
+      "id": "l3_context_field",
+      "role": "producer",
+      "evidence": {
+        "path": "src/typing_transition/decision.rs",
+        "line": 74,
+        "contains": "let l3_reports = crate::nanda_wave::l3_phrase_gate::evaluate_default_candidates"
+      }
+    },
+    {
+      "id": "decision_core",
+      "role": "candidate_rank_owner",
+      "evidence": {
+        "path": "src/typing_transition/candidate_resolution.rs",
+        "line": 15,
+        "contains": "let decision_batch = TransitionDecisionCore::evaluate_candidates"
+      }
+    },
+    {
+      "id": "prefetch_snapshot",
+      "role": "producer",
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
+        "line": 146,
+        "contains": "let completed = CompletedWork"
+      }
+    },
+    {
+      "id": "space_key",
+      "role": "interface",
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/managed.rs",
+        "line": 65,
+        "contains": "if keyval == KEY_SPACE"
+      }
+    },
+    {
+      "id": "exact_prefetch_take",
+      "role": "producer",
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/committed_tail.rs",
+        "line": 64,
+        "contains": "space_autocorrect_prefetch::take"
+      }
+    },
+    {
+      "id": "boundary_verifier",
+      "role": "authorization_owner",
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/state.rs",
+        "line": 421,
+        "contains": "decide_text_transition"
+      }
+    },
+    {
+      "id": "committed_tail",
+      "role": "mutation_owner",
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/state.rs",
+        "line": 564,
+        "contains": "Self::commit_text"
+      }
+    },
+    {
+      "id": "route_outcome",
+      "role": "producer",
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/committed_tail.rs",
+        "line": 150,
+        "contains": "trace::record_space_autocorrect_timing"
+      }
+    },
+    {
+      "id": "route_trace",
+      "role": "observer",
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/trace.rs",
+        "line": 133,
+        "contains": "pub(crate) fn record_space_autocorrect_timing"
+      }
+    },
+    {
+      "id": "focused_contract_tests",
+      "role": "proof_owner",
+      "evidence": {
+        "path": "src/correction_core/tests.rs",
+        "line": 485,
+        "contains": "fn live_canonical_l2_field_applies_verified_short_left_boundary"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "exec-token-enumerator",
+      "from": "glued_token",
+      "relation": "calls",
+      "to": "boundary_enumerator",
+      "events": ["boundary_candidate_generation"],
+      "evidence": {
+        "path": "src/nanda_wave/l2_field/bridge.rs",
+        "line": 169,
+        "contains": "crate::nanda_wave::l2::ime_l2_boundary_candidates"
+      }
+    },
+    {
+      "id": "exec-enumerator-evidence",
+      "from": "boundary_enumerator",
+      "relation": "delegates",
+      "to": "split_center_evidence",
+      "events": ["boundary_candidate_generation"],
+      "evidence": {
+        "path": "src/nanda_wave/l2/tail_scan_adapter.rs",
+        "line": 131,
+        "contains": "strong_short_left_field_boundary(left, right)"
+      }
+    },
+    {
+      "id": "exec-evidence-lattice",
+      "from": "split_center_evidence",
+      "relation": "delegates",
+      "to": "bounded_l2_boundary_lattice",
+      "events": ["boundary_candidate_generation"],
+      "evidence": {
+        "path": "src/nanda_wave/l2_field/bridge.rs",
+        "line": 163,
+        "contains": "const MAX_BOUNDARY_CANDIDATES: usize = 2"
+      }
+    },
+    {
+      "id": "authority-enumerator-evidence",
+      "from": "boundary_enumerator",
+      "relation": "produces_for",
+      "to": "split_center_evidence",
+      "events": ["boundary_candidate_generation"],
+      "evidence": {
+        "path": "src/nanda_wave/l2/tail_scan_adapter.rs",
+        "line": 129,
+        "contains": "let field_short_left = replacement"
+      }
+    },
+    {
+      "id": "exec-lattice-context",
+      "from": "bounded_l2_boundary_lattice",
+      "relation": "delegates",
+      "to": "l3_context_field",
+      "events": ["background_decision"],
+      "evidence": {
+        "path": "src/typing_transition/decision.rs",
+        "line": 74,
+        "contains": "evaluate_default_candidates"
+      }
+    },
+    {
+      "id": "exec-context-decision",
+      "from": "l3_context_field",
+      "relation": "delegates",
+      "to": "decision_core",
+      "events": ["background_decision"],
+      "evidence": {
+        "path": "src/typing_transition/decision.rs",
+        "line": 93,
+        "contains": "CandidateDecisionEvaluation::build"
+      }
+    },
+    {
+      "id": "exec-decision-snapshot",
+      "from": "decision_core",
+      "relation": "delegates",
+      "to": "prefetch_snapshot",
+      "events": ["background_decision"],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
+        "line": 146,
+        "contains": "let completed = CompletedWork"
+      }
+    },
+    {
+      "id": "authority-lattice-context",
+      "from": "bounded_l2_boundary_lattice",
+      "relation": "passes_to",
+      "to": "l3_context_field",
+      "events": ["background_decision"],
+      "evidence": {
+        "path": "src/typing_transition/decision.rs",
+        "line": 74,
+        "contains": "evaluate_default_candidates"
+      }
+    },
+    {
+      "id": "authority-context-decision",
+      "from": "l3_context_field",
+      "relation": "passes_to",
+      "to": "decision_core",
+      "events": ["background_decision"],
+      "evidence": {
+        "path": "src/typing_transition/decision.rs",
+        "line": 99,
+        "contains": "l3_report: l3_report.as_ref()"
+      }
+    },
+    {
+      "id": "exec-space-take",
+      "from": "space_key",
+      "relation": "calls",
+      "to": "exact_prefetch_take",
+      "events": ["space_apply"],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/managed.rs",
+        "line": 75,
+        "contains": "self.autocorrect_committed_token_on_space"
+      }
+    },
+    {
+      "id": "exec-take-verifier",
+      "from": "exact_prefetch_take",
+      "relation": "delegates",
+      "to": "boundary_verifier",
+      "events": ["space_apply"],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/committed_tail.rs",
+        "line": 128,
+        "contains": ".replace_committed_tail"
+      }
+    },
+    {
+      "id": "exec-verifier-commit",
+      "from": "boundary_verifier",
+      "relation": "delegates",
+      "to": "committed_tail",
+      "events": ["space_apply"],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/state.rs",
+        "line": 563,
+        "contains": "if !commit_text.is_empty()"
+      }
+    },
+    {
+      "id": "authority-snapshot-take",
+      "from": "prefetch_snapshot",
+      "relation": "passes_to",
+      "to": "exact_prefetch_take",
+      "events": ["space_apply"],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
+        "line": 98,
+        "contains": "return SpaceAutocorrectLookup::Ready"
+      }
+    },
+    {
+      "id": "authority-take-verifier",
+      "from": "exact_prefetch_take",
+      "relation": "passes_to",
+      "to": "boundary_verifier",
+      "events": ["space_apply"],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/committed_tail.rs",
+        "line": 136,
+        "contains": ".with_winner_action(decision.action)"
+      }
+    },
+    {
+      "id": "authority-verifier-commit",
+      "from": "boundary_verifier",
+      "relation": "authorizes",
+      "to": "committed_tail",
+      "events": ["space_apply"],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/state.rs",
+        "line": 465,
+        "contains": "lay::text_edit::authorize_backend_edit"
+      }
+    },
+    {
+      "id": "observe-outcome-trace",
+      "from": "route_outcome",
+      "relation": "observes",
+      "to": "route_trace",
+      "events": ["space_apply"],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/committed_tail.rs",
+        "line": 150,
+        "contains": "trace::record_space_autocorrect_timing"
+      }
+    },
+    {
+      "id": "prove-evidence-contract",
+      "from": "split_center_evidence",
+      "relation": "proves",
+      "to": "focused_contract_tests",
+      "events": ["software_proof"],
+      "evidence": {
+        "path": "src/nanda_wave/l2/tests.rs",
+        "line": 481,
+        "contains": "fn short_left_field_boundary_requires_rank_right_center_and_non_preposition"
+      }
+    },
+    {
+      "id": "prove-verifier-contract",
+      "from": "boundary_verifier",
+      "relation": "proves",
+      "to": "focused_contract_tests",
+      "events": ["software_proof"],
+      "evidence": {
+        "path": "src/correction_core/tests.rs",
+        "line": 508,
+        "contains": "let transition = resolution"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "id": "boundary-generation-execution",
+      "event": "boundary_candidate_generation",
+      "kind": "execution",
+      "entry": "glued_token",
+      "terminal": "bounded_l2_boundary_lattice",
+      "required_roles": ["interface", "producer", "evidence_owner"],
+      "path_cardinality": [
+        {
+          "from": "glued_token",
+          "to": "bounded_l2_boundary_lattice",
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "boundary-generation-authority",
+      "event": "boundary_candidate_generation",
+      "kind": "authority",
+      "entry": "boundary_enumerator",
+      "terminal": "split_center_evidence",
+      "required_roles": ["producer", "evidence_owner"]
+    },
+    {
+      "id": "background-decision-execution",
+      "event": "background_decision",
+      "kind": "execution",
+      "entry": "bounded_l2_boundary_lattice",
+      "terminal": "prefetch_snapshot",
+      "required_roles": ["producer", "candidate_rank_owner"],
+      "path_cardinality": [
+        {
+          "from": "bounded_l2_boundary_lattice",
+          "to": "prefetch_snapshot",
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "background-decision-authority",
+      "event": "background_decision",
+      "kind": "authority",
+      "entry": "bounded_l2_boundary_lattice",
+      "terminal": "decision_core",
+      "required_roles": ["producer", "candidate_rank_owner"]
+    },
+    {
+      "id": "space-apply-execution",
+      "event": "space_apply",
+      "kind": "execution",
+      "entry": "space_key",
+      "terminal": "committed_tail",
+      "required_roles": [
+        "interface",
+        "producer",
+        "authorization_owner",
+        "mutation_owner"
+      ],
+      "path_cardinality": [
+        {
+          "from": "space_key",
+          "to": "committed_tail",
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "space-apply-authority",
+      "event": "space_apply",
+      "kind": "authority",
+      "entry": "prefetch_snapshot",
+      "terminal": "committed_tail",
+      "required_roles": ["producer", "authorization_owner", "mutation_owner"]
+    },
+    {
+      "id": "space-observation",
+      "event": "space_apply",
+      "kind": "observation",
+      "entry": "route_outcome",
+      "terminal": "route_trace",
+      "required_roles": ["producer", "observer"]
+    },
+    {
+      "id": "boundary-proof",
+      "event": "software_proof",
+      "kind": "proof",
+      "entry": "split_center_evidence",
+      "terminal": "focused_contract_tests",
+      "required_roles": ["evidence_owner", "proof_owner"]
+    }
+  ]
+}

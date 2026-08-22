@@ -1,0 +1,208 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "atomic-route-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic.rs",
+      "sha256": "a8e48f00e3a0f766ebfa9a01879b3b38ad389b0dbded9bca062f15b4709c6580",
+      "size_bytes": 20335
+    },
+    {
+      "exists": true,
+      "id": "atomic-proof-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic/proof.rs",
+      "sha256": "6a4beadfee3d8dd3f57c64ec0841fa53c965831d9f4e41ce21e641feb624de69",
+      "size_bytes": 8246
+    },
+    {
+      "exists": true,
+      "id": "input-interface-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/ibus_interface.rs",
+      "sha256": "3cdd8be23ede8a71edc598b240c5b5abced19a791a1fdee19a894a0907773a83",
+      "size_bytes": 15388
+    },
+    {
+      "exists": true,
+      "id": "engine-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/engine.rs",
+      "sha256": "7a409bf3490c82cc4a171a6fb2d19328183bd8a3aa230d8aa8be0ec24fb05af3",
+      "size_bytes": 14791
+    },
+    {
+      "exists": true,
+      "id": "profile-proof-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/engine/profile_tests.rs",
+      "sha256": "01a3a707660fd797edf0129836ef54d2775b3d86f5bbc4c295c06857ee37b43c",
+      "size_bytes": 12028
+    },
+    {
+      "exists": true,
+      "id": "shared-state-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/protocol/state.rs",
+      "sha256": "62895c77aa5c05747d3ee6ed69652ff7b8664a51e080600ea261b35d8649f100",
+      "size_bytes": 1084
+    },
+    {
+      "exists": true,
+      "id": "engine-state-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/state.rs",
+      "sha256": "b31753790706d433be76c2d5645e197bc91e2678da316f4650f1034f734381a5",
+      "size_bytes": 42493
+    },
+    {
+      "exists": true,
+      "id": "handoff-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/tail_memory.rs",
+      "sha256": "edfc902ab15b7d9cf309995d1812868224d61430f055033e7cda5d25b160006b",
+      "size_bytes": 56066
+    },
+    {
+      "exists": true,
+      "id": "paper-contract",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/ime-atomic-exact-layout-lease-v27-paper-contract-2026-08-22.md",
+      "sha256": "1961094f506b7f480c1313b088b5ec8f60ec60c82e3cfc8b8746578cd71203a3",
+      "size_bytes": 108017
+    },
+    {
+      "exists": true,
+      "id": "route-contract",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_ATOMIC_V27_SHIFT_GESTURE_HANDOFF_ROUTE_V1_2026-08-22.json",
+      "sha256": "c8c9a1eb20f3209f2d0c8e3f881a20302e4f188b2a93ce76151f459b1e6ade6a",
+      "size_bytes": 4548
+    },
+    {
+      "exists": true,
+      "id": "route-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_V27_2026-08-22/shift-gesture-handoff-route-v1.json",
+      "sha256": "53ff9b8118cc2e495c2a865c4dbde9f106f556a9e1098f164d9d15fd3886b343",
+      "size_bytes": 6632
+    },
+    {
+      "exists": true,
+      "id": "failed-physical-evidence",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_V27_2026-08-22/physical-surrounding-reconcile-undo-v1-fail.json",
+      "sha256": "47cd7d4a1bfb63afc0bf17b91457b006c2f54c0d91a52b8a3696995cb05f7d7b",
+      "size_bytes": 1933
+    },
+    {
+      "exists": true,
+      "id": "installed-engine-preserved",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a",
+      "size_bytes": 6423488
+    },
+    {
+      "exists": true,
+      "id": "physical-proof-preserved",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/shell/atomicInputMethodRoute.js",
+      "sha256": "3f2d38ae86e5a984c055bb04837e299aee7aa41bcdf78d964670676fdb62e4bd",
+      "size_bytes": 16680
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 14,
+    "forbidden_side_effect_kinds": [
+      "direct_text_mutation",
+      "fixture_surface_in_runtime",
+      "generic_orphan_release_tap",
+      "handoff_text_authority",
+      "historical_receipt_rewrite",
+      "installed_runtime_mutation",
+      "legacy_mutation_acceptance",
+      "legacy_mutation_bridge",
+      "local_cargo_build",
+      "manual_toggle_in_atomic_proof",
+      "physical_proof_source_edit",
+      "receipt_bypass",
+      "shift_window_expansion",
+      "unbounded_focus_state_preservation",
+      "verifier_or_safety_gate_weakening"
+    ],
+    "identity_contracts": 4,
+    "invariants": 7,
+    "planned_side_effect_kinds": [
+      "ephemeral_process_start",
+      "filesystem_write",
+      "remote_filesystem_write",
+      "source_edit"
+    ],
+    "preserved_artifacts": 2,
+    "runtime_comparisons": 0,
+    "source_checks": 4,
+    "tests": 16
+  },
+  "manifest_sha256": "2338846fc7bbb58f89e0ec9d5d426fa018ec0fa1c0b6268f2899599903f3819d",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-atomic-route",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic.rs",
+      "sha256": "a8e48f00e3a0f766ebfa9a01879b3b38ad389b0dbded9bca062f15b4709c6580",
+      "size_bytes": 20335
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-input-route",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/ibus_interface.rs",
+      "sha256": "3cdd8be23ede8a71edc598b240c5b5abced19a791a1fdee19a894a0907773a83",
+      "size_bytes": 15388
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-handoff-route",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/tail_memory.rs",
+      "sha256": "edfc902ab15b7d9cf309995d1812868224d61430f055033e7cda5d25b160006b",
+      "size_bytes": 56066
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-physical-proof-route",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/shell/atomicInputMethodRoute.js",
+      "sha256": "3f2d38ae86e5a984c055bb04837e299aee7aa41bcdf78d964670676fdb62e4bd",
+      "size_bytes": 16680
+    }
+  ],
+  "task_id": "LAY_IME_ATOMIC_V27_SHIFT_GESTURE_HANDOFF_IMPLEMENTATION_V2_2026-08-22",
+  "verdict": "READY_TO_IMPLEMENT"
+}

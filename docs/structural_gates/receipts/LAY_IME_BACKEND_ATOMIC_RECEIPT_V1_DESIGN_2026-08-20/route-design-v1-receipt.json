@@ -1,0 +1,678 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "VETO",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": false,
+  "contract": "docs/structural_gates/preflights/LAY_IME_BACKEND_ATOMIC_RECEIPT_ROUTE_V1_2026-08-20.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "source_root": null,
+  "node_count": 10,
+  "edge_count": 14,
+  "routes": [
+    {
+      "id": "active-commit-success-execution",
+      "event": "active_commit_success",
+      "kind": "execution",
+      "entry": "input_event",
+      "via": [],
+      "terminal": "backend_receipt_observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "input_event",
+          "backend_batch_admission",
+          "lay_process_key_handler",
+          "ibus_daemon_frame_owner",
+          "client_batch_apply",
+          "backend_receipt_observer"
+        ]
+      ],
+      "role_owners": {
+        "authorization_owner": [
+          "backend_batch_admission"
+        ],
+        "observer": [
+          "backend_receipt_observer"
+        ],
+        "mutation_owner": [
+          "client_batch_apply"
+        ],
+        "orchestrator": [
+          "ibus_daemon_frame_owner",
+          "lay_process_key_handler"
+        ],
+        "interface": [
+          "input_event"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "input_event",
+          "to": "backend_receipt_observer",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "input_event",
+              "backend_batch_admission",
+              "lay_process_key_handler",
+              "ibus_daemon_frame_owner",
+              "client_batch_apply",
+              "backend_receipt_observer"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "committed-replace-success-execution",
+      "event": "committed_replace_success",
+      "kind": "execution",
+      "entry": "input_event",
+      "via": [],
+      "terminal": "backend_receipt_observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "input_event",
+          "backend_batch_admission",
+          "lay_process_key_handler",
+          "ibus_daemon_frame_owner",
+          "client_batch_apply",
+          "backend_receipt_observer"
+        ]
+      ],
+      "role_owners": {
+        "authorization_owner": [
+          "backend_batch_admission"
+        ],
+        "observer": [
+          "backend_receipt_observer"
+        ],
+        "mutation_owner": [
+          "client_batch_apply"
+        ],
+        "orchestrator": [
+          "ibus_daemon_frame_owner",
+          "lay_process_key_handler"
+        ],
+        "interface": [
+          "input_event"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "input_event",
+          "to": "backend_receipt_observer",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "input_event",
+              "backend_batch_admission",
+              "lay_process_key_handler",
+              "ibus_daemon_frame_owner",
+              "client_batch_apply",
+              "backend_receipt_observer"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tab-accept-success-execution",
+      "event": "tab_accept_success",
+      "kind": "execution",
+      "entry": "input_event",
+      "via": [],
+      "terminal": "backend_receipt_observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "input_event",
+          "backend_batch_admission",
+          "lay_process_key_handler",
+          "ibus_daemon_frame_owner",
+          "client_batch_apply",
+          "backend_receipt_observer"
+        ]
+      ],
+      "role_owners": {
+        "authorization_owner": [
+          "backend_batch_admission"
+        ],
+        "observer": [
+          "backend_receipt_observer"
+        ],
+        "mutation_owner": [
+          "client_batch_apply"
+        ],
+        "orchestrator": [
+          "ibus_daemon_frame_owner",
+          "lay_process_key_handler"
+        ],
+        "interface": [
+          "input_event"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "input_event",
+          "to": "backend_receipt_observer",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "input_event",
+              "backend_batch_admission",
+              "lay_process_key_handler",
+              "ibus_daemon_frame_owner",
+              "client_batch_apply",
+              "backend_receipt_observer"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rollback-success-execution",
+      "event": "rollback_success",
+      "kind": "execution",
+      "entry": "input_event",
+      "via": [],
+      "terminal": "backend_receipt_observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "input_event",
+          "backend_batch_admission",
+          "lay_process_key_handler",
+          "ibus_daemon_frame_owner",
+          "client_batch_apply",
+          "backend_receipt_observer"
+        ]
+      ],
+      "role_owners": {
+        "authorization_owner": [
+          "backend_batch_admission"
+        ],
+        "observer": [
+          "backend_receipt_observer"
+        ],
+        "mutation_owner": [
+          "client_batch_apply"
+        ],
+        "orchestrator": [
+          "ibus_daemon_frame_owner",
+          "lay_process_key_handler"
+        ],
+        "interface": [
+          "input_event"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "input_event",
+          "to": "backend_receipt_observer",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "input_event",
+              "backend_batch_admission",
+              "lay_process_key_handler",
+              "ibus_daemon_frame_owner",
+              "client_batch_apply",
+              "backend_receipt_observer"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "success-authority",
+      "event": "committed_replace_success",
+      "kind": "authority",
+      "entry": "atomic_batch_material",
+      "via": [],
+      "terminal": "client_batch_apply",
+      "path_count": 1,
+      "paths": [
+        [
+          "atomic_batch_material",
+          "backend_batch_admission",
+          "client_batch_apply"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "atomic_batch_material"
+        ],
+        "authorization_owner": [
+          "backend_batch_admission"
+        ],
+        "mutation_owner": [
+          "client_batch_apply"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "atomic_batch_material",
+          "to": "client_batch_apply",
+          "via": [],
+          "graph": "authority",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "atomic_batch_material",
+              "backend_batch_admission",
+              "client_batch_apply"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "capability-refusal-execution",
+      "event": "capability_refusal",
+      "kind": "execution",
+      "entry": "input_event",
+      "via": [],
+      "terminal": "native_unhandled_observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "input_event",
+          "backend_batch_admission",
+          "native_unhandled_observer"
+        ]
+      ],
+      "role_owners": {
+        "authorization_owner": [
+          "backend_batch_admission"
+        ],
+        "interface": [
+          "input_event"
+        ],
+        "observer": [
+          "native_unhandled_observer"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "input_event",
+          "to": "native_unhandled_observer",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "input_event",
+              "backend_batch_admission",
+              "native_unhandled_observer"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "engine-failure-execution",
+      "event": "engine_failure",
+      "kind": "execution",
+      "entry": "input_event",
+      "via": [],
+      "terminal": "native_unhandled_observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "input_event",
+          "backend_batch_admission",
+          "lay_process_key_handler",
+          "ibus_daemon_frame_owner",
+          "frame_discard",
+          "native_unhandled_observer"
+        ]
+      ],
+      "role_owners": {
+        "authorization_owner": [
+          "backend_batch_admission"
+        ],
+        "orchestrator": [
+          "frame_discard",
+          "ibus_daemon_frame_owner",
+          "lay_process_key_handler"
+        ],
+        "interface": [
+          "input_event"
+        ],
+        "observer": [
+          "native_unhandled_observer"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "input_event",
+          "to": "native_unhandled_observer",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "input_event",
+              "backend_batch_admission",
+              "lay_process_key_handler",
+              "ibus_daemon_frame_owner",
+              "frame_discard",
+              "native_unhandled_observer"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "queue-overflow-execution",
+      "event": "queue_overflow",
+      "kind": "execution",
+      "entry": "input_event",
+      "via": [],
+      "terminal": "native_unhandled_observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "input_event",
+          "backend_batch_admission",
+          "lay_process_key_handler",
+          "ibus_daemon_frame_owner",
+          "frame_discard",
+          "native_unhandled_observer"
+        ]
+      ],
+      "role_owners": {
+        "authorization_owner": [
+          "backend_batch_admission"
+        ],
+        "orchestrator": [
+          "frame_discard",
+          "ibus_daemon_frame_owner",
+          "lay_process_key_handler"
+        ],
+        "interface": [
+          "input_event"
+        ],
+        "observer": [
+          "native_unhandled_observer"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "input_event",
+          "to": "native_unhandled_observer",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "input_event",
+              "backend_batch_admission",
+              "lay_process_key_handler",
+              "ibus_daemon_frame_owner",
+              "frame_discard",
+              "native_unhandled_observer"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "frame-fetch-failure-execution",
+      "event": "frame_fetch_failure",
+      "kind": "execution",
+      "entry": "input_event",
+      "via": [],
+      "terminal": "native_unhandled_observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "input_event",
+          "backend_batch_admission",
+          "lay_process_key_handler",
+          "ibus_daemon_frame_owner",
+          "frame_discard",
+          "native_unhandled_observer"
+        ]
+      ],
+      "role_owners": {
+        "authorization_owner": [
+          "backend_batch_admission"
+        ],
+        "orchestrator": [
+          "frame_discard",
+          "ibus_daemon_frame_owner",
+          "lay_process_key_handler"
+        ],
+        "interface": [
+          "input_event"
+        ],
+        "observer": [
+          "native_unhandled_observer"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "input_event",
+          "to": "native_unhandled_observer",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "input_event",
+              "backend_batch_admission",
+              "lay_process_key_handler",
+              "ibus_daemon_frame_owner",
+              "frame_discard",
+              "native_unhandled_observer"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "delete-refusal-execution",
+      "event": "delete_refusal",
+      "kind": "execution",
+      "entry": "input_event",
+      "via": [],
+      "terminal": "native_unhandled_observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "input_event",
+          "backend_batch_admission",
+          "lay_process_key_handler",
+          "ibus_daemon_frame_owner",
+          "client_batch_apply",
+          "native_unhandled_observer"
+        ]
+      ],
+      "role_owners": {
+        "authorization_owner": [
+          "backend_batch_admission"
+        ],
+        "mutation_owner": [
+          "client_batch_apply"
+        ],
+        "orchestrator": [
+          "ibus_daemon_frame_owner",
+          "lay_process_key_handler"
+        ],
+        "interface": [
+          "input_event"
+        ],
+        "observer": [
+          "native_unhandled_observer"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "input_event",
+          "to": "native_unhandled_observer",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "input_event",
+              "backend_batch_admission",
+              "lay_process_key_handler",
+              "ibus_daemon_frame_owner",
+              "client_batch_apply",
+              "native_unhandled_observer"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "failure-proof",
+      "event": "engine_failure",
+      "kind": "proof",
+      "entry": "killpoint_proof",
+      "via": [],
+      "terminal": "ibus_daemon_frame_owner",
+      "path_count": 1,
+      "paths": [
+        [
+          "killpoint_proof",
+          "ibus_daemon_frame_owner"
+        ]
+      ],
+      "role_owners": {
+        "orchestrator": [
+          "ibus_daemon_frame_owner"
+        ],
+        "proof_owner": [
+          "killpoint_proof"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "killpoint_proof",
+          "to": "ibus_daemon_frame_owner",
+          "via": [],
+          "graph": "proof",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "killpoint_proof",
+              "ibus_daemon_frame_owner"
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {
+    "committed_replace_success": {
+      "authorization_owner": [
+        "backend_batch_admission"
+      ],
+      "mutation_owner": [
+        "client_batch_apply"
+      ],
+      "display_rank_owner": [],
+      "render_owner": [],
+      "evidence_owner": [
+        "atomic_batch_material"
+      ],
+      "candidate_rank_owner": []
+    }
+  },
+  "source_evidence": {
+    "expected": 0,
+    "verified": 0,
+    "complete": true
+  },
+  "issues": [
+    {
+      "code": "producer_relation_role_mismatch",
+      "message": "produces_for must originate at a producer",
+      "edge": "authority-material-admission",
+      "source": "atomic_batch_material",
+      "source_role": "evidence_owner"
+    },
+    {
+      "code": "proof_relation_role_mismatch",
+      "message": "proves must terminate at a proof_owner",
+      "edge": "proof-killpoint-frame",
+      "target_role": "orchestrator"
+    },
+    {
+      "code": "proof_relation_role_mismatch",
+      "message": "proves must terminate at a proof_owner",
+      "edge": "proof-killpoint-client",
+      "target_role": "mutation_owner"
+    }
+  ],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": false,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

@@ -1,0 +1,237 @@
+{
+  "authority_bearing": false,
+  "baseline_checks": [
+    {
+      "id": "slice6-final-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE6_BOUNDARY_INTERNALIZATION_2026-08-20/final-receipt.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 2688,
+        "sha256": "434b550498875ce88d00727187143562a2a804f2f214a042c0fbb7c5bb7dc546"
+      }
+    },
+    {
+      "id": "authority-paper",
+      "kind": "file",
+      "path": "../../ime-canonical-target-authority-paper-2026-08-17.md",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 186695,
+        "sha256": "a08bab05c207fe76313a4eb0e7d025178f88fb5d0cc753539f754a706d5bb824"
+      }
+    },
+    {
+      "id": "text-edit-owner",
+      "kind": "file",
+      "path": "../../../src/text_edit.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 2275,
+        "sha256": "0aa3768d6d3c80eb037dd9f13064db81217f55ea31a19f7d819dd2e77ff4e513"
+      }
+    },
+    {
+      "id": "cargo-manifest",
+      "kind": "file",
+      "path": "../../../Cargo.toml",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 2399,
+        "sha256": "91a3c72265db548d6190f16a0059bcd27174a80b3403302ce1b7ee9b7cb9cc8c"
+      }
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "event-record-identity",
+      "producer": "Prepared and terminal records for one exact event and focus lineage",
+      "consumer": "ordered journal recovery scanner",
+      "comparison": "schema sequence event lineage before intended-after observed-after and chain digest are byte-identical after decode",
+      "test_id": "record-roundtrip"
+    },
+    {
+      "id": "same-lineage-order",
+      "producer": "terminal N plus Prepared N+1 co-commit",
+      "consumer": "SameLineageStateBarrierV1",
+      "comparison": "N is publishable and N+1 is effect-eligible only after the same durability barrier succeeds",
+      "test_id": "co-commit-order"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "prepare-before-effect",
+      "statement": "an event can become effect-eligible only after its Prepared record is durably synced",
+      "test_id": "prepare-failure"
+    },
+    {
+      "id": "one-foreground-wait",
+      "statement": "a steady-state event performs at most one independent foreground durability wait",
+      "test_id": "barrier-count"
+    },
+    {
+      "id": "terminal-before-publish",
+      "statement": "success no-effect and recovery outcomes are not publishable before terminal durability",
+      "test_id": "tail-flush-order"
+    },
+    {
+      "id": "failure-is-not-success",
+      "statement": "append sync checksum queue and owner failures produce refusal before effect or recovery after effect, never success or native replay",
+      "test_id": "fault-matrix"
+    },
+    {
+      "id": "isolated-only",
+      "statement": "Slice 7A writes only a caller-selected temporary journal and cannot mutate text layout keys runtime state packages or installed services",
+      "test_id": "side-effect-scan"
+    },
+    {
+      "id": "fixed-performance-gate",
+      "statement": "prepare and co-commit p99 must be at most 2 ms and maximum below 8 ms without changing the frozen thresholds",
+      "test_id": "local-durability-microproof"
+    }
+  ],
+  "preserved_artifacts": [
+    {
+      "id": "slice6-receipt",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE6_BOUNDARY_INTERNALIZATION_2026-08-20/final-receipt.json",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "retain Slice 6 scoped PASS and global latency blocker",
+      "baseline_check_id": "slice6-final-receipt"
+    }
+  ],
+  "reuses_existing_implementation": true,
+  "runtime_comparisons": [],
+  "schema": "nanda.implementation-preflight.v1",
+  "scientific_future_sensitive": true,
+  "source_checks": [
+    {
+      "id": "text-edit-owner-pinned",
+      "path": "../../../src/text_edit.rs",
+      "sha256": "0aa3768d6d3c80eb037dd9f13064db81217f55ea31a19f7d819dd2e77ff4e513",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "weaken_authorized_edit",
+          "regex": "(?s)AuthorizedEdit.{0,500}(?:pub fn new|pub fields|unsafe)"
+        },
+        {
+          "effect": "bypass_verifier",
+          "regex": "(?s)(?:commit_text|replace_committed_tail).{0,300}(?:without|bypass).{0,100}(?:verify|AuthorizedEdit)"
+        },
+        {
+          "effect": "automatic_authority_change",
+          "regex": "(?:CandidateGateAction::Eligible|AuthorityCertificateV1|selected_winner)"
+        },
+        {
+          "effect": "generated_traffic",
+          "regex": "(?:TcpStream|UdpSocket|reqwest|ureq::|https?://)"
+        },
+        {
+          "effect": "layout_mutation",
+          "regex": "(?:set_layout|activate_layout|layout_controller)"
+        },
+        {
+          "effect": "restart_global_ibus_daemon",
+          "regex": "(?:restart|stop|kill|pkill).{0,80}ibus-daemon"
+        },
+        {
+          "effect": "restart_lay_daemon",
+          "regex": "(?:restart|stop|kill|pkill).{0,80}lay-daemon"
+        },
+        {
+          "effect": "rewrite_any_package",
+          "regex": "(?:File::create|OpenOptions::new).{0,300}(?:p2m|L2-RU|canonical|lexical)"
+        },
+        {
+          "effect": "runtime_deployment",
+          "regex": "(?:systemctl|daemon-reload|lay-runtime-control)"
+        },
+        {
+          "effect": "synthetic_key_output",
+          "regex": "(?:uinput|emit_key|write_key|KEY_[A-Z])"
+        },
+        {
+          "effect": "text_mutation",
+          "regex": "(?:commit_text|replace_committed_tail|delete_surrounding_text)"
+        },
+        {
+          "effect": "threshold_relaxation",
+          "regex": "(?s)(?:P99|MAX).{0,120}(?:2001|8000|8001|16000)"
+        },
+        {
+          "effect": "two_foreground_sync_waits",
+          "regex": "(?s)sync_(?:all|data).{0,600}sync_(?:all|data)"
+        },
+        {
+          "effect": "synthetic_fixture",
+          "regex": "(?:write|create|generate)_synthetic_fixture"
+        }
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "add-ordered-journal-domain", "kind": "source_edit"},
+      {"id": "add-isolated-microproof-binary", "kind": "source_edit"},
+      {"id": "build-release-remotely", "kind": "remote_build"},
+      {"id": "write-local-temporary-journal", "kind": "filesystem_write"},
+      {"id": "write-proof-receipt", "kind": "filesystem_write"}
+    ],
+    "forbidden": [
+      "runtime_deployment",
+      "restart_lay_daemon",
+      "restart_global_ibus_daemon",
+      "text_mutation",
+      "layout_mutation",
+      "synthetic_key_output",
+      "rewrite_any_package",
+      "generated_traffic",
+      "automatic_authority_change",
+      "two_foreground_sync_waits",
+      "threshold_relaxation"
+      ,"synthetic_fixture"
+      ,"weaken_authorized_edit"
+      ,"bypass_verifier"
+    ]
+  },
+  "state_machine": {
+    "initial_state": "SLICE6_SHADOW_PASS_RUNTIME_UNCHANGED",
+    "steps": [
+      {
+        "id": "implement-isolated-journal-core",
+        "from": "SLICE6_SHADOW_PASS_RUNTIME_UNCHANGED",
+        "to": "SLICE7A_MICROPROOF_READY_RUNTIME_UNCHANGED",
+        "mutates": true,
+        "failure_state": "SLICE7A_IMPLEMENTATION_REJECTED_RUNTIME_UNCHANGED",
+        "cleanup": "retain failed source and proof evidence; remove only generated temporary journals",
+        "preserves": ["slice6-receipt"],
+        "test_id": "fault-matrix"
+      },
+      {
+        "id": "run-local-durability-microproof",
+        "from": "SLICE7A_MICROPROOF_READY_RUNTIME_UNCHANGED",
+        "to": "SLICE7A_MICROPROOF_PASS_RUNTIME_UNCHANGED",
+        "mutates": true,
+        "failure_state": "SLICE7A_MICROPROOF_FAILED_RUNTIME_UNCHANGED",
+        "cleanup": "sync close and remove generated temporary journal while retaining the receipt",
+        "preserves": ["slice6-receipt"],
+        "test_id": "local-durability-microproof"
+      }
+    ],
+    "terminal_states": [
+      "SLICE7A_MICROPROOF_PASS_RUNTIME_UNCHANGED",
+      "SLICE7A_IMPLEMENTATION_REJECTED_RUNTIME_UNCHANGED",
+      "SLICE7A_MICROPROOF_FAILED_RUNTIME_UNCHANGED"
+    ]
+  },
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE7A_DURABILITY_MICROPROOF_IMPLEMENTATION_V1_2026-08-20",
+  "tests": [
+    {"id": "record-roundtrip", "kind": "parity", "expected": "every fixed-size journal identity field and checksum chain round-trips exactly"},
+    {"id": "prepare-failure", "kind": "fault_injection", "expected": "prepare append or sync failure returns pre-effect refusal and no effect eligibility"},
+    {"id": "co-commit-order", "kind": "parity", "expected": "one barrier durably commits terminal N and Prepared N+1 before either dependent state is released"},
+    {"id": "barrier-count", "kind": "integration", "expected": "each steady-state event reports no more than one independent foreground durability wait"},
+    {"id": "tail-flush-order", "kind": "integration", "expected": "idle terminal becomes publishable only after bounded tail flush durability"},
+    {"id": "fault-matrix", "kind": "fault_injection", "expected": "append sync checksum saturation disconnect and owner-stop failures are fail-closed"},
+    {"id": "side-effect-scan", "kind": "integration", "expected": "microproof contains no text layout key service package or network mutation"},
+    {"id": "local-durability-microproof", "kind": "fault_injection", "expected": "local ext4 NVMe prepare and co-commit p99 <=2 ms max <8 ms with prepare co-commit tail native-wait saturation and persistence-failure strata reported"}
+  ]
+}

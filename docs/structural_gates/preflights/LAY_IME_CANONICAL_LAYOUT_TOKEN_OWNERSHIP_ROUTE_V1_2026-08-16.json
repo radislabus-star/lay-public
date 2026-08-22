@@ -1,0 +1,100 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "active_input", "role": "interface"},
+    {"id": "canonical_token_extractor", "role": "producer"},
+    {"id": "bounded_l11_lattice", "role": "producer"},
+    {"id": "productive_v90", "role": "producer"},
+    {"id": "final_candidate_lattice", "role": "evidence_owner"},
+    {"id": "decision_core", "role": "candidate_rank_owner"},
+    {"id": "unsupported_input_abstain", "role": "evidence_owner"},
+    {"id": "deterministic_only", "role": "producer"},
+    {"id": "disabled_mode_lattice", "role": "evidence_owner"}
+  ],
+  "edges": [
+    {"id": "exec-supported-input-extractor", "from": "active_input", "relation": "calls", "to": "canonical_token_extractor", "events": ["nanda_supported_token"]},
+    {"id": "exec-supported-extractor-l11", "from": "canonical_token_extractor", "relation": "delegates", "to": "bounded_l11_lattice", "events": ["nanda_supported_token"]},
+    {"id": "exec-supported-l11-v90", "from": "bounded_l11_lattice", "relation": "delegates", "to": "productive_v90", "events": ["nanda_supported_token"]},
+    {"id": "exec-supported-v90-lattice", "from": "productive_v90", "relation": "delegates", "to": "final_candidate_lattice", "events": ["nanda_supported_token"]},
+    {"id": "exec-supported-lattice-decision", "from": "final_candidate_lattice", "relation": "delegates", "to": "decision_core", "events": ["nanda_supported_token"]},
+    {"id": "authority-supported-extractor-l11", "from": "canonical_token_extractor", "relation": "produces_for", "to": "bounded_l11_lattice", "events": ["nanda_supported_token"]},
+    {"id": "authority-supported-l11-v90", "from": "bounded_l11_lattice", "relation": "produces_for", "to": "productive_v90", "events": ["nanda_supported_token"]},
+    {"id": "authority-supported-v90-lattice", "from": "productive_v90", "relation": "produces_for", "to": "final_candidate_lattice", "events": ["nanda_supported_token"]},
+    {"id": "authority-supported-lattice-decision", "from": "final_candidate_lattice", "relation": "passes_to", "to": "decision_core", "events": ["nanda_supported_token"]},
+
+    {"id": "exec-unsupported-input-extractor", "from": "active_input", "relation": "calls", "to": "canonical_token_extractor", "events": ["nanda_unsupported_token"]},
+    {"id": "exec-unsupported-extractor-abstain", "from": "canonical_token_extractor", "relation": "delegates", "to": "unsupported_input_abstain", "events": ["nanda_unsupported_token"]},
+    {"id": "authority-unsupported-extractor-abstain", "from": "canonical_token_extractor", "relation": "produces_for", "to": "unsupported_input_abstain", "events": ["nanda_unsupported_token"]},
+
+    {"id": "exec-disabled-input-deterministic", "from": "active_input", "relation": "calls", "to": "deterministic_only", "events": ["nanda_disabled_prepare"]},
+    {"id": "exec-disabled-deterministic-lattice", "from": "deterministic_only", "relation": "delegates", "to": "disabled_mode_lattice", "events": ["nanda_disabled_prepare"]},
+    {"id": "exec-disabled-lattice-decision", "from": "disabled_mode_lattice", "relation": "delegates", "to": "decision_core", "events": ["nanda_disabled_prepare"]},
+    {"id": "authority-disabled-deterministic-lattice", "from": "deterministic_only", "relation": "produces_for", "to": "disabled_mode_lattice", "events": ["nanda_disabled_prepare"]},
+    {"id": "authority-disabled-lattice-decision", "from": "disabled_mode_lattice", "relation": "passes_to", "to": "decision_core", "events": ["nanda_disabled_prepare"]}
+  ],
+  "routes": [
+    {
+      "id": "supported-token-execution",
+      "event": "nanda_supported_token",
+      "kind": "execution",
+      "entry": "active_input",
+      "terminal": "decision_core",
+      "required_roles": ["interface", "producer", "evidence_owner", "candidate_rank_owner"],
+      "path_cardinality": [
+        {"from": "active_input", "to": "bounded_l11_lattice", "min": 1, "max": 1},
+        {"from": "active_input", "to": "productive_v90", "min": 1, "max": 1},
+        {"from": "active_input", "to": "decision_core", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "supported-token-authority",
+      "event": "nanda_supported_token",
+      "kind": "authority",
+      "entry": "canonical_token_extractor",
+      "terminal": "decision_core",
+      "required_roles": ["producer", "evidence_owner", "candidate_rank_owner"]
+    },
+    {
+      "id": "unsupported-token-execution",
+      "event": "nanda_unsupported_token",
+      "kind": "execution",
+      "entry": "active_input",
+      "terminal": "unsupported_input_abstain",
+      "required_roles": ["interface", "producer", "evidence_owner"],
+      "path_cardinality": [
+        {"from": "active_input", "to": "unsupported_input_abstain", "min": 1, "max": 1},
+        {"from": "active_input", "to": "bounded_l11_lattice", "min": 0, "max": 0}
+      ]
+    },
+    {
+      "id": "unsupported-token-authority",
+      "event": "nanda_unsupported_token",
+      "kind": "authority",
+      "entry": "canonical_token_extractor",
+      "terminal": "unsupported_input_abstain",
+      "required_roles": ["producer", "evidence_owner"]
+    },
+    {
+      "id": "nanda-disabled-execution",
+      "event": "nanda_disabled_prepare",
+      "kind": "execution",
+      "entry": "active_input",
+      "terminal": "decision_core",
+      "required_roles": ["interface", "producer", "evidence_owner", "candidate_rank_owner"],
+      "path_cardinality": [
+        {"from": "active_input", "to": "deterministic_only", "min": 1, "max": 1},
+        {"from": "active_input", "to": "bounded_l11_lattice", "min": 0, "max": 0},
+        {"from": "active_input", "to": "decision_core", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "nanda-disabled-authority",
+      "event": "nanda_disabled_prepare",
+      "kind": "authority",
+      "entry": "deterministic_only",
+      "terminal": "decision_core",
+      "required_roles": ["producer", "evidence_owner", "candidate_rank_owner"]
+    }
+  ]
+}

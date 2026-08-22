@@ -1,0 +1,67 @@
+{
+  "schema": "lay.unified-token-field.slice1-parity.v1",
+  "task_id": "lay-ime-unified-token-field-implementation-2026-08-16",
+  "slice": 1,
+  "verdict": "PASS_SCOPED_IMMUTABLE_FIELD_MATERIALIZATION_PARITY",
+  "host": "e@192.168.3.94",
+  "source_snapshot": "/home/e/build/lay-unified-token-field-20260816",
+  "cargo_target": "/home/e/build/lay-ime-boundary-layout-proof-20260815/target",
+  "release_binary": {
+    "bytes": 11010024,
+    "sha256": "416d21100193fe56f80955340e16fe1828a2cf7ad4c03b1f9a3d7cbdc00613cb"
+  },
+  "source_sha256": {
+    "src/nanda_wave/l2_field/productive_v1/live.rs": "31c38dfb8a2b2724f1abeddbe9ccec376c906f62084f9016a39bc61ee6b868e6",
+    "src/nanda_wave/l2_field/productive_v1/mod.rs": "c668f26ddbf65e20d417848b1493c6d13c75ed9454217ee8dc9788783c84ee30"
+  },
+  "tests": {
+    "command": "scripts/cargo-guard.sh test --locked --lib nanda_wave::l2_field::productive_v1::live::tests -- --nocapture",
+    "passed": 5,
+    "failed": 0,
+    "materialization_parity_test": "PASS",
+    "token_identity_mismatch_test": "PASS"
+  },
+  "live_projection_comparisons": [
+    {
+      "case": "morphology",
+      "before_sha256": "3b3a54a2701f677db0bfe170a9040743872e9b54926cdecc7d01ba9572289e38",
+      "after_sha256": "3b3a54a2701f677db0bfe170a9040743872e9b54926cdecc7d01ba9572289e38",
+      "verdict": "PASS"
+    },
+    {
+      "case": "glued",
+      "before_sha256": "ed6277299848dcf6c31c40da345663fc9c186d257ecea5968e38500cbbab3a4d",
+      "after_sha256": "ed6277299848dcf6c31c40da345663fc9c186d257ecea5968e38500cbbab3a4d",
+      "verdict": "PASS"
+    },
+    {
+      "case": "damaged_with_l11_lattice",
+      "before_sha256": "6314f851faf31c6f15639e432c94f433b2c888f3107aea4ae7826f8e03eee0bc",
+      "after_sha256": "6314f851faf31c6f15639e432c94f433b2c888f3107aea4ae7826f8e03eee0bc",
+      "verdict": "PASS"
+    },
+    {
+      "case": "empty_l11_lattice",
+      "before_sha256": "ba00c669cf5868c1ea89db07328815ad5c0d278da6410569b6d9c8775067e19a",
+      "after_sha256": "ba00c669cf5868c1ea89db07328815ad5c0d278da6410569b6d9c8775067e19a",
+      "verdict": "PASS"
+    }
+  ],
+  "comparison_projection": [
+    "status",
+    "availability",
+    "authority",
+    "ordered candidate replacement",
+    "source_id",
+    "error_class",
+    "gate_action",
+    "gate_reason"
+  ],
+  "not_tested": [
+    "full fixed 13 x 100 x 2 Productive proof",
+    "GUI event ordering",
+    "single-flight concurrency",
+    "installed runtime"
+  ],
+  "runtime_authority_changed": false
+}

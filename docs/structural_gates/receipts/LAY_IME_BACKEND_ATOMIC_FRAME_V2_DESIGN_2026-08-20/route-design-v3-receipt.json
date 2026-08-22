@@ -1,0 +1,625 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "VETO",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": false,
+  "contract": "docs/structural_gates/preflights/LAY_IME_BACKEND_ATOMIC_FRAME_ROUTE_V3_2026-08-20.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "source_root": null,
+  "node_count": 12,
+  "edge_count": 19,
+  "routes": [
+    {
+      "id": "wayland-replace-execution",
+      "event": "wayland_replace_submitted",
+      "kind": "execution",
+      "entry": "input_event",
+      "via": [],
+      "terminal": "submission_receipt",
+      "path_count": 1,
+      "paths": [
+        [
+          "input_event",
+          "backend_admission",
+          "atomic_process_rpc",
+          "typed_frame_collector",
+          "wayland_v2_transaction",
+          "submission_receipt"
+        ]
+      ],
+      "role_owners": {
+        "orchestrator": [
+          "atomic_process_rpc"
+        ],
+        "authorization_owner": [
+          "backend_admission"
+        ],
+        "interface": [
+          "input_event"
+        ],
+        "observer": [
+          "submission_receipt"
+        ],
+        "producer": [
+          "typed_frame_collector"
+        ],
+        "mutation_owner": [
+          "wayland_v2_transaction"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "input_event",
+          "to": "submission_receipt",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "input_event",
+              "backend_admission",
+              "atomic_process_rpc",
+              "typed_frame_collector",
+              "wayland_v2_transaction",
+              "submission_receipt"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wayland-replace-authority",
+      "event": "wayland_replace_submitted",
+      "kind": "authority",
+      "entry": "admitted_event_material",
+      "via": [],
+      "terminal": "wayland_v2_transaction",
+      "path_count": 1,
+      "paths": [
+        [
+          "admitted_event_material",
+          "backend_admission",
+          "typed_frame_collector",
+          "wayland_v2_transaction"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "admitted_event_material"
+        ],
+        "authorization_owner": [
+          "backend_admission"
+        ],
+        "producer": [
+          "typed_frame_collector"
+        ],
+        "mutation_owner": [
+          "wayland_v2_transaction"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "admitted_event_material",
+          "to": "wayland_v2_transaction",
+          "via": [],
+          "graph": "authority",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "admitted_event_material",
+              "backend_admission",
+              "typed_frame_collector",
+              "wayland_v2_transaction"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gtk-commit-execution",
+      "event": "gtk_commit_submitted",
+      "kind": "execution",
+      "entry": "input_event",
+      "via": [],
+      "terminal": "submission_receipt",
+      "path_count": 1,
+      "paths": [
+        [
+          "input_event",
+          "backend_admission",
+          "atomic_process_rpc",
+          "typed_frame_collector",
+          "gtk_commit_signal",
+          "submission_receipt"
+        ]
+      ],
+      "role_owners": {
+        "orchestrator": [
+          "atomic_process_rpc"
+        ],
+        "authorization_owner": [
+          "backend_admission"
+        ],
+        "mutation_owner": [
+          "gtk_commit_signal"
+        ],
+        "interface": [
+          "input_event"
+        ],
+        "observer": [
+          "submission_receipt"
+        ],
+        "producer": [
+          "typed_frame_collector"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "input_event",
+          "to": "submission_receipt",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "input_event",
+              "backend_admission",
+              "atomic_process_rpc",
+              "typed_frame_collector",
+              "gtk_commit_signal",
+              "submission_receipt"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gtk-commit-authority",
+      "event": "gtk_commit_submitted",
+      "kind": "authority",
+      "entry": "admitted_event_material",
+      "via": [],
+      "terminal": "gtk_commit_signal",
+      "path_count": 1,
+      "paths": [
+        [
+          "admitted_event_material",
+          "backend_admission",
+          "typed_frame_collector",
+          "gtk_commit_signal"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "admitted_event_material"
+        ],
+        "authorization_owner": [
+          "backend_admission"
+        ],
+        "mutation_owner": [
+          "gtk_commit_signal"
+        ],
+        "producer": [
+          "typed_frame_collector"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "admitted_event_material",
+          "to": "gtk_commit_signal",
+          "via": [],
+          "graph": "authority",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "admitted_event_material",
+              "backend_admission",
+              "typed_frame_collector",
+              "gtk_commit_signal"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "capability-refusal-execution",
+      "event": "capability_refusal",
+      "kind": "execution",
+      "entry": "input_event",
+      "via": [],
+      "terminal": "native_unhandled",
+      "path_count": 1,
+      "paths": [
+        [
+          "input_event",
+          "backend_admission",
+          "native_unhandled"
+        ]
+      ],
+      "role_owners": {
+        "authorization_owner": [
+          "backend_admission"
+        ],
+        "interface": [
+          "input_event"
+        ],
+        "observer": [
+          "native_unhandled"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "input_event",
+          "to": "native_unhandled",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "input_event",
+              "backend_admission",
+              "native_unhandled"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "collector-abort-execution",
+      "event": "collector_abort",
+      "kind": "execution",
+      "entry": "input_event",
+      "via": [],
+      "terminal": "native_unhandled",
+      "path_count": 1,
+      "paths": [
+        [
+          "input_event",
+          "backend_admission",
+          "atomic_process_rpc",
+          "typed_frame_collector",
+          "frame_discard",
+          "native_unhandled"
+        ]
+      ],
+      "role_owners": {
+        "orchestrator": [
+          "atomic_process_rpc",
+          "frame_discard"
+        ],
+        "authorization_owner": [
+          "backend_admission"
+        ],
+        "interface": [
+          "input_event"
+        ],
+        "observer": [
+          "native_unhandled"
+        ],
+        "producer": [
+          "typed_frame_collector"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "input_event",
+          "to": "native_unhandled",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "input_event",
+              "backend_admission",
+              "atomic_process_rpc",
+              "typed_frame_collector",
+              "frame_discard",
+              "native_unhandled"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "focus-lineage-execution",
+      "event": "focus_lineage_terminated",
+      "kind": "execution",
+      "entry": "input_event",
+      "via": [],
+      "terminal": "lineage_terminated",
+      "path_count": 1,
+      "paths": [
+        [
+          "input_event",
+          "backend_admission",
+          "atomic_process_rpc",
+          "typed_frame_collector",
+          "lineage_terminated"
+        ]
+      ],
+      "role_owners": {
+        "orchestrator": [
+          "atomic_process_rpc"
+        ],
+        "authorization_owner": [
+          "backend_admission"
+        ],
+        "interface": [
+          "input_event"
+        ],
+        "observer": [
+          "lineage_terminated"
+        ],
+        "producer": [
+          "typed_frame_collector"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "input_event",
+          "to": "lineage_terminated",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "input_event",
+              "backend_admission",
+              "atomic_process_rpc",
+              "typed_frame_collector",
+              "lineage_terminated"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "submission-uncertain-execution",
+      "event": "submission_uncertain",
+      "kind": "execution",
+      "entry": "input_event",
+      "via": [],
+      "terminal": "submission_receipt",
+      "path_count": 1,
+      "paths": [
+        [
+          "input_event",
+          "backend_admission",
+          "atomic_process_rpc",
+          "typed_frame_collector",
+          "wayland_v2_transaction",
+          "submission_receipt"
+        ]
+      ],
+      "role_owners": {
+        "orchestrator": [
+          "atomic_process_rpc"
+        ],
+        "authorization_owner": [
+          "backend_admission"
+        ],
+        "interface": [
+          "input_event"
+        ],
+        "observer": [
+          "submission_receipt"
+        ],
+        "producer": [
+          "typed_frame_collector"
+        ],
+        "mutation_owner": [
+          "wayland_v2_transaction"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "input_event",
+          "to": "submission_receipt",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "input_event",
+              "backend_admission",
+              "atomic_process_rpc",
+              "typed_frame_collector",
+              "wayland_v2_transaction",
+              "submission_receipt"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "collector-fault-proof",
+      "event": "collector_abort",
+      "kind": "proof",
+      "entry": "typed_frame_collector",
+      "via": [],
+      "terminal": "fault_matrix",
+      "path_count": 1,
+      "paths": [
+        [
+          "typed_frame_collector",
+          "fault_matrix"
+        ]
+      ],
+      "role_owners": {
+        "proof_owner": [
+          "fault_matrix"
+        ],
+        "producer": [
+          "typed_frame_collector"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "typed_frame_collector",
+          "to": "fault_matrix",
+          "via": [],
+          "graph": "proof",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "typed_frame_collector",
+              "fault_matrix"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wayland-transaction-proof",
+      "event": "wayland_replace_submitted",
+      "kind": "proof",
+      "entry": "wayland_v2_transaction",
+      "via": [],
+      "terminal": "fault_matrix",
+      "path_count": 1,
+      "paths": [
+        [
+          "wayland_v2_transaction",
+          "fault_matrix"
+        ]
+      ],
+      "role_owners": {
+        "proof_owner": [
+          "fault_matrix"
+        ],
+        "mutation_owner": [
+          "wayland_v2_transaction"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "wayland_v2_transaction",
+          "to": "fault_matrix",
+          "via": [],
+          "graph": "proof",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "wayland_v2_transaction",
+              "fault_matrix"
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {
+    "wayland_replace_submitted": {
+      "display_rank_owner": [],
+      "evidence_owner": [
+        "admitted_event_material"
+      ],
+      "candidate_rank_owner": [],
+      "mutation_owner": [
+        "wayland_v2_transaction"
+      ],
+      "authorization_owner": [
+        "backend_admission"
+      ],
+      "render_owner": []
+    },
+    "gtk_commit_submitted": {
+      "display_rank_owner": [],
+      "evidence_owner": [
+        "admitted_event_material"
+      ],
+      "candidate_rank_owner": [],
+      "mutation_owner": [
+        "gtk_commit_signal"
+      ],
+      "authorization_owner": [
+        "backend_admission"
+      ],
+      "render_owner": []
+    }
+  },
+  "source_evidence": {
+    "expected": 0,
+    "verified": 0,
+    "complete": true
+  },
+  "issues": [
+    {
+      "code": "authority_stage_reversal",
+      "message": "logical authority flow moves backward; control calls must use calls/delegates",
+      "edge": "authority-admission-collector",
+      "source": "backend_admission",
+      "target": "typed_frame_collector",
+      "source_role": "authorization_owner",
+      "target_role": "producer"
+    },
+    {
+      "code": "authorization_relation_role_mismatch",
+      "message": "authorizes must connect authorization_owner to mutation_owner",
+      "edge": "authority-admission-collector",
+      "source_role": "authorization_owner",
+      "target_role": "producer"
+    },
+    {
+      "code": "non_runtime_route_mutation_contamination",
+      "message": "observation and proof routes cannot own authorization or mutation",
+      "route": "wayland-transaction-proof",
+      "nodes": [
+        "wayland_v2_transaction"
+      ]
+    }
+  ],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": false,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

@@ -1,0 +1,3 @@
+Error: "durability strategy gate failed"
+Command exited with non-zero status 1
+PROOF wall=4.45 cpu=7% rss_kib=11128 exit=1

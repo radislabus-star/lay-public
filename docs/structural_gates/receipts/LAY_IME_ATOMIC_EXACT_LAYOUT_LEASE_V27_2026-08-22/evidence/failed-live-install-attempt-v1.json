@@ -1,0 +1,49 @@
+{
+  "schema": "lay.release-install-attempt.v1",
+  "release": "1.0.34",
+  "started_at": "2026-08-22T11:27:35+03:00",
+  "verdict": "INSTALL_ATTEMPT_REJECTED_GATE_RACE_ROLLBACK_PASS",
+  "preflight": {
+    "receipt": "release-1.0.34-live-install-preflight-v3.json",
+    "verdict": "READY_TO_IMPLEMENT",
+    "baseline_checks": "43/43",
+    "blockers": 0
+  },
+  "passed_before_rejection": {
+    "release_stage_sha": "10/10 PASS",
+    "rollback_snapshot_sha": "31/31 PASS",
+    "offline_l2_resolution": "PASS",
+    "installed_binary_parity": "10/10 PASS",
+    "canonical_l2_parity": "PASS",
+    "extension_source_installed_loaded_version": "1.0.34 PASS",
+    "model_service_reload_preserved_engine_pid": 2076619,
+    "managed_engine_rotation": {
+      "old_pid": 2076619,
+      "new_pid": 688573,
+      "active_engine": "lay-ime-ru",
+      "global_ibus_pid": 2076194
+    }
+  },
+  "rejection": {
+    "gate": "lay-l1.1-serve singleton readiness",
+    "operator_line": 154,
+    "cause": "fixed 12 second sleep was shorter than the cold daemon and L1.1 warmup interval",
+    "runtime_defect_proven": false,
+    "memory_gate_reached": false
+  },
+  "rollback": {
+    "snapshot": "/home/ubu/.local/lib/lay/rollback/1.0.33-pre-1.0.34-v27-20260822-1116",
+    "installed_binary_parity": "10/10 restored to 1.0.33",
+    "extension_loaded_version": "1.0.33",
+    "active_engine": "lay-ime-ru",
+    "global_ibus_pid": 2076194,
+    "mixed_version_leftovers": 0,
+    "keyboard_recovery": "PASS"
+  },
+  "required_gate_repair": [
+    "replace fixed sleep with bounded owner-readiness polling",
+    "measure memory only after all owners are ready",
+    "compare fresh 1.0.34 to fresh 1.0.33 using PSS plus SwapPss",
+    "make rollback handler single-flight"
+  ]
+}

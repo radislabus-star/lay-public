@@ -52,6 +52,24 @@ impl DecisionTransitionReceipt {
         )
     }
 
+    pub(super) fn from_verified_action(
+        event: &TypingErrorEvent,
+        candidate: &UnifiedCorrectionCandidate,
+        action: action::CorrectionActionOperatorReport,
+    ) -> Self {
+        Self::issue(
+            event.original.clone(),
+            candidate.replacement.clone(),
+            TransitionAudit::proven(
+                action.edit_operator,
+                action.edit_proof.into(),
+                action.verifier_passed,
+                action.left_context_changed,
+                action.changed_tokens,
+            ),
+        )
+    }
+
     pub(crate) fn projected_transition(
         &self,
         from_text: &str,

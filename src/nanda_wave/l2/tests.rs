@@ -454,11 +454,55 @@ fn boundary_cell_births_two_independent_content_centers() {
 }
 
 #[test]
+fn boundary_cell_births_strong_short_left_field_centers() {
+    for (original, expected) in [
+        ("данорм ", "да норм"),
+        ("ктоздесь ", "кто здесь"),
+        ("ужпотом ", "уж потом"),
+    ] {
+        let l1 = run_l1(original);
+        let candidates = run_l2(original, &l1);
+
+        assert!(
+            candidates.iter().any(|candidate| {
+                candidate.source == "BoundaryCell32"
+                    && candidate.text == expected
+                    && candidate
+                        .support
+                        .iter()
+                        .any(|support| support == "strong-short-left-field-boundary")
+            }),
+            "original={original:?} candidates={candidates:?}"
+        );
+    }
+}
+
+#[test]
+fn short_left_field_boundary_requires_rank_right_center_and_non_preposition() {
+    assert!(tail_scan_adapter::strong_short_left_field_boundary(
+        "да", "норм"
+    ));
+    assert!(tail_scan_adapter::strong_short_left_field_boundary(
+        "кто",
+        "здесь"
+    ));
+
+    for (left, right) in [("по", "спорта"), ("пос", "порта"), ("да", "брын")]
+    {
+        assert!(
+            !tail_scan_adapter::strong_short_left_field_boundary(left, right),
+            "weak or structurally blocked split gained field authority: {left:?} | {right:?}"
+        );
+    }
+}
+
+#[test]
 fn ime_boundary_authority_is_bound_to_the_selected_split_target() {
     for (token, target) in [
         ("Еленапросит", "Елена просит"),
         ("документыдля", "документы для"),
         ("тоесть", "то есть"),
+        ("данорм", "да норм"),
     ] {
         assert!(
             ime_l2_boundary_target_evidence(token, target),

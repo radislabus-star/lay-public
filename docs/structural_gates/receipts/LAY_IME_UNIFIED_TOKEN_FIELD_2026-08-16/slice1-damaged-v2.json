@@ -1,0 +1,152 @@
+{
+  "all_iterations": {
+    "max_us": 3373879,
+    "mean_us": 415959,
+    "min_us": 83606,
+    "p50_us": 87300,
+    "p95_us": 3373879,
+    "p99_us": 3373879,
+    "samples": 10
+  },
+  "authority": {
+    "kind": "tied",
+    "surfaces": [
+      "рабоч",
+      "рабоча",
+      "рабоче",
+      "рабочего",
+      "рабочее",
+      "рабочей",
+      "рабочем",
+      "рабочему",
+      "рабочею",
+      "рабочие",
+      "рабочий",
+      "рабочим",
+      "рабочими",
+      "рабочих"
+    ]
+  },
+  "availability": "Ready",
+  "candidates": [
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "l2_surface_stem_truncation_low",
+      "replacement": "рабоч ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "productive_v90_lattice_requires_common_l3",
+      "replacement": "рабоча ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "productive_v90_lattice_requires_common_l3",
+      "replacement": "рабоче ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "productive_v90_lattice_requires_common_l3",
+      "replacement": "рабочего ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "productive_v90_lattice_requires_common_l3",
+      "replacement": "рабочее ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "productive_v90_lattice_requires_common_l3",
+      "replacement": "рабочей ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "productive_v90_lattice_requires_common_l3",
+      "replacement": "рабочем ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "productive_v90_lattice_requires_common_l3",
+      "replacement": "рабочему ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "productive_v90_lattice_requires_common_l3",
+      "replacement": "рабочею ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "productive_v90_lattice_requires_common_l3",
+      "replacement": "рабочие ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "productive_v90_lattice_requires_common_l3",
+      "replacement": "рабочий ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "productive_v90_lattice_requires_common_l3",
+      "replacement": "рабочим ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "productive_v90_lattice_requires_common_l3",
+      "replacement": "рабочими ",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "productive_v90_lattice_requires_common_l3",
+      "replacement": "рабочих ",
+      "source_id": "ProductiveL2V90Surface"
+    }
+  ],
+  "cold_us": 3373879,
+  "hot": {
+    "max_us": 92933,
+    "mean_us": 87301,
+    "min_us": 83606,
+    "p50_us": 87300,
+    "p95_us": 92933,
+    "p99_us": 92933,
+    "samples": 9
+  },
+  "kind": "productive_v90_live_owner_query",
+  "outer_readout_cache_bypassed": true,
+  "owner_symbol": "live_productive_v1_readout",
+  "peak_rss_kib": 319500,
+  "producer_calls": 10,
+  "producer_symbol": "canonical_owned_text_candidates",
+  "repeat": 10,
+  "resident_rss_kib": 319500,
+  "runtime_authority_changed": false,
+  "status": "ready",
+  "text": "рабоает "
+}

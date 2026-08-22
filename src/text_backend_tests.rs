@@ -32,6 +32,13 @@ fn auto_backend_is_allowed_to_try_ime() {
 }
 
 #[test]
+fn only_explicit_uinput_grants_daemon_text_mutation_authority() {
+    assert!(TextBackendPreference::Uinput.daemon_owns_text_mutation());
+    assert!(!TextBackendPreference::Ime.daemon_owns_text_mutation());
+    assert!(!TextBackendPreference::Auto.daemon_owns_text_mutation());
+}
+
+#[test]
 fn ime_request_counts_unicode_tail_chars() {
     let request = ImeReplaceRequest::committed_tail("привет ", "hello ");
     assert_eq!(request.backspaces, 7);

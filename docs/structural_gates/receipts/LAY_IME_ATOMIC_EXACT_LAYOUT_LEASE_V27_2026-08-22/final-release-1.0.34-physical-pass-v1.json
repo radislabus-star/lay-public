@@ -1,0 +1,56 @@
+{
+  "schema": "lay.architecture-experiment-receipt.v1",
+  "id": "LAY_RELEASE_1_0_34_FINAL_PHYSICAL_PASS_V1_2026-08-22",
+  "tested": {
+    "scope": "final versioned release engine fixed 514-event route and exact physical double-Shift undo",
+    "route_run_id": "v27-release-1.0.34-route-v1",
+    "undo_run_id": "v27-release-1.0.34-undo-v1",
+    "engine_sha256": "3bb009025f3bd12c676416aff637b439ccd4f4c0c2d69d4c7c34b0f49b904691",
+    "source_manifest_sha256": "22f6a4198d7c2aa388e58ff806dade001e7d0d0fa16d96b7810d1bee804894cf",
+    "proof_source_sha256": "28e297a78745d113411727da341504932d26cfa098dc7fa55e0cdff7fff7ac4a"
+  },
+  "measured": {
+    "fixed_route": {
+      "events_passed": 514,
+      "events_total": 514,
+      "p50_ms": 1.357,
+      "p99_ms": 3.250,
+      "max_ms": 4.091,
+      "paired_releases": 514,
+      "release_rpcs": 0,
+      "native_releases": 0,
+      "ledger_entries": 0,
+      "process_status": 0,
+      "legacy_key_calls": 0,
+      "leftovers": 0
+    },
+    "undo": {
+      "exact_original_restored": true,
+      "paired_releases": 7,
+      "release_rpcs": 2,
+      "native_releases": 1,
+      "ledger_entries": 0,
+      "process_status": 0,
+      "legacy_key_calls": 0,
+      "leftovers": 0
+    }
+  },
+  "artifacts": {
+    "route_log_sha256": "75b4ecc5e2fb40c24ac2be37ec3bbfbfced38242b3e5077c23538576efcda395",
+    "route_metrics_sha256": "e6506d75cc0e87939add2735b88672eb0e1f9726a4de68871273da5a40fcb5d8",
+    "route_trace_sha256": "4973381b614b3df30a3b4547399cbb6b5469ea7253a804a6f20190c73259b2ba",
+    "undo_log_sha256": "ae134d28eef738d7689a8820118e93f01e225fe73686100a0d98571c6f79c019",
+    "undo_metrics_sha256": "56522090bb196fa165c3653cf0591de8e8fbdb55c68d78d2a43f6756b9bfd671",
+    "undo_trace_sha256": "0f709374051e61096616910bbd0f4feb0a43427fb353c1b11ebcb17315a8f91e",
+    "cleanup_sha256": "51c2b10ec8a32ed49080c4ecd4e253069a91cfa583d631062ab2cf3837f80a6f"
+  },
+  "not_tested": [
+    "installed 1.0.34 desktop runtime",
+    "loaded process executable SHA parity",
+    "post-install aggregate RSS and PSS",
+    "human live application double-Shift confirmation"
+  ],
+  "verdict": "FINAL_RELEASE_BINARY_PHYSICAL_PASS_INSTALL_NOT_STARTED",
+  "runtime_authority_changed": false,
+  "installed_runtime": "lay 1.0.33"
+}

@@ -1,0 +1,448 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-ime-immediate-space-material-reuse-v2-2026-08-16",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "candidate-sources-source",
+      "kind": "file",
+      "path": "../../../src/correction_core/candidate_sources.rs",
+      "expect": {
+        "size_bytes": 51947,
+        "sha256": "a972a50feaccd673742f18bab2fb102bccb5e0bd166ba53cdac248d007c10a11",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "typing-rule-evaluator-source",
+      "kind": "file",
+      "path": "../../../src/typing_pipeline/candidates.rs",
+      "expect": {
+        "size_bytes": 7305,
+        "sha256": "0919d50f1841add863dfd027b51b77e44833a9311a9c984622fed4e418f2d017",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "glued-word-source",
+      "kind": "file",
+      "path": "../../../src/phrase_reader/glued_phrase.rs",
+      "expect": {
+        "size_bytes": 11530,
+        "sha256": "798056413a15fed897d622caf30b0f8b22d126adb9c274d7e035ee0e14829294",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "space-worker-source",
+      "kind": "file",
+      "path": "../../../src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
+      "expect": {
+        "size_bytes": 13740,
+        "sha256": "18af5baf478e9c8cdb647a77300b8dc2a74335b447aec51da1d2da0a42f73e55",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "slice5-failed-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice5/immediate-space-replay-attempt2.json",
+      "expect": {
+        "size_bytes": 8095,
+        "sha256": "9839e2444827e9dbfb14e7958726b7edc5f7fc6fd42abcf7cef22da66d6754d5",
+        "mode": "0600"
+      }
+    },
+    {
+      "id": "installed-engine",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "expect": {
+        "size_bytes": 6423488,
+        "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a",
+        "mode": "0755"
+      }
+    },
+    {
+      "id": "installed-productive-v90",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2m",
+      "expect": {
+        "size_bytes": 17309944,
+        "sha256": "40fb6a9f0d92c3c7502e47f9c70230d9b86020f622b08a5c799342f13e09ce44",
+        "mode": "0644",
+        "prefix_hex": "4c41595032563100"
+      }
+    },
+    {
+      "id": "structural-verifier",
+      "kind": "file",
+      "path": "../../../src/text_edit/structural_verifier.rs",
+      "expect": {
+        "size_bytes": 7730,
+        "sha256": "19201157bc09df5cca617132d67a242474aaa331ca58dc18acb0152818b7b826",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "runtime-control",
+      "kind": "file",
+      "path": "../../../scripts/lay-runtime-control.sh",
+      "expect": {
+        "size_bytes": 5032,
+        "sha256": "746d077115277775acb275e077b57823ace9e416d2575eaf0bc53d3327d64e6d",
+        "mode": "0775"
+      }
+    }
+  ],
+  "source_checks": [
+    {
+      "id": "candidate-material-has-no-case-or-authority-shortcut",
+      "path": "../../../src/correction_core/candidate_sources.rs",
+      "sha256": "a972a50feaccd673742f18bab2fb102bccb5e0bd166ba53cdac248d007c10a11",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "literal_surface_runtime_branch",
+          "regex": "(?i)(?:данорм|мнесбросили|еленапросит|да норм|мне сбросили|елена просит)"
+        },
+        {
+          "effect": "boundary_only_authority_bypass",
+          "regex": "(?i)(?:return|selected).{0,100}BoundaryCell32"
+        },
+        {
+          "effect": "cache_selected_winner",
+          "regex": "(?i)(?:cache|cached).{0,100}(?:selected|winner)"
+        },
+        {
+          "effect": "cache_authorized_edit",
+          "regex": "(?i)(?:cache|cached).{0,100}AuthorizedEdit"
+        },
+        {
+          "effect": "cache_input_frame_identity",
+          "regex": "(?i)(?:cache|cached).{0,100}InputFrameIdentity"
+        },
+        {
+          "effect": "unbounded_material_cache",
+          "regex": "(?i)static.{0,120}(?:HashMap|BTreeMap).{0,120}(?:candidate|material)"
+        },
+        {
+          "effect": "change_model_package_bytes",
+          "regex": "(?i)(?:write|rename|copy).{0,100}(?:\\.p2m|\\.p2r|\\.l11c|\\.l2c)"
+        }
+      ]
+    },
+    {
+      "id": "space-worker-keeps-bounded-one-shot-contract",
+      "path": "../../../src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
+      "sha256": "18af5baf478e9c8cdb647a77300b8dc2a74335b447aec51da1d2da0a42f73e55",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "unbounded_worker_per_printable",
+          "regex": "(?i)fn schedule.{0,500}(?:thread::spawn|Builder::new\\(\\).{0,80}spawn)"
+        },
+        {
+          "effect": "increase_space_wait_budget",
+          "regex": "SPACE_PREFETCH_WAIT_BUDGET.{0,100}from_millis\\((?:9|[1-9][0-9]+)\\)"
+        },
+        {
+          "effect": "late_edit_after_fallback",
+          "regex": "(?i)(?:NotReady|not_ready).{0,300}(?:replace_committed_tail|AuthorizedEdit)"
+        }
+      ]
+    },
+    {
+      "id": "verifier-remains-fail-closed",
+      "path": "../../../src/text_edit/structural_verifier.rs",
+      "sha256": "19201157bc09df5cca617132d67a242474aaa331ca58dc18acb0152818b7b826",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "weaken_verifier_authority",
+          "regex": "(?i)(allow|eligible|authorized).{0,100}(without|bypass|skip).{0,100}(proof|plan|verif)"
+        }
+      ]
+    },
+    {
+      "id": "global-ibus-controller-remains-preserved",
+      "path": "../../../scripts/lay-runtime-control.sh",
+      "sha256": "746d077115277775acb275e077b57823ace9e416d2575eaf0bc53d3327d64e6d",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "restart_global_ibus_daemon",
+          "regex": "(?:restart|kill|pkill).{0,40}ibus-daemon"
+        }
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {
+        "id": "add-stage-timing-observation",
+        "kind": "source_edit"
+      },
+      {
+        "id": "extract-pure-deterministic-material",
+        "kind": "source_edit"
+      },
+      {
+        "id": "add-bounded-material-reuse",
+        "kind": "source_edit"
+      },
+      {
+        "id": "remote-focused-build-and-tests",
+        "kind": "remote_test"
+      },
+      {
+        "id": "staged-managed-ime-replay",
+        "kind": "temporary_service_activation"
+      }
+    ],
+    "forbidden": [
+      "literal_surface_runtime_branch",
+      "boundary_only_authority_bypass",
+      "cache_selected_winner",
+      "cache_authorized_edit",
+      "cache_input_frame_identity",
+      "unbounded_material_cache",
+      "unbounded_worker_per_printable",
+      "increase_space_wait_budget",
+      "late_edit_after_fallback",
+      "weaken_verifier_authority",
+      "change_model_package_bytes",
+      "restart_global_ibus_daemon"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "installed-engine-runtime",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "policy": "read_only_until_all_software_and-replay-gates-pass",
+      "rollback_policy": "restore exact 1.0.33 engine bytes after every staged replay",
+      "baseline_check_id": "installed-engine"
+    },
+    {
+      "id": "productive-v90-package",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2m",
+      "policy": "read_only_runtime_input",
+      "rollback_policy": "never modify for delivery optimization",
+      "baseline_check_id": "installed-productive-v90"
+    },
+    {
+      "id": "structural-verifier-authority",
+      "path": "../../../src/text_edit/structural_verifier.rs",
+      "policy": "read_only_authority_boundary",
+      "rollback_policy": "never edit to compensate for delivery failure",
+      "baseline_check_id": "structural-verifier"
+    },
+    {
+      "id": "slice5-failed-evidence",
+      "path": "../receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice5/immediate-space-replay-attempt2.json",
+      "policy": "immutable failed baseline receipt",
+      "rollback_policy": "retain unchanged beside later attempts",
+      "baseline_check_id": "slice5-failed-receipt"
+    },
+    {
+      "id": "runtime-controller",
+      "path": "../../../scripts/lay-runtime-control.sh",
+      "policy": "reuse unchanged",
+      "rollback_policy": "restart only managed Lay components",
+      "baseline_check_id": "runtime-control"
+    }
+  ],
+  "state_machine": {
+    "initial_state": "SLICE5_DELIVERY_FAIL_RUNTIME_1_0_33",
+    "terminal_states": [
+      "SLICE5_MATERIAL_REUSE_REPLAY_PASS_RUNTIME_RESTORED",
+      "BLOCKED_BEFORE_DEPLOY_RUNTIME_1_0_33_UNCHANGED"
+    ],
+    "steps": [
+      {
+        "id": "measure-first-expensive-candidate-stage",
+        "from": "SLICE5_DELIVERY_FAIL_RUNTIME_1_0_33",
+        "to": "CANDIDATE_STAGE_MEASURED",
+        "mutates": true,
+        "failure_state": "BLOCKED_BEFORE_DEPLOY_RUNTIME_1_0_33_UNCHANGED",
+        "cleanup": "retain diagnostic receipts; installed runtime and package bytes remain unchanged",
+        "preserves": [
+          "installed-engine-runtime",
+          "productive-v90-package",
+          "structural-verifier-authority",
+          "slice5-failed-evidence",
+          "runtime-controller"
+        ],
+        "test_id": "stage-timing-fault"
+      },
+      {
+        "id": "extract-and-reuse-pure-material",
+        "from": "CANDIDATE_STAGE_MEASURED",
+        "to": "MATERIAL_REUSE_SOFTWARE_PASS",
+        "mutates": true,
+        "failure_state": "BLOCKED_BEFORE_DEPLOY_RUNTIME_1_0_33_UNCHANGED",
+        "cleanup": "retain failed parity and latency receipts; do not deploy or change package bytes",
+        "preserves": [
+          "installed-engine-runtime",
+          "productive-v90-package",
+          "structural-verifier-authority",
+          "slice5-failed-evidence",
+          "runtime-controller"
+        ],
+        "test_id": "material-reuse-fault"
+      },
+      {
+        "id": "staged-fixed-replay",
+        "from": "MATERIAL_REUSE_SOFTWARE_PASS",
+        "to": "SLICE5_MATERIAL_REUSE_REPLAY_PASS_RUNTIME_RESTORED",
+        "mutates": true,
+        "failure_state": "BLOCKED_BEFORE_DEPLOY_RUNTIME_1_0_33_UNCHANGED",
+        "cleanup": "restore exact installed engine bytes, restart only managed Lay components and verify global IBus continuity",
+        "preserves": [
+          "productive-v90-package",
+          "structural-verifier-authority",
+          "slice5-failed-evidence",
+          "runtime-controller"
+        ],
+        "test_id": "staged-replay-fault"
+      }
+    ]
+  },
+  "tests": [
+    {
+      "id": "stage-timing-fault",
+      "kind": "fault_injection",
+      "expected": "missing or inconsistent stage timing stops optimization and leaves installed runtime unchanged"
+    },
+    {
+      "id": "material-reuse-fault",
+      "kind": "fault_injection",
+      "expected": "cache preparation failure or generation change leaves no stranded material and changes no installed runtime"
+    },
+    {
+      "id": "staged-replay-fault",
+      "kind": "fault_injection",
+      "expected": "staging, smoke or replay failure restores exact 1.0.33 engine bytes without restarting global IBus"
+    },
+    {
+      "id": "stage-timing-fixed-denominator",
+      "kind": "integration",
+      "expected": "typed timing separates deterministic material, canonical field, L3, DecisionCore and lease wait without changing candidates or authority"
+    },
+    {
+      "id": "pure-material-projection-parity",
+      "kind": "parity",
+      "expected": "direct and reused pure material produce identical ordered candidates, error classes, gates and final verdicts on the fixed corpus"
+    },
+    {
+      "id": "superseded-material-has-no-authority",
+      "kind": "fault_injection",
+      "expected": "superseded work may retain pure material but cannot publish a lease, winner, AuthorizedEdit, feedback event or mutation"
+    },
+    {
+      "id": "bounded-material-cache",
+      "kind": "integration",
+      "expected": "ready and in-flight material stay within fixed limits; failure and generation change leave no stranded entry"
+    },
+    {
+      "id": "fixed-immediate-space-replay",
+      "kind": "integration",
+      "expected": "four warmup and twenty eligible boundaries have zero eligible NotReady, one display and correction projection per frame, no late edit and unchanged latency budgets"
+    },
+    {
+      "id": "cold-hot-latency-separation",
+      "kind": "integration",
+      "expected": "cold first touch and hot reuse are separate denominators; a hot PASS is never reported as a cold PASS"
+    },
+    {
+      "id": "frame-lease-parity",
+      "kind": "parity",
+      "expected": "lease identity equals the producer frame across path, focus, epoch, tail, context, token, layout and config"
+    },
+    {
+      "id": "remote-source-and-binary-parity",
+      "kind": "parity",
+      "expected": "remote source archive matches local planned source bytes and staged binaries match remote release SHA-256"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "pure-material-only",
+      "statement": "reusable state contains candidate material only and never selected authority, online context, GUI identity or mutation state",
+      "test_id": "superseded-material-has-no-authority"
+    },
+    {
+      "id": "final-authority-remains-current",
+      "statement": "L3, L4, DecisionCore, verifier and mutation execute against the current request and exact InputFrameIdentity",
+      "test_id": "pure-material-projection-parity"
+    },
+    {
+      "id": "space-budget-unchanged",
+      "statement": "the Space wait remains 8 ms and literal fallback never receives a delayed correction",
+      "test_id": "fixed-immediate-space-replay"
+    },
+    {
+      "id": "cache-is-bounded-and-invalidatable",
+      "statement": "material reuse has explicit capacity and generation invalidation with fail-closed transient errors",
+      "test_id": "bounded-material-cache"
+    },
+    {
+      "id": "quality-contract-conjunctive",
+      "statement": "latency improvement cannot hide candidate, authority, false-split, clean-preservation or rollback regressions",
+      "test_id": "pure-material-projection-parity"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "pure-material-to-current-projection",
+      "producer": "bounded immutable deterministic candidate material",
+      "consumer": "current-context correction lattice",
+      "comparison": "ordered surfaces, typed origins, error classes and proposal gates",
+      "test_id": "pure-material-projection-parity"
+    },
+    {
+      "id": "current-frame-to-lease",
+      "producer": "one exact InputFrameIdentity",
+      "consumer": "single-consumer PreparedCorrectionLease",
+      "comparison": "path, focus, tail_epoch, exact tail, context, token, layout and correction config",
+      "test_id": "frame-lease-parity"
+    },
+    {
+      "id": "remote-build-to-staged-engine",
+      "producer": "remote release artifact",
+      "consumer": "temporary staged managed IBus engine",
+      "comparison": "SHA-256 byte identity",
+      "test_id": "remote-source-and-binary-parity"
+    }
+  ],
+  "runtime_comparisons": [
+    {
+      "id": "attempt2-to-material-reuse",
+      "source": "fixed immediate-Space JSONL analyzer receipts",
+      "comparison": "exact_stable_projection",
+      "stable_fields": [
+        "eligible_space_events",
+        "candidate_surfaces",
+        "candidate_error_classes",
+        "candidate_gate_actions",
+        "verifier_effects",
+        "late_edit_count",
+        "space_wait_budget_us",
+        "productive_package_sha256"
+      ],
+      "expected_to_change_fields": [
+        "candidate_material_cache_disposition",
+        "candidate_material_us",
+        "correction_projection_count",
+        "eligible_not_ready_count",
+        "worker_generation",
+        "managed_process_pids"
+      ],
+      "observed_not_compared_fields": [
+        "wall_clock_timestamp",
+        "trace_line_number",
+        "online_learning_generation"
+      ],
+      "reason": "prove delivery changes without changing candidate semantics or mutation authority",
+      "test_id": "fixed-immediate-space-replay"
+    }
+  ]
+}

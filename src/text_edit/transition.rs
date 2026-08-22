@@ -322,6 +322,7 @@ pub struct LatentTextTransitionCandidate {
     pub(crate) insert_text: String,
     pub(crate) intent: TextTransitionIntent,
     pub(crate) expected_tail: Option<VisibleTailSnapshot>,
+    pub(crate) selected_action: Option<EditAction>,
 }
 
 impl LatentTextTransitionCandidate {
@@ -338,7 +339,13 @@ impl LatentTextTransitionCandidate {
             insert_text: insert_text.into(),
             intent,
             expected_tail,
+            selected_action: None,
         }
+    }
+
+    pub fn with_selected_action(mut self, action: EditAction) -> Self {
+        self.selected_action = Some(action);
+        self
     }
 }
 
@@ -407,7 +414,8 @@ mod tests {
         TextTransitionIntent, TextTransitionRejection, VisibleFieldState,
     };
     use crate::text_edit::{
-        EditActionKind, TransitionOperator, VisibleTailSnapshot, VisibleTailSource,
+        plan_ime_candidate_accept_edit, EditActionKind, TransitionOperator, VisibleTailSnapshot,
+        VisibleTailSource,
     };
 
     fn candidate(delete_chars: u32, insert_text: &str) -> LatentTextTransitionCandidate {
@@ -418,6 +426,70 @@ mod tests {
             TextTransitionIntent::ImeAutocorrect,
             None,
         )
+    }
+
+    #[test]
+    fn selected_boundary_action_survives_structural_verification_unchanged() {
+        let original = "Еленапросит";
+        let replacement = "Елена просит ";
+        let selected_action =
+            plan_ime_candidate_accept_edit("selected-boundary-winner", 1000, original, replacement);
+        assert!(selected_action.allow_apply(), "action={selected_action:?}");
+        let state =
+            VisibleFieldState::committed_tail(original, Some("/test".to_string())).with_epoch(17);
+        let request = LatentTextTransitionCandidate::new(
+            VisibleTailSource::ImeCommittedTail,
+            original.chars().count() as u32,
+            replacement,
+            TextTransitionIntent::ImeAutocorrect,
+            Some(VisibleTailSnapshot::new(
+                VisibleTailSource::ImeCommittedTail,
+                original,
+                Some("/test".to_string()),
+                17,
+            )),
+        )
+        .with_selected_action(selected_action.clone());
+
+        match decide_text_transition(&state, request) {
+            TextTransitionDecision::Apply { plan, action } => {
+                assert_eq!(Some(&plan), selected_action.plan());
+                assert_eq!(action, selected_action);
+            }
+            other => panic!("unexpected decision: {other:?}"),
+        }
+    }
+
+    #[test]
+    fn selected_action_with_a_different_plan_fails_closed() {
+        let original = "prefix";
+        let replacement = "prefixsuffix";
+        let selected_action = plan_ime_candidate_accept_edit(
+            "selected-completion-winner",
+            1000,
+            original,
+            replacement,
+        );
+        assert!(selected_action.allow_apply(), "action={selected_action:?}");
+        let state = VisibleFieldState::committed_tail(original, Some("/test".to_string()));
+        let request = LatentTextTransitionCandidate::new(
+            VisibleTailSource::ImeCommittedTail,
+            original.chars().count() as u32,
+            replacement,
+            TextTransitionIntent::ImeAutocorrect,
+            None,
+        )
+        .with_selected_action(selected_action.clone());
+
+        assert_eq!(
+            decide_text_transition(&state, request),
+            TextTransitionDecision::Reject {
+                rejection: TextTransitionRejection::UnsafeEdit {
+                    reason: "selected_action_plan_mismatch",
+                },
+                action: Some(selected_action),
+            }
+        );
     }
 
     #[test]

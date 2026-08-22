@@ -1,0 +1,137 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "printable_key", "role": "interface"},
+    {"id": "canonical_l11_productive_v90", "role": "producer"},
+    {"id": "final_candidate_lattice", "role": "evidence_owner"},
+    {"id": "decision_core", "role": "candidate_rank_owner"},
+    {"id": "correction_lease", "role": "orchestrator"},
+    {"id": "transition_verifier", "role": "authorization_owner"},
+    {"id": "committed_tail_mutator", "role": "mutation_owner"}
+  ],
+  "edges": [
+    {
+      "id": "exec-key-canonical",
+      "from": "printable_key",
+      "relation": "calls",
+      "to": "canonical_l11_productive_v90",
+      "events": ["nanda_enabled_prepare"]
+    },
+    {
+      "id": "exec-canonical-lattice",
+      "from": "canonical_l11_productive_v90",
+      "relation": "delegates",
+      "to": "final_candidate_lattice",
+      "events": ["nanda_enabled_prepare"]
+    },
+    {
+      "id": "exec-lattice-decision",
+      "from": "final_candidate_lattice",
+      "relation": "delegates",
+      "to": "decision_core",
+      "events": ["nanda_enabled_prepare"]
+    },
+    {
+      "id": "exec-decision-lease",
+      "from": "decision_core",
+      "relation": "delegates",
+      "to": "correction_lease",
+      "events": ["nanda_enabled_prepare"]
+    },
+    {
+      "id": "data-canonical-lattice",
+      "from": "canonical_l11_productive_v90",
+      "relation": "produces_for",
+      "to": "final_candidate_lattice",
+      "events": ["nanda_enabled_prepare"]
+    },
+    {
+      "id": "data-lattice-decision",
+      "from": "final_candidate_lattice",
+      "relation": "passes_to",
+      "to": "decision_core",
+      "events": ["nanda_enabled_prepare"]
+    },
+    {
+      "id": "exec-lease-verifier",
+      "from": "correction_lease",
+      "relation": "delegates",
+      "to": "transition_verifier",
+      "events": ["space_ready_apply"]
+    },
+    {
+      "id": "exec-verifier-mutator",
+      "from": "transition_verifier",
+      "relation": "delegates",
+      "to": "committed_tail_mutator",
+      "events": ["space_ready_apply"]
+    },
+    {
+      "id": "authority-verifier-mutator",
+      "from": "transition_verifier",
+      "relation": "authorizes",
+      "to": "committed_tail_mutator",
+      "events": ["space_ready_apply"]
+    }
+  ],
+  "routes": [
+    {
+      "id": "canonical-only-execution",
+      "event": "nanda_enabled_prepare",
+      "kind": "execution",
+      "entry": "printable_key",
+      "terminal": "correction_lease",
+      "required_roles": [
+        "interface",
+        "producer",
+        "evidence_owner",
+        "candidate_rank_owner",
+        "orchestrator"
+      ],
+      "path_cardinality": [
+        {"from": "printable_key", "to": "canonical_l11_productive_v90", "min": 1, "max": 1},
+        {"from": "printable_key", "to": "decision_core", "min": 1, "max": 1},
+        {"from": "printable_key", "to": "correction_lease", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "canonical-only-authority",
+      "event": "nanda_enabled_prepare",
+      "kind": "authority",
+      "entry": "canonical_l11_productive_v90",
+      "terminal": "decision_core",
+      "required_roles": [
+        "producer",
+        "evidence_owner",
+        "candidate_rank_owner"
+      ]
+    },
+    {
+      "id": "space-ready-execution",
+      "event": "space_ready_apply",
+      "kind": "execution",
+      "entry": "correction_lease",
+      "terminal": "committed_tail_mutator",
+      "required_roles": [
+        "orchestrator",
+        "authorization_owner",
+        "mutation_owner"
+      ],
+      "path_cardinality": [
+        {"from": "correction_lease", "to": "committed_tail_mutator", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "space-ready-authority",
+      "event": "space_ready_apply",
+      "kind": "authority",
+      "entry": "transition_verifier",
+      "terminal": "committed_tail_mutator",
+      "required_roles": [
+        "authorization_owner",
+        "mutation_owner"
+      ]
+    }
+  ]
+}

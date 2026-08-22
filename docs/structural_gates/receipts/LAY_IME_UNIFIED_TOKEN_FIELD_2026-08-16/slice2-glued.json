@@ -1,0 +1,86 @@
+{
+  "all_iterations": {
+    "max_us": 3034065,
+    "mean_us": 17397,
+    "min_us": 1913,
+    "p50_us": 2185,
+    "p95_us": 2634,
+    "p99_us": 3083,
+    "samples": 200
+  },
+  "authority": {
+    "kind": "tied",
+    "surfaces": [
+      "донора",
+      "доноре",
+      "донору",
+      "доноры"
+    ]
+  },
+  "availability": "Ready",
+  "candidates": [
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "short_same_length_multi_edit_drift",
+      "replacement": "донора ",
+      "source_id": "ProductiveL2V90Grounded"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "short_same_length_multi_edit_drift",
+      "replacement": "доноре ",
+      "source_id": "ProductiveL2V90Grounded"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "short_same_length_multi_edit_drift",
+      "replacement": "донору ",
+      "source_id": "ProductiveL2V90Grounded"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "short_same_length_multi_edit_drift",
+      "replacement": "доноры ",
+      "source_id": "ProductiveL2V90Grounded"
+    }
+  ],
+  "cold_us": 3034065,
+  "field_cache": {
+    "generation": 2,
+    "in_flight_entries": 0,
+    "invalidations": 1,
+    "producer_computations": 1,
+    "ready_entries": 1,
+    "ready_hits": 199,
+    "saturated_requests": 0,
+    "superseded_publications": 0,
+    "transient_failures": 0,
+    "waiter_joins": 0
+  },
+  "hot": {
+    "max_us": 3236,
+    "mean_us": 2238,
+    "min_us": 1913,
+    "p50_us": 2185,
+    "p95_us": 2634,
+    "p99_us": 3083,
+    "samples": 199
+  },
+  "kind": "productive_v90_live_owner_query",
+  "materializer_symbol": "materialize_live_productive_v1_field",
+  "outer_readout_cache_bypassed": true,
+  "owner_symbol": "prepare_live_productive_v1_field",
+  "peak_rss_kib": 319216,
+  "producer_calls": 1,
+  "producer_symbol": "canonical_owned_text_candidates",
+  "repeat": 200,
+  "resident_rss_kib": 319216,
+  "runtime_authority_changed": false,
+  "status": "ready",
+  "text": "данорм "
+}
+

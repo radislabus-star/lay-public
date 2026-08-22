@@ -1449,3 +1449,263 @@ Rollback:
 Exact receipt:
 
 `/home/ubu/projects/lay/docs/structural_gates/receipts/IME_UNIFIED_CANDIDATE_FIELD_2026-08-12.json`
+
+## 18. Canonical Target-Authority Migration
+
+Active implementation worktree:
+
+`/home/ubu/projects/lay-l1-exact-peak-search`
+
+```text
+[PASS] Slice 0: immutable baseline freeze
+[PASS] Slice 1: common bounded target-evidence vocabulary
+[PASS] Slice 2a: deterministic enumeration-work budgets
+[PASS] Slice 2b: context-neutral prepared material and exact frame shadow
+  [PASS] 1,300/1,300 deterministic material pairs
+  [PASS] 3,864/3,864 bindable frame targets
+  [PASS] stale-frame accepts 0/3,864
+  [BLOCKED FROM AUTHORITY] 877/1,300 UPSTREAM_INCOMPLETE
+  [NOT CLAIMED] hot-path latency, live authority, deployment
+[PASS] Slice 3: frame-bound candidate validity shadow
+  [PASS] 3,864/3,864 candidate-state derivations
+  [PASS] false grounding 0
+  [PASS] cross-context and stale-frame accepts 0
+  [PASS] original preservation 3,900/3,900 outside target set
+  [NOT CLAIMED] Productive traversal p99, live authority, deployment
+[PASS] Slice 4: complete conflict cohort shadow
+  [PASS] 3,900/3,900 deterministic cohort derivations
+  [PASS] Winner/Tied/ABSTAIN = 0/1,050/2,850
+  [PASS] incomplete Winner, false singleton, lost grounded target = 0
+  [PASS] multiple-component authority and preservation bypass = 0
+  [NOT CLAIMED] useful Winner coverage, hot-path latency, live authority
+[PASS scoped] Slice 5: missing-target birth and retention
+  [PASS] typed operator implementation and exact work accounting
+  [PASS] first real-package smoke measured; budget 8/8, overflow 0, authority 0
+  [FAIL] canonical-L2-only birth/retention 4/8
+  [PASS] exact identity union birth 8/8, work 8/8, authority 0
+  [PASS] frozen 8-surface contour storage lane; retention 8/8, born-only 8/8
+  [PASS] remote 13x100 material target retention 1280/1280, false singleton 0
+  [PASS] no latency regression: contour 11.157 ms vs paired baseline 12.533 ms
+  [OPEN release blocker] inherited absolute 20-worker p99 remains >5 ms
+[PASS scoped] Slice 6: Boundary internalization shadow
+  [PASS] exact BoundarySplit and BoundaryMerge enumeration
+  [PASS] two-sided package grounding and separator-only geometry
+  [PASS] two-surface reserve, dedup and whole-field StorageCapacity overflow
+  [PASS] boundary witnesses remain Born; automatic authority grants 0
+  [PASS] remote 13x100 H/B/S0 = 1280/1280/1280, false singleton 0
+  [OPEN release blocker] maximum class p99 11.238 ms > 5 ms
+  [UNCHANGED] live authority, daemon, IBus, packages and installed 1.0.33
+[IN PROGRESS] Slice 7: crash-safe event transaction
+  [PASS] Slice 7A state machine, fault matrix and focused tests 8/8
+  [REJECTED] buffered ext4 write_at + fdatasync
+  [PASS] prepare/co-commit p99 1.265/1.164 ms <= 2 ms
+  [FAIL] prepare maximum 325.387 ms >= 8 ms
+  [REJECTED] DirectAlignedSlotCommitV1 O_DIRECT + O_DSYNC
+  [PASS] direct prepare/co-commit p99 1.657/1.575 ms <= 2 ms
+  [FAIL] direct prepare/co-commit max 330.324/162.240 ms >= 8 ms
+  [UNCHANGED] live authority, daemon, IBus, packages and installed 1.0.33
+  [NEXT] BackendAtomicReceiptV1 design receipt and kill-point proof
+[PENDING] Slice 8: lexical live readout
+[PENDING] Slice 9: separately calibrated context authority
+[PENDING] Slice 10: compatibility-route removal
+[PENDING] Slice 11: performance and failure proof
+[PENDING] Slice 12: versioned physical release
+```
+
+Slice 2 is closed only in shadow scope. It did not change runtime authority,
+installed packages, daemon/IBus processes or version `1.0.33`. Its instrumented
+maximum class p99 was `19.258 ms`, so latency remains outside the Slice 2 PASS.
+Slice 3 subsequently preserved the explicit `UPSTREAM_INCOMPLETE` blocker
+instead of converting retained targets into a complete authority cohort.
+
+Exact milestone receipt:
+
+`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE2_MATERIAL_FRAME_2026-08-20/final-receipt.json`
+
+### Slice 3 Closure
+
+Slice 3 is closed in shadow scope. Candidate validity is derived only after
+exact frame binding and is source-neutral. Witness failure is local, an
+incomplete target namespace remains `Born`, `Rejected` requires a complete
+namespace, and field incompleteness remains an absolute authority blocker.
+
+The fixed `13x100` proof produced `3,864/3,864` candidate-state derivations,
+zero false grounding, zero cross-context mismatch, zero stale-frame accepts and
+`3,900/3,900` separate original-preservation verdicts. H/B/S0, probe parity,
+false singleton and integrity denominators did not regress.
+
+The historical aggregate remains latency-failed: Productive traversal yields
+instrumented maximum class p99 `16.181 ms > 5 ms`. This is not part of the Slice
+3 semantic PASS and no live promotion is claimed. Runtime authority, installed
+packages, daemon/IBus and version `1.0.33` were unchanged.
+
+Exact receipt:
+
+`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE3_CANDIDATE_STATE_2026-08-20/final-receipt.json`
+
+The next code mutation requires a Slice 4 implementation preflight for complete
+conflict-component construction and deterministic `Winner | Tied | ABSTAIN`
+shadow settlement.
+
+### Slice 4 Closure
+
+Slice 4 is closed in shadow scope. Every retained material target is rebound to
+each exact frame, assigned a candidate state, placed in an exact-footprint
+conflict component and settled through one deterministic cohort. Duplicate
+outputs merge by semantic root before canonical ordering. Original preservation
+is consumed before every Winner path.
+
+The fixed `13x100` proof derived `3,900/3,900` cohorts. It measured
+`Winner/Tied/ABSTAIN = 0/1,050/2,850` with zero context/hash mismatch,
+incomplete Winner, false singleton, lost grounded target, multiple-component
+authority or preservation bypass. The absence of fixed-corpus Winners is not a
+coverage PASS; Winner mechanics are truth-table tested and live promotion
+remains unavailable.
+
+The historical aggregate remains latency-failed at maximum class p99
+`14.566 ms > 5 ms`. Runtime authority, installed packages, daemon/IBus and
+version `1.0.33` were unchanged.
+
+Exact receipt:
+
+`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE4_CONFLICT_COHORT_2026-08-20/final-receipt.json`
+
+The next code mutation requires a Slice 5 implementation preflight for bounded
+missing-target birth and retention shadow.
+
+### Slice 6 Closure
+
+Slice 6 internalizes exact boundary birth inside the context-neutral prepared
+material field. `BoundarySplit` requires exact grounding for both ordered parts;
+`BoundaryMerge` requires exact source parts and an exact merged target. The
+result carries `CompositeBoundaryGroundingV1`, exact separator-only geometry and
+remains `Born`, so this slice cannot grant automatic authority.
+
+The field owns one separate two-surface boundary reserve. Exact duplicate
+Productive, contour and boundary surfaces merge before storage accounting. More
+than two logical boundary surfaces marks the complete prepared field
+`Overflow(StorageCapacity)`; no truncated subset can be mislabeled complete.
+Enumeration is bounded to 64 grounding lookups and 64 operator steps.
+
+The regenerated remote `13x100` proof measured:
+
+```text
+evaluated comparisons                              2,600
+H / B / S0                           1,280 / 1,280 / 1,280
+H -> B / B -> S0 losses                               0 / 0
+BoundarySplit / BoundaryMerge package proofs          PASS
+false-split / real multi-split overflow proofs        PASS
+contour birth / retention / born-only                  8/8
+boundary automatic authority grants                      0
+false singleton / integrity errors                     0/0
+wall / CPU / peak RSS                 34.21 s / 1026% / 650,852 KiB
+maximum class p99                              11.238 ms
+```
+
+The Slice 6 boundary contract is a scoped shadow PASS. The aggregate receipt is
+still `FAIL_measured_shadow_gates` because `11.238 ms > 5 ms`; that blocks live
+promotion and deployment. The observed old deterministic boundary route did
+not reproduce the package-derived split/merge outputs. This is recorded as a
+legacy coverage difference, not used as a parity or promotion gate, and does
+not alter either route.
+
+Focused remote tests passed: boundary `3/3`, material-frame `10/10`. Not tested:
+live authority transfer, crash-safe mutation, queue-inclusive IBus/daemon
+latency, physical WeChat/Telegram behavior or deployment. Runtime authority
+changed: `false`; installed version remains `1.0.33`.
+
+Exact receipt directory:
+
+`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE6_BOUNDARY_INTERNALIZATION_2026-08-20`
+
+The next permitted implementation is Slice 7, beginning with the isolated
+durability-strategy microproof required by the authority paper. No live-owner
+change is permitted while the absolute latency gate remains open.
+
+### Slice 7A Buffered Durability Rejection
+
+The isolated output-transaction implementation passed its seven focused tests
+and complete injected fault matrix. The invalid tmpfs run and both earlier ext4
+runs are retained. The final ext4 proof used the SHA-matched remote metrics
+binary, 1,000 measured samples after 64 warmups and a cold-preallocated 8 MiB
+journal.
+
+Prepare p99 passed at `1.265 ms`, co-commit p99 passed at `1.164 ms`, and
+co-commit maximum passed at `1.677 ms`. Prepare maximum was `325.387 ms`, so the
+strict `<8 ms` gate failed. Runtime authority and the installed system were not
+changed.
+
+The failure persisted after removing inode growth and moving allocation out of
+the hot path. Buffered ext4 `write_at + fdatasync` is therefore rejected rather
+than rerun or threshold-tuned. The next bounded step is one
+`DirectAlignedSlotCommitV1` microproof using fixed aligned slots and
+`O_DIRECT | O_DSYNC`. Its semantic and numeric gates are unchanged. If direct
+I/O also fails, Slice 7 returns to backend atomicity design; no third local
+storage experiment is permitted.
+
+Exact receipt:
+
+`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE7A_DURABILITY_MICROPROOF_2026-08-20/final-ext4-preallocated-receipt.json`
+
+### Slice 7A Direct Durability Rejection
+
+The only admitted direct-storage proof used the SHA-matched remote metrics
+binary, fixed 4 KiB aligned slots in an 8 MiB ring, and one
+`O_DIRECT | O_DSYNC` write for every durability unit. The focused remote tests
+passed `8/8`; all checksum, torn-slot, foreign-generation, wrap, saturation,
+prepare-failure and terminal-failure strata passed.
+
+The one final ext4 proof used 64 warmups and 1,000 measured samples per stratum:
+
+```text
+prepare p50 / p95 / p99                 0.702 / 1.289 / 1.657 ms
+prepare maximum                                     330.324 ms  FAIL
+co-commit p50 / p95 / p99              0.694 / 1.228 / 1.575 ms
+co-commit maximum                                  162.240 ms  FAIL
+tail-flush p99 / maximum                    1.483 / 154.736 ms
+next-native p99 / maximum                    1.593 / 14.571 ms
+fault matrix                                                   PASS
+wall / peak RSS                                      7.61 s / 11,940 KiB
+```
+
+The direct path satisfies the frozen p99 `<=2 ms` gate but violates the strict
+maximum `<8 ms` gate for both prepare and co-commit. Removing the buffered page
+cache and separate `fdatasync` therefore did not bound device/filesystem
+durability tails. `DirectAlignedSlotCommitV1` is rejected without a rerun,
+threshold change or third local-storage variant.
+
+Slice 7 returns to `BackendAtomicReceiptV1`. The next work is a new paper and
+route receipt proving that the complete backend effect vector is atomic or
+exactly queryable/idempotently replayable after every kill point. Slice 7B and
+all live-owner work remain blocked until that independent receipt passes.
+Runtime authority and installed Lay `1.0.33` are unchanged.
+
+Exact receipt:
+
+`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE7A_DURABILITY_MICROPROOF_2026-08-20/final-direct-aligned-slot-receipt.json`
+
+### Slice 7 Backend Atomic Design
+
+The installed IBus `1.5.34~rc2-1` contains an existing synchronous
+post-process queue that captures commit, delete, preedit and forwarded-key
+operations during one `ProcessKeyEvent`. It is not currently an atomic receipt:
+engine failure can leave a prefix in the queue, queue overflow is not a
+whole-frame refusal, and the client post-process API returns `void`, so fetch
+failure cannot revoke `handled`.
+
+`IbusSynchronousPostProcessReceiptV1` is selected for paper/preflight work. It
+makes `ibus-daemon` the sealed-frame owner and one capability-checked client
+adapter the only mutation/disposition owner. Engine error, overflow, fetch
+failure, unsupported client or delete refusal produces zero mutation and the
+original event remains unhandled. Mutation outside `ProcessKeyEvent`, including
+the current surrounding-text callback auto-undo path, is forbidden.
+
+The V1 route packet was retained with `VETO` after three role-direction errors.
+Corrected V2 passed the design gate with no issues or warnings. It remains
+design-only: `safe_to_edit=false`, source/runtime behavior unproved. The next
+gate is an implementation preflight against the exact Ubuntu source package;
+working IBus installation and services are immutable in that scope.
+
+Design document:
+
+`/home/ubu/projects/lay-l1-exact-peak-search/docs/ime-backend-atomic-receipt-v1-2026-08-20.md`

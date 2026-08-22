@@ -1,0 +1,87 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "physical-undo-input", "role": "interface"},
+    {"id": "composite-undo-observation", "role": "observer"},
+    {"id": "javascript-v24-contract-proof", "role": "proof_owner"},
+    {"id": "javascript-composite-pass-marker", "role": "producer"},
+    {"id": "shell-proof-verdict", "role": "proof_owner"}
+  ],
+  "edges": [
+    {
+      "id": "observe-physical-composite",
+      "from": "physical-undo-input",
+      "relation": "observes",
+      "to": "composite-undo-observation",
+      "events": ["physical-undo-observation"]
+    },
+    {
+      "id": "proof-observation-v24-contract",
+      "from": "composite-undo-observation",
+      "relation": "proves",
+      "to": "javascript-v24-contract-proof",
+      "events": ["javascript-v24-contract-proof"]
+    },
+    {
+      "id": "produce-contract-marker",
+      "from": "javascript-v24-contract-proof",
+      "relation": "delegates",
+      "to": "javascript-composite-pass-marker",
+      "events": ["javascript-marker-production"]
+    },
+    {
+      "id": "proof-marker-shell-verdict",
+      "from": "javascript-composite-pass-marker",
+      "relation": "proves",
+      "to": "shell-proof-verdict",
+      "events": ["shell-marker-proof"]
+    }
+  ],
+  "routes": [
+    {
+      "id": "physical-undo-observation",
+      "event": "physical-undo-observation",
+      "kind": "observation",
+      "entry": "physical-undo-input",
+      "terminal": "composite-undo-observation",
+      "required_roles": ["interface", "observer"],
+      "path_cardinality": [
+        {"from": "physical-undo-input", "to": "composite-undo-observation", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "javascript-v24-contract-proof",
+      "event": "javascript-v24-contract-proof",
+      "kind": "proof",
+      "entry": "composite-undo-observation",
+      "terminal": "javascript-v24-contract-proof",
+      "required_roles": ["observer", "proof_owner"],
+      "path_cardinality": [
+        {"from": "composite-undo-observation", "to": "javascript-v24-contract-proof", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "javascript-marker-production",
+      "event": "javascript-marker-production",
+      "kind": "execution",
+      "entry": "javascript-v24-contract-proof",
+      "terminal": "javascript-composite-pass-marker",
+      "required_roles": ["proof_owner", "producer"],
+      "path_cardinality": [
+        {"from": "javascript-v24-contract-proof", "to": "javascript-composite-pass-marker", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "shell-marker-proof",
+      "event": "shell-marker-proof",
+      "kind": "proof",
+      "entry": "javascript-composite-pass-marker",
+      "terminal": "shell-proof-verdict",
+      "required_roles": ["producer", "proof_owner"],
+      "path_cardinality": [
+        {"from": "javascript-composite-pass-marker", "to": "shell-proof-verdict", "min": 1, "max": 1}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "schema": "lay.ime.ibus-parent-lifecycle-implementation-receipt.v1",
+  "task_id": "LAY_IME_IBUS_PARENT_LIFECYCLE_V23_V2_2026-08-21",
+  "preflight": {
+    "verdict": "READY_TO_IMPLEMENT",
+    "safe_to_implement": true,
+    "manifest_sha256": "e32138ec14ed21a2b27226cb00f2c462d5ccbf514cce47137ba4e7cf9e4d2e04"
+  },
+  "implementation": {
+    "scope": "Linux parent-death termination for --ibus only",
+    "main_sha256": "b78365d9864403a52f87d4d0685ba19957ffd6aabbf00603f7a05e04e0f68246",
+    "lifecycle_sha256": "47252ab11a2c799bf8b45c9c40b3b3534ebf34f947b3fd5b0f7fd630345c17c5",
+    "server_sha256": "f2cc5f9d30e4eca77f8efa62cbc4bfdb364e00ef894de7504081afcd28574814",
+    "atomic_owner_sha256": "0ac32eef663638c826f95a0e0293e9da8eb99377bca30d326b297e4febd73188",
+    "output_owner_sha256": "7ef339f78503de6d779c882c879021c22ef9f65b1d07cc09fb7b0d765131e1bc",
+    "polling_worker_added": false,
+    "signal_handler_added": false,
+    "hot_path_changed": false
+  },
+  "remote_build": {
+    "host": "e@192.168.3.94",
+    "logical_cpus": 20,
+    "guarded": true,
+    "focused_tests_passed": 5,
+    "focused_tests_failed": 0,
+    "release_seconds": 51.04,
+    "binary_bytes": 6676816,
+    "binary_sha256": "4f007010a264374cf35b9e93309e37d3bdf47a558d961ca2e2558b2f6761e735"
+  },
+  "observed_process_identity": {
+    "engine_pid": 3223119,
+    "engine_ppid": 3222083,
+    "parent_process": "ibus-daemon",
+    "comparison": "direct parent confirmed while both processes were live"
+  },
+  "aggregate_proof": {
+    "receipt": "atomic-full-route-v23-canonical-snapshot-lifecycle-settled-v4.log",
+    "process_status": 0,
+    "committed_characters": 514,
+    "printable_managed_commits": 514,
+    "printable_timing_records": 514,
+    "surrounding_text_records": 514,
+    "legacy_key_calls": 0,
+    "hot_samples": 512,
+    "p50_us": 1121,
+    "p99_us": 2723,
+    "max_us": 3732,
+    "leftovers_before_cleanup": 0,
+    "leftovers_after_cleanup": 0,
+    "verdict": "PASS"
+  },
+  "known_residual": {
+    "managed_releases": 508,
+    "expected_releases": 514,
+    "missing_atomic_profile_messages": 8,
+    "scope": "release/profile settlement only",
+    "deployment_blocking_followup": true
+  },
+  "installed_runtime_changed": false,
+  "deployment_authority": false,
+  "verdict": "V23_AGGREGATE_PASS_DEPLOYMENT_PENDING_RELEASE_PROFILE_FOLLOWUP"
+}

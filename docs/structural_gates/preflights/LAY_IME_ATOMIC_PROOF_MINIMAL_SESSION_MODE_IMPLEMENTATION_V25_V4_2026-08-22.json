@@ -1,0 +1,66 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_ATOMIC_PROOF_MINIMAL_SESSION_MODE_IMPLEMENTATION_V25_V4_2026-08-22",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {"id": "full-route-driver", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh", "expect": {"mode": "0755", "size_bytes": 13406, "sha256": "fe108c02538b9f532eb24dd3cf12bb432ed9bafc3a51c1ce10a46f62b3ffa028"}},
+    {"id": "shell-proof", "kind": "file", "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/shell/atomicInputMethodRoute.js", "expect": {"mode": "0664", "size_bytes": 16911, "sha256": "932af7eddb7eb0c931a590ced704a4ee960ffdcb5a0601a318598371bba38b92"}},
+    {"id": "mutter-owner", "kind": "file", "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-text-input.c", "expect": {"mode": "0664", "size_bytes": 52775, "sha256": "b8a439a1ab9375016e899b9799b8272b24e00001f3edb928543e0db83531ad46"}},
+    {"id": "installed-engine", "kind": "file", "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine", "expect": {"mode": "0755", "size_bytes": 6423488, "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a"}}
+  ],
+  "source_checks": [
+    {
+      "id": "pinned-driver",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh",
+      "sha256": "fe108c02538b9f532eb24dd3cf12bb432ed9bafc3a51c1ce10a46f62b3ffa028",
+      "forbidden_effect_patterns": [
+        {"effect": "skip_input_denominator", "regex": "skipAtomicInputDenominator"},
+        {"effect": "weaken_engine_admission", "regex": "skipAtomicEngineHashAdmission"},
+        {"effect": "production_session_mode_change", "regex": "installLayProofModeIntoUserSession"},
+        {"effect": "installed_runtime_mutation", "regex": "installAtomicProofIntoLiveRuntime"}
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "add-proof-session-mode", "kind": "source_edit"},
+      {"id": "bind-proof-session-mode", "kind": "source_edit"},
+      {"id": "sync-proof-session-mode", "kind": "remote_filesystem_write"},
+      {"id": "rerun-composite-proof", "kind": "ephemeral_process_start"}
+    ],
+    "forbidden": ["skip_input_denominator", "weaken_engine_admission", "production_session_mode_change", "installed_runtime_mutation"]
+  },
+  "preserved_artifacts": [
+    {"id": "shell-proof-preserved", "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/shell/atomicInputMethodRoute.js", "policy": "immutable", "cursor_policy": "none", "rollback_policy": "preserve_exact_bytes", "baseline_check_id": "shell-proof"},
+    {"id": "mutter-owner-preserved", "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-text-input.c", "policy": "immutable", "cursor_policy": "none", "rollback_policy": "preserve_exact_bytes", "baseline_check_id": "mutter-owner"},
+    {"id": "installed-engine-preserved", "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine", "policy": "immutable_before_deployment", "cursor_policy": "none", "rollback_policy": "preserve_exact_bytes", "baseline_check_id": "installed-engine"}
+  ],
+  "identity_contracts": [
+    {"id": "proof-mode-byte-parity", "producer": "local lay-proof session mode", "consumer": "read-only bwrap proof runtime", "comparison": "exact file SHA-256 recorded with the composite proof inputs", "test_id": "mode-parity"},
+    {"id": "input-denominator-parity", "producer": "unchanged atomicInputMethodRoute.js", "consumer": "minimal proof session", "comparison": "same undo and 514-event assertions, release ownership counters and latency gates", "test_id": "composite-denominator"}
+  ],
+  "runtime_comparisons": [],
+  "invariants": [
+    {"id": "no-audio-observer", "statement": "the IME proof session has no quickSettings panel and therefore no unrelated volume or camera startup owner", "test_id": "mode-static"},
+    {"id": "same-input-route", "statement": "Shell atomic adapter, Mutter text-input owner, Lay engine and proof script bytes remain unchanged", "test_id": "owner-parity"},
+    {"id": "same-proof-contract", "statement": "minimal session mode does not reduce event count, release assertions, undo postcondition or latency gates", "test_id": "composite-denominator"}
+  ],
+  "state_machine": {
+    "initial_state": "AUDIO_STARTUP_NONDETERMINISM_REPRODUCED",
+    "steps": [
+      {"id": "add-and-bind-mode", "from": "AUDIO_STARTUP_NONDETERMINISM_REPRODUCED", "to": "MINIMAL_PROOF_SESSION_BOUND", "mutates": true, "failure_state": "MODE_BIND_FAILED", "cleanup": "remove only the new proof mode and restore driver baseline bytes", "preserves": ["shell-proof-preserved", "mutter-owner-preserved", "installed-engine-preserved"], "test_id": "mode-bind-fault"},
+      {"id": "run-composite", "from": "MINIMAL_PROOF_SESSION_BOUND", "to": "COMPOSITE_PROOF_FINISHED", "mutates": true, "failure_state": "COMPOSITE_PROOF_FAILED", "cleanup": "terminate all proof-owned processes and retain the failed suffix", "preserves": ["shell-proof-preserved", "mutter-owner-preserved", "installed-engine-preserved"], "test_id": "composite-fault"}
+    ],
+    "terminal_states": ["COMPOSITE_PROOF_FINISHED", "MODE_BIND_FAILED", "COMPOSITE_PROOF_FAILED"]
+  },
+  "tests": [
+    {"id": "mode-bind-fault", "kind": "fault_injection", "expected": "a missing or malformed mode stops before input without changing production session configuration"},
+    {"id": "composite-fault", "kind": "fault_injection", "expected": "a failed proof leaves zero proof-owned processes and retains its complete receipt"},
+    {"id": "mode-parity", "kind": "parity", "expected": "local and remote proof mode hashes match"},
+    {"id": "mode-static", "kind": "parity", "expected": "proof mode inherits user window behavior but defines empty components and panel slots"},
+    {"id": "owner-parity", "kind": "parity", "expected": "Shell proof and Mutter text-input hashes remain at their pinned baselines"},
+    {"id": "composite-denominator", "kind": "parity", "expected": "undo and 514-event proof contracts remain byte-identical and must both pass"}
+  ]
+}

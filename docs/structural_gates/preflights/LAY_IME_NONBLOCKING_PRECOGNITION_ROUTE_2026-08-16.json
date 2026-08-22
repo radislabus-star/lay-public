@@ -1,0 +1,97 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "printable_key", "role": "interface"},
+    {"id": "visible_commit", "role": "mutation_owner"},
+    {"id": "input_snapshot", "role": "producer"},
+    {"id": "latest_only_scheduler", "role": "producer"},
+    {"id": "full_candidate_field", "role": "producer"},
+    {"id": "exact_result_mailbox", "role": "evidence_owner"},
+    {"id": "identity_gate", "role": "evidence_owner"},
+    {"id": "preedit_rank", "role": "display_rank_owner"},
+    {"id": "preedit_render", "role": "render_owner"},
+    {"id": "space_decision_core", "role": "candidate_rank_owner"},
+    {"id": "route_trace", "role": "observer"},
+    {"id": "fixed_proof", "role": "proof_owner"}
+  ],
+  "edges": [
+    {"id": "exec-key-commit", "from": "printable_key", "relation": "calls", "to": "visible_commit", "events": ["printable_input"]},
+    {"id": "exec-commit-snapshot", "from": "visible_commit", "relation": "delegates", "to": "input_snapshot", "events": ["printable_input"]},
+    {"id": "exec-snapshot-scheduler", "from": "input_snapshot", "relation": "delegates", "to": "latest_only_scheduler", "events": ["materialize_field"]},
+    {"id": "exec-scheduler-field", "from": "latest_only_scheduler", "relation": "delegates", "to": "full_candidate_field", "events": ["materialize_field"]},
+    {"id": "data-field-mailbox", "from": "full_candidate_field", "relation": "delegates", "to": "exact_result_mailbox", "events": ["field_ready"]},
+    {"id": "exec-mailbox-identity", "from": "exact_result_mailbox", "relation": "delegates", "to": "identity_gate", "events": ["field_ready"]},
+    {"id": "authority-snapshot-identity", "from": "input_snapshot", "relation": "passes_to", "to": "identity_gate", "events": ["field_ready"]},
+    {"id": "exec-identity-rank", "from": "identity_gate", "relation": "delegates", "to": "preedit_rank", "events": ["field_ready"]},
+    {"id": "exec-rank-render", "from": "preedit_rank", "relation": "delegates", "to": "preedit_render", "events": ["field_ready"]},
+    {"id": "data-identity-rank", "from": "identity_gate", "relation": "passes_to", "to": "preedit_rank", "events": ["field_ready"]},
+    {"id": "data-rank-render", "from": "preedit_rank", "relation": "passes_to", "to": "preedit_render", "events": ["field_ready"]},
+    {"id": "exec-space-decision", "from": "full_candidate_field", "relation": "delegates", "to": "space_decision_core", "events": ["space_prefetch"]},
+    {"id": "observe-input", "from": "printable_key", "relation": "observes", "to": "route_trace", "events": ["observation"]},
+    {"id": "observe-field", "from": "full_candidate_field", "relation": "observes", "to": "route_trace", "events": ["observation"]},
+    {"id": "prove-route", "from": "identity_gate", "relation": "proves", "to": "fixed_proof", "events": ["software_proof"]}
+  ],
+  "routes": [
+    {
+      "id": "printable-hot-execution",
+      "event": "printable_input",
+      "kind": "execution",
+      "entry": "printable_key",
+      "terminal": "input_snapshot",
+      "required_roles": ["interface", "mutation_owner", "producer"],
+      "path_cardinality": [{"from": "printable_key", "to": "input_snapshot", "min": 1, "max": 1}]
+    },
+    {
+      "id": "field-materialization-execution",
+      "event": "materialize_field",
+      "kind": "execution",
+      "entry": "latest_only_scheduler",
+      "terminal": "full_candidate_field",
+      "required_roles": ["producer"],
+      "path_cardinality": [{"from": "latest_only_scheduler", "to": "full_candidate_field", "min": 1, "max": 1}]
+    },
+    {
+      "id": "field-ready-execution",
+      "event": "field_ready",
+      "kind": "execution",
+      "entry": "exact_result_mailbox",
+      "terminal": "preedit_render",
+      "required_roles": ["evidence_owner", "display_rank_owner", "render_owner"],
+      "path_cardinality": [{"from": "exact_result_mailbox", "to": "preedit_render", "min": 1, "max": 1}]
+    },
+    {
+      "id": "field-ready-display-authority",
+      "event": "field_ready",
+      "kind": "authority",
+      "entry": "input_snapshot",
+      "terminal": "preedit_render",
+      "required_roles": ["producer", "evidence_owner", "display_rank_owner", "render_owner"]
+    },
+    {
+      "id": "space-prefetch-execution",
+      "event": "space_prefetch",
+      "kind": "execution",
+      "entry": "full_candidate_field",
+      "terminal": "space_decision_core",
+      "required_roles": ["producer", "candidate_rank_owner"],
+      "path_cardinality": [{"from": "full_candidate_field", "to": "space_decision_core", "min": 1, "max": 1}]
+    },
+    {
+      "id": "route-observation",
+      "event": "observation",
+      "kind": "observation",
+      "entry": "printable_key",
+      "terminal": "route_trace",
+      "required_roles": ["interface", "observer"]
+    },
+    {
+      "id": "identity-proof",
+      "event": "software_proof",
+      "kind": "proof",
+      "entry": "identity_gate",
+      "terminal": "fixed_proof",
+      "required_roles": ["evidence_owner", "proof_owner"]
+    }
+  ]
+}

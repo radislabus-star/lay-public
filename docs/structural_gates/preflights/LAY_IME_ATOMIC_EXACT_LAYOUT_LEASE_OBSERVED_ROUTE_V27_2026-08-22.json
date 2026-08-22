@@ -1,0 +1,763 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "observed_source",
+  "nodes": [
+    {
+      "id": "printable-input",
+      "role": "interface",
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/composition_commit.rs",
+        "line": 162,
+        "contains": "commit_managed_passthrough_char"
+      }
+    },
+    {
+      "id": "space-input",
+      "role": "interface",
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/managed.rs",
+        "line": 65,
+        "contains": "keyval == KEY_SPACE"
+      }
+    },
+    {
+      "id": "canonical-frame-builder",
+      "role": "orchestrator",
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/preedit.rs",
+        "line": 493,
+        "contains": "capture_input_frame_identity"
+      }
+    },
+    {
+      "id": "full-candidate-producer",
+      "role": "producer",
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
+        "line": 420,
+        "contains": "fn evaluate_full"
+      }
+    },
+    {
+      "id": "exact-layout-producer",
+      "role": "producer",
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
+        "line": 350,
+        "contains": "fn prepare_inline_exact"
+      }
+    },
+    {
+      "id": "canonical-field-evidence",
+      "role": "evidence_owner",
+      "evidence": {
+        "path": "src/correction_core.rs",
+        "line": 608,
+        "contains": "resolve_text_correction_observed_internal"
+      }
+    },
+    {
+      "id": "exact-closed-contour-evidence",
+      "role": "evidence_owner",
+      "evidence": {
+        "path": "src/exact_layout_authority.rs",
+        "line": 211,
+        "contains": "certify_closed_exact_layout"
+      }
+    },
+    {
+      "id": "transition-decision-core",
+      "role": "candidate_rank_owner",
+      "evidence": {
+        "path": "src/typing_transition/decision.rs",
+        "line": 58,
+        "contains": "evaluate_candidates"
+      }
+    },
+    {
+      "id": "transition-verifier",
+      "role": "authorization_owner",
+      "evidence": {
+        "path": "src/typing_transition/action.rs",
+        "line": 30,
+        "contains": "verify_action_operator"
+      }
+    },
+    {
+      "id": "prepared-decision-store",
+      "role": "orchestrator",
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
+        "line": 80,
+        "contains": "struct PreparedDecisionSlot"
+      }
+    },
+    {
+      "id": "space-lease-arbiter",
+      "role": "orchestrator",
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
+        "line": 234,
+        "contains": "fn take"
+      }
+    },
+    {
+      "id": "no-correction-result",
+      "role": "orchestrator",
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/managed.rs",
+        "line": 109,
+        "contains": "commit_managed_passthrough_char"
+      }
+    },
+    {
+      "id": "atomic-engine-output",
+      "role": "mutation_owner",
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/output.rs",
+        "line": 111,
+        "contains": "fn finish"
+      }
+    },
+    {
+      "id": "route-observer",
+      "role": "observer",
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/space_autocorrect_prefetch/proof.rs",
+        "line": 139,
+        "contains": "v27_race_fault_and_space_effect_matrix"
+      }
+    },
+    {
+      "id": "route-receipt",
+      "role": "proof_owner",
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/space_autocorrect_prefetch/proof.rs",
+        "line": 289,
+        "contains": "LAY_V27_SYSTEM_MATRIX"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "full-exec-input-frame",
+      "from": "printable-input",
+      "relation": "calls",
+      "to": "canonical-frame-builder",
+      "events": [
+        "full-apply-preparation",
+        "full-rank-noapply-preparation",
+        "full-verifier-noapply-preparation",
+        "full-infrastructure-noapply-preparation"
+      ],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/composition_commit.rs",
+        "line": 173,
+        "contains": "capture_input_frame_identity"
+      }
+    },
+    {
+      "id": "full-exec-frame-producer",
+      "from": "canonical-frame-builder",
+      "relation": "delegates",
+      "to": "full-candidate-producer",
+      "events": [
+        "full-apply-preparation",
+        "full-rank-noapply-preparation",
+        "full-verifier-noapply-preparation",
+        "full-infrastructure-noapply-preparation"
+      ],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/committed_tail.rs",
+        "line": 30,
+        "contains": "space_autocorrect_prefetch::schedule"
+      }
+    },
+    {
+      "id": "full-exec-producer-evidence",
+      "from": "full-candidate-producer",
+      "relation": "delegates",
+      "to": "canonical-field-evidence",
+      "events": [
+        "full-apply-preparation",
+        "full-rank-noapply-preparation",
+        "full-verifier-noapply-preparation"
+      ],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
+        "line": 452,
+        "contains": "decide_active_composition_autocorrect_observed"
+      }
+    },
+    {
+      "id": "full-exec-evidence-rank",
+      "from": "canonical-field-evidence",
+      "relation": "delegates",
+      "to": "transition-decision-core",
+      "events": [
+        "full-apply-preparation",
+        "full-rank-noapply-preparation",
+        "full-verifier-noapply-preparation"
+      ],
+      "evidence": {
+        "path": "src/typing_transition/candidate_resolution.rs",
+        "line": 26,
+        "contains": "TransitionDecisionCore::evaluate_candidates"
+      }
+    },
+    {
+      "id": "full-exec-rank-verifier",
+      "from": "transition-decision-core",
+      "relation": "delegates",
+      "to": "transition-verifier",
+      "events": [
+        "full-apply-preparation",
+        "full-verifier-noapply-preparation"
+      ],
+      "evidence": {
+        "path": "src/typing_transition/decision.rs",
+        "line": 740,
+        "contains": "action::verify_action_operator"
+      }
+    },
+    {
+      "id": "full-exec-verifier-store",
+      "from": "transition-verifier",
+      "relation": "delegates",
+      "to": "prepared-decision-store",
+      "events": [
+        "full-apply-preparation",
+        "full-verifier-noapply-preparation"
+      ],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
+        "line": 404,
+        "contains": "slot.full = FullSlotState::Terminal"
+      }
+    },
+    {
+      "id": "full-exec-rank-store-noapply",
+      "from": "transition-decision-core",
+      "relation": "delegates",
+      "to": "prepared-decision-store",
+      "events": [
+        "full-rank-noapply-preparation"
+      ],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
+        "line": 466,
+        "contains": "PreparedFullOutcome::NoApply"
+      }
+    },
+    {
+      "id": "full-exec-producer-store-infrastructure-noapply",
+      "from": "full-candidate-producer",
+      "relation": "delegates",
+      "to": "prepared-decision-store",
+      "events": [
+        "full-infrastructure-noapply-preparation"
+      ],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
+        "line": 424,
+        "contains": "PreparedNoApplyStage::Infrastructure"
+      }
+    },
+    {
+      "id": "full-auth-producer-evidence",
+      "from": "full-candidate-producer",
+      "relation": "produces_for",
+      "to": "canonical-field-evidence",
+      "events": [
+        "full-lease-lifecycle"
+      ],
+      "evidence": {
+        "path": "src/correction_core.rs",
+        "line": 633,
+        "contains": "L2CandidateSource::for_mode"
+      }
+    },
+    {
+      "id": "full-auth-evidence-rank",
+      "from": "canonical-field-evidence",
+      "relation": "passes_to",
+      "to": "transition-decision-core",
+      "events": [
+        "full-lease-lifecycle"
+      ],
+      "evidence": {
+        "path": "src/typing_transition/candidate.rs",
+        "line": 144,
+        "contains": "into_observed_resolution_with_peak_context"
+      }
+    },
+    {
+      "id": "full-auth-rank-verifier",
+      "from": "transition-decision-core",
+      "relation": "passes_to",
+      "to": "transition-verifier",
+      "events": [
+        "full-lease-lifecycle"
+      ],
+      "evidence": {
+        "path": "src/typing_transition/decision.rs",
+        "line": 740,
+        "contains": "action::verify_action_operator"
+      }
+    },
+    {
+      "id": "full-auth-verifier-output",
+      "from": "transition-verifier",
+      "relation": "authorizes",
+      "to": "atomic-engine-output",
+      "events": [
+        "full-lease-lifecycle"
+      ],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/committed_tail.rs",
+        "line": 213,
+        "contains": "replace_committed_tail"
+      }
+    },
+    {
+      "id": "exact-exec-input-frame",
+      "from": "printable-input",
+      "relation": "calls",
+      "to": "canonical-frame-builder",
+      "events": [
+        "exact-lease-preparation"
+      ],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/composition_commit.rs",
+        "line": 173,
+        "contains": "capture_input_frame_identity"
+      }
+    },
+    {
+      "id": "exact-exec-frame-producer",
+      "from": "canonical-frame-builder",
+      "relation": "delegates",
+      "to": "exact-layout-producer",
+      "events": [
+        "exact-lease-preparation"
+      ],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
+        "line": 134,
+        "contains": "prepare_inline_exact"
+      }
+    },
+    {
+      "id": "exact-exec-producer-evidence",
+      "from": "exact-layout-producer",
+      "relation": "delegates",
+      "to": "exact-closed-contour-evidence",
+      "events": [
+        "exact-lease-preparation"
+      ],
+      "evidence": {
+        "path": "src/ime_correction.rs",
+        "line": 118,
+        "contains": "certify_closed_exact_layout"
+      }
+    },
+    {
+      "id": "exact-exec-evidence-rank",
+      "from": "exact-closed-contour-evidence",
+      "relation": "delegates",
+      "to": "transition-decision-core",
+      "events": [
+        "exact-lease-preparation"
+      ],
+      "evidence": {
+        "path": "src/correction_core.rs",
+        "line": 659,
+        "contains": "into_closed_exact_resolution"
+      }
+    },
+    {
+      "id": "exact-exec-rank-verifier",
+      "from": "transition-decision-core",
+      "relation": "delegates",
+      "to": "transition-verifier",
+      "events": [
+        "exact-lease-preparation"
+      ],
+      "evidence": {
+        "path": "src/typing_transition/decision.rs",
+        "line": 296,
+        "contains": "action::verify_action_operator"
+      }
+    },
+    {
+      "id": "exact-exec-verifier-store",
+      "from": "transition-verifier",
+      "relation": "delegates",
+      "to": "prepared-decision-store",
+      "events": [
+        "exact-lease-preparation"
+      ],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
+        "line": 208,
+        "contains": "ExactSlotState::Prepared"
+      }
+    },
+    {
+      "id": "exact-auth-producer-evidence",
+      "from": "exact-layout-producer",
+      "relation": "produces_for",
+      "to": "exact-closed-contour-evidence",
+      "events": [
+        "exact-lease-lifecycle"
+      ],
+      "evidence": {
+        "path": "src/correction_core/candidate_sources.rs",
+        "line": 75,
+        "contains": "UnifiedCorrectionCandidate::new"
+      }
+    },
+    {
+      "id": "exact-auth-evidence-rank",
+      "from": "exact-closed-contour-evidence",
+      "relation": "passes_to",
+      "to": "transition-decision-core",
+      "events": [
+        "exact-lease-lifecycle"
+      ],
+      "evidence": {
+        "path": "src/typing_transition/candidate.rs",
+        "line": 151,
+        "contains": "into_closed_exact_resolution"
+      }
+    },
+    {
+      "id": "exact-auth-rank-verifier",
+      "from": "transition-decision-core",
+      "relation": "passes_to",
+      "to": "transition-verifier",
+      "events": [
+        "exact-lease-lifecycle"
+      ],
+      "evidence": {
+        "path": "src/typing_transition/decision.rs",
+        "line": 296,
+        "contains": "action::verify_action_operator"
+      }
+    },
+    {
+      "id": "exact-auth-verifier-output",
+      "from": "transition-verifier",
+      "relation": "authorizes",
+      "to": "atomic-engine-output",
+      "events": [
+        "exact-lease-lifecycle"
+      ],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/committed_tail.rs",
+        "line": 213,
+        "contains": "replace_committed_tail"
+      }
+    },
+    {
+      "id": "space-exec-input-arbiter",
+      "from": "space-input",
+      "relation": "calls",
+      "to": "space-lease-arbiter",
+      "events": [
+        "space-consume-full",
+        "space-consume-exact"
+      ],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/managed.rs",
+        "line": 73,
+        "contains": "take_space_autocorrect_lease"
+      }
+    },
+    {
+      "id": "space-exec-arbiter-output",
+      "from": "space-lease-arbiter",
+      "relation": "delegates",
+      "to": "atomic-engine-output",
+      "events": [
+        "space-consume-full",
+        "space-consume-exact"
+      ],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/committed_tail.rs",
+        "line": 213,
+        "contains": "replace_committed_tail"
+      }
+    },
+    {
+      "id": "space-no-correction-input-arbiter",
+      "from": "space-input",
+      "relation": "calls",
+      "to": "space-lease-arbiter",
+      "events": [
+        "space-no-correction"
+      ],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/managed.rs",
+        "line": 73,
+        "contains": "take_space_autocorrect_lease"
+      }
+    },
+    {
+      "id": "space-no-correction-arbiter-result",
+      "from": "space-lease-arbiter",
+      "relation": "delegates",
+      "to": "no-correction-result",
+      "events": [
+        "space-no-correction"
+      ],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/managed.rs",
+        "line": 107,
+        "contains": "commit_managed_passthrough_char"
+      }
+    },
+    {
+      "id": "proof-observer-receipt",
+      "from": "route-observer",
+      "relation": "proves",
+      "to": "route-receipt",
+      "events": [
+        "v27-proof"
+      ],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/space_autocorrect_prefetch/proof.rs",
+        "line": 289,
+        "contains": "LAY_V27_SYSTEM_MATRIX"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "id": "full-apply-preparation-execution",
+      "event": "full-apply-preparation",
+      "kind": "execution",
+      "entry": "printable-input",
+      "terminal": "prepared-decision-store",
+      "required_roles": [
+        "interface",
+        "orchestrator",
+        "producer",
+        "evidence_owner",
+        "candidate_rank_owner",
+        "authorization_owner"
+      ],
+      "path_cardinality": [
+        {
+          "from": "printable-input",
+          "to": "prepared-decision-store",
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "full-rank-noapply-preparation-execution",
+      "event": "full-rank-noapply-preparation",
+      "kind": "execution",
+      "entry": "printable-input",
+      "terminal": "prepared-decision-store",
+      "required_roles": [
+        "interface",
+        "orchestrator",
+        "producer",
+        "evidence_owner",
+        "candidate_rank_owner"
+      ],
+      "path_cardinality": [
+        {
+          "from": "printable-input",
+          "to": "prepared-decision-store",
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "full-verifier-noapply-preparation-execution",
+      "event": "full-verifier-noapply-preparation",
+      "kind": "execution",
+      "entry": "printable-input",
+      "terminal": "prepared-decision-store",
+      "required_roles": [
+        "interface",
+        "orchestrator",
+        "producer",
+        "evidence_owner",
+        "candidate_rank_owner",
+        "authorization_owner"
+      ],
+      "path_cardinality": [
+        {
+          "from": "printable-input",
+          "to": "prepared-decision-store",
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "full-infrastructure-noapply-preparation-execution",
+      "event": "full-infrastructure-noapply-preparation",
+      "kind": "execution",
+      "entry": "printable-input",
+      "terminal": "prepared-decision-store",
+      "required_roles": [
+        "interface",
+        "orchestrator",
+        "producer"
+      ],
+      "path_cardinality": [
+        {
+          "from": "printable-input",
+          "to": "prepared-decision-store",
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "exact-lease-preparation-execution",
+      "event": "exact-lease-preparation",
+      "kind": "execution",
+      "entry": "printable-input",
+      "terminal": "prepared-decision-store",
+      "required_roles": [
+        "interface",
+        "orchestrator",
+        "producer",
+        "evidence_owner",
+        "candidate_rank_owner",
+        "authorization_owner"
+      ],
+      "path_cardinality": [
+        {
+          "from": "printable-input",
+          "to": "prepared-decision-store",
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "full-lease-authority",
+      "event": "full-lease-lifecycle",
+      "kind": "authority",
+      "entry": "full-candidate-producer",
+      "terminal": "atomic-engine-output",
+      "required_roles": [
+        "producer",
+        "evidence_owner",
+        "candidate_rank_owner",
+        "authorization_owner",
+        "mutation_owner"
+      ],
+      "path_cardinality": [
+        {
+          "from": "full-candidate-producer",
+          "to": "atomic-engine-output",
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "exact-lease-authority",
+      "event": "exact-lease-lifecycle",
+      "kind": "authority",
+      "entry": "exact-layout-producer",
+      "terminal": "atomic-engine-output",
+      "required_roles": [
+        "producer",
+        "evidence_owner",
+        "candidate_rank_owner",
+        "authorization_owner",
+        "mutation_owner"
+      ],
+      "path_cardinality": [
+        {
+          "from": "exact-layout-producer",
+          "to": "atomic-engine-output",
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "space-consume-full-execution",
+      "event": "space-consume-full",
+      "kind": "execution",
+      "entry": "space-input",
+      "terminal": "atomic-engine-output",
+      "required_roles": [
+        "interface",
+        "orchestrator",
+        "mutation_owner"
+      ],
+      "path_cardinality": [
+        {
+          "from": "space-input",
+          "to": "atomic-engine-output",
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "space-consume-exact-execution",
+      "event": "space-consume-exact",
+      "kind": "execution",
+      "entry": "space-input",
+      "terminal": "atomic-engine-output",
+      "required_roles": [
+        "interface",
+        "orchestrator",
+        "mutation_owner"
+      ],
+      "path_cardinality": [
+        {
+          "from": "space-input",
+          "to": "atomic-engine-output",
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "space-no-correction-execution",
+      "event": "space-no-correction",
+      "kind": "execution",
+      "entry": "space-input",
+      "terminal": "no-correction-result",
+      "required_roles": [
+        "interface",
+        "orchestrator"
+      ],
+      "path_cardinality": [
+        {
+          "from": "space-input",
+          "to": "no-correction-result",
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "v27-proof-route",
+      "event": "v27-proof",
+      "kind": "proof",
+      "entry": "route-observer",
+      "terminal": "route-receipt",
+      "required_roles": [
+        "observer",
+        "proof_owner"
+      ]
+    }
+  ],
+  "source_root": "../../.."
+}

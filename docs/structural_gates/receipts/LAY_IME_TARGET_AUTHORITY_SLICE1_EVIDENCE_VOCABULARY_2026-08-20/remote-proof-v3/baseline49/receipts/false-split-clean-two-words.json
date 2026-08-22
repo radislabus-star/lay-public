@@ -1,0 +1,41 @@
+{
+  "planned": {
+    "id": "false-split-clean-two-words",
+    "series": "baseline49",
+    "denominator": "boundary_false_split",
+    "source_test": "src/correction_core/tests.rs::boundary_shift_cannot_apply_on_clean_two_word_surfaces",
+    "target_kind": "lib",
+    "target": "lib",
+    "compiled_selector": "correction_core::tests::boundary_shift_cannot_apply_on_clean_two_word_surfaces",
+    "expected_test_count": 1,
+    "expected_assertion_status": "PASS",
+    "expected_semantic_receipt": "clean existing boundary is preserved",
+    "environment": {
+      "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+      "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+      "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+      "LAY_DEBUG_DECISION_CORE": "1",
+      "LAY_L2_FIELD_TRACE": "1",
+      "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+      "CARGO_BUILD_JOBS": "20"
+    },
+    "command": [
+      "scripts/cargo-guard.sh",
+      "test",
+      "--lib",
+      "correction_core::tests::boundary_shift_cannot_apply_on_clean_two_word_surfaces",
+      "--",
+      "--exact",
+      "--nocapture",
+      "--test-threads=1"
+    ]
+  },
+  "exit_code": 0,
+  "observed_test_count": 1,
+  "observed_status": "PASS",
+  "valid_execution": true,
+  "log": {
+    "size_bytes": 73092,
+    "sha256": "051fe7bf2f9e10ebcfe20512582dcfc23841e5d7360decb74ba99d2ff23b669c"
+  }
+}

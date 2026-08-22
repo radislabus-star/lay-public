@@ -1,0 +1,74 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "stage-driver",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/stage-atomic-proof-engine-remote.sh",
+      "sha256": "34dcf601c7555a2476064c63de2aba0064be78a0262b45a6790cbca273d8ae3a",
+      "size_bytes": 3918
+    },
+    {
+      "exists": true,
+      "id": "atomic-engine-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic.rs",
+      "sha256": "456762f0185b598605950f4954ec5bb5267f8e1049ed6eb05d33e718fa04f3f2",
+      "size_bytes": 19621
+    },
+    {
+      "exists": true,
+      "id": "installed-lay-engine",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a",
+      "size_bytes": 6423488
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 3,
+    "forbidden_side_effect_kinds": [
+      "copy_heavy_model_directories",
+      "installed_runtime_mutation",
+      "local_heavy_build",
+      "mutable_target_engine"
+    ],
+    "identity_contracts": 1,
+    "invariants": 3,
+    "planned_side_effect_kinds": [
+      "filesystem_write",
+      "remote_build",
+      "remote_filesystem_write",
+      "source_edit"
+    ],
+    "preserved_artifacts": 2,
+    "runtime_comparisons": 0,
+    "source_checks": 1,
+    "tests": 6
+  },
+  "manifest_sha256": "4a128e91458dac47e7722d8eb1fbd819a2479dfd4d44dbefd69eb71f865c0d4f",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-stage-driver",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/stage-atomic-proof-engine-remote.sh",
+      "sha256": "34dcf601c7555a2476064c63de2aba0064be78a0262b45a6790cbca273d8ae3a",
+      "size_bytes": 3918
+    }
+  ],
+  "task_id": "LAY_IME_ATOMIC_PROOF_SOURCE_CLOSURE_IMPLEMENTATION_V25_V3_2026-08-22",
+  "verdict": "READY_TO_IMPLEMENT"
+}

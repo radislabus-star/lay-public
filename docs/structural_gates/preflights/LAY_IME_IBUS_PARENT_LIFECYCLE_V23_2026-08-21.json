@@ -1,0 +1,516 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_IBUS_PARENT_LIFECYCLE_V23_2026-08-21",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "lay-ibus-main",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 2213,
+        "sha256": "31bd989ae45c22fc073cf66e601aa5c06cc506ef952ddad520c73a8d91094367"
+      }
+    },
+    {
+      "id": "lay-ibus-server",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/server.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 1777,
+        "sha256": "f2cc5f9d30e4eca77f8efa62cbc4bfdb364e00ef894de7504081afcd28574814"
+      }
+    },
+    {
+      "id": "lay-ibus-args",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/args.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 499,
+        "sha256": "d6e5fa0151643ab1cb0cb28ebd464adec7459f24ccf0fcca9b400bcd01c73f25"
+      }
+    },
+    {
+      "id": "lay-atomic-owner",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 17211,
+        "sha256": "0ac32eef663638c826f95a0e0293e9da8eb99377bca30d326b297e4febd73188"
+      }
+    },
+    {
+      "id": "lay-output-owner",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/output.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 9869,
+        "sha256": "7ef339f78503de6d779c882c879021c22ef9f65b1d07cc09fb7b0d765131e1bc"
+      }
+    },
+    {
+      "id": "full-route-proof-driver",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 10143,
+        "sha256": "f86b82106f1e55100a253a20eeb5cfd861b0127827670ad6d534d81732eee83f"
+      }
+    },
+    {
+      "id": "installed-lay-engine",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 6423488,
+        "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a"
+      }
+    },
+    {
+      "id": "installed-ibus",
+      "kind": "file",
+      "path": "/usr/lib/x86_64-linux-gnu/libibus-1.0.so.5.0.534",
+      "expect": {
+        "mode": "0644",
+        "size_bytes": 542936,
+        "sha256": "e1977b9d3d84ee94b63f6c04056134c10aa51d4e0621f7abee1115da12259ec1"
+      }
+    },
+    {
+      "id": "installed-mutter",
+      "kind": "file",
+      "path": "/usr/lib/x86_64-linux-gnu/libmutter-18.so.0.0.0",
+      "expect": {
+        "mode": "0644",
+        "size_bytes": 2755048,
+        "sha256": "fec9023139ac8eff93fcc1af90413613cdb526e7f02389dc9d8fe90f7abc81e5"
+      }
+    },
+    {
+      "id": "installed-shell",
+      "kind": "file",
+      "path": "/usr/lib/gnome-shell/libshell-18.so",
+      "expect": {
+        "mode": "0644",
+        "size_bytes": 3107408,
+        "sha256": "94e81e3ff3820b3f8454d596c3a9ee7fa437b770b899098db85f15640a7abb73"
+      }
+    }
+  ],
+  "source_checks": [
+    {
+      "id": "pinned-ibus-main",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine.rs",
+      "sha256": "31bd989ae45c22fc073cf66e601aa5c06cc506ef952ddad520c73a8d91094367",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "non_ibus_lifecycle_change",
+          "regex": "arm_ibus_parent_death\\(true\\)|arm_parent_death_before_args"
+        },
+        {
+          "effect": "signal_handler_override",
+          "regex": "(?:signal_hook|sigaction|ctrlc::|tokio::signal)"
+        },
+        {
+          "effect": "manual_mode_termination",
+          "regex": "if !args[.]ibus.{0,80}(?:exit|SIGTERM|parent_death)"
+        }
+      ]
+    },
+    {
+      "id": "pinned-ibus-server",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/server.rs",
+      "sha256": "f2cc5f9d30e4eca77f8efa62cbc4bfdb364e00ef894de7504081afcd28574814",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "polling_worker",
+          "regex": "(?:thread::spawn|std::thread::sleep|async_io::Timer).{0,160}(?:ppid|parent|ibus)"
+        },
+        {
+          "effect": "session_bus_lifecycle_owner",
+          "regex": "session_connection.{0,120}(?:parent|lifecycle|termination)"
+        },
+        {
+          "effect": "second_mutation_owner",
+          "regex": "secondNativeMutationOwner|legacySameEventFallback"
+        },
+        {
+          "effect": "hot_path_lifecycle_check",
+          "regex": "process_(?:atomic_)?key_event.{0,160}(?:getppid|prctl|parent_death)"
+        }
+      ]
+    },
+    {
+      "id": "pinned-full-route-driver",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh",
+      "sha256": "f86b82106f1e55100a253a20eeb5cfd861b0127827670ad6d534d81732eee83f",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "local_build",
+          "regex": "(?:cargo|meson|ninja|make)\\s"
+        },
+        {
+          "effect": "runtime_deployment",
+          "regex": "(?:systemctl|dpkg|apt-get)\\s"
+        },
+        {
+          "effect": "installed_file_write",
+          "regex": "(?:/usr/lib|/home/ubu/[.]local/lib/lay)"
+        },
+        {
+          "effect": "live_session_restart",
+          "regex": "(?:kill|signal|restart).{0,80}(?:gnome-shell|ibus)"
+        },
+        {
+          "effect": "live_keyboard_signal",
+          "regex": "(?:ydotool|xdotool|wtype|/dev/(?:input|uinput))"
+        },
+        {
+          "effect": "historical_receipt_rewrite",
+          "regex": "rewriteHistoricalReceipt|truncateHistoricalEvidence"
+        },
+        {
+          "effect": "unbounded_remote_build",
+          "regex": "(?:--jobs\\s+0|-j\\s*0|unboundedRemoteBuild)"
+        }
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {
+        "id": "edit-ibus-lifecycle-source",
+        "kind": "source_edit"
+      },
+      {
+        "id": "sync-lifecycle-source-remote",
+        "kind": "remote_filesystem_write"
+      },
+      {
+        "id": "build-focused-engine-remote",
+        "kind": "remote_build"
+      },
+      {
+        "id": "run-focused-lifecycle-tests",
+        "kind": "ephemeral_process_start"
+      },
+      {
+        "id": "run-isolated-full-route",
+        "kind": "ephemeral_process_start"
+      },
+      {
+        "id": "write-lifecycle-evidence",
+        "kind": "filesystem_write"
+      }
+    ],
+    "forbidden": [
+      "non_ibus_lifecycle_change",
+      "signal_handler_override",
+      "manual_mode_termination",
+      "polling_worker",
+      "session_bus_lifecycle_owner",
+      "second_mutation_owner",
+      "hot_path_lifecycle_check",
+      "local_build",
+      "runtime_deployment",
+      "installed_file_write",
+      "live_session_restart",
+      "live_keyboard_signal",
+      "historical_receipt_rewrite",
+      "unbounded_remote_build"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "args-bytes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/args.rs",
+      "baseline_check_id": "lay-ibus-args",
+      "policy": "immutable",
+      "cursor_policy": "none",
+      "rollback_policy": "preserve_exact_bytes"
+    },
+    {
+      "id": "atomic-owner-bytes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic.rs",
+      "baseline_check_id": "lay-atomic-owner",
+      "policy": "immutable",
+      "cursor_policy": "none",
+      "rollback_policy": "preserve_exact_bytes"
+    },
+    {
+      "id": "output-owner-bytes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/output.rs",
+      "baseline_check_id": "lay-output-owner",
+      "policy": "immutable",
+      "cursor_policy": "none",
+      "rollback_policy": "preserve_exact_bytes"
+    },
+    {
+      "id": "proof-driver-bytes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh",
+      "baseline_check_id": "full-route-proof-driver",
+      "policy": "immutable",
+      "cursor_policy": "none",
+      "rollback_policy": "preserve_exact_bytes"
+    },
+    {
+      "id": "installed-lay-preserved",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "baseline_check_id": "installed-lay-engine",
+      "policy": "immutable_before_deployment",
+      "cursor_policy": "none",
+      "rollback_policy": "preserve_exact_bytes"
+    },
+    {
+      "id": "installed-ibus-preserved",
+      "path": "/usr/lib/x86_64-linux-gnu/libibus-1.0.so.5.0.534",
+      "baseline_check_id": "installed-ibus",
+      "policy": "immutable_before_deployment",
+      "cursor_policy": "none",
+      "rollback_policy": "preserve_exact_bytes"
+    },
+    {
+      "id": "installed-mutter-preserved",
+      "path": "/usr/lib/x86_64-linux-gnu/libmutter-18.so.0.0.0",
+      "baseline_check_id": "installed-mutter",
+      "policy": "immutable_before_deployment",
+      "cursor_policy": "none",
+      "rollback_policy": "preserve_exact_bytes"
+    },
+    {
+      "id": "installed-shell-preserved",
+      "path": "/usr/lib/gnome-shell/libshell-18.so",
+      "baseline_check_id": "installed-shell",
+      "policy": "immutable_before_deployment",
+      "cursor_policy": "none",
+      "rollback_policy": "preserve_exact_bytes"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "ibus-parent-lifecycle",
+      "producer": "--ibus component launch owned by the direct ibus-daemon parent",
+      "consumer": "Linux PR_SET_PDEATHSIG SIGTERM lifecycle arm",
+      "comparison": "the observed parent PID remains identical across arm or startup fails closed",
+      "test_id": "parent-arm-race"
+    },
+    {
+      "id": "manual-mode-separation",
+      "producer": "absence of --ibus",
+      "consumer": "manual engine lifecycle",
+      "comparison": "no parent-death signal is armed and existing manual behavior is unchanged",
+      "test_id": "manual-mode-noop"
+    },
+    {
+      "id": "remote-source-parity",
+      "producer": "local approved main and server source bytes",
+      "consumer": "20-CPU remote build checkout",
+      "comparison": "exact SHA-256 equality before build",
+      "test_id": "remote-source-parity"
+    }
+  ],
+  "runtime_comparisons": [],
+  "invariants": [
+    {
+      "id": "ibus-only-arm",
+      "statement": "parent-death termination is armed only after XML early return and only when args.ibus is true",
+      "test_id": "lifecycle-scope"
+    },
+    {
+      "id": "arm-race-closed",
+      "statement": "parent identity is observed before prctl and rechecked after it; an already changed or init parent fails startup",
+      "test_id": "parent-arm-race"
+    },
+    {
+      "id": "zero-hot-path-cost",
+      "statement": "lifecycle setup runs once before D-Bus registration and creates no polling task or key-event branch",
+      "test_id": "no-polling-route"
+    },
+    {
+      "id": "text-authority-preserved",
+      "statement": "atomic and output owner source bytes remain unchanged and legacy key calls stay zero",
+      "test_id": "text-owner-parity"
+    },
+    {
+      "id": "full-route-contract",
+      "statement": "514 exact commits, p99 at most 5 ms, maximum below 8 ms and zero task-owned leftovers all pass together",
+      "test_id": "integrated-full-route"
+    },
+    {
+      "id": "runtime-unmodified",
+      "statement": "installed Lay, IBus, Mutter and Shell bytes remain unchanged before deployment preflight",
+      "test_id": "installed-runtime-parity"
+    }
+  ],
+  "state_machine": {
+    "initial_state": "PAPER_APPROVED",
+    "steps": [
+      {
+        "id": "edit-lifecycle-source",
+        "from": "PAPER_APPROVED",
+        "to": "SOURCE_EDITED",
+        "mutates": true,
+        "failure_state": "SOURCE_EDIT_FAILED",
+        "cleanup": "restore main and server from their pinned baselines",
+        "preserves": [
+          "args-bytes",
+          "atomic-owner-bytes",
+          "output-owner-bytes",
+          "proof-driver-bytes",
+          "installed-lay-preserved",
+          "installed-ibus-preserved",
+          "installed-mutter-preserved",
+          "installed-shell-preserved"
+        ],
+        "test_id": "source-edit-fault"
+      },
+      {
+        "id": "sync-remote-source",
+        "from": "SOURCE_EDITED",
+        "to": "REMOTE_SOURCE_SYNCED",
+        "mutates": true,
+        "failure_state": "REMOTE_SYNC_FAILED",
+        "cleanup": "reject partial or hash-mismatched remote sources before build",
+        "preserves": [
+          "atomic-owner-bytes",
+          "output-owner-bytes",
+          "proof-driver-bytes",
+          "installed-lay-preserved",
+          "installed-ibus-preserved",
+          "installed-mutter-preserved",
+          "installed-shell-preserved"
+        ],
+        "test_id": "remote-sync-fault"
+      },
+      {
+        "id": "build-focused-engine",
+        "from": "REMOTE_SOURCE_SYNCED",
+        "to": "ENGINE_BUILT",
+        "mutates": true,
+        "failure_state": "ENGINE_BUILD_FAILED",
+        "cleanup": "discard only partial target cache outputs and retain source evidence",
+        "preserves": [
+          "installed-lay-preserved",
+          "installed-ibus-preserved",
+          "installed-mutter-preserved",
+          "installed-shell-preserved"
+        ],
+        "test_id": "engine-build-fault"
+      },
+      {
+        "id": "run-focused-tests",
+        "from": "ENGINE_BUILT",
+        "to": "LIFECYCLE_PROVEN",
+        "mutates": true,
+        "failure_state": "FOCUSED_TEST_FAILED",
+        "cleanup": "terminate test-owned processes and retain failed output",
+        "preserves": [
+          "installed-lay-preserved",
+          "installed-ibus-preserved",
+          "installed-mutter-preserved",
+          "installed-shell-preserved"
+        ],
+        "test_id": "focused-test-fault"
+      },
+      {
+        "id": "run-full-route",
+        "from": "LIFECYCLE_PROVEN",
+        "to": "V23_AGGREGATE_PROVEN",
+        "mutates": true,
+        "failure_state": "FULL_ROUTE_FAILED",
+        "cleanup": "terminate proof-owned processes, remove the socket and retain the full denominator",
+        "preserves": [
+          "installed-lay-preserved",
+          "installed-ibus-preserved",
+          "installed-mutter-preserved",
+          "installed-shell-preserved"
+        ],
+        "test_id": "full-route-fault"
+      }
+    ],
+    "terminal_states": [
+      "V23_AGGREGATE_PROVEN",
+      "SOURCE_EDIT_FAILED",
+      "REMOTE_SYNC_FAILED",
+      "ENGINE_BUILD_FAILED",
+      "FOCUSED_TEST_FAILED",
+      "FULL_ROUTE_FAILED"
+    ]
+  },
+  "tests": [
+    {
+      "id": "source-edit-fault",
+      "kind": "fault_injection",
+      "expected": "failed edit restores main and server and changes no authority owner"
+    },
+    {
+      "id": "remote-sync-fault",
+      "kind": "fault_injection",
+      "expected": "partial or mismatched remote source is refused before build"
+    },
+    {
+      "id": "engine-build-fault",
+      "kind": "fault_injection",
+      "expected": "failed guarded remote build grants no proof or deployment authority"
+    },
+    {
+      "id": "focused-test-fault",
+      "kind": "fault_injection",
+      "expected": "failed lifecycle test leaves no test process and retains evidence"
+    },
+    {
+      "id": "full-route-fault",
+      "kind": "fault_injection",
+      "expected": "failed integrated route cleans task processes and preserves failed evidence"
+    },
+    {
+      "id": "parent-arm-race",
+      "kind": "unit",
+      "expected": "same positive parent is accepted; init or changed parent is rejected"
+    },
+    {
+      "id": "manual-mode-noop",
+      "kind": "unit",
+      "expected": "ibus_owned false returns without invoking prctl"
+    },
+    {
+      "id": "lifecycle-scope",
+      "kind": "parity",
+      "expected": "XML exits before lifecycle arm and normal manual invocation does not arm it"
+    },
+    {
+      "id": "no-polling-route",
+      "kind": "model",
+      "expected": "no spawned thread, timer, message-stream observer or key-path check is added"
+    },
+    {
+      "id": "text-owner-parity",
+      "kind": "parity",
+      "expected": "atomic.rs and output.rs hashes remain pinned and integrated legacy calls equal zero"
+    },
+    {
+      "id": "remote-source-parity",
+      "kind": "parity",
+      "expected": "local and remote approved source hashes match before guarded build"
+    },
+    {
+      "id": "integrated-full-route",
+      "kind": "integration",
+      "expected": "514 exact commits, zero legacy calls, p99 at most 5 ms, max below 8 ms and leftovers before/after cleanup both zero"
+    },
+    {
+      "id": "installed-runtime-parity",
+      "kind": "parity",
+      "expected": "installed Lay, IBus, Mutter and Shell hashes remain byte-identical"
+    }
+  ]
+}

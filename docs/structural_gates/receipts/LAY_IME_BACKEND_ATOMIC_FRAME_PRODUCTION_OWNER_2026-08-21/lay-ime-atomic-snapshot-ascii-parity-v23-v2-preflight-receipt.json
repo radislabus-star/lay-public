@@ -1,0 +1,97 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "mutter-snapshot-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-text-input.c",
+      "sha256": "5d50a3a9becc31374c52f238729d1874b1cb9c5bfe46e5b90d053cc0cf2d29ca",
+      "size_bytes": 52566
+    },
+    {
+      "exists": true,
+      "id": "mutter-atomic-client-fixture",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/tests/wayland-test-clients/text-input-atomic-frame.c",
+      "sha256": "c81a9596db3063ec75367c18695c0bc257085168f549b1dacac0cd7c81f49f2a",
+      "size_bytes": 14974
+    },
+    {
+      "exists": true,
+      "id": "mutter-owner-fixture",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/tests/wayland-text-input-atomic-frame-tests.c",
+      "sha256": "c9e07a86f62c7af98d60db1d60066239bdcfb3bde6971f5c0159ea88e07645db",
+      "size_bytes": 20467
+    },
+    {
+      "exists": true,
+      "id": "installed-mutter",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/usr/lib/x86_64-linux-gnu/libmutter-18.so.0.0.0",
+      "sha256": "fec9023139ac8eff93fcc1af90413613cdb526e7f02389dc9d8fe90f7abc81e5",
+      "size_bytes": 2755048
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 4,
+    "forbidden_side_effect_kinds": [
+      "historical_receipt_rewrite",
+      "installed_file_write",
+      "live_keyboard_signal",
+      "live_session_restart",
+      "local_build",
+      "profile_digest_edit",
+      "runtime_deployment",
+      "snapshot_grammar_edit",
+      "snapshot_owner_edit",
+      "unbounded_remote_build"
+    ],
+    "identity_contracts": 1,
+    "invariants": 3,
+    "planned_side_effect_kinds": [
+      "filesystem_write",
+      "remote_build",
+      "remote_filesystem_write",
+      "test_source_edit"
+    ],
+    "preserved_artifacts": 2,
+    "runtime_comparisons": 0,
+    "source_checks": 2,
+    "tests": 7
+  },
+  "manifest_sha256": "467c8c0021542dc8e2627409c1e68d0f238c0479d33410cfb0f35534c2c5990d",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-mutter-owner",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-text-input.c",
+      "sha256": "5d50a3a9becc31374c52f238729d1874b1cb9c5bfe46e5b90d053cc0cf2d29ca",
+      "size_bytes": 52566
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-client-fixture",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/tests/wayland-test-clients/text-input-atomic-frame.c",
+      "sha256": "c81a9596db3063ec75367c18695c0bc257085168f549b1dacac0cd7c81f49f2a",
+      "size_bytes": 14974
+    }
+  ],
+  "task_id": "LAY_IME_ATOMIC_SNAPSHOT_ASCII_PARITY_V23_2026-08-21",
+  "verdict": "READY_TO_IMPLEMENT"
+}

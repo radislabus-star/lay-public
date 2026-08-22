@@ -1,0 +1,113 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "printable_key", "role": "interface"},
+    {"id": "ime_candidate_field", "role": "evidence_owner"},
+    {"id": "preedit_rank", "role": "display_rank_owner"},
+    {"id": "preedit_render", "role": "render_owner"},
+    {"id": "decision_core", "role": "candidate_rank_owner"},
+    {"id": "prefetch_snapshot", "role": "producer"},
+    {"id": "space_key", "role": "interface"},
+    {"id": "exact_prefetch_take", "role": "producer"},
+    {"id": "snapshot_plan_verifier", "role": "evidence_owner"},
+    {"id": "backend_authorizer", "role": "authorization_owner"},
+    {"id": "committed_tail_commit", "role": "mutation_owner"},
+    {"id": "space_apply_outcome", "role": "producer"},
+    {"id": "route_trace", "role": "observer"},
+    {"id": "focused_contract_tests", "role": "proof_owner"}
+  ],
+  "edges": [
+    {"id": "exec-key-field", "from": "printable_key", "relation": "calls", "to": "ime_candidate_field", "events": ["visible_input"]},
+    {"id": "exec-field-rank", "from": "ime_candidate_field", "relation": "delegates", "to": "preedit_rank", "events": ["visible_input"]},
+    {"id": "exec-rank-render", "from": "preedit_rank", "relation": "delegates", "to": "preedit_render", "events": ["visible_input"]},
+    {"id": "data-field-display-rank", "from": "ime_candidate_field", "relation": "passes_to", "to": "preedit_rank", "events": ["visible_input"]},
+    {"id": "data-display-render", "from": "preedit_rank", "relation": "passes_to", "to": "preedit_render", "events": ["visible_input"]},
+
+    {"id": "exec-key-prefetch-field", "from": "printable_key", "relation": "calls", "to": "ime_candidate_field", "events": ["prefetch_generation"]},
+    {"id": "exec-prefetch-field-decision", "from": "ime_candidate_field", "relation": "delegates", "to": "decision_core", "events": ["prefetch_generation"]},
+    {"id": "exec-decision-store", "from": "decision_core", "relation": "delegates", "to": "prefetch_snapshot", "events": ["prefetch_generation"]},
+    {"id": "data-field-decision", "from": "ime_candidate_field", "relation": "passes_to", "to": "decision_core", "events": ["prefetch_generation"]},
+
+    {"id": "exec-space-take", "from": "space_key", "relation": "calls", "to": "exact_prefetch_take", "events": ["space_apply"]},
+    {"id": "exec-take-verifier", "from": "exact_prefetch_take", "relation": "delegates", "to": "snapshot_plan_verifier", "events": ["space_apply"]},
+    {"id": "exec-verifier-authorizer", "from": "snapshot_plan_verifier", "relation": "delegates", "to": "backend_authorizer", "events": ["space_apply"]},
+    {"id": "exec-authorizer-commit", "from": "backend_authorizer", "relation": "delegates", "to": "committed_tail_commit", "events": ["space_apply"]},
+    {"id": "authority-prefetch-take", "from": "prefetch_snapshot", "relation": "passes_to", "to": "exact_prefetch_take", "events": ["space_apply"]},
+    {"id": "authority-take-verifier", "from": "exact_prefetch_take", "relation": "passes_to", "to": "snapshot_plan_verifier", "events": ["space_apply"]},
+    {"id": "authority-verifier-backend", "from": "snapshot_plan_verifier", "relation": "passes_to", "to": "backend_authorizer", "events": ["space_apply"]},
+    {"id": "authority-backend-commit", "from": "backend_authorizer", "relation": "authorizes", "to": "committed_tail_commit", "events": ["space_apply"]},
+
+    {"id": "observe-space-route", "from": "space_apply_outcome", "relation": "observes", "to": "route_trace", "events": ["space_apply"]},
+    {"id": "prove-space-route", "from": "snapshot_plan_verifier", "relation": "proves", "to": "focused_contract_tests", "events": ["software_proof"]}
+  ],
+  "routes": [
+    {
+      "id": "visible-input-execution",
+      "event": "visible_input",
+      "kind": "execution",
+      "entry": "printable_key",
+      "terminal": "preedit_render",
+      "required_roles": ["interface", "evidence_owner", "display_rank_owner", "render_owner"],
+      "path_cardinality": [{"from": "printable_key", "to": "preedit_render", "min": 1, "max": 1}]
+    },
+    {
+      "id": "visible-input-display-authority",
+      "event": "visible_input",
+      "kind": "authority",
+      "entry": "ime_candidate_field",
+      "terminal": "preedit_render",
+      "required_roles": ["evidence_owner", "display_rank_owner", "render_owner"]
+    },
+    {
+      "id": "prefetch-generation-execution",
+      "event": "prefetch_generation",
+      "kind": "execution",
+      "entry": "printable_key",
+      "terminal": "prefetch_snapshot",
+      "required_roles": ["interface", "evidence_owner", "candidate_rank_owner", "producer"],
+      "path_cardinality": [{"from": "printable_key", "to": "prefetch_snapshot", "min": 1, "max": 1}]
+    },
+    {
+      "id": "prefetch-generation-authority",
+      "event": "prefetch_generation",
+      "kind": "authority",
+      "entry": "ime_candidate_field",
+      "terminal": "decision_core",
+      "required_roles": ["evidence_owner", "candidate_rank_owner"]
+    },
+    {
+      "id": "space-apply-execution",
+      "event": "space_apply",
+      "kind": "execution",
+      "entry": "space_key",
+      "terminal": "committed_tail_commit",
+      "required_roles": ["interface", "producer", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "space_key", "to": "committed_tail_commit", "min": 1, "max": 1}]
+    },
+    {
+      "id": "space-apply-authority",
+      "event": "space_apply",
+      "kind": "authority",
+      "entry": "prefetch_snapshot",
+      "terminal": "committed_tail_commit",
+      "required_roles": ["producer", "authorization_owner", "mutation_owner"]
+    },
+    {
+      "id": "space-observation",
+      "event": "space_apply",
+      "kind": "observation",
+      "entry": "space_apply_outcome",
+      "terminal": "route_trace",
+      "required_roles": ["producer", "observer"]
+    },
+    {
+      "id": "space-proof",
+      "event": "software_proof",
+      "kind": "proof",
+      "entry": "snapshot_plan_verifier",
+      "terminal": "focused_contract_tests",
+      "required_roles": ["evidence_owner", "proof_owner"]
+    }
+  ]
+}

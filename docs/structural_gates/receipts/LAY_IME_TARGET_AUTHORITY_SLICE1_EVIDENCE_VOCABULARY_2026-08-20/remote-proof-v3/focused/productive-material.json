@@ -1,0 +1,9 @@
+{
+  "id": "productive-material",
+  "filter": "immutable_field_materialization_preserves_the_complete_readout",
+  "exit_code": 0,
+  "log": {
+    "size_bytes": 34007,
+    "sha256": "27b223f117937280f772794a8aa8ea2b33e84c5a311a8412614f1d1f8cf282bc"
+  }
+}

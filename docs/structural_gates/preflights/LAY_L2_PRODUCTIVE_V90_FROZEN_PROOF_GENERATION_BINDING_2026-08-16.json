@@ -1,0 +1,266 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-l2-productive-v90-frozen-proof-generation-binding-2026-08-16",
+  "authority_bearing": true,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "productive-proof-source-before-generation-binding",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/proof.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 125410,
+        "sha256": "e67e3c0549a74ce8ecc790e3b15888cb36757ce1aa141fc3d7a328d0e89a4ae3"
+      }
+    },
+    {
+      "id": "frozen-v64-manifest-evidence",
+      "kind": "file",
+      "path": "../receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_2026-08-16/frozen-v64-hypothesis-manifest-v1.json",
+      "expect": {
+        "mode": "0644",
+        "size_bytes": 1480754,
+        "sha256": "13e2db3470006303de3d87b2f999988db1661157760fec447e54ac37d5b495ea"
+      }
+    },
+    {
+      "id": "old-v90-fixed-proof-evidence",
+      "kind": "file",
+      "path": "../receipts/L2_PRODUCTIVE_V90_LIVE_DEPLOY_FIXED_PROOF_2026-08-12.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 1094701,
+        "sha256": "36c1471501b49c8f2aa94563317ffe3680b8802b33c308558f7fe2bf4a8ea02c"
+      }
+    },
+    {
+      "id": "v9-bound-v90-build-evidence",
+      "kind": "file",
+      "path": "../receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_2026-08-16/resume-build-receipt.json",
+      "expect": {
+        "mode": "0644",
+        "size_bytes": 2813,
+        "sha256": "78608961933f0d0235c4d2e3cdacf842780d9c4c99fbffb28362757f1e3c2e87"
+      }
+    },
+    {
+      "id": "productive-axis-schema",
+      "kind": "file",
+      "path": "../../../data/morphology/productive_v1_ru_axis_schema.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 1825,
+        "sha256": "b5b24f952e83e1e9738db0f89a9d2e9e16eaf7af754990114a562d42be3c060b"
+      }
+    }
+  ],
+  "source_checks": [
+    {
+      "id": "existing-frozen-proof-remains-fail-closed",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/proof.rs",
+      "sha256": "e67e3c0549a74ce8ecc790e3b15888cb36757ce1aa141fc3d7a328d0e89a4ae3",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "arbitrary-proof-identity-bypass",
+          "regex": "(?i)(?:skip|ignore|bypass).{0,80}(?:frozen|manifest|package_sha256)"
+        },
+        {
+          "effect": "runtime-configured-trust-root",
+          "regex": "(?i)(?:env|arg_path|arg_string).{0,120}(?:allowed|trusted).{0,80}(?:sha|generation)"
+        }
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {
+        "id": "edit-exact-proof-generation-binding",
+        "kind": "source_edit"
+      },
+      {
+        "id": "build-proof-binary-in-isolated-remote-target",
+        "kind": "remote_release_build"
+      },
+      {
+        "id": "run-exact-generation-binding-tests",
+        "kind": "remote_test"
+      },
+      {
+        "id": "run-fixed-read-only-productive-proof",
+        "kind": "remote_quality_proof"
+      }
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "rewrite_frozen_manifest",
+      "change_frozen_manifest_entries",
+      "arbitrary_cli_proof_bypass",
+      "prefix_or_wildcard_digest_admission",
+      "accept_cross_generation_pair",
+      "weaken_productive_runtime_fingerprint_validation",
+      "install_before_fixed_proof_pass",
+      "runtime_deployment",
+      "restart_global_ibus_daemon",
+      "literal_surface_runtime_branch"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "frozen-v64-manifest",
+      "path": "../receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_2026-08-16/frozen-v64-hypothesis-manifest-v1.json",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "never rewrite or regenerate from the V9-bound package",
+      "baseline_check_id": "frozen-v64-manifest-evidence"
+    },
+    {
+      "id": "old-v90-proof-generation",
+      "path": "../receipts/L2_PRODUCTIVE_V90_LIVE_DEPLOY_FIXED_PROOF_2026-08-12.json",
+      "policy": "retain old exact generation admission",
+      "rollback_policy": "old exact package and L1 pair remains accepted by unit and fixed proof contracts",
+      "baseline_check_id": "old-v90-fixed-proof-evidence"
+    },
+    {
+      "id": "v9-bound-v90-build",
+      "path": "../receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_2026-08-16/resume-build-receipt.json",
+      "policy": "read_only_staging_evidence",
+      "rollback_policy": "retain receipt and package remotely; do not install on proof failure",
+      "baseline_check_id": "v9-bound-v90-build-evidence"
+    }
+  ],
+  "state_machine": {
+    "initial_state": "V9_PACKAGE_BUILT_PROOF_IDENTITY_REJECTED_RUNTIME_UNCHANGED",
+    "terminal_states": [
+      "FIXED_PROOF_PASS_RUNTIME_UNCHANGED",
+      "SOURCE_BINDING_REJECTED_RUNTIME_UNCHANGED",
+      "REMOTE_BUILD_FAILED_RUNTIME_UNCHANGED",
+      "FIXED_PROOF_FAILED_RUNTIME_UNCHANGED"
+    ],
+    "steps": [
+      {
+        "id": "implement-exact-generation-table",
+        "from": "V9_PACKAGE_BUILT_PROOF_IDENTITY_REJECTED_RUNTIME_UNCHANGED",
+        "to": "SOURCE_BINDING_READY_RUNTIME_UNCHANGED",
+        "mutates": true,
+        "failure_state": "SOURCE_BINDING_REJECTED_RUNTIME_UNCHANGED",
+        "cleanup": "retain the baseline and rejected diff as evidence; do not sync or deploy unaccepted source",
+        "preserves": [
+          "frozen-v64-manifest",
+          "old-v90-proof-generation",
+          "v9-bound-v90-build"
+        ],
+        "test_id": "generation-binding-matrix"
+      },
+      {
+        "id": "build-and-check-proof-source-remotely",
+        "from": "SOURCE_BINDING_READY_RUNTIME_UNCHANGED",
+        "to": "REMOTE_PROOF_BINARY_READY_RUNTIME_UNCHANGED",
+        "mutates": true,
+        "failure_state": "REMOTE_BUILD_FAILED_RUNTIME_UNCHANGED",
+        "cleanup": "retain build logs and remove only partial files from the new isolated target",
+        "preserves": [
+          "frozen-v64-manifest",
+          "old-v90-proof-generation",
+          "v9-bound-v90-build"
+        ],
+        "test_id": "remote-source-and-build-parity"
+      },
+      {
+        "id": "run-fixed-proof-with-v9-generation",
+        "from": "REMOTE_PROOF_BINARY_READY_RUNTIME_UNCHANGED",
+        "to": "FIXED_PROOF_PASS_RUNTIME_UNCHANGED",
+        "mutates": true,
+        "failure_state": "FIXED_PROOF_FAILED_RUNTIME_UNCHANGED",
+        "cleanup": "retain exact failed proof receipt and keep installed runtime and packages unchanged",
+        "preserves": [
+          "frozen-v64-manifest",
+          "old-v90-proof-generation",
+          "v9-bound-v90-build"
+        ],
+        "test_id": "fixed-v9-productive-proof"
+      }
+    ]
+  },
+  "tests": [
+    {
+      "id": "generation-binding-matrix",
+      "kind": "unit",
+      "expected": "old exact pair and V9 exact pair are accepted; both cross-pairs and unknown digests are rejected"
+    },
+    {
+      "id": "frozen-manifest-payload-parity",
+      "kind": "parity",
+      "expected": "manifest bytes remain unchanged; spool SHA/bytes, canonical V13 SHA, axis SHA, 1300 entries, H=1280 and payload SHA 2f54844d7f7900734049d2ed2ae53150eead60da3223c0efc4256ba804b7f89b all match"
+    },
+    {
+      "id": "remote-source-and-build-parity",
+      "kind": "parity",
+      "expected": "remote proof.rs and Cargo inputs equal the local scoped source by SHA-256 and compile with Cargo 1.97.1"
+    },
+    {
+      "id": "fixed-v9-productive-proof",
+      "kind": "integration",
+      "expected": "fixed 13 x 100 x 2 proof runs against Productive 40fb6a9f... and L1 bf5a1619..., reports unchanged manifest payload and denominators, zero integrity errors and zero false singleton, and changes no runtime authority"
+    },
+    {
+      "id": "old-generation-binding-preserved",
+      "kind": "regression",
+      "expected": "the old Productive 9fd8c950... plus L1 47fa757a... pair remains an exact accepted proof generation"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "generation-pairs-are-atomic",
+      "statement": "a productive digest is accepted only with its exact L1 digest; cross-generation pairs fail closed",
+      "test_id": "generation-binding-matrix"
+    },
+    {
+      "id": "manifest-truth-is-unchanged",
+      "statement": "the new generation binding cannot rewrite or reinterpret frozen case identities or oracle paradigm bindings",
+      "test_id": "frozen-manifest-payload-parity"
+    },
+    {
+      "id": "old-generation-remains-verifiable",
+      "statement": "adding the V9 package pair does not replace the old proof generation",
+      "test_id": "old-generation-binding-preserved"
+    },
+    {
+      "id": "proof-does-not-deploy",
+      "statement": "source checks and fixed proof leave installed packages, Lay processes and global IBus unchanged",
+      "test_id": "fixed-v9-productive-proof"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "old-product-generation",
+      "producer": "Productive 9fd8c950398fb8ba47a2c9f2236880239d9f4376b191a691b0d01c47ddd3e438 plus L1 47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9",
+      "consumer": "frozen Productive proof generation resolver",
+      "comparison": "exact full SHA-256 pair equality",
+      "test_id": "old-generation-binding-preserved"
+    },
+    {
+      "id": "v9-product-generation",
+      "producer": "Productive 40fb6a9f0d92c3c7502e47f9c70230d9b86020f622b08a5c799342f13e09ce44 plus L1 bf5a1619a89038466ef786305cf35eda5f4af5b9f12b9140f7d3cac407e2f2a7",
+      "consumer": "frozen Productive proof generation resolver",
+      "comparison": "exact full SHA-256 pair equality",
+      "test_id": "generation-binding-matrix"
+    },
+    {
+      "id": "frozen-hypothesis-payload",
+      "producer": "the 1300 serialized FrozenHypothesisEntryV1 records",
+      "consumer": "fixed Productive proof oracle index",
+      "comparison": "recomputed payload SHA-256 plus exact H=1280 and sorted unique identities",
+      "test_id": "frozen-manifest-payload-parity"
+    },
+    {
+      "id": "local-to-remote-proof-source",
+      "producer": "local scoped proof source",
+      "consumer": "isolated remote release build and proof binary",
+      "comparison": "SHA-256 byte identity",
+      "test_id": "remote-source-and-build-parity"
+    }
+  ],
+  "runtime_comparisons": []
+}

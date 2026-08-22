@@ -1,0 +1,142 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-l2-short-left-boundary-2026-08-16",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {"id": "tail-scan-adapter", "kind": "file", "path": "../../../src/nanda_wave/l2/tail_scan_adapter.rs", "expect": {"size_bytes": 26970, "sha256": "76821f4adbacbb2930fdaeedb7c0dad0749b67638d5cc8e8d591ac3dbc0b93a0", "mode": "0664"}},
+    {"id": "l2-route", "kind": "file", "path": "../../../src/nanda_wave/l2.rs", "expect": {"size_bytes": 18826, "sha256": "c22763240e32766637fc2c00e4fb13fa82abdb7b7f33d4b3bc399c8c90a5753d", "mode": "0664"}},
+    {"id": "l2-tests", "kind": "file", "path": "../../../src/nanda_wave/l2/tests.rs", "expect": {"size_bytes": 45282, "sha256": "9fc52c9adf6d0d3fa76e99f6ceec0588537adaf42cdca3345e75486d3367a4b4", "mode": "0664"}},
+    {"id": "canonical-bridge", "kind": "file", "path": "../../../src/nanda_wave/l2_field/bridge.rs", "expect": {"size_bytes": 76781, "sha256": "242246fcad84452911c735b0e0133860aae201176a37d3b996c00cae30eeec62", "mode": "0664"}},
+    {"id": "correction-tests", "kind": "file", "path": "../../../src/correction_core/tests.rs", "expect": {"size_bytes": 93410, "sha256": "a130373eccdcb69653d46b1217247f051c3d3fc22d651e38ecee8ba5432fb4f1", "mode": "0664"}},
+    {"id": "edit-safety", "kind": "file", "path": "../../../src/text_edit/safety.rs", "expect": {"size_bytes": 12107, "sha256": "2eb243ee5f9f12947b8e35e1ce080ff42550bff3d62f2720688547ac16c80e4d", "mode": "0664"}},
+    {"id": "proposal-admission", "kind": "file", "path": "../../../src/typing_transition/proposal_admission.rs", "expect": {"size_bytes": 70639, "sha256": "dd4a37a8c0430c9ff145f9ae9cbbbc735164ece833a143a19af644ac7ad835ca", "mode": "0664"}},
+    {"id": "architecture-document", "kind": "file", "path": "../../../docs/l2-l11-canonical-architecture.md", "expect": {"size_bytes": 262839, "sha256": "1a2a8817bd276f4bf06e1ff16d117b64f7aaf1f2e4fa55dd608278b339d07ee3", "mode": "0664"}},
+    {"id": "managed-engine-source", "kind": "file", "path": "../../../src/bin/lay_ibus_engine/managed.rs", "expect": {"size_bytes": 9866, "sha256": "783b2ebf78ee44fe51316acee1d92dc759c2be57afa6f251e85452c2350ce60b", "mode": "0664"}},
+    {"id": "installed-ime-1-0-32", "kind": "file", "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine", "expect": {"size_bytes": 6421312, "sha256": "abe005b65fb586cc0e0dada94d15e726372ca6fa712e566e9254dee2367f5dd0", "mode": "0755"}}
+  ],
+  "source_checks": [
+    {
+      "id": "no-case-specific-or-broad-boundary-patch",
+      "path": "../../../src/nanda_wave/l2/tail_scan_adapter.rs",
+      "sha256": "76821f4adbacbb2930fdaeedb7c0dad0749b67638d5cc8e8d591ac3dbc0b93a0",
+      "forbidden_effect_patterns": [
+        {"effect": "literal_surface_runtime_branch", "regex": "(?:данорм|да норм|поспорта|пос порта)"},
+        {"effect": "broad_two_content_threshold_weakening", "regex": "independent_content_boundary_centers[\\s\\S]{0,500}chars\\(\\) < [0-3]"}
+      ]
+    },
+    {
+      "id": "no-boundary-reserve-expansion",
+      "path": "../../../src/nanda_wave/l2_field/bridge.rs",
+      "sha256": "242246fcad84452911c735b0e0133860aae201176a37d3b996c00cae30eeec62",
+      "forbidden_effect_patterns": [
+        {"effect": "boundary_frontier_expansion", "regex": "MAX_BOUNDARY_CANDIDATES\\s*:\\s*usize\\s*=\\s*(?:[3-9]|[1-9][0-9]+)"}
+      ]
+    },
+    {
+      "id": "no-safety-or-admission-weakening",
+      "path": "../../../src/text_edit/safety.rs",
+      "sha256": "2eb243ee5f9f12947b8e35e1ce080ff42550bff3d62f2720688547ac16c80e4d",
+      "forbidden_effect_patterns": [
+        {"effect": "safety_gate_weakening", "regex": "(?i)(?:bypass|disable|skip).{0,64}(?:safety|boundary)|(?:safety|boundary).{0,64}(?:bypass|disable|skip)"}
+      ]
+    },
+    {
+      "id": "no-global-ibus-restart",
+      "path": "../../../src/bin/lay_ibus_engine/managed.rs",
+      "sha256": "783b2ebf78ee44fe51316acee1d92dc759c2be57afa6f251e85452c2350ce60b",
+      "forbidden_effect_patterns": [
+        {"effect": "global_ibus_restart", "regex": "(?i)(?:restart|kill|pkill).{0,40}ibus-daemon"}
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "implement-bounded-short-left-field-birth", "kind": "filesystem_edit"},
+      {"id": "add-class-and-negative-proof", "kind": "filesystem_edit"},
+      {"id": "update-owning-architecture-document", "kind": "filesystem_edit"},
+      {"id": "run-focused-remote-proof", "kind": "cargo_test"},
+      {"id": "deploy-managed-ime-after-pass", "kind": "service_activation"}
+    ],
+    "forbidden": [
+      "literal_surface_runtime_branch",
+      "broad_two_content_threshold_weakening",
+      "boundary_frontier_expansion",
+      "safety_gate_weakening",
+      "global_ibus_restart"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "installed-ime-baseline",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "policy": "leave byte-identical until remote proof passes",
+      "rollback_policy": "restore exact installed 1.0.32 binary from the existing rollback snapshot",
+      "baseline_check_id": "installed-ime-1-0-32"
+    }
+  ],
+  "state_machine": {
+    "initial_state": "LIVE_1_0_32_SHORT_LEFT_BOUNDARY_MISSING",
+    "terminal_states": [
+      "REMOTE_PROOF_PASS_RUNTIME_UNCHANGED",
+      "DEPLOYED_AND_VERIFIED",
+      "PROOF_FAILED_RUNTIME_UNCHANGED",
+      "DEPLOY_FAILED_ROLLED_BACK_TO_1_0_32"
+    ],
+    "steps": [
+      {
+        "id": "implement-systemic-boundary-birth",
+        "from": "LIVE_1_0_32_SHORT_LEFT_BOUNDARY_MISSING",
+        "to": "SOURCE_FIXED_RUNTIME_UNCHANGED",
+        "mutates": true,
+        "failure_state": "PROOF_FAILED_RUNTIME_UNCHANGED",
+        "cleanup": "do not install; retain the source diff and current live 1.0.32",
+        "preserves": ["installed-ime-baseline"],
+        "test_id": "implementation-failure-preserves-runtime"
+      },
+      {
+        "id": "run-focused-remote-proof",
+        "from": "SOURCE_FIXED_RUNTIME_UNCHANGED",
+        "to": "REMOTE_PROOF_PASS_RUNTIME_UNCHANGED",
+        "mutates": false,
+        "failure_state": "PROOF_FAILED_RUNTIME_UNCHANGED",
+        "cleanup": "do not install; retain current live 1.0.32",
+        "preserves": ["installed-ime-baseline"],
+        "test_id": "remote-boundary-proof"
+      },
+      {
+        "id": "deploy-managed-ime",
+        "from": "REMOTE_PROOF_PASS_RUNTIME_UNCHANGED",
+        "to": "DEPLOYED_AND_VERIFIED",
+        "mutates": true,
+        "failure_state": "DEPLOY_FAILED_ROLLED_BACK_TO_1_0_32",
+        "cleanup": "restore exact 1.0.32 binary and restart only the managed Lay engine",
+        "preserves": ["installed-ime-baseline"],
+        "test_id": "managed-deploy-rollback"
+      }
+    ]
+  },
+  "tests": [
+    {"id": "short-left-class-birth", "kind": "integration", "expected": "strong short left and stable right field centers birth a bounded Boundary candidate without literal surface rules"},
+    {"id": "false-split-negative-class", "kind": "integration", "expected": "known whole words, weak short fragments, multi-letter prepositions and one-edit whole-word competitors do not gain false automatic split authority"},
+    {"id": "canonical-boundary-retention", "kind": "parity", "expected": "the selected split target survives the two-candidate canonical boundary reserve with Boundary target evidence"},
+    {"id": "decision-and-verifier-authority", "kind": "integration", "expected": "DecisionCore selects only a verified BoundaryMergeSplit and all losing or ambiguous candidates remain non-authoritative"},
+    {"id": "decision-winner-verifier-parity", "kind": "parity", "expected": "DecisionCore winner and BoundaryMergeSplit verifier compare identical from text, to text, class, origin and edit plan"},
+    {"id": "remote-boundary-proof", "kind": "integration", "expected": "focused L2, canonical bridge, correction core, IME authority, mutation safety and changed-source gates pass on e@192.168.3.94"},
+    {"id": "implementation-failure-preserves-runtime", "kind": "fault_injection", "expected": "any source or proof failure leaves installed 1.0.32 and global ibus-daemon unchanged"},
+    {"id": "managed-deploy-rollback", "kind": "fault_injection", "expected": "a failed managed-engine deployment restores exact 1.0.32 without restarting global ibus-daemon"}
+  ],
+  "invariants": [
+    {"id": "field-evidence-not-literal-fixture", "statement": "short-left birth depends on field rank and independent right-center evidence, never on a reported token or target literal", "test_id": "short-left-class-birth"},
+    {"id": "known-whole-and-preposition-protection", "statement": "known whole-surface protection and the multi-letter-preposition veto remain conjunctive blockers", "test_id": "false-split-negative-class"},
+    {"id": "bounded-boundary-reserve", "statement": "the canonical L2 bridge retains at most two Boundary candidates", "test_id": "canonical-boundary-retention"},
+    {"id": "birth-does-not-authorize", "statement": "L2 boundary birth only contributes a lattice candidate; DecisionCore and the verifier remain the sole rank and mutation authority owners", "test_id": "decision-and-verifier-authority"},
+    {"id": "global-ibus-survives", "statement": "global ibus-daemon is never restarted by this deployment", "test_id": "managed-deploy-rollback"}
+  ],
+  "identity_contracts": [
+    {"id": "boundary-target-to-canonical-lattice", "producer": "BoundaryCell32 split target with independent center evidence", "consumer": "CanonicalL2FieldBoundary reserve", "comparison": "token plus exact split surface plus Boundary target evidence", "test_id": "canonical-boundary-retention"},
+    {"id": "decision-winner-to-verifier", "producer": "TransitionDecisionCore selected Boundary candidate", "consumer": "BoundaryMergeSplit verifier", "comparison": "from text plus to text plus error class plus origin plus exact edit plan", "test_id": "decision-winner-verifier-parity"}
+  ],
+  "runtime_comparisons": []
+}

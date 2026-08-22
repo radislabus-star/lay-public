@@ -1,0 +1,313 @@
+{
+  "authority_bearing": false,
+  "baseline_checks": [
+    {
+      "id": "union-smoke",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE5_CONTOUR_BIRTH_2026-08-20/slice5-smoke-exact-union-13x1.json",
+      "expect": {
+        "mode": "0600",
+        "size_bytes": 113797,
+        "sha256": "ad632cd7869a9fe8702c4ae5e34b40fad326358fb7093252086a9a992e6e4104"
+      }
+    },
+    {
+      "id": "paper",
+      "kind": "file",
+      "path": "../../ime-canonical-target-authority-paper-2026-08-17.md",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 181617,
+        "sha256": "d2158ba4c31dd2dc99e04430bbb19d23de65fa6739322f0002d8cab8c8be0c37"
+      }
+    },
+    {
+      "id": "material-owner",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/material_frame.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 41480,
+        "sha256": "a36d6d43307401b2ccb1453350ed67b43a71d1a0266b34fd8cc86cf187efa37e"
+      }
+    },
+    {
+      "id": "contour-owner",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/contour_birth.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 20522,
+        "sha256": "abe38147457cdbed40caf19b26278dc96bac3e8c999ebfd9d428a32673f29e49"
+      }
+    },
+    {
+      "id": "proof-owner",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/proof.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 184500,
+        "sha256": "0846cc440715124f2ed5fb8f75699141f5d1d2f4ddba077805e3378384166ee4"
+      }
+    },
+    {
+      "id": "evidence-vocabulary",
+      "kind": "file",
+      "path": "../../../src/typing_transition/target_evidence.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 51805,
+        "sha256": "af909f2a5a1abe5908f11ea87f2594d27663b8b19ec3a2faa8bb9402c30eb158"
+      }
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "complete-before-retain",
+      "producer": "complete typed contour enumeration and all-seen digest",
+      "consumer": "eight-surface contour storage reserve",
+      "comparison": "every retained root belongs to the complete set and overflow preserves the complete-set digest",
+      "test_id": "contour-reserve-parity"
+    },
+    {
+      "id": "productive-dedup",
+      "producer": "productive retained surface identity",
+      "consumer": "matching contour witness roots",
+      "comparison": "exact canonical bytes merge roots without consuming a novel contour slot",
+      "test_id": "productive-contour-dedup"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "fixed-envelope",
+      "statement": "MAX_TARGETS_PER_FIELD remains 74 and novel contour storage remains at most 8 surfaces",
+      "test_id": "bounded-layout"
+    },
+    {
+      "id": "no-hidden-alternatives",
+      "statement": "more than eight logical novel contour surfaces yields whole-field StorageCapacity overflow and no Winner",
+      "test_id": "contour-overflow-fail-closed"
+    },
+    {
+      "id": "topology-before-bytes",
+      "statement": "direct ExactLayout surfaces are retained first and remaining storage is relation-partition fair; byte order is only an intra-partition tie break",
+      "test_id": "relation-fair-retention"
+    },
+    {
+      "id": "no-case-fix",
+      "statement": "no fixture surface test ID suffix or source-specific condition enters material storage selection",
+      "test_id": "systemic-source-scan"
+    },
+    {
+      "id": "live-unchanged",
+      "statement": "bridge cache DecisionCore verifier daemon IBus packages and installed runtime remain unchanged",
+      "test_id": "live-byte-parity"
+    }
+  ],
+  "preserved_artifacts": [
+    {
+      "id": "union-smoke-evidence",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE5_CONTOUR_BIRTH_2026-08-20/slice5-smoke-exact-union-13x1.json",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "retain union birth-pass retention-fail evidence",
+      "baseline_check_id": "union-smoke"
+    }
+  ],
+  "reuses_existing_implementation": true,
+  "runtime_comparisons": [],
+  "schema": "nanda.implementation-preflight.v1",
+  "scientific_future_sensitive": true,
+  "source_checks": [
+    {
+      "id": "material-owner-pinned",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/material_frame.rs",
+      "sha256": "a36d6d43307401b2ccb1453350ed67b43a71d1a0266b34fd8cc86cf187efa37e",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "literal_case_runtime_branch",
+          "regex": "(?i)(?:observed|candidate|surface)\\s*==\\s*\""
+        },
+        {
+          "effect": "raise_global_target_limit",
+          "regex": "MAX_TARGETS_PER_FIELD\\s*[:=].*(?:75|96|128)"
+        },
+        {
+          "effect": "mint_grounding_from_storage",
+          "regex": "StorageCapacity.{0,160}(?:Grounded|Winner)"
+        }
+      ]
+    },
+    {
+      "id": "contour-owner-pinned",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/contour_birth.rs",
+      "sha256": "abe38147457cdbed40caf19b26278dc96bac3e8c999ebfd9d428a32673f29e49",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "literal_case_runtime_branch",
+          "regex": "(?i)(?:observed|candidate|surface)\\s*==\\s*\""
+        },
+        {
+          "effect": "raise_contour_work_budget",
+          "regex": "MAX_CONTOUR_(?:EXACT_LOOKUPS|OPERATOR_STEPS)\\s*[:=].*(?:32768|65536)"
+        }
+      ]
+    },
+    {
+      "id": "proof-owner-pinned",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/proof.rs",
+      "sha256": "0846cc440715124f2ed5fb8f75699141f5d1d2f4ddba077805e3378384166ee4",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "runtime_deployment",
+          "regex": "(?:systemctl|daemon-reload|lay-runtime-control)"
+        },
+        {
+          "effect": "synthetic_fixture",
+          "regex": "(?:write|create|generate)_synthetic_fixture"
+        },
+        {
+          "effect": "generated_traffic",
+          "regex": "(?:TcpStream|UdpSocket|reqwest|hyper::|https?://)"
+        },
+        {
+          "effect": "restart_lay_daemon",
+          "regex": "(?:restart|stop|kill|pkill).{0,80}lay-daemon"
+        },
+        {
+          "effect": "restart_global_ibus_daemon",
+          "regex": "(?:restart|stop|kill|pkill).{0,80}ibus-daemon"
+        },
+        {
+          "effect": "rewrite_any_package",
+          "regex": "(?:File::create|OpenOptions::new).{0,300}(?:p2m|L2-RU|canonical|lexical)"
+        },
+        {
+          "effect": "change_live_rank_or_authority",
+          "regex": "(?:live|bridge).{0,120}(?:score|rank|authority)\\s*[+*]?="
+        }
+      ]
+    },
+    {
+      "id": "evidence-vocabulary-pinned",
+      "path": "../../../src/typing_transition/target_evidence.rs",
+      "sha256": "af909f2a5a1abe5908f11ea87f2594d27663b8b19ec3a2faa8bb9402c30eb158",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "raise_global_target_limit",
+          "regex": "MAX_TARGETS_PER_FIELD\\s*[:=].*(?:75|96|128)"
+        },
+        {
+          "effect": "mint_grounding_from_storage",
+          "regex": "Overflow.{0,160}Winner"
+        }
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {
+        "id": "implement-typed-contour-reserve",
+        "kind": "source_edit"
+      },
+      {
+        "id": "add-boundedness-tests",
+        "kind": "source_edit"
+      },
+      {
+        "id": "run-remote-shadow-proof",
+        "kind": "remote_test"
+      }
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "runtime_deployment",
+      "restart_lay_daemon",
+      "restart_global_ibus_daemon",
+      "rewrite_any_package",
+      "raise_global_target_limit",
+      "raise_contour_work_budget",
+      "literal_case_runtime_branch",
+      "mint_grounding_from_storage",
+      "change_live_rank_or_authority"
+    ]
+  },
+  "state_machine": {
+    "initial_state": "UNION_BIRTH_PASS_RETENTION_FAIL_RUNTIME_UNCHANGED",
+    "steps": [
+      {
+        "id": "implement-reserve",
+        "from": "UNION_BIRTH_PASS_RETENTION_FAIL_RUNTIME_UNCHANGED",
+        "to": "TYPED_CONTOUR_RESERVE_READY",
+        "mutates": true,
+        "failure_state": "RESERVE_IMPLEMENTATION_REJECTED_RUNTIME_UNCHANGED",
+        "cleanup": "retain failed diff and receipts without fallback or deployment",
+        "preserves": [
+          "union-smoke-evidence"
+        ],
+        "test_id": "contour-overflow-fail-closed"
+      },
+      {
+        "id": "run-fixed-proof",
+        "from": "TYPED_CONTOUR_RESERVE_READY",
+        "to": "TYPED_CONTOUR_RESERVE_SHADOW_PASS_RUNTIME_UNCHANGED",
+        "mutates": false,
+        "failure_state": "RESERVE_PROOF_FAILED_RUNTIME_UNCHANGED",
+        "cleanup": "retain exact failure receipt and stop before Slice 6",
+        "preserves": [
+          "union-smoke-evidence"
+        ],
+        "test_id": "fixed-proof"
+      }
+    ],
+    "terminal_states": [
+      "TYPED_CONTOUR_RESERVE_SHADOW_PASS_RUNTIME_UNCHANGED",
+      "RESERVE_IMPLEMENTATION_REJECTED_RUNTIME_UNCHANGED",
+      "RESERVE_PROOF_FAILED_RUNTIME_UNCHANGED"
+    ]
+  },
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE5_TYPED_CONTOUR_RESERVE_IMPLEMENTATION_V1_2026-08-20",
+  "tests": [
+    {
+      "id": "contour-reserve-parity",
+      "kind": "parity",
+      "expected": "enumeration and all-seen digest are order independent while retained contour surfaces stay within eight"
+    },
+    {
+      "id": "productive-contour-dedup",
+      "kind": "parity",
+      "expected": "matching productive and contour bytes merge semantic roots without a second surface"
+    },
+    {
+      "id": "bounded-layout",
+      "kind": "integration",
+      "expected": "global 74 and contour 8 storage ceilings remain exact"
+    },
+    {
+      "id": "contour-overflow-fail-closed",
+      "kind": "fault_injection",
+      "expected": "ninth novel contour surface produces whole-field StorageCapacity overflow and zero Winner"
+    },
+    {
+      "id": "relation-fair-retention",
+      "kind": "parity",
+      "expected": "direct layout and typed relation representatives survive independently of global byte order"
+    },
+    {
+      "id": "systemic-source-scan",
+      "kind": "integration",
+      "expected": "runtime selection contains no fixture literal or case-specific branch"
+    },
+    {
+      "id": "live-byte-parity",
+      "kind": "parity",
+      "expected": "live route installed binaries packages daemon and IBus remain unchanged"
+    },
+    {
+      "id": "fixed-proof",
+      "kind": "integration",
+      "expected": "fixed birth and retention are 8/8 with zero authority and full 13x100 preserves false-singleton target-loss and latency gates"
+    }
+  ]
+}

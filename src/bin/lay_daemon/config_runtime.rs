@@ -109,15 +109,19 @@ pub(super) fn active_text_backend() -> TextBackendPreference {
 }
 
 pub(super) fn active_auto_replace() -> bool {
-    current_config().auto_replace
+    let cfg = current_config();
+    cfg.active_text_backend().daemon_owns_text_mutation() && cfg.auto_replace
 }
 
 pub(super) fn active_typing_assist() -> bool {
-    current_config().typing_assist
+    let cfg = current_config();
+    cfg.active_text_backend().daemon_owns_text_mutation() && cfg.typing_assist
 }
 
 pub(super) fn active_enter_autocorrect() -> bool {
-    let config_enabled = current_config().enter_autocorrect;
+    let cfg = current_config();
+    let config_enabled =
+        cfg.active_text_backend().daemon_owns_text_mutation() && cfg.enter_autocorrect;
     let env_value = std::env::var(ENTER_AUTOCORRECT_EXPERIMENT_ENV).ok();
     active_enter_autocorrect_from_env(config_enabled, env_value.as_deref())
 }
@@ -178,7 +182,7 @@ pub(super) fn active_nanda_autocorrect() -> bool {
 }
 
 fn daemon_nanda_autocorrect_active(cfg: &LayConfig) -> bool {
-    cfg.nanda_autocorrect
+    cfg.active_text_backend().daemon_owns_text_mutation() && cfg.nanda_autocorrect
 }
 
 fn daemon_hot_field_policy(cfg: &LayConfig) -> lay::hot_field::HotFieldPolicy {
@@ -243,8 +247,25 @@ mod tests {
                 nanda_autocorrect: true,
                 ..LayConfig::default()
             };
-            assert!(daemon_nanda_autocorrect_active(&cfg));
+            assert!(!daemon_nanda_autocorrect_active(&cfg));
             assert!(!daemon_hot_field_policy(&cfg).allows_full_nanda_authority());
+        }
+    }
+
+    #[test]
+    fn direct_ime_owners_disable_daemon_text_decisions() {
+        for text_backend in ["ime", "auto"] {
+            let cfg = LayConfig {
+                text_backend: text_backend.to_string(),
+                auto_replace: true,
+                typing_assist: true,
+                enter_autocorrect: true,
+                nanda_autocorrect: true,
+                ..LayConfig::default()
+            };
+
+            assert!(!cfg.active_text_backend().daemon_owns_text_mutation());
+            assert!(!daemon_nanda_autocorrect_active(&cfg));
         }
     }
 

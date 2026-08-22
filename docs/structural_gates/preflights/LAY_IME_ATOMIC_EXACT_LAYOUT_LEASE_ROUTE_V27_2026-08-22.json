@@ -1,0 +1,118 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "printable-input", "role": "interface"},
+    {"id": "space-input", "role": "interface"},
+    {"id": "canonical-frame-builder", "role": "orchestrator"},
+    {"id": "full-candidate-producer", "role": "producer"},
+    {"id": "exact-layout-producer", "role": "producer"},
+    {"id": "canonical-field-evidence", "role": "evidence_owner"},
+    {"id": "exact-terminal-evidence", "role": "evidence_owner"},
+    {"id": "transition-decision-core", "role": "candidate_rank_owner"},
+    {"id": "transition-verifier", "role": "authorization_owner"},
+    {"id": "prepared-lease-store", "role": "orchestrator"},
+    {"id": "space-lease-arbiter", "role": "orchestrator"},
+    {"id": "no-correction-result", "role": "orchestrator"},
+    {"id": "atomic-engine-output", "role": "mutation_owner"},
+    {"id": "route-observer", "role": "observer"},
+    {"id": "route-receipt", "role": "proof_owner"}
+  ],
+  "edges": [
+    {"id": "full-exec-input-frame", "from": "printable-input", "relation": "calls", "to": "canonical-frame-builder", "events": ["full-lease-preparation"]},
+    {"id": "full-exec-frame-producer", "from": "canonical-frame-builder", "relation": "delegates", "to": "full-candidate-producer", "events": ["full-lease-preparation"]},
+    {"id": "full-exec-producer-evidence", "from": "full-candidate-producer", "relation": "delegates", "to": "canonical-field-evidence", "events": ["full-lease-preparation"]},
+    {"id": "full-exec-evidence-rank", "from": "canonical-field-evidence", "relation": "delegates", "to": "transition-decision-core", "events": ["full-lease-preparation"]},
+    {"id": "full-exec-rank-verifier", "from": "transition-decision-core", "relation": "delegates", "to": "transition-verifier", "events": ["full-lease-preparation"]},
+    {"id": "full-exec-verifier-store", "from": "transition-verifier", "relation": "delegates", "to": "prepared-lease-store", "events": ["full-lease-preparation"]},
+
+    {"id": "full-auth-producer-evidence", "from": "full-candidate-producer", "relation": "produces_for", "to": "canonical-field-evidence", "events": ["full-lease-lifecycle"]},
+    {"id": "full-auth-evidence-rank", "from": "canonical-field-evidence", "relation": "passes_to", "to": "transition-decision-core", "events": ["full-lease-lifecycle"]},
+    {"id": "full-auth-rank-verifier", "from": "transition-decision-core", "relation": "passes_to", "to": "transition-verifier", "events": ["full-lease-lifecycle"]},
+    {"id": "full-auth-verifier-output", "from": "transition-verifier", "relation": "authorizes", "to": "atomic-engine-output", "events": ["full-lease-lifecycle"]},
+
+    {"id": "exact-exec-input-frame", "from": "printable-input", "relation": "calls", "to": "canonical-frame-builder", "events": ["exact-lease-preparation"]},
+    {"id": "exact-exec-frame-producer", "from": "canonical-frame-builder", "relation": "delegates", "to": "exact-layout-producer", "events": ["exact-lease-preparation"]},
+    {"id": "exact-exec-producer-evidence", "from": "exact-layout-producer", "relation": "delegates", "to": "exact-terminal-evidence", "events": ["exact-lease-preparation"]},
+    {"id": "exact-exec-evidence-rank", "from": "exact-terminal-evidence", "relation": "delegates", "to": "transition-decision-core", "events": ["exact-lease-preparation"]},
+    {"id": "exact-exec-rank-verifier", "from": "transition-decision-core", "relation": "delegates", "to": "transition-verifier", "events": ["exact-lease-preparation"]},
+    {"id": "exact-exec-verifier-store", "from": "transition-verifier", "relation": "delegates", "to": "prepared-lease-store", "events": ["exact-lease-preparation"]},
+
+    {"id": "exact-auth-producer-evidence", "from": "exact-layout-producer", "relation": "produces_for", "to": "exact-terminal-evidence", "events": ["exact-lease-lifecycle"]},
+    {"id": "exact-auth-evidence-rank", "from": "exact-terminal-evidence", "relation": "passes_to", "to": "transition-decision-core", "events": ["exact-lease-lifecycle"]},
+    {"id": "exact-auth-rank-verifier", "from": "transition-decision-core", "relation": "passes_to", "to": "transition-verifier", "events": ["exact-lease-lifecycle"]},
+    {"id": "exact-auth-verifier-output", "from": "transition-verifier", "relation": "authorizes", "to": "atomic-engine-output", "events": ["exact-lease-lifecycle"]},
+
+    {"id": "space-exec-input-arbiter", "from": "space-input", "relation": "calls", "to": "space-lease-arbiter", "events": ["space-consume"]},
+    {"id": "space-exec-arbiter-output", "from": "space-lease-arbiter", "relation": "delegates", "to": "atomic-engine-output", "events": ["space-consume"]},
+
+    {"id": "space-no-lease-input-arbiter", "from": "space-input", "relation": "calls", "to": "space-lease-arbiter", "events": ["space-no-lease"]},
+    {"id": "space-no-lease-arbiter-result", "from": "space-lease-arbiter", "relation": "delegates", "to": "no-correction-result", "events": ["space-no-lease"]},
+
+    {"id": "proof-observer-receipt", "from": "route-observer", "relation": "proves", "to": "route-receipt", "events": ["v27-proof"]}
+  ],
+  "routes": [
+    {
+      "id": "full-lease-preparation-execution",
+      "event": "full-lease-preparation",
+      "kind": "execution",
+      "entry": "printable-input",
+      "terminal": "prepared-lease-store",
+      "required_roles": ["interface", "orchestrator", "producer", "evidence_owner", "candidate_rank_owner", "authorization_owner"],
+      "path_cardinality": [{"from": "printable-input", "to": "prepared-lease-store", "min": 1, "max": 1}]
+    },
+    {
+      "id": "exact-lease-preparation-execution",
+      "event": "exact-lease-preparation",
+      "kind": "execution",
+      "entry": "printable-input",
+      "terminal": "prepared-lease-store",
+      "required_roles": ["interface", "orchestrator", "producer", "evidence_owner", "candidate_rank_owner", "authorization_owner"],
+      "path_cardinality": [{"from": "printable-input", "to": "prepared-lease-store", "min": 1, "max": 1}]
+    },
+    {
+      "id": "full-lease-authority",
+      "event": "full-lease-lifecycle",
+      "kind": "authority",
+      "entry": "full-candidate-producer",
+      "terminal": "atomic-engine-output",
+      "required_roles": ["producer", "evidence_owner", "candidate_rank_owner", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "full-candidate-producer", "to": "atomic-engine-output", "min": 1, "max": 1}]
+    },
+    {
+      "id": "exact-lease-authority",
+      "event": "exact-lease-lifecycle",
+      "kind": "authority",
+      "entry": "exact-layout-producer",
+      "terminal": "atomic-engine-output",
+      "required_roles": ["producer", "evidence_owner", "candidate_rank_owner", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "exact-layout-producer", "to": "atomic-engine-output", "min": 1, "max": 1}]
+    },
+    {
+      "id": "space-consume-execution",
+      "event": "space-consume",
+      "kind": "execution",
+      "entry": "space-input",
+      "terminal": "atomic-engine-output",
+      "required_roles": ["interface", "orchestrator", "mutation_owner"],
+      "path_cardinality": [{"from": "space-input", "to": "atomic-engine-output", "min": 1, "max": 1}]
+    },
+    {
+      "id": "space-no-lease-execution",
+      "event": "space-no-lease",
+      "kind": "execution",
+      "entry": "space-input",
+      "terminal": "no-correction-result",
+      "required_roles": ["interface", "orchestrator"],
+      "path_cardinality": [{"from": "space-input", "to": "no-correction-result", "min": 1, "max": 1}]
+    },
+    {
+      "id": "v27-proof-route",
+      "event": "v27-proof",
+      "kind": "proof",
+      "entry": "route-observer",
+      "terminal": "route-receipt",
+      "required_roles": ["observer", "proof_owner"]
+    }
+  ]
+}

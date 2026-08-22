@@ -77,6 +77,10 @@ pub(super) fn input_state() -> Result<String, String> {
     call_ime_noarg("InputState")
 }
 
+pub(super) fn manual_toggle() -> Result<(bool, bool), String> {
+    call_ime_noarg("ManualToggleV2")
+}
+
 pub(super) fn can_replace_committed_tail(backspaces: u32) -> Result<bool, String> {
     let reply = dbus_connection()?
         .call_method(
@@ -91,10 +95,6 @@ pub(super) fn can_replace_committed_tail(backspaces: u32) -> Result<bool, String
         .body()
         .deserialize::<bool>()
         .map_err(|e| e.to_string())
-}
-
-pub(super) fn manual_toggle() -> Result<(bool, bool), String> {
-    call_ime_noarg("ManualToggleV2")
 }
 
 pub(super) fn suppress_next_autocorrect() -> Result<bool, String> {

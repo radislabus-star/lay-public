@@ -1,0 +1,35 @@
+{
+  "schema": "lay.release-memory-gate-correction.v1",
+  "release": "1.0.34",
+  "attempt": "live-install-attempt-v4.log",
+  "attempt_sha256": "894a221776f1ed98343d3260149050cec061d70d50a32dc43b5310f7ea2019e2",
+  "measured": {
+    "topology": {
+      "lay-daemon": 1,
+      "lay-l1.1-serve": 0,
+      "lay-ibus-engine": 1,
+      "lay-l3-online": 1
+    },
+    "engine_pss_plus_swap_pss_max_kib": 334819,
+    "total_owner_pss_plus_swap_pss_max_kib": 339415,
+    "global_ibus_pid": 2076194,
+    "rollback": "PASS"
+  },
+  "invalid_comparison": {
+    "old_engine_only_kib": 265818,
+    "old_engine_only_delta_kib": 16384,
+    "old_engine_only_cap_kib": 282202,
+    "reason": "the 1.0.34 engine owns the direct IME L1.1 field while the old topology measured that field partly in a separate lay-l1.1-serve process"
+  },
+  "replacement_contract": {
+    "old_engine_kib": 265818,
+    "old_sidecar_kib": 181566,
+    "ownership_aware_engine_cap_kib": 447384,
+    "unchanged_total_owner_cap_kib": 736062,
+    "measured_engine_headroom_kib": 112565,
+    "measured_total_headroom_kib": 396647
+  },
+  "verdict": "PER_ENGINE_BASELINE_INVALID_TOTAL_AND_OWNERSHIP_ENVELOPES_PASS",
+  "runtime_defect_proven": false,
+  "required_change": "replace only the obsolete engine-only cap; retain the total committed memory gate and all topology SHA IBus extension journal and rollback gates"
+}

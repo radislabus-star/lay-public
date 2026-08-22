@@ -1,0 +1,374 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "PASS",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": true,
+  "contract": "docs/structural_gates/preflights/LAY_IME_SPACE_BOUNDARY_LAYOUT_RECOVERY_ROUTE_2026-08-15.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "source_root": null,
+  "node_count": 14,
+  "edge_count": 19,
+  "routes": [
+    {
+      "id": "visible-input-execution",
+      "event": "visible_input",
+      "kind": "execution",
+      "entry": "printable_key",
+      "via": [],
+      "terminal": "preedit_render",
+      "path_count": 1,
+      "paths": [
+        [
+          "printable_key",
+          "ime_candidate_field",
+          "preedit_rank",
+          "preedit_render"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "ime_candidate_field"
+        ],
+        "display_rank_owner": [
+          "preedit_rank"
+        ],
+        "render_owner": [
+          "preedit_render"
+        ],
+        "interface": [
+          "printable_key"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "printable_key",
+          "to": "preedit_render",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "printable_key",
+              "ime_candidate_field",
+              "preedit_rank",
+              "preedit_render"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "visible-input-display-authority",
+      "event": "visible_input",
+      "kind": "authority",
+      "entry": "ime_candidate_field",
+      "via": [],
+      "terminal": "preedit_render",
+      "path_count": 1,
+      "paths": [
+        [
+          "ime_candidate_field",
+          "preedit_rank",
+          "preedit_render"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "ime_candidate_field"
+        ],
+        "display_rank_owner": [
+          "preedit_rank"
+        ],
+        "render_owner": [
+          "preedit_render"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "prefetch-generation-execution",
+      "event": "prefetch_generation",
+      "kind": "execution",
+      "entry": "printable_key",
+      "via": [],
+      "terminal": "prefetch_snapshot",
+      "path_count": 1,
+      "paths": [
+        [
+          "printable_key",
+          "ime_candidate_field",
+          "decision_core",
+          "prefetch_snapshot"
+        ]
+      ],
+      "role_owners": {
+        "candidate_rank_owner": [
+          "decision_core"
+        ],
+        "evidence_owner": [
+          "ime_candidate_field"
+        ],
+        "producer": [
+          "prefetch_snapshot"
+        ],
+        "interface": [
+          "printable_key"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "printable_key",
+          "to": "prefetch_snapshot",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "printable_key",
+              "ime_candidate_field",
+              "decision_core",
+              "prefetch_snapshot"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prefetch-generation-authority",
+      "event": "prefetch_generation",
+      "kind": "authority",
+      "entry": "ime_candidate_field",
+      "via": [],
+      "terminal": "decision_core",
+      "path_count": 1,
+      "paths": [
+        [
+          "ime_candidate_field",
+          "decision_core"
+        ]
+      ],
+      "role_owners": {
+        "candidate_rank_owner": [
+          "decision_core"
+        ],
+        "evidence_owner": [
+          "ime_candidate_field"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "space-apply-execution",
+      "event": "space_apply",
+      "kind": "execution",
+      "entry": "space_key",
+      "via": [],
+      "terminal": "committed_tail_commit",
+      "path_count": 1,
+      "paths": [
+        [
+          "space_key",
+          "exact_prefetch_take",
+          "snapshot_plan_verifier",
+          "backend_authorizer",
+          "committed_tail_commit"
+        ]
+      ],
+      "role_owners": {
+        "authorization_owner": [
+          "backend_authorizer"
+        ],
+        "mutation_owner": [
+          "committed_tail_commit"
+        ],
+        "producer": [
+          "exact_prefetch_take"
+        ],
+        "evidence_owner": [
+          "snapshot_plan_verifier"
+        ],
+        "interface": [
+          "space_key"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "space_key",
+          "to": "committed_tail_commit",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "space_key",
+              "exact_prefetch_take",
+              "snapshot_plan_verifier",
+              "backend_authorizer",
+              "committed_tail_commit"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "space-apply-authority",
+      "event": "space_apply",
+      "kind": "authority",
+      "entry": "prefetch_snapshot",
+      "via": [],
+      "terminal": "committed_tail_commit",
+      "path_count": 1,
+      "paths": [
+        [
+          "prefetch_snapshot",
+          "exact_prefetch_take",
+          "snapshot_plan_verifier",
+          "backend_authorizer",
+          "committed_tail_commit"
+        ]
+      ],
+      "role_owners": {
+        "authorization_owner": [
+          "backend_authorizer"
+        ],
+        "mutation_owner": [
+          "committed_tail_commit"
+        ],
+        "producer": [
+          "exact_prefetch_take",
+          "prefetch_snapshot"
+        ],
+        "evidence_owner": [
+          "snapshot_plan_verifier"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "space-observation",
+      "event": "space_apply",
+      "kind": "observation",
+      "entry": "space_apply_outcome",
+      "via": [],
+      "terminal": "route_trace",
+      "path_count": 1,
+      "paths": [
+        [
+          "space_apply_outcome",
+          "route_trace"
+        ]
+      ],
+      "role_owners": {
+        "observer": [
+          "route_trace"
+        ],
+        "producer": [
+          "space_apply_outcome"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "space-proof",
+      "event": "software_proof",
+      "kind": "proof",
+      "entry": "snapshot_plan_verifier",
+      "via": [],
+      "terminal": "focused_contract_tests",
+      "path_count": 1,
+      "paths": [
+        [
+          "snapshot_plan_verifier",
+          "focused_contract_tests"
+        ]
+      ],
+      "role_owners": {
+        "proof_owner": [
+          "focused_contract_tests"
+        ],
+        "evidence_owner": [
+          "snapshot_plan_verifier"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {
+    "visible_input": {
+      "render_owner": [
+        "preedit_render"
+      ],
+      "candidate_rank_owner": [],
+      "mutation_owner": [],
+      "evidence_owner": [
+        "ime_candidate_field"
+      ],
+      "authorization_owner": [],
+      "display_rank_owner": [
+        "preedit_rank"
+      ]
+    },
+    "prefetch_generation": {
+      "render_owner": [],
+      "candidate_rank_owner": [
+        "decision_core"
+      ],
+      "mutation_owner": [],
+      "evidence_owner": [
+        "ime_candidate_field"
+      ],
+      "authorization_owner": [],
+      "display_rank_owner": []
+    },
+    "space_apply": {
+      "render_owner": [],
+      "candidate_rank_owner": [],
+      "mutation_owner": [
+        "committed_tail_commit"
+      ],
+      "evidence_owner": [
+        "snapshot_plan_verifier"
+      ],
+      "authorization_owner": [
+        "backend_authorizer"
+      ],
+      "display_rank_owner": []
+    }
+  },
+  "source_evidence": {
+    "expected": 0,
+    "verified": 0,
+    "complete": true
+  },
+  "issues": [],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": false,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

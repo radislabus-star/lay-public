@@ -1,0 +1,327 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-ime-target-authority-slice2-work-measurement-v3-2026-08-20",
+  "authority_bearing": true,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "paper-before-work-measurement",
+      "kind": "file",
+      "path": "../../ime-canonical-target-authority-paper-2026-08-17.md",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 163821,
+        "sha256": "fe4cb310e44cca20381351145d2b446c9ff19859c3aed34a8cfb7b30e787aa17"
+      }
+    },
+    {
+      "id": "architecture-before-work-measurement",
+      "kind": "file",
+      "path": "../../l2-l11-canonical-architecture.md",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 313241,
+        "sha256": "a7e6c98dd0dd69ab9283c80fcf7975b70c0e51f43f9c70276368a09a2095de51"
+      }
+    },
+    {
+      "id": "productive-proof-before-work-measurement",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/proof.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 130494,
+        "sha256": "d21184428530c26ead1c0d3e4dc81c9e03999a2915d87d5c85900e6c41725a85"
+      }
+    },
+    {
+      "id": "productive-runtime-before-work-measurement",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/packaged_runtime.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 176152,
+        "sha256": "bc77fea032b0a79ee4cf34e1d4c67d389e802112768983d9b8c054faefcae7f2"
+      }
+    },
+    {
+      "id": "active-v90-fixed-proof-evidence",
+      "kind": "file",
+      "path": "../receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_2026-08-16/productive-v90-active-v9-v13-semantic-full-13x100.json",
+      "expect": {
+        "mode": "0644",
+        "size_bytes": 1095164,
+        "sha256": "dbc04196df45e13f5c02da4959a514da041ff3b0db6e07c72453f9e41276cabc"
+      }
+    },
+    {
+      "id": "frozen-v64-hypothesis-manifest",
+      "kind": "file",
+      "path": "../receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_2026-08-16/frozen-v64-hypothesis-manifest-v1.json",
+      "expect": {
+        "mode": "0644",
+        "size_bytes": 1480754,
+        "sha256": "13e2db3470006303de3d87b2f999988db1661157760fec447e54ac37d5b495ea"
+      }
+    }
+  ],
+  "source_checks": [
+    {
+      "id": "existing-productive-proof-remains-read-only",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/proof.rs",
+      "sha256": "d21184428530c26ead1c0d3e4dc81c9e03999a2915d87d5c85900e6c41725a85",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "generated_traffic",
+          "regex": "(?i)(?:TcpStream|UdpSocket|reqwest|hyper::|https?://)"
+        },
+        {
+          "effect": "synthetic_fixture",
+          "regex": "(?i)(?:synthetic|fixture).{0,80}(?:write|create|generate)"
+        },
+        {
+          "effect": "rewrite_frozen_manifest",
+          "regex": "(?i)(?:v9|active).{0,120}(?:write|rename).{0,120}frozen"
+        },
+        {
+          "effect": "runtime_deployment",
+          "regex": "(?i)(?:systemctl|lay-runtime-control|daemon-reload)"
+        },
+        {
+          "effect": "restart_lay_daemon",
+          "regex": "(?i)(?:restart|stop|kill|pkill).{0,80}lay-daemon"
+        },
+        {
+          "effect": "restart_global_ibus_daemon",
+          "regex": "(?i)(?:restart|stop|kill|pkill).{0,80}ibus-daemon"
+        },
+        {
+          "effect": "recrystallize_l11_or_l2_packages",
+          "regex": "(?i)(?:compile_lexical_grokking|compile_productive_paradigm_field_v1)"
+        },
+        {
+          "effect": "change_candidate_membership_rank_or_authority",
+          "regex": "(?i)(?:enumeration_work|work_measurement).{0,160}(?:sort_by|retain|truncate|score|verdict|authority)"
+        },
+        {
+          "effect": "literal_surface_runtime_branch",
+          "regex": "(?i)damaged_surface\\s*==\\s*\""
+        }
+      ]
+    },
+    {
+      "id": "existing-productive-runtime-remains-behaviorally-identical",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/packaged_runtime.rs",
+      "sha256": "bc77fea032b0a79ee4cf34e1d4c67d389e802112768983d9b8c054faefcae7f2",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "generated_traffic",
+          "regex": "(?i)(?:TcpStream|UdpSocket|reqwest|hyper::|https?://)"
+        },
+        {
+          "effect": "runtime_deployment",
+          "regex": "(?i)(?:systemctl|lay-runtime-control|daemon-reload)"
+        },
+        {
+          "effect": "restart_lay_daemon",
+          "regex": "(?i)(?:restart|stop|kill|pkill).{0,80}lay-daemon"
+        },
+        {
+          "effect": "restart_global_ibus_daemon",
+          "regex": "(?i)(?:restart|stop|kill|pkill).{0,80}ibus-daemon"
+        },
+        {
+          "effect": "recrystallize_l11_or_l2_packages",
+          "regex": "(?i)(?:compile_lexical_grokking|compile_productive_paradigm_field_v1)"
+        },
+        {
+          "effect": "change_candidate_membership_rank_or_authority",
+          "regex": "(?i)(?:enumeration_work|work_measurement).{0,160}(?:sort_by|retain|truncate|score|verdict|authority)"
+        },
+        {
+          "effect": "literal_surface_runtime_branch",
+          "regex": "(?i)(?:observed_surface|normalized_source)\\s*==\\s*\""
+        }
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {
+        "id": "instrument-proof-only-deterministic-work-counters",
+        "kind": "source_edit"
+      },
+      {
+        "id": "build-in-isolated-remote-worktree",
+        "kind": "remote_release_build"
+      },
+      {
+        "id": "run-fixed-v90-read-only-proof-remotely",
+        "kind": "remote_quality_measurement"
+      },
+      {
+        "id": "write-measurement-receipt",
+        "kind": "evidence_write"
+      }
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "rewrite_frozen_manifest",
+      "recrystallize_l11_or_l2_packages",
+      "change_candidate_membership_rank_or_authority",
+      "runtime_deployment",
+      "restart_lay_daemon",
+      "restart_global_ibus_daemon",
+      "literal_surface_runtime_branch"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "active-v90-proof",
+      "path": "../receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_2026-08-16/productive-v90-active-v9-v13-semantic-full-13x100.json",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "retain the accepted measurement baseline unchanged",
+      "baseline_check_id": "active-v90-fixed-proof-evidence"
+    },
+    {
+      "id": "frozen-hypothesis-manifest",
+      "path": "../receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_2026-08-16/frozen-v64-hypothesis-manifest-v1.json",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "never regenerate or rewrite during work measurement",
+      "baseline_check_id": "frozen-v64-hypothesis-manifest"
+    }
+  ],
+  "state_machine": {
+    "initial_state": "SLICE1_PASS_SLICE2_WORK_BUDGETS_UNMEASURED_RUNTIME_UNCHANGED",
+    "terminal_states": [
+      "WORK_MEASUREMENT_PASS_RUNTIME_UNCHANGED",
+      "INSTRUMENTATION_REJECTED_RUNTIME_UNCHANGED",
+      "REMOTE_BUILD_FAILED_RUNTIME_UNCHANGED",
+      "MEASUREMENT_FAILED_RUNTIME_UNCHANGED"
+    ],
+    "steps": [
+      {
+        "id": "add-proof-only-work-counters",
+        "from": "SLICE1_PASS_SLICE2_WORK_BUDGETS_UNMEASURED_RUNTIME_UNCHANGED",
+        "to": "COUNTERS_READY_RUNTIME_UNCHANGED",
+        "mutates": true,
+        "failure_state": "INSTRUMENTATION_REJECTED_RUNTIME_UNCHANGED",
+        "cleanup": "retain the rejected diff and do not run or freeze measurements",
+        "preserves": [
+          "active-v90-proof",
+          "frozen-hypothesis-manifest"
+        ],
+        "test_id": "instrumentation-failure-preserves-baseline"
+      },
+      {
+        "id": "build-scoped-proof-binary-remotely",
+        "from": "COUNTERS_READY_RUNTIME_UNCHANGED",
+        "to": "REMOTE_MEASUREMENT_BINARY_READY_RUNTIME_UNCHANGED",
+        "mutates": true,
+        "failure_state": "REMOTE_BUILD_FAILED_RUNTIME_UNCHANGED",
+        "cleanup": "retain build logs and remove only partial files in the isolated remote work root",
+        "preserves": [
+          "active-v90-proof",
+          "frozen-hypothesis-manifest"
+        ],
+        "test_id": "remote-build-failure-preserves-baseline"
+      },
+      {
+        "id": "measure-fixed-v90-work",
+        "from": "REMOTE_MEASUREMENT_BINARY_READY_RUNTIME_UNCHANGED",
+        "to": "WORK_MEASUREMENT_PASS_RUNTIME_UNCHANGED",
+        "mutates": true,
+        "failure_state": "MEASUREMENT_FAILED_RUNTIME_UNCHANGED",
+        "cleanup": "retain the failed receipt; do not freeze ceilings or begin Slice 2 implementation",
+        "preserves": [
+          "active-v90-proof",
+          "frozen-hypothesis-manifest"
+        ],
+        "test_id": "measurement-failure-preserves-runtime"
+      }
+    ]
+  },
+  "tests": [
+    {
+      "id": "instrumentation-parity",
+      "kind": "parity",
+      "expected": "profiled and unprofiled readouts remain structurally equal; counter collection changes no candidate, verdict, rank, completeness or authority"
+    },
+    {
+      "id": "counter-merge-order-parity",
+      "kind": "parity",
+      "expected": "per-producer and aggregate totals, maxima and percentiles are invariant under proof-shard merge order"
+    },
+    {
+      "id": "remote-source-build-parity",
+      "kind": "parity",
+      "expected": "remote scoped source bytes equal local bytes by SHA-256 and compile with the guarded isolated target"
+    },
+    {
+      "id": "fixed-v90-work-measurement",
+      "kind": "integration",
+      "expected": "the fixed 13 x 100 lemma-heldout V90 cohort reports 1300 complete per-field work samples, per-producer and aggregate maxima/percentiles, unchanged H=1280, zero H-to-B and B-to-S0 losses, zero false singleton and zero integrity errors"
+    },
+    {
+      "id": "measurement-failure-preserves-runtime",
+      "kind": "fault_injection",
+      "expected": "missing or inconsistent counters fail the measurement receipt and cannot change installed packages, Lay daemon, IBus or runtime authority"
+    },
+    {
+      "id": "instrumentation-failure-preserves-baseline",
+      "kind": "fault_injection",
+      "expected": "an invalid or behavior-changing instrumentation diff is rejected before remote sync and preserves frozen proof evidence"
+    },
+    {
+      "id": "remote-build-failure-preserves-baseline",
+      "kind": "fault_injection",
+      "expected": "a failed isolated remote build retains diagnostics, removes only its partial target and preserves fixed proof evidence and installed runtime"
+    },
+    {
+      "id": "fixed-proof-generation-parity",
+      "kind": "parity",
+      "expected": "the measurement consumes the exact active V90 and L1.1 package pair plus the unchanged frozen hypothesis payload"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "one-field-denominator",
+      "statement": "one EnumerationWork sample describes only target-blind material preparation plus one independently profiled damaged-surface Productive readout; oracle, baseline, probe parity and clean-preservation executions are excluded",
+      "test_id": "fixed-proof-generation-parity"
+    },
+    {
+      "id": "required-work-dimensions",
+      "statement": "every complete sample reports posting visits, relation or program replays, grounding lookups, generated logical targets and operator steps for each producer and their checked aggregate",
+      "test_id": "fixed-v90-work-measurement"
+    },
+    {
+      "id": "instrumentation-has-no-authority",
+      "statement": "measurement counters cannot affect target membership, ranking, completeness, admission, mutation or runtime authority",
+      "test_id": "instrumentation-parity"
+    },
+    {
+      "id": "measurement-does-not-freeze-budget",
+      "statement": "raw maxima are evidence only; numeric Slice 2 ceilings require a later paper revision and separate implementation preflight",
+      "test_id": "measurement-failure-preserves-runtime"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "fixed-proof-generation",
+      "producer": "Productive V90 40fb6a9f0d92c3c7502e47f9c70230d9b86020f622b08a5c799342f13e09ce44 plus active L1.1 bf5a1619a89038466ef786305cf35eda5f4af5b9f12b9140f7d3cac407e2f2a7",
+      "consumer": "Slice 2 work measurement",
+      "comparison": "exact full package SHA-256 pair and frozen proof manifest payload",
+      "test_id": "fixed-proof-generation-parity"
+    },
+    {
+      "id": "local-to-remote-measurement-source",
+      "producer": "local scoped proof and Productive runtime source",
+      "consumer": "isolated remote measurement binary",
+      "comparison": "SHA-256 byte identity",
+      "test_id": "remote-source-build-parity"
+    }
+  ],
+  "runtime_comparisons": []
+}

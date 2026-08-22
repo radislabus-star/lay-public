@@ -1,0 +1,162 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "typing-scenario-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/bin/lay_test_input/scenarios/typing.rs",
+      "sha256": "d4dac3fbf264207cc11f9a4b4ba781300d28f536e7b0b2384c6c92f65012ad03",
+      "size_bytes": 3221
+    },
+    {
+      "exists": true,
+      "id": "script-scenario-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/bin/lay_test_input/scenarios/script.rs",
+      "sha256": "6e6266fc0e9dd287494c8f852a7f33dd97a894d72b15dc4b5aae12856cb9df00",
+      "size_bytes": 3600
+    },
+    {
+      "exists": true,
+      "id": "ime-case-registry",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../scripts/runtime_smoke/ime_cases.py",
+      "sha256": "52c5d584d14d2b2cb18b3049dcefe29b2e1e95648ae0900d8d60d19ee19f7742",
+      "size_bytes": 3377
+    },
+    {
+      "exists": true,
+      "id": "managed-smoke-lifecycle",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../scripts/runtime_smoke/ime.py",
+      "sha256": "f5e58d4ec2dab02f9bf58737220a4cc09eea4fc5775c102424f6eb01d7878969",
+      "size_bytes": 4922
+    },
+    {
+      "exists": true,
+      "id": "builtin-script-index",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../data/test_input/builtin_scripts.tsv",
+      "sha256": "b6fe398a49327e05daa18cb9de8d3f11d1b304800950929f7d85fa00cf4fcf07",
+      "size_bytes": 2758
+    },
+    {
+      "exists": true,
+      "id": "space-worker-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
+      "sha256": "18af5baf478e9c8cdb647a77300b8dc2a74335b447aec51da1d2da0a42f73e55",
+      "size_bytes": 13740
+    },
+    {
+      "exists": true,
+      "id": "runtime-control",
+      "kind": "file",
+      "mode": "0775",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../scripts/lay-runtime-control.sh",
+      "sha256": "746d077115277775acb275e077b57823ace9e416d2575eaf0bc53d3327d64e6d",
+      "size_bytes": 5032
+    },
+    {
+      "exists": true,
+      "id": "installed-ibus-engine",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a",
+      "size_bytes": 6423488
+    },
+    {
+      "exists": true,
+      "id": "slice4-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice4-observability-and-duplicate-removal.json",
+      "sha256": "ea685158f90ea426f3d981cacc722b09596ed32944b2df9e23524fc83c17cd66",
+      "size_bytes": 5638
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 9,
+    "forbidden_side_effect_kinds": [
+      "blocking_space_wait_expansion",
+      "delayed_worker_mutation_authority",
+      "hide_warmup_events_in_eligible_denominator",
+      "ignore_invalid_trace_rows",
+      "installed_binary_write_before_promotion",
+      "literal_surface_runtime_branch",
+      "model_package_write",
+      "restart_global_ibus_daemon",
+      "runtime_authority_change",
+      "runtime_candidate_or_ranking_change",
+      "test_fixture_as_runtime_authority",
+      "unbounded_trace_ingestion"
+    ],
+    "identity_contracts": 3,
+    "invariants": 6,
+    "planned_side_effect_kinds": [
+      "filesystem_write",
+      "proof_source_edit",
+      "remote_test",
+      "service_activation",
+      "test_fixture_edit",
+      "test_source_edit"
+    ],
+    "preserved_artifacts": 4,
+    "runtime_comparisons": 1,
+    "source_checks": 4,
+    "tests": 12
+  },
+  "manifest_sha256": "a875a9f0d325ea159f0dd19b964c952bb9068bbb25d042262e57ec504d983761",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "managed-smoke-never-restarts-global-ibus",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../scripts/runtime_smoke/ime.py",
+      "sha256": "f5e58d4ec2dab02f9bf58737220a4cc09eea4fc5775c102424f6eb01d7878969",
+      "size_bytes": 4922
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "space-worker-deadline-and-authority-preserved",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
+      "sha256": "18af5baf478e9c8cdb647a77300b8dc2a74335b447aec51da1d2da0a42f73e55",
+      "size_bytes": 13740
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "existing-script-runner-does-not-hide-proof-input",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/bin/lay_test_input/scenarios/script.rs",
+      "sha256": "6e6266fc0e9dd287494c8f852a7f33dd97a894d72b15dc4b5aae12856cb9df00",
+      "size_bytes": 3600
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "runtime-controller-never-restarts-global-ibus",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../scripts/lay-runtime-control.sh",
+      "sha256": "746d077115277775acb275e077b57823ace9e416d2575eaf0bc53d3327d64e6d",
+      "size_bytes": 5032
+    }
+  ],
+  "task_id": "lay-ime-immediate-space-replay-2026-08-16",
+  "verdict": "READY_TO_IMPLEMENT"
+}

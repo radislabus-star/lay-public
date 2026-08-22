@@ -1,0 +1,143 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_ATOMIC_V27_SHIFT_GESTURE_HANDOFF_IMPLEMENTATION_V1_2026-08-22",
+  "authority_bearing": true,
+  "reuses_existing_implementation": true,
+  "scientific_future_sensitive": false,
+  "baseline_checks": [
+    {"id": "atomic-route-source", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic.rs", "expect": {"mode": "0664", "size_bytes": 20335, "sha256": "a8e48f00e3a0f766ebfa9a01879b3b38ad389b0dbded9bca062f15b4709c6580"}},
+    {"id": "atomic-proof-source", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic/proof.rs", "expect": {"mode": "0664", "size_bytes": 8246, "sha256": "6a4beadfee3d8dd3f57c64ec0841fa53c965831d9f4e41ce21e641feb624de69"}},
+    {"id": "input-interface-source", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/ibus_interface.rs", "expect": {"mode": "0664", "size_bytes": 15388, "sha256": "3cdd8be23ede8a71edc598b240c5b5abced19a791a1fdee19a894a0907773a83"}},
+    {"id": "engine-source", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/engine.rs", "expect": {"mode": "0664", "size_bytes": 14791, "sha256": "7a409bf3490c82cc4a171a6fb2d19328183bd8a3aa230d8aa8be0ec24fb05af3"}},
+    {"id": "profile-proof-source", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/engine/profile_tests.rs", "expect": {"mode": "0664", "size_bytes": 12028, "sha256": "01a3a707660fd797edf0129836ef54d2775b3d86f5bbc4c295c06857ee37b43c"}},
+    {"id": "shared-state-source", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/protocol/state.rs", "expect": {"mode": "0664", "size_bytes": 1084, "sha256": "62895c77aa5c05747d3ee6ed69652ff7b8664a51e080600ea261b35d8649f100"}},
+    {"id": "engine-state-source", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/state.rs", "expect": {"mode": "0664", "size_bytes": 42493, "sha256": "b31753790706d433be76c2d5645e197bc91e2678da316f4650f1034f734381a5"}},
+    {"id": "handoff-source", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/tail_memory.rs", "expect": {"mode": "0664", "size_bytes": 56066, "sha256": "edfc902ab15b7d9cf309995d1812868224d61430f055033e7cda5d25b160006b"}},
+    {"id": "paper-contract", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/ime-atomic-exact-layout-lease-v27-paper-contract-2026-08-22.md", "expect": {"mode": "0664", "size_bytes": 108017, "sha256": "1961094f506b7f480c1313b088b5ec8f60ec60c82e3cfc8b8746578cd71203a3"}},
+    {"id": "route-contract", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_ATOMIC_V27_SHIFT_GESTURE_HANDOFF_ROUTE_V1_2026-08-22.json", "expect": {"mode": "0664", "size_bytes": 4548, "sha256": "c8c9a1eb20f3209f2d0c8e3f881a20302e4f188b2a93ce76151f459b1e6ade6a"}},
+    {"id": "route-receipt", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_V27_2026-08-22/shift-gesture-handoff-route-v1.json", "expect": {"mode": "0664", "size_bytes": 6632, "sha256": "53ff9b8118cc2e495c2a865c4dbde9f106f556a9e1098f164d9d15fd3886b343"}},
+    {"id": "failed-physical-evidence", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_V27_2026-08-22/physical-surrounding-reconcile-undo-v1-fail.json", "expect": {"mode": "0664", "size_bytes": 1933, "sha256": "47cd7d4a1bfb63afc0bf17b91457b006c2f54c0d91a52b8a3696995cb05f7d7b"}},
+    {"id": "installed-engine-preserved", "kind": "file", "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine", "expect": {"mode": "0755", "size_bytes": 6423488, "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a"}},
+    {"id": "physical-proof-preserved", "kind": "file", "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/shell/atomicInputMethodRoute.js", "expect": {"mode": "0664", "size_bytes": 16680, "sha256": "3f2d38ae86e5a984c055bb04837e299aee7aa41bcdf78d964670676fdb62e4bd"}}
+  ],
+  "source_checks": [
+    {
+      "id": "pinned-atomic-route",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic.rs",
+      "sha256": "a8e48f00e3a0f766ebfa9a01879b3b38ad389b0dbded9bca062f15b4709c6580",
+      "forbidden_effect_patterns": [
+        {"effect": "legacy_mutation_bridge", "regex": "ManualToggleV2|EngineOutput::legacy"},
+        {"effect": "receipt_bypass", "regex": "bypass_atomic_receipt|ignore_receipt_identity"},
+        {"effect": "direct_text_mutation", "regex": "force_commit_exact_original|direct_undo_commit"},
+        {"effect": "installed_runtime_mutation", "regex": "install_lay|/\\.local/lib/lay|restart_installed_lay"},
+        {"effect": "local_cargo_build", "regex": "Command::new\\(\"cargo\"\\)|cargo (build|test|check)"}
+      ]
+    },
+    {
+      "id": "pinned-input-route",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/ibus_interface.rs",
+      "sha256": "3cdd8be23ede8a71edc598b240c5b5abced19a791a1fdee19a894a0907773a83",
+      "forbidden_effect_patterns": [
+        {"effect": "generic_orphan_release_tap", "regex": "orphan.*release.*tap|release_without_press.*true"},
+        {"effect": "shift_window_expansion", "regex": "shift_window_ms\\s*[+*]|tap_max_ms\\s*[+*]"},
+        {"effect": "fixture_surface_in_runtime", "regex": "(if|match)\\s+.*(ghbdtn|привет)"},
+        {"effect": "verifier_or_safety_gate_weakening", "regex": "bypass_(undo_)?verifier|disable_(undo_)?safety_gate"}
+      ]
+    },
+    {
+      "id": "pinned-handoff-route",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/tail_memory.rs",
+      "sha256": "edfc902ab15b7d9cf309995d1812868224d61430f055033e7cda5d25b160006b",
+      "forbidden_effect_patterns": [
+        {"effect": "unbounded_focus_state_preservation", "regex": "preserve_all_engine_state|unbounded_handoff|Duration::MAX"},
+        {"effect": "handoff_text_authority", "regex": "shift_gesture.*(original|replacement|edit_plan)"},
+        {"effect": "historical_receipt_rewrite", "regex": "rewrite_historical_receipt|truncate_historical_evidence"}
+      ]
+    },
+    {
+      "id": "pinned-physical-proof-route",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/shell/atomicInputMethodRoute.js",
+      "sha256": "3f2d38ae86e5a984c055bb04837e299aee7aa41bcdf78d964670676fdb62e4bd",
+      "forbidden_effect_patterns": [
+        {"effect": "physical_proof_source_edit", "regex": "editPhysicalProofSourceFromRuntime|rewriteAtomicInputMethodRoute"},
+        {"effect": "manual_toggle_in_atomic_proof", "regex": "ManualToggleV2|manualToggleV2|callManualToggle"},
+        {"effect": "legacy_mutation_acceptance", "regex": "ignoreLegacyMutationCount|acceptLegacyTextMutation"}
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "add-typed-shift-gesture-handoff-state", "kind": "source_edit"},
+      {"id": "publish-and-consume-bounded-gesture", "kind": "source_edit"},
+      {"id": "wire-native-observation-and-target-event", "kind": "source_edit"},
+      {"id": "add-systemic-handoff-tests", "kind": "source_edit"},
+      {"id": "update-architecture-evidence", "kind": "filesystem_write"},
+      {"id": "sync-source-to-remote-proof-tree", "kind": "remote_filesystem_write"},
+      {"id": "run-remote-focused-and-physical-gates", "kind": "ephemeral_process_start"}
+    ],
+    "forbidden": [
+      "installed_runtime_mutation",
+      "physical_proof_source_edit",
+      "legacy_mutation_bridge",
+      "receipt_bypass",
+      "direct_text_mutation",
+      "generic_orphan_release_tap",
+      "shift_window_expansion",
+      "fixture_surface_in_runtime",
+      "verifier_or_safety_gate_weakening",
+      "unbounded_focus_state_preservation",
+      "handoff_text_authority",
+      "local_cargo_build",
+      "historical_receipt_rewrite"
+    ]
+  },
+  "state_machine": {
+    "initial_state": "GESTURE_HANDOFF_ROOT_CAUSE_ROUTE_PASS",
+    "steps": [
+      {"id": "introduce-typed-gesture-state", "from": "GESTURE_HANDOFF_ROOT_CAUSE_ROUTE_PASS", "to": "TYPED_GESTURE_STATE_WIRED", "mutates": true, "failure_state": "TYPED_GESTURE_STATE_FAILED", "cleanup": "retain the scoped worktree diff for diagnosis and do not alter installed runtime or physical proof source", "preserves": ["installed-engine", "physical-proof-source"], "test_id": "typed-state-edit-fault"},
+      {"id": "implement-bounded-publish-consume", "from": "TYPED_GESTURE_STATE_WIRED", "to": "BOUNDED_HANDOFF_IMPLEMENTED", "mutates": true, "failure_state": "BOUNDED_HANDOFF_FAILED", "cleanup": "retain the scoped diff and block remote staging", "preserves": ["installed-engine", "physical-proof-source"], "test_id": "handoff-edit-fault"},
+      {"id": "wire-atomic-observation-and-input", "from": "BOUNDED_HANDOFF_IMPLEMENTED", "to": "ATOMIC_GESTURE_ROUTE_WIRED", "mutates": true, "failure_state": "ATOMIC_GESTURE_ROUTE_FAILED", "cleanup": "retain failed source evidence with no runtime promotion", "preserves": ["installed-engine", "physical-proof-source"], "test_id": "atomic-wiring-fault"},
+      {"id": "add-systemic-proof-cases", "from": "ATOMIC_GESTURE_ROUTE_WIRED", "to": "SYSTEMIC_TESTS_MAPPED", "mutates": true, "failure_state": "TEST_MAPPING_FAILED", "cleanup": "retain failed test evidence and block remote physical proof", "preserves": ["installed-engine", "physical-proof-source"], "test_id": "test-mapping-fault"},
+      {"id": "remote-build-and-proof", "from": "SYSTEMIC_TESTS_MAPPED", "to": "REMOTE_PHYSICAL_GATES_PASS", "mutates": true, "failure_state": "REMOTE_PHYSICAL_GATES_FAILED", "cleanup": "stop proof-owned processes retain logs and leave installed 1.0.33 unchanged", "preserves": ["installed-engine", "physical-proof-source"], "test_id": "remote-proof-fault"}
+    ],
+    "terminal_states": ["REMOTE_PHYSICAL_GATES_PASS", "TYPED_GESTURE_STATE_FAILED", "BOUNDED_HANDOFF_FAILED", "ATOMIC_GESTURE_ROUTE_FAILED", "TEST_MAPPING_FAILED", "REMOTE_PHYSICAL_GATES_FAILED"]
+  },
+  "preserved_artifacts": [
+    {"id": "installed-engine", "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine", "policy": "immutable_before_all_promotion_gates_pass", "cursor_policy": "none", "rollback_policy": "preserve_exact_bytes", "baseline_check_id": "installed-engine-preserved"},
+    {"id": "physical-proof-source", "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/shell/atomicInputMethodRoute.js", "policy": "immutable_during-runtime-gesture-repair", "cursor_policy": "none", "rollback_policy": "preserve_exact_bytes", "baseline_check_id": "physical-proof-preserved"}
+  ],
+  "identity_contracts": [
+    {"id": "shift-gesture-producer-consumer-parity", "producer": "commit_native_observation after a valid atomic native-unhandled modifier event", "consumer": "the different active Lay engine before processing its next event", "comparison": "one exact tuple of active pressed_at used_as_modifier and last_release_at transfers once only while the existing preserve lease and pending auto-undo are both valid", "test_id": "cross-engine-gesture-parity"},
+    {"id": "handoff-scope-parity", "producer": "existing bounded preserve_active_path_until and shared pending_auto_undo", "consumer": "gesture handoff publisher and consumer", "comparison": "both sides require unexpired lease pending undo active target path and different source path and neither extends the lease", "test_id": "handoff-scope-parity"},
+    {"id": "atomic-receipt-identity-preserved", "producer": "pending atomic transaction identity and disposition", "consumer": "settle_atomic_pending", "comparison": "focus epoch transaction identity digest and disposition predicates remain unchanged", "test_id": "receipt-guard-parity"},
+    {"id": "local-remote-source-parity", "producer": "scoped local Lay source aggregate", "consumer": "remote V27 proof build tree", "comparison": "exact aggregate SHA-256 before every remote build and proof", "test_id": "remote-source-parity"}
+  ],
+  "runtime_comparisons": [],
+  "invariants": [
+    {"id": "cross-engine-gesture-continuity", "statement": "a Shift press observed by the source engine and release observed by the target engine under the same bounded handoff remain one gesture", "test_id": "cross-engine-shift-continuity"},
+    {"id": "modifier-use-is-not-a-tap", "statement": "a cross-engine Shift used with another key remains used_as_modifier and cannot become a double tap", "test_id": "cross-engine-modifier-use"},
+    {"id": "ordinary-focus-quarantine", "statement": "absent or expired preserve lease transfers no gesture and keeps ordinary changed-path quarantine", "test_id": "expired-and-absent-lease-quarantine"},
+    {"id": "gesture-is-not-mutation-authority", "statement": "gesture handoff contains no text candidate plan receipt or mutation authority and existing exact snapshot plus pending auto-undo remain mandatory", "test_id": "gesture-authority-boundary"},
+    {"id": "reconciliation-remains-passing", "statement": "newer surrounding observation still survives receipt settlement and same-revision stale state remains invalidated", "test_id": "reconciliation-regression"},
+    {"id": "physical-double-shift-single-owner", "statement": "exact Space correction and four physical Shift events restore the exact source through one atomic frame with zero legacy calls", "test_id": "physical-double-shift-round-trip"},
+    {"id": "unchanged-full-route", "statement": "the fixed 514 event route remains 514 of 514 within latency budgets and with zero leftovers", "test_id": "fixed-full-route-regression"}
+  ],
+  "tests": [
+    {"id": "typed-state-edit-fault", "kind": "fault_injection", "expected": "partial shared state wiring cannot compile and changes no installed artifact"},
+    {"id": "handoff-edit-fault", "kind": "fault_injection", "expected": "missing lease pending undo path or one-shot guard blocks handoff and performs no mutation"},
+    {"id": "atomic-wiring-fault", "kind": "fault_injection", "expected": "failed native observation or target hydration leaves the gesture unavailable and never falls back to legacy mutation"},
+    {"id": "test-mapping-fault", "kind": "fault_injection", "expected": "missing continuity false-tap or quarantine proof blocks remote staging"},
+    {"id": "remote-proof-fault", "kind": "fault_injection", "expected": "failed remote build or proof leaves complete logs zero proof-owned processes and installed 1.0.33 unchanged"},
+    {"id": "cross-engine-gesture-parity", "kind": "parity", "expected": "producer and consumer use the same complete typed gesture tuple and one-shot source-target identity"},
+    {"id": "handoff-scope-parity", "kind": "parity", "expected": "publish and consume require the same existing unexpired lease pending undo and active target path"},
+    {"id": "receipt-guard-parity", "kind": "parity", "expected": "atomic receipt focus transaction digest and disposition checks remain byte-identical"},
+    {"id": "remote-source-parity", "kind": "parity", "expected": "local and remote scoped source aggregates are byte-identical"},
+    {"id": "cross-engine-shift-continuity", "kind": "integration", "expected": "press on source release on target and second target tap are recognized as exactly two taps"},
+    {"id": "cross-engine-modifier-use", "kind": "integration", "expected": "a shifted non-modifier key preserves used_as_modifier and cannot authorize undo"},
+    {"id": "expired-and-absent-lease-quarantine", "kind": "unit", "expected": "expired or missing lease transfers no gesture and ordinary path change clears state"},
+    {"id": "gesture-authority-boundary", "kind": "parity", "expected": "typed gesture state has no text or mutation fields and cannot bypass pending undo or exact snapshot"},
+    {"id": "reconciliation-regression", "kind": "integration", "expected": "all surrounding revision reconciliation tests remain passing"},
+    {"id": "physical-double-shift-round-trip", "kind": "integration", "expected": "ghbdtn Space becomes привет Space and four Shift events restore exactly ghbdtn Space through an atomic frame"},
+    {"id": "fixed-full-route-regression", "kind": "integration", "expected": "514 of 514 fixed events pass with p99 at most 5 ms max below 8 ms zero legacy calls and zero leftovers"}
+  ]
+}

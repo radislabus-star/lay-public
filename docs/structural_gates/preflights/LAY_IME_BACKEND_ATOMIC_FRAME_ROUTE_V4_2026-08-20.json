@@ -1,0 +1,264 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "input_event", "role": "interface"},
+    {"id": "admitted_event_material", "role": "producer"},
+    {"id": "backend_admission", "role": "authorization_owner"},
+    {"id": "atomic_process_rpc", "role": "orchestrator"},
+    {"id": "typed_frame_collector", "role": "evidence_owner"},
+    {"id": "wayland_v2_transaction", "role": "mutation_owner"},
+    {"id": "gtk_commit_signal", "role": "mutation_owner"},
+    {"id": "frame_discard", "role": "orchestrator"},
+    {"id": "submission_receipt", "role": "observer"},
+    {"id": "native_unhandled", "role": "observer"},
+    {"id": "lineage_terminated", "role": "observer"},
+    {"id": "fault_matrix", "role": "proof_owner"}
+  ],
+  "edges": [
+    {
+      "id": "exec-event-admission",
+      "from": "input_event",
+      "relation": "delegates",
+      "to": "backend_admission",
+      "events": [
+        "wayland_replace_submitted",
+        "gtk_commit_submitted",
+        "capability_refusal",
+        "collector_abort",
+        "focus_lineage_terminated",
+        "submission_uncertain"
+      ]
+    },
+    {
+      "id": "exec-admission-rpc",
+      "from": "backend_admission",
+      "relation": "delegates",
+      "to": "atomic_process_rpc",
+      "events": [
+        "wayland_replace_submitted",
+        "gtk_commit_submitted",
+        "collector_abort",
+        "focus_lineage_terminated",
+        "submission_uncertain"
+      ]
+    },
+    {
+      "id": "exec-rpc-collector",
+      "from": "atomic_process_rpc",
+      "relation": "delegates",
+      "to": "typed_frame_collector",
+      "events": [
+        "wayland_replace_submitted",
+        "gtk_commit_submitted",
+        "collector_abort",
+        "focus_lineage_terminated",
+        "submission_uncertain"
+      ]
+    },
+    {
+      "id": "exec-collector-wayland",
+      "from": "typed_frame_collector",
+      "relation": "delegates",
+      "to": "wayland_v2_transaction",
+      "events": ["wayland_replace_submitted", "submission_uncertain"]
+    },
+    {
+      "id": "exec-collector-gtk",
+      "from": "typed_frame_collector",
+      "relation": "delegates",
+      "to": "gtk_commit_signal",
+      "events": ["gtk_commit_submitted"]
+    },
+    {
+      "id": "exec-wayland-receipt",
+      "from": "wayland_v2_transaction",
+      "relation": "delegates",
+      "to": "submission_receipt",
+      "events": ["wayland_replace_submitted", "submission_uncertain"]
+    },
+    {
+      "id": "observe-wayland-receipt",
+      "from": "wayland_v2_transaction",
+      "relation": "observes",
+      "to": "submission_receipt",
+      "events": ["wayland_replace_submitted", "submission_uncertain"]
+    },
+    {
+      "id": "exec-gtk-receipt",
+      "from": "gtk_commit_signal",
+      "relation": "delegates",
+      "to": "submission_receipt",
+      "events": ["gtk_commit_submitted"]
+    },
+    {
+      "id": "observe-gtk-receipt",
+      "from": "gtk_commit_signal",
+      "relation": "observes",
+      "to": "submission_receipt",
+      "events": ["gtk_commit_submitted"]
+    },
+    {
+      "id": "exec-admission-native",
+      "from": "backend_admission",
+      "relation": "delegates",
+      "to": "native_unhandled",
+      "events": ["capability_refusal"]
+    },
+    {
+      "id": "exec-collector-discard",
+      "from": "typed_frame_collector",
+      "relation": "delegates",
+      "to": "frame_discard",
+      "events": ["collector_abort"]
+    },
+    {
+      "id": "exec-discard-native",
+      "from": "frame_discard",
+      "relation": "delegates",
+      "to": "native_unhandled",
+      "events": ["collector_abort"]
+    },
+    {
+      "id": "exec-collector-lineage",
+      "from": "typed_frame_collector",
+      "relation": "delegates",
+      "to": "lineage_terminated",
+      "events": ["focus_lineage_terminated"]
+    },
+    {
+      "id": "authority-material-collector",
+      "from": "admitted_event_material",
+      "relation": "produces_for",
+      "to": "typed_frame_collector",
+      "events": ["wayland_replace_submitted", "gtk_commit_submitted"]
+    },
+    {
+      "id": "authority-collector-admission",
+      "from": "typed_frame_collector",
+      "relation": "passes_to",
+      "to": "backend_admission",
+      "events": ["wayland_replace_submitted", "gtk_commit_submitted"]
+    },
+    {
+      "id": "authority-admission-wayland",
+      "from": "backend_admission",
+      "relation": "authorizes",
+      "to": "wayland_v2_transaction",
+      "events": ["wayland_replace_submitted"]
+    },
+    {
+      "id": "authority-admission-gtk",
+      "from": "backend_admission",
+      "relation": "authorizes",
+      "to": "gtk_commit_signal",
+      "events": ["gtk_commit_submitted"]
+    },
+    {
+      "id": "proof-collector-faults",
+      "from": "typed_frame_collector",
+      "relation": "proves",
+      "to": "fault_matrix",
+      "events": ["collector_abort", "focus_lineage_terminated"]
+    },
+    {
+      "id": "proof-wayland-transaction",
+      "from": "submission_receipt",
+      "relation": "proves",
+      "to": "fault_matrix",
+      "events": ["wayland_replace_submitted", "submission_uncertain"]
+    }
+  ],
+  "routes": [
+    {
+      "id": "wayland-replace-execution",
+      "event": "wayland_replace_submitted",
+      "kind": "execution",
+      "entry": "input_event",
+      "terminal": "submission_receipt",
+      "required_roles": ["interface", "authorization_owner", "orchestrator", "evidence_owner", "mutation_owner", "observer"],
+      "path_cardinality": [{"from": "input_event", "to": "submission_receipt", "min": 1, "max": 1}]
+    },
+    {
+      "id": "wayland-replace-authority",
+      "event": "wayland_replace_submitted",
+      "kind": "authority",
+      "entry": "admitted_event_material",
+      "terminal": "wayland_v2_transaction",
+      "required_roles": ["producer", "evidence_owner", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "admitted_event_material", "to": "wayland_v2_transaction", "min": 1, "max": 1}]
+    },
+    {
+      "id": "gtk-commit-execution",
+      "event": "gtk_commit_submitted",
+      "kind": "execution",
+      "entry": "input_event",
+      "terminal": "submission_receipt",
+      "required_roles": ["interface", "authorization_owner", "orchestrator", "evidence_owner", "mutation_owner", "observer"],
+      "path_cardinality": [{"from": "input_event", "to": "submission_receipt", "min": 1, "max": 1}]
+    },
+    {
+      "id": "gtk-commit-authority",
+      "event": "gtk_commit_submitted",
+      "kind": "authority",
+      "entry": "admitted_event_material",
+      "terminal": "gtk_commit_signal",
+      "required_roles": ["producer", "evidence_owner", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "admitted_event_material", "to": "gtk_commit_signal", "min": 1, "max": 1}]
+    },
+    {
+      "id": "capability-refusal-execution",
+      "event": "capability_refusal",
+      "kind": "execution",
+      "entry": "input_event",
+      "terminal": "native_unhandled",
+      "required_roles": ["interface", "authorization_owner", "observer"],
+      "path_cardinality": [{"from": "input_event", "to": "native_unhandled", "min": 1, "max": 1}]
+    },
+    {
+      "id": "collector-abort-execution",
+      "event": "collector_abort",
+      "kind": "execution",
+      "entry": "input_event",
+      "terminal": "native_unhandled",
+      "required_roles": ["interface", "authorization_owner", "orchestrator", "evidence_owner", "observer"],
+      "path_cardinality": [{"from": "input_event", "to": "native_unhandled", "min": 1, "max": 1}]
+    },
+    {
+      "id": "focus-lineage-execution",
+      "event": "focus_lineage_terminated",
+      "kind": "execution",
+      "entry": "input_event",
+      "terminal": "lineage_terminated",
+      "required_roles": ["interface", "authorization_owner", "orchestrator", "evidence_owner", "observer"],
+      "path_cardinality": [{"from": "input_event", "to": "lineage_terminated", "min": 1, "max": 1}]
+    },
+    {
+      "id": "submission-uncertain-execution",
+      "event": "submission_uncertain",
+      "kind": "execution",
+      "entry": "input_event",
+      "terminal": "submission_receipt",
+      "required_roles": ["interface", "authorization_owner", "orchestrator", "evidence_owner", "mutation_owner", "observer"],
+      "path_cardinality": [{"from": "input_event", "to": "submission_receipt", "min": 1, "max": 1}]
+    },
+    {
+      "id": "collector-fault-proof",
+      "event": "collector_abort",
+      "kind": "proof",
+      "entry": "typed_frame_collector",
+      "terminal": "fault_matrix",
+      "required_roles": ["evidence_owner", "proof_owner"],
+      "path_cardinality": [{"from": "typed_frame_collector", "to": "fault_matrix", "min": 1, "max": 1}]
+    },
+    {
+      "id": "wayland-transaction-proof",
+      "event": "wayland_replace_submitted",
+      "kind": "proof",
+      "entry": "submission_receipt",
+      "terminal": "fault_matrix",
+      "required_roles": ["observer", "proof_owner"],
+      "path_cardinality": [{"from": "submission_receipt", "to": "fault_matrix", "min": 1, "max": 1}]
+    }
+  ]
+}

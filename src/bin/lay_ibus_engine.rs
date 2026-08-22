@@ -2,6 +2,8 @@ use clap::Parser;
 
 #[path = "lay_ibus_engine/args.rs"]
 mod args;
+#[path = "lay_ibus_engine/atomic.rs"]
+mod atomic;
 #[path = "lay_ibus_engine/bridge.rs"]
 mod bridge;
 #[path = "lay_ibus_engine/bridge_actions.rs"]
@@ -26,8 +28,14 @@ mod key_decode;
 mod key_trace;
 #[path = "lay_ibus_engine/layout_sync.rs"]
 mod layout_sync;
+#[path = "lay_ibus_engine/lifecycle.rs"]
+mod lifecycle;
 #[path = "lay_ibus_engine/managed.rs"]
 mod managed;
+#[path = "lay_ibus_engine/output.rs"]
+mod output;
+#[path = "lay_ibus_engine/precognition_worker.rs"]
+mod precognition_worker;
 #[path = "lay_ibus_engine/preedit.rs"]
 mod preedit;
 #[path = "lay_ibus_engine/protocol.rs"]
@@ -61,7 +69,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         println!("{}", xml::component_xml(&xml::component_exec_path()));
         return Ok(());
     }
-    let _ = args.ibus;
+    lifecycle::arm_ibus_parent_death(args.ibus)?;
     zbus::block_on(server::run(&args))?;
     Ok(())
 }

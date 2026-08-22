@@ -1,0 +1,404 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_ATOMIC_CANONICAL_PROFILE_IDENTITY_REPAIR_V22_2026-08-21",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "mutter-profile-producer",
+      "kind": "file",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-text-input.c",
+      "expect": {"mode": "0664", "size_bytes": 52566, "sha256": "99debf2aca19cccd22ecd7b59e0629cbbb39f76ee4b7f5924ac45aededbc38f2"}
+    },
+    {
+      "id": "mutter-profile-fixture",
+      "kind": "file",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/tests/wayland-text-input-atomic-frame-tests.c",
+      "expect": {"mode": "0664", "size_bytes": 20466, "sha256": "668e3580cad1a199904c06d4891d137440f07faf4aac35dc80c4f1dbe031c2da"}
+    },
+    {
+      "id": "mutter-effect-codec",
+      "kind": "file",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/clutter/clutter/clutter-input-atomic-frame.c",
+      "expect": {"mode": "0664", "size_bytes": 15399, "sha256": "e350b9a813c4df518e8297b65d127ac013520defecee2820f388a954ab8a21cc"}
+    },
+    {
+      "id": "mutter-effect-header",
+      "kind": "file",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/clutter/clutter/clutter-input-atomic-frame.h",
+      "expect": {"mode": "0664", "size_bytes": 4694, "sha256": "7c468f83e00ccea86d031d37c3d59478213e7c7dbf39b11cdd901788c4cfcce8"}
+    },
+    {
+      "id": "shell-profile-fixture",
+      "kind": "file",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/unit/inputMethodAtomic.js",
+      "expect": {"mode": "0664", "size_bytes": 5737, "sha256": "adf513aa21d7b7859bc4c7aa00325d05042a93602bd2cd9bbfc0e3f6d1482bb9"}
+    },
+    {
+      "id": "shell-runtime-adapter",
+      "kind": "file",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/js/misc/inputMethodAtomic.js",
+      "expect": {"mode": "0664", "size_bytes": 15841, "sha256": "d40801329973da6c3e96f35edc2f478ad82c7752f4e245cb01f69904a24e19c0"}
+    },
+    {
+      "id": "ibus-codec-source",
+      "kind": "file",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/ibusatomicframe.c",
+      "expect": {"mode": "0664", "size_bytes": 61576, "sha256": "f05d053085c01d3298625364845144a8ea2709c281d7ebeaca60c0c0e172d58f"}
+    },
+    {
+      "id": "ibus-codec-header",
+      "kind": "file",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/ibusatomicframeprivate.h",
+      "expect": {"mode": "0664", "size_bytes": 16062, "sha256": "2b65333555b721376213b05014b7ba1b5b39a61d4345fae60035b019dd840648"}
+    },
+    {
+      "id": "ibus-codec-proof",
+      "kind": "file",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/ibus-atomic-frame.c",
+      "expect": {"mode": "0664", "size_bytes": 62611, "sha256": "57f1965420904228b9029ee12d684a0350af631c2b4e01eccdb9af0914293e34"}
+    },
+    {
+      "id": "ibus-v21-diagnostic-source",
+      "kind": "file",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/bus/inputcontext.c",
+      "expect": {"mode": "0664", "size_bytes": 152140, "sha256": "28dbed4f87cfab0734c98b48663fd6937068f997451d79d4c2d83c07e367491e"}
+    },
+    {
+      "id": "ibus-v20-production-source",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/ibus-inputcontext-v20.c",
+      "expect": {"mode": "0664", "size_bytes": 150019, "sha256": "4081c8277ec9308b85bdd8e32af8a36da69278bbd35de2c66cde03fb13ecf90c"}
+    },
+    {
+      "id": "lay-profile-validator",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic.rs",
+      "expect": {"mode": "0664", "size_bytes": 16640, "sha256": "45b06512eb69f04a967ae40ac7f30438f523d197d8d3e46a23df586016340319"}
+    },
+    {
+      "id": "lay-effect-producer",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/output.rs",
+      "expect": {"mode": "0664", "size_bytes": 9869, "sha256": "7ef339f78503de6d779c882c879021c22ef9f65b1d07cc09fb7b0d765131e1bc"}
+    },
+    {
+      "id": "v21-conflict-log",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/atomic-full-route-v21-ibus-admission-predicate.log",
+      "expect": {"mode": "0664", "size_bytes": 7744, "sha256": "fe40ad0c82d19f97ed83fa23dc7ca55202597a2c78aa3c3eb6f0844a3b325362"}
+    },
+    {
+      "id": "historical-ibus-profile-receipt",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/ibus-production-profile-admission-proof-v1.json",
+      "expect": {"mode": "0664", "size_bytes": 4708, "sha256": "e38b65ec7c0ff7d3495eec3e0a98947f6d603c9a0c024055fb56fce45641fafd"}
+    },
+    {
+      "id": "installed-mutter",
+      "kind": "file",
+      "path": "/usr/lib/x86_64-linux-gnu/libmutter-18.so.0.0.0",
+      "expect": {"mode": "0644", "size_bytes": 2755048, "sha256": "fec9023139ac8eff93fcc1af90413613cdb526e7f02389dc9d8fe90f7abc81e5"}
+    },
+    {
+      "id": "installed-shell",
+      "kind": "file",
+      "path": "/usr/lib/gnome-shell/libshell-18.so",
+      "expect": {"mode": "0644", "size_bytes": 3107408, "sha256": "94e81e3ff3820b3f8454d596c3a9ee7fa437b770b899098db85f15640a7abb73"}
+    },
+    {
+      "id": "installed-ibus",
+      "kind": "file",
+      "path": "/usr/lib/x86_64-linux-gnu/libibus-1.0.so.5.0.534",
+      "expect": {"mode": "0644", "size_bytes": 542936, "sha256": "e1977b9d3d84ee94b63f6c04056134c10aa51d4e0621f7abee1115da12259ec1"}
+    },
+    {
+      "id": "installed-lay-engine",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "expect": {"mode": "0755", "size_bytes": 6423488, "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a"}
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "replace-mutter-profile-digest", "kind": "source_edit"},
+      {"id": "replace-mutter-profile-fixture-digest", "kind": "test_source_edit"},
+      {"id": "replace-shell-profile-fixture-digest", "kind": "test_source_edit"},
+      {"id": "restore-v20-ibus-admission-predicate", "kind": "source_edit"},
+      {"id": "sync-isolated-remote-sources", "kind": "remote_filesystem_write"},
+      {"id": "run-remote-component-proofs", "kind": "remote_build"},
+      {"id": "run-isolated-full-route", "kind": "ephemeral_process_start"},
+      {"id": "write-v22-evidence", "kind": "filesystem_write"}
+    ],
+    "forbidden": [
+      "local_build",
+      "runtime_deployment",
+      "installed_file_write",
+      "live_session_restart",
+      "live_keyboard_signal",
+      "physical_user_text_mutation",
+      "wildcard_profile_admission",
+      "dual_production_digest_admission",
+      "old_digest_retained_in_mutable_source",
+      "profile_schema_or_vocabulary_change",
+      "per_leg_payload_widening",
+      "ibus_codec_or_lay_source_edit",
+      "shell_runtime_adapter_edit",
+      "historical_receipt_rewrite",
+      "legacy_fallback_change",
+      "second_native_mutation_owner",
+      "diagnostic_hot_path_retained",
+      "unbounded_remote_build",
+      "orphaned_test_process"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "pinned-mutter-profile-producer",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-text-input.c",
+      "sha256": "99debf2aca19cccd22ecd7b59e0629cbbb39f76ee4b7f5924ac45aededbc38f2",
+      "forbidden_effect_patterns": [
+        {"effect": "wildcard_profile_admission", "regex": "atomicProfileDigestWildcard|acceptAnyAtomicProfile"},
+        {"effect": "dual_production_digest_admission", "regex": "atomic_adapter_contract_digest_(?:old|legacy|alternate)|atomic_adapter_contract_digests"},
+        {"effect": "profile_schema_or_vocabulary_change", "regex": "LAY_ATOMIC_PROFILE_SCHEMA_V2|atomicProfileVocabularyExpansion"},
+        {"effect": "runtime_deployment", "regex": "(?:systemctl|dpkg|apt-get)\\s"},
+        {"effect": "installed_file_write", "regex": "(?:/usr/lib|/home/ubu/[.]local/lib/lay)"}
+      ]
+    },
+    {
+      "id": "pinned-mutter-profile-fixture",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/tests/wayland-text-input-atomic-frame-tests.c",
+      "sha256": "668e3580cad1a199904c06d4891d137440f07faf4aac35dc80c4f1dbe031c2da",
+      "forbidden_effect_patterns": [
+        {"effect": "dual_production_digest_admission", "regex": "expected_profile_digests|legacy_profile_digest"},
+        {"effect": "physical_user_text_mutation", "regex": "(?:ydotool|xdotool|wtype|/dev/uinput)"},
+        {"effect": "runtime_deployment", "regex": "(?:systemctl|dpkg|apt-get)\\s"}
+      ]
+    },
+    {
+      "id": "pinned-shell-profile-fixture",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/unit/inputMethodAtomic.js",
+      "sha256": "adf513aa21d7b7859bc4c7aa00325d05042a93602bd2cd9bbfc0e3f6d1482bb9",
+      "forbidden_effect_patterns": [
+        {"effect": "dual_production_digest_admission", "regex": "PROFILE_DIGESTS|LEGACY_PROFILE_DIGEST|ALTERNATE_PROFILE_DIGEST"},
+        {"effect": "shell_runtime_adapter_edit", "regex": "writeRuntimeAdapterFromFixture"},
+        {"effect": "runtime_deployment", "regex": "(?:systemctl|dpkg|apt-get)\\s"}
+      ]
+    },
+    {
+      "id": "pinned-ibus-v21-diagnostic-source",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/bus/inputcontext.c",
+      "sha256": "28dbed4f87cfab0734c98b48663fd6937068f997451d79d4c2d83c07e367491e",
+      "forbidden_effect_patterns": [
+        {"effect": "wildcard_profile_admission", "regex": "acceptAnyAtomicProfile|atomicProfileWildcard"},
+        {"effect": "legacy_fallback_change", "regex": "atomicProductionFallbackToLegacy|sameEventLegacyFallback"},
+        {"effect": "second_native_mutation_owner", "regex": "ibusAtomicNativeMutator|ibusAtomicReplayOwner"},
+        {"effect": "runtime_deployment", "regex": "(?:systemctl|dpkg|apt-get)\\s"}
+      ]
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "canonical-profile-grammar",
+      "producer": "162 exact domain-plus-descriptor bytes",
+      "consumer": "Mutter producer, Shell fixture, IBus admission and Lay validator",
+      "comparison": "SHA-256 equals 1475b580ff9600ccfa84e43eb9bd50a61fa0bca88b11d33a104877e36b39adac everywhere",
+      "test_id": "canonical-profile-byte-parity"
+    },
+    {
+      "id": "single-production-profile",
+      "producer": "Mutter capability lease",
+      "consumer": "IBus and Lay strict admission",
+      "comparison": "one exact digest accepted; 85742aec30f9d1f63bef5c3963f3af325efbc5b34da74cce2a942876ea354aa7 is refused",
+      "test_id": "single-digest-refusal-matrix"
+    },
+    {
+      "id": "hide-preedit-leg-types",
+      "producer": "Lay b=false engine marker and IBus strict translator",
+      "consumer": "IBus outer-frame unit encoder and Mutter strict unit decoder",
+      "comparison": "b=false only on engine leg, unit only on Shell/Mutter leg, no per-leg alternatives",
+      "test_id": "hide-preedit-translation-parity"
+    },
+    {
+      "id": "v20-admission-control-flow",
+      "producer": "preserved ibus-inputcontext-v20.c bytes",
+      "consumer": "post-edit IBus inputcontext.c",
+      "comparison": "exact file SHA-256 4081c8277ec9308b85bdd8e32af8a36da69278bbd35de2c66cde03fb13ecf90c",
+      "test_id": "v20-predicate-byte-parity"
+    },
+    {
+      "id": "remote-source-parity",
+      "producer": "local approved source bytes",
+      "consumer": "isolated 20-CPU remote proof sandboxes",
+      "comparison": "exact SHA-256 equality before every build",
+      "test_id": "remote-source-parity"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "one-canonical-profile",
+      "statement": "mutable source contains one production profile identity and no compatibility wildcard",
+      "test_id": "single-digest-refusal-matrix"
+    },
+    {
+      "id": "strict-route-specific-hide",
+      "statement": "each protocol leg admits one exact HidePreedit payload type and IBus performs the only translation",
+      "test_id": "hide-preedit-translation-parity"
+    },
+    {
+      "id": "diagnostic-removed-before-latency",
+      "statement": "the V21 classifier and rejection log are absent from the final IBus hot path",
+      "test_id": "v20-predicate-byte-parity"
+    },
+    {
+      "id": "no-unscoped-source-change",
+      "statement": "only three digest fixtures and the exact V21-to-V20 diagnostic rollback change",
+      "test_id": "source-scope-parity"
+    },
+    {
+      "id": "full-route-cardinality",
+      "statement": "514 admitted events produce exactly 514 expected commits with zero duplicate or legacy mutation",
+      "test_id": "integrated-text-cardinality"
+    },
+    {
+      "id": "bounded-integrated-latency",
+      "statement": "512 hot samples have p99 at most 5 ms and maximum below 8 ms",
+      "test_id": "integrated-latency"
+    },
+    {
+      "id": "installed-runtime-preserved",
+      "statement": "the four installed component files and live session remain unchanged throughout V22",
+      "test_id": "installed-runtime-parity"
+    },
+    {
+      "id": "no-leftovers",
+      "statement": "normal and failed remote proof runs leave zero task-owned processes",
+      "test_id": "process-cleanup"
+    }
+  ],
+  "preserved_artifacts": [
+    {"id": "mutter-effect-codec-source", "path": "/home/ubu/projects/mutter-lay-atomic-proof/clutter/clutter/clutter-input-atomic-frame.c", "policy": "read_only_exact_bytes", "rollback_policy": "profile identity repair cannot alter effect decoding", "baseline_check_id": "mutter-effect-codec"},
+    {"id": "mutter-effect-header-source", "path": "/home/ubu/projects/mutter-lay-atomic-proof/clutter/clutter/clutter-input-atomic-frame.h", "policy": "read_only_exact_bytes", "rollback_policy": "profile identity repair cannot alter schemas or constants", "baseline_check_id": "mutter-effect-header"},
+    {"id": "shell-runtime-adapter-source", "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/js/misc/inputMethodAtomic.js", "policy": "read_only_exact_bytes", "rollback_policy": "only the unit fixture may change", "baseline_check_id": "shell-runtime-adapter"},
+    {"id": "ibus-codec-source", "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/ibusatomicframe.c", "policy": "read_only_exact_bytes", "rollback_policy": "V22 verifies but does not edit the canonical codec", "baseline_check_id": "ibus-codec-source"},
+    {"id": "ibus-codec-header", "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/ibusatomicframeprivate.h", "policy": "read_only_exact_bytes", "rollback_policy": "V22 cannot alter the wire schema", "baseline_check_id": "ibus-codec-header"},
+    {"id": "ibus-codec-proof", "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/ibus-atomic-frame.c", "policy": "read_only_exact_bytes", "rollback_policy": "V22 reruns the existing proof without rewriting fixtures", "baseline_check_id": "ibus-codec-proof"},
+    {"id": "lay-profile-validator", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic.rs", "policy": "read_only_exact_bytes", "rollback_policy": "producer correction cannot widen Lay admission", "baseline_check_id": "lay-profile-validator"},
+    {"id": "lay-effect-producer", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/output.rs", "policy": "read_only_exact_bytes", "rollback_policy": "producer correction cannot alter engine effects", "baseline_check_id": "lay-effect-producer"},
+    {"id": "v20-production-source", "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/ibus-inputcontext-v20.c", "policy": "read_only_exact_bytes", "rollback_policy": "retain the exact rollback donor", "baseline_check_id": "ibus-v20-production-source"},
+    {"id": "v21-conflict-evidence", "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/atomic-full-route-v21-ibus-admission-predicate.log", "policy": "read_only_exact_bytes", "rollback_policy": "retain the falsifying integrated observation", "baseline_check_id": "v21-conflict-log"},
+    {"id": "historical-ibus-profile-receipt", "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/ibus-production-profile-admission-proof-v1.json", "policy": "read_only_exact_bytes", "rollback_policy": "supersede but never rewrite historical evidence", "baseline_check_id": "historical-ibus-profile-receipt"},
+    {"id": "installed-mutter", "path": "/usr/lib/x86_64-linux-gnu/libmutter-18.so.0.0.0", "policy": "read_only_exact_bytes", "rollback_policy": "V22 performs no install", "baseline_check_id": "installed-mutter"},
+    {"id": "installed-shell", "path": "/usr/lib/gnome-shell/libshell-18.so", "policy": "read_only_exact_bytes", "rollback_policy": "V22 performs no install", "baseline_check_id": "installed-shell"},
+    {"id": "installed-ibus", "path": "/usr/lib/x86_64-linux-gnu/libibus-1.0.so.5.0.534", "policy": "read_only_exact_bytes", "rollback_policy": "V22 performs no install", "baseline_check_id": "installed-ibus"},
+    {"id": "installed-lay-engine", "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine", "policy": "read_only_exact_bytes", "rollback_policy": "V22 performs no install", "baseline_check_id": "installed-lay-engine"}
+  ],
+  "runtime_comparisons": [
+    {
+      "id": "code-phase-installed-runtime",
+      "source": "local installed Mutter, Shell, IBus and Lay baseline",
+      "comparison": "exact_stable_projection",
+      "stable_fields": ["path", "mode", "size_bytes", "sha256", "gnome_shell_pid", "ibus_daemon_pid", "lay_engine_pid"],
+      "expected_to_change_fields": [],
+      "observed_not_compared_fields": ["wall_clock_timestamp", "remote_build_pid", "remote_load", "remote_available_memory"],
+      "reason": "V22 is isolated proof work and cannot alter the user's keyboard session",
+      "test_id": "installed-runtime-parity"
+    }
+  ],
+  "state_machine": {
+    "initial_state": "V21_CONFLICT_PINNED",
+    "terminal_states": [
+      "RECORDED",
+      "SOURCE_EDIT_FAILED_RETAINED",
+      "DIAGNOSTIC_ROLLBACK_FAILED_RETAINED",
+      "REMOTE_SYNC_FAILED_RETAINED",
+      "REMOTE_BUILD_FAILED_RETAINED",
+      "COMPONENT_PROOF_FAILED_RETAINED",
+      "FULL_ROUTE_FAILED_RETAINED",
+      "EVIDENCE_FAILED_RETAINED"
+    ],
+    "steps": [
+      {
+        "id": "canonicalize-producer-and-fixtures",
+        "from": "V21_CONFLICT_PINNED",
+        "to": "CANONICAL_SOURCE_READY",
+        "mutates": true,
+        "failure_state": "SOURCE_EDIT_FAILED_RETAINED",
+        "cleanup": "retain the scoped diff, change no consumer source or installed file, and block every build",
+        "preserves": ["mutter-effect-codec-source", "mutter-effect-header-source", "shell-runtime-adapter-source", "ibus-codec-source", "ibus-codec-header", "ibus-codec-proof", "lay-profile-validator", "lay-effect-producer", "v21-conflict-evidence", "historical-ibus-profile-receipt", "installed-mutter", "installed-shell", "installed-ibus", "installed-lay-engine"],
+        "test_id": "source-scope-parity"
+      },
+      {
+        "id": "restore-v20-admission-predicate",
+        "from": "CANONICAL_SOURCE_READY",
+        "to": "PRODUCTION_SOURCE_READY",
+        "mutates": true,
+        "failure_state": "DIAGNOSTIC_ROLLBACK_FAILED_RETAINED",
+        "cleanup": "retain the failed exact diff and block builds until inputcontext.c equals the preserved V20 bytes",
+        "preserves": ["v20-production-source", "v21-conflict-evidence", "ibus-codec-source", "installed-ibus"],
+        "test_id": "v20-predicate-byte-parity"
+      },
+      {
+        "id": "sync-isolated-remote-sources",
+        "from": "PRODUCTION_SOURCE_READY",
+        "to": "REMOTE_SOURCE_READY",
+        "mutates": true,
+        "failure_state": "REMOTE_SYNC_FAILED_RETAINED",
+        "cleanup": "retain remote source hashes, start no build and touch no remote installed file",
+        "preserves": ["installed-mutter", "installed-shell", "installed-ibus", "installed-lay-engine"],
+        "test_id": "remote-source-parity"
+      },
+      {
+        "id": "run-remote-component-proofs",
+        "from": "REMOTE_SOURCE_READY",
+        "to": "COMPONENT_PROOF_PASSED",
+        "mutates": true,
+        "failure_state": "REMOTE_BUILD_FAILED_RETAINED",
+        "cleanup": "terminate the exact compiler process group, retain logs and reject component PASS",
+        "preserves": ["installed-mutter", "installed-shell", "installed-ibus", "installed-lay-engine"],
+        "test_id": "remote-build-fault"
+      },
+      {
+        "id": "run-isolated-full-route",
+        "from": "COMPONENT_PROOF_PASSED",
+        "to": "FULL_ROUTE_PASSED",
+        "mutates": true,
+        "failure_state": "FULL_ROUTE_FAILED_RETAINED",
+        "cleanup": "terminate only task-owned D-Bus, IBus, Lay, Shell, Mutter and helper descendants and retain the first-loss evidence",
+        "preserves": ["installed-mutter", "installed-shell", "installed-ibus", "installed-lay-engine"],
+        "test_id": "process-cleanup"
+      },
+      {
+        "id": "record-v22-evidence",
+        "from": "FULL_ROUTE_PASSED",
+        "to": "RECORDED",
+        "mutates": true,
+        "failure_state": "EVIDENCE_FAILED_RETAINED",
+        "cleanup": "retain raw logs and refuse deployment authority until the receipt and architecture document agree",
+        "preserves": ["v21-conflict-evidence", "historical-ibus-profile-receipt", "installed-mutter", "installed-shell", "installed-ibus", "installed-lay-engine"],
+        "test_id": "evidence-write-fault"
+      }
+    ]
+  },
+  "tests": [
+    {"id": "source-scope-parity", "kind": "parity", "expected": "the only digest edits are the Mutter producer, Mutter fixture and Shell fixture arrays; no schema or runtime adapter changes"},
+    {"id": "canonical-profile-byte-parity", "kind": "parity", "expected": "35 domain bytes plus the 127-byte descriptor hash to exactly 1475b580ff9600ccfa84e43eb9bd50a61fa0bca88b11d33a104877e36b39adac"},
+    {"id": "single-digest-refusal-matrix", "kind": "fault_injection", "expected": "1475...adac is the sole admitted production digest and 8574...4aa7 plus every one-byte mutation are refused"},
+    {"id": "hide-preedit-translation-parity", "kind": "parity", "expected": "Lay b=false is accepted only by the engine decoder, re-encoded as unit, and unit is accepted only by the outer-frame decoder and Mutter"},
+    {"id": "v20-predicate-byte-parity", "kind": "parity", "expected": "post-edit IBus inputcontext.c exactly matches the preserved V20 file and contains no V21 rejection classifier or message"},
+    {"id": "remote-source-parity", "kind": "parity", "expected": "all local approved sources and isolated remote inputs have exact matching SHA-256 values before build"},
+    {"id": "remote-build-fault", "kind": "fault_injection", "expected": "a failed remote component build terminates its process group, leaves no task-owned process and changes no installed runtime"},
+    {"id": "mutter-focused-profile", "kind": "integration", "expected": "normal and sanitized text-input atomic profile tests pass with the canonical digest and unchanged effect semantics"},
+    {"id": "shell-atomic-unit", "kind": "unit", "expected": "the GNOME Shell atomic adapter unit suite passes with the canonical fixture"},
+    {"id": "ibus-profile-and-marker", "kind": "integration", "expected": "normal and private 19/19 admission proofs plus strict engine-marker translation pass"},
+    {"id": "lay-validator-and-output", "kind": "unit", "expected": "focused remote Lay atomic validator and canonical output tests pass through the repository Cargo guard"},
+    {"id": "integrated-profile-parity", "kind": "parity", "expected": "one exact 1475...adac capability crosses Mutter, Shell, IBus and Lay"},
+    {"id": "integrated-process-hop", "kind": "integration", "expected": "real Lay receives one atomic request per admitted event and legacy ProcessKeyEvent count is zero"},
+    {"id": "integrated-text-cardinality", "kind": "integration", "expected": "514 admitted events produce exactly 514 expected GtkEntry commits with duplicate mutations zero"},
+    {"id": "integrated-latency", "kind": "integration", "expected": "512 hot key-to-GtkEntry samples satisfy p99 <= 5 ms and maximum < 8 ms"},
+    {"id": "installed-runtime-parity", "kind": "parity", "expected": "installed hashes and live process identities remain unchanged throughout V22"},
+    {"id": "process-cleanup", "kind": "fault_injection", "expected": "normal and failed runs leave zero task-owned remote descendants"},
+    {"id": "evidence-write-fault", "kind": "fault_injection", "expected": "missing or inconsistent receipts block package and deployment authority"}
+  ]
+}

@@ -1,0 +1,193 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "printable_key", "role": "interface"},
+    {"id": "space_ready", "role": "interface"},
+    {"id": "space_not_ready", "role": "interface"},
+    {"id": "input_frame", "role": "producer"},
+    {"id": "single_flight_field", "role": "orchestrator"},
+    {"id": "canonical_token_field", "role": "evidence_owner"},
+    {"id": "correction_readout", "role": "candidate_rank_owner"},
+    {"id": "correction_lease", "role": "orchestrator"},
+    {"id": "display_candidate_readout", "role": "candidate_rank_owner"},
+    {"id": "display_projection", "role": "display_rank_owner"},
+    {"id": "preedit_renderer", "role": "render_owner"},
+    {"id": "space_lookup", "role": "orchestrator"},
+    {"id": "transition_verifier", "role": "authorization_owner"},
+    {"id": "literal_space_authority", "role": "authorization_owner"},
+    {"id": "committed_tail_mutator", "role": "mutation_owner"},
+    {"id": "analysis_receipt", "role": "producer"},
+    {"id": "space_receipt", "role": "producer"},
+    {"id": "mutation_receipt", "role": "producer"},
+    {"id": "runtime_trace", "role": "observer"},
+    {"id": "route_proof", "role": "proof_owner"}
+  ],
+  "edges": [
+    {"id": "exec-correction-key-frame", "from": "printable_key", "relation": "calls", "to": "input_frame", "events": ["printable_correction_prepare"]},
+    {"id": "exec-correction-frame-single-flight", "from": "input_frame", "relation": "delegates", "to": "single_flight_field", "events": ["printable_correction_prepare"]},
+    {"id": "exec-correction-single-flight-field", "from": "single_flight_field", "relation": "delegates", "to": "canonical_token_field", "events": ["printable_correction_prepare"]},
+    {"id": "exec-correction-field-readout", "from": "canonical_token_field", "relation": "delegates", "to": "correction_readout", "events": ["printable_correction_prepare"]},
+    {"id": "exec-correction-readout-lease", "from": "correction_readout", "relation": "delegates", "to": "correction_lease", "events": ["printable_correction_prepare"]},
+    {"id": "data-correction-frame-field", "from": "input_frame", "relation": "produces_for", "to": "canonical_token_field", "events": ["printable_correction_prepare"]},
+    {"id": "data-correction-field-readout", "from": "canonical_token_field", "relation": "passes_to", "to": "correction_readout", "events": ["printable_correction_prepare"]},
+
+    {"id": "exec-display-key-frame", "from": "printable_key", "relation": "calls", "to": "input_frame", "events": ["printable_display_refresh"]},
+    {"id": "exec-display-frame-single-flight", "from": "input_frame", "relation": "delegates", "to": "single_flight_field", "events": ["printable_display_refresh"]},
+    {"id": "exec-display-single-flight-field", "from": "single_flight_field", "relation": "delegates", "to": "canonical_token_field", "events": ["printable_display_refresh"]},
+    {"id": "exec-display-field-readout", "from": "canonical_token_field", "relation": "delegates", "to": "display_candidate_readout", "events": ["printable_display_refresh"]},
+    {"id": "exec-display-readout-projection", "from": "display_candidate_readout", "relation": "delegates", "to": "display_projection", "events": ["printable_display_refresh"]},
+    {"id": "exec-display-projection-render", "from": "display_projection", "relation": "delegates", "to": "preedit_renderer", "events": ["printable_display_refresh"]},
+    {"id": "data-display-frame-field", "from": "input_frame", "relation": "produces_for", "to": "canonical_token_field", "events": ["printable_display_refresh"]},
+    {"id": "data-display-field-readout", "from": "canonical_token_field", "relation": "passes_to", "to": "display_candidate_readout", "events": ["printable_display_refresh"]},
+    {"id": "data-display-readout-projection", "from": "display_candidate_readout", "relation": "passes_to", "to": "display_projection", "events": ["printable_display_refresh"]},
+    {"id": "data-display-projection-render", "from": "display_projection", "relation": "passes_to", "to": "preedit_renderer", "events": ["printable_display_refresh"]},
+
+    {"id": "exec-space-ready-lookup", "from": "space_ready", "relation": "calls", "to": "space_lookup", "events": ["space_ready_apply"]},
+    {"id": "exec-ready-lookup-lease", "from": "space_lookup", "relation": "delegates", "to": "correction_lease", "events": ["space_ready_apply"]},
+    {"id": "exec-ready-lease-verifier", "from": "correction_lease", "relation": "delegates", "to": "transition_verifier", "events": ["space_ready_apply"]},
+    {"id": "exec-ready-verifier-mutator", "from": "transition_verifier", "relation": "delegates", "to": "committed_tail_mutator", "events": ["space_ready_apply"]},
+    {"id": "data-ready-readout-verifier", "from": "correction_readout", "relation": "passes_to", "to": "transition_verifier", "events": ["space_ready_apply"]},
+    {"id": "authority-ready-verifier-mutator", "from": "transition_verifier", "relation": "authorizes", "to": "committed_tail_mutator", "events": ["space_ready_apply"]},
+
+    {"id": "exec-space-miss-lookup", "from": "space_not_ready", "relation": "calls", "to": "space_lookup", "events": ["space_literal_fallback"]},
+    {"id": "exec-miss-lookup-authority", "from": "space_lookup", "relation": "delegates", "to": "literal_space_authority", "events": ["space_literal_fallback"]},
+    {"id": "exec-miss-authority-mutator", "from": "literal_space_authority", "relation": "delegates", "to": "committed_tail_mutator", "events": ["space_literal_fallback"]},
+    {"id": "authority-miss-user-space", "from": "literal_space_authority", "relation": "authorizes", "to": "committed_tail_mutator", "events": ["space_literal_fallback"]},
+
+    {"id": "observe-analysis", "from": "analysis_receipt", "relation": "observes", "to": "runtime_trace", "events": ["analysis_observation"]},
+    {"id": "observe-space", "from": "space_receipt", "relation": "observes", "to": "runtime_trace", "events": ["space_observation"]},
+    {"id": "observe-mutation", "from": "mutation_receipt", "relation": "observes", "to": "runtime_trace", "events": ["mutation_observation"]},
+    {"id": "prove-single-flight", "from": "single_flight_field", "relation": "proves", "to": "route_proof", "events": ["single_flight_proof"]},
+    {"id": "prove-correction-readout", "from": "correction_readout", "relation": "proves", "to": "route_proof", "events": ["correction_readout_proof"]},
+    {"id": "prove-display-readout", "from": "display_candidate_readout", "relation": "proves", "to": "route_proof", "events": ["display_readout_proof"]}
+  ],
+  "routes": [
+    {
+      "id": "printable-correction-execution",
+      "event": "printable_correction_prepare",
+      "kind": "execution",
+      "entry": "printable_key",
+      "terminal": "correction_lease",
+      "required_roles": ["interface", "producer", "orchestrator", "evidence_owner", "candidate_rank_owner"],
+      "path_cardinality": [
+        {"from": "printable_key", "to": "canonical_token_field", "min": 1, "max": 1},
+        {"from": "printable_key", "to": "correction_lease", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "printable-correction-authority",
+      "event": "printable_correction_prepare",
+      "kind": "authority",
+      "entry": "input_frame",
+      "terminal": "correction_readout",
+      "required_roles": ["producer", "evidence_owner", "candidate_rank_owner"]
+    },
+    {
+      "id": "printable-display-execution",
+      "event": "printable_display_refresh",
+      "kind": "execution",
+      "entry": "printable_key",
+      "terminal": "preedit_renderer",
+      "required_roles": ["interface", "producer", "orchestrator", "evidence_owner", "candidate_rank_owner", "display_rank_owner", "render_owner"],
+      "path_cardinality": [
+        {"from": "printable_key", "to": "canonical_token_field", "min": 1, "max": 1},
+        {"from": "printable_key", "to": "preedit_renderer", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "printable-display-authority",
+      "event": "printable_display_refresh",
+      "kind": "authority",
+      "entry": "input_frame",
+      "terminal": "preedit_renderer",
+      "required_roles": ["producer", "evidence_owner", "candidate_rank_owner", "display_rank_owner", "render_owner"]
+    },
+    {
+      "id": "space-ready-execution",
+      "event": "space_ready_apply",
+      "kind": "execution",
+      "entry": "space_ready",
+      "terminal": "committed_tail_mutator",
+      "required_roles": ["interface", "orchestrator", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [
+        {"from": "space_ready", "to": "committed_tail_mutator", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "space-ready-authority",
+      "event": "space_ready_apply",
+      "kind": "authority",
+      "entry": "correction_readout",
+      "terminal": "committed_tail_mutator",
+      "required_roles": ["candidate_rank_owner", "authorization_owner", "mutation_owner"]
+    },
+    {
+      "id": "space-fallback-execution",
+      "event": "space_literal_fallback",
+      "kind": "execution",
+      "entry": "space_not_ready",
+      "terminal": "committed_tail_mutator",
+      "required_roles": ["interface", "orchestrator", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [
+        {"from": "space_not_ready", "to": "committed_tail_mutator", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "space-fallback-authority",
+      "event": "space_literal_fallback",
+      "kind": "authority",
+      "entry": "literal_space_authority",
+      "terminal": "committed_tail_mutator",
+      "required_roles": ["authorization_owner", "mutation_owner"]
+    },
+    {
+      "id": "analysis-observation",
+      "event": "analysis_observation",
+      "kind": "observation",
+      "entry": "analysis_receipt",
+      "terminal": "runtime_trace",
+      "required_roles": ["producer", "observer"]
+    },
+    {
+      "id": "space-observation",
+      "event": "space_observation",
+      "kind": "observation",
+      "entry": "space_receipt",
+      "terminal": "runtime_trace",
+      "required_roles": ["producer", "observer"]
+    },
+    {
+      "id": "mutation-observation",
+      "event": "mutation_observation",
+      "kind": "observation",
+      "entry": "mutation_receipt",
+      "terminal": "runtime_trace",
+      "required_roles": ["producer", "observer"]
+    },
+    {
+      "id": "single-flight-proof",
+      "event": "single_flight_proof",
+      "kind": "proof",
+      "entry": "single_flight_field",
+      "terminal": "route_proof",
+      "required_roles": ["orchestrator", "proof_owner"]
+    },
+    {
+      "id": "correction-readout-proof",
+      "event": "correction_readout_proof",
+      "kind": "proof",
+      "entry": "correction_readout",
+      "terminal": "route_proof",
+      "required_roles": ["candidate_rank_owner", "proof_owner"]
+    },
+    {
+      "id": "display-readout-proof",
+      "event": "display_readout_proof",
+      "kind": "proof",
+      "entry": "display_candidate_readout",
+      "terminal": "route_proof",
+      "required_roles": ["candidate_rank_owner", "proof_owner"]
+    }
+  ]
+}

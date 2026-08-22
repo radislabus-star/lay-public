@@ -1,0 +1,129 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_ATOMIC_STATEFUL_ENGINE_V1_2026-08-21",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {"id":"engine-root","kind":"file","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine.rs","expect":{"mode":"0664","size_bytes":2113,"sha256":"9b61f72d200d968962215592c5f7758b3a5d1dd72b4bbd8085a8ee3d254c0578"}},
+    {"id":"engine-state-owner","kind":"file","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/engine.rs","expect":{"mode":"0664","size_bytes":13010,"sha256":"f2bac4a739a53e9d05f8aaad55129bbac001c11a7dc8fae6d1f7d119fd91192f"}},
+    {"id":"engine-types","kind":"file","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/engine/types.rs","expect":{"mode":"0664","size_bytes":9288,"sha256":"0fbd2fe1f22ed7c7926073e3c94bbefc90b7b716c1fb0d37e71fadbaa2c9dc05"}},
+    {"id":"shared-state-owner","kind":"file","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/protocol/state.rs","expect":{"mode":"0664","size_bytes":1077,"sha256":"bf3bbd00dbb135ca4aff5689e97945a391481e3f7e796e9b08fdd2d262e1bb53"}},
+    {"id":"ibus-interface","kind":"file","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/ibus_interface.rs","expect":{"mode":"0664","size_bytes":12613,"sha256":"bf8ff69e4309899ae03d00129973b52e1a51ca3b86526a8fc8e181fa5b535b0b"}},
+    {"id":"preedit-route","kind":"file","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/preedit.rs","expect":{"mode":"0664","size_bytes":30862,"sha256":"220c3b8b166a79468402a88d0ec21c3da9a276fe6b7a8a44eca4ab59c088a609"}},
+    {"id":"managed-route","kind":"file","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/managed.rs","expect":{"mode":"0664","size_bytes":11774,"sha256":"288c83cefbd98dccfcd9ad6c379ccbe1e8824be3ff170fb928ba4459d1567339"}},
+    {"id":"composition-commit-route","kind":"file","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/composition_commit.rs","expect":{"mode":"0664","size_bytes":14086,"sha256":"0005503245603ff4632912a2b5f0107a5299648532c5478f9a989afa82eeaae3"}},
+    {"id":"composition-edit-route","kind":"file","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/composition_edit.rs","expect":{"mode":"0664","size_bytes":8341,"sha256":"8820fa7bf993e5a3e0ecb72b4adb9ab1da093e99c71824f293f0933c649b35a3"}},
+    {"id":"committed-tail-route","kind":"file","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/committed_tail.rs","expect":{"mode":"0664","size_bytes":25042,"sha256":"72e567392a1790467ecb1797b1a031949bf61e8615742eead57a8c5ecfbfa753"}},
+    {"id":"state-route","kind":"file","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/state.rs","expect":{"mode":"0664","size_bytes":40998,"sha256":"e0010783e73c8b95140a5c013329dc1032e69a60c2491844bd5e9bc54fa1efd6"}},
+    {"id":"layout-route","kind":"file","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/layout_sync.rs","expect":{"mode":"0664","size_bytes":9039,"sha256":"db948de33f7a725dedd4fd2992f09f2bc1bef0f39ad2f25d35ccbfa248066c99"}},
+    {"id":"architecture-paper","kind":"file","path":"/home/ubu/projects/lay-l1-exact-peak-search/docs/ime-backend-atomic-frame-v2-2026-08-20.md","expect":{"mode":"0664","size_bytes":122475,"sha256":"044df98dbf5c8f2f31ec6b40498d9eff1e33f1ab8c9a85be08add811833ef1db"}},
+    {"id":"mutter-owner-proof","kind":"file","path":"/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/mutter-slice3b-implementation-proof-v1.json","expect":{"mode":"0664","size_bytes":7273,"sha256":"7a935e8fc62577b0a22cb44d307675ec3a199244fa6baa5fce010ae2f2863716"}},
+    {"id":"ibus-admission-proof","kind":"file","path":"/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/ibus-production-profile-admission-proof-v1.json","expect":{"mode":"0664","size_bytes":4708,"sha256":"e38b65ec7c0ff7d3495eec3e0a98947f6d603c9a0c024055fb56fce45641fafd"}}
+  ],
+  "side_effects": {
+    "planned": [
+      {"id":"add-engine-atomic-codec","kind":"source_edit"},
+      {"id":"add-semantic-output-sink","kind":"source_edit"},
+      {"id":"add-speculative-state-settlement","kind":"source_edit"},
+      {"id":"add-atomic-engine-proof","kind":"source_edit"},
+      {"id":"remote-build-and-proof","kind":"remote_build"},
+      {"id":"record-measured-result","kind":"filesystem_write"}
+    ],
+    "forbidden": [
+      "local_build",
+      "runtime_deployment",
+      "installed_file_write",
+      "restart_or_signal_keyboard_route",
+      "physical_text_mutation",
+      "same_event_legacy_fallback",
+      "second_native_mutation_owner",
+      "legacy_signal_from_atomic_method",
+      "shared_mutable_speculative_state",
+      "pre_receipt_layout_or_learning_authority",
+      "cross_focus_state_commit",
+      "unbounded_effect_vector"
+    ]
+  },
+  "source_checks": [
+    {
+      "id":"pinned-ibus-interface",
+      "path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/ibus_interface.rs",
+      "sha256":"bf8ff69e4309899ae03d00129973b52e1a51ca3b86526a8fc8e181fa5b535b0b",
+      "forbidden_effect_patterns":[
+        {"effect":"same_event_legacy_fallback","regex":"atomic.{0,120}process_key_event\\("},
+        {"effect":"legacy_signal_from_atomic_method","regex":"process_key_event_atomic_v1[\\s\\S]{0,800}Self::(?:commit_text|delete_surrounding_text|update_preedit_text)"},
+        {"effect":"runtime_deployment","regex":"(?:systemctl|dpkg\\s+-i|apt(?:-get)?\\s+install)"},
+        {"effect":"physical_text_mutation","regex":"/dev/(?:input|uinput)|(?:ydotool|xdotool|wtype)\\b"}
+      ]
+    },
+    {
+      "id":"pinned-engine-state",
+      "path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/engine.rs",
+      "sha256":"f2bac4a739a53e9d05f8aaad55129bbac001c11a7dc8fae6d1f7d119fd91192f",
+      "forbidden_effect_patterns":[
+        {"effect":"shared_mutable_speculative_state","regex":"speculative\\.shared\\s*=\\s*(?:self\\.shared|Arc::clone\\(&self\\.shared\\))"},
+        {"effect":"unbounded_effect_vector","regex":"ATOMIC_MAX_EFFECTS\\s*=\\s*(?:0|usize::MAX)"},
+        {"effect":"cross_focus_state_commit","regex":"commit_speculative_to_replacement_focus"}
+      ]
+    },
+    {
+      "id":"pinned-layout-route",
+      "path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/layout_sync.rs",
+      "sha256":"db948de33f7a725dedd4fd2992f09f2bc1bef0f39ad2f25d35ccbfa248066c99",
+      "forbidden_effect_patterns":[
+        {"effect":"pre_receipt_layout_or_learning_authority","regex":"atomic_proposal.{0,160}(?:switch_active_ime_engine|request_active_ime_engine_switch)"}
+      ]
+    }
+  ],
+  "identity_contracts": [
+    {"id":"engine-request-abi","producer":"IBus daemon engine request","consumer":"Lay ProcessKeyEventAtomicV1","comparison":"exact (uuu(ttttttay)((uuayuuyu)(tttttbay))(ytay)) signature and normal-form bytes","test_id":"engine-abi-parity"},
+    {"id":"proposal-abi","producer":"Lay atomic effect builder","consumer":"IBus daemon proposal decoder","comparison":"exact (ya(yv)) signature, canonical tags and bounded payloads","test_id":"proposal-abi-parity"},
+    {"id":"receipt-settlement","producer":"Mutter terminal result through Shell and IBus","consumer":"Lay pending speculative transaction","comparison":"exact transaction identity, effect digest and focus lineage","test_id":"receipt-matrix"},
+    {"id":"state-image-identity","producer":"deep speculative Lay engine and SharedState image","consumer":"receipt settlement owner","comparison":"same engine path and focus generation, no shared mutable authority","test_id":"state-isolation"},
+    {"id":"production-profile-identity","producer":"Mutter production lease","consumer":"Lay atomic engine request validator","comparison":"protocol 1, adapter 196609, transaction 196610, digest 85742a...4aa7, mask 15, count 3, flags 63","test_id":"production-profile-parity"}
+  ],
+  "invariants": [
+    {"id":"one-pending-transaction","statement":"one Lay engine path owns at most one unsettled speculative image","test_id":"single-pending"},
+    {"id":"atomic-method-emits-no-signals","statement":"ProcessKeyEventAtomicV1 returns one proposal and emits zero legacy mutation signals","test_id":"zero-legacy-signals"},
+    {"id":"bounded-canonical-effects","statement":"proposal has at most three effects and one of the Mutter canonical tag patterns","test_id":"effect-canonicalization"},
+    {"id":"receipt-only-state-authority","statement":"engine, SharedState, layout and accepted-learning authority change only after exact successful receipt","test_id":"receipt-matrix"},
+    {"id":"fail-closed-lineage","statement":"missing, mismatched, duplicate, refused, uncertain or cross-focus receipt commits no speculative state","test_id":"failure-matrix"},
+    {"id":"no-legacy-fallback","statement":"an atomic event never invokes legacy ProcessKeyEvent as retry","test_id":"zero-legacy-signals"},
+    {"id":"mutter-only-native-mutator","statement":"Lay proposes, IBus validates, Shell transfers and Mutter alone mutates native text","test_id":"integrated-route"}
+  ],
+  "preserved_artifacts": [
+    {"id":"architecture-contract","path":"/home/ubu/projects/lay-l1-exact-peak-search/docs/ime-backend-atomic-frame-v2-2026-08-20.md","policy":"read_only_during_code_then_append_measured_result","rollback_policy":"retain the pre-implementation contract and every negative result","baseline_check_id":"architecture-paper"},
+    {"id":"mutter-owner-proof","path":"/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/mutter-slice3b-implementation-proof-v1.json","policy":"read_only_exact_bytes","rollback_policy":"Lay cannot rewrite the native-owner proof","baseline_check_id":"mutter-owner-proof"},
+    {"id":"ibus-admission-proof","path":"/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/ibus-production-profile-admission-proof-v1.json","policy":"read_only_exact_bytes","rollback_policy":"Lay cannot widen the IBus admission proof","baseline_check_id":"ibus-admission-proof"}
+  ],
+  "runtime_comparisons": [],
+  "state_machine": {
+    "initial_state":"PREFLIGHT_REQUIRED",
+    "terminal_states":["RECORDED","EDIT_FAILED_RETAINED","REMOTE_BUILD_FAILED_RETAINED","ENGINE_HOP_FAILED_RETAINED","INTEGRATION_FAILED_RETAINED","EVIDENCE_FAILED_RETAINED"],
+    "steps":[
+      {"id":"implement-stateful-atomic-engine","from":"PREFLIGHT_REQUIRED","to":"SOURCE_READY","mutates":true,"failure_state":"EDIT_FAILED_RETAINED","cleanup":"retain scoped source diff; modify no installed runtime","preserves":["architecture-contract","mutter-owner-proof","ibus-admission-proof"],"test_id":"source-scope"},
+      {"id":"remote-build-lay-engine","from":"SOURCE_READY","to":"REMOTE_BUILD_READY","mutates":true,"failure_state":"REMOTE_BUILD_FAILED_RETAINED","cleanup":"terminate only task-owned remote jobs and retain logs","preserves":["architecture-contract","mutter-owner-proof","ibus-admission-proof"],"test_id":"remote-build-fault"},
+      {"id":"run-real-engine-process-hop","from":"REMOTE_BUILD_READY","to":"ENGINE_HOP_PASSED","mutates":true,"failure_state":"ENGINE_HOP_FAILED_RETAINED","cleanup":"tear down isolated IBus bus and fake client; retain logs; reject deployment","preserves":["mutter-owner-proof","ibus-admission-proof"],"test_id":"real-engine-hop"},
+      {"id":"run-full-isolated-integration","from":"ENGINE_HOP_PASSED","to":"INTEGRATION_PASSED","mutates":true,"failure_state":"INTEGRATION_FAILED_RETAINED","cleanup":"tear down isolated compositor, buses and clients; retain logs; reject deployment","preserves":["mutter-owner-proof","ibus-admission-proof"],"test_id":"integrated-route"},
+      {"id":"record-stateful-engine-result","from":"INTEGRATION_PASSED","to":"RECORDED","mutates":true,"failure_state":"EVIDENCE_FAILED_RETAINED","cleanup":"retain raw logs and block packaging until receipt and architecture agree","preserves":["mutter-owner-proof","ibus-admission-proof"],"test_id":"evidence-completeness"}
+    ]
+  },
+  "tests": [
+    {"id":"source-scope","kind":"parity","expected":"only allowlisted Lay engine, proof registration and architecture files change"},
+    {"id":"engine-abi-parity","kind":"parity","expected":"real IBus request decodes through exact Lay method signature"},
+    {"id":"proposal-abi-parity","kind":"parity","expected":"IBus accepts each canonical Lay proposal without translation"},
+    {"id":"production-profile-parity","kind":"parity","expected":"Lay observes exact unchanged Mutter and IBus production vocabulary"},
+    {"id":"single-pending","kind":"fault_injection","expected":"second unsettled event is refused or serialized; never two pending images"},
+    {"id":"state-isolation","kind":"fault_injection","expected":"speculative engine and SharedState writes are invisible before receipt"},
+    {"id":"effect-canonicalization","kind":"fault_injection","expected":"commit/delete/preedit/hide combinations canonicalize to the fixed <=3-effect matrix; forward or overflow refuses"},
+    {"id":"receipt-matrix","kind":"fault_injection","expected":"accepted exact receipt commits once; every non-success receipt discards all deferred authority"},
+    {"id":"failure-matrix","kind":"fault_injection","expected":"missing, duplicate, mismatched, uncertain, focus-lost and malformed inputs produce zero state or text authority"},
+    {"id":"zero-legacy-signals","kind":"integration","expected":"atomic request records one engine call, zero ProcessKeyEvent calls and zero legacy mutation signals"},
+    {"id":"real-engine-hop","kind":"integration","expected":"normal IBus carries production request to real Lay engine and validates one bounded proposal"},
+    {"id":"integrated-route","kind":"integration","expected":"Shell to IBus to Lay to Mutter to text-input-v3 passes dispositions, FIFO, focus failure and zero-fallback proof"},
+    {"id":"latency","kind":"integration","expected":"RPC p99 <=2 ms, integrated p99 <=5 ms and maximum <8 ms"},
+    {"id":"remote-build-fault","kind":"fault_injection","expected":"failed remote build changes no installed runtime and leaves no task process"},
+    {"id":"evidence-completeness","kind":"parity","expected":"receipt and architecture separate measured, untested, verdict and runtime authority"}
+  ]
+}

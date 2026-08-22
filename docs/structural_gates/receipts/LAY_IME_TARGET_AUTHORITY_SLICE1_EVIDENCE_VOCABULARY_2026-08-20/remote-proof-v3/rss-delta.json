@@ -1,0 +1,11 @@
+{
+  "selector": "typing_transition::live_candidate::tests::decision_core_is_the_live_completion_sort_owner",
+  "runs_per_binary": 9,
+  "baseline_median_kib": 12480,
+  "candidate_median_kib": 13920,
+  "baseline_max_kib": 12800,
+  "candidate_max_kib": 14400,
+  "median_delta_kib": 1440,
+  "limit_kib": 5120,
+  "verdict": "PASS"
+}

@@ -1,0 +1,2 @@
+test preedit::tests::display_cancellation_does_not_change_space_authority_identity ... ok
+

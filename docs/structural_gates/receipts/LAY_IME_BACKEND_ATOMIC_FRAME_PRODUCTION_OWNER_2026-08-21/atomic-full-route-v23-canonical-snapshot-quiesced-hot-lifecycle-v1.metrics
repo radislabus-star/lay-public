@@ -1,0 +1,12 @@
+process_status=1
+integrated_marker_count=1
+registry_ready_count=1
+reuse_count=2
+process_exit_zero_count=0
+forbidden_marker_count=0
+engine_trace_lines=2265
+engine_key_events=878
+legacy_key_calls=0
+leftovers_before_cleanup=0
+leftovers_after_cleanup=0
+GNOME Shell-Message: 20:45:03.371: LAY_ATOMIC_INTEGRATED samples=512 p50=1274us p99=3009us max=3424us text_chars=514

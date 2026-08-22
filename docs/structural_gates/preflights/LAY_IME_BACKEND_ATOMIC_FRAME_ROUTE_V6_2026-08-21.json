@@ -1,0 +1,252 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "physical_event", "role": "interface"},
+    {"id": "frozen_event_lease", "role": "producer"},
+    {"id": "input_context_atomic_rpc", "role": "orchestrator"},
+    {"id": "daemon_capability_gate", "role": "orchestrator"},
+    {"id": "engine_atomic_rpc", "role": "orchestrator"},
+    {"id": "lay_effect_proposal", "role": "producer"},
+    {"id": "daemon_frame_validator", "role": "evidence_owner"},
+    {"id": "client_frame_admission", "role": "authorization_owner"},
+    {"id": "wayland_v2_transaction", "role": "mutation_owner"},
+    {"id": "submission_receipt", "role": "observer"},
+    {"id": "visible_postcondition", "role": "observer"},
+    {"id": "native_unhandled", "role": "observer"},
+    {"id": "lineage_terminated", "role": "observer"},
+    {"id": "fault_matrix", "role": "proof_owner"}
+  ],
+  "edges": [
+    {
+      "id": "exec-event-freeze",
+      "from": "physical_event",
+      "relation": "delegates",
+      "to": "frozen_event_lease",
+      "events": ["wayland_frame_submitted", "capability_refusal", "engine_proposal_rejected", "client_frame_refused", "focus_lineage_terminated"]
+    },
+    {
+      "id": "exec-freeze-input-rpc",
+      "from": "frozen_event_lease",
+      "relation": "delegates",
+      "to": "input_context_atomic_rpc",
+      "events": ["wayland_frame_submitted", "capability_refusal", "engine_proposal_rejected", "client_frame_refused", "focus_lineage_terminated"]
+    },
+    {
+      "id": "exec-input-rpc-capability",
+      "from": "input_context_atomic_rpc",
+      "relation": "delegates",
+      "to": "daemon_capability_gate",
+      "events": ["wayland_frame_submitted", "capability_refusal", "engine_proposal_rejected", "client_frame_refused", "focus_lineage_terminated"]
+    },
+    {
+      "id": "exec-capability-engine-rpc",
+      "from": "daemon_capability_gate",
+      "relation": "delegates",
+      "to": "engine_atomic_rpc",
+      "events": ["wayland_frame_submitted", "engine_proposal_rejected", "client_frame_refused"]
+    },
+    {
+      "id": "exec-engine-rpc-lay",
+      "from": "engine_atomic_rpc",
+      "relation": "delegates",
+      "to": "lay_effect_proposal",
+      "events": ["wayland_frame_submitted", "engine_proposal_rejected", "client_frame_refused"]
+    },
+    {
+      "id": "exec-lay-validator",
+      "from": "lay_effect_proposal",
+      "relation": "delegates",
+      "to": "daemon_frame_validator",
+      "events": ["wayland_frame_submitted", "engine_proposal_rejected", "client_frame_refused"]
+    },
+    {
+      "id": "exec-validator-client",
+      "from": "daemon_frame_validator",
+      "relation": "delegates",
+      "to": "client_frame_admission",
+      "events": ["wayland_frame_submitted", "client_frame_refused"]
+    },
+    {
+      "id": "exec-client-wayland",
+      "from": "client_frame_admission",
+      "relation": "delegates",
+      "to": "wayland_v2_transaction",
+      "events": ["wayland_frame_submitted"]
+    },
+    {
+      "id": "exec-wayland-receipt",
+      "from": "wayland_v2_transaction",
+      "relation": "delegates",
+      "to": "submission_receipt",
+      "events": ["wayland_frame_submitted"]
+    },
+    {
+      "id": "exec-capability-native",
+      "from": "daemon_capability_gate",
+      "relation": "delegates",
+      "to": "native_unhandled",
+      "events": ["capability_refusal"]
+    },
+    {
+      "id": "exec-validator-native",
+      "from": "daemon_frame_validator",
+      "relation": "delegates",
+      "to": "native_unhandled",
+      "events": ["engine_proposal_rejected"]
+    },
+    {
+      "id": "exec-client-refused",
+      "from": "client_frame_admission",
+      "relation": "delegates",
+      "to": "submission_receipt",
+      "events": ["client_frame_refused"]
+    },
+    {
+      "id": "exec-capability-lineage",
+      "from": "daemon_capability_gate",
+      "relation": "delegates",
+      "to": "lineage_terminated",
+      "events": ["focus_lineage_terminated"]
+    },
+    {
+      "id": "authority-lease-lay",
+      "from": "frozen_event_lease",
+      "relation": "produces_for",
+      "to": "lay_effect_proposal",
+      "events": ["wayland_frame_submitted"]
+    },
+    {
+      "id": "authority-lay-validator",
+      "from": "lay_effect_proposal",
+      "relation": "passes_to",
+      "to": "daemon_frame_validator",
+      "events": ["wayland_frame_submitted"]
+    },
+    {
+      "id": "authority-validator-client",
+      "from": "daemon_frame_validator",
+      "relation": "passes_to",
+      "to": "client_frame_admission",
+      "events": ["wayland_frame_submitted"]
+    },
+    {
+      "id": "authority-client-wayland",
+      "from": "client_frame_admission",
+      "relation": "authorizes",
+      "to": "wayland_v2_transaction",
+      "events": ["wayland_frame_submitted"]
+    },
+    {
+      "id": "observe-wayland-receipt",
+      "from": "wayland_v2_transaction",
+      "relation": "observes",
+      "to": "submission_receipt",
+      "events": ["wayland_frame_submitted"]
+    },
+    {
+      "id": "observe-receipt-visible",
+      "from": "submission_receipt",
+      "relation": "observes",
+      "to": "visible_postcondition",
+      "events": ["wayland_frame_submitted"]
+    },
+    {
+      "id": "proof-validator-faults",
+      "from": "daemon_frame_validator",
+      "relation": "proves",
+      "to": "fault_matrix",
+      "events": ["engine_proposal_rejected"]
+    },
+    {
+      "id": "proof-visible-faults",
+      "from": "visible_postcondition",
+      "relation": "proves",
+      "to": "fault_matrix",
+      "events": ["wayland_frame_submitted"]
+    }
+  ],
+  "routes": [
+    {
+      "id": "wayland-frame-execution",
+      "event": "wayland_frame_submitted",
+      "kind": "execution",
+      "entry": "physical_event",
+      "terminal": "submission_receipt",
+      "required_roles": ["interface", "producer", "orchestrator", "evidence_owner", "authorization_owner", "mutation_owner", "observer"],
+      "path_cardinality": [{"from": "physical_event", "to": "submission_receipt", "min": 1, "max": 1}]
+    },
+    {
+      "id": "wayland-frame-authority",
+      "event": "wayland_frame_submitted",
+      "kind": "authority",
+      "entry": "frozen_event_lease",
+      "terminal": "wayland_v2_transaction",
+      "required_roles": ["producer", "evidence_owner", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "frozen_event_lease", "to": "wayland_v2_transaction", "min": 1, "max": 1}]
+    },
+    {
+      "id": "capability-refusal-execution",
+      "event": "capability_refusal",
+      "kind": "execution",
+      "entry": "physical_event",
+      "terminal": "native_unhandled",
+      "required_roles": ["interface", "producer", "orchestrator", "observer"],
+      "path_cardinality": [{"from": "physical_event", "to": "native_unhandled", "min": 1, "max": 1}]
+    },
+    {
+      "id": "proposal-rejection-execution",
+      "event": "engine_proposal_rejected",
+      "kind": "execution",
+      "entry": "physical_event",
+      "terminal": "native_unhandled",
+      "required_roles": ["interface", "producer", "orchestrator", "evidence_owner", "observer"],
+      "path_cardinality": [{"from": "physical_event", "to": "native_unhandled", "min": 1, "max": 1}]
+    },
+    {
+      "id": "client-refusal-execution",
+      "event": "client_frame_refused",
+      "kind": "execution",
+      "entry": "physical_event",
+      "terminal": "submission_receipt",
+      "required_roles": ["interface", "producer", "orchestrator", "evidence_owner", "authorization_owner", "observer"],
+      "path_cardinality": [{"from": "physical_event", "to": "submission_receipt", "min": 1, "max": 1}]
+    },
+    {
+      "id": "focus-lineage-execution",
+      "event": "focus_lineage_terminated",
+      "kind": "execution",
+      "entry": "physical_event",
+      "terminal": "lineage_terminated",
+      "required_roles": ["interface", "producer", "orchestrator", "observer"],
+      "path_cardinality": [{"from": "physical_event", "to": "lineage_terminated", "min": 1, "max": 1}]
+    },
+    {
+      "id": "submission-observation",
+      "event": "wayland_frame_submitted",
+      "kind": "observation",
+      "entry": "submission_receipt",
+      "terminal": "visible_postcondition",
+      "required_roles": ["observer"],
+      "path_cardinality": [{"from": "submission_receipt", "to": "visible_postcondition", "min": 1, "max": 1}]
+    },
+    {
+      "id": "proposal-fault-proof",
+      "event": "engine_proposal_rejected",
+      "kind": "proof",
+      "entry": "daemon_frame_validator",
+      "terminal": "fault_matrix",
+      "required_roles": ["evidence_owner", "proof_owner"],
+      "path_cardinality": [{"from": "daemon_frame_validator", "to": "fault_matrix", "min": 1, "max": 1}]
+    },
+    {
+      "id": "visible-postcondition-proof",
+      "event": "wayland_frame_submitted",
+      "kind": "proof",
+      "entry": "visible_postcondition",
+      "terminal": "fault_matrix",
+      "required_roles": ["observer", "proof_owner"],
+      "path_cardinality": [{"from": "visible_postcondition", "to": "fault_matrix", "min": 1, "max": 1}]
+    }
+  ]
+}

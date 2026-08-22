@@ -1,0 +1,99 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "observed_source",
+  "source_root": "../../..",
+  "nodes": [
+    {
+      "id": "correction_request",
+      "role": "interface",
+      "evidence": {"path": "src/correction_core.rs", "line": 471, "contains": "pub(crate) fn resolve_text_correction_observed("}
+    },
+    {
+      "id": "canonical_bridge",
+      "role": "orchestrator",
+      "evidence": {"path": "src/nanda_wave/l2_field/bridge.rs", "line": 37, "contains": "pub(crate) fn canonical_text_readout_observed(original: &str)"}
+    },
+    {
+      "id": "canonical_v90_producer",
+      "role": "producer",
+      "evidence": {"path": "src/nanda_wave/l2_field/bridge.rs", "line": 39, "contains": "|| canonical_owned_text_candidates_observed(original)"}
+    },
+    {
+      "id": "field_wide_authority",
+      "role": "evidence_owner",
+      "evidence": {"path": "src/nanda_wave/l2_field/productive_v1/live.rs", "line": 107, "contains": "let common_l3_required = lattice_surface_count(&lattice) > 1;"}
+    },
+    {
+      "id": "legacy_boundary_producer",
+      "role": "producer",
+      "evidence": {"path": "src/nanda_wave/l2_field/bridge.rs", "line": 40, "contains": "|| boundary_text_candidates(original)"}
+    },
+    {
+      "id": "legacy_boundary_split",
+      "role": "producer",
+      "evidence": {"path": "src/nanda_wave/l2.rs", "line": 175, "contains": "let mut candidates = boundary_split_candidates(\"\", token, &l1, &context)"}
+    },
+    {
+      "id": "merged_candidate_lattice",
+      "role": "evidence_owner",
+      "evidence": {"path": "src/nanda_wave/l2_field/bridge.rs", "line": 42, "contains": "for candidate in boundary_candidates {"}
+    },
+    {
+      "id": "decision_core",
+      "role": "candidate_rank_owner",
+      "evidence": {"path": "src/typing_transition/decision.rs", "line": 51, "contains": "pub(crate) fn evaluate_candidates("}
+    },
+    {
+      "id": "transition_and_backend_verifier",
+      "role": "authorization_owner",
+      "evidence": {"path": "src/bin/lay_ibus_engine/state.rs", "line": 425, "contains": "let (plan, edit_action) = match decide_text_transition(&visible_state, transition_candidate)"}
+    },
+    {
+      "id": "committed_tail_mutator",
+      "role": "mutation_owner",
+      "evidence": {"path": "src/bin/lay_ibus_engine/state.rs", "line": 568, "contains": "Self::commit_text(emitter, make_ibus_text(commit_text))"}
+    }
+  ],
+  "edges": [
+    {"id": "exec-request-bridge", "from": "correction_request", "relation": "calls", "to": "canonical_bridge", "events": ["canonical_correction"], "evidence": {"path": "src/correction_core/candidate_sources.rs", "line": 33, "contains": "crate::nanda_wave::l2_field::canonical_text_readout_observed(req.text);"}},
+    {"id": "exec-bridge-v90", "from": "canonical_bridge", "relation": "calls", "to": "canonical_v90_producer", "events": ["canonical_correction"], "evidence": {"path": "src/nanda_wave/l2_field/bridge.rs", "line": 39, "contains": "|| canonical_owned_text_candidates_observed(original)"}},
+    {"id": "exec-v90-field", "from": "canonical_v90_producer", "relation": "delegates", "to": "field_wide_authority", "events": ["canonical_correction"], "evidence": {"path": "src/nanda_wave/l2_field/productive_v1/live.rs", "line": 107, "contains": "let common_l3_required = lattice_surface_count(&lattice) > 1;"}},
+    {"id": "exec-field-merge", "from": "field_wide_authority", "relation": "delegates", "to": "merged_candidate_lattice", "events": ["canonical_correction"], "evidence": {"path": "src/nanda_wave/l2_field/bridge.rs", "line": 43, "contains": "if let Some(existing) = observed"}},
+    {"id": "exec-bridge-boundary", "from": "canonical_bridge", "relation": "calls", "to": "legacy_boundary_producer", "events": ["canonical_correction"], "evidence": {"path": "src/nanda_wave/l2_field/bridge.rs", "line": 40, "contains": "|| boundary_text_candidates(original)"}},
+    {"id": "exec-boundary-split", "from": "legacy_boundary_producer", "relation": "calls", "to": "legacy_boundary_split", "events": ["canonical_correction"], "evidence": {"path": "src/nanda_wave/l2.rs", "line": 175, "contains": "let mut candidates = boundary_split_candidates(\"\", token, &l1, &context)"}},
+    {"id": "exec-split-merge", "from": "legacy_boundary_split", "relation": "delegates", "to": "merged_candidate_lattice", "events": ["canonical_correction"], "evidence": {"path": "src/nanda_wave/l2_field/bridge.rs", "line": 42, "contains": "for candidate in boundary_candidates {"}},
+    {"id": "data-v90-field", "from": "canonical_v90_producer", "relation": "produces_for", "to": "field_wide_authority", "events": ["canonical_correction"], "evidence": {"path": "src/nanda_wave/l2_field/productive_v1/live.rs", "line": 226, "contains": "pub(in crate::nanda_wave::l2_field) fn materialize_live_productive_v1_field("}},
+    {"id": "data-field-merge", "from": "field_wide_authority", "relation": "passes_to", "to": "merged_candidate_lattice", "events": ["canonical_correction"], "evidence": {"path": "src/nanda_wave/l2_field/bridge.rs", "line": 43, "contains": "if let Some(existing) = observed"}},
+    {"id": "data-boundary-merge", "from": "legacy_boundary_split", "relation": "produces_for", "to": "merged_candidate_lattice", "events": ["canonical_correction"], "evidence": {"path": "src/nanda_wave/l2_field/bridge.rs", "line": 42, "contains": "for candidate in boundary_candidates {"}},
+    {"id": "data-merge-decision", "from": "merged_candidate_lattice", "relation": "passes_to", "to": "decision_core", "events": ["canonical_correction"], "evidence": {"path": "src/correction_core.rs", "line": 502, "contains": "lattice.into_observed_resolution_with_peak_context(l2_peak_context.as_ref());"}},
+    {"id": "data-decision-verifier", "from": "decision_core", "relation": "passes_to", "to": "transition_and_backend_verifier", "events": ["canonical_correction"], "evidence": {"path": "src/bin/lay_ibus_engine/state.rs", "line": 425, "contains": "let (plan, edit_action) = match decide_text_transition(&visible_state, transition_candidate)"}},
+    {"id": "data-verifier-mutator", "from": "transition_and_backend_verifier", "relation": "authorizes", "to": "committed_tail_mutator", "events": ["canonical_correction"], "evidence": {"path": "src/bin/lay_ibus_engine/state.rs", "line": 568, "contains": "Self::commit_text(emitter, make_ibus_text(commit_text))"}}
+  ],
+  "routes": [
+    {
+      "id": "current-competing-producer-execution",
+      "event": "canonical_correction",
+      "kind": "execution",
+      "entry": "canonical_bridge",
+      "terminal": "merged_candidate_lattice",
+      "required_roles": ["orchestrator", "producer", "evidence_owner"],
+      "path_cardinality": [{"from": "canonical_bridge", "to": "merged_candidate_lattice", "min": 1, "max": 1}]
+    },
+    {
+      "id": "current-v90-authority",
+      "event": "canonical_correction",
+      "kind": "authority",
+      "entry": "canonical_v90_producer",
+      "terminal": "committed_tail_mutator",
+      "required_roles": ["producer", "evidence_owner", "candidate_rank_owner", "authorization_owner", "mutation_owner"]
+    },
+    {
+      "id": "current-boundary-authority",
+      "event": "canonical_correction",
+      "kind": "authority",
+      "entry": "legacy_boundary_split",
+      "terminal": "committed_tail_mutator",
+      "required_roles": ["producer", "evidence_owner", "candidate_rank_owner", "authorization_owner", "mutation_owner"]
+    }
+  ]
+}

@@ -1,11 +1,15 @@
+use super::output::EngineOutput;
 use zbus::fdo;
-use zbus::object_server::SignalEmitter;
 
 use super::engine::LayIbusEngine;
 use super::protocol::{KEY_LEFT, KEY_RIGHT, KEY_UP};
 
 impl LayIbusEngine {
-    pub(super) async fn backspace(&mut self, emitter: &SignalEmitter<'_>) -> fdo::Result<bool> {
+    pub(super) async fn backspace(
+        &mut self,
+        emitter: &mut EngineOutput<'_, '_>,
+    ) -> fdo::Result<bool> {
+        self.invalidate_input_frame_background_work();
         self.preedit_dirty = false;
         if !self.buffer.is_empty() {
             if self.composition_cursor == 0 {
@@ -49,7 +53,7 @@ impl LayIbusEngine {
 
     pub(super) async fn move_composition_cursor(
         &mut self,
-        emitter: &SignalEmitter<'_>,
+        emitter: &mut EngineOutput<'_, '_>,
         keyval: u32,
     ) -> fdo::Result<bool> {
         if self.buffer.is_empty() {
@@ -69,7 +73,7 @@ impl LayIbusEngine {
 
     pub(super) async fn select_precognition_candidate(
         &mut self,
-        emitter: &SignalEmitter<'_>,
+        emitter: &mut EngineOutput<'_, '_>,
         keyval: u32,
     ) -> fdo::Result<bool> {
         let step = if keyval == KEY_UP { -1 } else { 1 };

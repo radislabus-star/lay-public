@@ -1,0 +1,358 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "productive-live-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/productive_v1/live.rs",
+      "sha256": "64829d7f64cda13ae63a7691ae4b51bc2e09bb41a72c29374108fb089943bee8",
+      "size_bytes": 23542
+    },
+    {
+      "exists": true,
+      "id": "productive-runtime-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/productive_v1/packaged_runtime.rs",
+      "sha256": "0898a0e6307166846a9847c17d07d108cf349720b338dcfeda8e0cef620c8e53",
+      "size_bytes": 175860
+    },
+    {
+      "exists": true,
+      "id": "l2-bridge-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/bridge.rs",
+      "sha256": "ee12ed48419b6f664277c6a88c1b2e3f1ca81dce0f68bfd11ee9c0062c3d79da",
+      "size_bytes": 77431
+    },
+    {
+      "exists": true,
+      "id": "l2-cache-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/cache.rs",
+      "sha256": "58220f784a83b9d5168d4cb95e0311692ce89abd030409f34bc14b5c285ac97d",
+      "size_bytes": 1934
+    },
+    {
+      "exists": true,
+      "id": "l2-module-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/mod.rs",
+      "sha256": "28057e156a5658baa7938d15bbea91da77e56e92d6180275780f7f57a9546c00",
+      "size_bytes": 51505
+    },
+    {
+      "exists": true,
+      "id": "candidate-gate-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/candidate_gate.rs",
+      "sha256": "234a50a15d10cbe854924c3a194ef0592de2852d448479e536838766a834f124",
+      "size_bytes": 85302
+    },
+    {
+      "exists": true,
+      "id": "train-cli-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/bin/lay_nanda_wave_train.rs",
+      "sha256": "66fdc46ad769325de5d328c03c16d6c03d1c7fa00ffd060e06ce1fc0ffafcf7a",
+      "size_bytes": 95544
+    },
+    {
+      "exists": true,
+      "id": "precognition-worker-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/precognition_worker.rs",
+      "sha256": "12739971318aba51b3094b0a4dcf57a467ab6abf8880e220c6942c5437ee2fbb",
+      "size_bytes": 6839
+    },
+    {
+      "exists": true,
+      "id": "space-prefetch-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
+      "sha256": "76b4c6bc13dbadd20ad11e4df0c49106bd66e03b6a311250b81d878f288c2b18",
+      "size_bytes": 8111
+    },
+    {
+      "exists": true,
+      "id": "preedit-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/preedit.rs",
+      "sha256": "c3b31fad0bb1beb4ffbdc16981052e219f4ebe2ff271ab27d2ff03c26d460444",
+      "size_bytes": 28706
+    },
+    {
+      "exists": true,
+      "id": "composition-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/composition_commit.rs",
+      "sha256": "8e8b524ec89f1f1b770f4515e9a80aedf6d9760000bd8fbcf8737ad7dcbb0483",
+      "size_bytes": 13276
+    },
+    {
+      "exists": true,
+      "id": "managed-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/managed.rs",
+      "sha256": "783b2ebf78ee44fe51316acee1d92dc759c2be57afa6f251e85452c2350ce60b",
+      "size_bytes": 9866
+    },
+    {
+      "exists": true,
+      "id": "state-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/state.rs",
+      "sha256": "65dd211de4b2016c8b6b7f889d93b62d6b59194b0dcc0e3b16a07bd6edc6b0cd",
+      "size_bytes": 40807
+    },
+    {
+      "exists": true,
+      "id": "trace-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/trace.rs",
+      "sha256": "21e3350a0a54c2157731666e42637cdcfbd70d9fb9361ceed88d54c49b2da2f2",
+      "size_bytes": 10494
+    },
+    {
+      "exists": true,
+      "id": "architecture-plan",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../ime-unified-token-field-implementation-plan-2026-08-16.md",
+      "sha256": "ebf834c9c30acf0792cc19eb3caf5552f7d3691b7c0c2180ba768147b983e1f7",
+      "size_bytes": 25110
+    },
+    {
+      "exists": true,
+      "id": "live-deploy-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_LIVE_DEPLOY_2026-08-16.json",
+      "sha256": "2f87f5a8dcabd6c3366eb4942fe82860e7e79f1131ec75726526027d85d877a3",
+      "size_bytes": 4968
+    },
+    {
+      "exists": true,
+      "id": "installed-productive-v90",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2m",
+      "sha256": "40fb6a9f0d92c3c7502e47f9c70230d9b86020f622b08a5c799342f13e09ce44",
+      "size_bytes": 17309944
+    },
+    {
+      "exists": true,
+      "id": "installed-productive-recovery",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2r",
+      "sha256": "de7972c80448dc792759d70de99cda6ec48c3d6af337763856601db563ab167e",
+      "size_bytes": 2123112
+    },
+    {
+      "exists": true,
+      "id": "structural-verifier",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/text_edit/structural_verifier.rs",
+      "sha256": "19201157bc09df5cca617132d67a242474aaa331ca58dc18acb0152818b7b826",
+      "size_bytes": 7730
+    },
+    {
+      "exists": true,
+      "id": "runtime-control",
+      "kind": "file",
+      "mode": "0775",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../scripts/lay-runtime-control.sh",
+      "sha256": "746d077115277775acb275e077b57823ace9e416d2575eaf0bc53d3327d64e6d",
+      "size_bytes": 5032
+    }
+  ],
+  "blockers": [
+    {
+      "code": "baseline_byte_length_mismatch",
+      "field": "baseline_checks[18]",
+      "message": "expected 7592 bytes, observed 7730"
+    },
+    {
+      "code": "baseline_sha256_mismatch",
+      "field": "baseline_checks[18]",
+      "message": "file SHA-256 differs"
+    },
+    {
+      "code": "baseline_byte_length_mismatch",
+      "field": "baseline_checks[19]",
+      "message": "expected 4915 bytes, observed 5032"
+    },
+    {
+      "code": "source_sha256_mismatch",
+      "field": "source_checks[4].sha256",
+      "message": "reused source SHA-256 differs"
+    },
+    {
+      "code": "test_contract_incomplete",
+      "field": "tests[2]",
+      "message": "valid kind and non-empty expected result are required"
+    },
+    {
+      "code": "test_contract_incomplete",
+      "field": "tests[8]",
+      "message": "valid kind and non-empty expected result are required"
+    },
+    {
+      "code": "runtime_comparison_test_missing",
+      "field": "runtime_comparisons[0].test_id",
+      "message": "runtime comparison requires unit, integration, or parity test"
+    },
+    {
+      "code": "fault_injection_missing",
+      "field": "state_machine.steps[0].test_id",
+      "message": "mutating failure requires a fault_injection test"
+    },
+    {
+      "code": "fault_injection_missing",
+      "field": "state_machine.steps[1].test_id",
+      "message": "mutating failure requires a fault_injection test"
+    },
+    {
+      "code": "fault_injection_missing",
+      "field": "state_machine.steps[2].test_id",
+      "message": "mutating failure requires a fault_injection test"
+    },
+    {
+      "code": "fault_injection_missing",
+      "field": "state_machine.steps[3].test_id",
+      "message": "mutating failure requires a fault_injection test"
+    },
+    {
+      "code": "fault_injection_missing",
+      "field": "state_machine.steps[4].test_id",
+      "message": "mutating failure requires a fault_injection test"
+    },
+    {
+      "code": "fault_injection_missing",
+      "field": "state_machine.steps[5].test_id",
+      "message": "mutating failure requires a fault_injection test"
+    },
+    {
+      "code": "identity_parity_missing",
+      "field": "identity_contracts[0].test_id",
+      "message": "identity contract requires a parity test"
+    },
+    {
+      "code": "identity_parity_missing",
+      "field": "identity_contracts[1].test_id",
+      "message": "identity contract requires a parity test"
+    },
+    {
+      "code": "identity_parity_missing",
+      "field": "identity_contracts[2].test_id",
+      "message": "identity contract requires a parity test"
+    },
+    {
+      "code": "identity_parity_missing",
+      "field": "identity_contracts[3].test_id",
+      "message": "identity contract requires a parity test"
+    }
+  ],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 20,
+    "forbidden_side_effect_kinds": [
+      "blocking_field_on_ibus_thread",
+      "cache_request_time_authority",
+      "change_productive_package_bytes",
+      "literal_surface_runtime_branch",
+      "restart_global_ibus_daemon",
+      "second_mutation_authority",
+      "unbounded_single_flight_cache",
+      "weaken_productive_fingerprint_validation",
+      "weaken_verifier_authority"
+    ],
+    "identity_contracts": 4,
+    "invariants": 8,
+    "planned_side_effect_kinds": [
+      "remote_release_build",
+      "remote_test",
+      "service_activation",
+      "source_edit"
+    ],
+    "preserved_artifacts": 5,
+    "runtime_comparisons": 1,
+    "source_checks": 6,
+    "tests": 11
+  },
+  "manifest_sha256": "5a732315d3cc7970babe068a701ad59b23669b06698329eafc6583fc4edaf068",
+  "safe_to_implement": false,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "no-literal-runtime-case",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/bridge.rs",
+      "sha256": "ee12ed48419b6f664277c6a88c1b2e3f1ca81dce0f68bfd11ee9c0062c3d79da",
+      "size_bytes": 77431
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "field-cache-stays-domain-only-and-bounded",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/cache.rs",
+      "sha256": "58220f784a83b9d5168d4cb95e0311692ce89abd030409f34bc14b5c285ac97d",
+      "size_bytes": 1934
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "ibus-thread-never-computes-field",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/composition_commit.rs",
+      "sha256": "8e8b524ec89f1f1b770f4515e9a80aedf6d9760000bd8fbcf8737ad7dcbb0483",
+      "size_bytes": 13276
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "productive-fingerprint-admission-remains-exact",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/productive_v1/packaged_runtime.rs",
+      "sha256": "0898a0e6307166846a9847c17d07d108cf349720b338dcfeda8e0cef620c8e53",
+      "size_bytes": 175860
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "verifier-remains-fail-closed",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/text_edit/structural_verifier.rs",
+      "sha256": "19201157bc09df5cca617132d67a242474aaa331ca58dc18acb0152818b7b826",
+      "size_bytes": 7730
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "managed-runtime-controller-preserved",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../scripts/lay-runtime-control.sh",
+      "sha256": "746d077115277775acb275e077b57823ace9e416d2575eaf0bc53d3327d64e6d",
+      "size_bytes": 5032
+    }
+  ],
+  "task_id": "lay-ime-unified-token-field-implementation-2026-08-16",
+  "verdict": "BLOCKED_BEFORE_CODE"
+}

@@ -1,0 +1,9 @@
+{
+  "id": "common-target-evidence",
+  "filter": "target_evidence",
+  "exit_code": 0,
+  "log": {
+    "size_bytes": 35913,
+    "sha256": "2b984e0b99629bee3b4b15309651a061a33fae13a3a6d086611cb03bb1cb9d2c"
+  }
+}

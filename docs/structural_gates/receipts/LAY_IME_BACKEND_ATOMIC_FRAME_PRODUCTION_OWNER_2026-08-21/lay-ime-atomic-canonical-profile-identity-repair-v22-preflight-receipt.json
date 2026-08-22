@@ -1,0 +1,330 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "mutter-profile-producer",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-text-input.c",
+      "sha256": "99debf2aca19cccd22ecd7b59e0629cbbb39f76ee4b7f5924ac45aededbc38f2",
+      "size_bytes": 52566
+    },
+    {
+      "exists": true,
+      "id": "mutter-profile-fixture",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/tests/wayland-text-input-atomic-frame-tests.c",
+      "sha256": "668e3580cad1a199904c06d4891d137440f07faf4aac35dc80c4f1dbe031c2da",
+      "size_bytes": 20466
+    },
+    {
+      "exists": true,
+      "id": "mutter-effect-codec",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/clutter/clutter/clutter-input-atomic-frame.c",
+      "sha256": "e350b9a813c4df518e8297b65d127ac013520defecee2820f388a954ab8a21cc",
+      "size_bytes": 15399
+    },
+    {
+      "exists": true,
+      "id": "mutter-effect-header",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/clutter/clutter/clutter-input-atomic-frame.h",
+      "sha256": "7c468f83e00ccea86d031d37c3d59478213e7c7dbf39b11cdd901788c4cfcce8",
+      "size_bytes": 4694
+    },
+    {
+      "exists": true,
+      "id": "shell-profile-fixture",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/unit/inputMethodAtomic.js",
+      "sha256": "adf513aa21d7b7859bc4c7aa00325d05042a93602bd2cd9bbfc0e3f6d1482bb9",
+      "size_bytes": 5737
+    },
+    {
+      "exists": true,
+      "id": "shell-runtime-adapter",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/js/misc/inputMethodAtomic.js",
+      "sha256": "d40801329973da6c3e96f35edc2f478ad82c7752f4e245cb01f69904a24e19c0",
+      "size_bytes": 15841
+    },
+    {
+      "exists": true,
+      "id": "ibus-codec-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/ibusatomicframe.c",
+      "sha256": "f05d053085c01d3298625364845144a8ea2709c281d7ebeaca60c0c0e172d58f",
+      "size_bytes": 61576
+    },
+    {
+      "exists": true,
+      "id": "ibus-codec-header",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/ibusatomicframeprivate.h",
+      "sha256": "2b65333555b721376213b05014b7ba1b5b39a61d4345fae60035b019dd840648",
+      "size_bytes": 16062
+    },
+    {
+      "exists": true,
+      "id": "ibus-codec-proof",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/ibus-atomic-frame.c",
+      "sha256": "57f1965420904228b9029ee12d684a0350af631c2b4e01eccdb9af0914293e34",
+      "size_bytes": 62611
+    },
+    {
+      "exists": true,
+      "id": "ibus-v21-diagnostic-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/bus/inputcontext.c",
+      "sha256": "28dbed4f87cfab0734c98b48663fd6937068f997451d79d4c2d83c07e367491e",
+      "size_bytes": 152140
+    },
+    {
+      "exists": true,
+      "id": "ibus-v20-production-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/ibus-inputcontext-v20.c",
+      "sha256": "4081c8277ec9308b85bdd8e32af8a36da69278bbd35de2c66cde03fb13ecf90c",
+      "size_bytes": 150019
+    },
+    {
+      "exists": true,
+      "id": "lay-profile-validator",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic.rs",
+      "sha256": "45b06512eb69f04a967ae40ac7f30438f523d197d8d3e46a23df586016340319",
+      "size_bytes": 16640
+    },
+    {
+      "exists": true,
+      "id": "lay-effect-producer",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/output.rs",
+      "sha256": "7ef339f78503de6d779c882c879021c22ef9f65b1d07cc09fb7b0d765131e1bc",
+      "size_bytes": 9869
+    },
+    {
+      "exists": true,
+      "id": "v21-conflict-log",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/atomic-full-route-v21-ibus-admission-predicate.log",
+      "sha256": "fe40ad0c82d19f97ed83fa23dc7ca55202597a2c78aa3c3eb6f0844a3b325362",
+      "size_bytes": 7744
+    },
+    {
+      "exists": true,
+      "id": "historical-ibus-profile-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/ibus-production-profile-admission-proof-v1.json",
+      "sha256": "e38b65ec7c0ff7d3495eec3e0a98947f6d603c9a0c024055fb56fce45641fafd",
+      "size_bytes": 4708
+    },
+    {
+      "exists": true,
+      "id": "installed-mutter",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/usr/lib/x86_64-linux-gnu/libmutter-18.so.0.0.0",
+      "sha256": "fec9023139ac8eff93fcc1af90413613cdb526e7f02389dc9d8fe90f7abc81e5",
+      "size_bytes": 2755048
+    },
+    {
+      "exists": true,
+      "id": "installed-shell",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/usr/lib/gnome-shell/libshell-18.so",
+      "sha256": "94e81e3ff3820b3f8454d596c3a9ee7fa437b770b899098db85f15640a7abb73",
+      "size_bytes": 3107408
+    },
+    {
+      "exists": true,
+      "id": "installed-ibus",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/usr/lib/x86_64-linux-gnu/libibus-1.0.so.5.0.534",
+      "sha256": "e1977b9d3d84ee94b63f6c04056134c10aa51d4e0621f7abee1115da12259ec1",
+      "size_bytes": 542936
+    },
+    {
+      "exists": true,
+      "id": "installed-lay-engine",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a",
+      "size_bytes": 6423488
+    }
+  ],
+  "blockers": [
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: diagnostic_hot_path_retained"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: historical_receipt_rewrite"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: ibus_codec_or_lay_source_edit"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: live_keyboard_signal"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: live_session_restart"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: local_build"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: old_digest_retained_in_mutable_source"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: orphaned_test_process"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: per_leg_payload_widening"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: unbounded_remote_build"
+    },
+    {
+      "code": "fault_injection_missing",
+      "field": "state_machine.steps[0].test_id",
+      "message": "mutating failure requires a fault_injection test"
+    },
+    {
+      "code": "fault_injection_missing",
+      "field": "state_machine.steps[1].test_id",
+      "message": "mutating failure requires a fault_injection test"
+    },
+    {
+      "code": "fault_injection_missing",
+      "field": "state_machine.steps[2].test_id",
+      "message": "mutating failure requires a fault_injection test"
+    },
+    {
+      "code": "identity_parity_missing",
+      "field": "identity_contracts[1].test_id",
+      "message": "identity contract requires a parity test"
+    }
+  ],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 19,
+    "forbidden_side_effect_kinds": [
+      "diagnostic_hot_path_retained",
+      "dual_production_digest_admission",
+      "historical_receipt_rewrite",
+      "ibus_codec_or_lay_source_edit",
+      "installed_file_write",
+      "legacy_fallback_change",
+      "live_keyboard_signal",
+      "live_session_restart",
+      "local_build",
+      "old_digest_retained_in_mutable_source",
+      "orphaned_test_process",
+      "per_leg_payload_widening",
+      "physical_user_text_mutation",
+      "profile_schema_or_vocabulary_change",
+      "runtime_deployment",
+      "second_native_mutation_owner",
+      "shell_runtime_adapter_edit",
+      "unbounded_remote_build",
+      "wildcard_profile_admission"
+    ],
+    "identity_contracts": 5,
+    "invariants": 8,
+    "planned_side_effect_kinds": [
+      "ephemeral_process_start",
+      "filesystem_write",
+      "remote_build",
+      "remote_filesystem_write",
+      "source_edit",
+      "test_source_edit"
+    ],
+    "preserved_artifacts": 15,
+    "runtime_comparisons": 1,
+    "source_checks": 4,
+    "tests": 18
+  },
+  "manifest_sha256": "7df75ed03c473cd9c594401c00714cc185d789b39d7cadb549ed25241ffb52da",
+  "safe_to_implement": false,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-mutter-profile-producer",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-text-input.c",
+      "sha256": "99debf2aca19cccd22ecd7b59e0629cbbb39f76ee4b7f5924ac45aededbc38f2",
+      "size_bytes": 52566
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-mutter-profile-fixture",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/tests/wayland-text-input-atomic-frame-tests.c",
+      "sha256": "668e3580cad1a199904c06d4891d137440f07faf4aac35dc80c4f1dbe031c2da",
+      "size_bytes": 20466
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-shell-profile-fixture",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/unit/inputMethodAtomic.js",
+      "sha256": "adf513aa21d7b7859bc4c7aa00325d05042a93602bd2cd9bbfc0e3f6d1482bb9",
+      "size_bytes": 5737
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-ibus-v21-diagnostic-source",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/bus/inputcontext.c",
+      "sha256": "28dbed4f87cfab0734c98b48663fd6937068f997451d79d4c2d83c07e367491e",
+      "size_bytes": 152140
+    }
+  ],
+  "task_id": "LAY_IME_ATOMIC_CANONICAL_PROFILE_IDENTITY_REPAIR_V22_2026-08-21",
+  "verdict": "BLOCKED_BEFORE_CODE"
+}

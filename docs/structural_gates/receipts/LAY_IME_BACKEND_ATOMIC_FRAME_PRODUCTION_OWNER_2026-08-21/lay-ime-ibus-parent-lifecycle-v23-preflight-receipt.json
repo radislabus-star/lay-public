@@ -1,0 +1,175 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "lay-ibus-main",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine.rs",
+      "sha256": "31bd989ae45c22fc073cf66e601aa5c06cc506ef952ddad520c73a8d91094367",
+      "size_bytes": 2213
+    },
+    {
+      "exists": true,
+      "id": "lay-ibus-server",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/server.rs",
+      "sha256": "f2cc5f9d30e4eca77f8efa62cbc4bfdb364e00ef894de7504081afcd28574814",
+      "size_bytes": 1777
+    },
+    {
+      "exists": true,
+      "id": "lay-ibus-args",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/args.rs",
+      "sha256": "d6e5fa0151643ab1cb0cb28ebd464adec7459f24ccf0fcca9b400bcd01c73f25",
+      "size_bytes": 499
+    },
+    {
+      "exists": true,
+      "id": "lay-atomic-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic.rs",
+      "sha256": "0ac32eef663638c826f95a0e0293e9da8eb99377bca30d326b297e4febd73188",
+      "size_bytes": 17211
+    },
+    {
+      "exists": true,
+      "id": "lay-output-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/output.rs",
+      "sha256": "7ef339f78503de6d779c882c879021c22ef9f65b1d07cc09fb7b0d765131e1bc",
+      "size_bytes": 9869
+    },
+    {
+      "exists": true,
+      "id": "full-route-proof-driver",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh",
+      "sha256": "f86b82106f1e55100a253a20eeb5cfd861b0127827670ad6d534d81732eee83f",
+      "size_bytes": 10143
+    },
+    {
+      "exists": true,
+      "id": "installed-lay-engine",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a",
+      "size_bytes": 6423488
+    },
+    {
+      "exists": true,
+      "id": "installed-ibus",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/usr/lib/x86_64-linux-gnu/libibus-1.0.so.5.0.534",
+      "sha256": "e1977b9d3d84ee94b63f6c04056134c10aa51d4e0621f7abee1115da12259ec1",
+      "size_bytes": 542936
+    },
+    {
+      "exists": true,
+      "id": "installed-mutter",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/usr/lib/x86_64-linux-gnu/libmutter-18.so.0.0.0",
+      "sha256": "fec9023139ac8eff93fcc1af90413613cdb526e7f02389dc9d8fe90f7abc81e5",
+      "size_bytes": 2755048
+    },
+    {
+      "exists": true,
+      "id": "installed-shell",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/usr/lib/gnome-shell/libshell-18.so",
+      "sha256": "94e81e3ff3820b3f8454d596c3a9ee7fa437b770b899098db85f15640a7abb73",
+      "size_bytes": 3107408
+    }
+  ],
+  "blockers": [
+    {
+      "code": "identity_parity_missing",
+      "field": "identity_contracts[0].test_id",
+      "message": "identity contract requires a parity test"
+    },
+    {
+      "code": "identity_parity_missing",
+      "field": "identity_contracts[1].test_id",
+      "message": "identity contract requires a parity test"
+    }
+  ],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 10,
+    "forbidden_side_effect_kinds": [
+      "historical_receipt_rewrite",
+      "hot_path_lifecycle_check",
+      "installed_file_write",
+      "live_keyboard_signal",
+      "live_session_restart",
+      "local_build",
+      "manual_mode_termination",
+      "non_ibus_lifecycle_change",
+      "polling_worker",
+      "runtime_deployment",
+      "second_mutation_owner",
+      "session_bus_lifecycle_owner",
+      "signal_handler_override",
+      "unbounded_remote_build"
+    ],
+    "identity_contracts": 3,
+    "invariants": 6,
+    "planned_side_effect_kinds": [
+      "ephemeral_process_start",
+      "filesystem_write",
+      "remote_build",
+      "remote_filesystem_write",
+      "source_edit"
+    ],
+    "preserved_artifacts": 8,
+    "runtime_comparisons": 0,
+    "source_checks": 3,
+    "tests": 13
+  },
+  "manifest_sha256": "faf0f22f6840eb6d84d0d013489c0499182bc0ca0337c6cf4798caf798c3b65c",
+  "safe_to_implement": false,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-ibus-main",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine.rs",
+      "sha256": "31bd989ae45c22fc073cf66e601aa5c06cc506ef952ddad520c73a8d91094367",
+      "size_bytes": 2213
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-ibus-server",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/server.rs",
+      "sha256": "f2cc5f9d30e4eca77f8efa62cbc4bfdb364e00ef894de7504081afcd28574814",
+      "size_bytes": 1777
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-full-route-driver",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh",
+      "sha256": "f86b82106f1e55100a253a20eeb5cfd861b0127827670ad6d534d81732eee83f",
+      "size_bytes": 10143
+    }
+  ],
+  "task_id": "LAY_IME_IBUS_PARENT_LIFECYCLE_V23_2026-08-21",
+  "verdict": "BLOCKED_BEFORE_CODE"
+}

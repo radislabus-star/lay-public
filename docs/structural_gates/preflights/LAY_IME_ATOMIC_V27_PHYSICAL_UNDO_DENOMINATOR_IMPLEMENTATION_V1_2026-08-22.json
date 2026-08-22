@@ -1,0 +1,209 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_ATOMIC_V27_PHYSICAL_UNDO_DENOMINATOR_IMPLEMENTATION_V1_2026-08-22",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "physical-undo-javascript-proof",
+      "kind": "file",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/shell/atomicInputMethodRoute.js",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 16680,
+        "sha256": "3f2d38ae86e5a984c055bb04837e299aee7aa41bcdf78d964670676fdb62e4bd"
+      }
+    },
+    {
+      "id": "physical-undo-shell-parser",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 13954,
+        "sha256": "cb89bcdd3f16b53a9bf97d68113743484ea23fa7ee9b93159dbfe845497f9168"
+      }
+    },
+    {
+      "id": "installed-lay-1-0-33-engine",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 6423488,
+        "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a"
+      }
+    }
+  ],
+  "source_checks": [
+    {
+      "id": "pinned-javascript-proof-owner",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/shell/atomicInputMethodRoute.js",
+      "sha256": "3f2d38ae86e5a984c055bb04837e299aee7aa41bcdf78d964670676fdb62e4bd",
+      "forbidden_effect_patterns": [
+        {"effect": "production_lay_source_edit", "regex": "editProductionLayForDenominator|changeLayRuntimeForProofCounter"},
+        {"effect": "verifier_or_safety_gate_weakening", "regex": "bypassUndoVerifier|disableUndoSafetyGate"},
+        {"effect": "physical_restore_assertion_removal", "regex": "skipExactOriginalWait|ignoreExactOriginalFailure"},
+        {"effect": "installed_runtime_mutation", "regex": "installBeforePhysicalProof|restartLiveRuntimeForDenominator"}
+      ]
+    },
+    {
+      "id": "pinned-shell-proof-owner",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh",
+      "sha256": "cb89bcdd3f16b53a9bf97d68113743484ea23fa7ee9b93159dbfe845497f9168",
+      "forbidden_effect_patterns": [
+        {"effect": "route_scope_denominator_change", "regex": "paired_releases=514 release_rpcs=2 native_releases=1"},
+        {"effect": "proof_failure_suppression", "regex": "ignoreUndoProofFailure|forceUndoProofPass"},
+        {"effect": "historical_receipt_rewrite", "regex": "rewriteHistoricalUndoReceipt|truncateHistoricalUndoEvidence"},
+        {"effect": "local_build", "regex": "cargo build|cargo test"}
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "correct-javascript-undo-denominator", "kind": "source_edit"},
+      {"id": "correct-shell-undo-marker-parser", "kind": "source_edit"},
+      {"id": "sync-javascript-proof-source", "kind": "remote_filesystem_write"},
+      {"id": "run-new-physical-undo-proof", "kind": "ephemeral_process_start"},
+      {"id": "write-new-proof-receipt", "kind": "filesystem_write"}
+    ],
+    "forbidden": [
+      "production_lay_source_edit",
+      "route_scope_denominator_change",
+      "verifier_or_safety_gate_weakening",
+      "physical_restore_assertion_removal",
+      "proof_failure_suppression",
+      "installed_runtime_mutation",
+      "historical_receipt_rewrite",
+      "local_build"
+    ]
+  },
+  "state_machine": {
+    "initial_state": "PRODUCT_UNDO_PASS_PROOF_DENOMINATOR_FAIL",
+    "steps": [
+      {
+        "id": "edit-two-proof-owners",
+        "from": "PRODUCT_UNDO_PASS_PROOF_DENOMINATOR_FAIL",
+        "to": "UNDO_DENOMINATOR_SOURCE_CORRECTED",
+        "mutates": true,
+        "failure_state": "PROOF_SOURCE_EDIT_FAILED",
+        "cleanup": "restore only both proof files from their pinned baselines and retain the failed patch",
+        "preserves": ["installed-runtime-preserved"],
+        "test_id": "proof-source-edit-fault"
+      },
+      {
+        "id": "sync-javascript-proof-owner",
+        "from": "UNDO_DENOMINATOR_SOURCE_CORRECTED",
+        "to": "REMOTE_PROOF_SOURCE_PARITY",
+        "mutates": true,
+        "failure_state": "REMOTE_SOURCE_PARITY_FAILED",
+        "cleanup": "stop before compositor execution and retain local and remote hashes",
+        "preserves": ["installed-runtime-preserved"],
+        "test_id": "remote-proof-sync-fault"
+      },
+      {
+        "id": "run-corrected-physical-undo-proof",
+        "from": "REMOTE_PROOF_SOURCE_PARITY",
+        "to": "PHYSICAL_UNDO_DENOMINATOR_PROVEN",
+        "mutates": true,
+        "failure_state": "PHYSICAL_UNDO_PROOF_FAILED",
+        "cleanup": "terminate only proof-owned processes and preserve all append-only run artifacts under the new run id",
+        "preserves": ["installed-runtime-preserved"],
+        "test_id": "physical-undo-run-fault"
+      },
+      {
+        "id": "write-pass-or-fail-receipt",
+        "from": "PHYSICAL_UNDO_DENOMINATOR_PROVEN",
+        "to": "PROOF_RECEIPT_WRITTEN",
+        "mutates": true,
+        "failure_state": "PROOF_RECEIPT_WRITE_FAILED",
+        "cleanup": "leave remote run artifacts immutable and regenerate only the new local receipt",
+        "preserves": ["installed-runtime-preserved"],
+        "test_id": "proof-receipt-write-fault"
+      }
+    ],
+    "terminal_states": [
+      "PROOF_RECEIPT_WRITTEN",
+      "PROOF_SOURCE_EDIT_FAILED",
+      "REMOTE_SOURCE_PARITY_FAILED",
+      "PHYSICAL_UNDO_PROOF_FAILED",
+      "PROOF_RECEIPT_WRITE_FAILED"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "installed-runtime-preserved",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "policy": "immutable_until_physical_proof_pass",
+      "cursor_policy": "none",
+      "rollback_policy": "preserve_exact_bytes",
+      "baseline_check_id": "installed-lay-1-0-33-engine"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "javascript-shell-marker-contract",
+      "producer": "LAY_ATOMIC_DOUBLE_SHIFT_COMPOSITE JavaScript marker",
+      "consumer": "run-atomic-full-route-remote.sh undo marker parser",
+      "comparison": "byte-identical paired_releases=7 release_rpcs=2 native_releases=1 ledger_entries=0 contract",
+      "test_id": "javascript-shell-marker-parity"
+    },
+    {
+      "id": "local-remote-javascript-proof",
+      "producer": "local corrected atomicInputMethodRoute.js",
+      "consumer": "remote GNOME Shell proof source",
+      "comparison": "exact SHA-256 before the compositor run",
+      "test_id": "local-remote-proof-parity"
+    },
+    {
+      "id": "staged-engine-identity",
+      "producer": "admitted staged engine selector",
+      "consumer": "physical undo proof process",
+      "comparison": "exact engine SHA-256 01033e4b02fe39e57f229946063a68cb9c36a4d960466acd060cf5e43a7d43b9",
+      "test_id": "staged-engine-parity"
+    }
+  ],
+  "runtime_comparisons": [],
+  "invariants": [
+    {
+      "id": "undo-v24-release-denominator",
+      "statement": "undo scope requires paired releases 7 atomic release RPCs 2 native release replays 1 and paired ledger entries 0",
+      "test_id": "undo-denominator-shape"
+    },
+    {
+      "id": "route-denominator-preserved",
+      "statement": "route scope remains paired releases 514 atomic release RPCs 0 native release replays 0 and paired ledger entries 0",
+      "test_id": "route-denominator-shape"
+    },
+    {
+      "id": "exact-restore-remains-required",
+      "statement": "the JavaScript proof waits for exact ghbdtn with one Space before producing the PASS marker",
+      "test_id": "exact-restore-source-order"
+    },
+    {
+      "id": "no-production-change-before-pass",
+      "statement": "the installed Lay 1.0.33 binary remains byte-identical throughout denominator correction and physical proof",
+      "test_id": "installed-runtime-parity"
+    },
+    {
+      "id": "physical-proof-clean",
+      "statement": "the corrected physical run has zero legacy calls zero ledger entries zero proof-owned leftovers and process status zero",
+      "test_id": "corrected-physical-undo"
+    }
+  ],
+  "tests": [
+    {"id": "proof-source-edit-fault", "kind": "fault_injection", "expected": "a partial two-file edit changes no production Lay source installed runtime or historical evidence"},
+    {"id": "remote-proof-sync-fault", "kind": "fault_injection", "expected": "a local and remote JavaScript hash mismatch stops before GNOME Shell starts"},
+    {"id": "physical-undo-run-fault", "kind": "fault_injection", "expected": "a failed new run retains its logs metrics cleanup and hashes and leaves zero proof-owned processes"},
+    {"id": "proof-receipt-write-fault", "kind": "fault_injection", "expected": "remote immutable run artifacts remain authoritative if local receipt writing fails"},
+    {"id": "javascript-shell-marker-parity", "kind": "parity", "expected": "JavaScript output and shell parser contain the same corrected four-counter marker"},
+    {"id": "local-remote-proof-parity", "kind": "parity", "expected": "local and remote corrected JavaScript proof sources have identical SHA-256"},
+    {"id": "staged-engine-parity", "kind": "parity", "expected": "physical proof uses staged engine SHA-256 01033e4b02fe39e57f229946063a68cb9c36a4d960466acd060cf5e43a7d43b9"},
+    {"id": "undo-denominator-shape", "kind": "parity", "expected": "only undo scope asserts 7 2 1 0"},
+    {"id": "route-denominator-shape", "kind": "parity", "expected": "route scope still asserts 514 0 0 0"},
+    {"id": "exact-restore-source-order", "kind": "parity", "expected": "exact visible ghbdtn wait precedes the corrected counter assertion and PASS marker"},
+    {"id": "installed-runtime-parity", "kind": "parity", "expected": "installed engine remains SHA-256 dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a until proof PASS"},
+    {"id": "corrected-physical-undo", "kind": "integration", "expected": "ghbdtn becomes привет and double Shift restores ghbdtn with paired 7 RPC 2 native 1 ledger 0 process status 0 legacy 0 and leftovers 0"}
+  ]
+}

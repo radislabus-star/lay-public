@@ -1,0 +1,317 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "ibus-source-root",
+      "kind": "directory",
+      "mode": "0775",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof"
+    },
+    {
+      "exists": true,
+      "id": "atomic-frame-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/ibusatomicframe.c",
+      "sha256": "b47a319ac1103926b10f23101a7b22908e2b67b74cd45d1fa36af6e48bd5997c",
+      "size_bytes": 34587
+    },
+    {
+      "exists": true,
+      "id": "atomic-frame-header",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/ibusatomicframeprivate.h",
+      "sha256": "cb29c9dee3ef89d4a42069804c5a57346853603014fb3de560a843dc32485822",
+      "size_bytes": 8479
+    },
+    {
+      "exists": true,
+      "id": "atomic-frame-tests",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/ibus-atomic-frame.c",
+      "sha256": "b1aaf69e4c0f4f685bfa1a8b9fea11d427f05645824bb84d3ad5af1e0e853ba8",
+      "size_bytes": 37698
+    },
+    {
+      "exists": true,
+      "id": "daemon-input-context-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/bus/inputcontext.c",
+      "sha256": "d6fbaf772962153900a1bd1230df63e90d1cd37ba6020f61f1dddc8c30ab332c",
+      "size_bytes": 129694
+    },
+    {
+      "exists": true,
+      "id": "daemon-input-context-header",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/bus/inputcontext.h",
+      "sha256": "13f91c7827b15abf6a35cb122f8aca11954dd5310e55c16e6b7049d138702255",
+      "size_bytes": 15751
+    },
+    {
+      "exists": true,
+      "id": "engine-proxy-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/bus/engineproxy.c",
+      "sha256": "883ea4ee7925d030389ac3ccac58c00612558a22e11ae91ea1a5f265bb742a29",
+      "size_bytes": 58906
+    },
+    {
+      "exists": true,
+      "id": "engine-proxy-header",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/bus/engineproxy.h",
+      "sha256": "31677becf08c0ce42ab1afe1b3c518904140f57d4d115d346ca89cc85b1408d4",
+      "size_bytes": 13378
+    },
+    {
+      "exists": true,
+      "id": "source-makefile",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/Makefile.am",
+      "sha256": "2839fcab725c6be3d5a3bc40cc581c7e1ca2e523b0639064955d2397ff5e2c07",
+      "size_bytes": 15448
+    },
+    {
+      "exists": true,
+      "id": "tests-makefile",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/Makefile.am",
+      "sha256": "aed467fa580a6889c50803fbebebc8a125feaf6798659213e662f4bd2512a7d7",
+      "size_bytes": 8184
+    },
+    {
+      "exists": false,
+      "id": "atomic-hop-test-absent",
+      "kind": "absent",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/ibus-atomic-process.c"
+    },
+    {
+      "exists": true,
+      "id": "architecture-paper",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../ime-backend-atomic-frame-v2-2026-08-20.md",
+      "sha256": "60d279b160bb24bb97b3b76e4f18b2d597bd5310b26585e8efe1455e463bd6bd",
+      "size_bytes": 42409
+    },
+    {
+      "exists": true,
+      "id": "slice2-preflight-v1-manifest",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_CAPABILITY_HOPS_V1_2026-08-21.json",
+      "sha256": "e450444075e4536caf15c749d4b4e9c1b323e3bc51b953f76d2f79eb0bc4bee8",
+      "size_bytes": 24406
+    },
+    {
+      "exists": true,
+      "id": "slice2-preflight-v1-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/implementation-preflight-receipt-v1.json",
+      "sha256": "72425e6617af434148836e18bbe47346020410f790cb934a232571027c11d435",
+      "size_bytes": 7967
+    },
+    {
+      "exists": true,
+      "id": "slice2-preflight-v2-manifest",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_CAPABILITY_HOPS_V2_2026-08-21.json",
+      "sha256": "20afe2e26a8682efb82f5da60760177fe921fd86604f406cd59da8f924fca932",
+      "size_bytes": 25977
+    },
+    {
+      "exists": true,
+      "id": "slice2-preflight-v2-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/implementation-preflight-receipt-v2.json",
+      "sha256": "a2e3a6f95da437a5804f46cf4b3a36cff1ab94085576f80e96356f4ba2a1169d",
+      "size_bytes": 8796
+    },
+    {
+      "exists": true,
+      "id": "slice2-route-v9",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_BACKEND_ATOMIC_FRAME_SLICE2_ROUTE_V9_2026-08-21.json",
+      "sha256": "2d63c779271c94101efbd972caeadb0f10683e9c415d84905c60e51863858f2e",
+      "size_bytes": 8788
+    },
+    {
+      "exists": true,
+      "id": "slice2-route-v9-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_DESIGN_2026-08-20/slice2-route-v9-receipt.json",
+      "sha256": "f30c1b0b27507dee043678696e0036526c3b6ebc4cd38f23b24e368a2a98948c",
+      "size_bytes": 14007
+    },
+    {
+      "exists": true,
+      "id": "slice2-route-v7-veto-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_DESIGN_2026-08-20/slice2-route-v7-receipt.json",
+      "sha256": "bc78d13656b2a0692f3535a419b47d2734cd5748d457c8cfb7ff6e0f5887e47e",
+      "size_bytes": 15805
+    },
+    {
+      "exists": true,
+      "id": "slice2-route-v8-veto-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_DESIGN_2026-08-20/slice2-route-v8-receipt.json",
+      "sha256": "9b03671dec6988b5eebe317ce2e7625db45f427f2ec78b7ba6d56b4120606850",
+      "size_bytes": 17916
+    },
+    {
+      "exists": true,
+      "id": "route-v6",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_BACKEND_ATOMIC_FRAME_ROUTE_V6_2026-08-21.json",
+      "sha256": "f52076089a71c95d0747a781f8aac7b4f0ffd1fa499de7fb0ffe7c01ba7b9a0e",
+      "size_bytes": 9043
+    },
+    {
+      "exists": true,
+      "id": "route-v6-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_DESIGN_2026-08-20/route-design-v6-receipt.json",
+      "sha256": "4dfc6820a0d225c2ce55484712a9e6cd7e51f091c4c49590a7dccc2e65d789b5",
+      "size_bytes": 13696
+    },
+    {
+      "exists": true,
+      "id": "current-observed-veto",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_DESIGN_2026-08-20/current-observed-v5-receipt.json",
+      "sha256": "79e783d58d76e06d4316edc1ff8907fb7c7cff35ab37c4b19bc3143114aa322e",
+      "size_bytes": 7097
+    },
+    {
+      "exists": true,
+      "id": "installed-ibus-daemon",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/usr/bin/ibus-daemon",
+      "sha256": "24338c0e7cfb749d2ac9b9254d7d54029e71b5ac9342aa1b8d78b1d55f5ac1b6",
+      "size_bytes": 170496
+    },
+    {
+      "exists": true,
+      "id": "installed-libibus",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/usr/lib/x86_64-linux-gnu/libibus-1.0.so.5.0.534",
+      "sha256": "e1977b9d3d84ee94b63f6c04056134c10aa51d4e0621f7abee1115da12259ec1",
+      "size_bytes": 542936
+    },
+    {
+      "exists": true,
+      "id": "installed-gtk3-module",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/usr/lib/x86_64-linux-gnu/gtk-3.0/3.0.0/immodules/im-ibus.so",
+      "sha256": "644cedf86a7b6e18d2be31afeb75007c85e6bdb0ed8a6b5c53c54621310aa3e2",
+      "size_bytes": 47288
+    },
+    {
+      "exists": true,
+      "id": "installed-gtk4-module",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/usr/lib/x86_64-linux-gnu/gtk-4.0/4.0.0/immodules/libim-ibus.so",
+      "sha256": "4e5b450fa00d51a45fbcc160e26358d81da793b39b6e04a27c749b905b3cba60",
+      "size_bytes": 47272
+    },
+    {
+      "exists": true,
+      "id": "installed-lay-daemon",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+      "sha256": "f0821f3b1dbf87fb83db1119534d3e4a1aef489dd6d5588ca8a8f9b86a19194c",
+      "size_bytes": 8342624
+    }
+  ],
+  "blockers": [
+    {
+      "code": "identity_parity_missing",
+      "field": "identity_contracts[7].test_id",
+      "message": "identity contract requires a parity test"
+    }
+  ],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 28,
+    "forbidden_side_effect_kinds": [
+      "connect_live_session_bus",
+      "engine_mutation_signal_capture",
+      "host_package_database_mutation",
+      "input_device_access",
+      "installed_file_write",
+      "layout_mutation",
+      "legacy_method_semantic_change",
+      "legacy_same_event_fallback",
+      "local_build",
+      "restart_live_ibus",
+      "retained_sealed_frame",
+      "runtime_deployment",
+      "runtime_quality_claim",
+      "second_frame_fetch_rpc",
+      "signal_live_ibus",
+      "sudo_or_privilege_escalation",
+      "synthetic_key_output",
+      "text_mutation"
+    ],
+    "identity_contracts": 10,
+    "invariants": 15,
+    "planned_side_effect_kinds": [
+      "filesystem_write",
+      "graph_update",
+      "isolated_process_test",
+      "remote_build",
+      "remote_dependency_download",
+      "remote_filesystem_write",
+      "source_edit"
+    ],
+    "preserved_artifacts": 18,
+    "runtime_comparisons": 0,
+    "source_checks": 1,
+    "tests": 31
+  },
+  "manifest_sha256": "3bdf2c0c8fd250fa097cb3f34aaad89ffef5d28ba5cf7b4e5600c352825005b8",
+  "safe_to_implement": false,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "reused-atomic-codec",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/ibusatomicframe.c",
+      "sha256": "b47a319ac1103926b10f23101a7b22908e2b67b74cd45d1fa36af6e48bd5997c",
+      "size_bytes": 34587
+    }
+  ],
+  "task_id": "LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_CAPABILITY_HOPS_V3_2026-08-21",
+  "verdict": "BLOCKED_BEFORE_CODE"
+}

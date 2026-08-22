@@ -149,6 +149,20 @@ fn changed_engine_path_quarantines_handoff_without_focus_in_id() {
     assert!(first.bind_focus_path());
     first.tail_buffer = "старый ".to_string();
     first.publish_tail_handoff();
+    first.remember_pending_ime_auto_undo(
+        "старое ".to_string(),
+        "старый ".to_string(),
+        lay::typing_cpu::ObservedSystemTransition::LayoutProjection,
+    );
+    first.publish_active_path_preserve_handoff(Instant::now() + Duration::from_millis(700));
+    first.shift_active = true;
+    first.shift_pressed_at = Some(Instant::now());
+    first.publish_shift_gesture_handoff();
+    first
+        .shared
+        .lock()
+        .expect("shared state")
+        .preserve_active_path_until = None;
 
     let mut second = LayIbusEngine::new(
         "/engine/b".to_string(),
@@ -159,12 +173,68 @@ fn changed_engine_path_quarantines_handoff_without_focus_in_id() {
     );
     assert!(second.bind_focus_path());
     assert!(second.tail_buffer.is_empty());
-    assert!(second
+    let state = second.shared.lock().expect("shared state");
+    assert!(state.handoff_tail_buffer.is_empty());
+    assert!(state.pending_auto_undo.is_none());
+    assert!(state.shift_gesture_handoff.is_none());
+}
+
+#[test]
+fn shift_gesture_handoff_is_typed_and_one_shot() {
+    let shared = Arc::new(Mutex::new(Default::default()));
+    let mut source = LayIbusEngine::new(
+        "/engine/us".to_string(),
+        Arc::clone(&shared),
+        false,
+        true,
+        LayConfig::default(),
+    );
+    assert!(source.bind_focus_path());
+    source.tail_buffer = "собака ".to_string();
+    source.publish_tail_handoff();
+    source.remember_pending_ime_auto_undo(
+        "cj,frf ".to_string(),
+        "собака ".to_string(),
+        lay::typing_cpu::ObservedSystemTransition::LayoutProjection,
+    );
+    source.publish_active_path_preserve_handoff(Instant::now() + Duration::from_millis(700));
+    let pressed_at = Instant::now();
+    let previous_release = pressed_at - Duration::from_millis(100);
+    source.shift_active = true;
+    source.shift_pressed_at = Some(pressed_at);
+    source.shift_used_as_modifier = true;
+    source.last_shift_release_at = Some(previous_release);
+    source.publish_shift_gesture_handoff();
+
+    let mut target = LayIbusEngine::new(
+        "/engine/ru".to_string(),
+        shared,
+        true,
+        true,
+        LayConfig::default(),
+    );
+    assert!(target.bind_focus_path());
+    target.consume_shift_gesture_handoff();
+
+    assert!(target.shift_active);
+    assert_eq!(target.shift_pressed_at, Some(pressed_at));
+    assert!(target.shift_used_as_modifier);
+    assert_eq!(target.last_shift_release_at, Some(previous_release));
+    assert!(target
         .shared
         .lock()
         .expect("shared state")
-        .handoff_tail_buffer
-        .is_empty());
+        .shift_gesture_handoff
+        .is_none());
+
+    target.shift_active = false;
+    target.shift_pressed_at = None;
+    target.shift_used_as_modifier = false;
+    target.last_shift_release_at = None;
+    target.consume_shift_gesture_handoff();
+    assert!(!target.shift_active);
+    assert!(target.shift_pressed_at.is_none());
+    assert!(target.last_shift_release_at.is_none());
 }
 
 #[test]
@@ -374,7 +444,20 @@ fn expired_layout_switch_handoff_is_quarantined() {
     assert!(first.bind_focus_path());
     first.tail_buffer = "старый ".to_string();
     first.publish_tail_handoff();
-    first.publish_active_path_preserve_handoff(Instant::now() - Duration::from_millis(1));
+    first.remember_pending_ime_auto_undo(
+        "старое ".to_string(),
+        "старый ".to_string(),
+        lay::typing_cpu::ObservedSystemTransition::LayoutProjection,
+    );
+    first.publish_active_path_preserve_handoff(Instant::now() + Duration::from_millis(700));
+    first.shift_active = true;
+    first.shift_pressed_at = Some(Instant::now());
+    first.publish_shift_gesture_handoff();
+    first
+        .shared
+        .lock()
+        .expect("shared state")
+        .preserve_active_path_until = Some(Instant::now() - Duration::from_millis(1));
 
     let mut second = LayIbusEngine::new(
         "/engine/ru".to_string(),
@@ -391,4 +474,10 @@ fn expired_layout_switch_handoff_is_quarantined() {
         ManualToggleAuthority::DaemonWordBuffer
     );
     assert!(second.take_pending_ime_auto_undo().is_none());
+    assert!(second
+        .shared
+        .lock()
+        .expect("shared state")
+        .shift_gesture_handoff
+        .is_none());
 }

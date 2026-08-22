@@ -8,6 +8,7 @@ use std::collections::{HashSet, VecDeque};
 use std::sync::{Arc, Mutex, OnceLock};
 
 const LEXICAL_READOUT_CACHE_CAPACITY: usize = 128;
+const NEAR_SURFACE_CACHE_CAPACITY: usize = 128;
 // The gate asks L2 for a bounded material lattice and then applies phase
 // competition. Four candidates per requested display slot leave enough
 // competitors for interference while avoiding a 192-node DAFSA walk per key.
@@ -20,6 +21,69 @@ type CachedLexicalCandidates = Arc<Vec<super::super::lexical_phase::LexicalPhase
 type LexicalReadoutCache = VecDeque<(String, usize, LexicalReadoutMode, CachedLexicalCandidates)>;
 
 static LEXICAL_READOUT_CACHE: OnceLock<Mutex<LexicalReadoutCache>> = OnceLock::new();
+static NEAR_SURFACE_CACHE: OnceLock<Mutex<NearSurfaceCache>> = OnceLock::new();
+
+#[derive(Clone)]
+struct NearSurfaceCacheEntry {
+    generation: u64,
+    normalized: String,
+    limit: usize,
+    surfaces: Arc<Vec<String>>,
+}
+
+struct NearSurfaceCache {
+    capacity: usize,
+    entries: VecDeque<NearSurfaceCacheEntry>,
+}
+
+impl NearSurfaceCache {
+    fn new(capacity: usize) -> Self {
+        assert!(capacity > 0);
+        Self {
+            capacity,
+            entries: VecDeque::new(),
+        }
+    }
+
+    fn get(&mut self, generation: u64, normalized: &str, limit: usize) -> Option<Arc<Vec<String>>> {
+        let index = self.entries.iter().position(|entry| {
+            entry.generation == generation && entry.normalized == normalized && entry.limit == limit
+        })?;
+        let entry = self.entries.remove(index)?;
+        let surfaces = Arc::clone(&entry.surfaces);
+        self.entries.push_back(entry);
+        Some(surfaces)
+    }
+
+    fn insert(
+        &mut self,
+        generation: u64,
+        normalized: &str,
+        limit: usize,
+        surfaces: Arc<Vec<String>>,
+    ) {
+        self.entries.retain(|entry| entry.generation == generation);
+        if let Some(index) = self.entries.iter().position(|entry| {
+            entry.generation == generation && entry.normalized == normalized && entry.limit == limit
+        }) {
+            self.entries.remove(index);
+        }
+        self.entries.push_back(NearSurfaceCacheEntry {
+            generation,
+            normalized: normalized.to_string(),
+            limit,
+            surfaces,
+        });
+        while self.entries.len() > self.capacity {
+            self.entries.pop_front();
+        }
+    }
+}
+
+fn near_surface_cache() -> &'static Mutex<NearSurfaceCache> {
+    NEAR_SURFACE_CACHE
+        .get_or_init(|| Mutex::new(NearSurfaceCache::new(NEAR_SURFACE_CACHE_CAPACITY)))
+}
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum LexicalReadoutMode {
@@ -372,7 +436,15 @@ pub(crate) fn l2_center_near_surfaces(text: &str, limit: usize) -> Vec<String> {
     if !(3..=18).contains(&len) || !normalized.chars().all(is_cyrillic_letter) {
         return Vec::new();
     }
-    surface_motif_memory()
+    let generation = super::super::l2_field::candidate_material_generation();
+    if let Some(surfaces) = near_surface_cache()
+        .lock()
+        .ok()
+        .and_then(|mut cache| cache.get(generation, &normalized, limit))
+    {
+        return surfaces.as_ref().clone();
+    }
+    let surfaces = surface_motif_memory()
         .surface_candidates(&normalized, limit.saturating_mul(8))
         .into_iter()
         .filter(|candidate| {
@@ -389,7 +461,14 @@ pub(crate) fn l2_center_near_surfaces(text: &str, limit: usize) -> Vec<String> {
         })
         .take(limit)
         .map(|candidate| candidate.word)
-        .collect()
+        .collect::<Vec<_>>();
+    if super::super::l2_field::candidate_material_generation() != generation {
+        return Vec::new();
+    }
+    if let Ok(mut cache) = near_surface_cache().lock() {
+        cache.insert(generation, &normalized, limit, Arc::new(surfaces.clone()));
+    }
+    surfaces
 }
 
 pub(crate) fn l2_center_contains_surface(word: &str) -> bool {
@@ -784,5 +863,32 @@ mod tests {
     #[test]
     fn missing_decoder_artifact_cannot_crash_feedback_admission() {
         assert!(!optional_decoder_contains_surface(None, "прекрасно"));
+    }
+
+    #[test]
+    fn near_surface_material_cache_is_lru_bounded() {
+        let mut cache = NearSurfaceCache::new(2);
+        cache.insert(7, "один", 32, Arc::new(vec!["одна".to_string()]));
+        cache.insert(7, "два", 32, Arc::new(vec!["две".to_string()]));
+        assert!(cache.get(7, "один", 32).is_some());
+        cache.insert(7, "три", 32, Arc::new(Vec::new()));
+
+        assert_eq!(cache.entries.len(), 2);
+        assert!(cache.get(7, "один", 32).is_some());
+        assert!(cache.get(7, "два", 32).is_none());
+        assert!(cache.get(7, "три", 32).is_some());
+    }
+
+    #[test]
+    fn near_surface_material_cache_drops_previous_generation() {
+        let mut cache = NearSurfaceCache::new(4);
+        cache.insert(3, "форма", 32, Arc::new(vec!["формы".to_string()]));
+        cache.insert(4, "форма", 32, Arc::new(Vec::new()));
+
+        assert_eq!(cache.entries.len(), 1);
+        assert!(cache.get(3, "форма", 32).is_none());
+        assert!(cache
+            .get(4, "форма", 32)
+            .is_some_and(|surfaces| surfaces.is_empty()));
     }
 }

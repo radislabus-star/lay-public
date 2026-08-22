@@ -1,0 +1,86 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "physical-undo-javascript-proof",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/shell/atomicInputMethodRoute.js",
+      "sha256": "3f2d38ae86e5a984c055bb04837e299aee7aa41bcdf78d964670676fdb62e4bd",
+      "size_bytes": 16680
+    },
+    {
+      "exists": true,
+      "id": "physical-undo-shell-parser",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh",
+      "sha256": "cb89bcdd3f16b53a9bf97d68113743484ea23fa7ee9b93159dbfe845497f9168",
+      "size_bytes": 13954
+    },
+    {
+      "exists": true,
+      "id": "installed-lay-1-0-33-engine",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a",
+      "size_bytes": 6423488
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 3,
+    "forbidden_side_effect_kinds": [
+      "historical_receipt_rewrite",
+      "installed_runtime_mutation",
+      "local_build",
+      "physical_restore_assertion_removal",
+      "production_lay_source_edit",
+      "proof_failure_suppression",
+      "route_scope_denominator_change",
+      "verifier_or_safety_gate_weakening"
+    ],
+    "identity_contracts": 3,
+    "invariants": 5,
+    "planned_side_effect_kinds": [
+      "ephemeral_process_start",
+      "filesystem_write",
+      "remote_filesystem_write",
+      "source_edit"
+    ],
+    "preserved_artifacts": 1,
+    "runtime_comparisons": 0,
+    "source_checks": 2,
+    "tests": 12
+  },
+  "manifest_sha256": "ba33a4fb1b5f749b361532e097e1dd5c4ae352138cbd21f69b709e2423a6ba64",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-javascript-proof-owner",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/shell/atomicInputMethodRoute.js",
+      "sha256": "3f2d38ae86e5a984c055bb04837e299aee7aa41bcdf78d964670676fdb62e4bd",
+      "size_bytes": 16680
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-shell-proof-owner",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh",
+      "sha256": "cb89bcdd3f16b53a9bf97d68113743484ea23fa7ee9b93159dbfe845497f9168",
+      "size_bytes": 13954
+    }
+  ],
+  "task_id": "LAY_IME_ATOMIC_V27_PHYSICAL_UNDO_DENOMINATOR_IMPLEMENTATION_V1_2026-08-22",
+  "verdict": "READY_TO_IMPLEMENT"
+}

@@ -7,6 +7,8 @@ use super::decision::TransitionDecisionCore;
 use crate::typing_cpu::{ImeCandidateProposal, ImeCandidateSource};
 use std::collections::HashSet;
 
+pub(crate) use super::target_evidence::ReplacementTargetEvidence;
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum LiveCandidateLane {
     ExactCompletion,
@@ -15,25 +17,6 @@ pub(crate) enum LiveCandidateLane {
     GeneralReplacement,
     LayoutReplacement,
     BoundaryReplacement,
-}
-
-/// Target-specific proof for a full-token IME replacement.
-///
-/// A lane only groups candidates for bounded readout. It must never grant
-/// display authority to every surface produced by that operator.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) enum ReplacementTargetEvidence {
-    None,
-    ExactLayoutProjection,
-    VerifiedLexicalEdit,
-    ContextBoundLexicalEdit,
-    VerifiedBoundary,
-}
-
-impl ReplacementTargetEvidence {
-    pub(crate) const fn authorizes(self) -> bool {
-        !matches!(self, Self::None)
-    }
 }
 
 #[derive(Debug, Clone)]
@@ -76,6 +59,12 @@ pub(crate) struct LiveCompletionProposal {
     pub(crate) l4_transition_state_specific: bool,
     pub(crate) l4_transition_attract_count: u32,
     pub(crate) l4_transition_repel_count: u32,
+}
+
+impl LiveCompletionProposal {
+    pub(crate) fn common_target_evidence(&self) -> super::target_evidence::TargetEvidenceSetV1 {
+        self.replacement_target_evidence.to_common()
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -534,5 +523,23 @@ mod tests {
         let selected = TransitionDecisionCore::select_ime_readout(&proposals, 8);
         assert_eq!(selected[0].display_text(), "работает");
         assert!(selected[0].is_replacement());
+    }
+
+    #[test]
+    fn live_candidate_projects_the_exact_replacement_evidence_value() {
+        for replacement_target_evidence in [
+            ReplacementTargetEvidence::None,
+            ReplacementTargetEvidence::ExactLayoutProjection,
+            ReplacementTargetEvidence::VerifiedLexicalEdit,
+            ReplacementTargetEvidence::ContextBoundLexicalEdit,
+            ReplacementTargetEvidence::VerifiedBoundary,
+        ] {
+            let mut candidate = completion("candidate", "", 0.5);
+            candidate.replacement_target_evidence = replacement_target_evidence;
+            assert_eq!(
+                candidate.common_target_evidence(),
+                replacement_target_evidence.to_common()
+            );
+        }
     }
 }

@@ -48,6 +48,25 @@ pub fn is_protected_ascii_token(core: &str) -> bool {
             || is_mixed_case_ascii_brand(core))
 }
 
+pub(super) fn is_protected_ascii_token_if_warm(core: &str) -> Option<bool> {
+    if !has_ascii_letter(core) {
+        return Some(false);
+    }
+    let lower = core.to_ascii_lowercase();
+    Some(
+        core.is_ascii()
+            && (crate::lexicon::is_common_en_technical_word_if_warm(&lower)?
+                || crate::lexicon::is_user_protected_ascii_word_if_warm(core)?
+                || has_domain_like_dot(core)
+                || core.contains('@')
+                || core.contains("://")
+                || core.contains('/')
+                || core.contains('\\')
+                || is_upper_ascii_acronym(core)
+                || is_mixed_case_ascii_brand(core)),
+    )
+}
+
 pub fn is_ascii_technical_token(core: &str) -> bool {
     core.is_ascii()
         && has_ascii_letter(core)

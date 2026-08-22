@@ -1,0 +1,263 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "VETO",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": false,
+  "contract": "docs/structural_gates/preflights/LAY_IME_ATOMIC_V27_PHYSICAL_UNDO_DENOMINATOR_ROUTE_V2_2026-08-22.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "source_root": null,
+  "node_count": 6,
+  "edge_count": 5,
+  "routes": [
+    {
+      "id": "physical-undo-observation",
+      "event": "physical-undo-observation",
+      "kind": "observation",
+      "entry": "physical-undo-input",
+      "via": [],
+      "terminal": "composite-undo-observation",
+      "path_count": 1,
+      "paths": [
+        [
+          "physical-undo-input",
+          "composite-undo-observation"
+        ]
+      ],
+      "role_owners": {
+        "observer": [
+          "composite-undo-observation"
+        ],
+        "interface": [
+          "physical-undo-input"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "physical-undo-input",
+          "to": "composite-undo-observation",
+          "via": [],
+          "graph": "observation",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "physical-undo-input",
+              "composite-undo-observation"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "javascript-contract-evidence",
+      "event": "javascript-contract-evidence",
+      "kind": "authority",
+      "entry": "accepted-v24-release-denominator",
+      "via": [],
+      "terminal": "javascript-contract-assertion",
+      "path_count": 1,
+      "paths": [
+        [
+          "accepted-v24-release-denominator",
+          "javascript-contract-assertion"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "accepted-v24-release-denominator"
+        ],
+        "proof_owner": [
+          "javascript-contract-assertion"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "accepted-v24-release-denominator",
+          "to": "javascript-contract-assertion",
+          "via": [],
+          "graph": "authority",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "accepted-v24-release-denominator",
+              "javascript-contract-assertion"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "javascript-contract-proof",
+      "event": "javascript-contract-proof",
+      "kind": "proof",
+      "entry": "composite-undo-observation",
+      "via": [],
+      "terminal": "javascript-contract-assertion",
+      "path_count": 1,
+      "paths": [
+        [
+          "composite-undo-observation",
+          "javascript-contract-assertion"
+        ]
+      ],
+      "role_owners": {
+        "observer": [
+          "composite-undo-observation"
+        ],
+        "proof_owner": [
+          "javascript-contract-assertion"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "composite-undo-observation",
+          "to": "javascript-contract-assertion",
+          "via": [],
+          "graph": "proof",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "composite-undo-observation",
+              "javascript-contract-assertion"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "javascript-marker-production",
+      "event": "javascript-marker-production",
+      "kind": "execution",
+      "entry": "javascript-contract-assertion",
+      "via": [],
+      "terminal": "javascript-composite-pass-marker",
+      "path_count": 1,
+      "paths": [
+        [
+          "javascript-contract-assertion",
+          "javascript-composite-pass-marker"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "javascript-composite-pass-marker"
+        ],
+        "proof_owner": [
+          "javascript-contract-assertion"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "javascript-contract-assertion",
+          "to": "javascript-composite-pass-marker",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "javascript-contract-assertion",
+              "javascript-composite-pass-marker"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "shell-marker-proof",
+      "event": "shell-marker-proof",
+      "kind": "proof",
+      "entry": "javascript-composite-pass-marker",
+      "via": [],
+      "terminal": "shell-proof-verdict",
+      "path_count": 1,
+      "paths": [
+        [
+          "javascript-composite-pass-marker",
+          "shell-proof-verdict"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "javascript-composite-pass-marker"
+        ],
+        "proof_owner": [
+          "shell-proof-verdict"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "javascript-composite-pass-marker",
+          "to": "shell-proof-verdict",
+          "via": [],
+          "graph": "proof",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "javascript-composite-pass-marker",
+              "shell-proof-verdict"
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {
+    "javascript-contract-evidence": {
+      "authorization_owner": [],
+      "display_rank_owner": [],
+      "evidence_owner": [
+        "accepted-v24-release-denominator"
+      ],
+      "candidate_rank_owner": [],
+      "mutation_owner": [],
+      "render_owner": []
+    }
+  },
+  "source_evidence": {
+    "expected": 0,
+    "verified": 0,
+    "complete": true
+  },
+  "issues": [
+    {
+      "code": "authority_route_observer_contamination",
+      "message": "observer and proof nodes cannot participate in live authority flow",
+      "route": "javascript-contract-evidence",
+      "nodes": [
+        "javascript-contract-assertion"
+      ]
+    }
+  ],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": false,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

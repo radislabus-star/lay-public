@@ -1,6 +1,6 @@
+use super::output::EngineOutput;
 use std::time::Instant;
 use zbus::fdo;
-use zbus::object_server::SignalEmitter;
 
 use super::engine::LayIbusEngine;
 use super::text::make_ibus_text;
@@ -45,7 +45,7 @@ impl ActiveCompositionCommit {
 impl LayIbusEngine {
     pub(super) async fn commit_verified_active_composition(
         &mut self,
-        emitter: &SignalEmitter<'_>,
+        emitter: &mut EngineOutput<'_, '_>,
         authorized_edit: AuthorizedEdit,
     ) -> fdo::Result<()> {
         let text = authorized_edit.action().to_text().to_string();
@@ -61,7 +61,7 @@ impl LayIbusEngine {
 
     pub(super) async fn commit_active_composition(
         &mut self,
-        emitter: &SignalEmitter<'_>,
+        emitter: &mut EngineOutput<'_, '_>,
         request: ActiveCompositionCommit,
     ) -> fdo::Result<()> {
         self.commit_active_composition_with_suffix(
@@ -77,7 +77,7 @@ impl LayIbusEngine {
 
     pub(super) async fn accept_completion(
         &mut self,
-        emitter: &SignalEmitter<'_>,
+        emitter: &mut EngineOutput<'_, '_>,
         with_space: bool,
     ) -> fdo::Result<bool> {
         if self.buffer.is_empty() {
@@ -152,7 +152,7 @@ impl LayIbusEngine {
 
     pub(super) async fn accept_completion_with_space(
         &mut self,
-        emitter: &SignalEmitter<'_>,
+        emitter: &mut EngineOutput<'_, '_>,
     ) -> fdo::Result<bool> {
         let handled = self.accept_completion(emitter, true).await?;
         self.trace_key("alt_accept", 0, 0, handled, None);
@@ -161,25 +161,37 @@ impl LayIbusEngine {
 
     pub(super) async fn commit_managed_passthrough_char(
         &mut self,
-        emitter: &SignalEmitter<'_>,
+        emitter: &mut EngineOutput<'_, '_>,
         ch: char,
     ) -> fdo::Result<()> {
-        Self::commit_text(emitter, make_ibus_text(ch.to_string()))
+        emitter
+            .commit_text(make_ibus_text(ch.to_string()))
             .await
             .map_err(|e| fdo::Error::Failed(e.to_string()))?;
         self.last_commit_at = Some(Instant::now());
         self.push_tail_char(ch);
-        self.schedule_space_autocorrect_prefetch();
-        self.refresh_precognition_after_visible_input(emitter).await
+        let frame = self.capture_input_frame_identity();
+        if !ch.is_whitespace() {
+            if let Some(identity) = frame.as_ref() {
+                self.schedule_space_autocorrect_prefetch(identity);
+            }
+        } else {
+            self.invalidate_space_autocorrect_path();
+        }
+        self.refresh_precognition_after_visible_input(emitter, frame)
+            .await?;
+        Ok(())
     }
 
     pub(super) async fn observe_terminal_passthrough_char(
         &mut self,
-        emitter: &SignalEmitter<'_>,
+        emitter: &mut EngineOutput<'_, '_>,
         ch: char,
     ) -> fdo::Result<()> {
         self.push_tail_char(ch);
-        self.refresh_precognition_after_visible_input(emitter).await
+        let frame = self.capture_input_frame_identity();
+        self.refresh_precognition_after_visible_input(emitter, frame)
+            .await
     }
 
     /// Finalizes the currently active IME preedit composition.
@@ -189,7 +201,7 @@ impl LayIbusEngine {
     /// committed-tail replacement edits text that is already in the widget.
     async fn commit_active_composition_with_suffix(
         &mut self,
-        emitter: &SignalEmitter<'_>,
+        emitter: &mut EngineOutput<'_, '_>,
         with_space: bool,
         suffix: &str,
         sync_layout: bool,
@@ -213,7 +225,7 @@ impl LayIbusEngine {
 
     async fn commit_authorized_active_composition_text(
         &mut self,
-        emitter: &SignalEmitter<'_>,
+        emitter: &mut EngineOutput<'_, '_>,
         mut text: String,
         sync_layout: bool,
         autocorrect: bool,
@@ -253,7 +265,7 @@ impl LayIbusEngine {
         self.clear_preedit(emitter).await?;
         let clear_us = clear_started_at.elapsed().as_micros() as u64;
         let output_started_at = Instant::now();
-        if let Err(error) = Self::commit_text(emitter, make_ibus_text(text.clone())).await {
+        if let Err(error) = emitter.commit_text(make_ibus_text(text.clone())).await {
             let _ = self.update_composition_preedit(emitter).await;
             return Err(fdo::Error::Failed(error.to_string()));
         }
@@ -333,6 +345,43 @@ mod active_composition_route_contract {
             source.contains("ActiveCompositionAuthority::VerifiedEdit(Box::new(authorized_edit))")
                 && source.contains("authority.matches_text"),
             "accepted completion must hold AuthorizedEdit until CommitText"
+        );
+    }
+
+    #[test]
+    fn space_correction_is_scheduled_before_display_projection() {
+        let source = include_str!("composition_commit.rs");
+        let route = source
+            .split("pub(super) async fn commit_managed_passthrough_char")
+            .nth(1)
+            .expect("managed passthrough route")
+            .split("pub(super) async fn observe_terminal_passthrough_char")
+            .next()
+            .expect("single route body");
+        let prefetch = route
+            .find("schedule_space_autocorrect_prefetch")
+            .expect("Space prefetch schedule");
+        let refresh = route
+            .find("refresh_precognition_after_visible_input")
+            .expect("visible field refresh");
+
+        assert!(
+            prefetch < refresh,
+            "Space correction must receive the shared frame before display projection"
+        );
+        assert_eq!(
+            route.matches("capture_input_frame_identity").count(),
+            1,
+            "one printable event must capture one shared GUI identity"
+        );
+        assert!(
+            route.contains("schedule_space_autocorrect_prefetch(identity)")
+                && route.contains("refresh_precognition_after_visible_input(emitter, frame)"),
+            "correction and display must receive clones of the same captured frame"
+        );
+        assert!(
+            !route.contains("refresh_precognition_candidates("),
+            "visible input must not materialize the field synchronously"
         );
     }
 }

@@ -396,7 +396,7 @@ fn restore_word(
         nanda_autocorrect: true,
         nanda_candidate_route: route,
         nanda_wave_options: cfg.active_nanda_wave_options(),
-        mode: correction_core::CorrectionMode::DeterministicThenNanda,
+        mode: correction_core::CorrectionMode::NandaOnly,
     });
 
     match resolution.selected {
@@ -420,7 +420,7 @@ fn resolve_with_route(
         nanda_autocorrect: true,
         nanda_candidate_route: route,
         nanda_wave_options: cfg.active_nanda_wave_options(),
-        mode: correction_core::CorrectionMode::DeterministicThenNanda,
+        mode: correction_core::CorrectionMode::NandaOnly,
     })
 }
 
@@ -579,7 +579,11 @@ fn print_correction_core_explanation(
         nanda_autocorrect: cfg.nanda_autocorrect,
         nanda_candidate_route: route,
         nanda_wave_options: cfg.active_nanda_wave_options(),
-        mode: correction_core::CorrectionMode::DeterministicThenNanda,
+        mode: if cfg.nanda_autocorrect {
+            correction_core::CorrectionMode::NandaOnly
+        } else {
+            correction_core::CorrectionMode::DeterministicOnly
+        },
     });
 
     println!("correction_core:");

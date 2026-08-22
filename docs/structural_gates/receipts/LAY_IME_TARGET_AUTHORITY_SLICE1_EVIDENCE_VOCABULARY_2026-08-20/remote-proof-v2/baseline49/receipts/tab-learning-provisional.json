@@ -1,0 +1,42 @@
+{
+  "planned": {
+    "id": "tab-learning-provisional",
+    "series": "baseline49",
+    "denominator": "tab",
+    "source_test": "src/bin/lay_ibus_engine/tail_memory.rs::tab_completion_learning_stays_pending_until_the_next_word",
+    "target_kind": "bin",
+    "target": "lay-ibus-engine",
+    "compiled_selector": "tail_memory::tests::tab_completion_learning_stays_pending_until_the_next_word",
+    "expected_test_count": 1,
+    "expected_assertion_status": "PASS",
+    "expected_semantic_receipt": "acceptance does not become durable before a stable boundary",
+    "environment": {
+      "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+      "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+      "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+      "LAY_DEBUG_DECISION_CORE": "1",
+      "LAY_L2_FIELD_TRACE": "1",
+      "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+      "CARGO_BUILD_JOBS": "20"
+    },
+    "command": [
+      "scripts/cargo-guard.sh",
+      "test",
+      "--bin",
+      "lay-ibus-engine",
+      "tail_memory::tests::tab_completion_learning_stays_pending_until_the_next_word",
+      "--",
+      "--exact",
+      "--nocapture",
+      "--test-threads=1"
+    ]
+  },
+  "exit_code": 0,
+  "observed_test_count": 1,
+  "observed_status": "PASS",
+  "valid_execution": true,
+  "log": {
+    "size_bytes": 58125,
+    "sha256": "63e83e079fdff9a5892460eb1939d7d689c2b3571136132344f4eaeb650ec027"
+  }
+}

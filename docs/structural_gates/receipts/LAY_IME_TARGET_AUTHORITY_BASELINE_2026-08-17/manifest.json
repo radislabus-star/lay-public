@@ -1,0 +1,81 @@
+{
+  "schema": "lay.ime-target-authority-diagnostic-baseline.v1",
+  "status": "PARTIAL_DURABLE_BASELINE",
+  "captured_at": "2026-08-17",
+  "source_host": "e@192.168.3.94",
+  "source_directory": "/home/e/build/lay-ime-boundary-layout-proof-20260815",
+  "source_commit_at_execution": null,
+  "source_dirty_bytes_snapshot": null,
+  "source_snapshot_complete": false,
+  "active_case_manifest": "event-and-boundary-cases-v7.json",
+  "history_provenance": "/home/ubu/.codex/sessions/2026/04/29/rollout-2026-04-29T17-55-15-019dd9bc-b358-7d01-b32d-7e64d0b9509a.jsonl",
+  "environment": {
+    "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+    "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+    "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+    "LAY_DEBUG_DECISION_CORE": "1",
+    "LAY_L2_FIELD_TRACE": "1 for deep tests; not recorded for aggregate command"
+  },
+  "commands": {
+    "aggregate": "scripts/cargo-guard.sh test --lib ime_correction::tests -- --nocapture",
+    "deep_template": "scripts/cargo-guard.sh test --lib ime_correction::tests::<test_name> -- --exact --nocapture --test-threads=1",
+    "command_recovery": "exact command bodies recovered from the session JSONL; raw Cargo logs do not contain their invoking shell command"
+  },
+  "results": {
+    "aggregate": {
+      "passed": 18,
+      "failed": 18,
+      "ignored": 0,
+      "measured": 0,
+      "filtered_out": 1483,
+      "duration_seconds": 15.34
+    },
+    "deep": {
+      "passed": 2,
+      "failed": 10,
+      "total": 12
+    }
+  },
+  "deep_tests": [
+    {"name": "active_composition_autocorrect_uses_unified_input_gate", "result": "FAIL"},
+    {"name": "active_composition_context_replacement_keeps_previous_words_out_of_commit", "result": "FAIL"},
+    {"name": "active_russian_layout_allows_unknown_cyrillic_projection_to_known_ascii", "result": "PASS"},
+    {"name": "committed_tail_autocorrect_repairs_layout_word_with_missing_initial_letter", "result": "FAIL"},
+    {"name": "committed_tail_autocorrect_repairs_duplicate_latin_prefix_before_russian_word", "result": "FAIL"},
+    {"name": "committed_tail_repairs_accidental_final_consonant_after_imperative", "result": "FAIL"},
+    {"name": "committed_tail_space_action_matches_physical_token_without_pending_space", "result": "FAIL"},
+    {"name": "committed_tail_space_route_defaults_to_canonical_l2_owner_for_l11_seeded_restore", "result": "FAIL"},
+    {"name": "committed_tail_space_route_keeps_verified_inverse_length_member_of_l2_tie", "result": "FAIL"},
+    {"name": "committed_tail_space_route_uses_shared_decision_core_for_dirty_tokens", "result": "FAIL"},
+    {"name": "live_l2_space_route_keeps_short_wrong_layout_function_word_authority", "result": "PASS"},
+    {"name": "committed_tail_boundary_uses_same_dual_layout_decision_as_cli", "result": "FAIL"}
+  ],
+  "files": [
+    {"path": "raw/lay-ime-canonical-only-36-v3.log", "size_bytes": 691176, "mode": "0664", "sha256": "f69581b37b2597a97b9b2e18fd326f0eafb5c83a3df76cc4b7b1f2816af08b52"},
+    {"path": "raw/lay-deep-active_composition_autocorrect_uses_unified_input_gate.log", "size_bytes": 53038, "mode": "0664", "sha256": "5c2c264aafaa7fcd20e1cc04ba0c77a88be6fd9bf9926f24e704b34a66eea641"},
+    {"path": "raw/lay-deep-active_composition_context_replacement_keeps_previous_words_out_of_commit.log", "size_bytes": 53599, "mode": "0664", "sha256": "90a7317d7042de1ade98603e3fef7c92eca55bff5bcde76d6e1b8a58c2eaa0ca"},
+    {"path": "raw/lay-deep-active_russian_layout_allows_unknown_cyrillic_projection_to_known_ascii.log", "size_bytes": 64765, "mode": "0664", "sha256": "6e512c31ffb62de17c46546dd3d5c4b1e76049b516fa65554c4fa7b39c96c9ff"},
+    {"path": "raw/lay-deep-committed_tail_autocorrect_repairs_duplicate_latin_prefix_before_russian_word.log", "size_bytes": 30816, "mode": "0664", "sha256": "42dd063c6b69fdb290b4b9623c4deb01629bff2d24c4f4bb95f00b08e9cc2ecf"},
+    {"path": "raw/lay-deep-committed_tail_autocorrect_repairs_layout_word_with_missing_initial_letter.log", "size_bytes": 30807, "mode": "0664", "sha256": "35ba0394c9379af7988c9d302a28b9b1b8447b94507096d82ae31a1f970eeccc"},
+    {"path": "raw/lay-deep-committed_tail_boundary_uses_same_dual_layout_decision_as_cli.log", "size_bytes": 35465, "mode": "0664", "sha256": "b21ec0d2aefa59afe928976c06aaa826bef47a7afe2f181bdc6bfb515a3077de"},
+    {"path": "raw/lay-deep-committed_tail_repairs_accidental_final_consonant_after_imperative.log", "size_bytes": 43680, "mode": "0664", "sha256": "db01d2d7c6fae03e1f316d6c79dffd530f13fc1f292f3323d91517c78d1ac628"},
+    {"path": "raw/lay-deep-committed_tail_space_action_matches_physical_token_without_pending_space.log", "size_bytes": 31180, "mode": "0664", "sha256": "85d272d618f2a3b05196d0d13f5ecff0a6184bfcbf5b2647d447a8c834234aba"},
+    {"path": "raw/lay-deep-committed_tail_space_route_defaults_to_canonical_l2_owner_for_l11_seeded_restore.log", "size_bytes": 58814, "mode": "0664", "sha256": "b8a2b7303ced3911ae850bb7f80ea0727c102da83961fa68eabc827e8532becc"},
+    {"path": "raw/lay-deep-committed_tail_space_route_keeps_verified_inverse_length_member_of_l2_tie.log", "size_bytes": 58988, "mode": "0664", "sha256": "274f520e52c064862d2a7b6a8458903aeb41d1280cbc80e549288ad8bc5f37e0"},
+    {"path": "raw/lay-deep-committed_tail_space_route_uses_shared_decision_core_for_dirty_tokens.log", "size_bytes": 95211, "mode": "0664", "sha256": "363dff30847072e40ee7c31ecba0fab827521eab5ad50a04207494b73eebf106"},
+    {"path": "raw/lay-deep-live_l2_space_route_keeps_short_wrong_layout_function_word_authority.log", "size_bytes": 67200, "mode": "0664", "sha256": "2330762276a0b47b23c812c3e96d62935908f33dce0c5507f8b1e6711790d369"},
+    {"path": "event-and-boundary-cases.json", "size_bytes": 20630, "mode": "0664", "sha256": "75d142d7eecd62b9e9b987c6b6ea7bf3d1bc7a682c3e1a595009c612e1f1edc7", "status": "SUPERSEDED_V2_RETAINED"},
+    {"path": "event-and-boundary-cases-v3.json", "size_bytes": 23135, "mode": "0664", "sha256": "561b449f510306affbf195280a3388322a8b2a0eb937d1ceac3aaf81e558d95a", "status": "SUPERSEDED_V3_RETAINED"},
+    {"path": "event-and-boundary-cases-v4.json", "size_bytes": 27237, "mode": "0664", "sha256": "9b1e9f874b2db90309239d274968b0dfa2551ace1b3ffab602cabe74e8068cfd", "status": "SUPERSEDED_V4_RETAINED"},
+    {"path": "event-and-boundary-cases-v5.json", "size_bytes": 32179, "mode": "0664", "sha256": "12bb3193424ac120c4cd93b74c9133d1b0deeb6ea5aed5d8f6cc23590fe80185", "status": "SUPERSEDED_V5_RETAINED"},
+    {"path": "event-and-boundary-cases-v6.json", "size_bytes": 40949, "mode": "0664", "sha256": "f49ae0e80d8df91b2eb4fc3e26fce4df2a91e4cf97f1b3901b2a968b0c33886c", "status": "SUPERSEDED_V6_RETAINED"},
+    {"path": "event-and-boundary-cases-v7.json", "size_bytes": 43134, "mode": "0664", "sha256": "4bb3772bde5c81f5ca13d66bf37f9ef833d84881d1ce0e3eb36507d72aaefe68", "status": "ACTIVE_CASE_DEFINITIONS"}
+  ],
+  "limitations": [
+    "The raw logs are now durable and hash-pinned, but the exact dirty source bytes used by the remote test run were not snapshotted at execution time.",
+    "The source commit at execution is not present in the raw logs and cannot be inferred from the current remote checkout without overclaiming.",
+    "Revision-8 Boundary, identity, persistence, durability, quarantine, handoff, release and per-event case definitions are frozen in event-and-boundary-cases-v7.json, but they have not been executed from an immutable source archive.",
+    "Fifty-nine future-contract cases intentionally name missing tests and a first-required slice; each blocks its owning promotion slice, not an earlier slice.",
+    "This receipt is diagnostic baseline evidence only and does not authorize implementation or deployment."
+  ]
+}

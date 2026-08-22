@@ -1,0 +1,119 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "slice6-final-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE6_BOUNDARY_INTERNALIZATION_2026-08-20/final-receipt.json",
+      "sha256": "434b550498875ce88d00727187143562a2a804f2f214a042c0fbb7c5bb7dc546",
+      "size_bytes": 2688
+    },
+    {
+      "exists": true,
+      "id": "buffered-ext4-failure-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE7A_DURABILITY_MICROPROOF_2026-08-20/final-ext4-preallocated-receipt.json",
+      "sha256": "b8766d04b4a95233d4ef1e531b767d67124c784d6a658bee73833ea0224e732b",
+      "size_bytes": 2916
+    },
+    {
+      "exists": true,
+      "id": "authority-paper",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../ime-canonical-target-authority-paper-2026-08-17.md",
+      "sha256": "a61e0b57569c41d76b3ac6f053feec6fbd3fb75eda4b03a082afed500e909d72",
+      "size_bytes": 190901
+    },
+    {
+      "exists": true,
+      "id": "output-transaction-core",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/text_edit/output_transaction.rs",
+      "sha256": "c0f02958ee01f80fbf2d1577675cda974c79cf424d530bbfbbe1076752703e9c",
+      "size_bytes": 31890
+    },
+    {
+      "exists": true,
+      "id": "durability-microproof-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/bin/lay_output_transaction_microproof.rs",
+      "sha256": "394892b850368cd657aa8119176b2e392c0cf66cbfba2bdbc9bf1cef004dc517",
+      "size_bytes": 14331
+    },
+    {
+      "exists": true,
+      "id": "cargo-manifest",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../Cargo.toml",
+      "sha256": "91a3c72265db548d6190f16a0059bcd27174a80b3403302ce1b7ee9b7cb9cc8c",
+      "size_bytes": 2399
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 6,
+    "forbidden_side_effect_kinds": [
+      "automatic_authority_change",
+      "buffered_io_fallback",
+      "bypass_verifier",
+      "generated_traffic",
+      "layout_mutation",
+      "restart_global_ibus_daemon",
+      "restart_lay_daemon",
+      "rewrite_any_package",
+      "runtime_deployment",
+      "synthetic_fixture",
+      "synthetic_key_output",
+      "text_mutation",
+      "threshold_relaxation",
+      "two_foreground_sync_waits",
+      "weaken_authorized_edit"
+    ],
+    "identity_contracts": 2,
+    "invariants": 9,
+    "planned_side_effect_kinds": [
+      "filesystem_write",
+      "remote_build",
+      "source_edit"
+    ],
+    "preserved_artifacts": 2,
+    "runtime_comparisons": 0,
+    "source_checks": 2,
+    "tests": 11
+  },
+  "manifest_sha256": "77c5adba3539a75dad9fcad015af87d5a7b68660b9644f7dce7fb62c72549ac2",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "text-edit-owner-pinned",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/text_edit.rs",
+      "sha256": "69717ea3a5c2120f4e5a92653ddd3258ebb0deb49faee8dd2a14b078c5fe1cfb",
+      "size_bytes": 2354
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "microproof-source-pinned",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/bin/lay_output_transaction_microproof.rs",
+      "sha256": "394892b850368cd657aa8119176b2e392c0cf66cbfba2bdbc9bf1cef004dc517",
+      "size_bytes": 14331
+    }
+  ],
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE7A_DIRECT_ALIGNED_SLOT_IMPLEMENTATION_V2_2026-08-20",
+  "verdict": "READY_TO_IMPLEMENT"
+}

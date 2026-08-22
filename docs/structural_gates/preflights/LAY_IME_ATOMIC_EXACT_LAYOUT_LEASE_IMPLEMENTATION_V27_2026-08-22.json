@@ -1,0 +1,131 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_IMPLEMENTATION_V27_2026-08-22",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {"id": "lexical-phase-runtime", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/nanda_wave/lexical_phase/runtime.rs", "expect": {"mode": "0664", "size_bytes": 75523, "sha256": "d67008a65a4e878f754774bb4a4f8ca57532f4cffe97024d9189eedfaead98cf"}},
+    {"id": "ascii-layout-candidate", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/layout_autoswitch/ascii/candidate.rs", "expect": {"mode": "0664", "size_bytes": 5117, "sha256": "fab983c7412b5ec831afa4fdb89f95d0dd332114396b3d12c1184ebb6a67663f"}},
+    {"id": "ascii-layout-word", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/layout_autoswitch/ascii/word.rs", "expect": {"mode": "0664", "size_bytes": 5036, "sha256": "5ebbabd22d148202570a435d383ab5e3e91cfd15904fa21181f9d586eaa70d37"}},
+    {"id": "layout-autoswitch-root", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/layout_autoswitch.rs", "expect": {"mode": "0664", "size_bytes": 8155, "sha256": "ad724c920b2913e3a67b3fe6ff399eea21ef2559ebd6efa84cd5d479ee36b36c"}},
+    {"id": "correction-core", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/correction_core.rs", "expect": {"mode": "0664", "size_bytes": 43215, "sha256": "b26df818637c7ff4a139add18c7e9e527705582828157363faac7817d67a4629"}},
+    {"id": "candidate-sources", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/correction_core/candidate_sources.rs", "expect": {"mode": "0664", "size_bytes": 54854, "sha256": "c2972cd97ebbeff1089528a3647bb77e0bf64f29205d209c7eb670fd7e3f2a7b"}},
+    {"id": "ime-correction", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/ime_correction.rs", "expect": {"mode": "0664", "size_bytes": 32354, "sha256": "b7e9e47bb5275c14fd64ad65904c371082e5b75439d68da29a4907d18bd79e78"}},
+    {"id": "space-prefetch", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs", "expect": {"mode": "0664", "size_bytes": 24869, "sha256": "baf4c570b8f14a53d74b59f66031ca36aff43c17c5f12799de54e1e54fb466f2"}},
+    {"id": "committed-tail", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/committed_tail.rs", "expect": {"mode": "0664", "size_bytes": 25068, "sha256": "2b233dece8ce78a2f2c356681d2c02d2828476d1a245e43e297384a63134c8a1"}},
+    {"id": "remote-stage-driver", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/stage-atomic-proof-engine-remote.sh", "expect": {"mode": "0755", "size_bytes": 4615, "sha256": "eba9abefcde44e6657de8ffe4eac89f7bdc9de9477b6b2268f1e21800df1adbc"}},
+    {"id": "full-route-driver", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh", "expect": {"mode": "0755", "size_bytes": 13954, "sha256": "cb89bcdd3f16b53a9bf97d68113743484ea23fa7ee9b93159dbfe845497f9168"}},
+    {"id": "installed-engine", "kind": "file", "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine", "expect": {"mode": "0755", "size_bytes": 6423488, "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a"}},
+    {"id": "shell-atomic-adapter", "kind": "file", "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/js/misc/inputMethodAtomic.js", "expect": {"mode": "0664", "size_bytes": 17418, "sha256": "aa070fd5cff62ae2794b082d7dcfb042f1c714e411cec8328e3d5f19cf44bb07"}}
+  ],
+  "source_checks": [
+    {"id": "pinned-lexical-phase-runtime", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/nanda_wave/lexical_phase/runtime.rs", "sha256": "d67008a65a4e878f754774bb4a4f8ca57532f4cffe97024d9189eedfaead98cf", "forbidden_effect_patterns": [
+      {"effect": "runtime_word_exception", "regex": "ghbdtn.*привет|привет.*ghbdtn"},
+      {"effect": "mutable_exact_terminal_owner", "regex": "onlineExactTerminalAuthority|feedbackExactTerminalAuthority"}
+    ]},
+    {"id": "pinned-layout-candidate", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/layout_autoswitch/ascii/candidate.rs", "sha256": "fab983c7412b5ec831afa4fdb89f95d0dd332114396b3d12c1184ebb6a67663f", "forbidden_effect_patterns": [
+      {"effect": "word_specific_runtime_branch", "regex": "ghbdtn.*привет|dnjpfvtyf.*автозамена"},
+      {"effect": "direct_exact_mutation", "regex": "exactLayoutDirectCommit|exactLayoutReplay"}
+    ]},
+    {"id": "pinned-space-prefetch", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs", "sha256": "baf4c570b8f14a53d74b59f66031ca36aff43c17c5f12799de54e1e54fb466f2", "forbidden_effect_patterns": [
+      {"effect": "second_mutation_owner", "regex": "exactLayoutDirectCommit|legacyExactLayoutApply"},
+      {"effect": "unbounded_wait", "regex": "SPACE_PREFETCH_WAIT_BUDGET.*from_millis\\(([9]|[1-9][0-9]+)\\)"},
+      {"effect": "runtime_word_exception", "regex": "ghbdtn.*привет|привет.*ghbdtn"}
+    ]},
+    {"id": "pinned-full-route-driver", "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh", "sha256": "cb89bcdd3f16b53a9bf97d68113743484ea23fa7ee9b93159dbfe845497f9168", "forbidden_effect_patterns": [
+      {"effect": "local_heavy_build", "regex": "localCargoBuild|buildOnDesktop"},
+      {"effect": "runtime_deployment_before_full_proof", "regex": "installBeforeFullProof|deployUnprovenV27"}
+    ]},
+    {"id": "pinned-shell-timeout", "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/js/misc/inputMethodAtomic.js", "sha256": "aa070fd5cff62ae2794b082d7dcfb042f1c714e411cec8328e3d5f19cf44bb07", "forbidden_effect_patterns": [
+      {"effect": "rpc_timeout_increase", "regex": "RPC_TIMEOUT_MSEC = (9|[1-9][0-9]+)"}
+    ]}
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "add-nonblocking-exact-terminal-readout", "kind": "source_edit"},
+      {"id": "replace-boolean-exact-policy-with-typed-certificate", "kind": "source_edit"},
+      {"id": "bind-exact-decision-to-canonical-frame", "kind": "source_edit"},
+      {"id": "prepare-exact-lease-on-printable-frame", "kind": "source_edit"},
+      {"id": "add-generated-corpus-race-and-latency-proofs", "kind": "source_edit"},
+      {"id": "run-remote-focused-and-composite-proof", "kind": "remote_build"},
+      {"id": "write-v27-proof-receipts", "kind": "filesystem_write"}
+    ],
+    "forbidden": [
+      "second_mutation_owner",
+      "second_candidate_rank_owner",
+      "second_verifier",
+      "synchronous_exact_computation_on_space",
+      "cold_package_load_on_printable_or_space",
+      "ngram_coherence_as_exact_authority",
+      "generated_form_as_exact_authority",
+      "layout_typo_fast_authority",
+      "ru_to_en_fast_authority",
+      "edge_symbol_fast_authority",
+      "unbound_identity_material",
+      "verifier_bypass",
+      "word_specific_runtime_branch",
+      "rpc_timeout_increase",
+      "local_heavy_build",
+      "runtime_deployment_before_full_proof"
+    ]
+  },
+  "preserved_artifacts": [
+    {"id": "installed-engine-preserved", "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine", "policy": "immutable_before_deployment", "cursor_policy": "none", "rollback_policy": "preserve_exact_bytes", "baseline_check_id": "installed-engine"},
+    {"id": "failed-v26-evidence-preserved", "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_IMPLEMENTATION_V26_2026-08-22.json", "policy": "append_only_history", "cursor_policy": "none", "rollback_policy": "never_rewrite_failed_evidence", "baseline_check_id": "candidate-sources"}
+  ],
+  "identity_contracts": [
+    {"id": "one-canonical-frame", "producer": "canonical printable InputFrameIdentity builder", "consumer": "full and exact prepared lease producers", "comparison": "path focus receipt tail epoch committed tail context prefix observed token active composition active layout and correction config are byte-equal", "test_id": "canonical-frame-producer-parity"},
+    {"id": "exact-terminal-generation", "producer": "already-warm immutable lexical phase exact terminal readout", "consumer": "ExactSurfaceCertificate", "comparison": "source is not an exact English terminal target is an exact Cyrillic terminal and lexical generation is unchanged", "test_id": "exact-terminal-certificate-parity"},
+    {"id": "prepared-lease-frame", "producer": "verified full or exact decision receipt", "consumer": "Space lease arbiter and committed-tail output", "comparison": "complete InputFrameIdentity worker generation material generation lease kind decision and verifier receipt remain equal", "test_id": "prepared-lease-identity-parity"},
+    {"id": "full-exact-decision-parity", "producer": "exact eligible fixed corpus", "consumer": "eventual full route result", "comparison": "replacement allow_apply transition proof source role and changed token set agree", "test_id": "generated-full-exact-parity"}
+  ],
+  "runtime_comparisons": [
+    {"id": "v25-v27-head-of-line", "source": "V25 undo-v7 trace and V27 Space composite trace", "comparison": "exact_stable_projection_under_stale_full_worker", "reason": "V25 final decision was fast but stale work consumed the RPC deadline", "stable_fields": ["input", "target", "transition_proof", "legacy_key_calls", "leftovers_after_cleanup"], "expected_to_change_fields": ["exact_prepared_on_printable", "space_lookup_wait_us", "space_total_us", "process_status", "autocorrect_visible"], "observed_not_compared_fields": ["headless compositor startup time"], "test_id": "atomic-undo-composite"},
+    {"id": "full-exact-quality", "source": "pinned generated eligible and negative corpora", "comparison": "exact_fast_authority", "reason": "fast route may not apply where the full owner abstains or chooses another surface", "stable_fields": ["replacement", "allow_apply", "transition_proof", "changed_tokens"], "expected_to_change_fields": ["producer_latency", "lease_kind"], "observed_not_compared_fields": ["candidate ordering outside selected target"], "test_id": "generated-full-exact-parity"}
+  ],
+  "invariants": [
+    {"id": "one-rank-verifier-mutation-chain", "statement": "full and exact producers use one L2CandidateLattice one TransitionDecisionCore one verifier and one atomic mutation owner", "test_id": "single-owner-source-contract"},
+    {"id": "exact-terminal-only", "statement": "fast authority requires an already-warm exact target terminal and rejects source exact terminals ngram-only generated-only and layout-then-typo surfaces", "test_id": "exact-terminal-certificate-parity"},
+    {"id": "context-preserved", "statement": "arbitrary left phrase context is retained byte-for-byte and only the final observed token plus pending Space may change", "test_id": "exact-context-matrix"},
+    {"id": "exact-prepared-before-space", "statement": "Space selects a prepared exact lease and never initializes or computes exact lexical authority", "test_id": "space-no-exact-computation-contract"},
+    {"id": "ready-full-precedence", "statement": "an identity-matched full lease ready at arbitration wins over exact and both leases are single-consumer", "test_id": "full-lease-precedence"},
+    {"id": "stale-fail-closed", "statement": "focus tail config worker material or lexical generation mismatch cannot publish or apply either lease", "test_id": "lease-race-fault-matrix"},
+    {"id": "not-warm-nonblocking", "statement": "an absent or initializing lexical package returns exact unavailable without waiting opening parsing mapping or prefetching", "test_id": "not-warm-exact-readout"},
+    {"id": "en-to-ru-only", "statement": "V27 fast lease has no RU-to-EN edge and rejects edge-symbol ambiguity", "test_id": "exact-negative-corpus"},
+    {"id": "runtime-unmodified", "statement": "installed Lay 1.0.33 remains byte-identical until a separate deployment preflight", "test_id": "installed-runtime-parity"}
+  ],
+  "state_machine": {
+    "initial_state": "V27_PAPER_ROUTE_PASS",
+    "steps": [
+      {"id": "edit-typed-exact-certificate", "from": "V27_PAPER_ROUTE_PASS", "to": "SOURCE_EDITED", "mutates": true, "failure_state": "SOURCE_EDIT_FAILED", "cleanup": "remove only V27 scoped hunks while preserving all pre-existing dirty worktree changes", "preserves": ["installed-engine-preserved", "failed-v26-evidence-preserved"], "test_id": "source-edit-fault"},
+      {"id": "run-remote-focused-tests", "from": "SOURCE_EDITED", "to": "FOCUSED_PROVEN", "mutates": true, "failure_state": "FOCUSED_PROOF_FAILED", "cleanup": "discard partial remote build output retain complete logs and do not stage an engine", "preserves": ["installed-engine-preserved", "failed-v26-evidence-preserved"], "test_id": "focused-proof-fault"},
+      {"id": "run-generated-corpus", "from": "FOCUSED_PROVEN", "to": "QUALITY_PROVEN", "mutates": true, "failure_state": "QUALITY_PROOF_FAILED", "cleanup": "retain manifest denominator and failures reject runtime promotion", "preserves": ["installed-engine-preserved", "failed-v26-evidence-preserved"], "test_id": "generated-corpus-fault"},
+      {"id": "stage-immutable-engine", "from": "QUALITY_PROVEN", "to": "ENGINE_STAGED", "mutates": true, "failure_state": "ENGINE_STAGE_FAILED", "cleanup": "reject partial hash-mismatched or provenance-mismatched immutable stage", "preserves": ["installed-engine-preserved", "failed-v26-evidence-preserved"], "test_id": "engine-stage-fault"},
+      {"id": "run-atomic-undo-and-514-route", "from": "ENGINE_STAGED", "to": "PRODUCT_PROVEN", "mutates": true, "failure_state": "PRODUCT_PROOF_FAILED", "cleanup": "terminate proof-owned processes retain all receipts and leave installed runtime unchanged", "preserves": ["installed-engine-preserved", "failed-v26-evidence-preserved"], "test_id": "physical-product-fault"}
+    ],
+    "terminal_states": ["PRODUCT_PROVEN", "SOURCE_EDIT_FAILED", "FOCUSED_PROOF_FAILED", "QUALITY_PROOF_FAILED", "ENGINE_STAGE_FAILED", "PRODUCT_PROOF_FAILED"]
+  },
+  "tests": [
+    {"id": "source-edit-fault", "kind": "fault_injection", "expected": "failed edit preserves unrelated dirty changes and installed engine bytes"},
+    {"id": "focused-proof-fault", "kind": "fault_injection", "expected": "failed remote test cannot stage or install a binary"},
+    {"id": "generated-corpus-fault", "kind": "fault_injection", "expected": "denominator or manifest mismatch is a hard quality failure"},
+    {"id": "engine-stage-fault", "kind": "fault_injection", "expected": "partial hash or provenance mismatch is rejected before physical proof"},
+    {"id": "physical-product-fault", "kind": "fault_injection", "expected": "failed composite cleans proof-owned processes and leaves installed runtime unchanged"},
+    {"id": "single-owner-source-contract", "kind": "parity", "expected": "two producers converge on one lattice rank verifier and atomic mutation owner"},
+    {"id": "canonical-frame-producer-parity", "kind": "parity", "expected": "full and exact leases are derived from one byte-equal canonical frame"},
+    {"id": "exact-terminal-certificate-parity", "kind": "property", "expected": "eligible targets have exact terminals while source exact ngram-only generated-only and layout-typo surfaces cannot certify"},
+    {"id": "generated-full-exact-parity", "kind": "quality", "expected": "100 percent replacement allow_apply proof source-role and changed-token parity with zero false authority"},
+    {"id": "exact-negative-corpus", "kind": "quality", "expected": "zero exact applies across pinned English collisions layout-typo protected composite edge-symbol reverse-direction and unknown targets"},
+    {"id": "exact-context-matrix", "kind": "integration", "expected": "first word and multiword Russian or ASCII contexts preserve every left-context byte"},
+    {"id": "space-no-exact-computation-contract", "kind": "source_and_runtime", "expected": "Space consumes prepared material and invokes no exact projection terminal lookup package load or DecisionCore preparation"},
+    {"id": "not-warm-exact-readout", "kind": "latency_fault", "expected": "not-warm exact lookup returns unavailable without I/O allocation or blocking"},
+    {"id": "full-lease-precedence", "kind": "unit", "expected": "current ready full wins and each full or exact lease is consumed at most once"},
+    {"id": "lease-race-fault-matrix", "kind": "concurrency", "expected": "zero stale applies for focus tail config worker material and package generation races"},
+    {"id": "printable-exact-miss-latency", "kind": "latency", "expected": "added p99 at most 0.250 ms under concurrent stale full work"},
+    {"id": "printable-exact-hit-latency", "kind": "latency", "expected": "preparation p99 at most 2.000 ms under concurrent stale full work"},
+    {"id": "atomic-undo-composite", "kind": "integration", "expected": "ghbdtn becomes привет before 8 ms deadline and atomic double Shift restores ghbdtn with zero legacy mutations"},
+    {"id": "fixed-514-event-route", "kind": "integration", "expected": "514 paired releases p99 at most 5 ms max below 8 ms and zero leftovers"},
+    {"id": "installed-runtime-parity", "kind": "parity", "expected": "installed engine SHA-256 remains dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a"}
+  ]
+}

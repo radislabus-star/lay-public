@@ -5,9 +5,16 @@ use crate::russian_typo_scoring::best_ranked_dictionary_candidate;
 use crate::text_case::apply_word_case;
 use crate::word_reader::is_cyrillic_word;
 
+use super::memo::{memoized_text, WordMaterialKind};
 use super::thresholds::NGRAM_TYPO_REJECT_MARGIN;
 
 pub(crate) fn correct_repeated_letter(word: &str) -> Option<String> {
+    memoized_text(WordMaterialKind::RepeatedLetter, word, || {
+        correct_repeated_letter_uncached(word)
+    })
+}
+
+fn correct_repeated_letter_uncached(word: &str) -> Option<String> {
     if !is_cyrillic_word(word) {
         return None;
     }

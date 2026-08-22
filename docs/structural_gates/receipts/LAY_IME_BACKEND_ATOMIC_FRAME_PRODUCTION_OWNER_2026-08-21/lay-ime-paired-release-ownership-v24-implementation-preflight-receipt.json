@@ -1,0 +1,182 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "shell-atomic-adapter",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/js/misc/inputMethodAtomic.js",
+      "sha256": "d40801329973da6c3e96f35edc2f478ad82c7752f4e245cb01f69904a24e19c0",
+      "size_bytes": 15841
+    },
+    {
+      "exists": true,
+      "id": "shell-atomic-unit-proof",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/unit/inputMethodAtomic.js",
+      "sha256": "9f8224e735e38bdd64600a9313b9f14540df671dbb086c48d91ce2015c314bb1",
+      "size_bytes": 5737
+    },
+    {
+      "exists": true,
+      "id": "shell-atomic-integrated-proof",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/shell/atomicInputMethodRoute.js",
+      "sha256": "b5d085eb6cdc75f1ffed50ebcb4dddeb64d92bf0f1103685aa0024658b8fb2b3",
+      "size_bytes": 9703
+    },
+    {
+      "exists": true,
+      "id": "lay-atomic-settlement-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic.rs",
+      "sha256": "0ac32eef663638c826f95a0e0293e9da8eb99377bca30d326b297e4febd73188",
+      "size_bytes": 17211
+    },
+    {
+      "exists": true,
+      "id": "remote-full-route-driver",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh",
+      "sha256": "f86b82106f1e55100a253a20eeb5cfd861b0127827670ad6d534d81732eee83f",
+      "size_bytes": 10143
+    },
+    {
+      "exists": true,
+      "id": "shell-input-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/js/misc/inputMethod.js",
+      "sha256": "7e84931650ccee7920428d22287da6e99763db7f08783a48fdda55fd459e3b37",
+      "size_bytes": 15192
+    },
+    {
+      "exists": true,
+      "id": "lay-engine-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/engine.rs",
+      "sha256": "34d6a194a47066bfffe8b5710ee64f4a8bc6328a718453c9ecdecb3dfc41cc0b",
+      "size_bytes": 13826
+    },
+    {
+      "exists": true,
+      "id": "lay-ibus-event-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/ibus_interface.rs",
+      "sha256": "000fa5e72c4f7e72fb689bed48cc348fd5dc09e63ff9bfab8dc663ee2af05a57",
+      "size_bytes": 15396
+    },
+    {
+      "exists": true,
+      "id": "mutter-atomic-profile-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-text-input.c",
+      "sha256": "5d50a3a9becc31374c52f238729d1874b1cb9c5bfe46e5b90d053cc0cf2d29ca",
+      "size_bytes": 52566
+    },
+    {
+      "exists": true,
+      "id": "installed-lay-engine",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a",
+      "size_bytes": 6423488
+    },
+    {
+      "exists": true,
+      "id": "installed-mutter",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/usr/lib/x86_64-linux-gnu/libmutter-18.so.0.0.0",
+      "sha256": "fec9023139ac8eff93fcc1af90413613cdb526e7f02389dc9d8fe90f7abc81e5",
+      "size_bytes": 2755048
+    },
+    {
+      "exists": true,
+      "id": "installed-shell",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/usr/lib/gnome-shell/libshell-18.so",
+      "sha256": "94e81e3ff3820b3f8454d596c3a9ee7fa437b770b899098db85f15640a7abb73",
+      "size_bytes": 3107408
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 12,
+    "forbidden_side_effect_kinds": [
+      "global_handled_marker_clear",
+      "historical_receipt_rewrite",
+      "installed_file_write",
+      "live_keyboard_signal",
+      "live_session_restart",
+      "local_build",
+      "modifier_release_capture",
+      "native_paired_release",
+      "runtime_deployment",
+      "second_mutation_owner",
+      "second_release_rpc",
+      "unbound_paired_receipt",
+      "unbounded_release_ledger",
+      "unbounded_remote_build"
+    ],
+    "identity_contracts": 4,
+    "invariants": 7,
+    "planned_side_effect_kinds": [
+      "ephemeral_process_start",
+      "filesystem_write",
+      "remote_build",
+      "remote_filesystem_write",
+      "source_edit"
+    ],
+    "preserved_artifacts": 7,
+    "runtime_comparisons": 0,
+    "source_checks": 3,
+    "tests": 15
+  },
+  "manifest_sha256": "6dafd1d8aa0f17aa7d6b551a7f2e8f87b9df70fed342c7fa6a1ad0373f8f7cee",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-shell-atomic-adapter",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/js/misc/inputMethodAtomic.js",
+      "sha256": "d40801329973da6c3e96f35edc2f478ad82c7752f4e245cb01f69904a24e19c0",
+      "size_bytes": 15841
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-lay-atomic-settlement",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic.rs",
+      "sha256": "0ac32eef663638c826f95a0e0293e9da8eb99377bca30d326b297e4febd73188",
+      "size_bytes": 17211
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-full-route-driver",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh",
+      "sha256": "f86b82106f1e55100a253a20eeb5cfd861b0127827670ad6d534d81732eee83f",
+      "size_bytes": 10143
+    }
+  ],
+  "task_id": "LAY_IME_PAIRED_RELEASE_OWNERSHIP_IMPLEMENTATION_V24_2026-08-22",
+  "verdict": "READY_TO_IMPLEMENT"
+}

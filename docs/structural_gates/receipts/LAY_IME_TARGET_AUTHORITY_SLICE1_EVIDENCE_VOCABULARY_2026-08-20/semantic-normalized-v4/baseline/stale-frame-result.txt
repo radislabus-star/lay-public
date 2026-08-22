@@ -1,0 +1,2 @@
+test preedit::tests::background_result_requires_the_current_focus_tail_and_token_identity ... ok
+

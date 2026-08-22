@@ -15,6 +15,21 @@ pub(super) fn type_physical(
     Ok(())
 }
 
+pub(super) fn type_physical_before_boundary(
+    dev: &mut VirtualDevice,
+    physical_text: &str,
+    pause_ms: u64,
+) -> std::io::Result<()> {
+    let mut chars = physical_text.chars().peekable();
+    while let Some(ch) = chars.next() {
+        tap_physical_char(dev, ch)?;
+        if chars.peek().is_some() {
+            sleep(Duration::from_millis(pause_ms));
+        }
+    }
+    Ok(())
+}
+
 pub(super) fn double_shift_manual(dev: &mut VirtualDevice, settle_ms: u64) -> std::io::Result<()> {
     double_shift_manual_after(dev, 200, settle_ms)
 }

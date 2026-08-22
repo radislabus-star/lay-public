@@ -4,18 +4,33 @@ use std::sync::{Arc, Condvar, Mutex, OnceLock};
 
 use lay::keyboard::preferred_layout_for_text;
 
-use super::engine::LayIbusEngine;
+use super::engine::{DeferredLayoutAction, LayIbusEngine};
 use super::trace;
 
 const RU_ENGINE: &str = "lay-ime-ru";
 const US_ENGINE: &str = "lay-ime-us";
 impl LayIbusEngine {
     pub(super) fn sync_layout_after_committed_text(&mut self, text: &str, owner: &'static str) {
+        self.invalidate_input_frame_background_work();
         if !self.config.auto_switch_layout {
             return;
         }
         let target_is_ru = preferred_layout_for_text(text, self.layout_is_ru);
         let target_engine = ime_engine_for_layout(target_is_ru);
+        if self.atomic_speculation {
+            if target_is_ru != self.layout_is_ru {
+                let previous_is_ru = self.layout_is_ru;
+                self.layout_is_ru = target_is_ru;
+                self.publish_tail_handoff();
+                self.deferred_layout_actions
+                    .push(DeferredLayoutAction::BackgroundSwitch {
+                        previous_is_ru,
+                        target_is_ru,
+                        engine: target_engine,
+                    });
+            }
+            return;
+        }
         if target_is_ru == self.layout_is_ru {
             self.publish_tail_handoff();
             trace::record_layout_sync(target_is_ru, target_engine, true);
@@ -40,11 +55,27 @@ impl LayIbusEngine {
     }
 
     fn sync_layout_for_text_blocking(&mut self, text: &str) {
+        self.invalidate_input_frame_background_work();
         if !self.config.auto_switch_layout {
             return;
         }
         let target_is_ru = preferred_layout_for_text(text, self.layout_is_ru);
         let target_engine = ime_engine_for_layout(target_is_ru);
+        if self.atomic_speculation {
+            if target_is_ru != self.layout_is_ru {
+                let previous_is_ru = self.layout_is_ru;
+                self.layout_is_ru = target_is_ru;
+                self.publish_tail_handoff();
+                self.deferred_layout_actions
+                    .push(DeferredLayoutAction::BlockingSwitch {
+                        previous_is_ru,
+                        target_is_ru,
+                        engine: target_engine,
+                        activate_gnome: false,
+                    });
+            }
+            return;
+        }
         self.publish_tail_handoff();
         if target_is_ru == self.layout_is_ru {
             trace::record_layout_sync(target_is_ru, target_engine, true);
@@ -58,10 +89,24 @@ impl LayIbusEngine {
     }
 
     pub(super) fn toggle_layout_from_modifier_hotkey(&mut self) -> bool {
+        self.invalidate_input_frame_background_work();
         let target_is_ru = current_active_ime_layout_is_ru()
             .map(|current_is_ru| !current_is_ru)
             .unwrap_or(!self.layout_is_ru);
         let target_engine = ime_engine_for_layout(target_is_ru);
+        if self.atomic_speculation {
+            let previous_is_ru = self.layout_is_ru;
+            self.layout_is_ru = target_is_ru;
+            self.publish_tail_handoff();
+            self.deferred_layout_actions
+                .push(DeferredLayoutAction::BlockingSwitch {
+                    previous_is_ru,
+                    target_is_ru,
+                    engine: target_engine,
+                    activate_gnome: true,
+                });
+            return true;
+        }
         let ok = activate_gnome_layout_for_ime(target_is_ru)
             .or_else(|_| switch_active_ime_engine(target_engine))
             .is_ok();
@@ -70,6 +115,40 @@ impl LayIbusEngine {
         }
         trace::record_layout_sync(target_is_ru, target_engine, ok);
         ok
+    }
+
+    pub(super) fn apply_deferred_layout_actions(&mut self) {
+        self.atomic_speculation = false;
+        for action in std::mem::take(&mut self.deferred_layout_actions) {
+            match action {
+                DeferredLayoutAction::BackgroundSwitch {
+                    previous_is_ru,
+                    target_is_ru,
+                    engine,
+                } => {
+                    let _ = previous_is_ru;
+                    request_active_ime_engine_switch(target_is_ru, engine);
+                    trace::record_layout_sync_requested(target_is_ru, engine);
+                }
+                DeferredLayoutAction::BlockingSwitch {
+                    previous_is_ru,
+                    target_is_ru,
+                    engine,
+                    activate_gnome,
+                } => {
+                    let result = if activate_gnome {
+                        activate_gnome_layout_for_ime(target_is_ru)
+                            .or_else(|_| switch_active_ime_engine(engine))
+                    } else {
+                        switch_active_ime_engine(engine)
+                    };
+                    let ok = result.is_ok();
+                    self.layout_is_ru = if ok { target_is_ru } else { previous_is_ru };
+                    self.publish_tail_handoff();
+                    trace::record_layout_sync(target_is_ru, engine, ok);
+                }
+            }
+        }
     }
 }
 

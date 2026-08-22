@@ -1,0 +1,92 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "slice6-final-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE6_BOUNDARY_INTERNALIZATION_2026-08-20/final-receipt.json",
+      "sha256": "434b550498875ce88d00727187143562a2a804f2f214a042c0fbb7c5bb7dc546",
+      "size_bytes": 2688
+    },
+    {
+      "exists": true,
+      "id": "authority-paper",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../ime-canonical-target-authority-paper-2026-08-17.md",
+      "sha256": "a08bab05c207fe76313a4eb0e7d025178f88fb5d0cc753539f754a706d5bb824",
+      "size_bytes": 186695
+    },
+    {
+      "exists": true,
+      "id": "text-edit-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/text_edit.rs",
+      "sha256": "0aa3768d6d3c80eb037dd9f13064db81217f55ea31a19f7d819dd2e77ff4e513",
+      "size_bytes": 2275
+    },
+    {
+      "exists": true,
+      "id": "cargo-manifest",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../Cargo.toml",
+      "sha256": "91a3c72265db548d6190f16a0059bcd27174a80b3403302ce1b7ee9b7cb9cc8c",
+      "size_bytes": 2399
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 4,
+    "forbidden_side_effect_kinds": [
+      "automatic_authority_change",
+      "bypass_verifier",
+      "generated_traffic",
+      "layout_mutation",
+      "restart_global_ibus_daemon",
+      "restart_lay_daemon",
+      "rewrite_any_package",
+      "runtime_deployment",
+      "synthetic_fixture",
+      "synthetic_key_output",
+      "text_mutation",
+      "threshold_relaxation",
+      "two_foreground_sync_waits",
+      "weaken_authorized_edit"
+    ],
+    "identity_contracts": 2,
+    "invariants": 6,
+    "planned_side_effect_kinds": [
+      "filesystem_write",
+      "remote_build",
+      "source_edit"
+    ],
+    "preserved_artifacts": 1,
+    "runtime_comparisons": 0,
+    "source_checks": 1,
+    "tests": 8
+  },
+  "manifest_sha256": "e84627f59dcb93ffedb48a58ea21e791b774e6fd5760bb9f7191be43fb93f936",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "text-edit-owner-pinned",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/text_edit.rs",
+      "sha256": "0aa3768d6d3c80eb037dd9f13064db81217f55ea31a19f7d819dd2e77ff4e513",
+      "size_bytes": 2275
+    }
+  ],
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE7A_DURABILITY_MICROPROOF_IMPLEMENTATION_V1_2026-08-20",
+  "verdict": "READY_TO_IMPLEMENT"
+}

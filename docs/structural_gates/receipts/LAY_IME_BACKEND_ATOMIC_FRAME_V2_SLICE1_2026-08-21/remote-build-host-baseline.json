@@ -1,0 +1,45 @@
+{
+  "schema": "lay.remote-build-host-baseline.v1",
+  "task_id": "LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE1_2026-08-21",
+  "observed_at": "2026-08-21T00:18:54+03:00",
+  "host": {
+    "ssh_target": "e@192.168.3.94",
+    "hostname": "e-MEGA-MINI-M1-13th",
+    "machine_id_sha256": "5ac0bb537745673ef80942c2df32d586f5753c85de1c8b2453aa4e7317b77441",
+    "logical_cpu_count": 20,
+    "cpu_model": "13th Gen Intel(R) Core(TM) i9-13900HK"
+  },
+  "load_observation": {
+    "load_1m": 1.46,
+    "load_5m": 1.86,
+    "load_15m": 1.90,
+    "available_bytes_on_home_filesystem": 26167296000
+  },
+  "toolchain": {
+    "gcc": "11.4.0",
+    "make": "4.3",
+    "rsync": "3.2.7",
+    "installed_glib_runtime": "2.72.4-0ubuntu2.9",
+    "apt_candidate_libglib2_0_dev": "2.72.4-0ubuntu2.9",
+    "autoconf_present": false,
+    "automake_present": false,
+    "libtoolize_present": false,
+    "glib_development_headers_present": false
+  },
+  "selected_slice1_build_route": {
+    "sandbox": "/home/e/projects/ibus-lay-atomic-v2-slice1-20260821",
+    "sandbox_was_absent": true,
+    "compile_scope": "pure atomic frame module and its unit test only",
+    "dependency_route": "download the exact Ubuntu libglib2.0-dev candidate without sudo and extract it inside the sandbox",
+    "host_install": false,
+    "full_ibus_build": false
+  },
+  "claim_boundary": {
+    "remote_host_verified": true,
+    "remote_capacity_observed": true,
+    "slice1_dependency_route_identified": true,
+    "source_compiled": false,
+    "tests_passed": false,
+    "installed_runtime_changed": false
+  }
+}

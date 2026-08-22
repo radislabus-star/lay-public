@@ -1,0 +1,77 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "physical-modifier-interface", "role": "interface"},
+    {"id": "source-engine-modifier-observer", "role": "observer"},
+    {"id": "native-observation-committer", "role": "orchestrator"},
+    {"id": "committed-shift-gesture", "role": "producer"},
+    {"id": "bounded-handoff-evidence", "role": "evidence_owner"},
+    {"id": "target-engine-handoff-reconciler", "role": "orchestrator"},
+    {"id": "existing-auto-undo-authorizer", "role": "authorization_owner"},
+    {"id": "atomic-frame-owner", "role": "mutation_owner"},
+    {"id": "layout-focus-observer", "role": "observer"},
+    {"id": "physical-proof-owner", "role": "proof_owner"}
+  ],
+  "edges": [
+    {"id": "publish-interface-observer", "from": "physical-modifier-interface", "relation": "calls", "to": "source-engine-modifier-observer", "events": ["modifier-handoff-publish"]},
+    {"id": "publish-observer-committer", "from": "source-engine-modifier-observer", "relation": "delegates", "to": "native-observation-committer", "events": ["modifier-handoff-publish"]},
+    {"id": "publish-committer-gesture", "from": "native-observation-committer", "relation": "delegates", "to": "committed-shift-gesture", "events": ["modifier-handoff-publish"]},
+
+    {"id": "consume-interface-reconciler", "from": "physical-modifier-interface", "relation": "calls", "to": "target-engine-handoff-reconciler", "events": ["modifier-handoff-consume"]},
+    {"id": "consume-reconciler-authorizer", "from": "target-engine-handoff-reconciler", "relation": "delegates", "to": "existing-auto-undo-authorizer", "events": ["modifier-handoff-consume"]},
+    {"id": "consume-authorizer-frame", "from": "existing-auto-undo-authorizer", "relation": "delegates", "to": "atomic-frame-owner", "events": ["modifier-handoff-consume"]},
+
+    {"id": "authority-gesture-evidence", "from": "committed-shift-gesture", "relation": "produces_for", "to": "bounded-handoff-evidence", "events": ["auto-undo-authority"]},
+    {"id": "authority-evidence-authorizer", "from": "bounded-handoff-evidence", "relation": "passes_to", "to": "existing-auto-undo-authorizer", "events": ["auto-undo-authority"]},
+    {"id": "authority-authorizer-frame", "from": "existing-auto-undo-authorizer", "relation": "authorizes", "to": "atomic-frame-owner", "events": ["auto-undo-authority"]},
+
+    {"id": "observation-interface-layout", "from": "physical-modifier-interface", "relation": "observes", "to": "layout-focus-observer", "events": ["layout-engine-handoff-observation"]},
+    {"id": "proof-layout-physical", "from": "layout-focus-observer", "relation": "proves", "to": "physical-proof-owner", "events": ["physical-double-shift-proof"]}
+  ],
+  "routes": [
+    {
+      "id": "modifier-handoff-publish-execution",
+      "event": "modifier-handoff-publish",
+      "kind": "execution",
+      "entry": "physical-modifier-interface",
+      "terminal": "committed-shift-gesture",
+      "required_roles": ["interface", "observer", "orchestrator", "producer"],
+      "path_cardinality": [{"from": "physical-modifier-interface", "to": "committed-shift-gesture", "min": 1, "max": 1}]
+    },
+    {
+      "id": "modifier-handoff-consume-execution",
+      "event": "modifier-handoff-consume",
+      "kind": "execution",
+      "entry": "physical-modifier-interface",
+      "terminal": "atomic-frame-owner",
+      "required_roles": ["interface", "orchestrator", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "physical-modifier-interface", "to": "atomic-frame-owner", "min": 1, "max": 1}]
+    },
+    {
+      "id": "auto-undo-authority",
+      "event": "auto-undo-authority",
+      "kind": "authority",
+      "entry": "committed-shift-gesture",
+      "terminal": "atomic-frame-owner",
+      "required_roles": ["producer", "evidence_owner", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "committed-shift-gesture", "to": "atomic-frame-owner", "min": 1, "max": 1}]
+    },
+    {
+      "id": "layout-engine-handoff-observation",
+      "event": "layout-engine-handoff-observation",
+      "kind": "observation",
+      "entry": "physical-modifier-interface",
+      "terminal": "layout-focus-observer",
+      "required_roles": ["interface", "observer"]
+    },
+    {
+      "id": "physical-double-shift-proof",
+      "event": "physical-double-shift-proof",
+      "kind": "proof",
+      "entry": "layout-focus-observer",
+      "terminal": "physical-proof-owner",
+      "required_roles": ["observer", "proof_owner"]
+    }
+  ]
+}

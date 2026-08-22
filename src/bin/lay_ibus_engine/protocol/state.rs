@@ -16,7 +16,16 @@ pub(crate) struct PendingImeAutoUndoRetry {
     pub(crate) requested_at: Instant,
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Clone)]
+pub(crate) struct ShiftGestureHandoff {
+    pub(crate) source_path: String,
+    pub(crate) shift_active: bool,
+    pub(crate) shift_pressed_at: Option<Instant>,
+    pub(crate) shift_used_as_modifier: bool,
+    pub(crate) last_shift_release_at: Option<Instant>,
+}
+
+#[derive(Debug, Clone, Default)]
 pub(crate) struct SharedState {
     pub(crate) active_path: Option<String>,
     pub(crate) handoff_tail_buffer: String,
@@ -26,6 +35,7 @@ pub(crate) struct SharedState {
     pub(crate) preserve_active_path_until: Option<Instant>,
     pub(crate) pending_auto_undo: Option<PendingImeAutoUndo>,
     pub(crate) pending_auto_undo_retry: Option<PendingImeAutoUndoRetry>,
+    pub(crate) shift_gesture_handoff: Option<ShiftGestureHandoff>,
     pub(crate) next_engine_id: u32,
 }
 

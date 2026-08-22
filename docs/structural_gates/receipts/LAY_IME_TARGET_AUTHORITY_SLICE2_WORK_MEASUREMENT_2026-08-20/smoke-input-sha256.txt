@@ -1,0 +1,6 @@
+dc57d3caebe35483715b314b632f1e51bf5bece61055ea4a5f2542ceb90a5b94  /home/e/build/lay-ime-boundary-layout-proof-20260815/target/release/lay-nanda-wave-train
+40fb6a9f0d92c3c7502e47f9c70230d9b86020f622b08a5c799342f13e09ce44  /home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m
+bf5a1619a89038466ef786305cf35eda5f4af5b9f12b9140f7d3cac407e2f2a7  /home/e/build/lay-productive-v90-active-20260816/input/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.v9.bin
+cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b  /home/e/.local/share/lay/nanda_wave/l2/LAY-L2-RU-FULL-v13.bin
+b5b24f952e83e1e9738db0f89a9d2e9e16eaf7af754990114a562d42be3c060b  /home/e/build/lay-slice2-work-measurement-20260820/source/data/morphology/productive_v1_ru_axis_schema.json
+13e2db3470006303de3d87b2f999988db1661157760fec447e54ac37d5b495ea  /home/e/build/lay-productive-v90-active-20260816/work/full-v1-v90-active-v9-v13/frozen-v64-hypothesis-manifest-v1.json

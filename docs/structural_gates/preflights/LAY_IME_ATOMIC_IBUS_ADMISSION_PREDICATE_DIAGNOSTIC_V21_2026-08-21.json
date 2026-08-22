@@ -1,0 +1,266 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_ATOMIC_IBUS_ADMISSION_PREDICATE_DIAGNOSTIC_V21_2026-08-21",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "ibus-input-context-source",
+      "kind": "file",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/bus/inputcontext.c",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 150019,
+        "sha256": "4081c8277ec9308b85bdd8e32af8a36da69278bbd35de2c66cde03fb13ecf90c"
+      }
+    },
+    {
+      "id": "v20-proxy-pass-evidence",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/atomic-full-route-v20-proxy-call-observer.log",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 7732,
+        "sha256": "7ee84dfe4afb6f885f3a5dce6dd63a8833cf3d28c2461ce82e5a19acaab8f72d"
+      }
+    },
+    {
+      "id": "shell-v20-observer",
+      "kind": "file",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/shell/atomicInputMethodRoute.js",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 7784,
+        "sha256": "3ef07b32404c9e76da6e6df28eae64e1ec4c48f273ea878a1f9ba359f854c05f"
+      }
+    },
+    {
+      "id": "proof-runner",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 10143,
+        "sha256": "f86b82106f1e55100a253a20eeb5cfd861b0127827670ad6d534d81732eee83f"
+      }
+    },
+    {
+      "id": "architecture-paper",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/ime-backend-atomic-frame-v2-2026-08-20.md",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 140154,
+        "sha256": "09eeff1136ff8543a2a5a9af0b9e7e7e57c37d6837274f56be425072a57c1291"
+      }
+    },
+    {
+      "id": "installed-lay-engine",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 6423488,
+        "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a"
+      }
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "classify-ibus-admission-predicates", "kind": "diagnostic_source_edit"},
+      {"id": "sync-one-ibus-source", "kind": "remote_filesystem_write"},
+      {"id": "rebuild-scoped-ibus-daemon", "kind": "remote_build"},
+      {"id": "run-one-isolated-event", "kind": "ephemeral_process_start"},
+      {"id": "preserve-v21-evidence", "kind": "filesystem_write"}
+    ],
+    "forbidden": [
+      "local_build",
+      "runtime_deployment",
+      "installed_file_write",
+      "live_session_restart",
+      "live_keyboard_signal",
+      "physical_user_text_mutation",
+      "shell_mutter_lay_source_edit",
+      "admission_semantics_change",
+      "predicate_reordering",
+      "second_atomic_call",
+      "diagnostic_latency_promoted_to_pass",
+      "orphaned_test_process",
+      "uncontrolled_remote_build"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "pinned-ibus-input-context",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/bus/inputcontext.c",
+      "sha256": "4081c8277ec9308b85bdd8e32af8a36da69278bbd35de2c66cde03fb13ecf90c",
+      "forbidden_effect_patterns": [
+        {"effect": "runtime_deployment", "regex": "(?:systemctl|dpkg|apt-get|gnome-extensions)"},
+        {"effect": "installed_file_write", "regex": "(?:replace_contents|set_contents).{0,100}/(?:usr|home/ubu/[.]local)"},
+        {"effect": "live_session_restart", "regex": "(?:restart|kill|signal).{0,80}(?:gnome|ibus)"},
+        {"effect": "physical_user_text_mutation", "regex": "/dev/(?:input|uinput)|(?:ydotool|xdotool|wtype)\\b"},
+        {"effect": "shell_mutter_lay_source_edit", "regex": "diagnosticEditsShellMutterOrLay"},
+        {"effect": "admission_semantics_change", "regex": "diagnosticBroadensAtomicAdmission"},
+        {"effect": "predicate_reordering", "regex": "diagnosticReordersAtomicPredicates"},
+        {"effect": "second_atomic_call", "regex": "diagnosticCallsAtomicTwice"},
+        {"effect": "diagnostic_latency_promoted_to_pass", "regex": "diagnosticRunGrantsLatencyPass"},
+        {"effect": "local_build", "regex": "(?:cargo|meson|ninja|make)\\s"}
+      ]
+    },
+    {
+      "id": "pinned-proof-runner",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh",
+      "sha256": "f86b82106f1e55100a253a20eeb5cfd861b0127827670ad6d534d81732eee83f",
+      "forbidden_effect_patterns": [
+        {"effect": "runtime_deployment", "regex": "(?:systemctl|dpkg|apt-get|gnome-extensions).{0,80}(?:install|enable|restart|reload)"},
+        {"effect": "installed_file_write", "regex": "(?:cp|install|rsync).{0,120}/(?:usr|home/ubu/[.]local)/(?:bin|lib|share)"},
+        {"effect": "live_session_restart", "regex": "(?:gnome-session-quit|loginctl.{0,40}terminate|systemctl.{0,40}restart.{0,40}(?:gnome|ibus))"},
+        {"effect": "live_keyboard_signal", "regex": "(?:kill|signal|restart).{0,100}(?:live[-_ ]?(?:ibus|gnome|mutter)|user[-_ ]?session)"},
+        {"effect": "physical_user_text_mutation", "regex": "/dev/(?:input|uinput)|(?:ydotool|xdotool|wtype)\\b"},
+        {"effect": "uncontrolled_remote_build", "regex": "(?:ninja|meson compile|make).{0,80}(?:-j ?20|--jobs=20).{0,80}(?:all|install)"},
+        {"effect": "orphaned_test_process", "regex": "leave_task_owned_process_running"}
+      ]
+    },
+    {
+      "id": "pinned-shell-observer",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/shell/atomicInputMethodRoute.js",
+      "sha256": "3ef07b32404c9e76da6e6df28eae64e1ec4c48f273ea878a1f9ba359f854c05f",
+      "forbidden_effect_patterns": [
+        {"effect": "second_atomic_call", "regex": "(?:context[.]call|ProcessKeyEventAtomicV1|call_sync|g_dbus_connection_call)"},
+        {"effect": "physical_user_text_mutation", "regex": "/dev/(?:input|uinput)|(?:ydotool|xdotool|wtype)\\b"},
+        {"effect": "diagnostic_latency_promoted_to_pass", "regex": "diagnosticRunGrantsLatencyPass"}
+      ]
+    }
+  ],
+  "state_machine": {
+    "initial_state": "V20_EVIDENCE_PINNED",
+    "steps": [
+      {
+        "id": "instrument-sequential-predicate-classifier",
+        "from": "V20_EVIDENCE_PINNED",
+        "to": "DIAGNOSTIC_SOURCE_READY",
+        "mutates": true,
+        "failure_state": "EDIT_FAILED_RETAINED",
+        "cleanup": "retain the bounded diff; transfer and build nothing after a source-scope failure",
+        "preserves": ["architecture-contract", "installed-runtime"],
+        "test_id": "source-scope-parity"
+      },
+      {
+        "id": "scoped-remote-build",
+        "from": "DIAGNOSTIC_SOURCE_READY",
+        "to": "DIAGNOSTIC_BINARY_READY",
+        "mutates": true,
+        "failure_state": "REMOTE_BUILD_FAILED_RETAINED",
+        "cleanup": "terminate only the scoped build process and retain its log; install nothing",
+        "preserves": ["architecture-contract", "installed-runtime"],
+        "test_id": "remote-build-fault"
+      },
+      {
+        "id": "run-and-record-one-event",
+        "from": "DIAGNOSTIC_BINARY_READY",
+        "to": "RECORDED",
+        "mutates": true,
+        "failure_state": "ROUTE_UNRESOLVED",
+        "cleanup": "terminate the isolated process lineage, require zero leftovers and retain all evidence",
+        "preserves": ["installed-runtime"],
+        "test_id": "process-cleanup"
+      }
+    ],
+    "terminal_states": [
+      "RECORDED",
+      "EDIT_FAILED_RETAINED",
+      "REMOTE_BUILD_FAILED_RETAINED",
+      "ROUTE_UNRESOLVED"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "architecture-contract",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/ime-backend-atomic-frame-v2-2026-08-20.md",
+      "baseline_check_id": "architecture-paper",
+      "policy": "read_only_during_diagnostic_then_append_measured_result",
+      "cursor_policy": "not_applicable",
+      "rollback_policy": "retain every measured V20 and V21 result"
+    },
+    {
+      "id": "installed-runtime",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "baseline_check_id": "installed-lay-engine",
+      "policy": "observed_only_no_write",
+      "cursor_policy": "not_applicable",
+      "rollback_policy": "V21 cannot install or restart any live runtime"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "predicate-order-parity",
+      "producer": "V20 compound IBus admission predicate",
+      "consumer": "V21 sequential classifier",
+      "comparison": "identical term order, identical short-circuit behavior and exactly one call to atomic_consume_prior_receipt",
+      "test_id": "predicate-order-parity"
+    },
+    {
+      "id": "isolated-binary-source-parity",
+      "producer": "local V21 IBus inputcontext.c",
+      "consumer": "remote scoped IBus daemon build",
+      "comparison": "exact SHA-256 source parity before the scoped build",
+      "test_id": "remote-source-parity"
+    }
+  ],
+  "runtime_comparisons": [
+    {
+      "id": "remote-load-admission",
+      "source": "remote host immediately before scoped build and proof",
+      "comparison": "exact_stable_projection",
+      "reason": "build only the IBus daemon target on the 20-CPU proof host",
+      "stable_fields": ["logical_cpu_count"],
+      "expected_to_change_fields": ["load_average", "build_pid", "build_cpu_percent"],
+      "observed_not_compared_fields": ["page_cache", "unrelated_service_rss"],
+      "test_id": "remote-load-check"
+    },
+    {
+      "id": "isolated-process-cleanup",
+      "source": "task-owned remote proof processes before and after V21",
+      "comparison": "exact_stable_projection",
+      "reason": "diagnosis cannot leave a compositor, bus or Lay engine alive",
+      "stable_fields": ["leftover_process_count"],
+      "expected_to_change_fields": ["ephemeral_pid", "temporary_bus_address"],
+      "observed_not_compared_fields": ["system_load", "page_cache"],
+      "test_id": "process-cleanup-parity"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "observation-only",
+      "statement": "V21 records the first false admission term but preserves the original branch result and all state mutations",
+      "test_id": "source-scope-parity"
+    },
+    {
+      "id": "single-consume",
+      "statement": "atomic_consume_prior_receipt is evaluated at most once and at the same short-circuit position as V20",
+      "test_id": "predicate-order-parity"
+    },
+    {
+      "id": "no-authority-expansion",
+      "statement": "V21 grants no runtime, deployment or latency authority",
+      "test_id": "claim-boundary"
+    },
+    {
+      "id": "no-leftovers",
+      "statement": "all scoped build and isolated proof processes terminate",
+      "test_id": "process-cleanup"
+    }
+  ],
+  "tests": [
+    {"id": "source-scope-parity", "kind": "parity", "expected": "only IBus inputcontext diagnostic classification changes; return values and downstream calls remain byte-equivalent in control flow"},
+    {"id": "predicate-order-parity", "kind": "parity", "expected": "all thirteen admission terms retain order and short-circuit semantics, including one receipt-consumption call"},
+    {"id": "remote-source-parity", "kind": "parity", "expected": "local and remote V21 inputcontext.c hashes match before build"},
+    {"id": "remote-load-check", "kind": "integration", "expected": "20-CPU host has capacity for one scoped IBus daemon rebuild"},
+    {"id": "remote-build-fault", "kind": "fault_injection", "expected": "build failure changes no installed or live runtime and leaves no build process"},
+    {"id": "first-rejection-term", "kind": "integration", "expected": "exactly one first-rejection marker names the earliest false term for the first event"},
+    {"id": "claim-boundary", "kind": "parity", "expected": "diagnostic build and timings are not promoted to runtime, deployment or latency PASS"},
+    {"id": "process-cleanup", "kind": "fault_injection", "expected": "failed or successful V21 proof leaves zero task-owned processes after cleanup"},
+    {"id": "process-cleanup-parity", "kind": "parity", "expected": "task-owned process count is zero before build and after proof cleanup"}
+  ]
+}

@@ -1,0 +1,2049 @@
+{
+  "receipt_count": 49,
+  "valid_execution_count": 49,
+  "pass_count": 46,
+  "fail_count": 3,
+  "invalid_count": 0,
+  "receipts": [
+    {
+      "planned": {
+        "id": "active-space-no-completion-autocorrect",
+        "series": "baseline49",
+        "denominator": "active_composition_space",
+        "source_test": "src/bin/lay_ibus_engine/composition_commit.rs::completion_with_space_does_not_trigger_autocorrect",
+        "target_kind": "bin",
+        "target": "lay-ibus-engine",
+        "compiled_selector": "composition_commit::tests::completion_with_space_does_not_trigger_autocorrect",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "physical active composition is committed with one Space without automatic completion",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--bin",
+          "lay-ibus-engine",
+          "composition_commit::tests::completion_with_space_does_not_trigger_autocorrect",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 60379,
+        "sha256": "d54edf922e9bf267252fbeed1464cbba8bd9c8e2838f3a40bc9a2c8f97b08bc9"
+      }
+    },
+    {
+      "planned": {
+        "id": "display-cancel-does-not-mint-space",
+        "series": "baseline49",
+        "denominator": "display",
+        "source_test": "src/bin/lay_ibus_engine/preedit/tests.rs::display_cancellation_does_not_change_space_authority_identity",
+        "target_kind": "bin",
+        "target": "lay-ibus-engine",
+        "compiled_selector": "preedit::tests::display_cancellation_does_not_change_space_authority_identity",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "display cancellation grants no correction authority",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--bin",
+          "lay-ibus-engine",
+          "preedit::tests::display_cancellation_does_not_change_space_authority_identity",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 60381,
+        "sha256": "bdbe338645dea8d903bc0487c25b4bd92dcd2943d1a5c184678d18fec5abf83f"
+      }
+    },
+    {
+      "planned": {
+        "id": "display-current-frame-only",
+        "series": "baseline49",
+        "denominator": "display",
+        "source_test": "src/bin/lay_ibus_engine/preedit/tests.rs::background_result_requires_the_current_focus_tail_and_token_identity",
+        "target_kind": "bin",
+        "target": "lay-ibus-engine",
+        "compiled_selector": "preedit::tests::background_result_requires_the_current_focus_tail_and_token_identity",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "mismatched focus tail or token result is discarded",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--bin",
+          "lay-ibus-engine",
+          "preedit::tests::background_result_requires_the_current_focus_tail_and_token_identity",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 60440,
+        "sha256": "a03d9722ca512845b8caa92f00bbe24adaae4f3d1c58148907661a37b7d7d65d"
+      }
+    },
+    {
+      "planned": {
+        "id": "display-frame-identity",
+        "series": "baseline49",
+        "denominator": "display",
+        "source_test": "src/bin/lay_ibus_engine/precognition_worker.rs::result_identity_binds_every_visible_input_dimension",
+        "target_kind": "bin",
+        "target": "lay-ibus-engine",
+        "compiled_selector": "precognition_worker::tests::result_identity_binds_every_visible_input_dimension",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "publication identity changes for every visible frame dimension",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--bin",
+          "lay-ibus-engine",
+          "precognition_worker::tests::result_identity_binds_every_visible_input_dimension",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 60435,
+        "sha256": "056bf4a54262eca0314e3f9dfee94df0e9b4999efa7eab27db3d3a212d378b68"
+      }
+    },
+    {
+      "planned": {
+        "id": "display-payload-before-visibility",
+        "series": "baseline49",
+        "denominator": "display",
+        "source_test": "src/bin/lay_ibus_engine/preedit/tests.rs::preedit_publisher_installs_payload_before_showing_it",
+        "target_kind": "bin",
+        "target": "lay-ibus-engine",
+        "compiled_selector": "preedit::tests::preedit_publisher_installs_payload_before_showing_it",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "visible bytes and receipt payload are from one generation",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--bin",
+          "lay-ibus-engine",
+          "preedit::tests::preedit_publisher_installs_payload_before_showing_it",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 60370,
+        "sha256": "f3b0019731384d5dffe13ae9a1b40832e2b4ca14d6f09681c827478f8e2f46aa"
+      }
+    },
+    {
+      "planned": {
+        "id": "display-retarget-without-blank",
+        "series": "baseline49",
+        "denominator": "display",
+        "source_test": "src/bin/lay_ibus_engine/preedit/tests.rs::invalidated_target_retargets_to_fresh_top_candidate_without_blank_frame",
+        "target_kind": "bin",
+        "target": "lay-ibus-engine",
+        "compiled_selector": "preedit::tests::invalidated_target_retargets_to_fresh_top_candidate_without_blank_frame",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "invalidated target cannot publish and fresh frame remains renderable",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--bin",
+          "lay-ibus-engine",
+          "preedit::tests::invalidated_target_retargets_to_fresh_top_candidate_without_blank_frame",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 60443,
+        "sha256": "0a02042f1a9dff40789db42209c74f7064e314fa5462c319a58688cccdcc82a0"
+      }
+    },
+    {
+      "planned": {
+        "id": "false-split-ambiguous-short-shift",
+        "series": "baseline49",
+        "denominator": "boundary_false_split",
+        "source_test": "src/correction_core/tests.rs::ambiguous_short_boundary_shift_is_suggestion_only",
+        "target_kind": "lib",
+        "target": "lib",
+        "compiled_selector": "correction_core::tests::ambiguous_short_boundary_shift_is_suggestion_only",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "ambiguity cannot become automatic authority",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--lib",
+          "correction_core::tests::ambiguous_short_boundary_shift_is_suggestion_only",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 101,
+      "observed_test_count": 1,
+      "observed_status": "FAIL",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 55873,
+        "sha256": "d825561661f59c50eb5717ea4ec648c257a8fc22a11b49456e710cad39b4ea26"
+      }
+    },
+    {
+      "planned": {
+        "id": "false-split-clean-two-words",
+        "series": "baseline49",
+        "denominator": "boundary_false_split",
+        "source_test": "src/correction_core/tests.rs::boundary_shift_cannot_apply_on_clean_two_word_surfaces",
+        "target_kind": "lib",
+        "target": "lib",
+        "compiled_selector": "correction_core::tests::boundary_shift_cannot_apply_on_clean_two_word_surfaces",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "clean existing boundary is preserved",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--lib",
+          "correction_core::tests::boundary_shift_cannot_apply_on_clean_two_word_surfaces",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 73092,
+        "sha256": "051fe7bf2f9e10ebcfe20512582dcfc23841e5d7360decb74ba99d2ff23b669c"
+      }
+    },
+    {
+      "planned": {
+        "id": "false-split-known-forms",
+        "series": "baseline49",
+        "denominator": "boundary_false_split",
+        "source_test": "src/nanda_wave/l2/tests.rs::boundary_cell_does_not_split_known_russian_word_forms",
+        "target_kind": "lib",
+        "target": "lib",
+        "compiled_selector": "nanda_wave::l2::tests::boundary_cell_does_not_split_known_russian_word_forms",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "known inflected forms remain whole",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--lib",
+          "nanda_wave::l2::tests::boundary_cell_does_not_split_known_russian_word_forms",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 35832,
+        "sha256": "90372257a53397896674f3552f5d0e7736da39ecc1f0bcefb56eb20136f2e087"
+      }
+    },
+    {
+      "planned": {
+        "id": "false-split-known-word-in-phrase",
+        "series": "baseline49",
+        "denominator": "boundary_false_split",
+        "source_test": "src/correction_core/tests.rs::boundary_gate_does_not_split_known_word_inside_phrase",
+        "target_kind": "lib",
+        "target": "lib",
+        "compiled_selector": "correction_core::tests::boundary_gate_does_not_split_known_word_inside_phrase",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "phrase context cannot create a false split",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--lib",
+          "correction_core::tests::boundary_gate_does_not_split_known_word_inside_phrase",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 33972,
+        "sha256": "3a7bbc1fa74bdd3cd21145f654f30d83817a77083a513cc6d61ce917809e28db"
+      }
+    },
+    {
+      "planned": {
+        "id": "false-split-known-word",
+        "series": "baseline49",
+        "denominator": "boundary_false_split",
+        "source_test": "src/correction_core/tests.rs::boundary_gate_does_not_split_known_single_word",
+        "target_kind": "lib",
+        "target": "lib",
+        "compiled_selector": "correction_core::tests::boundary_gate_does_not_split_known_single_word",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "known whole word is preserved",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--lib",
+          "correction_core::tests::boundary_gate_does_not_split_known_single_word",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 33965,
+        "sha256": "258d02995723efcb21180695d9450ae2ddbc4e420b39621110db0e5b23a8f4a6"
+      }
+    },
+    {
+      "planned": {
+        "id": "false-split-non-boundary-source",
+        "series": "baseline49",
+        "denominator": "boundary_false_split",
+        "source_test": "src/correction_core/tests.rs::boundary_gate_rejects_known_word_split_from_non_boundary_candidate",
+        "target_kind": "lib",
+        "target": "lib",
+        "compiled_selector": "correction_core::tests::boundary_gate_rejects_known_word_split_from_non_boundary_candidate",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "source label cannot impersonate Boundary geometry",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--lib",
+          "correction_core::tests::boundary_gate_rejects_known_word_split_from_non_boundary_candidate",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 101,
+      "observed_test_count": 1,
+      "observed_status": "FAIL",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 34462,
+        "sha256": "c72a784965e45968d5120855f0fdd93a2d0bbe6ae6e7d6d9c761b8422dcb99e6"
+      }
+    },
+    {
+      "planned": {
+        "id": "false-split-preposition-guess",
+        "series": "baseline49",
+        "denominator": "boundary_false_split",
+        "source_test": "src/nanda_wave/l2/tests.rs::boundary_cell_does_not_split_multi_letter_preposition_guesses",
+        "target_kind": "lib",
+        "target": "lib",
+        "compiled_selector": "nanda_wave::l2::tests::boundary_cell_does_not_split_multi_letter_preposition_guesses",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "plausible prefix alone is insufficient",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--lib",
+          "nanda_wave::l2::tests::boundary_cell_does_not_split_multi_letter_preposition_guesses",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 36187,
+        "sha256": "8f860930f591a94d8cc49bf8f25ebadc8c9f15903c25a081b8816863b0aa638f"
+      }
+    },
+    {
+      "planned": {
+        "id": "false-split-short-ending",
+        "series": "baseline49",
+        "denominator": "boundary_false_split",
+        "source_test": "src/nanda_wave/l2/tests.rs::boundary_cell_does_not_split_clean_words_with_short_endings",
+        "target_kind": "lib",
+        "target": "lib",
+        "compiled_selector": "nanda_wave::l2::tests::boundary_cell_does_not_split_clean_words_with_short_endings",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "short ending shape cannot override clean preservation",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--lib",
+          "nanda_wave::l2::tests::boundary_cell_does_not_split_clean_words_with_short_endings",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 34431,
+        "sha256": "e85913d99990358db83609f82e4489326b81ee7579be8b51145baf3909530147"
+      }
+    },
+    {
+      "planned": {
+        "id": "false-split-unknown-short-tail",
+        "series": "baseline49",
+        "denominator": "boundary_false_split",
+        "source_test": "src/correction_core/tests.rs::boundary_gate_rejects_short_function_split_with_unknown_tail",
+        "target_kind": "lib",
+        "target": "lib",
+        "compiled_selector": "correction_core::tests::boundary_gate_rejects_short_function_split_with_unknown_tail",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "both sides require exact grounding",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--lib",
+          "correction_core::tests::boundary_gate_rejects_short_function_split_with_unknown_tail",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 33979,
+        "sha256": "507ff1e1abd50d8a660d89724364b1a28b08c046b3fc968f75847601bfe261f5"
+      }
+    },
+    {
+      "planned": {
+        "id": "false-split-weak-right-tail",
+        "series": "baseline49",
+        "denominator": "boundary_false_split",
+        "source_test": "src/nanda_wave/l2/tests.rs::boundary_cell_does_not_birth_short_fragment_split_from_weak_right_tail",
+        "target_kind": "lib",
+        "target": "lib",
+        "compiled_selector": "nanda_wave::l2::tests::boundary_cell_does_not_birth_short_fragment_split_from_weak_right_tail",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "weak fragment is not exact grounding",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--lib",
+          "nanda_wave::l2::tests::boundary_cell_does_not_birth_short_fragment_split_from_weak_right_tail",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 34631,
+        "sha256": "c9b9bae1aca460110f81e7cb572f06008d2ddf682f1745c469c9589c6b41163f"
+      }
+    },
+    {
+      "planned": {
+        "id": "rollback-awaits-snapshot",
+        "series": "baseline49",
+        "denominator": "rollback",
+        "source_test": "src/bin/lay_ibus_engine/tail_memory.rs::early_stale_postcondition_waits_for_committed_surrounding_text",
+        "target_kind": "bin",
+        "target": "lay-ibus-engine",
+        "compiled_selector": "tail_memory::tests::early_stale_postcondition_waits_for_committed_surrounding_text",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "early observation defers without falling through to manual toggle",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--bin",
+          "lay-ibus-engine",
+          "tail_memory::tests::early_stale_postcondition_waits_for_committed_surrounding_text",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 60384,
+        "sha256": "fc12f3ed2aa11178c642f3bff1862a026dbe23769454d77118f423a680b1d6f7"
+      }
+    },
+    {
+      "planned": {
+        "id": "rollback-backend-error-retains",
+        "series": "baseline49",
+        "denominator": "rollback",
+        "source_test": "tests/text_mutation_monopoly_contract.rs::ime_auto_undo_restores_pending_snapshot_on_backend_error",
+        "target_kind": "test",
+        "target": "text_mutation_monopoly_contract",
+        "compiled_selector": "ime_auto_undo_restores_pending_snapshot_on_backend_error",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "backend refusal restores the exact pending receipt",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--test",
+          "text_mutation_monopoly_contract",
+          "ime_auto_undo_restores_pending_snapshot_on_backend_error",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 61176,
+        "sha256": "e3398ffcbeec885de79ba0df7aead15daac677f5fd3efb05f5f2a043fd09dc4c"
+      }
+    },
+    {
+      "planned": {
+        "id": "rollback-causal-snapshot",
+        "series": "baseline49",
+        "denominator": "rollback",
+        "source_test": "src/bin/lay_ibus_engine/tail_memory.rs::pending_ime_auto_undo_accepts_exact_causal_precondition_snapshot",
+        "target_kind": "bin",
+        "target": "lay-ibus-engine",
+        "compiled_selector": "tail_memory::tests::pending_ime_auto_undo_accepts_exact_causal_precondition_snapshot",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "only the exact causal postcondition authorizes inverse edit",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--bin",
+          "lay-ibus-engine",
+          "tail_memory::tests::pending_ime_auto_undo_accepts_exact_causal_precondition_snapshot",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 60440,
+        "sha256": "7f727864e0813429dd69a2014643de8cda3fb7cfa29458b7a9a084ab7ce10ff0"
+      }
+    },
+    {
+      "planned": {
+        "id": "rollback-changed-tail-reject",
+        "series": "baseline49",
+        "denominator": "rollback",
+        "source_test": "src/bin/lay_ibus_engine/tail_memory.rs::pending_ime_auto_undo_rejects_a_changed_visible_tail",
+        "target_kind": "bin",
+        "target": "lay-ibus-engine",
+        "compiled_selector": "tail_memory::tests::pending_ime_auto_undo_rejects_a_changed_visible_tail",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "changed visible tail invalidates rollback",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--bin",
+          "lay-ibus-engine",
+          "tail_memory::tests::pending_ime_auto_undo_rejects_a_changed_visible_tail",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 60374,
+        "sha256": "4257eeb1cb8c7e625fdc082d0b347a7a0f87128842d4f958ff145f586b41df46"
+      }
+    },
+    {
+      "planned": {
+        "id": "rollback-exact-original",
+        "series": "baseline49",
+        "denominator": "rollback",
+        "source_test": "src/bin/lay_ibus_engine/tail_memory.rs::pending_ime_auto_undo_restores_exact_original_surface",
+        "target_kind": "bin",
+        "target": "lay-ibus-engine",
+        "compiled_selector": "tail_memory::tests::pending_ime_auto_undo_restores_exact_original_surface",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "rollback restores exact pre-autocorrection bytes",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--bin",
+          "lay-ibus-engine",
+          "tail_memory::tests::pending_ime_auto_undo_restores_exact_original_surface",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 60375,
+        "sha256": "6bbd3209ff545f07df9aa4effbded6a16a9fd3b31bbac93747f2b99951a2ea13"
+      }
+    },
+    {
+      "planned": {
+        "id": "rollback-priority",
+        "series": "baseline49",
+        "denominator": "rollback",
+        "source_test": "tests/typing_transition_authority_contract.rs::double_shift_exact_auto_undo_is_a_protected_first_priority_contract",
+        "target_kind": "test",
+        "target": "typing_transition_authority_contract",
+        "compiled_selector": "double_shift_exact_auto_undo_is_a_protected_first_priority_contract",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "pending autocorrection rollback is checked before manual layout toggle",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--test",
+          "typing_transition_authority_contract",
+          "double_shift_exact_auto_undo_is_a_protected_first_priority_contract",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 61251,
+        "sha256": "ac1c1aa50027d46e010eb3079f2a1ef155a1cf0750c763a87a9cb1ee16133ff1"
+      }
+    },
+    {
+      "planned": {
+        "id": "rollback-unrelated-snapshot-reject",
+        "series": "baseline49",
+        "denominator": "rollback",
+        "source_test": "src/bin/lay_ibus_engine/tail_memory.rs::pending_ime_auto_undo_rejects_unrelated_surrounding_snapshot",
+        "target_kind": "bin",
+        "target": "lay-ibus-engine",
+        "compiled_selector": "tail_memory::tests::pending_ime_auto_undo_rejects_unrelated_surrounding_snapshot",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "unrelated visible state cannot be mutated",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--bin",
+          "lay-ibus-engine",
+          "tail_memory::tests::pending_ime_auto_undo_rejects_unrelated_surrounding_snapshot",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 60382,
+        "sha256": "f774ac6027e16605995a9607f3dd5f9b90aef53391c2d4632f5042eda33666d4"
+      }
+    },
+    {
+      "planned": {
+        "id": "space-invalidated-no-publication",
+        "series": "baseline49",
+        "denominator": "committed_space",
+        "source_test": "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs::invalidated_identity_cannot_publish_or_be_consumed",
+        "target_kind": "bin",
+        "target": "lay-ibus-engine",
+        "compiled_selector": "space_autocorrect_prefetch::tests::invalidated_identity_cannot_publish_or_be_consumed",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "invalidated frame cannot publish or mutate",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--bin",
+          "lay-ibus-engine",
+          "space_autocorrect_prefetch::tests::invalidated_identity_cannot_publish_or_be_consumed",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 60387,
+        "sha256": "357abe80797b211a6d2a3320d7a8142e18e36beb2a77378b8c9bf90d945b0b3a"
+      }
+    },
+    {
+      "planned": {
+        "id": "space-latest-frame-wins",
+        "series": "baseline49",
+        "denominator": "committed_space",
+        "source_test": "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs::later_frame_supersedes_desired_work_without_parallel_identity",
+        "target_kind": "bin",
+        "target": "lay-ibus-engine",
+        "compiled_selector": "space_autocorrect_prefetch::tests::later_frame_supersedes_desired_work_without_parallel_identity",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "supersession creates no parallel authority",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--bin",
+          "lay-ibus-engine",
+          "space_autocorrect_prefetch::tests::later_frame_supersedes_desired_work_without_parallel_identity",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 60452,
+        "sha256": "119f3ed65ccec4b1c3042330306ce638b66df699d818a6c37853abaa4eb73a6e"
+      }
+    },
+    {
+      "planned": {
+        "id": "space-matching-inflight-lease",
+        "series": "baseline49",
+        "denominator": "committed_space",
+        "source_test": "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs::take_waits_for_matching_inflight_generation_within_budget",
+        "target_kind": "bin",
+        "target": "lay-ibus-engine",
+        "compiled_selector": "space_autocorrect_prefetch::tests::take_waits_for_matching_inflight_generation_within_budget",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "only exact matching generation may be consumed within the fixed wait",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--bin",
+          "lay-ibus-engine",
+          "space_autocorrect_prefetch::tests::take_waits_for_matching_inflight_generation_within_budget",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 60394,
+        "sha256": "af11d66de36b9121e0d79d06861a3df8c55a21fbf390cac3fabe255bdaae388f"
+      }
+    },
+    {
+      "planned": {
+        "id": "space-package-reload-invalidates",
+        "series": "baseline49",
+        "denominator": "committed_space",
+        "source_test": "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs::package_generation_change_prevents_lease_publication",
+        "target_kind": "bin",
+        "target": "lay-ibus-engine",
+        "compiled_selector": "space_autocorrect_prefetch::tests::package_generation_change_prevents_lease_publication",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "old package generation cannot mint a lease",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--bin",
+          "lay-ibus-engine",
+          "space_autocorrect_prefetch::tests::package_generation_change_prevents_lease_publication",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 60337,
+        "sha256": "d9bc891e847fa2aa789e22209c9b4cb34e7ccab3b53058db6abfe6acffba08f0"
+      }
+    },
+    {
+      "planned": {
+        "id": "space-shared-decision-core",
+        "series": "baseline49",
+        "denominator": "committed_space",
+        "source_test": "src/bin/lay_ibus_engine/managed.rs::managed_space_uses_shared_decision_core_for_verified_token_transitions",
+        "target_kind": "bin",
+        "target": "lay-ibus-engine",
+        "compiled_selector": "managed::word_boundary_route_contract::managed_space_uses_shared_decision_core_for_verified_token_transitions",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "one DecisionCore owns automatic policy",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--bin",
+          "lay-ibus-engine",
+          "managed::word_boundary_route_contract::managed_space_uses_shared_decision_core_for_verified_token_transitions",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 60411,
+        "sha256": "6bdded64377b3875f655ee4520d94bbed7390dbcf0fe6b49ebac56214e6ae238"
+      }
+    },
+    {
+      "planned": {
+        "id": "space-single-consumer",
+        "series": "baseline49",
+        "denominator": "committed_space",
+        "source_test": "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs::completed_lease_is_single_consumer",
+        "target_kind": "bin",
+        "target": "lay-ibus-engine",
+        "compiled_selector": "space_autocorrect_prefetch::tests::completed_lease_is_single_consumer",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "one lease cannot authorize two events",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--bin",
+          "lay-ibus-engine",
+          "space_autocorrect_prefetch::tests::completed_lease_is_single_consumer",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 60425,
+        "sha256": "57f44563499685a6f85f15c436c62b4c596c9cce010009164247bd449f66184a"
+      }
+    },
+    {
+      "planned": {
+        "id": "space-stale-not-ready",
+        "series": "baseline49",
+        "denominator": "committed_space",
+        "source_test": "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs::stale_completed_prefetch_never_returns_ready",
+        "target_kind": "bin",
+        "target": "lay-ibus-engine",
+        "compiled_selector": "space_autocorrect_prefetch::tests::stale_completed_prefetch_never_returns_ready",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "stale material falls back to exactly one raw Space",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--bin",
+          "lay-ibus-engine",
+          "space_autocorrect_prefetch::tests::stale_completed_prefetch_never_returns_ready",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 60381,
+        "sha256": "668b32aecf8d6819e61baa59e822c85cf2a7176a6d1cd5f8cb0d9f1a8d1b936b"
+      }
+    },
+    {
+      "planned": {
+        "id": "space-take-before-display-close",
+        "series": "baseline49",
+        "denominator": "committed_space",
+        "source_test": "src/bin/lay_ibus_engine/managed.rs::managed_space_takes_lease_before_closing_display_generation",
+        "target_kind": "bin",
+        "target": "lay-ibus-engine",
+        "compiled_selector": "managed::word_boundary_route_contract::managed_space_takes_lease_before_closing_display_generation",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "event ordering cannot invalidate its own matching lease",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--bin",
+          "lay-ibus-engine",
+          "managed::word_boundary_route_contract::managed_space_takes_lease_before_closing_display_generation",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 60400,
+        "sha256": "cb8e14888a5ec860bde6d045411badaba36d1b257478a431667f6084d3c79735"
+      }
+    },
+    {
+      "planned": {
+        "id": "space-timeout-withdraws-authority",
+        "series": "baseline49",
+        "denominator": "committed_space",
+        "source_test": "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs::timeout_withdraws_lease_but_keeps_one_material_only_job",
+        "target_kind": "bin",
+        "target": "lay-ibus-engine",
+        "compiled_selector": "space_autocorrect_prefetch::tests::timeout_withdraws_lease_but_keeps_one_material_only_job",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "timeout cannot cause a late edit",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--bin",
+          "lay-ibus-engine",
+          "space_autocorrect_prefetch::tests::timeout_withdraws_lease_but_keeps_one_material_only_job",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 60394,
+        "sha256": "4f1bfa3cad0421cc9520078b0a6e55f29974826995b91d89b0c144c98f730738"
+      }
+    },
+    {
+      "planned": {
+        "id": "split-authority-binds-target",
+        "series": "baseline49",
+        "denominator": "boundary_true_split",
+        "source_test": "src/nanda_wave/l2/tests.rs::ime_boundary_authority_is_bound_to_the_selected_split_target",
+        "target_kind": "lib",
+        "target": "lib",
+        "compiled_selector": "nanda_wave::l2::tests::ime_boundary_authority_is_bound_to_the_selected_split_target",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "Boundary evidence cannot authorize a different surface",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--lib",
+          "nanda_wave::l2::tests::ime_boundary_authority_is_bound_to_the_selected_split_target",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 101,
+      "observed_test_count": 1,
+      "observed_status": "FAIL",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 34599,
+        "sha256": "8336cebece8da21a384bbae52ef29dbc1f570bb00d4bc7dbda47a138c8911bc6"
+      }
+    },
+    {
+      "planned": {
+        "id": "split-current-glued-token",
+        "series": "baseline49",
+        "denominator": "boundary_true_split",
+        "source_test": "src/nanda_wave/l2/tests.rs::boundary_cell_repairs_and_splits_the_current_glued_token",
+        "target_kind": "lib",
+        "target": "lib",
+        "compiled_selector": "nanda_wave::l2::tests::boundary_cell_repairs_and_splits_the_current_glued_token",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "exact typed operator owns every changed scalar and separator",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--lib",
+          "nanda_wave::l2::tests::boundary_cell_repairs_and_splits_the_current_glued_token",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 35735,
+        "sha256": "8b365f53c01e637a53ca55d6eeb83406b068b0901852c2ea9bc4e0b71400688e"
+      }
+    },
+    {
+      "planned": {
+        "id": "split-dictionary-glue",
+        "series": "baseline49",
+        "denominator": "boundary_true_split",
+        "source_test": "src/nanda_wave/l2/tests.rs::boundary_cell_splits_dictionary_glue",
+        "target_kind": "lib",
+        "target": "lib",
+        "compiled_selector": "nanda_wave::l2::tests::boundary_cell_splits_dictionary_glue",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "glued lexical centers birth the exact split",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--lib",
+          "nanda_wave::l2::tests::boundary_cell_splits_dictionary_glue",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 34436,
+        "sha256": "527a623b4338c1ef6a28aede6650568be82e402f6f6813b3f23c55566bb20975"
+      }
+    },
+    {
+      "planned": {
+        "id": "split-independent-centers",
+        "series": "baseline49",
+        "denominator": "boundary_true_split",
+        "source_test": "src/nanda_wave/l2/tests.rs::boundary_cell_births_two_independent_content_centers",
+        "target_kind": "lib",
+        "target": "lib",
+        "compiled_selector": "nanda_wave::l2::tests::boundary_cell_births_two_independent_content_centers",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "both sides have independent lexical grounding",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--lib",
+          "nanda_wave::l2::tests::boundary_cell_births_two_independent_content_centers",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 34533,
+        "sha256": "d8e00d749a38107eb5ef047f88309eddb69d8e952982c9a9c5c6b05339f21d59"
+      }
+    },
+    {
+      "planned": {
+        "id": "split-short-left-center",
+        "series": "baseline49",
+        "denominator": "boundary_true_split",
+        "source_test": "src/correction_core/tests.rs::live_canonical_l2_field_applies_verified_short_left_boundary",
+        "target_kind": "lib",
+        "target": "lib",
+        "compiled_selector": "correction_core::tests::live_canonical_l2_field_applies_verified_short_left_boundary",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "strong short-left evidence remains bounded and typed",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--lib",
+          "correction_core::tests::live_canonical_l2_field_applies_verified_short_left_boundary",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 40921,
+        "sha256": "8dc158a74ec33d4b2b118257a7ad7b9f65b864da5d116205e1e69a8ad2d3d61a"
+      }
+    },
+    {
+      "planned": {
+        "id": "split-trailing-function",
+        "series": "baseline49",
+        "denominator": "boundary_true_split",
+        "source_test": "src/correction_core/tests.rs::live_canonical_l2_field_applies_trailing_short_function_boundary",
+        "target_kind": "lib",
+        "target": "lib",
+        "compiled_selector": "correction_core::tests::live_canonical_l2_field_applies_trailing_short_function_boundary",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "trailing function split is grounded on both sides",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--lib",
+          "correction_core::tests::live_canonical_l2_field_applies_trailing_short_function_boundary",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 38950,
+        "sha256": "f2038b32705be5ca2172830c8bb382002b793071f39f6a9e3b2cb7b8388e6921"
+      }
+    },
+    {
+      "planned": {
+        "id": "split-two-content-centers",
+        "series": "baseline49",
+        "denominator": "boundary_true_split",
+        "source_test": "src/correction_core/tests.rs::live_canonical_l2_field_applies_verified_two_content_boundary",
+        "target_kind": "lib",
+        "target": "lib",
+        "compiled_selector": "correction_core::tests::live_canonical_l2_field_applies_verified_two_content_boundary",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "two exact lexical centers produce a separator-only target",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--lib",
+          "correction_core::tests::live_canonical_l2_field_applies_verified_two_content_boundary",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 35622,
+        "sha256": "823961fb191fae4a96689d3d817ec4e021e6f4cda4968258e839fdba4d731607"
+      }
+    },
+    {
+      "planned": {
+        "id": "split-typed-compound",
+        "series": "baseline49",
+        "denominator": "boundary_true_split",
+        "source_test": "src/correction_core/tests.rs::live_canonical_l2_field_applies_bounded_typo_plus_boundary_repair",
+        "target_kind": "lib",
+        "target": "lib",
+        "compiled_selector": "correction_core::tests::live_canonical_l2_field_applies_bounded_typo_plus_boundary_repair",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "any typo plus split is one explicit compound operator",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--lib",
+          "correction_core::tests::live_canonical_l2_field_applies_bounded_typo_plus_boundary_repair",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 35655,
+        "sha256": "a20bab94a5e7db474322fa92bb9d255db15a018c8d6a3994bf37267682423ba3"
+      }
+    },
+    {
+      "planned": {
+        "id": "stale-frame-result",
+        "series": "baseline49",
+        "denominator": "stale_publication",
+        "source_test": "src/bin/lay_ibus_engine/preedit/tests.rs::background_result_requires_the_current_focus_tail_and_token_identity",
+        "target_kind": "bin",
+        "target": "lay-ibus-engine",
+        "compiled_selector": "preedit::tests::background_result_requires_the_current_focus_tail_and_token_identity",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "stale worker result is discarded",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--bin",
+          "lay-ibus-engine",
+          "preedit::tests::background_result_requires_the_current_focus_tail_and_token_identity",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 60440,
+        "sha256": "33339f0ce289e7d64fdf36f44049cbf8944d1a869106e9d0445b73a60395a4dd"
+      }
+    },
+    {
+      "planned": {
+        "id": "stale-invalidation",
+        "series": "baseline49",
+        "denominator": "stale_publication",
+        "source_test": "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs::invalidated_identity_cannot_publish_or_be_consumed",
+        "target_kind": "bin",
+        "target": "lay-ibus-engine",
+        "compiled_selector": "space_autocorrect_prefetch::tests::invalidated_identity_cannot_publish_or_be_consumed",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "invalidated work has no render or mutation effect",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--bin",
+          "lay-ibus-engine",
+          "space_autocorrect_prefetch::tests::invalidated_identity_cannot_publish_or_be_consumed",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 60387,
+        "sha256": "357abe80797b211a6d2a3320d7a8142e18e36beb2a77378b8c9bf90d945b0b3a"
+      }
+    },
+    {
+      "planned": {
+        "id": "stale-package-generation",
+        "series": "baseline49",
+        "denominator": "stale_publication",
+        "source_test": "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs::package_generation_change_prevents_lease_publication",
+        "target_kind": "bin",
+        "target": "lay-ibus-engine",
+        "compiled_selector": "space_autocorrect_prefetch::tests::package_generation_change_prevents_lease_publication",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "package reload invalidates late publication",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--bin",
+          "lay-ibus-engine",
+          "space_autocorrect_prefetch::tests::package_generation_change_prevents_lease_publication",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 60389,
+        "sha256": "798805dc9844053e359a62774bafd0f08577f0240a1c3b0e212001e1dbb0ebc9"
+      }
+    },
+    {
+      "planned": {
+        "id": "stale-space-fault-matrix",
+        "series": "baseline49",
+        "denominator": "stale_publication",
+        "source_test": "src/bin/lay_ibus_engine/preedit/tests.rs::space_authority_rejects_focus_tail_layout_and_config_faults",
+        "target_kind": "bin",
+        "target": "lay-ibus-engine",
+        "compiled_selector": "preedit::tests::space_authority_rejects_focus_tail_layout_and_config_faults",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "every named frame fault rejects authority",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--bin",
+          "lay-ibus-engine",
+          "preedit::tests::space_authority_rejects_focus_tail_layout_and_config_faults",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 60431,
+        "sha256": "3e06679280fbe1c771bfd60f3a059d4a4cffcec606e128d0005fe838769c5c55"
+      }
+    },
+    {
+      "planned": {
+        "id": "stale-supersession",
+        "series": "baseline49",
+        "denominator": "stale_publication",
+        "source_test": "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs::later_frame_supersedes_desired_work_without_parallel_identity",
+        "target_kind": "bin",
+        "target": "lay-ibus-engine",
+        "compiled_selector": "space_autocorrect_prefetch::tests::later_frame_supersedes_desired_work_without_parallel_identity",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "superseded generation is terminal",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--bin",
+          "lay-ibus-engine",
+          "space_autocorrect_prefetch::tests::later_frame_supersedes_desired_work_without_parallel_identity",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 60294,
+        "sha256": "16c183fb2b00a11f245e189de4d0a5a4b93f4efb1493e757be1beecfac8d5857"
+      }
+    },
+    {
+      "planned": {
+        "id": "tab-edit-revokes-learning",
+        "series": "baseline49",
+        "denominator": "tab",
+        "source_test": "src/bin/lay_ibus_engine/tail_memory.rs::backspace_turns_tab_completion_into_an_edit_trajectory",
+        "target_kind": "bin",
+        "target": "lay-ibus-engine",
+        "compiled_selector": "tail_memory::tests::backspace_turns_tab_completion_into_an_edit_trajectory",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "immediate edit revokes positive target learning",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--bin",
+          "lay-ibus-engine",
+          "tail_memory::tests::backspace_turns_tab_completion_into_an_edit_trajectory",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 60324,
+        "sha256": "7f3ffadd88d4ef54e865648a668b2a0d0b4adf3f532f338e195fdfeb5b8514f6"
+      }
+    },
+    {
+      "planned": {
+        "id": "tab-focus-loss-revokes-learning",
+        "series": "baseline49",
+        "denominator": "tab",
+        "source_test": "src/bin/lay_ibus_engine/tail_memory.rs::focus_reset_discards_pending_tab_completion_without_learning",
+        "target_kind": "bin",
+        "target": "lay-ibus-engine",
+        "compiled_selector": "tail_memory::tests::focus_reset_discards_pending_tab_completion_without_learning",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "focus loss cannot confirm a provisional acceptance",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--bin",
+          "lay-ibus-engine",
+          "tail_memory::tests::focus_reset_discards_pending_tab_completion_without_learning",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 60330,
+        "sha256": "cb21a58fc4d039dc921f3089d6c2d0342e3c57a686b62ce7c1737508d58f0ae5"
+      }
+    },
+    {
+      "planned": {
+        "id": "tab-learning-provisional",
+        "series": "baseline49",
+        "denominator": "tab",
+        "source_test": "src/bin/lay_ibus_engine/tail_memory.rs::tab_completion_learning_stays_pending_until_the_next_word",
+        "target_kind": "bin",
+        "target": "lay-ibus-engine",
+        "compiled_selector": "tail_memory::tests::tab_completion_learning_stays_pending_until_the_next_word",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "acceptance does not become durable before a stable boundary",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--bin",
+          "lay-ibus-engine",
+          "tail_memory::tests::tab_completion_learning_stays_pending_until_the_next_word",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 60433,
+        "sha256": "57e2cb3b29777df94bee2c0f30f0e6be6f28237583779600f067fa7a31c2f9c2"
+      }
+    },
+    {
+      "planned": {
+        "id": "tab-typed-edit-contract",
+        "series": "baseline49",
+        "denominator": "tab",
+        "source_test": "src/bin/lay_ibus_engine/composition_commit.rs::completion_accept_uses_edit_action_contract",
+        "target_kind": "bin",
+        "target": "lay-ibus-engine",
+        "compiled_selector": "composition_commit::active_composition_route_contract::completion_accept_uses_edit_action_contract",
+        "expected_test_count": 1,
+        "expected_assertion_status": "PASS",
+        "expected_semantic_receipt": "explicit acceptance uses the typed edit plan",
+        "environment": {
+          "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+          "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+          "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+          "LAY_DEBUG_DECISION_CORE": "1",
+          "LAY_L2_FIELD_TRACE": "1",
+          "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+          "CARGO_BUILD_JOBS": "20"
+        },
+        "command": [
+          "scripts/cargo-guard.sh",
+          "test",
+          "--bin",
+          "lay-ibus-engine",
+          "composition_commit::active_composition_route_contract::completion_accept_uses_edit_action_contract",
+          "--",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ]
+      },
+      "exit_code": 0,
+      "observed_test_count": 1,
+      "observed_status": "PASS",
+      "valid_execution": true,
+      "log": {
+        "size_bytes": 60454,
+        "sha256": "09c643e4fefac936b850aba7e5efb1436b2ea391c46953ecdefe49471039a8d1"
+      }
+    }
+  ]
+}

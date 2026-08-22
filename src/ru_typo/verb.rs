@@ -4,6 +4,7 @@ use crate::russian_typo_scoring::ngram_allows_ru_candidate;
 use crate::text_case::apply_word_case;
 use crate::word_reader::is_cyrillic_word;
 
+use super::memo::{memoized_text, WordMaterialKind};
 use super::thresholds::NGRAM_VERB_ENDING_MARGIN;
 
 const REFLEXIVE_CONFUSION_DATA: &str =
@@ -12,6 +13,12 @@ const VERB_ENDING_CONFUSION_DATA: &str =
     include_str!("../../data/lexicon/russian_verb_ending_confusion.tsv");
 
 pub(crate) fn correct_verb_ending_confusion(word: &str) -> Option<String> {
+    memoized_text(WordMaterialKind::VerbEnding, word, || {
+        correct_verb_ending_confusion_uncached(word)
+    })
+}
+
+fn correct_verb_ending_confusion_uncached(word: &str) -> Option<String> {
     if word.chars().count() < 5 || !is_cyrillic_word(word) {
         return None;
     }

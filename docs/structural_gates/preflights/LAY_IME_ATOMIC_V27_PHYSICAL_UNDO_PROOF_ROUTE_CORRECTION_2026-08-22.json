@@ -1,0 +1,193 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_ATOMIC_V27_PHYSICAL_UNDO_PROOF_ROUTE_CORRECTION_2026-08-22",
+  "authority_bearing": true,
+  "reuses_existing_implementation": true,
+  "scientific_future_sensitive": false,
+  "baseline_checks": [
+    {
+      "id": "physical-undo-proof-source",
+      "kind": "file",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/shell/atomicInputMethodRoute.js",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 16911,
+        "sha256": "932af7eddb7eb0c931a590ced704a4ee960ffdcb5a0601a318598371bba38b92"
+      }
+    },
+    {
+      "id": "atomic-legacy-bridge-guard",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/bridge_actions.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 7775,
+        "sha256": "0a0ee33063084260387fc51a28c30c8a824e32b281ae3a5e64db935a8508afa1"
+      }
+    },
+    {
+      "id": "installed-lay-engine",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 6423488,
+        "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a"
+      }
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {
+        "id": "replace-legacy-proof-call-with-atomic-modifier-observation",
+        "kind": "source_edit"
+      },
+      {
+        "id": "sync-proof-source-to-remote-sandbox",
+        "kind": "remote_filesystem_write"
+      },
+      {
+        "id": "run-new-append-only-undo-proof-id",
+        "kind": "ephemeral_process_start"
+      },
+      {
+        "id": "write-failure-or-pass-receipt",
+        "kind": "filesystem_write"
+      }
+    ],
+    "forbidden": [
+      "production_lay_source_edit",
+      "manual_toggle_v2_enablement_in_atomic_mode",
+      "legacy_text_mutation_acceptance",
+      "verifier_or_safety_gate_weakening",
+      "candidate_or_model_change",
+      "installed_runtime_mutation",
+      "historical_receipt_rewrite",
+      "local_build"
+    ]
+  },
+  "state_machine": {
+    "initial_state": "UNDO_PROOF_ROUTE_CONTRADICTION_OBSERVED",
+    "steps": [
+      {
+        "id": "edit-proof-observer-only",
+        "from": "UNDO_PROOF_ROUTE_CONTRADICTION_OBSERVED",
+        "to": "ATOMIC_MODIFIER_PROOF_READY",
+        "mutates": true,
+        "failure_state": "PROOF_SOURCE_EDIT_FAILED",
+        "cleanup": "restore only the proof observer from its pinned baseline",
+        "preserves": [
+          "legacy-bridge-guard-preserved",
+          "installed-runtime-preserved"
+        ],
+        "test_id": "proof-source-shape"
+      },
+      {
+        "id": "sync-proof-observer",
+        "from": "ATOMIC_MODIFIER_PROOF_READY",
+        "to": "REMOTE_PROOF_SOURCE_PARITY",
+        "mutates": true,
+        "failure_state": "REMOTE_SOURCE_PARITY_FAILED",
+        "cleanup": "reject execution and retain both source hashes",
+        "preserves": [
+          "legacy-bridge-guard-preserved",
+          "installed-runtime-preserved"
+        ],
+        "test_id": "local-remote-proof-parity"
+      },
+      {
+        "id": "run-physical-atomic-undo",
+        "from": "REMOTE_PROOF_SOURCE_PARITY",
+        "to": "PHYSICAL_ATOMIC_UNDO_PROVEN",
+        "mutates": true,
+        "failure_state": "PHYSICAL_ATOMIC_UNDO_FAILED",
+        "cleanup": "terminate only proof-owned processes and retain the complete failed run under a new ID",
+        "preserves": [
+          "legacy-bridge-guard-preserved",
+          "installed-runtime-preserved"
+        ],
+        "test_id": "physical-atomic-undo"
+      }
+    ],
+    "terminal_states": [
+      "PHYSICAL_ATOMIC_UNDO_PROVEN",
+      "PROOF_SOURCE_EDIT_FAILED",
+      "REMOTE_SOURCE_PARITY_FAILED",
+      "PHYSICAL_ATOMIC_UNDO_FAILED"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "legacy-bridge-guard-preserved",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/bridge_actions.rs",
+      "policy": "immutable_for_proof_correction",
+      "cursor_policy": "none",
+      "rollback_policy": "preserve_exact_bytes",
+      "baseline_check_id": "atomic-legacy-bridge-guard"
+    },
+    {
+      "id": "installed-runtime-preserved",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "policy": "immutable_before_deployment",
+      "cursor_policy": "none",
+      "rollback_policy": "preserve_exact_bytes",
+      "baseline_check_id": "installed-lay-engine"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "local-remote-proof-source",
+      "producer": "local corrected atomicInputMethodRoute.js",
+      "consumer": "remote GNOME Shell proof source",
+      "comparison": "exact SHA-256 before the compositor run",
+      "test_id": "local-remote-proof-parity"
+    },
+    {
+      "id": "physical-modifier-cardinality",
+      "producer": "four physical Shift press release events",
+      "consumer": "Shell atomic event identity and Lay ProcessKeyEventAtomicV1",
+      "comparison": "event identity advances by exactly four while paired-release ledger remains empty",
+      "test_id": "physical-atomic-undo"
+    }
+  ],
+  "runtime_comparisons": [],
+  "invariants": [
+    {
+      "id": "atomic-double-shift-only",
+      "statement": "the proof must not invoke ManualToggleV2 after physical Shift and must obtain the restoration from the atomic modifier route",
+      "test_id": "proof-source-shape"
+    },
+    {
+      "id": "no-legacy-mutation-fallback",
+      "statement": "atomic mode keeps the ManualToggleV2 guard and the proof records zero legacy mutation calls",
+      "test_id": "physical-atomic-undo"
+    },
+    {
+      "id": "paired-release-excludes-modifiers",
+      "statement": "none of the four Shift events enters the paired printable release ledger",
+      "test_id": "physical-atomic-undo"
+    },
+    {
+      "id": "exact-source-restored",
+      "statement": "ghbdtn is atomically corrected to привет and immediate double Shift restores exactly ghbdtn with one trailing Space",
+      "test_id": "physical-atomic-undo"
+    }
+  ],
+  "tests": [
+    {
+      "id": "proof-source-shape",
+      "kind": "parity",
+      "expected": "the double-Shift proof contains no ManualToggleV2 call and asserts an exact four-event atomic identity advance"
+    },
+    {
+      "id": "local-remote-proof-parity",
+      "kind": "parity",
+      "expected": "local and remote corrected proof sources have identical SHA-256"
+    },
+    {
+      "id": "physical-atomic-undo",
+      "kind": "integration",
+      "expected": "ghbdtn becomes привет and four physical Shift events restore ghbdtn through one atomic frame with modifier event delta four paired modifier releases zero legacy calls zero partial effects and zero leftovers"
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "kind": "lay_ime_atomic_exact_layout_lease_v27_fullfield_checkpoint",
+  "schema_version": 1,
+  "measured_at": "2026-08-22",
+  "execution_host": "e@192.168.3.94",
+  "execution_root": "/home/e/projects/lay-v27-proof",
+  "toolchain": {
+    "rustc": "1.97.1 (8bab26f4f 2026-07-14)",
+    "cargo": "1.97.1 (c980f4866 2026-06-30)",
+    "test_binary_sha256": "93f61c06f11ae8a9e1593446ed9bf49c742e03fbbbcd122d224c57a94ca74560"
+  },
+  "source_sha256": {
+    "src/nanda_wave/l2/layout_adapter.rs": "9d0424256c7b443d6e72d5aa192e792929c3dade1008b9c3f118127b154add6c",
+    "src/correction_core/tests.rs": "94abebb66fc5ded045e8f5c9671299792abd8bbd5486d54001530644a96b9b89",
+    "src/ime_correction.rs": "d2e6ae21a942c46d92b948f9ad80e45249ef18eab0801ed2b95f1c1569bfb738"
+  },
+  "tests": [
+    {
+      "selector": "full_field_direct_layout_uses_broad_surface_authority_after_source_guard",
+      "passed": 1,
+      "failed": 0
+    },
+    {
+      "selector": "stable_layout_projection_precedes_secondary_typo_repair_from_logs",
+      "passed": 1,
+      "failed": 0
+    },
+    {
+      "selector": "exact_layout_scope_rejects_protected_composite_and_nonterminal_inputs",
+      "passed": 1,
+      "failed": 0,
+      "fact": "cnjq remains absent from closed exact authority"
+    },
+    {
+      "selector": "layout_projection",
+      "passed": 28,
+      "failed": 0,
+      "filtered_out": 1567
+    }
+  ],
+  "measured_facts": [
+    "FullField can birth a direct Layout candidate from a broad Russian surface authority after the exact English source guard",
+    "cnjq maps to stoy in the FullField route without a secondary typo mutation",
+    "the same source remains ClosedExactAbsent because the exact terminal snapshot was not expanded",
+    "the fixed broad layout_projection filter passes 28 of 28"
+  ],
+  "not_tested": [
+    "standalone independent oracle",
+    "generated exact and negative corpora",
+    "mutation and race matrices",
+    "Space and double-Shift physical paths",
+    "integrated latency",
+    "RSS and aggregate PSS",
+    "installed runtime"
+  ],
+  "runtime_authority_changed": false,
+  "installed_runtime": "Lay 1.0.33",
+  "verdict": "IMPLEMENTATION_CHECKPOINT_PASS_NOT_PROMOTED"
+}

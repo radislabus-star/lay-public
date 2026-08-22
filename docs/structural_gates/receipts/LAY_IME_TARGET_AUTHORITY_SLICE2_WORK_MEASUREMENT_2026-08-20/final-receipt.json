@@ -1,0 +1,147 @@
+{
+  "schema": "lay.slice2-work-measurement-receipt.v1",
+  "task_id": "lay-ime-target-authority-slice2-work-measurement-2026-08-20",
+  "verdict": "PASS_WORK_BUDGET_FREEZE_RUNTIME_UNCHANGED",
+  "scope": "proof-only deterministic work measurement for the exact active V90/V9/V13 package tuple",
+  "preflight": {
+    "path": "docs/structural_gates/preflights/LAY_IME_TARGET_AUTHORITY_SLICE2_WORK_MEASUREMENT_V3_2026-08-20.json",
+    "sha256": "d089b8b215eea8d1934b22d0be3d3374e3530b1f015c942ad5823438c7e031a5",
+    "verdict": "READY_TO_IMPLEMENT",
+    "safe_to_implement": true
+  },
+  "implementation": {
+    "packaged_runtime_sha256": "dc60941402ba36a7ea3aeb4a3e8d65d2f818d10b8a08b9b5b63e60af48a6b8a7",
+    "proof_sha256": "754adc0f15ead6f8e78cf87b4ab8bd7f04a2c571e525bed4634b6912d27376ce",
+    "local_tests": {
+      "enumeration_work": "2/2 PASS",
+      "productive_v1": "106/106 PASS"
+    }
+  },
+  "immutable_inputs": {
+    "proof_binary_sha256": "dc57d3caebe35483715b314b632f1e51bf5bece61055ea4a5f2542ceb90a5b94",
+    "productive_v90_sha256": "40fb6a9f0d92c3c7502e47f9c70230d9b86020f622b08a5c799342f13e09ce44",
+    "l11_v9_sha256": "bf5a1619a89038466ef786305cf35eda5f4af5b9f12b9140f7d3cac407e2f2a7",
+    "canonical_l2_v13_sha256": "cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b",
+    "axis_schema_sha256": "b5b24f952e83e1e9738db0f89a9d2e9e16eaf7af754990114a562d42be3c060b",
+    "frozen_hypothesis_manifest_sha256": "13e2db3470006303de3d87b2f999988db1661157760fec447e54ac37d5b495ea"
+  },
+  "proofs": {
+    "smoke": {
+      "receipt": "slice2-work-smoke-13x1.json",
+      "sha256": "b244f42f87f8868882d1f9f096c7348829a9611da64703d6205059c2fb808ebb",
+      "measurement_samples": 13,
+      "expected_samples": 13,
+      "complete": true
+    },
+    "fixed": {
+      "receipt": "slice2-work-full-13x100.json",
+      "sha256": "c683d4eaa9f235ecf0af16e7bd7e2021f4007088d37ab1d973c3b776cc2b4c00",
+      "evaluated": 2600,
+      "measurement_samples": 1300,
+      "expected_samples": 1300,
+      "unique_samples": 1300,
+      "complete": true,
+      "aggregate_exact": true,
+      "sample_digest_sha256": "31e49ea32a391580f2f9b5c56256a5aecf1b2a25a0d39a7072c228d713e62ea8",
+      "normalized_non_latency_semantic_sha256": "905ce2d6ad7cb5c28e852fa0e603927feabb5e2afde031ab7826c8c51f256b4b"
+    }
+  },
+  "measured_maximum_per_field": {
+    "canonical_grounding": {
+      "posting_visits": 0,
+      "relation_replays": 0,
+      "grounding_lookups": 229,
+      "generated_logical_targets": 0,
+      "operator_steps": 0
+    },
+    "cold_binding": {
+      "posting_visits": 88130,
+      "relation_replays": 103763,
+      "grounding_lookups": 0,
+      "generated_logical_targets": 0,
+      "operator_steps": 382150
+    },
+    "productive_traversal": {
+      "posting_visits": 0,
+      "relation_replays": 6348,
+      "grounding_lookups": 0,
+      "generated_logical_targets": 6348,
+      "operator_steps": 9406
+    },
+    "aggregate": {
+      "posting_visits": 88130,
+      "relation_replays": 103803,
+      "grounding_lookups": 229,
+      "generated_logical_targets": 6348,
+      "operator_steps": 382340
+    }
+  },
+  "frozen_budget_per_field": {
+    "derivation": "smallest power of two not below the exact fixed-proof maximum; zero producer dimensions remain zero",
+    "package_identity_change_requires_new_proof": true,
+    "canonical_grounding": {
+      "posting_visits": 0,
+      "relation_replays": 0,
+      "grounding_lookups": 256,
+      "generated_logical_targets": 0,
+      "operator_steps": 0
+    },
+    "cold_binding": {
+      "posting_visits": 131072,
+      "relation_replays": 131072,
+      "grounding_lookups": 0,
+      "generated_logical_targets": 0,
+      "operator_steps": 524288
+    },
+    "productive_traversal": {
+      "posting_visits": 0,
+      "relation_replays": 8192,
+      "grounding_lookups": 0,
+      "generated_logical_targets": 8192,
+      "operator_steps": 16384
+    },
+    "aggregate": {
+      "posting_visits": 131072,
+      "relation_replays": 131072,
+      "grounding_lookups": 256,
+      "generated_logical_targets": 8192,
+      "operator_steps": 524288
+    }
+  },
+  "safety": {
+    "manifest_h": 1280,
+    "h_to_b_losses": 0,
+    "b_to_s0_losses": 0,
+    "false_singleton": 0,
+    "integrity_errors": 0,
+    "probe_parity": "2600/2600 exact",
+    "counter_errors": 0
+  },
+  "resource_observation": {
+    "workers": 20,
+    "wall_seconds": 19.47,
+    "cpu_percent": 660,
+    "peak_rss_kib": 391408,
+    "latency_promotion_claimed": false
+  },
+  "tested": [
+    "fixed denominator and immutable package identity",
+    "complete per-producer and aggregate deterministic work counters",
+    "order-independent sample digest",
+    "semantic non-latency parity",
+    "zero H-to-B and B-to-S0 loss",
+    "zero false singleton and integrity errors"
+  ],
+  "not_tested": [
+    "context-neutral prepared material implementation",
+    "exact frame binding and stale-frame rejection",
+    "work-budget exhaustion propagation in runtime",
+    "daemon or IBus latency",
+    "physical multi-client behavior",
+    "automatic authority"
+  ],
+  "runtime_authority_changed": false,
+  "deployment_actions": 0,
+  "numeric_budget_frozen": true,
+  "next_gate": "new Slice 2 material/frame implementation preflight"
+}

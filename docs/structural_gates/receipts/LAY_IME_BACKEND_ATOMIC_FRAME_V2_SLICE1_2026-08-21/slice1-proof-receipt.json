@@ -1,0 +1,162 @@
+{
+  "schema": "lay.ime-backend-atomic-frame-v2-slice1-proof.v1",
+  "task_id": "LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE1_2026-08-21",
+  "recorded_at": "2026-08-21T00:49:23+03:00",
+  "verdict": "PASS_PURE_CODEC_COLLECTOR_ONLY",
+  "implementation_preflight": {
+    "manifest": "../../preflights/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE1_IMPLEMENTATION_PREFLIGHT_V2_2026-08-21.json",
+    "receipt": "implementation-preflight-receipt-v2.json",
+    "verdict": "READY_TO_IMPLEMENT",
+    "safe_to_implement": true,
+    "blockers": 0,
+    "manifest_sha256": "f0f0986f9d75838cafb37648f0c7a3948f3caa0f766503719bc495cb8d0ee76a"
+  },
+  "dependency_transfer_preflight": {
+    "manifest": "../../preflights/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE1_DEPENDENCY_TRANSFER_PREFLIGHT_V1_2026-08-21.json",
+    "receipt": "dependency-transfer-preflight-receipt-v1.json",
+    "verdict": "READY_TO_IMPLEMENT",
+    "safe_to_implement": true,
+    "blockers": 0,
+    "manifest_sha256": "c7d5804442ea0df2d98ea8e5acee41daaf66f243e13081929344c853ff11ec1b"
+  },
+  "remote_host": {
+    "ssh_target": "e@192.168.3.94",
+    "hostname": "e-MEGA-MINI-M1-13th",
+    "logical_cpu_count": 20,
+    "sandbox": "/home/e/projects/ibus-lay-atomic-v2-slice1-20260821",
+    "sandbox_size": "13 MiB",
+    "available_bytes_after_proof": 26028994560,
+    "load_after_proof": [1.65, 1.62, 1.65]
+  },
+  "dependency": {
+    "package": "libglib2.0-dev",
+    "version": "2.72.4-0ubuntu2.9",
+    "architecture": "amd64",
+    "size_bytes": 1743632,
+    "sha256": "1b21713a3eef3d9f97a30178938f3bd32e5d32f1858bc28d6146b4c22d6649cc",
+    "extraction": "task sysroot only",
+    "dpkg_status_sha256_after": "6a04a5b72a2a4d7f4d3bcf8a463eb05280a8e4e165e48311a20ddf8e7678706a",
+    "host_package_install": false
+  },
+  "source_identity": [
+    {
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/ibusatomicframe.c",
+      "size_bytes": 34587,
+      "sha256": "b47a319ac1103926b10f23101a7b22908e2b67b74cd45d1fa36af6e48bd5997c",
+      "remote_sha256_equal": true
+    },
+    {
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/ibusatomicframeprivate.h",
+      "size_bytes": 8479,
+      "sha256": "cb29c9dee3ef89d4a42069804c5a57346853603014fb3de560a843dc32485822",
+      "remote_sha256_equal": true
+    },
+    {
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/ibus-atomic-frame.c",
+      "size_bytes": 37698,
+      "sha256": "b1aaf69e4c0f4f685bfa1a8b9fea11d427f05645824bb84d3ad5af1e0e853ba8",
+      "remote_sha256_equal": true
+    },
+    {
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/Makefile.am",
+      "size_bytes": 15448,
+      "sha256": "2839fcab725c6be3d5a3bc40cc581c7e1ca2e523b0639064955d2397ff5e2c07",
+      "remote_sha256_equal": true
+    },
+    {
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/Makefile.am",
+      "size_bytes": 8184,
+      "sha256": "aed467fa580a6889c50803fbebebc8a125feaf6798659213e662f4bd2512a7d7",
+      "remote_sha256_equal": true
+    }
+  ],
+  "build": {
+    "compiler": "gcc 11.4.0",
+    "language": "gnu11",
+    "warnings": "-Wall -Wextra -Werror -Wformat=2 -Wshadow -Wpointer-arith -Wcast-qual -Wstrict-prototypes -Wmissing-prototypes -Werror=implicit-function-declaration",
+    "normal_binary_sha256": "4c953eaa732cfdaea00383787c318b420b03a130761adcf867d93c2d3890fab1",
+    "sanitizer_binary_sha256": "270152eb188df1e970c2e47bfb095eed7bed93a345a591f5be945168fd11dc3a",
+    "full_ibus_build": false
+  },
+  "proof": {
+    "registered_tests": 12,
+    "normal": {
+      "passed": 12,
+      "failed": 0,
+      "skipped": 0,
+      "elapsed_seconds": 0.01,
+      "max_rss_kib": 3200,
+      "raw_log": "raw/unit-v2.log",
+      "raw_log_sha256": "47db3be7582f453786944a5efb62239374b90c84c57012f66c59874d9ef94e05"
+    },
+    "asan_ubsan_lsan": {
+      "passed": 12,
+      "failed": 0,
+      "skipped": 0,
+      "memory_errors": 0,
+      "undefined_behavior_errors": 0,
+      "leaked_bytes": 0,
+      "elapsed_seconds": 0.03,
+      "max_rss_kib": 20480,
+      "raw_log": "raw/sanitize-unit-v2.log",
+      "raw_log_sha256": "5c529c7cb59199784de45a98c775c555401b92deceaefb22971003e1c5fcbde0"
+    },
+    "canonical_vector_enumeration": {
+      "all_sequences_length_0_through_4": 341,
+      "accepted_canonical_sequences": 8,
+      "rejected_sequences": 333
+    },
+    "covered_contracts": [
+      "exact schema constants",
+      "all canonical vectors and byte-identical roundtrip",
+      "every tag sequence through length four",
+      "reserved tags and wrong payload types",
+      "non-normal GVariant input",
+      "identity and digest mismatch",
+      "UTF-8 text and cursor bounds",
+      "effect overflow and sticky abort",
+      "handled disposition matrix",
+      "focus and capability mismatch",
+      "no retained frame after finish"
+    ]
+  },
+  "retained_failed_experiment": {
+    "result": "SANITIZER_FAIL",
+    "functional_tests": "12/12 PASS",
+    "leaked_bytes": 70205,
+    "leaked_allocations": 1117,
+    "first_shared_mechanism": "one extra hard GVariant reference per encoded test reply",
+    "repair": "pass the collector vector as a floating child and stop pre-incrementing the retained test vector before @a(yv)",
+    "runtime_semantics_changed": false,
+    "raw_log": "raw/sanitize-unit.log",
+    "raw_log_sha256": "d33e1e80f73373401862540a97fcedfadbec146434aa593f438ea6e39ac0de56"
+  },
+  "preservation": {
+    "legacy_daemon_source_sha256": "d6fbaf772962153900a1bd1230df63e90d1cd37ba6020f61f1dddc8c30ab332c",
+    "legacy_client_source_sha256": "470a92daa5cd587c7110a744db5c19f54625f54e5bd969f1cbc1ea47450364b4",
+    "legacy_client_header_sha256": "70717bc1ea6ccb753c2c68e9ed7c0b9ca21c01ee648a9d17ec5d80c01eee49f1",
+    "installed_ibus_daemon_sha256": "24338c0e7cfb749d2ac9b9254d7d54029e71b5ac9342aa1b8d78b1d55f5ac1b6",
+    "installed_libibus_sha256": "e1977b9d3d84ee94b63f6c04056134c10aa51d4e0621f7abee1115da12259ec1",
+    "installed_gtk3_module_sha256": "644cedf86a7b6e18d2be31afeb75007c85e6bdb0ed8a6b5c53c54621310aa3e2",
+    "installed_gtk4_module_sha256": "4e5b450fa00d51a45fbcc160e26358d81da793b39b6e04a27c749b905b3cba60",
+    "installed_lay_daemon_sha256": "f0821f3b1dbf87fb83db1119534d3e4a1aef489dd6d5588ca8a8f9b86a19194c",
+    "runtime_restart_or_signal": false,
+    "runtime_deployment": false
+  },
+  "claim_boundary": {
+    "typed_schema_frozen": true,
+    "pure_codec_proven": true,
+    "pure_collector_state_machine_proven": true,
+    "malformed_and_overflow_fail_closed_proven": true,
+    "full_ibus_autotools_build_proven": false,
+    "process_key_event_atomic_rpc_implemented": false,
+    "daemon_signal_capture_implemented": false,
+    "client_reply_validator_integrated": false,
+    "fake_engine_kill_matrix_proven": false,
+    "wayland_transaction_owner_implemented": false,
+    "lay_capability_propagation_implemented": false,
+    "physical_client_gate_passed": false,
+    "live_runtime_authority_changed": false,
+    "deployment_authority": false
+  }
+}

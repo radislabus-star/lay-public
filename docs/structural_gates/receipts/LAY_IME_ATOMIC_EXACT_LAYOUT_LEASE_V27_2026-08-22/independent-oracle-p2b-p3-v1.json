@@ -1,0 +1,70 @@
+{
+  "schema": "lay-v27-independent-oracle-proof-receipt-v1",
+  "kind": "independent_oracle_and_generated_full_exact_parity",
+  "verdict": "P2B_P3_PASS_NOT_PROMOTED",
+  "remote": "e@192.168.3.94:/home/e/projects/lay-v27-proof",
+  "installed_runtime": "Lay 1.0.33",
+  "runtime_authority_changed": false,
+  "oracle": {
+    "standalone_no_lay_dependency": true,
+    "runtime_import_matches": 0,
+    "source_sha256": "a64e26af57adc74949ccc0eb96aebdcc84504839d29cdfc1e074d7f4236e8237",
+    "binary_sha256": "910a9800bfd2667ba4998d8b8add2ce5931106708958a326073134b4ecfc7b36",
+    "keyboard_table_fingerprint": "d0716e9203bdf583",
+    "normalization_version": "trim-comment-lower-script-v1-max24",
+    "projection_version": "us-qwerty-to-ru-bijective-v1",
+    "rustc": "1.97.1 (8bab26f4f 2026-07-14)",
+    "frozen_manifest": "docs/structural_gates/receipts/LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_V27_2026-08-22/independent-oracle-manifest-v1.json",
+    "frozen_manifest_sha256": "ccd0498c1a274ce72774b29a524c108c4f03db9f39a27e75cc558fcf29ea3333"
+  },
+  "corpus": {
+    "rows": 243748,
+    "rows_bytes": 19591577,
+    "rows_sha256": "194fe17aea00cf11129a3be838b3255f921db09d1608fa16facbc017867ef47a",
+    "eligible_exact": 91562,
+    "known_english_collisions": 423,
+    "class_count": 27,
+    "all_class_denominators_nonzero": true,
+    "source_count": 6,
+    "source_hashes_match_paper_contract": true
+  },
+  "parity": {
+    "certificate_rows": 243748,
+    "certificate_divergences": 0,
+    "certificate_actual_sha256": "194fe17aea00cf11129a3be838b3255f921db09d1608fa16facbc017867ef47a",
+    "full_field_rows": 243748,
+    "full_field_divergences": 0,
+    "full_field_actual_sha256": "194fe17aea00cf11129a3be838b3255f921db09d1608fa16facbc017867ef47a",
+    "full_field_wall_seconds": 22.30,
+    "full_field_cpu_percent": 1142,
+    "full_field_max_rss_kib": 419916
+  },
+  "one_sided_mutation": {
+    "pair": "q<->w",
+    "oracle_only_divergences": 26139,
+    "runtime_only_divergences": 26133,
+    "runtime_source_restored": true,
+    "restored_runtime_divergences": 0,
+    "restored_dict_sha256": "8e2423531e24787a2305ec4876d1590fc823c9f32e2126eff31f815ffbbda4cd"
+  },
+  "runtime_test_binary": {
+    "path": "/home/e/projects/lay-v27-proof/target/debug/deps/lay-a0f76ec5510d13fc",
+    "sha256": "e4c0e75e0cec001114d88a074d8287da25206cdbeb21a7ee740ae5247a23045e"
+  },
+  "measured": [
+    "independent oracle provenance",
+    "six-source immutable denominator",
+    "English guard membership",
+    "all generated positive and negative certificate dispositions",
+    "FullField and ClosedExact replacement allow_apply and transition-proof parity",
+    "one-sided oracle and runtime keyboard mutations"
+  ],
+  "not_tested": [
+    "race and fault matrix",
+    "Space cardinality and atomic refusal",
+    "double-Shift physical undo and feedback",
+    "four component latency denominators",
+    "controlled per-process RSS and aggregate PSS deltas",
+    "physical installed runtime"
+  ]
+}

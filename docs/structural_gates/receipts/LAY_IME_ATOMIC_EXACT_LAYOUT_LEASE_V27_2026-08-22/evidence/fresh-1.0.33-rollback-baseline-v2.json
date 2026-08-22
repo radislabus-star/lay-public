@@ -1,0 +1,58 @@
+{
+  "schema": "lay.release-live-baseline.v2",
+  "captured_at": "2026-08-22T11:30:54+03:00",
+  "release": "1.0.33",
+  "sample_kind": "fresh rollback runtime after complete owner readiness",
+  "process_age_seconds": 178,
+  "global_ibus_pid": 2076194,
+  "active_engine": "lay-ime-ru",
+  "loaded_extension_version": "1.0.33",
+  "owners": [
+    {
+      "role": "lay-daemon",
+      "pid": 689478,
+      "rss_kib": 392972,
+      "pss_kib": 286379,
+      "swap_pss_kib": 0,
+      "committed_proportional_kib": 286379,
+      "exe_sha256": "f0821f3b1dbf87fb83db1119534d3e4a1aef489dd6d5588ca8a8f9b86a19194c"
+    },
+    {
+      "role": "lay-l1.1-serve",
+      "pid": 689591,
+      "rss_kib": 183620,
+      "pss_kib": 181566,
+      "swap_pss_kib": 0,
+      "committed_proportional_kib": 181566,
+      "exe_sha256": "6ab87a880e2c1ae7f1736ab7f934ef5600c2086c6c8b27c7386fa7c5923c71f8"
+    },
+    {
+      "role": "lay-ibus-engine",
+      "pid": 689525,
+      "rss_kib": 372296,
+      "pss_kib": 265818,
+      "swap_pss_kib": 0,
+      "committed_proportional_kib": 265818,
+      "exe_sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a"
+    },
+    {
+      "role": "lay-l3-online",
+      "pid": 689482,
+      "rss_kib": 4560,
+      "pss_kib": 2299,
+      "swap_pss_kib": 0,
+      "committed_proportional_kib": 2299,
+      "exe_sha256": "7de3aa6f10e09928a27b17c2932078a1bbe75a6cf02d7fdf225f0184724eff4a"
+    }
+  ],
+  "engine_gate": {
+    "metric": "Pss plus SwapPss after owner readiness",
+    "baseline_kib": 265818,
+    "allowed_delta_kib": 16384,
+    "maximum_1.0.34_kib": 282202
+  },
+  "supersedes_for_memory_comparison": {
+    "artifact": "live-1.0.33-preinstall-v1.json",
+    "reason": "the prior multi-day processes had swapped pages and were not age-equivalent to a fresh post-install runtime"
+  }
+}

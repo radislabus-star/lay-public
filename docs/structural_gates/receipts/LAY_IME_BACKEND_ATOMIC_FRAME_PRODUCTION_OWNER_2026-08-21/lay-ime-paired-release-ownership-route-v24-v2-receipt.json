@@ -1,0 +1,367 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "VETO",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": false,
+  "contract": "docs/structural_gates/preflights/LAY_IME_PAIRED_RELEASE_OWNERSHIP_ROUTE_V24_V2_2026-08-22.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "source_root": null,
+  "node_count": 9,
+  "edge_count": 22,
+  "routes": [
+    {
+      "id": "frame-ready-press-execution",
+      "event": "frame-ready-press",
+      "kind": "execution",
+      "entry": "clutter-key-event",
+      "via": [],
+      "terminal": "mutter-atomic-submit",
+      "path_count": 1,
+      "paths": [
+        [
+          "clutter-key-event",
+          "shell-atomic-adapter",
+          "mutter-atomic-profile",
+          "lay-atomic-proposal",
+          "shell-atomic-receipt",
+          "mutter-atomic-submit"
+        ]
+      ],
+      "role_owners": {
+        "interface": [
+          "clutter-key-event"
+        ],
+        "evidence_owner": [
+          "lay-atomic-proposal"
+        ],
+        "producer": [
+          "mutter-atomic-profile"
+        ],
+        "mutation_owner": [
+          "mutter-atomic-submit"
+        ],
+        "orchestrator": [
+          "shell-atomic-adapter"
+        ],
+        "authorization_owner": [
+          "shell-atomic-receipt"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "clutter-key-event",
+          "to": "mutter-atomic-submit",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "clutter-key-event",
+              "shell-atomic-adapter",
+              "mutter-atomic-profile",
+              "lay-atomic-proposal",
+              "shell-atomic-receipt",
+              "mutter-atomic-submit"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "frame-ready-press-authority",
+      "event": "frame-ready-press",
+      "kind": "authority",
+      "entry": "mutter-atomic-profile",
+      "via": [],
+      "terminal": "mutter-atomic-submit",
+      "path_count": 1,
+      "paths": [
+        [
+          "mutter-atomic-profile",
+          "lay-atomic-proposal",
+          "shell-atomic-receipt",
+          "mutter-atomic-submit"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "lay-atomic-proposal"
+        ],
+        "producer": [
+          "mutter-atomic-profile"
+        ],
+        "mutation_owner": [
+          "mutter-atomic-submit"
+        ],
+        "authorization_owner": [
+          "shell-atomic-receipt"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "paired-release-execution",
+      "event": "paired-nonmodifier-release",
+      "kind": "execution",
+      "entry": "clutter-key-event",
+      "via": [],
+      "terminal": "shell-release-consumer",
+      "path_count": 1,
+      "paths": [
+        [
+          "clutter-key-event",
+          "shell-atomic-adapter",
+          "shell-release-pair-ledger",
+          "shell-paired-release-authorizer",
+          "shell-release-consumer"
+        ]
+      ],
+      "role_owners": {
+        "interface": [
+          "clutter-key-event"
+        ],
+        "orchestrator": [
+          "shell-atomic-adapter"
+        ],
+        "authorization_owner": [
+          "shell-paired-release-authorizer"
+        ],
+        "mutation_owner": [
+          "shell-release-consumer"
+        ],
+        "evidence_owner": [
+          "shell-release-pair-ledger"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "clutter-key-event",
+          "to": "shell-release-consumer",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "clutter-key-event",
+              "shell-atomic-adapter",
+              "shell-release-pair-ledger",
+              "shell-paired-release-authorizer",
+              "shell-release-consumer"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "paired-release-authority",
+      "event": "paired-nonmodifier-release",
+      "kind": "authority",
+      "entry": "shell-release-pair-ledger",
+      "via": [],
+      "terminal": "shell-release-consumer",
+      "path_count": 1,
+      "paths": [
+        [
+          "shell-release-pair-ledger",
+          "shell-paired-release-authorizer",
+          "shell-release-consumer"
+        ]
+      ],
+      "role_owners": {
+        "authorization_owner": [
+          "shell-paired-release-authorizer"
+        ],
+        "mutation_owner": [
+          "shell-release-consumer"
+        ],
+        "evidence_owner": [
+          "shell-release-pair-ledger"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "modifier-release-execution",
+      "event": "modifier-release",
+      "kind": "execution",
+      "entry": "clutter-key-event",
+      "via": [],
+      "terminal": "mutter-atomic-submit",
+      "path_count": 1,
+      "paths": [
+        [
+          "clutter-key-event",
+          "shell-atomic-adapter",
+          "mutter-atomic-profile",
+          "lay-atomic-proposal",
+          "shell-atomic-receipt",
+          "mutter-atomic-submit"
+        ]
+      ],
+      "role_owners": {
+        "interface": [
+          "clutter-key-event"
+        ],
+        "evidence_owner": [
+          "lay-atomic-proposal"
+        ],
+        "producer": [
+          "mutter-atomic-profile"
+        ],
+        "mutation_owner": [
+          "mutter-atomic-submit"
+        ],
+        "orchestrator": [
+          "shell-atomic-adapter"
+        ],
+        "authorization_owner": [
+          "shell-atomic-receipt"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "clutter-key-event",
+          "to": "mutter-atomic-submit",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "clutter-key-event",
+              "shell-atomic-adapter",
+              "mutter-atomic-profile",
+              "lay-atomic-proposal",
+              "shell-atomic-receipt",
+              "mutter-atomic-submit"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "modifier-release-authority",
+      "event": "modifier-release",
+      "kind": "authority",
+      "entry": "mutter-atomic-profile",
+      "via": [],
+      "terminal": "mutter-atomic-submit",
+      "path_count": 1,
+      "paths": [
+        [
+          "mutter-atomic-profile",
+          "lay-atomic-proposal",
+          "shell-atomic-receipt",
+          "mutter-atomic-submit"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "lay-atomic-proposal"
+        ],
+        "producer": [
+          "mutter-atomic-profile"
+        ],
+        "mutation_owner": [
+          "mutter-atomic-submit"
+        ],
+        "authorization_owner": [
+          "shell-atomic-receipt"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {
+    "frame-ready-press": {
+      "mutation_owner": [
+        "mutter-atomic-submit"
+      ],
+      "candidate_rank_owner": [],
+      "authorization_owner": [
+        "shell-atomic-receipt"
+      ],
+      "render_owner": [],
+      "evidence_owner": [
+        "lay-atomic-proposal"
+      ],
+      "display_rank_owner": []
+    },
+    "paired-nonmodifier-release": {
+      "mutation_owner": [
+        "shell-release-consumer"
+      ],
+      "candidate_rank_owner": [],
+      "authorization_owner": [
+        "shell-paired-release-authorizer"
+      ],
+      "render_owner": [],
+      "evidence_owner": [
+        "shell-release-pair-ledger"
+      ],
+      "display_rank_owner": []
+    },
+    "modifier-release": {
+      "mutation_owner": [
+        "mutter-atomic-submit"
+      ],
+      "candidate_rank_owner": [],
+      "authorization_owner": [
+        "shell-atomic-receipt"
+      ],
+      "render_owner": [],
+      "evidence_owner": [
+        "lay-atomic-proposal"
+      ],
+      "display_rank_owner": []
+    }
+  },
+  "source_evidence": {
+    "expected": 0,
+    "verified": 0,
+    "complete": true
+  },
+  "issues": [
+    {
+      "code": "producer_relation_role_mismatch",
+      "message": "produces_for must originate at a producer",
+      "edge": "authority-press-lay-receipt",
+      "source": "lay-atomic-proposal",
+      "source_role": "evidence_owner"
+    },
+    {
+      "code": "producer_relation_role_mismatch",
+      "message": "produces_for must originate at a producer",
+      "edge": "authority-modifier-release-lay-receipt",
+      "source": "lay-atomic-proposal",
+      "source_role": "evidence_owner"
+    }
+  ],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": false,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

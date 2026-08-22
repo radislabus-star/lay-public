@@ -1,0 +1,62 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_ATOMIC_PROOF_KEYBOARD_ONLY_SESSION_MODE_IMPLEMENTATION_V25_V5_2026-08-22",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {"id": "proof-mode", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/lay-proof-mode.json", "expect": {"mode": "0664", "size_bytes": 115, "sha256": "c1246bd66f730ec55ecc57cd5e44086473834e68373d27fa96eb7b16067088af"}},
+    {"id": "shell-proof", "kind": "file", "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/shell/atomicInputMethodRoute.js", "expect": {"mode": "0664", "size_bytes": 16911, "sha256": "932af7eddb7eb0c931a590ced704a4ee960ffdcb5a0601a318598371bba38b92"}},
+    {"id": "mutter-owner", "kind": "file", "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-text-input.c", "expect": {"mode": "0664", "size_bytes": 52775, "sha256": "b8a439a1ab9375016e899b9799b8272b24e00001f3edb928543e0db83531ad46"}},
+    {"id": "installed-engine", "kind": "file", "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine", "expect": {"mode": "0755", "size_bytes": 6423488, "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a"}}
+  ],
+  "source_checks": [
+    {
+      "id": "pinned-proof-mode",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/lay-proof-mode.json",
+      "sha256": "c1246bd66f730ec55ecc57cd5e44086473834e68373d27fa96eb7b16067088af",
+      "forbidden_effect_patterns": [
+        {"effect": "restore_quick_settings", "regex": "quickSettings"},
+        {"effect": "add_audio_panel", "regex": "volume|camera|screenRecording"},
+        {"effect": "production_session_change", "regex": "install.*user.*session"}
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "add-keyboard-panel-owner", "kind": "source_edit"},
+      {"id": "sync-proof-mode", "kind": "remote_filesystem_write"},
+      {"id": "rerun-undo-proof", "kind": "ephemeral_process_start"}
+    ],
+    "forbidden": ["restore_quick_settings", "add_audio_panel", "production_session_change"]
+  },
+  "preserved_artifacts": [
+    {"id": "shell-proof-preserved", "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/shell/atomicInputMethodRoute.js", "policy": "immutable", "cursor_policy": "none", "rollback_policy": "preserve_exact_bytes", "baseline_check_id": "shell-proof"},
+    {"id": "mutter-owner-preserved", "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-text-input.c", "policy": "immutable", "cursor_policy": "none", "rollback_policy": "preserve_exact_bytes", "baseline_check_id": "mutter-owner"},
+    {"id": "installed-engine-preserved", "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine", "policy": "immutable_before_deployment", "cursor_policy": "none", "rollback_policy": "preserve_exact_bytes", "baseline_check_id": "installed-engine"}
+  ],
+  "identity_contracts": [
+    {"id": "keyboard-owner-without-audio", "producer": "lay-proof session mode", "consumer": "GNOME Shell InputSourceManager", "comparison": "right panel contains exactly keyboard and excludes quickSettings", "test_id": "mode-static"}
+  ],
+  "runtime_comparisons": [],
+  "invariants": [
+    {"id": "xkb-options-initialized", "statement": "the keyboard panel owner initializes KeyboardManager options before IBus readiness", "test_id": "undo-composite"},
+    {"id": "audio-remains-absent", "statement": "quickSettings, volume and camera owners remain absent", "test_id": "mode-static"},
+    {"id": "input-owners-unchanged", "statement": "Shell proof, Mutter text-input and installed Lay bytes remain unchanged", "test_id": "owner-parity"}
+  ],
+  "state_machine": {
+    "initial_state": "MINIMAL_MODE_MISSING_KEYBOARD_OWNER",
+    "steps": [
+      {"id": "add-keyboard-owner", "from": "MINIMAL_MODE_MISSING_KEYBOARD_OWNER", "to": "KEYBOARD_ONLY_MODE_BOUND", "mutates": true, "failure_state": "MODE_EDIT_FAILED", "cleanup": "restore only the proof-mode baseline bytes", "preserves": ["shell-proof-preserved", "mutter-owner-preserved", "installed-engine-preserved"], "test_id": "mode-edit-fault"},
+      {"id": "run-undo", "from": "KEYBOARD_ONLY_MODE_BOUND", "to": "UNDO_PROOF_FINISHED", "mutates": true, "failure_state": "UNDO_PROOF_FAILED", "cleanup": "terminate proof-owned processes and retain the failed suffix", "preserves": ["shell-proof-preserved", "mutter-owner-preserved", "installed-engine-preserved"], "test_id": "undo-fault"}
+    ],
+    "terminal_states": ["UNDO_PROOF_FINISHED", "MODE_EDIT_FAILED", "UNDO_PROOF_FAILED"]
+  },
+  "tests": [
+    {"id": "mode-edit-fault", "kind": "fault_injection", "expected": "a partial mode edit changes no runtime owner"},
+    {"id": "undo-fault", "kind": "fault_injection", "expected": "failed undo proof leaves zero proof-owned processes and retains evidence"},
+    {"id": "mode-static", "kind": "parity", "expected": "panel right is exactly keyboard; all other panel slots and components are empty"},
+    {"id": "owner-parity", "kind": "parity", "expected": "pinned Shell proof, Mutter owner and installed engine hashes remain unchanged"},
+    {"id": "undo-composite", "kind": "parity", "expected": "Shell starts, seven engine events are observed and exact double-Shift undo passes"}
+  ]
+}

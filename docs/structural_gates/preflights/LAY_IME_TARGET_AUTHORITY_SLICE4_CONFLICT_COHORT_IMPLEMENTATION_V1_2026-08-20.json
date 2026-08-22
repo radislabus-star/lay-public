@@ -1,0 +1,252 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-ime-target-authority-slice4-conflict-cohort-implementation-v1-2026-08-20",
+  "authority_bearing": true,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "authority-paper-after-slice3",
+      "kind": "file",
+      "path": "../../ime-canonical-target-authority-paper-2026-08-17.md",
+      "expect": {"mode": "0664", "size_bytes": 175186, "sha256": "c2b2588d16cc776dc9ca9a4bbb42deaab4130c9cc67bd1f9a0e5267af440c5e7"}
+    },
+    {
+      "id": "slice3-final-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE3_CANDIDATE_STATE_2026-08-20/final-receipt.json",
+      "expect": {"mode": "0664", "size_bytes": 5111, "sha256": "0243987e665d959f0285c528c2643f2a25067bf5b9ae7af1122c2cd76c41ff50"}
+    },
+    {
+      "id": "target-evidence-before-slice4",
+      "kind": "file",
+      "path": "../../../src/typing_transition/target_evidence.rs",
+      "expect": {"mode": "0664", "size_bytes": 51779, "sha256": "28c62b4ff746ab34506906102620d5f9ad57de1b5946a30aa6f9894fe456b7da"}
+    },
+    {
+      "id": "candidate-state-before-slice4",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/candidate_state.rs",
+      "expect": {"mode": "0664", "size_bytes": 24197, "sha256": "1cedca478e3ee64f8b9a414b6014544747600ec15f1374a4331f778992cf6b59"}
+    },
+    {
+      "id": "material-frame-before-slice4",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/material_frame.rs",
+      "expect": {"mode": "0664", "size_bytes": 39009, "sha256": "f5babdbd43d2e1d50a1d2a4e9d6021097183c902323f79c596ac9a7d30db538c"}
+    },
+    {
+      "id": "productive-proof-before-slice4",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/proof.rs",
+      "expect": {"mode": "0664", "size_bytes": 167179, "sha256": "22a7a52bf6804febe27c8fdd87df1e7b487f06c1fe2fb30d9ff4e52c0dcadd93"}
+    },
+    {
+      "id": "live-cache-preserved",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/cache.rs",
+      "expect": {"mode": "0664", "size_bytes": 23664, "sha256": "9da969bfff12dba0217954647b1ba8e21302365770abaa82178953fcf63fec07"}
+    },
+    {
+      "id": "live-bridge-preserved",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/bridge.rs",
+      "expect": {"mode": "0664", "size_bytes": 109138, "sha256": "bf47a5a7b4ae33541efc15a8de91fa406abd69044653f89aff0a6bfd4f143708"}
+    },
+    {
+      "id": "decision-owner-preserved",
+      "kind": "file",
+      "path": "../../../src/typing_transition/decision.rs",
+      "expect": {"mode": "0664", "size_bytes": 27803, "sha256": "f4ba3c3554650b19e178458818a11b165586a3ab86ff54fd106cd2d1d7054f1e"}
+    },
+    {
+      "id": "verifier-preserved",
+      "kind": "file",
+      "path": "../../../src/text_edit/structural_verifier.rs",
+      "expect": {"mode": "0664", "size_bytes": 7730, "sha256": "19201157bc09df5cca617132d67a242474aaa331ca58dc18acb0152818b7b826"}
+    },
+    {
+      "id": "installed-engine-preserved",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "expect": {"mode": "0755", "size_bytes": 6423488, "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a"}
+    },
+    {
+      "id": "installed-productive-preserved",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2m",
+      "expect": {"mode": "0644", "size_bytes": 17309944, "sha256": "40fb6a9f0d92c3c7502e47f9c70230d9b86020f622b08a5c799342f13e09ce44", "prefix_hex": "4c41595032563100"}
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "footprint-is-frame-bound",
+      "producer": "BoundFrameTargetV1 plus exact source snapshot",
+      "consumer": "ConflictCohortMemberShadowV1",
+      "comparison": "exact source reference scalar span projected length separator mask and footprint digest",
+      "test_id": "footprint-frame-parity"
+    },
+    {
+      "id": "duplicate-target-root-union",
+      "producer": "frame-bound targets with identical exact projected bytes and footprint",
+      "consumer": "canonical conflict member",
+      "comparison": "semantic evidence roots are unioned before cohort ordering without producer or arrival identity",
+      "test_id": "duplicate-root-permutation-parity"
+    },
+    {
+      "id": "complete-component-settlement",
+      "producer": "all Grounded Born and Rejected targets plus every applicable CompletenessScopeV1",
+      "consumer": "CohortVerdictV1",
+      "comparison": "Winner exists only for one grounded target in one complete conflict component with no blocker or preservation veto",
+      "test_id": "cohort-settlement-parity"
+    },
+    {
+      "id": "canonical-cohort-order",
+      "producer": "deduplicated conflict members",
+      "consumer": "ordered cohort hash and tied member array",
+      "comparison": "footprint bytes projected bytes material identity evidence-root digest and completeness identity ascending",
+      "test_id": "cohort-permutation-parity"
+    }
+  ],
+  "invariants": [
+    {"id": "validity-before-cohort", "statement": "cohort construction consumes frame-bound CandidateValidityShadowV1 and cannot change candidate state", "test_id": "candidate-state-preservation"},
+    {"id": "born-blocks-singleton", "statement": "a conflicting Born target participates in completeness and prevents a grounded singleton Winner", "test_id": "born-conflict-fault"},
+    {"id": "rejected-not-a-tie-member", "statement": "Rejected targets cannot become grounded tie members or authority", "test_id": "rejected-exclusion"},
+    {"id": "whole-field-incomplete-blocks", "statement": "whole-field Overflow or Failed completeness blocks every Winner", "test_id": "whole-field-incomplete-fault"},
+    {"id": "narrow-scope-needs-proof", "statement": "narrow completeness scope is usable only with a nonzero exhaustive partition proof reference", "test_id": "narrow-scope-proof-fault"},
+    {"id": "original-preserve-veto", "statement": "FrameOriginalPreservationV1 Preserve is consumed before every Winner path", "test_id": "preservation-veto"},
+    {"id": "multiple-components-abstain", "statement": "two independent nonempty edit components yield Abstain MultipleEditComponents", "test_id": "multiple-component-fault"},
+    {"id": "context-disabled", "statement": "context score rank and L3 L4 values are absent from Slice 4 settlement inputs", "test_id": "cohort-input-scan"},
+    {"id": "no-runtime-authority-change", "statement": "Slice 4 cannot issue a certificate rank display mutate teach install or restart runtime", "test_id": "live-route-semantic-parity"},
+    {"id": "no-case-specific-branch", "statement": "no literal word phrase suffix test id or source id enters runtime conditions", "test_id": "systemic-runtime-source-scan"}
+  ],
+  "preserved_artifacts": [
+    {"id": "slice3-result", "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE3_CANDIDATE_STATE_2026-08-20/final-receipt.json", "policy": "read_only_exact_bytes", "rollback_policy": "retain Slice 3 candidate-state proof unchanged", "baseline_check_id": "slice3-final-receipt"},
+    {"id": "current-live-cache", "path": "../../../src/nanda_wave/l2_field/cache.rs", "policy": "read_only_exact_bytes", "rollback_policy": "no cohort or verdict enters live cache", "baseline_check_id": "live-cache-preserved"},
+    {"id": "decision-and-verifier", "path": "../../../src/typing_transition/decision.rs", "policy": "read_only_exact_bytes", "rollback_policy": "no admission mutation or verifier change", "baseline_check_id": "decision-owner-preserved"},
+    {"id": "installed-runtime", "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine", "policy": "read_only_exact_bytes", "rollback_policy": "no install or process restart", "baseline_check_id": "installed-engine-preserved"}
+  ],
+  "runtime_comparisons": [
+    {
+      "id": "live-route-remains-unchanged",
+      "source": "current live L2 route before and after proof-only Slice 4",
+      "comparison": "exact_stable_projection",
+      "reason": "conflict cohort remains shadow-only",
+      "stable_fields": ["candidate surfaces", "rank", "verdict", "authority", "mutation count"],
+      "expected_to_change_fields": ["proof-only cohort counters and hashes"],
+      "observed_not_compared_fields": ["instrumented proof latency"],
+      "test_id": "live-route-semantic-parity"
+    }
+  ],
+  "source_checks": [
+    {
+      "id": "candidate-state-remains-validity-only",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/candidate_state.rs",
+      "sha256": "1cedca478e3ee64f8b9a414b6014544747600ec15f1374a4331f778992cf6b59",
+      "forbidden_effect_patterns": [
+        {"effect": "change_live_candidate_membership_rank_or_authority", "regex": "(?:AuthorizedEdit|CandidateGateAction::Eligible|AuthorityCertificateV1)"},
+        {"effect": "context_changes_candidate_state", "regex": "(?s)(?:context_hash|context_score|left_context_ref).{0,300}CandidateStateV1"},
+        {"effect": "literal_surface_runtime_branch", "regex": "(?i)(?:observed|surface|target)\\s*==\\s*\""}
+      ]
+    },
+    {
+      "id": "proof-remains-proof-only",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/proof.rs",
+      "sha256": "22a7a52bf6804febe27c8fdd87df1e7b487f06c1fe2fb30d9ff4e52c0dcadd93",
+      "forbidden_effect_patterns": [
+        {"effect": "generated_traffic", "regex": "(?i)(?:TcpStream|UdpSocket|reqwest|hyper::|https?://)"},
+        {"effect": "synthetic_fixture", "regex": "(?i)(?:synthetic|fixture).{0,80}(?:write|create|generate)"},
+        {"effect": "runtime_deployment", "regex": "(?i)(?:systemctl|daemon-reload|lay-runtime-control)"},
+        {"effect": "restart_lay_daemon", "regex": "(?i)(?:restart|stop|kill|pkill).{0,80}lay-daemon"},
+        {"effect": "restart_global_ibus_daemon", "regex": "(?i)(?:restart|stop|kill|pkill).{0,80}ibus-daemon"},
+        {"effect": "rewrite_productive_package", "regex": "(?s)(?:File::create|OpenOptions::new).{0,300}(?:p2m|PRODUCTIVE)"},
+        {"effect": "weaken_verifier_authority", "regex": "(?i)(?:bypass|skip|disable).{0,100}(?:verifier|SafetyGate)"},
+        {"effect": "change_double_shift_contract", "regex": "(?i)(?:double.?shift|auto.?undo).{0,120}(?:disable|remove|skip|ignore)"},
+        {"effect": "incomplete_cohort_issues_winner", "regex": "(?s)(?:Overflow|Failed|UpstreamIncomplete).{0,300}CohortVerdictV1::Winner"},
+        {"effect": "multiple_components_composed", "regex": "(?s)MultipleEditComponents.{0,300}CohortVerdictV1::Winner"},
+        {"effect": "preservation_veto_bypassed", "regex": "(?s)FrameOriginalPreservationVerdictV1::Preserve.{0,300}CohortVerdictV1::Winner"}
+      ]
+    },
+    {
+      "id": "live-cache-stays-byte-identical",
+      "path": "../../../src/nanda_wave/l2_field/cache.rs",
+      "sha256": "9da969bfff12dba0217954647b1ba8e21302365770abaa82178953fcf63fec07",
+      "forbidden_effect_patterns": [
+        {"effect": "cache_cohort_or_verdict", "regex": "(?:CohortVerdictV1|EditFootprintV1|CandidateStateV1)"},
+        {"effect": "change_live_candidate_membership_rank_or_authority", "regex": "(?:AuthorizedEdit|AuthorityCertificateV1|selected_winner)"}
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "create-conflict-cohort-shadow-owner", "kind": "source_file_create"},
+      {"id": "attach-proof-only-cohort-denominator", "kind": "source_edit"},
+      {"id": "run-focused-and-fixed-proof", "kind": "remote_test"},
+      {"id": "update-architecture-receipts-and-graph", "kind": "documentation_edit"}
+    ],
+    "forbidden": [
+      "generated_traffic", "synthetic_fixture", "literal_surface_runtime_branch",
+      "runtime_deployment", "restart_lay_daemon", "restart_global_ibus_daemon",
+      "rewrite_productive_package", "change_live_candidate_membership_rank_or_authority",
+      "cache_cohort_or_verdict", "context_changes_candidate_state",
+      "incomplete_cohort_issues_winner", "preservation_veto_bypassed",
+      "multiple_components_composed", "weaken_verifier_authority", "change_double_shift_contract"
+    ]
+  },
+  "state_machine": {
+    "initial_state": "SLICE3_SHADOW_PASS_RUNTIME_UNCHANGED",
+    "terminal_states": ["SLICE4_SHADOW_PASS_RUNTIME_UNCHANGED", "SLICE4_IMPLEMENTATION_REJECTED_RUNTIME_UNCHANGED", "SLICE4_PROOF_FAILED_RUNTIME_UNCHANGED"],
+    "steps": [
+      {
+        "id": "construct-frame-bound-conflict-components",
+        "from": "SLICE3_SHADOW_PASS_RUNTIME_UNCHANGED",
+        "to": "CONFLICT_COMPONENT_SHADOW_READY",
+        "mutates": true,
+        "failure_state": "SLICE4_IMPLEMENTATION_REJECTED_RUNTIME_UNCHANGED",
+        "cleanup": "retain failing isolated diff and evidence; do not add a fallback owner or change live output",
+        "preserves": ["slice3-result", "current-live-cache", "decision-and-verifier", "installed-runtime"],
+        "test_id": "footprint-frame-fault"
+      },
+      {
+        "id": "derive-canonical-shadow-verdict",
+        "from": "CONFLICT_COMPONENT_SHADOW_READY",
+        "to": "COHORT_VERDICT_SHADOW_READY",
+        "mutates": true,
+        "failure_state": "SLICE4_IMPLEMENTATION_REJECTED_RUNTIME_UNCHANGED",
+        "cleanup": "discard shadow verdict and preserve candidate states original evidence and live route",
+        "preserves": ["slice3-result", "current-live-cache", "decision-and-verifier", "installed-runtime"],
+        "test_id": "cohort-settlement-fault"
+      },
+      {
+        "id": "run-fixed-conflict-cohort-shadow-proof",
+        "from": "COHORT_VERDICT_SHADOW_READY",
+        "to": "SLICE4_SHADOW_PASS_RUNTIME_UNCHANGED",
+        "mutates": false,
+        "failure_state": "SLICE4_PROOF_FAILED_RUNTIME_UNCHANGED",
+        "cleanup": "retain failed receipt stop after one causal analysis and make no deployment or authority change",
+        "preserves": ["slice3-result", "current-live-cache", "decision-and-verifier", "installed-runtime"],
+        "test_id": "fixed-conflict-cohort-shadow-proof"
+      }
+    ]
+  },
+  "tests": [
+    {"id": "footprint-frame-parity", "kind": "parity", "expected": "same exact frame target produces the same exact footprint"},
+    {"id": "footprint-frame-fault", "kind": "fault_injection", "expected": "stale frame span or source snapshot aborts conflict construction"},
+    {"id": "duplicate-root-permutation-parity", "kind": "parity", "expected": "duplicate output aliases merge semantic roots without producer votes"},
+    {"id": "cohort-truth-table", "kind": "unit", "expected": "zero one many complete and incomplete members map exactly to Winner Tied or Abstain"},
+    {"id": "cohort-settlement-parity", "kind": "parity", "expected": "same complete component state and preservation evidence produce the same verdict"},
+    {"id": "cohort-settlement-fault", "kind": "fault_injection", "expected": "missing completeness or preservation input aborts shadow settlement without live output"},
+    {"id": "cohort-permutation-parity", "kind": "parity", "expected": "all input permutations produce identical ordered members hash and verdict"},
+    {"id": "candidate-state-preservation", "kind": "parity", "expected": "cohort construction does not mutate Born Grounded or Rejected"},
+    {"id": "born-conflict-fault", "kind": "fault_injection", "expected": "one Grounded plus one conflicting Born cannot issue Winner"},
+    {"id": "rejected-exclusion", "kind": "unit", "expected": "Rejected is excluded from grounded tie membership"},
+    {"id": "whole-field-incomplete-fault", "kind": "fault_injection", "expected": "field overflow or failure yields incomplete Tied or Abstain never Winner"},
+    {"id": "narrow-scope-proof-fault", "kind": "fault_injection", "expected": "unproved narrow scope fails closed"},
+    {"id": "preservation-veto", "kind": "fault_injection", "expected": "Preserve original yields Abstain PreserveOriginal before Winner"},
+    {"id": "multiple-component-fault", "kind": "fault_injection", "expected": "two independent components yield Abstain MultipleEditComponents"},
+    {"id": "cohort-input-scan", "kind": "integration", "expected": "cohort settlement accepts no context score rank L3 or L4 input"},
+    {"id": "fixed-conflict-cohort-shadow-proof", "kind": "integration", "expected": "fixed 13x100 reports deterministic cohorts zero false singleton zero incomplete Winner and zero lost grounded target"},
+    {"id": "live-route-semantic-parity", "kind": "parity", "expected": "shadow-disabled live semantic output and authority remain exact"},
+    {"id": "systemic-runtime-source-scan", "kind": "integration", "expected": "changed source has no literal case deployment package write certificate or live owner callsite"}
+  ]
+}

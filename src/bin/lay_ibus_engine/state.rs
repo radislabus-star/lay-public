@@ -1,3 +1,4 @@
+use super::output::EngineOutput;
 use lay::config::LayConfig;
 use lay::text_edit::{
     decide_text_transition, EditAction, LatentTextTransitionCandidate, TextEditBackend,
@@ -6,7 +7,6 @@ use lay::text_edit::{
 };
 use std::time::{Duration, Instant};
 use zbus::fdo;
-use zbus::object_server::SignalEmitter;
 
 use super::engine::{
     LayIbusEngine, PendingSystemOutcomeFeedback, RecentCommittedTailReplace,
@@ -219,10 +219,42 @@ impl LayIbusEngine {
         .can_execute()
     }
 
+    #[cfg(test)]
     pub(crate) fn new(
         path: String,
         shared: Shared,
         layout_is_ru: bool,
+        managed_input: bool,
+        config: LayConfig,
+    ) -> Self {
+        let profile = if layout_is_ru {
+            lay::exact_layout_authority::FactoryEngineProfile::Ru
+        } else {
+            lay::exact_layout_authority::FactoryEngineProfile::UsQwerty
+        };
+        Self::new_with_factory_profile(path, shared, profile, managed_input, config)
+    }
+
+    pub(crate) fn new_from_component(
+        path: String,
+        shared: Shared,
+        component_name: &str,
+        managed_input: bool,
+        config: LayConfig,
+    ) -> Self {
+        Self::new_with_factory_profile(
+            path,
+            shared,
+            lay::exact_layout_authority::FactoryEngineProfile::from_component_name(component_name),
+            managed_input,
+            config,
+        )
+    }
+
+    fn new_with_factory_profile(
+        path: String,
+        shared: Shared,
+        factory_engine_profile: lay::exact_layout_authority::FactoryEngineProfile,
         managed_input: bool,
         config: LayConfig,
     ) -> Self {
@@ -249,13 +281,17 @@ impl LayIbusEngine {
             preedit_candidate_index: 0,
             preedit_fast: Default::default(),
             preedit_dirty: false,
+            pending_display_frame: None,
             pending_passthrough_preedit_clear: false,
             cursor_cell_width: 0,
             surrounding_text_supported: false,
             surrounding_text_snapshot: None,
-            layout_is_ru,
+            surrounding_observation_revision: 0,
+            factory_engine_profile,
+            layout_is_ru: factory_engine_profile.initial_layout_is_ru(),
             shift_active: false,
             shift_used_as_modifier: false,
+            shift_pressed_at: None,
             alt_completion_active: false,
             alt_used_as_modifier: false,
             handled_press_keycodes: Default::default(),
@@ -269,12 +305,17 @@ impl LayIbusEngine {
             word_input_mode: None,
             managed_input,
             config,
+            atomic_route_active: false,
+            atomic_speculation: false,
+            deferred_layout_actions: Vec::new(),
+            deferred_learning_actions: Vec::new(),
         };
         engine.rebuild_preedit_fast_from_tail();
         engine
     }
 
     pub(super) fn reset_for_ibus_focus_change(&mut self) {
+        self.invalidate_input_frame_background_work();
         self.pending_ime_completion_learning = None;
         let preserve_tail =
             self.should_preserve_focus_handoff() || self.shared_active_path_preserved();
@@ -286,7 +327,9 @@ impl LayIbusEngine {
         self.preedit_candidate_index = 0;
         self.preedit_fast.clear_candidate_tracking();
         self.preedit_dirty = false;
+        self.pending_display_frame = None;
         self.pending_passthrough_preedit_clear = false;
+        self.shift_pressed_at = None;
         self.last_shift_release_at = None;
         if !preserve_tail {
             self.last_tail_input_at = None;
@@ -295,6 +338,7 @@ impl LayIbusEngine {
             self.suppress_next_committed_tail_autocorrect = false;
             self.clear_autocorrect_suppression_handoff();
         }
+        self.shift_active = false;
         self.shift_used_as_modifier = false;
         self.alt_completion_active = false;
         self.alt_used_as_modifier = false;
@@ -317,6 +361,7 @@ impl LayIbusEngine {
     }
 
     pub(super) fn reset_for_ibus_soft_reset(&mut self) {
+        self.invalidate_input_frame_background_work();
         // GTK resets the IBus context after an unhandled committed-tail
         // Backspace. Keep only an edit trajectory that was armed immediately
         // before that Backspace; focus changes still clear it unconditionally.
@@ -335,9 +380,12 @@ impl LayIbusEngine {
         self.preedit_candidate_index = 0;
         self.preedit_fast.reset();
         self.preedit_dirty = false;
+        self.pending_display_frame = None;
         self.pending_passthrough_preedit_clear = false;
+        self.shift_pressed_at = None;
         self.last_shift_release_at = None;
         self.recent_committed_tail_replace = None;
+        self.shift_active = false;
         self.shift_used_as_modifier = false;
         self.alt_completion_active = false;
         self.alt_used_as_modifier = false;
@@ -355,7 +403,7 @@ impl LayIbusEngine {
     /// has different client-side caret semantics.
     pub(crate) async fn replace_committed_tail(
         &mut self,
-        emitter: &SignalEmitter<'_>,
+        emitter: &mut EngineOutput<'_, '_>,
         request: CommittedTailReplaceRequest,
     ) -> fdo::Result<bool> {
         if request.is_noop() {
@@ -412,61 +460,47 @@ impl LayIbusEngine {
             intent,
             request.expected_tail,
         );
-        let (plan, structural_action) =
-            match decide_text_transition(&visible_state, transition_candidate) {
-                TextTransitionDecision::AlreadyApplied => {
-                    trace::record_committed_tail_replace(
-                        source,
-                        "target_state_already_observed",
-                        backspaces,
-                        "",
-                    );
-                    return Ok(true);
-                }
-                TextTransitionDecision::Apply { plan, action } => (plan, action),
-                TextTransitionDecision::Reject { rejection, action } => {
-                    if let Some(action) = action.as_ref() {
-                        lay::action_log::record_candidate_edit_action_before_apply(
-                            action,
-                            lay::action_log::MutationLogRoute::IME_COMMITTED_TAIL,
-                            None,
-                        );
-                        trace::record_committed_tail_replace(
-                            source,
-                            rejection.reason(),
-                            backspaces,
-                            action.to_text(),
-                        );
-                    } else if rejection.reason() != "noop_transition" {
-                        trace::record_committed_tail_replace_guard(
-                            source,
-                            rejection.reason(),
-                            backspaces,
-                            rejection.expected(),
-                            rejection.actual(),
-                        );
-                    }
-                    return Ok(false);
-                }
-            };
-        let edit_action = if let Some(winner_action) = winner_action {
-            let winner_plan = winner_action.plan();
-            if !winner_action.allow_apply()
-                || winner_action.from_text() != structural_action.from_text()
-                || winner_action.to_text() != structural_action.to_text()
-                || winner_plan != Some(&plan)
-            {
+        let transition_candidate = if let Some(winner_action) = winner_action {
+            transition_candidate.with_selected_action(winner_action)
+        } else {
+            transition_candidate
+        };
+        let (plan, edit_action) = match decide_text_transition(&visible_state, transition_candidate)
+        {
+            TextTransitionDecision::AlreadyApplied => {
                 trace::record_committed_tail_replace(
                     source,
-                    "winner_action_structural_mismatch",
+                    "target_state_already_observed",
                     backspaces,
-                    winner_action.to_text(),
+                    "",
                 );
+                return Ok(true);
+            }
+            TextTransitionDecision::Apply { plan, action } => (plan, action),
+            TextTransitionDecision::Reject { rejection, action } => {
+                if let Some(action) = action.as_ref() {
+                    lay::action_log::record_candidate_edit_action_before_apply(
+                        action,
+                        lay::action_log::MutationLogRoute::IME_COMMITTED_TAIL,
+                        None,
+                    );
+                    trace::record_committed_tail_replace(
+                        source,
+                        rejection.reason(),
+                        backspaces,
+                        action.to_text(),
+                    );
+                } else if rejection.reason() != "noop_transition" {
+                    trace::record_committed_tail_replace_guard(
+                        source,
+                        rejection.reason(),
+                        backspaces,
+                        rejection.expected(),
+                        rejection.actual(),
+                    );
+                }
                 return Ok(false);
             }
-            winner_action
-        } else {
-            structural_action
         };
         let logical_text = edit_action.to_text().to_string();
         lay::action_log::record_candidate_edit_action_before_apply(
@@ -561,20 +595,21 @@ impl LayIbusEngine {
             forward_cursor_steps(emitter, KEY_LEFT, authorized_plan.move_left).await?;
             let delete_started = Instant::now();
             if authorized_plan.backspaces > 0 {
-                Self::delete_surrounding_text(
-                    emitter,
-                    -(authorized_plan.backspaces as i32),
-                    authorized_plan.backspaces,
-                )
-                .await
-                .map_err(|e| fdo::Error::Failed(e.to_string()))?;
+                emitter
+                    .delete_surrounding_text(
+                        -(authorized_plan.backspaces as i32),
+                        authorized_plan.backspaces,
+                    )
+                    .await
+                    .map_err(|e| fdo::Error::Failed(e.to_string()))?;
             }
             delete_us = delete_started.elapsed().as_micros();
             text.clone()
         };
         let commit_started = Instant::now();
         if !commit_text.is_empty() {
-            Self::commit_text(emitter, make_ibus_text(commit_text))
+            emitter
+                .commit_text(make_ibus_text(commit_text))
                 .await
                 .map_err(|e| fdo::Error::Failed(e.to_string()))?;
         }
@@ -754,15 +789,17 @@ fn surrounding_snapshot_match_for_suffix(
 }
 
 async fn forward_cursor_steps(
-    emitter: &SignalEmitter<'_>,
+    emitter: &mut EngineOutput<'_, '_>,
     keyval: u32,
     count: u32,
 ) -> fdo::Result<()> {
     for _ in 0..count {
-        LayIbusEngine::forward_key_event(emitter, keyval, 0, 0)
+        emitter
+            .forward_key_event(keyval, 0, 0)
             .await
             .map_err(|error| fdo::Error::Failed(error.to_string()))?;
-        LayIbusEngine::forward_key_event(emitter, keyval, 0, RELEASE_MASK)
+        emitter
+            .forward_key_event(keyval, 0, RELEASE_MASK)
             .await
             .map_err(|error| fdo::Error::Failed(error.to_string()))?;
     }

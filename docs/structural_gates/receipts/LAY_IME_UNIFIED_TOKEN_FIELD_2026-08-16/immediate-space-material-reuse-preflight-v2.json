@@ -1,0 +1,159 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "candidate-sources-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/correction_core/candidate_sources.rs",
+      "sha256": "a972a50feaccd673742f18bab2fb102bccb5e0bd166ba53cdac248d007c10a11",
+      "size_bytes": 51947
+    },
+    {
+      "exists": true,
+      "id": "typing-rule-evaluator-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/typing_pipeline/candidates.rs",
+      "sha256": "0919d50f1841add863dfd027b51b77e44833a9311a9c984622fed4e418f2d017",
+      "size_bytes": 7305
+    },
+    {
+      "exists": true,
+      "id": "glued-word-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/phrase_reader/glued_phrase.rs",
+      "sha256": "798056413a15fed897d622caf30b0f8b22d126adb9c274d7e035ee0e14829294",
+      "size_bytes": 11530
+    },
+    {
+      "exists": true,
+      "id": "space-worker-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
+      "sha256": "18af5baf478e9c8cdb647a77300b8dc2a74335b447aec51da1d2da0a42f73e55",
+      "size_bytes": 13740
+    },
+    {
+      "exists": true,
+      "id": "slice5-failed-receipt",
+      "kind": "file",
+      "mode": "0600",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice5/immediate-space-replay-attempt2.json",
+      "sha256": "9839e2444827e9dbfb14e7958726b7edc5f7fc6fd42abcf7cef22da66d6754d5",
+      "size_bytes": 8095
+    },
+    {
+      "exists": true,
+      "id": "installed-engine",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a",
+      "size_bytes": 6423488
+    },
+    {
+      "exists": true,
+      "id": "installed-productive-v90",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2m",
+      "sha256": "40fb6a9f0d92c3c7502e47f9c70230d9b86020f622b08a5c799342f13e09ce44",
+      "size_bytes": 17309944
+    },
+    {
+      "exists": true,
+      "id": "structural-verifier",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/text_edit/structural_verifier.rs",
+      "sha256": "19201157bc09df5cca617132d67a242474aaa331ca58dc18acb0152818b7b826",
+      "size_bytes": 7730
+    },
+    {
+      "exists": true,
+      "id": "runtime-control",
+      "kind": "file",
+      "mode": "0775",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../scripts/lay-runtime-control.sh",
+      "sha256": "746d077115277775acb275e077b57823ace9e416d2575eaf0bc53d3327d64e6d",
+      "size_bytes": 5032
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 9,
+    "forbidden_side_effect_kinds": [
+      "boundary_only_authority_bypass",
+      "cache_authorized_edit",
+      "cache_input_frame_identity",
+      "cache_selected_winner",
+      "change_model_package_bytes",
+      "increase_space_wait_budget",
+      "late_edit_after_fallback",
+      "literal_surface_runtime_branch",
+      "restart_global_ibus_daemon",
+      "unbounded_material_cache",
+      "unbounded_worker_per_printable",
+      "weaken_verifier_authority"
+    ],
+    "identity_contracts": 3,
+    "invariants": 5,
+    "planned_side_effect_kinds": [
+      "remote_test",
+      "source_edit",
+      "temporary_service_activation"
+    ],
+    "preserved_artifacts": 5,
+    "runtime_comparisons": 1,
+    "source_checks": 4,
+    "tests": 11
+  },
+  "manifest_sha256": "8ac7de82587d1c2b286117b97a37b6f835dab13e3811ddd6d7814d4ec19461e5",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "candidate-material-has-no-case-or-authority-shortcut",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/correction_core/candidate_sources.rs",
+      "sha256": "a972a50feaccd673742f18bab2fb102bccb5e0bd166ba53cdac248d007c10a11",
+      "size_bytes": 51947
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "space-worker-keeps-bounded-one-shot-contract",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
+      "sha256": "18af5baf478e9c8cdb647a77300b8dc2a74335b447aec51da1d2da0a42f73e55",
+      "size_bytes": 13740
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "verifier-remains-fail-closed",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/text_edit/structural_verifier.rs",
+      "sha256": "19201157bc09df5cca617132d67a242474aaa331ca58dc18acb0152818b7b826",
+      "size_bytes": 7730
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "global-ibus-controller-remains-preserved",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../scripts/lay-runtime-control.sh",
+      "sha256": "746d077115277775acb275e077b57823ace9e416d2575eaf0bc53d3327d64e6d",
+      "size_bytes": 5032
+    }
+  ],
+  "task_id": "lay-ime-immediate-space-material-reuse-v2-2026-08-16",
+  "verdict": "READY_TO_IMPLEMENT"
+}

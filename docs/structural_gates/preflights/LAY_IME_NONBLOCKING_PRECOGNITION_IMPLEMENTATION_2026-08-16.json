@@ -1,0 +1,131 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-ime-nonblocking-precognition-2026-08-16",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {"id": "cargo-manifest", "kind": "file", "path": "../../../Cargo.toml", "expect": {"size_bytes": 2399, "sha256": "6c8956ad608e0da63d54a7577c27a9066475f8c889648a498ee8cb0a1baeb5ae", "mode": "0664"}},
+    {"id": "ibus-engine-root", "kind": "file", "path": "../../../src/bin/lay_ibus_engine.rs", "expect": {"size_bytes": 2037, "sha256": "d2a8af0d3cf4506c721474e38bc5faa7773e5e09764f6af07222f20403b8ae44", "mode": "0664"}},
+    {"id": "ibus-factory", "kind": "file", "path": "../../../src/bin/lay_ibus_engine/factory.rs", "expect": {"size_bytes": 1728, "sha256": "a1c3e68f03ed2ca164482a691bf83da1b3f23d7d7577891be658b8a75058d653", "mode": "0664"}},
+    {"id": "ibus-engine-state", "kind": "file", "path": "../../../src/bin/lay_ibus_engine/engine.rs", "expect": {"size_bytes": 12881, "sha256": "cb9f116ea8d165d3387f9634028d5c9ac2a01dceddbd885049423fcd98918133", "mode": "0664"}},
+    {"id": "preedit", "kind": "file", "path": "../../../src/bin/lay_ibus_engine/preedit.rs", "expect": {"size_bytes": 26058, "sha256": "da4df5608fd55faf896cf15aaf69b0bd600db1c97a95a57d3c8ddc5c019d80ed", "mode": "0664"}},
+    {"id": "preedit-readout", "kind": "file", "path": "../../../src/bin/lay_ibus_engine/preedit_readout.rs", "expect": {"size_bytes": 6884, "sha256": "17c20467dd8fee3f6be7a06249c5fc0dbd5a4c7b8ea3faddb6321ab4f4a343e2", "mode": "0664"}},
+    {"id": "composition-commit", "kind": "file", "path": "../../../src/bin/lay_ibus_engine/composition_commit.rs", "expect": {"size_bytes": 13118, "sha256": "15d324ed3e717ac93653412b85a5bdce455d3a09c355f49d04c89574a6b81908", "mode": "0664"}},
+    {"id": "space-prefetch", "kind": "file", "path": "../../../src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs", "expect": {"size_bytes": 8111, "sha256": "76b4c6bc13dbadd20ad11e4df0c49106bd66e03b6a311250b81d878f288c2b18", "mode": "0664"}},
+    {"id": "candidate-gate", "kind": "file", "path": "../../../src/nanda_wave/candidate_gate.rs", "expect": {"size_bytes": 84226, "sha256": "5813ca5e979619d27e19bb19d32af7b49a6ff6e05300cb7478697a28d69c47db", "mode": "0664"}},
+    {"id": "productive-live", "kind": "file", "path": "../../../src/nanda_wave/l2_field/productive_v1/live.rs", "expect": {"size_bytes": 22284, "sha256": "d80b5037cb2e4c2d1925cac4b6c96d0736ab5de48fc97fb61f7ee42cab3380aa", "mode": "0664"}},
+    {"id": "productive-runtime", "kind": "file", "path": "../../../src/nanda_wave/l2_field/productive_v1/packaged_runtime.rs", "expect": {"size_bytes": 175860, "sha256": "0898a0e6307166846a9847c17d07d108cf349720b338dcfeda8e0cef620c8e53", "mode": "0664"}},
+    {"id": "installed-ime-1-0-31", "kind": "file", "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine", "expect": {"size_bytes": 6398136, "sha256": "b754481efdf333bba8cb8ae1bbf252cf2d7f2bd3cdd7f00dc49924c0c49a52ec", "mode": "0755"}}
+  ],
+  "source_checks": [
+    {
+      "id": "no-heavy-field-in-printable-handler",
+      "path": "../../../src/bin/lay_ibus_engine/composition_commit.rs",
+      "sha256": "15d324ed3e717ac93653412b85a5bdce455d3a09c355f49d04c89574a6b81908",
+      "forbidden_effect_patterns": [
+        {"effect": "synchronous_v90_on_printable_key", "regex": "commit_managed_passthrough_char[\\s\\S]{0,1500}(?:live_completion_candidates|canonical_ime_candidates)"},
+        {"effect": "global_ibus_restart", "regex": "(?:restart|kill|pkill).{0,40}ibus-daemon"}
+      ]
+    },
+    {
+      "id": "no-candidate-source-removal",
+      "path": "../../../src/nanda_wave/candidate_gate.rs",
+      "sha256": "5813ca5e979619d27e19bb19d32af7b49a6ff6e05300cb7478697a28d69c47db",
+      "forbidden_effect_patterns": [
+        {"effect": "disable_productive_v90_for_latency", "regex": "(?i)(?:disable|skip|return Vec::new).{0,120}(?:productive|canonical).*latency"},
+        {"effect": "literal_surface_runtime_branch", "regex": "(?:token|surface|partial)\\s*==\\s*\\\"(?:закончишь|ошибку|сильный|работают)\\\""}
+      ]
+    },
+    {
+      "id": "no-space-wait-expansion",
+      "path": "../../../src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
+      "sha256": "76b4c6bc13dbadd20ad11e4df0c49106bd66e03b6a311250b81d878f288c2b18",
+      "forbidden_effect_patterns": [
+        {"effect": "blocking_space_wait_expansion", "regex": "SPACE_PREFETCH_WAIT_BUDGET[^;]{0,100}from_millis\\((?:[2-9][0-9]|[1-9][0-9]{2,})\\)"}
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "instrument-warm-v90-stages", "kind": "filesystem_edit"},
+      {"id": "add-latest-only-precognition-owner", "kind": "filesystem_edit"},
+      {"id": "run-focused-remote-proof", "kind": "cargo_test"},
+      {"id": "deploy-only-after-proof", "kind": "service_activation"}
+    ],
+    "forbidden": [
+      "synchronous_v90_on_printable_key",
+      "disable_productive_v90_for_latency",
+      "literal_surface_runtime_branch",
+      "blocking_space_wait_expansion",
+      "global_ibus_restart"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "installed-ime-baseline",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "policy": "leave_unchanged_until_remote_functional_and_latency_proofs_pass",
+      "rollback_policy": "restore exact 1.0.31 binary and extension metadata",
+      "baseline_check_id": "installed-ime-1-0-31"
+    }
+  ],
+  "state_machine": {
+    "initial_state": "LIVE_1_0_31_FUNCTIONAL_PASS_LATENCY_WATCH",
+    "terminal_states": ["REMOTE_PROOF_PASS_RUNTIME_UNCHANGED", "PROOF_FAILED_RUNTIME_UNCHANGED"],
+    "steps": [
+      {
+        "id": "profile-warm-single-process-route",
+        "from": "LIVE_1_0_31_FUNCTIONAL_PASS_LATENCY_WATCH",
+        "to": "ROOT_STAGE_MEASURED_RUNTIME_UNCHANGED",
+        "mutates": true,
+        "failure_state": "PROOF_FAILED_RUNTIME_UNCHANGED",
+        "cleanup": "retain instrumentation receipt and do not install",
+        "preserves": ["installed-ime-baseline"],
+        "test_id": "instrumentation-failure-preserves-runtime"
+      },
+      {
+        "id": "implement-nonblocking-precognition-route",
+        "from": "ROOT_STAGE_MEASURED_RUNTIME_UNCHANGED",
+        "to": "SOURCE_FIXED_RUNTIME_UNCHANGED",
+        "mutates": true,
+        "failure_state": "PROOF_FAILED_RUNTIME_UNCHANGED",
+        "cleanup": "do not install and retain live 1.0.31",
+        "preserves": ["installed-ime-baseline"],
+        "test_id": "precognition-stale-result"
+      },
+      {
+        "id": "run-remote-proof",
+        "from": "SOURCE_FIXED_RUNTIME_UNCHANGED",
+        "to": "REMOTE_PROOF_PASS_RUNTIME_UNCHANGED",
+        "mutates": false,
+        "failure_state": "PROOF_FAILED_RUNTIME_UNCHANGED",
+        "cleanup": "do not install and retain live 1.0.31",
+        "preserves": ["installed-ime-baseline"],
+        "test_id": "remote-functional-latency-gate"
+      }
+    ]
+  },
+  "tests": [
+    {"id": "warm-stage-profile", "kind": "integration", "expected": "one warmed process reports separate L1.1, lexical, Productive V90 setup/binding/traversal/reduce/readout and total timings"},
+    {"id": "instrumentation-failure-preserves-runtime", "kind": "fault_injection", "expected": "a profiling build or run failure leaves installed 1.0.31 unchanged"},
+    {"id": "precognition-identity-parity", "kind": "parity", "expected": "producer and consumer compare the same path, focus, tail epoch, context, token and generation fields"},
+    {"id": "precognition-stale-result", "kind": "fault_injection", "expected": "a mismatched or superseded completed field is discarded and cannot update visible candidates"},
+    {"id": "candidate-coverage-parity", "kind": "parity", "expected": "the eventual full-field result is byte-for-byte candidate equivalent to the synchronous 1.0.31 gate for the fixed corpus"},
+    {"id": "printable-hot-path-budget", "kind": "integration", "expected": "printable-key p99 is at most 5 ms and maximum is below 20 ms without executing Productive V90 synchronously"},
+    {"id": "remote-functional-latency-gate", "kind": "integration", "expected": "focused and changed gates pass, candidate coverage is preserved, and live p50/p90/p99 satisfy the recorded budget"},
+    {"id": "proof-failure-preserves-runtime", "kind": "fault_injection", "expected": "any failed proof leaves installed 1.0.31 and global ibus-daemon unchanged"}
+  ],
+  "invariants": [
+    {"id": "one-heavy-field-owner", "statement": "one latest-only worker owns full L1.1 to L2 to L3 candidate materialization for visible IME precognition", "test_id": "candidate-coverage-parity"},
+    {"id": "printable-never-waits-for-v90", "statement": "the IBus printable-key handler performs no synchronous Productive V90 traversal", "test_id": "printable-hot-path-budget"},
+    {"id": "result-identity-is-exact", "statement": "a completed candidate field may be rendered or prefetched only for the exact immutable input snapshot that produced it", "test_id": "precognition-identity-parity"},
+    {"id": "latency-does-not-buy-less-evidence", "statement": "nonblocking scheduling changes readiness timing but never removes L1.1, lexical, Productive V90, L3 or decision evidence from the eventual field", "test_id": "candidate-coverage-parity"}
+  ],
+  "identity_contracts": [
+    {"id": "printable-snapshot-to-worker", "producer": "IBus printable-key tail snapshot", "consumer": "precognition material worker", "comparison": "engine path plus focus receipt plus tail epoch plus context tail plus normalized token plus generation", "test_id": "precognition-identity-parity"},
+    {"id": "worker-result-to-render", "producer": "completed full candidate field", "consumer": "IBus preedit display owner", "comparison": "exact request identity and current visible token state", "test_id": "precognition-identity-parity"},
+    {"id": "sync-baseline-to-async-result", "producer": "1.0.31 synchronous candidate gate", "consumer": "1.0.32 background candidate gate", "comparison": "ordered candidate surface, suffix, replacement flag, source and score", "test_id": "candidate-coverage-parity"}
+  ],
+  "runtime_comparisons": []
+}

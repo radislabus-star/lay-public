@@ -61,6 +61,10 @@ fn correct_wrong_layout_cyrillic_word_with_policy(
     let converted_is_known_english_layout =
         is_known_english_layout_autoswitch_word(&converted_lower);
     let layout_generated_trailing = original_trailing.is_empty() && !converted_trailing.is_empty();
+    let english_candidates = english_layout_autoswitch_candidates(converted_word, policy);
+    if english_candidates.is_empty() {
+        return None;
+    }
     if short_russian_word_strongly_blocks_technical_layout(&original_lower, original_word) {
         return None;
     }
@@ -79,18 +83,13 @@ fn correct_wrong_layout_cyrillic_word_with_policy(
         return None;
     }
 
-    english_layout_autoswitch_candidates(converted_word, policy)
-        .into_iter()
-        .find_map(|candidate_lower| {
-            let candidate_word = apply_word_case(original_word, &candidate_lower);
-            let candidate = format!("{converted_leading}{candidate_word}{converted_trailing}");
-            (is_common_en_technical_word(&candidate_lower)
-                || is_known_non_russian_to_english_layout_candidate(
-                    &original_lower,
-                    &candidate_lower,
-                ))
-            .then_some(candidate)
-        })
+    english_candidates.into_iter().find_map(|candidate_lower| {
+        let candidate_word = apply_word_case(original_word, &candidate_lower);
+        let candidate = format!("{converted_leading}{candidate_word}{converted_trailing}");
+        (is_common_en_technical_word(&candidate_lower)
+            || is_known_non_russian_to_english_layout_candidate(&original_lower, &candidate_lower))
+        .then_some(candidate)
+    })
 }
 
 fn is_known_non_russian_to_english_layout_candidate(original_lower: &str, candidate: &str) -> bool {

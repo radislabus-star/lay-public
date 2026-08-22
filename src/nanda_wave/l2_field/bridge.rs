@@ -6,14 +6,24 @@ use crate::correction_core::{
 };
 use crate::text_case::apply_word_case;
 use crate::typing_transition::{action as action_operator, decision::TransitionDecisionCore};
-use crate::word_reader::{replace_last_text_word, split_last_alphabetic_token};
+use crate::word_reader::{
+    replace_last_text_word, split_last_alphabetic_token, split_last_trimmed_ws_token,
+    split_word_punctuation,
+};
 use rayon::prelude::*;
+use std::collections::{BTreeMap, BTreeSet};
 
+use super::productive_v1::{
+    CanonicalContourRelation, CanonicalContourSeed, CanonicalFormGrounding,
+    CanonicalSurfaceGrounding,
+};
 use super::runtime::{
-    CanonicalL2FieldReadout, CompositionalFormBirth, CompositionalLemmaBirth, L2FieldAuthority,
-    L2FieldAvailability, L2LexicalSeed, L2LexicalSeedOrigin, L2LocalVerdict, ProductiveL2FormBirth,
-    StandaloneL2Field, StandaloneL2Readout, CANONICAL_L2_PRODUCTIVE_SOURCE_ID,
-    CANONICAL_L2_READOUT_SOURCE_ID, CANONICAL_L2_SURFACE_SOURCE_ID,
+    CanonicalFieldCacheDisposition, CanonicalFieldTelemetry, CanonicalL2FieldReadout,
+    CompositionalFormBirth, CompositionalLemmaBirth, L2FieldAuthority, L2FieldAvailability,
+    L2LexicalSeed, L2LexicalSeedOrigin, L2LocalVerdict, ObservedCanonicalL2FieldReadout,
+    ProductiveL2FormBirth, StandaloneL2Field, StandaloneL2Readout,
+    CANONICAL_L2_PRODUCTIVE_SOURCE_ID, CANONICAL_L2_READOUT_SOURCE_ID,
+    CANONICAL_L2_SURFACE_SOURCE_ID,
 };
 
 pub(crate) fn canonical_text_candidates(original: &str) -> Vec<UnifiedCorrectionCandidate> {
@@ -21,54 +31,59 @@ pub(crate) fn canonical_text_candidates(original: &str) -> Vec<UnifiedCorrection
 }
 
 pub(crate) fn canonical_text_readout(original: &str) -> CanonicalL2FieldReadout {
-    if let Some(readout) = super::cache::get(original) {
-        return readout;
-    }
-    let (mut readout, boundary_candidates) = rayon::join(
-        || canonical_owned_text_candidates(original),
+    canonical_text_readout_observed(original).readout
+}
+
+pub(crate) fn canonical_text_readout_observed(original: &str) -> ObservedCanonicalL2FieldReadout {
+    let (mut observed, boundary_candidates) = rayon::join(
+        || canonical_owned_text_candidates_observed(original),
         || boundary_text_candidates(original),
     );
-    for candidate in boundary_candidates
-        .into_iter()
-        .chain(short_layout_candidates(original))
-    {
-        if let Some(existing) = readout
+    for candidate in boundary_candidates {
+        if let Some(existing) = observed
+            .readout
             .candidates
             .iter_mut()
             .find(|existing| existing.replacement == candidate.replacement)
         {
             existing.merge_evidence(candidate);
         } else {
-            readout.candidates.push(candidate);
+            observed.readout.candidates.push(candidate);
         }
     }
-    super::cache::store(original, &readout);
-    readout
+    observed
 }
 
 /// Projects the one canonical L1.1 -> Productive V90 field into the live IME
 /// lattice. The shared candidate gate remains the only ranking owner and Tab
 /// remains the only mutation authority for whole-token replacements.
-pub(crate) fn canonical_ime_candidates(
+pub(crate) fn canonical_ime_candidates_observed(
     context_prefix: &str,
     token: &str,
     limit: usize,
 ) -> (
     L2FieldAvailability,
     Vec<crate::nanda_wave::l2::L2ImeWordCandidate>,
+    CanonicalFieldTelemetry,
 ) {
     if limit == 0 {
-        return (L2FieldAvailability::UnsupportedInput, Vec::new());
+        return (
+            L2FieldAvailability::UnsupportedInput,
+            Vec::new(),
+            CanonicalFieldTelemetry::default(),
+        );
     }
     let original = if context_prefix.is_empty() {
         token.to_string()
     } else {
         format!("{context_prefix}{token}")
     };
-    let readout = canonical_owned_text_candidates(&original);
+    let observed = canonical_owned_text_candidates_observed(&original);
+    let telemetry = observed.telemetry;
+    let readout = observed.readout;
     let availability = readout.availability;
     if availability != L2FieldAvailability::Ready {
-        return (availability, Vec::new());
+        return (availability, Vec::new(), telemetry);
     }
 
     let normalized = token.to_lowercase();
@@ -132,7 +147,7 @@ pub(crate) fn canonical_ime_candidates(
     });
     candidates.dedup_by(|left, right| left.surface.eq_ignore_ascii_case(&right.surface));
     candidates.truncate(limit);
-    (availability, candidates)
+    (availability, candidates, telemetry)
 }
 
 fn canonical_ime_score_milli(candidate: &UnifiedCorrectionCandidate) -> u32 {
@@ -216,127 +231,210 @@ pub(crate) fn cold_probe_surfaces(context_prefix: &str, damaged_surface: &str) -
                 .collect()
         })
         .unwrap_or_default();
-    surfaces.extend(
-        short_layout_candidates(&original)
-            .into_iter()
-            .filter_map(|candidate| {
-                split_last_alphabetic_token(&candidate.replacement)
-                    .map(|(_, token)| token.to_lowercase())
-            }),
-    );
     surfaces.sort();
     surfaces.dedup();
     surfaces
 }
 
-fn short_layout_candidates(original: &str) -> Vec<UnifiedCorrectionCandidate> {
-    let Some((_, token)) = split_last_alphabetic_token(original) else {
-        return Vec::new();
-    };
-    if token.chars().count() != 1 || original.split_whitespace().count() < 2 {
-        return Vec::new();
-    }
-    crate::nanda_wave::l2::hot_short_layout_candidates(original)
-        .into_iter()
-        .filter_map(|candidate| {
-            let (_, projected_token) = split_last_alphabetic_token(&candidate.text)?;
-            let replacement = replace_last_text_word(original, projected_token)?;
-            let origin = candidate.origin;
-            let error_class = action_operator::classify_token_transition(
-                original,
-                &replacement,
-                origin,
-                TypingErrorClass::WrongLayout,
-            );
-            let gate = TransitionDecisionCore::admit_candidate_proposal(
-                original,
-                &replacement,
-                error_class,
-                origin,
-            );
-            Some(UnifiedCorrectionCandidate::new(
-                replacement,
-                CorrectionDecisionSource::Nanda,
-                origin,
-                CANONICAL_L2_SURFACE_SOURCE_ID,
-                error_class,
-                gate,
-            ))
-        })
-        .collect()
-}
-
 fn canonical_owned_text_candidates(original: &str) -> CanonicalL2FieldReadout {
-    let started = std::time::Instant::now();
-    let Some((_, token)) = split_last_alphabetic_token(original) else {
-        return CanonicalL2FieldReadout::abstain(L2FieldAvailability::UnsupportedInput);
-    };
-    let normalized_token = token.to_lowercase();
-    if normalized_token.chars().count() < 2
-        || !normalized_token
-            .chars()
-            .all(crate::keyboard::is_cyrillic_letter)
-    {
-        return CanonicalL2FieldReadout::abstain(L2FieldAvailability::UnsupportedInput);
-    }
-    let seed_started = std::time::Instant::now();
-    let l11_seeds = match live_l11_seed_surfaces(
-        token,
-        super::super::lexical_grokking::L11_LIVE_LATTICE_LIMIT,
-    ) {
-        Ok(seeds) => seeds,
-        Err(_) => {
-            return CanonicalL2FieldReadout::unavailable(L2FieldAvailability::L11ServiceUnavailable)
-        }
-    };
-    let seed_duration = seed_started.elapsed();
-    if l11_seeds.is_empty() {
-        return CanonicalL2FieldReadout::abstain(L2FieldAvailability::EmptyL11Lattice);
-    }
-    // Productive V90 consumes the bounded L1.1 lattice directly. The canonical
-    // package remains a read-only identity index; its historical candidate
-    // generation and local verdict are not executed on the live route.
-    let readout = match super::installed_l2_field() {
-        Err(_) => {
-            CanonicalL2FieldReadout::unavailable(L2FieldAvailability::CanonicalPackageUnavailable)
-        }
-        Ok(canonical_index) => match super::installed_productive_l2_v1() {
-            Err(_) => CanonicalL2FieldReadout::unavailable(
-                L2FieldAvailability::ProductivePackageUnavailable,
-            ),
-            Ok(runtime) => super::productive_v1::live_productive_v1_readout(
-                original,
-                token,
-                canonical_index,
-                &runtime,
-                &l11_seeds,
-            )
-            .unwrap_or_else(|_| {
-                CanonicalL2FieldReadout::unavailable(L2FieldAvailability::ProductiveReadoutError)
-            }),
-        },
-    };
-    if std::env::var_os("LAY_L2_FIELD_TRACE").is_some() {
-        let finished = std::time::Instant::now();
-        eprintln!(
-            "l2_field_trace owner=productive_v90 seeds_us={} productive_us={} total_us={} seeds={} candidates={}",
-            seed_duration.as_micros(),
-            finished
-                .duration_since(started)
-                .saturating_sub(seed_duration)
-                .as_micros(),
-            finished.duration_since(started).as_micros(),
-            l11_seeds.len(),
-            readout.candidates.len(),
-        );
-    }
-    readout
+    canonical_owned_text_candidates_observed(original).readout
 }
 
-fn live_l11_seed_surfaces(
-    token: &str,
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum CanonicalInputTokenKind {
+    Cyrillic,
+    PhysicalLayout,
+    MixedLayout,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+struct CanonicalInputToken<'a> {
+    context_prefix: &'a str,
+    surface: &'a str,
+    kind: CanonicalInputTokenKind,
+}
+
+fn canonical_input_token(original: &str) -> Option<CanonicalInputToken<'_>> {
+    if let Some((context_prefix, surface)) = split_last_trimmed_ws_token(original) {
+        if admitted_physical_layout_surface(surface)
+            || admitted_contextual_short_layout_surface(context_prefix, surface)
+        {
+            return Some(CanonicalInputToken {
+                context_prefix,
+                surface,
+                kind: CanonicalInputTokenKind::PhysicalLayout,
+            });
+        }
+        if admitted_mixed_layout_surface(surface) {
+            return Some(CanonicalInputToken {
+                context_prefix,
+                surface,
+                kind: CanonicalInputTokenKind::MixedLayout,
+            });
+        }
+    }
+
+    let (context_prefix, surface) = split_last_alphabetic_token(original)?;
+    surface
+        .chars()
+        .all(crate::keyboard::is_cyrillic_letter)
+        .then_some(CanonicalInputToken {
+            context_prefix,
+            surface,
+            kind: CanonicalInputTokenKind::Cyrillic,
+        })
+}
+
+fn admitted_contextual_short_layout_surface(context_prefix: &str, surface: &str) -> bool {
+    if context_prefix.trim().is_empty()
+        || surface.chars().count() != 1
+        || !crate::layout_autoswitch::is_ascii_layout_letter_surface(surface)
+    {
+        return false;
+    }
+    let projected = crate::dict::convert(surface, crate::dict::Direction::Us2Ru);
+    projected.chars().all(crate::keyboard::is_cyrillic_letter)
+        && (crate::russian_lexicon::is_known_russian_word_or_form(&projected)
+            || crate::lexicon::is_common_ru_word(&projected)
+            || crate::nanda_wave::l2::l2_surface_foundation_contains(&projected))
+}
+
+fn admitted_mixed_layout_surface(surface: &str) -> bool {
+    if surface.chars().count() < 2
+        || crate::word_recognizer::is_cli_option_token(surface)
+        || surface.chars().any(|character| !character.is_alphabetic())
+    {
+        return false;
+    }
+    let has_ascii = surface
+        .chars()
+        .any(|character| character.is_ascii_alphabetic());
+    let has_cyrillic = surface.chars().any(crate::keyboard::is_cyrillic_letter);
+    has_ascii && has_cyrillic
+}
+
+fn admitted_physical_layout_surface(surface: &str) -> bool {
+    if !crate::layout_autoswitch::is_ascii_layout_letter_surface(surface)
+        || crate::word_recognizer::is_cli_option_token(surface)
+    {
+        return false;
+    }
+
+    let (_, lexical_core, _) = split_word_punctuation(surface);
+    if lexical_core.is_empty()
+        || crate::word_recognizer::is_ascii_technical_or_brand_token(surface)
+        || crate::layout_autoswitch::is_protected_ascii_layout_token(surface)
+        || crate::layout_autoswitch::is_protected_ascii_layout_token(lexical_core)
+    {
+        return false;
+    }
+
+    let admitted_short_projection = surface.chars().count() <= 3
+        && exact_layout_surface_has_independent_lexical_support(&crate::dict::convert(
+            surface,
+            crate::dict::Direction::Us2Ru,
+        ));
+    admitted_short_projection
+        || !crate::layout_autoswitch::is_known_english_layout_autoswitch_word(
+            &lexical_core.to_ascii_lowercase(),
+        )
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+struct CanonicalQueryContour {
+    surface: String,
+    relation: CanonicalContourRelation,
+}
+
+#[derive(Clone, Debug)]
+struct CanonicalQueryResult {
+    contour: CanonicalQueryContour,
+    seeds: Vec<crate::nanda_wave::L11SeedSurface>,
+}
+
+fn canonical_query_contours(input: CanonicalInputToken<'_>) -> Vec<CanonicalQueryContour> {
+    let mut contours = vec![CanonicalQueryContour {
+        surface: input.surface.to_string(),
+        relation: CanonicalContourRelation::Identity,
+    }];
+    match input.kind {
+        CanonicalInputTokenKind::PhysicalLayout => push_query_contour(
+            &mut contours,
+            crate::dict::convert(input.surface, crate::dict::Direction::Us2Ru),
+            CanonicalContourRelation::ExactLayout,
+        ),
+        CanonicalInputTokenKind::Cyrillic => {
+            let identity = crate::word_recognizer::recognize_token(input.surface);
+            if !identity.known_ru {
+                let projected = crate::dict::convert(input.surface, crate::dict::Direction::Ru2Us);
+                if admitted_ascii_projection(&projected) {
+                    push_query_contour(
+                        &mut contours,
+                        projected,
+                        CanonicalContourRelation::ExactLayout,
+                    );
+                }
+            }
+        }
+        CanonicalInputTokenKind::MixedLayout => {
+            let ascii_count = input
+                .surface
+                .chars()
+                .filter(|character| character.is_ascii_alphabetic())
+                .count();
+            let cyrillic_count = input
+                .surface
+                .chars()
+                .filter(|character| crate::keyboard::is_cyrillic_letter(*character))
+                .count();
+            if cyrillic_count >= ascii_count {
+                push_query_contour(
+                    &mut contours,
+                    crate::dict::convert(input.surface, crate::dict::Direction::Us2Ru),
+                    CanonicalContourRelation::ExactLayout,
+                );
+            }
+            if ascii_count >= cyrillic_count {
+                push_query_contour(
+                    &mut contours,
+                    crate::dict::convert(input.surface, crate::dict::Direction::Ru2Us),
+                    CanonicalContourRelation::ExactLayout,
+                );
+            }
+        }
+    }
+    contours
+}
+
+fn push_query_contour(
+    contours: &mut Vec<CanonicalQueryContour>,
+    surface: String,
+    relation: CanonicalContourRelation,
+) {
+    if surface.is_empty()
+        || contours
+            .iter()
+            .any(|contour| contour.surface.eq_ignore_ascii_case(&surface))
+    {
+        return;
+    }
+    contours.push(CanonicalQueryContour { surface, relation });
+}
+
+fn admitted_ascii_projection(surface: &str) -> bool {
+    let identity = crate::word_recognizer::recognize_token(surface);
+    identity.known_en
+        || crate::lexicon::is_common_en_technical_word(&surface.to_ascii_lowercase())
+        || crate::word_recognizer::is_ascii_technical_or_brand_token(surface)
+        || crate::layout_autoswitch::is_known_english_layout_autoswitch_word(
+            &surface.to_ascii_lowercase(),
+        )
+}
+
+fn live_l11_contour_results(
+    contours: &[CanonicalQueryContour],
     material_limit: usize,
-) -> std::io::Result<Vec<crate::nanda_wave::L11SeedSurface>> {
+) -> std::io::Result<Vec<CanonicalQueryResult>> {
     let socket_path = crate::nanda_wave::default_l11_socket_path();
     if !socket_path.exists() {
         return Err(std::io::Error::new(
@@ -344,16 +442,527 @@ fn live_l11_seed_surfaces(
             "L1.1 service socket is unavailable",
         ));
     }
-    Ok(crate::nanda_wave::request_l11_seed_surfaces(
-        &socket_path,
-        token,
-        material_limit.max(1),
-        l11_service_timeout(),
-    )?
-    .into_iter()
-    .filter(|seed| !seed.surface.chars().any(char::is_whitespace))
-    .take(material_limit)
-    .collect())
+    contours
+        .par_iter()
+        .map(|contour| {
+            let seeds = crate::nanda_wave::request_l11_seed_surfaces(
+                &socket_path,
+                &contour.surface,
+                material_limit.max(1),
+                l11_service_timeout(),
+            )?
+            .into_iter()
+            .filter(|seed| !seed.surface.chars().any(char::is_whitespace))
+            .take(material_limit)
+            .collect();
+            Ok(CanonicalQueryResult {
+                contour: contour.clone(),
+                seeds,
+            })
+        })
+        .collect()
+}
+
+fn merge_contour_seeds(results: &[CanonicalQueryResult]) -> Vec<CanonicalContourSeed> {
+    let exact_layout_surfaces = results
+        .iter()
+        .filter(|result| result.contour.relation == CanonicalContourRelation::ExactLayout)
+        .map(|result| result.contour.surface.to_lowercase())
+        .collect::<BTreeSet<_>>();
+    let mut by_identity = BTreeMap::<(Option<u32>, String), CanonicalContourSeed>::new();
+    for result in results {
+        for seed in &result.seeds {
+            let normalized = seed.surface.to_lowercase();
+            let relation = if exact_layout_surfaces.contains(&normalized) {
+                CanonicalContourRelation::ExactLayout
+            } else if result.contour.relation == CanonicalContourRelation::ExactLayout {
+                CanonicalContourRelation::LayoutThenTypo
+            } else {
+                CanonicalContourRelation::Identity
+            };
+            let query_surface = if relation == CanonicalContourRelation::ExactLayout {
+                results
+                    .iter()
+                    .find(|candidate| {
+                        candidate.contour.relation == CanonicalContourRelation::ExactLayout
+                            && candidate
+                                .contour
+                                .surface
+                                .eq_ignore_ascii_case(&seed.surface)
+                    })
+                    .map(|candidate| candidate.contour.surface.clone())
+                    .unwrap_or_else(|| result.contour.surface.clone())
+            } else {
+                result.contour.surface.clone()
+            };
+            let key = (seed.terminal_id, normalized);
+            by_identity
+                .entry(key)
+                .and_modify(|retained| {
+                    retained.seed.authority |= seed.authority;
+                    retained.seed.score_milli = retained.seed.score_milli.max(seed.score_milli);
+                    if relation > retained.relation {
+                        retained.relation = relation;
+                        retained.query_surface.clone_from(&query_surface);
+                    }
+                })
+                .or_insert_with(|| CanonicalContourSeed {
+                    query_surface,
+                    seed: seed.clone(),
+                    relation,
+                });
+        }
+    }
+    let mut merged = by_identity.into_values().collect::<Vec<_>>();
+    merged.sort_by(|left, right| {
+        right
+            .seed
+            .authority
+            .cmp(&left.seed.authority)
+            .then_with(|| {
+                contour_seed_priority(right.relation).cmp(&contour_seed_priority(left.relation))
+            })
+            .then_with(|| right.seed.score_milli.cmp(&left.seed.score_milli))
+            .then_with(|| left.seed.terminal_id.cmp(&right.seed.terminal_id))
+            .then_with(|| left.seed.surface.cmp(&right.seed.surface))
+    });
+    merged.truncate(super::super::lexical_grokking::L11_LIVE_LATTICE_LIMIT);
+    merged
+}
+
+const fn contour_seed_priority(relation: CanonicalContourRelation) -> u8 {
+    match relation {
+        CanonicalContourRelation::ExactLayout => 3,
+        CanonicalContourRelation::Identity => 2,
+        CanonicalContourRelation::LayoutThenTypo => 1,
+        CanonicalContourRelation::InverseGeometry => 0,
+    }
+}
+
+fn canonical_form_groundings(
+    canonical_index: &StandaloneL2Field,
+    results: &[CanonicalQueryResult],
+) -> Vec<CanonicalFormGrounding> {
+    const MAX_FORM_GROUNDINGS: usize = 32;
+    const MAX_INVERSE_FORMS_PER_CONTOUR: usize = 16;
+
+    let mut by_form = BTreeMap::<u32, CanonicalFormGrounding>::new();
+    for result in results {
+        let query_peak = result.seeds.iter().map(|seed| seed.score_milli).max();
+        if result.contour.relation == CanonicalContourRelation::ExactLayout {
+            if let Some(form_ref) = canonical_index.form_ref_for_surface(&result.contour.surface) {
+                merge_form_grounding(
+                    &mut by_form,
+                    CanonicalFormGrounding {
+                        form_ref,
+                        normalized_surface: result.contour.surface.to_lowercase(),
+                        support_milli: query_peak.unwrap_or(1_000).max(1_000),
+                        relation: CanonicalContourRelation::ExactLayout,
+                    },
+                );
+            }
+        }
+        let inverse_relation = if result.contour.relation == CanonicalContourRelation::Identity {
+            CanonicalContourRelation::InverseGeometry
+        } else {
+            CanonicalContourRelation::LayoutThenTypo
+        };
+        // Canonical inverse geometry is an independent bounded lookup lane. A
+        // missing L1.1 seed must not disable it, but its minimal support never
+        // turns it into an authoritative L1.1 observation.
+        let inverse_support = query_peak.unwrap_or(1).max(1);
+        for form_ref in canonical_index
+            .single_edit_form_refs(&result.contour.surface, MAX_INVERSE_FORMS_PER_CONTOUR)
+        {
+            let Some(surface) = canonical_index
+                .decode_form_ref(form_ref)
+                .map(std::borrow::Cow::into_owned)
+            else {
+                continue;
+            };
+            merge_form_grounding(
+                &mut by_form,
+                CanonicalFormGrounding {
+                    form_ref,
+                    normalized_surface: surface,
+                    support_milli: inverse_support,
+                    relation: inverse_relation,
+                },
+            );
+        }
+    }
+    let mut groundings = by_form.into_values().collect::<Vec<_>>();
+    groundings.sort_by(|left, right| {
+        right
+            .relation
+            .cmp(&left.relation)
+            .then_with(|| right.support_milli.cmp(&left.support_milli))
+            .then_with(|| left.form_ref.cmp(&right.form_ref))
+    });
+    groundings.truncate(MAX_FORM_GROUNDINGS);
+    groundings
+}
+
+fn canonical_surface_groundings(
+    canonical_index: &StandaloneL2Field,
+    results: &[CanonicalQueryResult],
+) -> Vec<CanonicalSurfaceGrounding> {
+    const MAX_DIRECT_SURFACE_GROUNDINGS: usize = 4;
+    const MAX_REFERENCE_SURFACE_GROUNDINGS_PER_CONTOUR: usize = 2;
+
+    let mut by_surface = BTreeMap::<String, CanonicalSurfaceGrounding>::new();
+    for result in results {
+        let query_peak = result.seeds.iter().map(|seed| seed.score_milli).max();
+        if result.contour.relation == CanonicalContourRelation::ExactLayout
+            && exact_layout_surface_has_independent_lexical_support(&result.contour.surface)
+        {
+            let normalized_surface = result.contour.surface.to_lowercase();
+            by_surface.insert(
+                normalized_surface.clone(),
+                CanonicalSurfaceGrounding {
+                    normalized_surface,
+                    support_milli: query_peak.unwrap_or(1_000).max(1_000),
+                    relation: CanonicalContourRelation::ExactLayout,
+                },
+            );
+        }
+        let relation = if result.contour.relation == CanonicalContourRelation::Identity {
+            CanonicalContourRelation::InverseGeometry
+        } else {
+            CanonicalContourRelation::LayoutThenTypo
+        };
+        let support_milli = query_peak.unwrap_or(1).max(1);
+        for surface in reference_backed_missing_letter_surfaces(
+            &result.contour.surface,
+            MAX_REFERENCE_SURFACE_GROUNDINGS_PER_CONTOUR,
+        ) {
+            if canonical_index.form_ref_for_surface(&surface).is_some() {
+                continue;
+            }
+            let normalized_surface = surface.to_lowercase();
+            by_surface
+                .entry(normalized_surface.clone())
+                .and_modify(|retained| {
+                    retained.support_milli = retained.support_milli.max(support_milli);
+                    retained.relation = retained.relation.max(relation);
+                })
+                .or_insert(CanonicalSurfaceGrounding {
+                    normalized_surface,
+                    support_milli,
+                    relation,
+                });
+        }
+    }
+    let mut groundings = by_surface.into_values().collect::<Vec<_>>();
+    groundings.sort_by(|left, right| {
+        right
+            .relation
+            .cmp(&left.relation)
+            .then_with(|| right.support_milli.cmp(&left.support_milli))
+            .then_with(|| left.normalized_surface.cmp(&right.normalized_surface))
+    });
+    groundings.truncate(MAX_DIRECT_SURFACE_GROUNDINGS);
+    groundings
+}
+
+fn exact_layout_surface_has_independent_lexical_support(surface: &str) -> bool {
+    let lower = surface.to_lowercase();
+    if lower.chars().all(crate::keyboard::is_cyrillic_letter) {
+        return crate::russian_lexicon::is_reference_known_russian_word_or_form(&lower)
+            || crate::russian_lexicon::is_known_russian_word_or_form(&lower)
+            || crate::lexicon::is_common_ru_word(&lower)
+            || crate::nanda_wave::l2::l2_surface_foundation_contains(&lower);
+    }
+    if lower
+        .chars()
+        .all(|character| character.is_ascii_alphabetic())
+    {
+        let identity = crate::word_recognizer::recognize_token(&lower);
+        return identity.known_en
+            || crate::lexicon::is_common_en_technical_word(&lower)
+            || crate::word_recognizer::is_ascii_technical_or_brand_token(&lower)
+            || crate::layout_autoswitch::is_known_english_layout_autoswitch_word(&lower);
+    }
+    false
+}
+
+fn merge_form_grounding(
+    by_form: &mut BTreeMap<u32, CanonicalFormGrounding>,
+    grounding: CanonicalFormGrounding,
+) {
+    by_form
+        .entry(grounding.form_ref)
+        .and_modify(|retained| {
+            retained.support_milli = retained.support_milli.max(grounding.support_milli);
+            retained.relation = retained.relation.max(grounding.relation);
+        })
+        .or_insert(grounding);
+}
+
+fn canonical_contour_identity_bytes(
+    results: &[CanonicalQueryResult],
+    seeds: &[CanonicalContourSeed],
+    forms: &[CanonicalFormGrounding],
+    surfaces: &[CanonicalSurfaceGrounding],
+) -> Vec<u8> {
+    let mut bytes = b"LAY-CONTOUR-FIELD-V2\0".to_vec();
+    push_identity_count(&mut bytes, results.len());
+    for result in results {
+        bytes.push(result.contour.relation.tag());
+        push_identity_text(&mut bytes, &result.contour.surface);
+        push_identity_count(&mut bytes, result.seeds.len());
+        for seed in &result.seeds {
+            bytes.extend_from_slice(&seed.terminal_id.unwrap_or(u32::MAX).to_le_bytes());
+            bytes.push(u8::from(seed.authority));
+            bytes.extend_from_slice(&seed.score_milli.to_le_bytes());
+            push_identity_text(&mut bytes, &seed.surface);
+        }
+    }
+    push_identity_count(&mut bytes, seeds.len());
+    for evidence in seeds {
+        bytes.push(evidence.relation.tag());
+        push_identity_text(&mut bytes, &evidence.query_surface);
+        bytes.extend_from_slice(&evidence.seed.terminal_id.unwrap_or(u32::MAX).to_le_bytes());
+        bytes.push(u8::from(evidence.seed.authority));
+        bytes.extend_from_slice(&evidence.seed.score_milli.to_le_bytes());
+        push_identity_text(&mut bytes, &evidence.seed.surface);
+    }
+    push_identity_count(&mut bytes, forms.len());
+    for grounding in forms {
+        bytes.push(grounding.relation.tag());
+        bytes.extend_from_slice(&grounding.form_ref.to_le_bytes());
+        bytes.extend_from_slice(&grounding.support_milli.to_le_bytes());
+        push_identity_text(&mut bytes, &grounding.normalized_surface);
+    }
+    push_identity_count(&mut bytes, surfaces.len());
+    for grounding in surfaces {
+        bytes.push(grounding.relation.tag());
+        bytes.extend_from_slice(&grounding.support_milli.to_le_bytes());
+        push_identity_text(&mut bytes, &grounding.normalized_surface);
+    }
+    bytes
+}
+
+fn push_identity_count(bytes: &mut Vec<u8>, count: usize) {
+    bytes.extend_from_slice(&(count.min(u32::MAX as usize) as u32).to_le_bytes());
+}
+
+fn push_identity_text(bytes: &mut Vec<u8>, text: &str) {
+    push_identity_count(bytes, text.len());
+    bytes.extend_from_slice(text.as_bytes());
+}
+
+fn canonical_owned_text_candidates_observed(original: &str) -> ObservedCanonicalL2FieldReadout {
+    let started = std::time::Instant::now();
+    let Some(input) = canonical_input_token(original) else {
+        return observed_field_readout(
+            CanonicalL2FieldReadout::abstain(L2FieldAvailability::UnsupportedInput),
+            started,
+            0,
+            CanonicalFieldCacheDisposition::NotRequested,
+            0,
+        );
+    };
+    let token = input.surface;
+    let query_contours = canonical_query_contours(input);
+    if token.chars().count() < 2 && query_contours.len() == 1 {
+        return observed_field_readout(
+            CanonicalL2FieldReadout::abstain(L2FieldAvailability::UnsupportedInput),
+            started,
+            0,
+            CanonicalFieldCacheDisposition::NotRequested,
+            0,
+        );
+    }
+    let seed_started = std::time::Instant::now();
+    let query_results = match live_l11_contour_results(
+        &query_contours,
+        super::super::lexical_grokking::L11_LIVE_LATTICE_LIMIT,
+    ) {
+        Ok(results) => results,
+        Err(_) => {
+            return observed_field_readout(
+                CanonicalL2FieldReadout::unavailable(L2FieldAvailability::L11ServiceUnavailable),
+                started,
+                elapsed_us(seed_started.elapsed()),
+                CanonicalFieldCacheDisposition::NotRequested,
+                0,
+            )
+        }
+    };
+    let contour_seeds = merge_contour_seeds(&query_results);
+    let l11_seeds = contour_seeds
+        .iter()
+        .map(|evidence| evidence.seed.clone())
+        .collect::<Vec<_>>();
+    let seed_duration = seed_started.elapsed();
+    // Productive V90 consumes one typed contour field. Canonical inverse forms
+    // ground that field but never become independent L1.1 authority.
+    let (readout, cache_disposition, field_generation) = match super::installed_l2_field() {
+        Err(_) => (
+            CanonicalL2FieldReadout::unavailable(L2FieldAvailability::CanonicalPackageUnavailable),
+            CanonicalFieldCacheDisposition::NotRequested,
+            0,
+        ),
+        Ok(canonical_index) => {
+            let form_groundings = canonical_form_groundings(canonical_index, &query_results);
+            let surface_groundings = canonical_surface_groundings(canonical_index, &query_results);
+            if contour_seeds.is_empty()
+                && form_groundings.is_empty()
+                && surface_groundings.is_empty()
+            {
+                (
+                    CanonicalL2FieldReadout::abstain(L2FieldAvailability::EmptyL11Lattice),
+                    CanonicalFieldCacheDisposition::NotRequested,
+                    0,
+                )
+            } else {
+                match super::installed_productive_l2_v1() {
+                    Err(error) => {
+                        if std::env::var_os("LAY_L2_FIELD_TRACE").is_some() {
+                            eprintln!("l2_field_trace productive_admission_error={error:?}");
+                        }
+                        (
+                            CanonicalL2FieldReadout::unavailable(
+                                L2FieldAvailability::ProductivePackageUnavailable,
+                            ),
+                            CanonicalFieldCacheDisposition::NotRequested,
+                            0,
+                        )
+                    }
+                    Ok(runtime) => {
+                        let contour_identity = canonical_contour_identity_bytes(
+                            &query_results,
+                            &contour_seeds,
+                            &form_groundings,
+                            &surface_groundings,
+                        );
+                        let key = super::cache::CanonicalTokenKey::new(
+                            super::productive_v1::canonical_live_scene_bytes(
+                                input.context_prefix,
+                                token,
+                                canonical_index,
+                            ),
+                            &contour_identity,
+                            &l11_seeds,
+                            runtime.l11_package_sha256(),
+                            runtime.canonical_l2_package_sha256(),
+                            runtime.package_sha256(),
+                        );
+                        match super::cache::get_or_prepare(key, || {
+                            super::productive_v1::prepare_live_productive_v1_field(
+                                input.context_prefix,
+                                token,
+                                canonical_index,
+                                &runtime,
+                                &contour_seeds,
+                                &form_groundings,
+                                &surface_groundings,
+                            )
+                        }) {
+                            Ok(prepared) => {
+                                let disposition = match prepared.disposition {
+                                    super::cache::FieldCacheDisposition::Produced => {
+                                        CanonicalFieldCacheDisposition::Produced
+                                    }
+                                    super::cache::FieldCacheDisposition::Waited => {
+                                        CanonicalFieldCacheDisposition::Waited
+                                    }
+                                    super::cache::FieldCacheDisposition::ReadyHit => {
+                                        CanonicalFieldCacheDisposition::ReadyHit
+                                    }
+                                };
+                                let readout = if !super::cache::generation_is_current(
+                                    prepared.generation,
+                                ) || prepared.field.productive_package_sha256()
+                                    != runtime.package_sha256()
+                                {
+                                    CanonicalL2FieldReadout::unavailable(
+                                        L2FieldAvailability::ProductiveReadoutError,
+                                    )
+                                } else {
+                                    super::productive_v1::materialize_live_productive_v1_field(
+                                        original,
+                                        token,
+                                        &prepared.field,
+                                    )
+                                    .unwrap_or_else(|error| {
+                                        if std::env::var_os("LAY_L2_FIELD_TRACE").is_some() {
+                                            eprintln!(
+                                                "l2_field_trace productive_materialization_error={error:?}"
+                                            );
+                                        }
+                                        CanonicalL2FieldReadout::unavailable(
+                                            L2FieldAvailability::ProductiveReadoutError,
+                                        )
+                                    })
+                                };
+                                (readout, disposition, prepared.generation)
+                            }
+                            Err(error) => {
+                                if std::env::var_os("LAY_L2_FIELD_TRACE").is_some() {
+                                    eprintln!("l2_field_trace field_cache_error={error:?}");
+                                }
+                                (
+                                    CanonicalL2FieldReadout::unavailable(
+                                        L2FieldAvailability::ProductiveReadoutError,
+                                    ),
+                                    CanonicalFieldCacheDisposition::Failed,
+                                    0,
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    };
+    let observed = observed_field_readout(
+        readout,
+        started,
+        elapsed_us(seed_duration),
+        cache_disposition,
+        field_generation,
+    );
+    if std::env::var_os("LAY_L2_FIELD_TRACE").is_some() {
+        eprintln!(
+            "l2_field_trace owner=productive_v90 seeds_us={} productive_us={} total_us={} contours={} seeds={} candidates={} field_cache={:?} field_generation={}",
+            observed.telemetry.l11_us,
+            observed.telemetry.productive_v90_us,
+            observed.telemetry.total_us,
+            query_contours.len(),
+            l11_seeds.len(),
+            observed.readout.candidates.len(),
+            observed.telemetry.cache_disposition,
+            observed.telemetry.field_generation,
+        );
+    }
+    observed
+}
+
+fn observed_field_readout(
+    readout: CanonicalL2FieldReadout,
+    started: std::time::Instant,
+    l11_us: u64,
+    cache_disposition: CanonicalFieldCacheDisposition,
+    field_generation: u64,
+) -> ObservedCanonicalL2FieldReadout {
+    let total_us = elapsed_us(started.elapsed());
+    ObservedCanonicalL2FieldReadout {
+        readout,
+        telemetry: CanonicalFieldTelemetry {
+            l11_us,
+            productive_v90_us: total_us.saturating_sub(l11_us),
+            total_us,
+            field_producer_count: cache_disposition.producer_count(),
+            cache_disposition,
+            field_generation,
+        },
+    }
+}
+
+fn elapsed_us(duration: std::time::Duration) -> u64 {
+    duration.as_micros().min(u128::from(u64::MAX)) as u64
 }
 
 pub(super) fn query_live_canonical_l2(
@@ -449,6 +1058,7 @@ pub(super) fn query_live_canonical_l2(
         "candidates": readout.candidates.iter().map(|candidate| serde_json::json!({
             "replacement": candidate.replacement,
             "source_id": candidate.source_id,
+            "origin": format!("{:?}", candidate.origin),
             "error_class": candidate.error_class.as_str(),
             "gate_action": format!("{:?}", candidate.gate.action),
             "gate_reason": candidate.gate.reason,
@@ -457,6 +1067,106 @@ pub(super) fn query_live_canonical_l2(
         "peak_rss_kib": process_status_kib("VmHWM:"),
         "resident_rss_kib": process_status_kib("VmRSS:"),
         "runtime_authority_changed": false,
+    })
+}
+
+/// Benchmarks the exact Productive V90 producer used by the live text and IME
+/// projections. This deliberately bypasses both the legacy compositional query
+/// helper and the outer materialized-readout cache.
+pub(super) fn query_live_productive_v90(original: &str, repeat: usize) -> serde_json::Value {
+    let cache_before = super::cache::stats();
+    let mut iteration_us = Vec::with_capacity(repeat);
+    let mut last_readout = None;
+
+    for _ in 0..repeat {
+        let started = std::time::Instant::now();
+        let readout = canonical_owned_text_candidates(original);
+        iteration_us.push(started.elapsed().as_micros() as u64);
+        if readout.availability != L2FieldAvailability::Ready {
+            let cache_delta = super::cache::stats().delta(cache_before);
+            return serde_json::json!({
+                "kind": "productive_v90_live_owner_query",
+                "status": "unavailable",
+                "text": original,
+                "repeat": repeat,
+                "producer_symbol": "canonical_owned_text_candidates",
+                "owner_symbol": "prepare_live_productive_v1_field",
+                "materializer_symbol": "materialize_live_productive_v1_field",
+                "outer_readout_cache_bypassed": true,
+                "availability": format!("{:?}", readout.availability),
+                "completed_iterations": iteration_us.len(),
+                "all_iterations": latency_summary(&iteration_us),
+                "field_cache": field_cache_stats_json(cache_delta),
+                "runtime_authority_changed": false,
+            });
+        }
+        last_readout = Some(readout);
+    }
+
+    let readout = last_readout.expect("validated non-zero repeat");
+    let authority = match &readout.authority {
+        L2FieldAuthority::Winner { surface } => serde_json::json!({
+            "kind": "winner",
+            "surfaces": [surface],
+        }),
+        L2FieldAuthority::Tied { surfaces } => serde_json::json!({
+            "kind": "tied",
+            "surfaces": surfaces,
+        }),
+        L2FieldAuthority::Abstain => serde_json::json!({
+            "kind": "abstain",
+            "surfaces": [],
+        }),
+        L2FieldAuthority::Unavailable => serde_json::json!({
+            "kind": "unavailable",
+            "surfaces": [],
+        }),
+    };
+    let cold_us = iteration_us.first().copied().unwrap_or_default();
+    let hot_us = iteration_us.iter().skip(1).copied().collect::<Vec<_>>();
+    let cache_delta = super::cache::stats().delta(cache_before);
+    serde_json::json!({
+        "kind": "productive_v90_live_owner_query",
+        "status": "ready",
+        "text": original,
+        "repeat": repeat,
+        "producer_symbol": "canonical_owned_text_candidates",
+        "owner_symbol": "prepare_live_productive_v1_field",
+        "materializer_symbol": "materialize_live_productive_v1_field",
+        "outer_readout_cache_bypassed": true,
+        "producer_calls": cache_delta.producer_computations,
+        "cold_us": cold_us,
+        "hot": latency_summary(&hot_us),
+        "all_iterations": latency_summary(&iteration_us),
+        "availability": format!("{:?}", readout.availability),
+        "authority": authority,
+        "field_cache": field_cache_stats_json(cache_delta),
+        "candidates": readout.candidates.iter().map(|candidate| serde_json::json!({
+            "replacement": candidate.replacement,
+            "source_id": candidate.source_id,
+            "origin": format!("{:?}", candidate.origin),
+            "error_class": candidate.error_class.as_str(),
+            "gate_action": format!("{:?}", candidate.gate.action),
+            "gate_reason": candidate.gate.reason,
+        })).collect::<Vec<_>>(),
+        "peak_rss_kib": process_status_kib("VmHWM:"),
+        "resident_rss_kib": process_status_kib("VmRSS:"),
+        "runtime_authority_changed": false,
+    })
+}
+
+fn field_cache_stats_json(stats: super::cache::FieldCacheStatsSnapshot) -> serde_json::Value {
+    serde_json::json!({
+        "generation": stats.generation,
+        "ready_entries": stats.ready_entries,
+        "in_flight_entries": stats.in_flight_entries,
+        "producer_computations": stats.producer_computations,
+        "waiter_joins": stats.waiter_joins,
+        "ready_hits": stats.ready_hits,
+        "transient_failures": stats.transient_failures,
+        "superseded_publications": stats.superseded_publications,
+        "saturated_requests": stats.saturated_requests,
+        "invalidations": stats.invalidations,
     })
 }
 
@@ -915,11 +1625,8 @@ fn reference_backed_missing_letter_candidates(
     token: &str,
     limit: usize,
 ) -> Vec<crate::nanda_wave::l2::L2ImeWordCandidate> {
-    crate::ru_typo::safe_missing_letter_candidates(token)
-        .filter(|candidate| {
-            crate::russian_lexicon::is_reference_backed_short_passive_participle(candidate)
-        })
-        .take(limit)
+    reference_backed_missing_letter_surfaces(token, limit)
+        .into_iter()
         .map(|surface| {
             let seed = crate::nanda_wave::L11SeedSurface {
                 terminal_id: None,
@@ -929,6 +1636,15 @@ fn reference_backed_missing_letter_candidates(
             };
             l11_seed_only_candidate(token, &seed)
         })
+        .collect()
+}
+
+fn reference_backed_missing_letter_surfaces(token: &str, limit: usize) -> Vec<String> {
+    crate::ru_typo::safe_missing_letter_candidates(token)
+        .filter(|candidate| {
+            crate::russian_lexicon::is_reference_backed_short_passive_participle(candidate)
+        })
+        .take(limit)
         .collect()
 }
 
@@ -1701,6 +2417,77 @@ fn candidate_last_word_lower(candidate: &UnifiedCorrectionCandidate) -> Option<S
 mod tests {
     use super::*;
 
+    #[test]
+    fn canonical_token_preserves_complete_physical_layout_surface() {
+        assert_eq!(
+            canonical_input_token("введи cj,frf "),
+            Some(CanonicalInputToken {
+                context_prefix: "введи ",
+                surface: "cj,frf",
+                kind: CanonicalInputTokenKind::PhysicalLayout,
+            })
+        );
+        assert_eq!(
+            canonical_input_token("ytn "),
+            Some(CanonicalInputToken {
+                context_prefix: "",
+                surface: "ytn",
+                kind: CanonicalInputTokenKind::PhysicalLayout,
+            })
+        );
+    }
+
+    #[test]
+    fn canonical_token_admits_lexically_supported_short_layout_surface() {
+        assert_eq!(
+            crate::dict::convert("yt", crate::dict::Direction::Us2Ru),
+            "не"
+        );
+        assert_eq!(
+            canonical_input_token("yt "),
+            Some(CanonicalInputToken {
+                context_prefix: "",
+                surface: "yt",
+                kind: CanonicalInputTokenKind::PhysicalLayout,
+            })
+        );
+    }
+
+    #[test]
+    fn canonical_token_preserves_cyrillic_context_identity() {
+        assert_eq!(
+            canonical_input_token("проверь врмея, "),
+            Some(CanonicalInputToken {
+                context_prefix: "проверь ",
+                surface: "врмея",
+                kind: CanonicalInputTokenKind::Cyrillic,
+            })
+        );
+    }
+
+    #[test]
+    fn canonical_token_rejects_protected_ascii_classes() {
+        for text in [
+            "https://example.com ",
+            "--help ",
+            "release-build ",
+            "PDF ",
+            "Apple ",
+        ] {
+            assert_eq!(
+                canonical_input_token(text),
+                None,
+                "protected ASCII token reached L1.1: {text:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn canonical_token_rejects_known_english_plain_words() {
+        assert!(crate::layout_autoswitch::is_known_english_layout_autoswitch_word("hello"));
+        assert_eq!(canonical_input_token("hello "), None);
+    }
+
     fn lexical_candidate(
         surface: &str,
         score: u32,
@@ -1736,6 +2523,21 @@ mod tests {
         assert_eq!(candidate.origin, CandidateOrigin::Boundary);
         assert_eq!(candidate.source_id, "CanonicalL2FieldBoundary");
         assert_eq!(candidate.error_class, TypingErrorClass::GluedWords);
+    }
+
+    #[test]
+    fn canonical_readout_reserves_a_strong_short_left_boundary_candidate() {
+        let readout = canonical_text_readout("данорм ");
+        let candidate = readout
+            .candidates
+            .iter()
+            .find(|candidate| candidate.replacement == "да норм ")
+            .expect("bounded short-left boundary reserve");
+
+        assert_eq!(candidate.origin, CandidateOrigin::Boundary);
+        assert_eq!(candidate.source_id, "CanonicalL2FieldBoundary");
+        assert_eq!(candidate.error_class, TypingErrorClass::GluedWords);
+        assert_eq!(candidate.gate.action, CandidateGateAction::Eligible);
     }
 
     #[test]

@@ -1,0 +1,90 @@
+{
+  "schema": "lay.l2.productive-v90.fingerprint-rebind-deploy-decision.v1",
+  "receipt_id": "L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_DEPLOY_DECISION_2026-08-16",
+  "date": "2026-08-16",
+  "verdict": "APPROVED_FOR_ATOMIC_REBIND_DEPLOYMENT_WITH_EXISTING_LATENCY_EXCEPTION",
+  "scope": "fingerprint-only rebind of the accepted Productive V90 semantic payload to active L1.1 V9 and unchanged canonical L2 V13",
+  "installed_runtime_authority_changed": false,
+  "automatic_gate_verdict": "FAIL_measured_shadow_gates",
+  "automatic_gate_blocker": "maximum class p99 5286 us exceeds the frozen 5000 us threshold",
+  "general_latency_gate_relaxed": false,
+  "decision_basis": {
+    "existing_receipt_scoped_exception": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_LIVE_DEPLOY_2026-08-12.json",
+    "accepted_old_v90_maximum_class_p99_us": 5317,
+    "new_v9_bound_maximum_class_p99_us": 5286,
+    "new_generation_is_faster_us": 31,
+    "exception_scope": "same V90 owner semantics only; this does not waive the 5000 us gate for another algorithm, payload, proof generation or runtime route"
+  },
+  "generation_identity": {
+    "old": {
+      "productive_sha256": "9fd8c950398fb8ba47a2c9f2236880239d9f4376b191a691b0d01c47ddd3e438",
+      "recovery_sha256": "44a20f7aaf7578a960477fbfb1d30c9828b9d71f037e3ad1b2d57bc7fa5568c4",
+      "l11_sha256": "47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9"
+    },
+    "new": {
+      "productive_sha256": "40fb6a9f0d92c3c7502e47f9c70230d9b86020f622b08a5c799342f13e09ce44",
+      "recovery_sha256": "de7972c80448dc792759d70de99cda6ec48c3d6af337763856601db563ab167e",
+      "l11_sha256": "bf5a1619a89038466ef786305cf35eda5f4af5b9f12b9140f7d3cac407e2f2a7"
+    },
+    "canonical_l2_v13_sha256": "cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b"
+  },
+  "semantic_byte_parity": {
+    "productive_header_bytes": 256,
+    "productive_payload_sha256": "6a959bf04e5011b576c333b87cd00a0c400d5b735581a259c1af89e0fc03aeb8",
+    "productive_payload_byte_identical": true,
+    "recovery_header_bytes": 256,
+    "recovery_payload_sha256": "ad3d1c03d3a48fc81838d63644f3be51fc0d7d2405e0850f73a71ad5730a31ed",
+    "recovery_payload_byte_identical": true,
+    "semantic_or_ranking_payload_changed": false
+  },
+  "normative_proof": {
+    "old_receipt": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_2026-08-16/baseline-v90-semantic-normative-clean-workers1-13x100.json",
+    "new_receipt": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_2026-08-16/productive-v90-active-v9-v13-semantic-normative-clean-workers1-13x100.json",
+    "workers": 1,
+    "evaluated": 2600,
+    "sampled_h": 1280,
+    "sampled_b": 1280,
+    "sampled_s0": 1280,
+    "semantic_raw_top1": 1109,
+    "base_raw_top1": 267,
+    "base_projection_failures": 0,
+    "false_singleton": 0,
+    "integrity_errors": 0,
+    "probe_parity_comparisons": 2600,
+    "probe_parity_failures": 0,
+    "normalized_semantic_receipt_sha256": "db98b950242f4564778a0d3aabbbd1148348d439c63d2bf901aa28932866ca46",
+    "quality_and_safety_parity": "EXACT"
+  },
+  "non_normative_legacy_route": {
+    "receipt": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_2026-08-16/productive-v90-active-v9-v13-full-13x100.json",
+    "shared_replay_owner": "legacy",
+    "raw_top1": 272,
+    "base_projection_failures": 2526,
+    "use_for_deployment_decision": false,
+    "reason": "wrong replay authority route"
+  },
+  "deployment_contract": {
+    "staged_productive": "/home/ubu/.local/lib/lay/staging/productive-v90-v9-20260816/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+    "staged_recovery": "/home/ubu/.local/lib/lay/staging/productive-v90-v9-20260816/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2r",
+    "install_productive": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2m",
+    "install_recovery": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2r",
+    "snapshot_complete_pair_before_install": true,
+    "atomic_pair_install": true,
+    "rollback_on_hash_or_admission_failure": true,
+    "restart_managed_lay_components_only": true,
+    "restart_global_ibus_daemon": false,
+    "required_live_status": "ready_live_owner"
+  },
+  "pre_deployment_state": {
+    "lay_version": "1.0.33",
+    "productive_status": "unavailable",
+    "productive_reason": "productive package fingerprint does not match L1.1/canonical L2",
+    "global_ibus_daemon_pid": 3702
+  },
+  "not_yet_tested": [
+    "installed ready_live_owner admission",
+    "cold and hot installed query latency",
+    "installed daemon and IBus RSS",
+    "physical typing and double-Shift rollback"
+  ]
+}

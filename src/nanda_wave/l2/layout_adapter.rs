@@ -5,7 +5,10 @@ use super::{candidate_support, l1_energy};
 use crate::candidate_contract::CandidateOrigin;
 use crate::dict::{convert, detect_direction};
 use crate::keyboard::is_cyrillic_letter;
-use crate::layout_autoswitch::is_ascii_layout_letter_surface;
+use crate::layout_autoswitch::{
+    is_ascii_layout_letter_surface, is_known_english_layout_autoswitch_word,
+    is_russian_layout_surface_authority_word,
+};
 use crate::lexicon::{
     is_common_en_guard_prefix, is_common_en_technical_word, is_ru_live_protected_word,
     is_user_protected_word, visual_b_after_ascii_replacement, visual_b_default_replacement,
@@ -16,6 +19,14 @@ use crate::text_metrics::damerau_levenshtein;
 const MAX_LAYOUT_SCAN_CANDIDATES: usize = 4;
 pub(super) const LAYOUT_THEN_L2_WORD_CENTER: &str = "layout_then_l2_word_center";
 pub(super) const LAYOUT_SEQUENCE_CELL: &str = "LayoutSequenceCell32";
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+struct LayoutProjection {
+    converted: String,
+    strong_autoswitch: bool,
+    word_center_settled: bool,
+    direct_surface_authority: bool,
+}
 
 pub(super) fn layout_sequence_candidate(
     tail: &str,
@@ -76,19 +87,23 @@ pub(super) fn layout_candidate_with_projection_policy(
     if technical_context_blocks_layout(prefix, token) {
         return None;
     }
-    let (converted, strong_autoswitch, word_center_settled) =
-        layout_converted_token(token, allow_noisy_projection)?;
+    let LayoutProjection {
+        converted,
+        strong_autoswitch,
+        word_center_settled,
+        direct_surface_authority,
+    } = layout_converted_token(token, allow_noisy_projection)?;
     if converted == token {
         return None;
     }
     // L4 records rank candidates after they exist; it is not lexical evidence.
     // In particular, a historical accept must never create a short layout
     // candidate whose target has no compact L1/L2 center.
-    let projection_supported = strong_autoswitch || word_center_settled;
+    let projection_supported = strong_autoswitch || word_center_settled || direct_surface_authority;
     // A clean, already-known English surface is its own stable L2 center. Do
     // not let an accidental keyboard projection pull it into a Russian center
     // unless accepted transition memory or a strong layout signal says so.
-    if input_has_settled_phase(token) && !strong_autoswitch {
+    if input_has_settled_phase(token) && !strong_autoswitch && !direct_surface_authority {
         return None;
     }
     if context.token_count() < 2
@@ -96,17 +111,23 @@ pub(super) fn layout_candidate_with_projection_policy(
         && !is_common_en_technical_word(&converted.to_ascii_lowercase())
         && !strong_autoswitch
         && !word_center_settled
+        && !direct_surface_authority
     {
         return None;
     }
-    if !layout_candidate_allowed(token, &converted, strong_autoswitch, word_center_settled) {
+    if !layout_candidate_allowed(
+        token,
+        &converted,
+        direct_surface_authority,
+        word_center_settled,
+    ) {
         return None;
     }
     if !language_allows_layout(token, &converted, projection_supported) {
         return None;
     }
     let energy = l1_energy(l1, "KeyboardCell32").max(0.35);
-    let risk = if strong_autoswitch {
+    let risk = if strong_autoswitch || direct_surface_authority {
         layout_risk(token, &converted, context).min(0.05)
     } else if word_center_settled {
         (layout_risk(token, &converted, context) + 0.06).min(0.24)
@@ -156,17 +177,27 @@ pub(super) fn layout_scan_candidates(
         if technical_context_blocks_layout(prefix, token) {
             continue;
         }
-        let Some((converted, strong_autoswitch, word_center_settled)) =
-            layout_converted_token(token, true)
+        let Some(LayoutProjection {
+            converted,
+            strong_autoswitch,
+            word_center_settled,
+            direct_surface_authority,
+        }) = layout_converted_token(token, true)
         else {
             continue;
         };
-        let projection_supported = strong_autoswitch || word_center_settled;
-        if input_has_settled_phase(token) && !strong_autoswitch {
+        let projection_supported =
+            strong_autoswitch || word_center_settled || direct_surface_authority;
+        if input_has_settled_phase(token) && !strong_autoswitch && !direct_surface_authority {
             continue;
         }
         if converted == token
-            || !layout_candidate_allowed(token, &converted, strong_autoswitch, word_center_settled)
+            || !layout_candidate_allowed(
+                token,
+                &converted,
+                direct_surface_authority,
+                word_center_settled,
+            )
             || !language_allows_layout(token, &converted, projection_supported)
         {
             continue;
@@ -179,7 +210,7 @@ pub(super) fn layout_scan_candidates(
         let text = replaced.join(" ");
         let energy = l1_energy(l1, "KeyboardCell32").max(0.35);
         let base_risk = layout_risk(token, &replaced[idx], context);
-        let risk = if strong_autoswitch {
+        let risk = if strong_autoswitch || direct_surface_authority {
             base_risk.min(0.08)
         } else if word_center_settled {
             (base_risk + 0.08).min(0.28)
@@ -212,10 +243,7 @@ pub(super) fn layout_scan_candidates(
     candidates
 }
 
-fn layout_converted_token(
-    token: &str,
-    allow_noisy_projection: bool,
-) -> Option<(String, bool, bool)> {
+fn layout_converted_token(token: &str, allow_noisy_projection: bool) -> Option<LayoutProjection> {
     if token.chars().any(is_cyrillic_letter) {
         let raw_converted = convert(token, detect_direction(token));
         if std::env::var_os("LAY_DEBUG_DECISION_CORE").is_some() {
@@ -232,18 +260,36 @@ fn layout_converted_token(
         {
             if let Some(center) = settle_english_word_center(&raw_converted) {
                 let center = apply_word_case(token, &center);
-                return Some((center, false, true));
+                return Some(LayoutProjection {
+                    converted: center,
+                    strong_autoswitch: false,
+                    word_center_settled: true,
+                    direct_surface_authority: false,
+                });
             }
         }
         if allow_noisy_projection {
             if let Some(converted) =
                 crate::layout_autoswitch::correct_wrong_layout_cyrillic_word(token)
             {
-                return Some((converted, true, false));
+                return Some(LayoutProjection {
+                    converted,
+                    strong_autoswitch: true,
+                    word_center_settled: false,
+                    direct_surface_authority: false,
+                });
             }
         }
         // Cyrillic-to-ASCII requires a proven target; raw projection is not a
         // fallback because it turns valid Russian words into keyboard noise.
+        return None;
+    }
+    // FullField may use the broader Russian surface authority, but only after
+    // the source-side English guard. This remains separate from the closed
+    // exact lease, whose terminal snapshot is intentionally narrower.
+    if is_ascii_layout_letter_surface(token)
+        && is_known_english_layout_autoswitch_word(&token.to_ascii_lowercase())
+    {
         return None;
     }
     // An all-caps alphabetic token is an explicit keyboard-mode signal from
@@ -258,24 +304,45 @@ fn layout_converted_token(
     if ascii_letters.len() >= 4 && ascii_letters.iter().all(|ch| ch.is_ascii_uppercase()) {
         let converted = convert(token, crate::dict::Direction::Us2Ru);
         if converted != token && converted.chars().all(is_cyrillic_letter) {
-            return Some((converted, true, false));
+            return Some(LayoutProjection {
+                converted,
+                strong_autoswitch: true,
+                word_center_settled: false,
+                direct_surface_authority: false,
+            });
         }
     }
     let converted = convert(token, detect_direction(token));
     if converted == token {
         return None;
     }
+    let converted_lower = converted.to_lowercase();
+    if is_ascii_layout_letter_surface(token)
+        && converted.chars().all(is_cyrillic_letter)
+        && is_russian_layout_surface_authority_word(&converted_lower)
+    {
+        return Some(LayoutProjection {
+            converted: apply_word_case(token, &converted_lower),
+            strong_autoswitch: false,
+            word_center_settled: false,
+            direct_surface_authority: true,
+        });
+    }
     // A projected first word has no phrase context yet. Its compact L2 lexical
     // center is sufficient surface evidence: the artifact can reconstruct the
     // target, while random keyboard noise has no terminal center and remains
     // blocked by the caller's first-token guard.
-    let converted_lower = converted.to_lowercase();
     if is_ascii_layout_letter_surface(token)
         && token.chars().count() >= 3
         && converted.chars().all(is_cyrillic_letter)
         && surface_motif_memory().contains_surface(&converted_lower)
     {
-        return Some((apply_word_case(token, &converted_lower), false, true));
+        return Some(LayoutProjection {
+            converted: apply_word_case(token, &converted_lower),
+            strong_autoswitch: false,
+            word_center_settled: true,
+            direct_surface_authority: false,
+        });
     }
     // Lexical centers are case-normalized. Case is a surface property that is
     // restored only after the same center has admitted the layout projection.
@@ -289,7 +356,12 @@ fn layout_converted_token(
         && converted.chars().all(is_cyrillic_letter)
         && crate::hot_field::HotFieldSnapshot::current()
             .layout_projection_has_phase_authority(&converted_center_form);
-    Some((converted, exact_projection_has_center, false))
+    Some(LayoutProjection {
+        converted,
+        strong_autoswitch: exact_projection_has_center,
+        word_center_settled: false,
+        direct_surface_authority: false,
+    })
 }
 
 pub(super) fn settle_english_word_center(token: &str) -> Option<String> {
@@ -495,7 +567,7 @@ fn input_has_settled_phase(token: &str) -> bool {
 pub(super) fn layout_candidate_allowed(
     token: &str,
     converted: &str,
-    _strong_autoswitch: bool,
+    direct_surface_authority: bool,
     learned_transition: bool,
 ) -> bool {
     let switched_script = (token.chars().all(|ch| ch.is_ascii_alphabetic())
@@ -503,7 +575,8 @@ pub(super) fn layout_candidate_allowed(
         || (token.chars().all(is_cyrillic_letter)
             && converted.chars().all(|ch| ch.is_ascii_alphabetic()));
     switched_script
-        && (learned_transition
+        && (direct_surface_authority
+            || learned_transition
             || crate::hot_field::HotFieldSnapshot::current()
                 .layout_projection_has_phase_authority(converted))
 }
@@ -537,19 +610,19 @@ mod tests {
     fn cyrillic_layout_projection_requires_a_proven_target() {
         assert!(layout_converted_token("давай", true).is_none());
         assert_eq!(
-            layout_converted_token("зщке", true).map(|candidate| candidate.0),
+            layout_converted_token("зщке", true).map(|candidate| candidate.converted),
             Some("port".to_string())
         );
         assert_eq!(
-            layout_converted_token("сфкпщ", true).map(|candidate| candidate.0),
+            layout_converted_token("сфкпщ", true).map(|candidate| candidate.converted),
             Some("cargo".to_string())
         );
         assert_eq!(
-            layout_converted_token("вудуеу", true).map(|candidate| candidate.0),
+            layout_converted_token("вудуеу", true).map(|candidate| candidate.converted),
             Some("delete".to_string())
         );
         assert_eq!(
-            layout_converted_token("ytn", true).map(|candidate| candidate.0),
+            layout_converted_token("ytn", true).map(|candidate| candidate.converted),
             Some("нет".to_string())
         );
     }
@@ -557,28 +630,39 @@ mod tests {
     #[test]
     fn ascii_layout_projection_recovers_reference_backed_forms() {
         assert_eq!(
-            layout_converted_token("ltkfq", true).map(|candidate| candidate.0),
+            layout_converted_token("ltkfq", true).map(|candidate| candidate.converted),
             Some("делай".to_string())
         );
         assert_eq!(
-            layout_converted_token("Ghjljkbv", true).map(|candidate| candidate.0),
+            layout_converted_token("Ghjljkbv", true).map(|candidate| candidate.converted),
             Some("Продолим".to_string())
         );
     }
 
     #[test]
+    fn full_field_direct_layout_uses_broad_surface_authority_after_source_guard() {
+        assert!(!is_known_english_layout_autoswitch_word("cnjq"));
+        assert!(is_russian_layout_surface_authority_word("стой"));
+
+        let projection = layout_converted_token("cnjq", true).expect("direct layout projection");
+        assert_eq!(projection.converted, "стой");
+        assert!(projection.direct_surface_authority);
+        assert!(!projection.word_center_settled);
+    }
+
+    #[test]
     fn short_layout_projection_uses_target_phase_authority() {
-        assert!(!layout_candidate_allowed("rt", "ке", true, false));
-        assert!(layout_candidate_allowed("rt", "ке", true, true));
-        assert!(layout_candidate_allowed("yt", "не", true, false));
-        assert!(layout_candidate_allowed("ytn", "нет", true, false));
+        assert!(!layout_candidate_allowed("rt", "ке", false, false));
+        assert!(layout_candidate_allowed("rt", "ке", false, true));
+        assert!(layout_candidate_allowed("yt", "не", false, false));
+        assert!(layout_candidate_allowed("ytn", "нет", false, false));
         assert!(crate::nanda_wave::l2::hot_layout_candidate("rt").is_none());
     }
 
     #[test]
     fn all_caps_layout_projection_uses_the_same_lexical_center() {
         assert_eq!(
-            layout_converted_token("YTGTHTDTHYEKJCM", true).map(|candidate| candidate.0),
+            layout_converted_token("YTGTHTDTHYEKJCM", true).map(|candidate| candidate.converted),
             Some("НЕПЕРЕВЕРНУЛОСЬ".to_string())
         );
     }

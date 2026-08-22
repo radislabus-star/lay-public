@@ -1,0 +1,1224 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "PASS",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": true,
+  "contract": "docs/structural_gates/preflights/LAY_IME_TARGET_OUTPUT_TRANSACTION_ROUTE_V5_2026-08-17.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "source_root": "/home/ubu/projects/lay-l1-exact-peak-search",
+  "node_count": 21,
+  "edge_count": 42,
+  "routes": [
+    {
+      "id": "space-correct-success-execution",
+      "event": "space_correct_success",
+      "kind": "execution",
+      "entry": "committed_space_event",
+      "via": [],
+      "terminal": "output_success_observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "committed_space_event",
+          "automatic_space_edit_plan",
+          "compound_edit_authorization",
+          "output_transaction",
+          "committed_tail_mutator",
+          "output_success_observer"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "automatic_space_edit_plan"
+        ],
+        "interface": [
+          "committed_space_event"
+        ],
+        "mutation_owner": [
+          "committed_tail_mutator"
+        ],
+        "authorization_owner": [
+          "compound_edit_authorization"
+        ],
+        "observer": [
+          "output_success_observer"
+        ],
+        "orchestrator": [
+          "output_transaction"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "committed_space_event",
+          "to": "output_success_observer",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "committed_space_event",
+              "automatic_space_edit_plan",
+              "compound_edit_authorization",
+              "output_transaction",
+              "committed_tail_mutator",
+              "output_success_observer"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "space-correct-success-authority",
+      "event": "space_correct_success",
+      "kind": "authority",
+      "entry": "automatic_space_edit_plan",
+      "via": [],
+      "terminal": "committed_tail_mutator",
+      "path_count": 1,
+      "paths": [
+        [
+          "automatic_space_edit_plan",
+          "compound_edit_authorization",
+          "committed_tail_mutator"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "automatic_space_edit_plan"
+        ],
+        "mutation_owner": [
+          "committed_tail_mutator"
+        ],
+        "authorization_owner": [
+          "compound_edit_authorization"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "space-raw-success-execution",
+      "event": "space_raw_success",
+      "kind": "execution",
+      "entry": "committed_space_event",
+      "via": [],
+      "terminal": "output_success_observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "committed_space_event",
+          "raw_space_edit_plan",
+          "compound_edit_authorization",
+          "output_transaction",
+          "committed_tail_mutator",
+          "output_success_observer"
+        ]
+      ],
+      "role_owners": {
+        "interface": [
+          "committed_space_event"
+        ],
+        "mutation_owner": [
+          "committed_tail_mutator"
+        ],
+        "authorization_owner": [
+          "compound_edit_authorization"
+        ],
+        "observer": [
+          "output_success_observer"
+        ],
+        "orchestrator": [
+          "output_transaction"
+        ],
+        "evidence_owner": [
+          "raw_space_edit_plan"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "committed_space_event",
+          "to": "output_success_observer",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "committed_space_event",
+              "raw_space_edit_plan",
+              "compound_edit_authorization",
+              "output_transaction",
+              "committed_tail_mutator",
+              "output_success_observer"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "space-raw-success-authority",
+      "event": "space_raw_success",
+      "kind": "authority",
+      "entry": "raw_space_edit_plan",
+      "via": [],
+      "terminal": "committed_tail_mutator",
+      "path_count": 1,
+      "paths": [
+        [
+          "raw_space_edit_plan",
+          "compound_edit_authorization",
+          "committed_tail_mutator"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "committed_tail_mutator"
+        ],
+        "authorization_owner": [
+          "compound_edit_authorization"
+        ],
+        "evidence_owner": [
+          "raw_space_edit_plan"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "space-correct-zero-output-execution",
+      "event": "space_correct_zero_output_failure",
+      "kind": "execution",
+      "entry": "committed_space_event",
+      "via": [],
+      "terminal": "zero_output_observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "committed_space_event",
+          "automatic_space_edit_plan",
+          "compound_edit_authorization",
+          "output_transaction",
+          "committed_tail_mutator",
+          "zero_output_proof",
+          "zero_output_terminal",
+          "zero_output_observer"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "automatic_space_edit_plan",
+          "zero_output_proof",
+          "zero_output_terminal"
+        ],
+        "interface": [
+          "committed_space_event"
+        ],
+        "mutation_owner": [
+          "committed_tail_mutator"
+        ],
+        "authorization_owner": [
+          "compound_edit_authorization"
+        ],
+        "orchestrator": [
+          "output_transaction"
+        ],
+        "observer": [
+          "zero_output_observer"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "committed_space_event",
+          "to": "zero_output_observer",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "committed_space_event",
+              "automatic_space_edit_plan",
+              "compound_edit_authorization",
+              "output_transaction",
+              "committed_tail_mutator",
+              "zero_output_proof",
+              "zero_output_terminal",
+              "zero_output_observer"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "space-correct-partial-execution",
+      "event": "space_correct_partial",
+      "kind": "execution",
+      "entry": "committed_space_event",
+      "via": [],
+      "terminal": "recovery_observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "committed_space_event",
+          "automatic_space_edit_plan",
+          "compound_edit_authorization",
+          "output_transaction",
+          "committed_tail_mutator",
+          "recovery_required",
+          "recovery_observer"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "automatic_space_edit_plan",
+          "recovery_required"
+        ],
+        "interface": [
+          "committed_space_event"
+        ],
+        "mutation_owner": [
+          "committed_tail_mutator"
+        ],
+        "authorization_owner": [
+          "compound_edit_authorization"
+        ],
+        "orchestrator": [
+          "output_transaction"
+        ],
+        "observer": [
+          "recovery_observer"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "committed_space_event",
+          "to": "recovery_observer",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "committed_space_event",
+              "automatic_space_edit_plan",
+              "compound_edit_authorization",
+              "output_transaction",
+              "committed_tail_mutator",
+              "recovery_required",
+              "recovery_observer"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "space-raw-zero-output-execution",
+      "event": "space_raw_zero_output_failure",
+      "kind": "execution",
+      "entry": "committed_space_event",
+      "via": [],
+      "terminal": "zero_output_observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "committed_space_event",
+          "raw_space_edit_plan",
+          "compound_edit_authorization",
+          "output_transaction",
+          "committed_tail_mutator",
+          "zero_output_proof",
+          "zero_output_terminal",
+          "zero_output_observer"
+        ]
+      ],
+      "role_owners": {
+        "interface": [
+          "committed_space_event"
+        ],
+        "mutation_owner": [
+          "committed_tail_mutator"
+        ],
+        "authorization_owner": [
+          "compound_edit_authorization"
+        ],
+        "orchestrator": [
+          "output_transaction"
+        ],
+        "evidence_owner": [
+          "raw_space_edit_plan",
+          "zero_output_proof",
+          "zero_output_terminal"
+        ],
+        "observer": [
+          "zero_output_observer"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "committed_space_event",
+          "to": "zero_output_observer",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "committed_space_event",
+              "raw_space_edit_plan",
+              "compound_edit_authorization",
+              "output_transaction",
+              "committed_tail_mutator",
+              "zero_output_proof",
+              "zero_output_terminal",
+              "zero_output_observer"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "space-raw-partial-execution",
+      "event": "space_raw_partial",
+      "kind": "execution",
+      "entry": "committed_space_event",
+      "via": [],
+      "terminal": "recovery_observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "committed_space_event",
+          "raw_space_edit_plan",
+          "compound_edit_authorization",
+          "output_transaction",
+          "committed_tail_mutator",
+          "recovery_required",
+          "recovery_observer"
+        ]
+      ],
+      "role_owners": {
+        "interface": [
+          "committed_space_event"
+        ],
+        "mutation_owner": [
+          "committed_tail_mutator"
+        ],
+        "authorization_owner": [
+          "compound_edit_authorization"
+        ],
+        "orchestrator": [
+          "output_transaction"
+        ],
+        "evidence_owner": [
+          "raw_space_edit_plan",
+          "recovery_required"
+        ],
+        "observer": [
+          "recovery_observer"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "committed_space_event",
+          "to": "recovery_observer",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "committed_space_event",
+              "raw_space_edit_plan",
+              "compound_edit_authorization",
+              "output_transaction",
+              "committed_tail_mutator",
+              "recovery_required",
+              "recovery_observer"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rollback-success-execution",
+      "event": "rollback_success",
+      "kind": "execution",
+      "entry": "double_shift_event",
+      "via": [],
+      "terminal": "output_success_observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "double_shift_event",
+          "rollback_apply_evidence",
+          "compound_edit_authorization",
+          "output_transaction",
+          "committed_tail_mutator",
+          "output_success_observer"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "committed_tail_mutator"
+        ],
+        "authorization_owner": [
+          "compound_edit_authorization"
+        ],
+        "interface": [
+          "double_shift_event"
+        ],
+        "observer": [
+          "output_success_observer"
+        ],
+        "orchestrator": [
+          "output_transaction"
+        ],
+        "evidence_owner": [
+          "rollback_apply_evidence"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "double_shift_event",
+          "to": "output_success_observer",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "double_shift_event",
+              "rollback_apply_evidence",
+              "compound_edit_authorization",
+              "output_transaction",
+              "committed_tail_mutator",
+              "output_success_observer"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rollback-success-authority",
+      "event": "rollback_success",
+      "kind": "authority",
+      "entry": "rollback_apply_evidence",
+      "via": [],
+      "terminal": "committed_tail_mutator",
+      "path_count": 1,
+      "paths": [
+        [
+          "rollback_apply_evidence",
+          "compound_edit_authorization",
+          "committed_tail_mutator"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "committed_tail_mutator"
+        ],
+        "authorization_owner": [
+          "compound_edit_authorization"
+        ],
+        "evidence_owner": [
+          "rollback_apply_evidence"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "rollback-zero-output-execution",
+      "event": "rollback_zero_output_failure",
+      "kind": "execution",
+      "entry": "double_shift_event",
+      "via": [],
+      "terminal": "pending_rollback_observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "double_shift_event",
+          "rollback_apply_evidence",
+          "compound_edit_authorization",
+          "output_transaction",
+          "committed_tail_mutator",
+          "zero_output_proof",
+          "pending_rollback_restored",
+          "pending_rollback_observer"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "committed_tail_mutator"
+        ],
+        "authorization_owner": [
+          "compound_edit_authorization"
+        ],
+        "interface": [
+          "double_shift_event"
+        ],
+        "orchestrator": [
+          "output_transaction"
+        ],
+        "observer": [
+          "pending_rollback_observer"
+        ],
+        "evidence_owner": [
+          "pending_rollback_restored",
+          "rollback_apply_evidence",
+          "zero_output_proof"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "double_shift_event",
+          "to": "pending_rollback_observer",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "double_shift_event",
+              "rollback_apply_evidence",
+              "compound_edit_authorization",
+              "output_transaction",
+              "committed_tail_mutator",
+              "zero_output_proof",
+              "pending_rollback_restored",
+              "pending_rollback_observer"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rollback-partial-execution",
+      "event": "rollback_partial_failure",
+      "kind": "execution",
+      "entry": "double_shift_event",
+      "via": [],
+      "terminal": "recovery_observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "double_shift_event",
+          "rollback_apply_evidence",
+          "compound_edit_authorization",
+          "output_transaction",
+          "committed_tail_mutator",
+          "recovery_required",
+          "recovery_observer"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "committed_tail_mutator"
+        ],
+        "authorization_owner": [
+          "compound_edit_authorization"
+        ],
+        "interface": [
+          "double_shift_event"
+        ],
+        "orchestrator": [
+          "output_transaction"
+        ],
+        "observer": [
+          "recovery_observer"
+        ],
+        "evidence_owner": [
+          "recovery_required",
+          "rollback_apply_evidence"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "double_shift_event",
+          "to": "recovery_observer",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "double_shift_event",
+              "rollback_apply_evidence",
+              "compound_edit_authorization",
+              "output_transaction",
+              "committed_tail_mutator",
+              "recovery_required",
+              "recovery_observer"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tab-success-execution",
+      "event": "tab_success",
+      "kind": "execution",
+      "entry": "tab_event",
+      "via": [],
+      "terminal": "output_success_observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "tab_event",
+          "visible_tab_edit_plan",
+          "compound_edit_authorization",
+          "output_transaction",
+          "active_composition_mutator",
+          "output_success_observer"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "active_composition_mutator"
+        ],
+        "authorization_owner": [
+          "compound_edit_authorization"
+        ],
+        "observer": [
+          "output_success_observer"
+        ],
+        "orchestrator": [
+          "output_transaction"
+        ],
+        "interface": [
+          "tab_event"
+        ],
+        "evidence_owner": [
+          "visible_tab_edit_plan"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "tab_event",
+          "to": "output_success_observer",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "tab_event",
+              "visible_tab_edit_plan",
+              "compound_edit_authorization",
+              "output_transaction",
+              "active_composition_mutator",
+              "output_success_observer"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tab-success-authority",
+      "event": "tab_success",
+      "kind": "authority",
+      "entry": "visible_tab_edit_plan",
+      "via": [],
+      "terminal": "active_composition_mutator",
+      "path_count": 1,
+      "paths": [
+        [
+          "visible_tab_edit_plan",
+          "compound_edit_authorization",
+          "active_composition_mutator"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "active_composition_mutator"
+        ],
+        "authorization_owner": [
+          "compound_edit_authorization"
+        ],
+        "evidence_owner": [
+          "visible_tab_edit_plan"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "tab-zero-output-execution",
+      "event": "tab_zero_output_failure",
+      "kind": "execution",
+      "entry": "tab_event",
+      "via": [],
+      "terminal": "zero_output_observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "tab_event",
+          "visible_tab_edit_plan",
+          "compound_edit_authorization",
+          "output_transaction",
+          "active_composition_mutator",
+          "zero_output_proof",
+          "zero_output_terminal",
+          "zero_output_observer"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "active_composition_mutator"
+        ],
+        "authorization_owner": [
+          "compound_edit_authorization"
+        ],
+        "orchestrator": [
+          "output_transaction"
+        ],
+        "interface": [
+          "tab_event"
+        ],
+        "evidence_owner": [
+          "visible_tab_edit_plan",
+          "zero_output_proof",
+          "zero_output_terminal"
+        ],
+        "observer": [
+          "zero_output_observer"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "tab_event",
+          "to": "zero_output_observer",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "tab_event",
+              "visible_tab_edit_plan",
+              "compound_edit_authorization",
+              "output_transaction",
+              "active_composition_mutator",
+              "zero_output_proof",
+              "zero_output_terminal",
+              "zero_output_observer"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tab-partial-execution",
+      "event": "tab_partial",
+      "kind": "execution",
+      "entry": "tab_event",
+      "via": [],
+      "terminal": "recovery_observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "tab_event",
+          "visible_tab_edit_plan",
+          "compound_edit_authorization",
+          "output_transaction",
+          "active_composition_mutator",
+          "recovery_required",
+          "recovery_observer"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "active_composition_mutator"
+        ],
+        "authorization_owner": [
+          "compound_edit_authorization"
+        ],
+        "orchestrator": [
+          "output_transaction"
+        ],
+        "observer": [
+          "recovery_observer"
+        ],
+        "evidence_owner": [
+          "recovery_required",
+          "visible_tab_edit_plan"
+        ],
+        "interface": [
+          "tab_event"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "tab_event",
+          "to": "recovery_observer",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "tab_event",
+              "visible_tab_edit_plan",
+              "compound_edit_authorization",
+              "output_transaction",
+              "active_composition_mutator",
+              "recovery_required",
+              "recovery_observer"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "active-space-success-execution",
+      "event": "active_space_success",
+      "kind": "execution",
+      "entry": "active_space_event",
+      "via": [],
+      "terminal": "output_success_observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "active_space_event",
+          "active_composition_space_plan",
+          "compound_edit_authorization",
+          "output_transaction",
+          "active_composition_mutator",
+          "output_success_observer"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "active_composition_mutator"
+        ],
+        "evidence_owner": [
+          "active_composition_space_plan"
+        ],
+        "interface": [
+          "active_space_event"
+        ],
+        "authorization_owner": [
+          "compound_edit_authorization"
+        ],
+        "observer": [
+          "output_success_observer"
+        ],
+        "orchestrator": [
+          "output_transaction"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "active_space_event",
+          "to": "output_success_observer",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "active_space_event",
+              "active_composition_space_plan",
+              "compound_edit_authorization",
+              "output_transaction",
+              "active_composition_mutator",
+              "output_success_observer"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "active-space-success-authority",
+      "event": "active_space_success",
+      "kind": "authority",
+      "entry": "active_composition_space_plan",
+      "via": [],
+      "terminal": "active_composition_mutator",
+      "path_count": 1,
+      "paths": [
+        [
+          "active_composition_space_plan",
+          "compound_edit_authorization",
+          "active_composition_mutator"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "active_composition_mutator"
+        ],
+        "evidence_owner": [
+          "active_composition_space_plan"
+        ],
+        "authorization_owner": [
+          "compound_edit_authorization"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "active-space-zero-output-execution",
+      "event": "active_space_zero_output_failure",
+      "kind": "execution",
+      "entry": "active_space_event",
+      "via": [],
+      "terminal": "zero_output_observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "active_space_event",
+          "active_composition_space_plan",
+          "compound_edit_authorization",
+          "output_transaction",
+          "active_composition_mutator",
+          "zero_output_proof",
+          "zero_output_terminal",
+          "zero_output_observer"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "active_composition_mutator"
+        ],
+        "evidence_owner": [
+          "active_composition_space_plan",
+          "zero_output_proof",
+          "zero_output_terminal"
+        ],
+        "interface": [
+          "active_space_event"
+        ],
+        "authorization_owner": [
+          "compound_edit_authorization"
+        ],
+        "orchestrator": [
+          "output_transaction"
+        ],
+        "observer": [
+          "zero_output_observer"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "active_space_event",
+          "to": "zero_output_observer",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "active_space_event",
+              "active_composition_space_plan",
+              "compound_edit_authorization",
+              "output_transaction",
+              "active_composition_mutator",
+              "zero_output_proof",
+              "zero_output_terminal",
+              "zero_output_observer"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "active-space-partial-execution",
+      "event": "active_space_partial",
+      "kind": "execution",
+      "entry": "active_space_event",
+      "via": [],
+      "terminal": "recovery_observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "active_space_event",
+          "active_composition_space_plan",
+          "compound_edit_authorization",
+          "output_transaction",
+          "active_composition_mutator",
+          "recovery_required",
+          "recovery_observer"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "active_composition_mutator"
+        ],
+        "evidence_owner": [
+          "active_composition_space_plan",
+          "recovery_required"
+        ],
+        "interface": [
+          "active_space_event"
+        ],
+        "authorization_owner": [
+          "compound_edit_authorization"
+        ],
+        "orchestrator": [
+          "output_transaction"
+        ],
+        "observer": [
+          "recovery_observer"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "active_space_event",
+          "to": "recovery_observer",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "active_space_event",
+              "active_composition_space_plan",
+              "compound_edit_authorization",
+              "output_transaction",
+              "active_composition_mutator",
+              "recovery_required",
+              "recovery_observer"
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {
+    "space_correct_success": {
+      "evidence_owner": [
+        "automatic_space_edit_plan"
+      ],
+      "display_rank_owner": [],
+      "candidate_rank_owner": [],
+      "render_owner": [],
+      "authorization_owner": [
+        "compound_edit_authorization"
+      ],
+      "mutation_owner": [
+        "committed_tail_mutator"
+      ]
+    },
+    "space_raw_success": {
+      "evidence_owner": [
+        "raw_space_edit_plan"
+      ],
+      "display_rank_owner": [],
+      "candidate_rank_owner": [],
+      "render_owner": [],
+      "authorization_owner": [
+        "compound_edit_authorization"
+      ],
+      "mutation_owner": [
+        "committed_tail_mutator"
+      ]
+    },
+    "rollback_success": {
+      "evidence_owner": [
+        "rollback_apply_evidence"
+      ],
+      "display_rank_owner": [],
+      "candidate_rank_owner": [],
+      "render_owner": [],
+      "authorization_owner": [
+        "compound_edit_authorization"
+      ],
+      "mutation_owner": [
+        "committed_tail_mutator"
+      ]
+    },
+    "tab_success": {
+      "evidence_owner": [
+        "visible_tab_edit_plan"
+      ],
+      "display_rank_owner": [],
+      "candidate_rank_owner": [],
+      "render_owner": [],
+      "authorization_owner": [
+        "compound_edit_authorization"
+      ],
+      "mutation_owner": [
+        "active_composition_mutator"
+      ]
+    },
+    "active_space_success": {
+      "evidence_owner": [
+        "active_composition_space_plan"
+      ],
+      "display_rank_owner": [],
+      "candidate_rank_owner": [],
+      "render_owner": [],
+      "authorization_owner": [
+        "compound_edit_authorization"
+      ],
+      "mutation_owner": [
+        "active_composition_mutator"
+      ]
+    }
+  },
+  "source_evidence": {
+    "expected": 0,
+    "verified": 0,
+    "complete": true
+  },
+  "issues": [],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": false,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

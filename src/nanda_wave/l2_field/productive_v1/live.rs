@@ -13,11 +13,15 @@ use crate::nanda_wave::lexical_grokking::restoration::{
 };
 use crate::nanda_wave::L11SeedSurface;
 use crate::text_case::apply_word_case;
+use crate::typing_transition::target_evidence::{
+    stable_bytes_ref, EnumerationCompletenessV1, MaterialTargetIdentityV1,
+    NormalizationLayoutProfileIdV1, PreparedMaterialKeyV1, SeparatorProfileIdV1,
+};
 use crate::typing_transition::{action as action_operator, decision::TransitionDecisionCore};
 use crate::word_reader::replace_last_text_word;
 
 use super::calibrate::{CandidateProvenanceClassV1, ProductiveCalibratedVerdictV1};
-use super::composite::{CompositeGroundedVerdictV1, CompositeL2LatticeV1};
+use super::composite::{CompositeGroundedVerdictV1, CompositeL2LatticeV1, CompositeSurfaceGroupV1};
 use super::packaged_runtime::{
     PackagedGroundedLemmaV1, PackagedProductiveCandidateV1, PackagedProductiveRuntimeV1,
 };
@@ -26,28 +30,204 @@ use super::scene::{BoundaryKindV1, L2LocalSceneV1, LocalTokenObservationV1};
 pub(super) const PRODUCTIVE_V90_SURFACE_SOURCE_ID: &str = "ProductiveL2V90Surface";
 pub(super) const PRODUCTIVE_V90_GROUNDED_SOURCE_ID: &str = "ProductiveL2V90Grounded";
 pub(super) const PRODUCTIVE_V90_GROUNDED_WINNER_SOURCE_ID: &str = "ProductiveL2V90GroundedWinner";
+pub(super) const PRODUCTIVE_V90_LAYOUT_SOURCE_ID: &str = "ProductiveL2V90Layout";
+pub(super) const PRODUCTIVE_V90_CONTOUR_SOURCE_ID: &str = "ProductiveL2V90Contour";
 const MAX_ACTIVE_PACKAGE_LEMMAS: usize = 32;
 
-/// The only live L2 owner. Canonical L2 is used as a read-only identity index;
-/// its historical local verdict is deliberately absent from this path.
-pub(in crate::nanda_wave::l2_field) fn live_productive_v1_readout(
-    original: &str,
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub(in crate::nanda_wave::l2_field) enum CanonicalContourRelation {
+    InverseGeometry,
+    Identity,
+    LayoutThenTypo,
+    ExactLayout,
+}
+
+impl CanonicalContourRelation {
+    pub(in crate::nanda_wave::l2_field) const fn tag(self) -> u8 {
+        match self {
+            Self::InverseGeometry => 0,
+            Self::Identity => 1,
+            Self::LayoutThenTypo => 2,
+            Self::ExactLayout => 3,
+        }
+    }
+
+    const fn candidate_origin(self) -> CandidateOrigin {
+        match self {
+            Self::ExactLayout => CandidateOrigin::Layout,
+            Self::LayoutThenTypo => CandidateOrigin::LayoutThenTypo,
+            Self::Identity | Self::InverseGeometry => CandidateOrigin::L2Surface,
+        }
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub(in crate::nanda_wave::l2_field) struct CanonicalContourSeed {
+    pub(in crate::nanda_wave::l2_field) query_surface: String,
+    pub(in crate::nanda_wave::l2_field) seed: L11SeedSurface,
+    pub(in crate::nanda_wave::l2_field) relation: CanonicalContourRelation,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub(in crate::nanda_wave::l2_field) struct CanonicalFormGrounding {
+    pub(in crate::nanda_wave::l2_field) form_ref: u32,
+    pub(in crate::nanda_wave::l2_field) normalized_surface: String,
+    pub(in crate::nanda_wave::l2_field) support_milli: u32,
+    pub(in crate::nanda_wave::l2_field) relation: CanonicalContourRelation,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub(in crate::nanda_wave::l2_field) struct CanonicalSurfaceGrounding {
+    pub(in crate::nanda_wave::l2_field) normalized_surface: String,
+    pub(in crate::nanda_wave::l2_field) support_milli: u32,
+    pub(in crate::nanda_wave::l2_field) relation: CanonicalContourRelation,
+}
+
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+struct CanonicalContourProvenance {
+    surface_relations: BTreeMap<String, CanonicalContourRelation>,
+    lemma_relations: BTreeMap<u32, CanonicalContourRelation>,
+}
+
+/// Immutable L1.1 -> Productive V90 field material. Text replacement and
+/// request-time L3/L4 ranking are intentionally outside this value.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub(in crate::nanda_wave::l2_field) struct PreparedCanonicalTokenField {
+    observed: String,
+    productive_package_sha256: [u8; 32],
+    lattice: CompositeL2LatticeV1,
+    common_l3_required: bool,
+    authority: L2FieldAuthority,
+    contour_provenance: CanonicalContourProvenance,
+}
+
+impl PreparedCanonicalTokenField {
+    fn from_lattice(
+        observed: &str,
+        contour_provenance: CanonicalContourProvenance,
+        productive_package_sha256: [u8; 32],
+        lattice: CompositeL2LatticeV1,
+    ) -> Self {
+        let common_l3_required = lattice_surface_count(&lattice) > 1;
+        let authority = live_authority(&lattice, common_l3_required);
+        Self {
+            observed: observed.to_string(),
+            productive_package_sha256,
+            lattice,
+            common_l3_required,
+            authority,
+            contour_provenance,
+        }
+    }
+
+    pub(in crate::nanda_wave::l2_field) fn observed(&self) -> &str {
+        &self.observed
+    }
+
+    pub(in crate::nanda_wave::l2_field) fn productive_package_sha256(&self) -> [u8; 32] {
+        self.productive_package_sha256
+    }
+
+    pub(in crate::nanda_wave::l2_field) fn common_material_key(&self) -> PreparedMaterialKeyV1 {
+        let mut generation_bytes = [0_u8; 8];
+        generation_bytes.copy_from_slice(&self.productive_package_sha256[..8]);
+        let mut exact_package_digest_prefix = [0_u8; 16];
+        exact_package_digest_prefix.copy_from_slice(&self.productive_package_sha256[..16]);
+        PreparedMaterialKeyV1 {
+            observed_contour_ref: stable_bytes_ref(self.observed.as_bytes()),
+            normalization_layout_profile_id: NormalizationLayoutProfileIdV1(1),
+            package_generation: u64::from_le_bytes(generation_bytes),
+            exact_package_digest_prefix,
+        }
+    }
+
+    pub(in crate::nanda_wave::l2_field) fn common_completeness(&self) -> EnumerationCompletenessV1 {
+        self.lattice.common_completeness()
+    }
+
+    pub(in crate::nanda_wave::l2_field) fn common_material_target_identity(
+        &self,
+        surface: &str,
+        separator_profile_id: Option<u32>,
+    ) -> MaterialTargetIdentityV1 {
+        let normalized = super::super::compositional::normalize_surface(surface);
+        let normalized_ref = stable_bytes_ref(normalized.as_bytes());
+        MaterialTargetIdentityV1 {
+            normalized_scalars_ref: normalized_ref,
+            canonical_bytes_ref: normalized_ref,
+            normalization_layout_profile_id: NormalizationLayoutProfileIdV1(1),
+            separator_profile_id: SeparatorProfileIdV1(separator_profile_id.unwrap_or(0)),
+            exact_scalar_count: normalized.chars().count().min(usize::from(u16::MAX)) as u16,
+            flags: u16::from(separator_profile_id.is_some()),
+            accelerator: normalized_ref,
+        }
+    }
+}
+
+/// Prepares the only live L2 field owner. Canonical L2 is a read-only identity
+/// index; its historical local verdict is deliberately absent from this path.
+pub(in crate::nanda_wave::l2_field) fn prepare_live_productive_v1_field(
+    context_prefix: &str,
     observed: &str,
     canonical_index: &StandaloneL2Field,
     runtime: &PackagedProductiveRuntimeV1,
-    l11_seeds: &[L11SeedSurface],
-) -> Result<CanonicalL2FieldReadout, String> {
-    let restoration = l11_restoration_readout(observed, l11_seeds);
-    let groundings = package_known_groundings(canonical_index, runtime, l11_seeds)?;
-    let scene = live_scene(original, observed, canonical_index);
+    contour_seeds: &[CanonicalContourSeed],
+    form_groundings: &[CanonicalFormGrounding],
+    surface_groundings: &[CanonicalSurfaceGrounding],
+) -> Result<PreparedCanonicalTokenField, String> {
+    let l11_seeds = contour_seeds
+        .iter()
+        .map(|evidence| evidence.seed.clone())
+        .collect::<Vec<_>>();
+    let restoration = l11_restoration_readout(observed, &l11_seeds);
+    let (groundings, contour_provenance) = package_known_groundings(
+        canonical_index,
+        runtime,
+        contour_seeds,
+        form_groundings,
+        surface_groundings,
+    )?;
+    let scene = live_scene(context_prefix, observed, canonical_index);
     let grounded_winner_present = matches!(restoration, RestorationReadout::Winner { .. });
-    let productive = runtime.evaluate_shadow_with_cold_bindings(
-        observed,
-        &scene,
-        &groundings,
-        &[],
-        grounded_winner_present,
-    );
+    let trace_stages = std::env::var_os("LAY_L2_FIELD_TRACE").is_some();
+    let (productive, telemetry) = if trace_stages {
+        let (readout, telemetry) = runtime.evaluate_shadow_with_cold_bindings_profiled(
+            observed,
+            &scene,
+            &groundings,
+            &[],
+            grounded_winner_present,
+        );
+        (readout, Some(telemetry))
+    } else {
+        (
+            runtime.evaluate_shadow_with_cold_bindings(
+                observed,
+                &scene,
+                &groundings,
+                &[],
+                grounded_winner_present,
+            ),
+            None,
+        )
+    };
+    if let Some(telemetry) = telemetry {
+        eprintln!(
+            "productive_v90_stage_trace token_chars={} l11_seeds={} groundings={} active_bindings={} setup_us={} binding_us={} traversal_us={} reduce_us={} readout_us={} logical_terminals={} surface_basins={} selected={}",
+            observed.chars().count(),
+            l11_seeds.len(),
+            groundings.len(),
+            telemetry.active_binding_count,
+            telemetry.setup_us,
+            telemetry.binding_preparation_us,
+            telemetry.traversal_us,
+            telemetry.surface_reduce_us,
+            telemetry.final_readout_us,
+            telemetry.logical_terminal_count,
+            telemetry.logical_surface_basin_count,
+            telemetry.selected_candidate_count,
+        );
+    }
     if let Some(error) = productive.integrity_error.as_deref() {
         return Err(format!("productive V90 integrity error: {error}"));
     }
@@ -59,20 +239,56 @@ pub(in crate::nanda_wave::l2_field) fn live_productive_v1_readout(
                 .map(|terminal_id| (terminal_id, seed.surface.clone()))
         })
         .collect::<BTreeMap<_, _>>();
-    let lattice = CompositeL2LatticeV1::assemble(
+    let mut lattice = CompositeL2LatticeV1::assemble(
         &restoration,
         |terminal_id| surface_by_terminal.get(&terminal_id).cloned(),
         productive,
         None,
     )?;
+    lattice.merge_contour_surfaces(
+        surface_groundings
+            .iter()
+            .map(|grounding| grounding.normalized_surface.clone()),
+    )?;
     if !lattice.grounded_winner_is_preserved() {
         return Err("productive V90 dropped the grounded L1.1 winner".to_string());
     }
 
-    let common_l3_required = productive_surface_count(&lattice) > 1;
-    let authority = live_authority(&lattice, common_l3_required);
-    let candidates = materialize_live_candidates(original, observed, &lattice, common_l3_required)?;
-    Ok(CanonicalL2FieldReadout::new(candidates, authority))
+    Ok(PreparedCanonicalTokenField::from_lattice(
+        observed,
+        contour_provenance,
+        runtime.package_sha256(),
+        lattice,
+    ))
+}
+
+pub(in crate::nanda_wave::l2_field) fn materialize_live_productive_v1_field(
+    original: &str,
+    observed: &str,
+    field: &PreparedCanonicalTokenField,
+) -> Result<CanonicalL2FieldReadout, String> {
+    if field.observed != observed {
+        return Err("productive V90 field token identity mismatch".to_string());
+    }
+    let candidates = materialize_live_candidates(
+        original,
+        observed,
+        &field.lattice,
+        field.common_l3_required,
+        &field.contour_provenance,
+    )?;
+    Ok(CanonicalL2FieldReadout::new(
+        candidates,
+        field.authority.clone(),
+    ))
+}
+
+pub(in crate::nanda_wave::l2_field) fn canonical_live_scene_bytes(
+    context_prefix: &str,
+    observed: &str,
+    canonical_index: &StandaloneL2Field,
+) -> Vec<u8> {
+    live_scene(context_prefix, observed, canonical_index).canonical_bytes()
 }
 
 fn materialize_live_candidates(
@@ -80,12 +296,16 @@ fn materialize_live_candidates(
     observed: &str,
     lattice: &CompositeL2LatticeV1,
     common_l3_required: bool,
+    contour_provenance: &CanonicalContourProvenance,
 ) -> Result<Vec<UnifiedCorrectionCandidate>, String> {
+    let trace_stages = std::env::var_os("LAY_L2_FIELD_TRACE").is_some();
+    let setup_started = trace_stages.then(std::time::Instant::now);
     let protected_surface = lattice
         .grounded_candidates
         .iter()
         .find(|candidate| candidate.protected_winner)
         .map(|candidate| candidate.normalized_surface.as_str());
+    let field_authority = live_authority(lattice, common_l3_required);
     let productive_winner = match (&lattice.productive_verdict, common_l3_required) {
         (ProductiveCalibratedVerdictV1::Winner { candidate, .. }, false) => {
             Some(candidate.normalized_surface.as_str())
@@ -109,12 +329,20 @@ fn materialize_live_candidates(
         .filter(|candidate| candidate.grounded_support > 0)
         .map(|candidate| candidate.identity.lemma_id)
         .collect::<BTreeSet<_>>();
+    let setup_us = setup_started
+        .map(|started| started.elapsed().as_micros())
+        .unwrap_or_default();
 
     let mut candidates = Vec::with_capacity(lattice.surface_groups.len());
+    let mut projection_us = 0_u128;
+    let mut classify_us = 0_u128;
+    let mut gate_us = 0_u128;
+    let mut evidence_us = 0_u128;
     for group in &lattice.surface_groups {
         if group.normalized_surface.eq_ignore_ascii_case(observed) {
             continue;
         }
+        let stage_started = trace_stages.then(std::time::Instant::now);
         let projected = apply_word_case(observed, &group.normalized_surface);
         let replacement = replace_last_text_word(original, &projected)
             .ok_or_else(|| "productive V90 cannot replace the active word".to_string())?;
@@ -122,44 +350,68 @@ fn materialize_live_candidates(
             .get(group.normalized_surface.as_str())
             .cloned()
             .unwrap_or_default();
+        let origin = live_candidate_origin(contour_provenance, group);
         let same_lemma_slot = productive_nodes.iter().any(|candidate| {
             candidate
                 .equivalent_identities
                 .iter()
                 .any(|identity| grounded_lemmas.contains(&identity.lemma_id))
         });
-        let declared_class = if same_lemma_slot {
+        let declared_class = if origin == CandidateOrigin::Layout {
+            TypingErrorClass::WrongLayout
+        } else if origin == CandidateOrigin::LayoutThenTypo {
+            TypingErrorClass::CompositeTypo
+        } else if same_lemma_slot {
             TypingErrorClass::GrammarAgreement
         } else {
             TypingErrorClass::Unknown
         };
+        projection_us += stage_started
+            .map(|started| started.elapsed().as_micros())
+            .unwrap_or_default();
+        let stage_started = trace_stages.then(std::time::Instant::now);
         let error_class = action_operator::classify_token_transition(
             original,
             &replacement,
-            CandidateOrigin::L2Surface,
+            origin,
             declared_class,
         );
+        classify_us += stage_started
+            .map(|started| started.elapsed().as_micros())
+            .unwrap_or_default();
+        let stage_started = trace_stages.then(std::time::Instant::now);
         let mut gate = TransitionDecisionCore::admit_candidate_proposal(
             original,
             &replacement,
             error_class,
-            CandidateOrigin::L2Surface,
+            origin,
         );
         let is_protected = protected_surface == Some(group.normalized_surface.as_str());
-        let productive_has_l2_winner =
-            productive_winner == Some(group.normalized_surface.as_str()) && !is_protected;
-        if !is_protected
-            && !productive_nodes.is_empty()
-            && !productive_has_l2_winner
-            && gate.action == CandidateGateAction::Eligible
+        if !candidate_has_live_authority(
+            &field_authority,
+            origin,
+            is_protected,
+            &group.normalized_surface,
+        ) && gate.action == CandidateGateAction::Eligible
         {
             gate = CandidateGateDecision {
                 action: CandidateGateAction::SuggestOnly,
-                reason: "productive_v90_lattice_requires_common_l3",
+                reason: live_authority_deferral_reason(&field_authority),
             };
         }
-        let source_id = if is_protected {
+        gate_us += stage_started
+            .map(|started| started.elapsed().as_micros())
+            .unwrap_or_default();
+        let stage_started = trace_stages.then(std::time::Instant::now);
+        let source_id = if matches!(
+            origin,
+            CandidateOrigin::Layout | CandidateOrigin::LayoutThenTypo
+        ) {
+            PRODUCTIVE_V90_LAYOUT_SOURCE_ID
+        } else if is_protected {
             PRODUCTIVE_V90_GROUNDED_WINNER_SOURCE_ID
+        } else if group.contour_grounding {
+            PRODUCTIVE_V90_CONTOUR_SOURCE_ID
         } else if !productive_nodes.is_empty() {
             PRODUCTIVE_V90_SURFACE_SOURCE_ID
         } else {
@@ -168,7 +420,7 @@ fn materialize_live_candidates(
         let mut candidate = UnifiedCorrectionCandidate::new(
             replacement,
             CorrectionDecisionSource::Nanda,
-            CandidateOrigin::L2Surface,
+            origin,
             source_id,
             error_class,
             gate,
@@ -178,8 +430,78 @@ fn materialize_live_candidates(
             productive_winner,
         ));
         candidates.push(candidate);
+        evidence_us += stage_started
+            .map(|started| started.elapsed().as_micros())
+            .unwrap_or_default();
+    }
+    if trace_stages {
+        eprintln!(
+            "productive_v90_materialization_trace surfaces={} emitted={} setup_us={} projection_us={} classify_us={} gate_us={} evidence_us={}",
+            lattice.surface_groups.len(),
+            candidates.len(),
+            setup_us,
+            projection_us,
+            classify_us,
+            gate_us,
+            evidence_us,
+        );
     }
     Ok(candidates)
+}
+
+fn candidate_has_live_authority(
+    authority: &L2FieldAuthority,
+    origin: CandidateOrigin,
+    protected_grounded_winner: bool,
+    normalized_surface: &str,
+) -> bool {
+    origin == CandidateOrigin::Layout
+        || protected_grounded_winner
+        || matches!(
+            authority,
+            L2FieldAuthority::Winner { surface }
+                if surface.eq_ignore_ascii_case(normalized_surface)
+        )
+}
+
+fn live_authority_deferral_reason(authority: &L2FieldAuthority) -> &'static str {
+    match authority {
+        L2FieldAuthority::Tied { .. } => "productive_v90_lattice_requires_common_l3",
+        L2FieldAuthority::Abstain => "productive_v90_lattice_abstained",
+        L2FieldAuthority::Unavailable => "productive_v90_lattice_unavailable",
+        L2FieldAuthority::Winner { .. } => "productive_v90_non_winner_requires_common_l3",
+    }
+}
+
+fn live_candidate_origin(
+    contour_provenance: &CanonicalContourProvenance,
+    group: &CompositeSurfaceGroupV1,
+) -> CandidateOrigin {
+    if let Some(relation) = contour_provenance
+        .surface_relations
+        .get(&group.normalized_surface)
+        .copied()
+    {
+        return relation.candidate_origin();
+    }
+    group
+        .productive_identities
+        .iter()
+        .filter_map(|identity| {
+            contour_provenance
+                .lemma_relations
+                .get(&identity.lemma_id)
+                .copied()
+        })
+        .max()
+        .filter(|relation| {
+            matches!(
+                relation,
+                CanonicalContourRelation::ExactLayout | CanonicalContourRelation::LayoutThenTypo
+            )
+        })
+        .map(|_| CandidateOrigin::LayoutThenTypo)
+        .unwrap_or(CandidateOrigin::L2Surface)
 }
 
 fn productive_slot_evidence(
@@ -214,13 +536,8 @@ fn productive_slot_evidence(
     evidence
 }
 
-fn productive_surface_count(lattice: &CompositeL2LatticeV1) -> usize {
-    lattice
-        .productive_candidates
-        .iter()
-        .map(|candidate| candidate.normalized_surface.as_ref())
-        .collect::<BTreeSet<_>>()
-        .len()
+fn lattice_surface_count(lattice: &CompositeL2LatticeV1) -> usize {
+    lattice.surface_groups.len()
 }
 
 fn live_authority(lattice: &CompositeL2LatticeV1, common_l3_required: bool) -> L2FieldAuthority {
@@ -276,26 +593,77 @@ fn live_authority(lattice: &CompositeL2LatticeV1, common_l3_required: bool) -> L
 fn package_known_groundings(
     canonical_index: &StandaloneL2Field,
     runtime: &PackagedProductiveRuntimeV1,
-    seeds: &[L11SeedSurface],
-) -> Result<Vec<PackagedGroundedLemmaV1>, String> {
-    let mut evidence_by_lemma = BTreeMap::<u32, u32>::new();
-    for seed in seeds {
-        let Some(form_ref) = canonical_index.form_ref_for_surface(&seed.surface) else {
+    contour_seeds: &[CanonicalContourSeed],
+    form_groundings: &[CanonicalFormGrounding],
+    surface_groundings: &[CanonicalSurfaceGrounding],
+) -> Result<(Vec<PackagedGroundedLemmaV1>, CanonicalContourProvenance), String> {
+    let mut evidence_by_lemma = BTreeMap::<u32, (u32, CanonicalContourRelation)>::new();
+    let mut surface_relations = BTreeMap::<String, CanonicalContourRelation>::new();
+    for evidence in contour_seeds {
+        let normalized_surface =
+            super::super::compositional::normalize_surface(&evidence.seed.surface);
+        merge_relation(
+            &mut surface_relations,
+            normalized_surface,
+            evidence.relation,
+        );
+        let Some(form_ref) = canonical_index.form_ref_for_surface(&evidence.seed.surface) else {
             continue;
         };
         for (lemma_id, _) in canonical_index.imported_binding_identities_for_form(form_ref) {
-            evidence_by_lemma
-                .entry(lemma_id)
-                .and_modify(|evidence| *evidence = (*evidence).max(seed.score_milli.max(1)))
-                .or_insert(seed.score_milli.max(1));
+            merge_lemma_evidence(
+                &mut evidence_by_lemma,
+                lemma_id,
+                evidence.seed.score_milli.max(1),
+                evidence.relation,
+            );
         }
     }
+    for grounding in form_groundings {
+        let decoded = canonical_index
+            .imported_surface_for_form(grounding.form_ref)
+            .ok_or_else(|| "typed contour grounding references an unknown form".to_string())?;
+        if !decoded.eq_ignore_ascii_case(&grounding.normalized_surface) {
+            return Err("typed contour grounding surface does not match its form ref".to_string());
+        }
+        merge_relation(
+            &mut surface_relations,
+            super::super::compositional::normalize_surface(&grounding.normalized_surface),
+            grounding.relation,
+        );
+        for (lemma_id, _) in
+            canonical_index.imported_binding_identities_for_form(grounding.form_ref)
+        {
+            merge_lemma_evidence(
+                &mut evidence_by_lemma,
+                lemma_id,
+                grounding.support_milli.max(1),
+                grounding.relation,
+            );
+        }
+    }
+    for grounding in surface_groundings {
+        merge_relation(
+            &mut surface_relations,
+            super::super::compositional::normalize_surface(&grounding.normalized_surface),
+            grounding.relation,
+        );
+    }
     let mut ranked = evidence_by_lemma.into_iter().collect::<Vec<_>>();
-    ranked.sort_by(|left, right| right.1.cmp(&left.1).then_with(|| left.0.cmp(&right.0)));
+    ranked.sort_by(|left, right| {
+        right
+            .1
+             .0
+            .cmp(&left.1 .0)
+            .then_with(|| right.1 .1.cmp(&left.1 .1))
+            .then_with(|| left.0.cmp(&right.0))
+    });
     ranked.truncate(MAX_ACTIVE_PACKAGE_LEMMAS);
 
     let mut grounded = Vec::new();
-    for (lemma_id, seed_support) in ranked {
+    let mut lemma_relations = BTreeMap::new();
+    for (lemma_id, (seed_support, relation)) in ranked {
+        lemma_relations.insert(lemma_id, relation);
         for descriptor in runtime.grounding_descriptors(lemma_id)? {
             let normalized_source = canonical_index
                 .imported_surface_for_form(descriptor.canonical_source_form_ref)
@@ -322,7 +690,39 @@ fn package_known_groundings(
     grounded.dedup_by(|left, right| {
         (left.lemma_id, left.pos_domain) == (right.lemma_id, right.pos_domain)
     });
-    Ok(grounded)
+    Ok((
+        grounded,
+        CanonicalContourProvenance {
+            surface_relations,
+            lemma_relations,
+        },
+    ))
+}
+
+fn merge_relation(
+    relations: &mut BTreeMap<String, CanonicalContourRelation>,
+    surface: String,
+    relation: CanonicalContourRelation,
+) {
+    relations
+        .entry(surface)
+        .and_modify(|retained| *retained = (*retained).max(relation))
+        .or_insert(relation);
+}
+
+fn merge_lemma_evidence(
+    evidence_by_lemma: &mut BTreeMap<u32, (u32, CanonicalContourRelation)>,
+    lemma_id: u32,
+    support_milli: u32,
+    relation: CanonicalContourRelation,
+) {
+    evidence_by_lemma
+        .entry(lemma_id)
+        .and_modify(|retained| {
+            retained.0 = retained.0.max(support_milli);
+            retained.1 = retained.1.max(relation);
+        })
+        .or_insert((support_milli, relation));
 }
 
 fn l11_restoration_readout(observed: &str, seeds: &[L11SeedSurface]) -> RestorationReadout {
@@ -381,14 +781,11 @@ fn l11_restoration_readout(observed: &str, seeds: &[L11SeedSurface]) -> Restorat
 }
 
 fn live_scene(
-    original: &str,
+    context_prefix: &str,
     observed: &str,
     canonical_index: &StandaloneL2Field,
 ) -> L2LocalSceneV1 {
-    let context = crate::word_reader::split_last_alphabetic_token(original)
-        .map(|(context, _)| context)
-        .unwrap_or_default();
-    let left = context
+    let left = context_prefix
         .split_whitespace()
         .rev()
         .filter_map(normalize_context_token)
@@ -417,7 +814,7 @@ fn live_scene(
             token_observation(left.get(1).cloned()),
             token_observation(left.first().cloned()),
         ],
-        boundary_before: if context.trim().is_empty() {
+        boundary_before: if context_prefix.trim().is_empty() {
             BoundaryKindV1::None
         } else {
             BoundaryKindV1::Token
@@ -491,6 +888,68 @@ mod tests {
         }
     }
 
+    fn surface_group(
+        surface: &str,
+        grounded: bool,
+        productive_identities: Vec<ProductiveCandidateIdentityV1>,
+    ) -> CompositeSurfaceGroupV1 {
+        CompositeSurfaceGroupV1 {
+            normalized_surface: surface.to_string(),
+            grounded_terminal_ids: grounded.then_some(7).into_iter().collect(),
+            productive_identities,
+            grounded_protection: false,
+            contour_grounding: false,
+        }
+    }
+
+    #[test]
+    fn physical_layout_origin_is_bound_to_cross_script_grounding() {
+        let identity = productive_candidate(17, 2, 102, "собаки").identity;
+        let provenance = CanonicalContourProvenance {
+            surface_relations: [("собака".to_string(), CanonicalContourRelation::ExactLayout)]
+                .into_iter()
+                .collect(),
+            lemma_relations: [(17, CanonicalContourRelation::ExactLayout)]
+                .into_iter()
+                .collect(),
+        };
+        assert_eq!(
+            live_candidate_origin(&provenance, &surface_group("собака", true, Vec::new())),
+            CandidateOrigin::Layout
+        );
+        assert_eq!(
+            live_candidate_origin(&provenance, &surface_group("собаки", false, vec![identity]),),
+            CandidateOrigin::LayoutThenTypo
+        );
+        assert_eq!(
+            live_candidate_origin(&provenance, &surface_group("tyn", true, Vec::new()),),
+            CandidateOrigin::L2Surface
+        );
+        assert_eq!(
+            live_candidate_origin(
+                &CanonicalContourProvenance::default(),
+                &surface_group("собака", true, Vec::new()),
+            ),
+            CandidateOrigin::L2Surface
+        );
+        assert!(candidate_has_live_authority(
+            &L2FieldAuthority::Tied {
+                surfaces: vec!["собака".to_string(), "собаки".to_string()],
+            },
+            CandidateOrigin::Layout,
+            false,
+            "собака",
+        ));
+        assert!(!candidate_has_live_authority(
+            &L2FieldAuthority::Tied {
+                surfaces: vec!["собака".to_string(), "собаки".to_string()],
+            },
+            CandidateOrigin::LayoutThenTypo,
+            false,
+            "собаки",
+        ));
+    }
+
     #[test]
     fn l11_authority_is_derived_from_typed_seed_not_candidate_order() {
         let readout = l11_restoration_readout(
@@ -554,7 +1013,7 @@ mod tests {
         let lattice = CompositeL2LatticeV1::assemble(&l11, |_| None, productive, None)
             .expect("two-slot productive lattice");
 
-        let common_l3_required = productive_surface_count(&lattice) > 1;
+        let common_l3_required = lattice_surface_count(&lattice) > 1;
         assert!(common_l3_required);
         assert!(matches!(
             live_authority(&lattice, common_l3_required),
@@ -562,9 +1021,14 @@ mod tests {
                 if surfaces == &["форма".to_string(), "формы".to_string()]
         ));
 
-        let candidates =
-            materialize_live_candidates("нужна форм", "форм", &lattice, common_l3_required)
-                .expect("common L3 candidates");
+        let candidates = materialize_live_candidates(
+            "нужна форм",
+            "форм",
+            &lattice,
+            common_l3_required,
+            &CanonicalContourProvenance::default(),
+        )
+        .expect("common L3 candidates");
         assert_eq!(candidates.len(), 2);
         assert!(candidates
             .iter()
@@ -575,5 +1039,108 @@ mod tests {
                 .iter()
                 .any(|evidence| evidence.lemma_id == 17)
         }));
+    }
+
+    #[test]
+    fn immutable_field_materialization_preserves_the_complete_readout() {
+        let nominative = productive_candidate(17, 1, 101, "форма");
+        let genitive = productive_candidate(17, 2, 102, "формы");
+        let productive = PackagedProductiveReadoutV1 {
+            verdict: ProductiveCalibratedVerdictV1::Winner {
+                candidate: readout_candidate(&nominative),
+                calibration_stratum_id: 1,
+            },
+            candidates: vec![nominative, genitive],
+            logical_terminal_count: 2,
+            logical_surface_basin_count: 2,
+            integrity_error: None,
+        };
+        let l11 = RestorationReadout::Abstain {
+            reason: AbstainReason::NoCandidates,
+            geometry_distance: None,
+            candidates: Vec::new(),
+        };
+        let lattice = CompositeL2LatticeV1::assemble(&l11, |_| None, productive, None)
+            .expect("two-slot productive lattice");
+        let common_l3_required = lattice_surface_count(&lattice) > 1;
+        let provenance = CanonicalContourProvenance::default();
+        let expected = CanonicalL2FieldReadout::new(
+            materialize_live_candidates(
+                "нужна форм",
+                "форм",
+                &lattice,
+                common_l3_required,
+                &provenance,
+            )
+            .expect("direct materialization"),
+            live_authority(&lattice, common_l3_required),
+        );
+        let field = PreparedCanonicalTokenField::from_lattice("форм", provenance, [7; 32], lattice);
+
+        let actual = materialize_live_productive_v1_field("нужна форм", "форм", &field)
+            .expect("immutable field materialization");
+
+        assert_eq!(actual, expected);
+        assert_eq!(field.observed(), "форм");
+        assert_eq!(field.productive_package_sha256(), [7; 32]);
+        assert_eq!(
+            field.common_material_key(),
+            PreparedMaterialKeyV1 {
+                observed_contour_ref: stable_bytes_ref("форм".as_bytes()),
+                normalization_layout_profile_id: NormalizationLayoutProfileIdV1(1),
+                package_generation: u64::from_le_bytes([7; 8]),
+                exact_package_digest_prefix: [7; 16],
+            }
+        );
+        let completeness = field.common_completeness();
+        assert_eq!(
+            completeness.state(),
+            crate::typing_transition::target_evidence::EnumerationStateV1::Complete
+        );
+        assert_eq!(completeness.logical_count_lower_bound(), 2);
+        assert_eq!(
+            field.common_material_target_identity("формы", Some(11)),
+            MaterialTargetIdentityV1 {
+                normalized_scalars_ref: stable_bytes_ref("формы".as_bytes()),
+                canonical_bytes_ref: stable_bytes_ref("формы".as_bytes()),
+                normalization_layout_profile_id: NormalizationLayoutProfileIdV1(1),
+                separator_profile_id: SeparatorProfileIdV1(11),
+                exact_scalar_count: 5,
+                flags: 1,
+                accelerator: stable_bytes_ref("формы".as_bytes()),
+            }
+        );
+    }
+
+    #[test]
+    fn immutable_field_rejects_a_different_observed_token() {
+        let productive = PackagedProductiveReadoutV1 {
+            verdict: ProductiveCalibratedVerdictV1::Abstain {
+                suggestions: Vec::new(),
+                productive_overflow: false,
+            },
+            candidates: Vec::new(),
+            logical_terminal_count: 0,
+            logical_surface_basin_count: 0,
+            integrity_error: None,
+        };
+        let l11 = RestorationReadout::Abstain {
+            reason: AbstainReason::NoCandidates,
+            geometry_distance: None,
+            candidates: Vec::new(),
+        };
+        let lattice = CompositeL2LatticeV1::assemble(&l11, |_| None, productive, None)
+            .expect("empty productive lattice");
+        let field = PreparedCanonicalTokenField::from_lattice(
+            "форм",
+            CanonicalContourProvenance::default(),
+            [0; 32],
+            lattice,
+        );
+
+        let error = materialize_live_productive_v1_field("нужна форма", "форма", &field)
+            .expect_err("mismatched token identity must fail closed");
+
+        assert_eq!(error, "productive V90 field token identity mismatch");
     }
 }

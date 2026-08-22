@@ -23,7 +23,7 @@ fn ime_correction_route_reaches_common_decision_core() {
     let transition_decision = read("src/typing_transition/decision.rs");
 
     assert!(
-        ime_correction.contains("decide_input_gate(InputGateRequest")
+        ime_correction.contains("decide_input_gate_observed(InputGateRequest")
             || ime_correction.contains("resolve_text_correction(CorrectionRequest"),
         "ime_correction.rs must enter the shared correction pipeline"
     );

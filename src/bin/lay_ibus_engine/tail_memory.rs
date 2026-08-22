@@ -1,7 +1,9 @@
 use super::engine::{
     LayIbusEngine, PendingImeCompletionLearning, PendingSystemOutcomeFeedback, SystemOutcomeKind,
 };
-use super::protocol::{PendingImeAutoUndo, PendingImeAutoUndoRetry, SharedState};
+use super::protocol::{
+    PendingImeAutoUndo, PendingImeAutoUndoRetry, SharedState, ShiftGestureHandoff,
+};
 use lay::text_edit::{VisibleTailSnapshot, VisibleTailSource};
 use std::time::{Duration, Instant};
 
@@ -26,6 +28,7 @@ impl LayIbusEngine {
         let Ok(mut state) = self.shared.lock() else {
             return;
         };
+        state.shift_gesture_handoff = None;
         state.pending_auto_undo_retry = None;
         state.pending_auto_undo = (original != replacement
             && !original.trim().is_empty()
@@ -54,9 +57,11 @@ impl LayIbusEngine {
             return None;
         };
         let Some(pending) = state.pending_auto_undo.take() else {
+            state.shift_gesture_handoff = None;
             record_pending_ime_auto_undo_lifecycle(self, &state, "take", "missing");
             return None;
         };
+        state.shift_gesture_handoff = None;
         state.pending_auto_undo_retry = None;
         if let Some(reason) = pending_ime_auto_undo_invalid_reason(self, &pending) {
             record_detached_ime_auto_undo_lifecycle(self, &state, &pending, "take", reason);
@@ -76,6 +81,7 @@ impl LayIbusEngine {
         let Ok(mut state) = self.shared.lock() else {
             return;
         };
+        state.shift_gesture_handoff = None;
         state.pending_auto_undo_retry = None;
         state.pending_auto_undo = Some(pending);
         record_pending_ime_auto_undo_lifecycle(self, &state, "restore", "stored");
@@ -86,6 +92,7 @@ impl LayIbusEngine {
             return;
         };
         record_pending_ime_auto_undo_lifecycle(self, &state, "clear", reason);
+        state.shift_gesture_handoff = None;
         state.pending_auto_undo = None;
         state.pending_auto_undo_retry = None;
     }
@@ -116,6 +123,7 @@ impl LayIbusEngine {
         };
         if let Some(reason) = pending_ime_auto_undo_invalid_reason(self, pending) {
             record_pending_ime_auto_undo_lifecycle(self, &state, "defer", reason);
+            state.shift_gesture_handoff = None;
             state.pending_auto_undo = None;
             state.pending_auto_undo_retry = None;
             return false;
@@ -180,6 +188,7 @@ impl LayIbusEngine {
         }
         let Some(pending) = state.pending_auto_undo.as_ref() else {
             record_pending_ime_auto_undo_lifecycle(self, &state, "retry", "missing_undo");
+            state.shift_gesture_handoff = None;
             state.pending_auto_undo_retry = None;
             return "missing_undo";
         };
@@ -193,6 +202,7 @@ impl LayIbusEngine {
         }
         if let Some(reason) = pending_ime_auto_undo_invalid_reason(self, pending) {
             record_pending_ime_auto_undo_lifecycle(self, &state, "retry", reason);
+            state.shift_gesture_handoff = None;
             state.pending_auto_undo = None;
             state.pending_auto_undo_retry = None;
             return "invalidated";
@@ -533,6 +543,7 @@ impl LayIbusEngine {
         state.preserve_active_path_until = None;
         state.pending_auto_undo = None;
         state.pending_auto_undo_retry = None;
+        state.shift_gesture_handoff = None;
     }
 
     fn quarantine_visible_postcondition_mismatch(&mut self) {
@@ -561,6 +572,7 @@ impl LayIbusEngine {
             state.preserve_active_path_until = None;
             state.pending_auto_undo = None;
             state.pending_auto_undo_retry = None;
+            state.shift_gesture_handoff = None;
         };
     }
 
@@ -622,7 +634,74 @@ impl LayIbusEngine {
             return true;
         }
         state.preserve_active_path_until = None;
+        state.shift_gesture_handoff = None;
         false
+    }
+
+    pub(super) fn publish_shift_gesture_handoff(&self) {
+        let Ok(mut state) = self.shared.lock() else {
+            return;
+        };
+        let now = Instant::now();
+        let lease_is_live = state
+            .preserve_active_path_until
+            .is_some_and(|until| now <= until);
+        if !lease_is_live || state.pending_auto_undo.is_none() {
+            state.shift_gesture_handoff = None;
+            return;
+        }
+        if state.active_path.as_deref() != Some(self.path.as_str()) {
+            return;
+        }
+        state.shift_gesture_handoff = Some(ShiftGestureHandoff {
+            source_path: self.path.clone(),
+            shift_active: self.shift_active,
+            shift_pressed_at: self.shift_pressed_at,
+            shift_used_as_modifier: self.shift_used_as_modifier,
+            last_shift_release_at: self.last_shift_release_at,
+        });
+        super::trace::record(format!(
+            r#"{{"kind":"ibus_shift_gesture_handoff","stage":"publish","source":"{}","shift_active":{},"used_as_modifier":{}}}"#,
+            self.path, self.shift_active, self.shift_used_as_modifier,
+        ));
+    }
+
+    pub(super) fn consume_shift_gesture_handoff(&mut self) {
+        let handoff = {
+            let Ok(mut state) = self.shared.lock() else {
+                return;
+            };
+            let now = Instant::now();
+            let lease_is_live = state
+                .preserve_active_path_until
+                .is_some_and(|until| now <= until);
+            if !lease_is_live || state.pending_auto_undo.is_none() {
+                state.shift_gesture_handoff = None;
+                return;
+            }
+            if state.active_path.as_deref() != Some(self.path.as_str()) {
+                return;
+            }
+            let Some(gesture) = state.shift_gesture_handoff.as_ref() else {
+                return;
+            };
+            if gesture.source_path == self.path {
+                return;
+            }
+            state.shift_gesture_handoff.take()
+        };
+        let Some(handoff) = handoff else {
+            return;
+        };
+        let source_path = handoff.source_path.clone();
+        self.shift_active = handoff.shift_active;
+        self.shift_pressed_at = handoff.shift_pressed_at;
+        self.shift_used_as_modifier = handoff.shift_used_as_modifier;
+        self.last_shift_release_at = handoff.last_shift_release_at;
+        super::trace::record(format!(
+            r#"{{"kind":"ibus_shift_gesture_handoff","stage":"consume","source":"{}","target":"{}","shift_active":{},"used_as_modifier":{}}}"#,
+            source_path, self.path, self.shift_active, self.shift_used_as_modifier,
+        ));
     }
 }
 

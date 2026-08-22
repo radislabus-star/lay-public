@@ -1,0 +1,58 @@
+{
+  "schema": "lay.canonical-layout-token.direct-v9-probe.v1",
+  "date": "2026-08-16",
+  "host": "e@192.168.3.94",
+  "checkout": "/home/e/build/lay-ime-boundary-layout-proof-20260815",
+  "package": {
+    "path": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.v9.bin",
+    "bytes": 77962328,
+    "sha256": "bf5a1619a89038466ef786305cf35eda5f4af5b9f12b9140f7d3cac407e2f2a7",
+    "admission_receipt": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json"
+  },
+  "queries": [
+    {
+      "surface": "ytn",
+      "limit": 32,
+      "seed_count": 32,
+      "target": "нет",
+      "target_rank": 2,
+      "target_authority": false,
+      "target_score_milli": 1665
+    },
+    {
+      "surface": "cj,frf",
+      "limit": 8,
+      "seed_count": 1,
+      "seeds": ["собака"],
+      "target": "собака",
+      "target_rank": 1,
+      "target_authority": false,
+      "target_score_milli": 1653
+    },
+    {
+      "surface": "врмея",
+      "limit": 8,
+      "seed_count": 8,
+      "target": "время",
+      "target_rank": 1,
+      "target_authority": false,
+      "target_score_milli": 1864
+    },
+    {
+      "surface": "звгрузи",
+      "limit": 8,
+      "seed_count": 0,
+      "target": "загрузи",
+      "target_rank": null
+    }
+  ],
+  "measured_fact": "V9 retains the layout targets for ytn and cj,frf; the current canonical bridge loses those requests before L1.1. The звгрузи loss is independently an empty L1.1 lattice.",
+  "not_tested": [
+    "canonical bridge after extractor implementation",
+    "Productive V90 layout materialization",
+    "DecisionCore and verifier authority",
+    "aggregate quality and latency",
+    "physical GUI behavior"
+  ],
+  "runtime_authority_changed": false
+}

@@ -1,0 +1,10 @@
+test nanda_wave::l2::tests::boundary_cell_does_not_split_clean_words_with_short_endings ... layout-center token="плохим" raw="gkj[bv" blocked=false
+l2_boundary_fuzzy_trace elapsed_us=94999 candidates=32
+l2_boundary_light_trace elapsed_us=95120 found=false
+l2_boundary_phrase_trace elapsed_us=313467 found=false
+layout-center token="ходим" raw="[jlbv" blocked=false
+l2_boundary_light_trace elapsed_us=24 found=false
+layout-center token="отдел" raw="jnltk" blocked=true
+layout-center token="модель" raw="vjltkm" blocked=true
+ok
+

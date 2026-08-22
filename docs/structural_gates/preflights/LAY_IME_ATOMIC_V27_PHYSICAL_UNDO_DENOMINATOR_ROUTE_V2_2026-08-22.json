@@ -1,0 +1,106 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "physical-undo-input", "role": "interface"},
+    {"id": "composite-undo-observation", "role": "observer"},
+    {"id": "accepted-v24-release-denominator", "role": "evidence_owner"},
+    {"id": "javascript-contract-assertion", "role": "proof_owner"},
+    {"id": "javascript-composite-pass-marker", "role": "producer"},
+    {"id": "shell-proof-verdict", "role": "proof_owner"}
+  ],
+  "edges": [
+    {
+      "id": "observe-physical-composite",
+      "from": "physical-undo-input",
+      "relation": "observes",
+      "to": "composite-undo-observation",
+      "events": ["physical-undo-observation"]
+    },
+    {
+      "id": "evidence-denominator-assertion",
+      "from": "accepted-v24-release-denominator",
+      "relation": "passes_to",
+      "to": "javascript-contract-assertion",
+      "events": ["javascript-contract-evidence"]
+    },
+    {
+      "id": "proof-observation-assertion",
+      "from": "composite-undo-observation",
+      "relation": "proves",
+      "to": "javascript-contract-assertion",
+      "events": ["javascript-contract-proof"]
+    },
+    {
+      "id": "produce-assertion-marker",
+      "from": "javascript-contract-assertion",
+      "relation": "delegates",
+      "to": "javascript-composite-pass-marker",
+      "events": ["javascript-marker-production"]
+    },
+    {
+      "id": "proof-marker-shell-verdict",
+      "from": "javascript-composite-pass-marker",
+      "relation": "proves",
+      "to": "shell-proof-verdict",
+      "events": ["shell-marker-proof"]
+    }
+  ],
+  "routes": [
+    {
+      "id": "physical-undo-observation",
+      "event": "physical-undo-observation",
+      "kind": "observation",
+      "entry": "physical-undo-input",
+      "terminal": "composite-undo-observation",
+      "required_roles": ["interface", "observer"],
+      "path_cardinality": [
+        {"from": "physical-undo-input", "to": "composite-undo-observation", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "javascript-contract-evidence",
+      "event": "javascript-contract-evidence",
+      "kind": "authority",
+      "entry": "accepted-v24-release-denominator",
+      "terminal": "javascript-contract-assertion",
+      "required_roles": ["evidence_owner", "proof_owner"],
+      "path_cardinality": [
+        {"from": "accepted-v24-release-denominator", "to": "javascript-contract-assertion", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "javascript-contract-proof",
+      "event": "javascript-contract-proof",
+      "kind": "proof",
+      "entry": "composite-undo-observation",
+      "terminal": "javascript-contract-assertion",
+      "required_roles": ["observer", "proof_owner"],
+      "path_cardinality": [
+        {"from": "composite-undo-observation", "to": "javascript-contract-assertion", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "javascript-marker-production",
+      "event": "javascript-marker-production",
+      "kind": "execution",
+      "entry": "javascript-contract-assertion",
+      "terminal": "javascript-composite-pass-marker",
+      "required_roles": ["proof_owner", "producer"],
+      "path_cardinality": [
+        {"from": "javascript-contract-assertion", "to": "javascript-composite-pass-marker", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "shell-marker-proof",
+      "event": "shell-marker-proof",
+      "kind": "proof",
+      "entry": "javascript-composite-pass-marker",
+      "terminal": "shell-proof-verdict",
+      "required_roles": ["producer", "proof_owner"],
+      "path_cardinality": [
+        {"from": "javascript-composite-pass-marker", "to": "shell-proof-verdict", "min": 1, "max": 1}
+      ]
+    }
+  ]
+}

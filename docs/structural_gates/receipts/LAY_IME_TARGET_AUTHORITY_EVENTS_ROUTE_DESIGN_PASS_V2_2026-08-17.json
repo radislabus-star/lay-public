@@ -1,0 +1,904 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "PASS",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": true,
+  "contract": "docs/structural_gates/preflights/LAY_IME_TARGET_AUTHORITY_EVENTS_ROUTE_V2_2026-08-17.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "source_root": null,
+  "node_count": 24,
+  "edge_count": 47,
+  "routes": [
+    {
+      "id": "display-refresh-execution",
+      "event": "display_refresh",
+      "kind": "execution",
+      "entry": "printable_event",
+      "via": [],
+      "terminal": "preedit_renderer",
+      "path_count": 1,
+      "paths": [
+        [
+          "printable_event",
+          "prepared_field_producer",
+          "prepared_target_material",
+          "display_candidate_readout",
+          "display_rank",
+          "preedit_renderer"
+        ]
+      ],
+      "role_owners": {
+        "candidate_rank_owner": [
+          "display_candidate_readout"
+        ],
+        "display_rank_owner": [
+          "display_rank"
+        ],
+        "render_owner": [
+          "preedit_renderer"
+        ],
+        "producer": [
+          "prepared_field_producer"
+        ],
+        "evidence_owner": [
+          "prepared_target_material"
+        ],
+        "interface": [
+          "printable_event"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "printable_event",
+          "to": "preedit_renderer",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "printable_event",
+              "prepared_field_producer",
+              "prepared_target_material",
+              "display_candidate_readout",
+              "display_rank",
+              "preedit_renderer"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "display-refresh-authority",
+      "event": "display_refresh",
+      "kind": "authority",
+      "entry": "prepared_field_producer",
+      "via": [],
+      "terminal": "preedit_renderer",
+      "path_count": 1,
+      "paths": [
+        [
+          "prepared_field_producer",
+          "prepared_target_material",
+          "display_candidate_readout",
+          "display_rank",
+          "preedit_renderer"
+        ]
+      ],
+      "role_owners": {
+        "candidate_rank_owner": [
+          "display_candidate_readout"
+        ],
+        "display_rank_owner": [
+          "display_rank"
+        ],
+        "render_owner": [
+          "preedit_renderer"
+        ],
+        "producer": [
+          "prepared_field_producer"
+        ],
+        "evidence_owner": [
+          "prepared_target_material"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "tab-accept-execution",
+      "event": "tab_accept",
+      "kind": "execution",
+      "entry": "tab_event",
+      "via": [],
+      "terminal": "active_composition_mutator",
+      "path_count": 1,
+      "paths": [
+        [
+          "tab_event",
+          "visible_target_receipt",
+          "explicit_tab_selection",
+          "compound_edit_authorization",
+          "active_composition_mutator"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "active_composition_mutator"
+        ],
+        "authorization_owner": [
+          "compound_edit_authorization"
+        ],
+        "candidate_rank_owner": [
+          "explicit_tab_selection"
+        ],
+        "interface": [
+          "tab_event"
+        ],
+        "evidence_owner": [
+          "visible_target_receipt"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "tab_event",
+          "to": "active_composition_mutator",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "tab_event",
+              "visible_target_receipt",
+              "explicit_tab_selection",
+              "compound_edit_authorization",
+              "active_composition_mutator"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tab-accept-authority",
+      "event": "tab_accept",
+      "kind": "authority",
+      "entry": "visible_target_receipt",
+      "via": [],
+      "terminal": "active_composition_mutator",
+      "path_count": 1,
+      "paths": [
+        [
+          "visible_target_receipt",
+          "explicit_tab_selection",
+          "compound_edit_authorization",
+          "active_composition_mutator"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "active_composition_mutator"
+        ],
+        "authorization_owner": [
+          "compound_edit_authorization"
+        ],
+        "candidate_rank_owner": [
+          "explicit_tab_selection"
+        ],
+        "evidence_owner": [
+          "visible_target_receipt"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "space-l2-execution",
+      "event": "space_l2_winner",
+      "kind": "execution",
+      "entry": "committed_space_event",
+      "via": [],
+      "terminal": "committed_tail_mutator",
+      "path_count": 1,
+      "paths": [
+        [
+          "committed_space_event",
+          "frame_bound_automatic_evidence",
+          "l2_winner_readout",
+          "compound_edit_authorization",
+          "committed_tail_mutator"
+        ]
+      ],
+      "role_owners": {
+        "interface": [
+          "committed_space_event"
+        ],
+        "mutation_owner": [
+          "committed_tail_mutator"
+        ],
+        "authorization_owner": [
+          "compound_edit_authorization"
+        ],
+        "evidence_owner": [
+          "frame_bound_automatic_evidence"
+        ],
+        "candidate_rank_owner": [
+          "l2_winner_readout"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "committed_space_event",
+          "to": "committed_tail_mutator",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "committed_space_event",
+              "frame_bound_automatic_evidence",
+              "l2_winner_readout",
+              "compound_edit_authorization",
+              "committed_tail_mutator"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "space-l2-authority",
+      "event": "space_l2_winner",
+      "kind": "authority",
+      "entry": "frame_bound_automatic_evidence",
+      "via": [],
+      "terminal": "committed_tail_mutator",
+      "path_count": 1,
+      "paths": [
+        [
+          "frame_bound_automatic_evidence",
+          "l2_winner_readout",
+          "compound_edit_authorization",
+          "committed_tail_mutator"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "committed_tail_mutator"
+        ],
+        "authorization_owner": [
+          "compound_edit_authorization"
+        ],
+        "evidence_owner": [
+          "frame_bound_automatic_evidence"
+        ],
+        "candidate_rank_owner": [
+          "l2_winner_readout"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "space-context-execution",
+      "event": "space_context_tied",
+      "kind": "execution",
+      "entry": "committed_space_event",
+      "via": [],
+      "terminal": "committed_tail_mutator",
+      "path_count": 1,
+      "paths": [
+        [
+          "committed_space_event",
+          "frame_bound_automatic_evidence",
+          "context_tie_readout",
+          "compound_edit_authorization",
+          "committed_tail_mutator"
+        ]
+      ],
+      "role_owners": {
+        "interface": [
+          "committed_space_event"
+        ],
+        "mutation_owner": [
+          "committed_tail_mutator"
+        ],
+        "authorization_owner": [
+          "compound_edit_authorization"
+        ],
+        "candidate_rank_owner": [
+          "context_tie_readout"
+        ],
+        "evidence_owner": [
+          "frame_bound_automatic_evidence"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "committed_space_event",
+          "to": "committed_tail_mutator",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "committed_space_event",
+              "frame_bound_automatic_evidence",
+              "context_tie_readout",
+              "compound_edit_authorization",
+              "committed_tail_mutator"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "space-context-authority",
+      "event": "space_context_tied",
+      "kind": "authority",
+      "entry": "frame_bound_automatic_evidence",
+      "via": [],
+      "terminal": "committed_tail_mutator",
+      "path_count": 1,
+      "paths": [
+        [
+          "frame_bound_automatic_evidence",
+          "context_tie_readout",
+          "compound_edit_authorization",
+          "committed_tail_mutator"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "committed_tail_mutator"
+        ],
+        "authorization_owner": [
+          "compound_edit_authorization"
+        ],
+        "candidate_rank_owner": [
+          "context_tie_readout"
+        ],
+        "evidence_owner": [
+          "frame_bound_automatic_evidence"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "space-fallback-execution",
+      "event": "space_fallback",
+      "kind": "execution",
+      "entry": "committed_space_event",
+      "via": [],
+      "terminal": "committed_tail_mutator",
+      "path_count": 1,
+      "paths": [
+        [
+          "committed_space_event",
+          "raw_user_input_authorization",
+          "committed_tail_mutator"
+        ]
+      ],
+      "role_owners": {
+        "interface": [
+          "committed_space_event"
+        ],
+        "mutation_owner": [
+          "committed_tail_mutator"
+        ],
+        "authorization_owner": [
+          "raw_user_input_authorization"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "committed_space_event",
+          "to": "committed_tail_mutator",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "committed_space_event",
+              "raw_user_input_authorization",
+              "committed_tail_mutator"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "space-fallback-authority",
+      "event": "space_fallback",
+      "kind": "authority",
+      "entry": "raw_user_input_authorization",
+      "via": [],
+      "terminal": "committed_tail_mutator",
+      "path_count": 1,
+      "paths": [
+        [
+          "raw_user_input_authorization",
+          "committed_tail_mutator"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "committed_tail_mutator"
+        ],
+        "authorization_owner": [
+          "raw_user_input_authorization"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "active-space-execution",
+      "event": "active_composition_space",
+      "kind": "execution",
+      "entry": "active_space_event",
+      "via": [],
+      "terminal": "active_composition_mutator",
+      "path_count": 1,
+      "paths": [
+        [
+          "active_space_event",
+          "raw_user_input_authorization",
+          "active_composition_mutator"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "active_composition_mutator"
+        ],
+        "interface": [
+          "active_space_event"
+        ],
+        "authorization_owner": [
+          "raw_user_input_authorization"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "active_space_event",
+          "to": "active_composition_mutator",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "active_space_event",
+              "raw_user_input_authorization",
+              "active_composition_mutator"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "active-space-authority",
+      "event": "active_composition_space",
+      "kind": "authority",
+      "entry": "raw_user_input_authorization",
+      "via": [],
+      "terminal": "active_composition_mutator",
+      "path_count": 1,
+      "paths": [
+        [
+          "raw_user_input_authorization",
+          "active_composition_mutator"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "active_composition_mutator"
+        ],
+        "authorization_owner": [
+          "raw_user_input_authorization"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "stale-publication-execution",
+      "event": "stale_publication",
+      "kind": "execution",
+      "entry": "stale_publication_event",
+      "via": [],
+      "terminal": "stale_discard_observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "stale_publication_event",
+          "stale_generation_guard",
+          "stale_discard_observer"
+        ]
+      ],
+      "role_owners": {
+        "observer": [
+          "stale_discard_observer"
+        ],
+        "authorization_owner": [
+          "stale_generation_guard"
+        ],
+        "interface": [
+          "stale_publication_event"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "stale_publication_event",
+          "to": "stale_discard_observer",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "stale_publication_event",
+              "stale_generation_guard",
+              "stale_discard_observer"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "stale-publication-authority",
+      "event": "stale_publication",
+      "kind": "authority",
+      "entry": "prepared_field_producer",
+      "via": [],
+      "terminal": "stale_generation_guard",
+      "path_count": 1,
+      "paths": [
+        [
+          "prepared_field_producer",
+          "stale_generation_guard"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "prepared_field_producer"
+        ],
+        "authorization_owner": [
+          "stale_generation_guard"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "stale-publication-observation",
+      "event": "stale_publication",
+      "kind": "observation",
+      "entry": "prepared_field_producer",
+      "via": [],
+      "terminal": "stale_discard_observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "prepared_field_producer",
+          "stale_discard_observer"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "prepared_field_producer"
+        ],
+        "observer": [
+          "stale_discard_observer"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "rollback-apply-execution",
+      "event": "rollback_apply",
+      "kind": "execution",
+      "entry": "double_shift_event",
+      "via": [],
+      "terminal": "committed_tail_mutator",
+      "path_count": 1,
+      "paths": [
+        [
+          "double_shift_event",
+          "rollback_receipt",
+          "compound_edit_authorization",
+          "committed_tail_mutator"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "committed_tail_mutator"
+        ],
+        "authorization_owner": [
+          "compound_edit_authorization"
+        ],
+        "interface": [
+          "double_shift_event"
+        ],
+        "evidence_owner": [
+          "rollback_receipt"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "double_shift_event",
+          "to": "committed_tail_mutator",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "double_shift_event",
+              "rollback_receipt",
+              "compound_edit_authorization",
+              "committed_tail_mutator"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rollback-apply-authority",
+      "event": "rollback_apply",
+      "kind": "authority",
+      "entry": "rollback_receipt",
+      "via": [],
+      "terminal": "committed_tail_mutator",
+      "path_count": 1,
+      "paths": [
+        [
+          "rollback_receipt",
+          "compound_edit_authorization",
+          "committed_tail_mutator"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "committed_tail_mutator"
+        ],
+        "authorization_owner": [
+          "compound_edit_authorization"
+        ],
+        "evidence_owner": [
+          "rollback_receipt"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "rollback-defer-execution",
+      "event": "rollback_defer",
+      "kind": "execution",
+      "entry": "double_shift_event",
+      "via": [],
+      "terminal": "rollback_receipt",
+      "path_count": 1,
+      "paths": [
+        [
+          "double_shift_event",
+          "rollback_receipt"
+        ]
+      ],
+      "role_owners": {
+        "interface": [
+          "double_shift_event"
+        ],
+        "evidence_owner": [
+          "rollback_receipt"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "double_shift_event",
+          "to": "rollback_receipt",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "double_shift_event",
+              "rollback_receipt"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rollback-defer-observation",
+      "event": "rollback_defer",
+      "kind": "observation",
+      "entry": "rollback_receipt",
+      "via": [],
+      "terminal": "rollback_snapshot_observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "rollback_receipt",
+          "rollback_snapshot_observer"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "rollback_receipt"
+        ],
+        "observer": [
+          "rollback_snapshot_observer"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {
+    "display_refresh": {
+      "render_owner": [
+        "preedit_renderer"
+      ],
+      "candidate_rank_owner": [
+        "display_candidate_readout"
+      ],
+      "evidence_owner": [
+        "prepared_target_material"
+      ],
+      "display_rank_owner": [
+        "display_rank"
+      ],
+      "mutation_owner": [],
+      "authorization_owner": []
+    },
+    "tab_accept": {
+      "render_owner": [],
+      "candidate_rank_owner": [
+        "explicit_tab_selection"
+      ],
+      "evidence_owner": [
+        "visible_target_receipt"
+      ],
+      "display_rank_owner": [],
+      "mutation_owner": [
+        "active_composition_mutator"
+      ],
+      "authorization_owner": [
+        "compound_edit_authorization"
+      ]
+    },
+    "space_l2_winner": {
+      "render_owner": [],
+      "candidate_rank_owner": [
+        "l2_winner_readout"
+      ],
+      "evidence_owner": [
+        "frame_bound_automatic_evidence"
+      ],
+      "display_rank_owner": [],
+      "mutation_owner": [
+        "committed_tail_mutator"
+      ],
+      "authorization_owner": [
+        "compound_edit_authorization"
+      ]
+    },
+    "space_context_tied": {
+      "render_owner": [],
+      "candidate_rank_owner": [
+        "context_tie_readout"
+      ],
+      "evidence_owner": [
+        "frame_bound_automatic_evidence"
+      ],
+      "display_rank_owner": [],
+      "mutation_owner": [
+        "committed_tail_mutator"
+      ],
+      "authorization_owner": [
+        "compound_edit_authorization"
+      ]
+    },
+    "space_fallback": {
+      "render_owner": [],
+      "candidate_rank_owner": [],
+      "evidence_owner": [],
+      "display_rank_owner": [],
+      "mutation_owner": [
+        "committed_tail_mutator"
+      ],
+      "authorization_owner": [
+        "raw_user_input_authorization"
+      ]
+    },
+    "active_composition_space": {
+      "render_owner": [],
+      "candidate_rank_owner": [],
+      "evidence_owner": [],
+      "display_rank_owner": [],
+      "mutation_owner": [
+        "active_composition_mutator"
+      ],
+      "authorization_owner": [
+        "raw_user_input_authorization"
+      ]
+    },
+    "stale_publication": {
+      "render_owner": [],
+      "candidate_rank_owner": [],
+      "evidence_owner": [],
+      "display_rank_owner": [],
+      "mutation_owner": [],
+      "authorization_owner": [
+        "stale_generation_guard"
+      ]
+    },
+    "rollback_apply": {
+      "render_owner": [],
+      "candidate_rank_owner": [],
+      "evidence_owner": [
+        "rollback_receipt"
+      ],
+      "display_rank_owner": [],
+      "mutation_owner": [
+        "committed_tail_mutator"
+      ],
+      "authorization_owner": [
+        "compound_edit_authorization"
+      ]
+    }
+  },
+  "source_evidence": {
+    "expected": 0,
+    "verified": 0,
+    "complete": true
+  },
+  "issues": [],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": false,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

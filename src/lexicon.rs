@@ -41,6 +41,9 @@ const L2_SURFACE_HOT_RU_DATA: &str = include_str!("../data/lexicon/l2_surface_ho
 const VISUAL_B_DEFAULT_DATA: &str = include_str!("../data/lexicon/visual_b_default.txt");
 const VISUAL_B_AFTER_ASCII_DATA: &str = include_str!("../data/lexicon/visual_b_after_ascii.txt");
 
+static USER_PROTECTED_ASCII_WORDS: OnceLock<HashSet<String>> = OnceLock::new();
+static COMMON_EN_TECHNICAL_WORDS: OnceLock<HashSet<String>> = OnceLock::new();
+
 pub fn warm_up() {
     let _ = common_ru_words().len();
     let _ = ru_technical_loanwords().len();
@@ -164,6 +167,35 @@ pub fn extend_common_ru_words(words: &mut HashSet<String>) {
     words.extend(common_ru_words().iter().cloned());
 }
 
+pub(crate) fn warm_up_exact_ascii_protection() -> (u64, usize, usize) {
+    let technical = common_en_technical_words();
+    let user = user_protected_ascii_words();
+    let fingerprint = fingerprint_word_sets(&[technical, user]);
+    let entries = technical.len().saturating_add(user.len());
+    let resident_bytes = technical
+        .iter()
+        .chain(user)
+        .map(|word| word.capacity())
+        .sum::<usize>()
+        .saturating_add(entries.saturating_mul(std::mem::size_of::<String>()));
+    (fingerprint, entries, resident_bytes)
+}
+
+pub(crate) fn is_common_en_technical_word_if_warm(word: &str) -> Option<bool> {
+    Some(COMMON_EN_TECHNICAL_WORDS.get()?.contains(word))
+}
+
+pub(crate) fn is_user_protected_ascii_word_if_warm(word: &str) -> Option<bool> {
+    if !word.is_ascii() {
+        return Some(false);
+    }
+    Some(
+        USER_PROTECTED_ASCII_WORDS
+            .get()?
+            .contains(&word.to_ascii_lowercase()),
+    )
+}
+
 pub fn extend_ru_technical_loanwords(words: &mut HashSet<String>) {
     words.extend(ru_technical_loanwords().iter().cloned());
 }
@@ -192,8 +224,7 @@ fn user_protected_words() -> &'static HashSet<String> {
 }
 
 fn user_protected_ascii_words() -> &'static HashSet<String> {
-    static WORDS: OnceLock<HashSet<String>> = OnceLock::new();
-    WORDS.get_or_init(|| {
+    USER_PROTECTED_ASCII_WORDS.get_or_init(|| {
         let Some(home) = std::env::var_os("HOME") else {
             return HashSet::new();
         };
@@ -252,8 +283,24 @@ fn common_ru_words_ordered() -> &'static Vec<String> {
 }
 
 fn common_en_technical_words() -> &'static HashSet<String> {
-    static WORDS: OnceLock<HashSet<String>> = OnceLock::new();
-    WORDS.get_or_init(|| parse_word_data(COMMON_EN_TECHNICAL_DATA))
+    COMMON_EN_TECHNICAL_WORDS.get_or_init(|| parse_word_data(COMMON_EN_TECHNICAL_DATA))
+}
+
+fn fingerprint_word_sets(sets: &[&HashSet<String>]) -> u64 {
+    let mut words = sets
+        .iter()
+        .flat_map(|set| set.iter().map(String::as_str))
+        .collect::<Vec<_>>();
+    words.sort_unstable();
+    words.dedup();
+    let mut digest = 0xcbf2_9ce4_8422_2325_u64;
+    for word in words {
+        for byte in word.bytes().chain(std::iter::once(0)) {
+            digest ^= u64::from(byte);
+            digest = digest.wrapping_mul(0x100_0000_01b3);
+        }
+    }
+    digest
 }
 
 fn common_en_guard_prefixes() -> &'static HashSet<String> {

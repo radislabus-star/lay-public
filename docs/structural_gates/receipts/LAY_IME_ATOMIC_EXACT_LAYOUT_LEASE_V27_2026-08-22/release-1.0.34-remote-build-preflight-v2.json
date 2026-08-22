@@ -1,0 +1,130 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "cargo-version",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/Cargo.toml",
+      "sha256": "91a3c72265db548d6190f16a0059bcd27174a80b3403302ce1b7ee9b7cb9cc8c",
+      "size_bytes": 2399
+    },
+    {
+      "exists": true,
+      "id": "cargo-lock-version",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/Cargo.lock",
+      "sha256": "34cbaa577bdfed3f352a59e443573372f7a2635011d147d23379e022c369d6d9",
+      "size_bytes": 70770
+    },
+    {
+      "exists": true,
+      "id": "versioning-doc",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/VERSIONING.md",
+      "sha256": "56792955a2a7dfb0bac92a20add1e1022de8a495bfae2d6370dafad1e9a54eb1",
+      "size_bytes": 1921
+    },
+    {
+      "exists": true,
+      "id": "extension-metadata-version",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/extension/lay@radislabus-star.github.io/metadata.json",
+      "sha256": "ca27bebadcd451dfaf4c38326912c6a1ed16a0fafb57cb450b3f53748034158f",
+      "size_bytes": 420
+    },
+    {
+      "exists": true,
+      "id": "tray-version",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/extension/lay@radislabus-star.github.io/tray_support.js",
+      "sha256": "d98e989117f13c9a89f2521b17719c6653becd596f30b672919fd3cec613b5e5",
+      "size_bytes": 8489
+    },
+    {
+      "exists": true,
+      "id": "release-installer",
+      "kind": "file",
+      "mode": "0775",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/install-release-binaries.sh",
+      "sha256": "259850478a99bb32b1aaffa863ff72138f018b7ce1231611a05fad706d7ffd02",
+      "size_bytes": 2333
+    },
+    {
+      "exists": true,
+      "id": "installed-lay",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay",
+      "sha256": "0a00e2343ab55922eae7f8955c53f4d9c77999c6b99e8136b12c95a871816680",
+      "size_bytes": 6230136
+    },
+    {
+      "exists": true,
+      "id": "installed-daemon",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+      "sha256": "f0821f3b1dbf87fb83db1119534d3e4a1aef489dd6d5588ca8a8f9b86a19194c",
+      "size_bytes": 8342624
+    },
+    {
+      "exists": true,
+      "id": "installed-engine",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a",
+      "size_bytes": 6423488
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 9,
+    "forbidden_side_effect_kinds": [
+      "build_phase_installed_runtime_mutation",
+      "global_ibus_restart",
+      "historical_receipt_rewrite",
+      "local_build",
+      "model_package_rebuild",
+      "service_restart_before_final_proof"
+    ],
+    "identity_contracts": 3,
+    "invariants": 5,
+    "planned_side_effect_kinds": [
+      "ephemeral_process_start",
+      "filesystem_write",
+      "remote_filesystem_write",
+      "source_edit"
+    ],
+    "preserved_artifacts": 3,
+    "runtime_comparisons": 0,
+    "source_checks": 1,
+    "tests": 12
+  },
+  "manifest_sha256": "7d8975e91e54f2ebc7eb6f36e2e91310ea30b5b8190f7b7f67b6346c751e64bd",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-release-installer",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/install-release-binaries.sh",
+      "sha256": "259850478a99bb32b1aaffa863ff72138f018b7ce1231611a05fad706d7ffd02",
+      "size_bytes": 2333
+    }
+  ],
+  "task_id": "LAY_RELEASE_1_0_34_REMOTE_BUILD_V2_2026-08-22",
+  "verdict": "READY_TO_IMPLEMENT"
+}

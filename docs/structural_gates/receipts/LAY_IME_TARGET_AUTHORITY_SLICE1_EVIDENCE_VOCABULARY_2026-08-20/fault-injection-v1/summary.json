@@ -1,0 +1,19 @@
+{
+  "schema": "lay.ime-target-authority-slice1-adapter-fault-injection.v1",
+  "verdict": "PASS",
+  "missing_adapter": {
+    "exit_code": 101,
+    "compile_rejected": true,
+    "log_sha256": "fb7bcad3b1fa59538a3b743fc9951a9bb9fa19cb342efb73816eb88f057b2bff"
+  },
+  "lossy_adapter": {
+    "exit_code": 101,
+    "parity_test_rejected": true,
+    "log_sha256": "7f1c5bbb3ba33c85a146342a3769d6a6a139715c8cf750a083621b74aacb2fec"
+  },
+  "candidate_after_faults": {
+    "parity_test_passed": true,
+    "log_sha256": "f1820e0a753bfe7245d14aa83e960b0aa9d92b82ddc69fa55f280fc27a72daac"
+  },
+  "production_runtime_touched": false
+}

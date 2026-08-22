@@ -1,0 +1,262 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE1_DEPENDENCY_TRANSFER_V1_2026-08-21",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": false,
+  "baseline_checks": [
+    {
+      "id": "atomic-frame-source",
+      "kind": "file",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/ibusatomicframe.c",
+      "expect": {"mode": "0664", "size_bytes": 34681, "sha256": "b2e853cec9bfda8807dc8a3a84ba3ae15d562a8eefeda98f3998b9dad8762500"}
+    },
+    {
+      "id": "atomic-frame-header",
+      "kind": "file",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/ibusatomicframeprivate.h",
+      "expect": {"mode": "0664", "size_bytes": 8479, "sha256": "cb29c9dee3ef89d4a42069804c5a57346853603014fb3de560a843dc32485822"}
+    },
+    {
+      "id": "atomic-frame-test",
+      "kind": "file",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/ibus-atomic-frame.c",
+      "expect": {"mode": "0664", "size_bytes": 37645, "sha256": "21e613508a20f163c2c00e217cc2d4c4d906c79bccc4e813d3f93e0c6ed491ce"}
+    },
+    {
+      "id": "atomic-frame-src-makefile",
+      "kind": "file",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/Makefile.am",
+      "expect": {"mode": "0664", "size_bytes": 15448, "sha256": "2839fcab725c6be3d5a3bc40cc581c7e1ca2e523b0639064955d2397ff5e2c07"}
+    },
+    {
+      "id": "atomic-frame-tests-makefile",
+      "kind": "file",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/Makefile.am",
+      "expect": {"mode": "0664", "size_bytes": 8184, "sha256": "aed467fa580a6889c50803fbebebc8a125feaf6798659213e662f4bd2512a7d7"}
+    },
+    {
+      "id": "slice1-implementation-preflight-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE1_2026-08-21/implementation-preflight-receipt-v2.json",
+      "expect": {"mode": "0664", "size_bytes": 6921, "sha256": "c1c5a8b9da910d31cef7598a98590eeb27312f75c0b68bd70b253bf7e5694c13"}
+    },
+    {
+      "id": "dependency-route-baseline",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE1_2026-08-21/dependency-route-v2-baseline.json",
+      "expect": {"mode": "0664", "size_bytes": 1276, "sha256": "81631e3b4c62c90616c1ba19e63443db067cda383a339115fe88a01fa7d3bdea"}
+    },
+    {
+      "id": "local-dependency-temp-absent",
+      "kind": "absent",
+      "path": "/tmp/lay-ibus-atomic-v2-slice1-deps-20260821",
+      "expect": {}
+    },
+    {
+      "id": "installed-ibus-daemon",
+      "kind": "file",
+      "path": "/usr/bin/ibus-daemon",
+      "expect": {"mode": "0755", "size_bytes": 170496, "sha256": "24338c0e7cfb749d2ac9b9254d7d54029e71b5ac9342aa1b8d78b1d55f5ac1b6"}
+    },
+    {
+      "id": "installed-libibus",
+      "kind": "file",
+      "path": "/usr/lib/x86_64-linux-gnu/libibus-1.0.so.5.0.534",
+      "expect": {"mode": "0644", "size_bytes": 542936, "sha256": "e1977b9d3d84ee94b63f6c04056134c10aa51d4e0621f7abee1115da12259ec1"}
+    },
+    {
+      "id": "installed-lay-daemon",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+      "expect": {"mode": "0755", "size_bytes": 8342624, "sha256": "f0821f3b1dbf87fb83db1119534d3e4a1aef489dd6d5588ca8a8f9b86a19194c"}
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "create-local-temporary-download-directory", "kind": "temporary_filesystem_write"},
+      {"id": "download-exact-apt-indexed-package", "kind": "dependency_download"},
+      {"id": "transfer-verified-package-over-existing-ssh", "kind": "remote_filesystem_write"},
+      {"id": "extract-package-inside-task-sysroot", "kind": "remote_sandbox_extract"},
+      {"id": "write-transfer-receipt", "kind": "filesystem_write"}
+    ],
+    "forbidden": [
+      "source_edit",
+      "package_install",
+      "host_package_database_mutation",
+      "sudo_or_privilege_escalation",
+      "installed_file_write",
+      "runtime_deployment",
+      "restart_live_ibus",
+      "signal_live_ibus",
+      "connect_live_session_bus",
+      "text_mutation",
+      "layout_mutation",
+      "synthetic_key_output",
+      "unverified_dependency",
+      "local_compilation",
+      "runtime_quality_claim"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "module-source",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/ibusatomicframe.c",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "never modify during dependency transport",
+      "baseline_check_id": "atomic-frame-source"
+    },
+    {
+      "id": "module-header",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/ibusatomicframeprivate.h",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "never modify during dependency transport",
+      "baseline_check_id": "atomic-frame-header"
+    },
+    {
+      "id": "module-test",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/ibus-atomic-frame.c",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "never modify during dependency transport",
+      "baseline_check_id": "atomic-frame-test"
+    },
+    {
+      "id": "src-build-metadata",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/Makefile.am",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "never modify during dependency transport",
+      "baseline_check_id": "atomic-frame-src-makefile"
+    },
+    {
+      "id": "test-build-metadata",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/Makefile.am",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "never modify during dependency transport",
+      "baseline_check_id": "atomic-frame-tests-makefile"
+    },
+    {
+      "id": "implementation-preflight",
+      "path": "../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE1_2026-08-21/implementation-preflight-receipt-v2.json",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "never overwrite implementation evidence",
+      "baseline_check_id": "slice1-implementation-preflight-receipt"
+    },
+    {
+      "id": "dependency-route-receipt",
+      "path": "../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE1_2026-08-21/dependency-route-v2-baseline.json",
+      "policy": "append_never_overwrite",
+      "rollback_policy": "retain the rejected DNS route and selected transfer route",
+      "baseline_check_id": "dependency-route-baseline"
+    },
+    {
+      "id": "installed-daemon",
+      "path": "/usr/bin/ibus-daemon",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "never modify restart or replace",
+      "baseline_check_id": "installed-ibus-daemon"
+    },
+    {
+      "id": "installed-library",
+      "path": "/usr/lib/x86_64-linux-gnu/libibus-1.0.so.5.0.534",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "never modify or replace",
+      "baseline_check_id": "installed-libibus"
+    },
+    {
+      "id": "installed-lay-runtime",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "never modify restart or replace",
+      "baseline_check_id": "installed-lay-daemon"
+    }
+  ],
+  "state_machine": {
+    "initial_state": "TRANSFER_ROUTE_PINNED",
+    "steps": [
+      {
+        "id": "download-and-verify-local-package",
+        "from": "TRANSFER_ROUTE_PINNED",
+        "to": "LOCAL_PACKAGE_VERIFIED",
+        "mutates": true,
+        "failure_state": "LOCAL_DOWNLOAD_FAILED_CLEANED",
+        "cleanup": "remove only the task-owned temporary directory and retain the failure log",
+        "preserves": ["module-source", "module-header", "module-test", "src-build-metadata", "test-build-metadata", "implementation-preflight", "dependency-route-receipt", "installed-daemon", "installed-library", "installed-lay-runtime"],
+        "test_id": "local-download-fault-policy"
+      },
+      {
+        "id": "transfer-and-verify-remote-package",
+        "from": "LOCAL_PACKAGE_VERIFIED",
+        "to": "REMOTE_PACKAGE_VERIFIED",
+        "mutates": true,
+        "failure_state": "REMOTE_TRANSFER_FAILED_RETAINED",
+        "cleanup": "retain or remove only the task-owned remote package and record both hashes; never retry with an unverified file",
+        "preserves": ["module-source", "module-header", "module-test", "src-build-metadata", "test-build-metadata", "implementation-preflight", "dependency-route-receipt", "installed-daemon", "installed-library", "installed-lay-runtime"],
+        "test_id": "remote-transfer-fault-policy"
+      },
+      {
+        "id": "extract-verified-remote-package",
+        "from": "REMOTE_PACKAGE_VERIFIED",
+        "to": "REMOTE_HEADERS_READY",
+        "mutates": true,
+        "failure_state": "REMOTE_EXTRACTION_FAILED_RETAINED",
+        "cleanup": "retain the exact package and extraction log in the task sandbox; never invoke dpkg install apt install or sudo",
+        "preserves": ["module-source", "module-header", "module-test", "src-build-metadata", "test-build-metadata", "implementation-preflight", "dependency-route-receipt", "installed-daemon", "installed-library", "installed-lay-runtime"],
+        "test_id": "remote-extraction-fault-policy"
+      }
+    ],
+    "terminal_states": [
+      "REMOTE_HEADERS_READY",
+      "LOCAL_DOWNLOAD_FAILED_CLEANED",
+      "REMOTE_TRANSFER_FAILED_RETAINED",
+      "REMOTE_EXTRACTION_FAILED_RETAINED"
+    ]
+  },
+  "identity_contracts": [
+    {
+      "id": "apt-index-local-package-identity",
+      "producer": "Ubuntu APT index package metadata",
+      "consumer": "local temporary deb",
+      "comparison": "filename version architecture size 1743632 and SHA-256 1b21713a3eef3d9f97a30178938f3bd32e5d32f1858bc28d6146b4c22d6649cc are exact",
+      "test_id": "local-package-hash-parity"
+    },
+    {
+      "id": "local-remote-package-identity",
+      "producer": "verified local temporary deb",
+      "consumer": "remote task sandbox deb",
+      "comparison": "SHA-256 size dpkg package version and architecture are exact before extraction",
+      "test_id": "remote-package-hash-parity"
+    }
+  ],
+  "runtime_comparisons": [],
+  "invariants": [
+    {
+      "id": "only-pinned-package-crosses-hosts",
+      "statement": "no package bytes are transferred or extracted until exact APT size and SHA-256 pass",
+      "test_id": "local-package-hash-parity"
+    },
+    {
+      "id": "remote-copy-is-identical",
+      "statement": "the remote package is byte-identical to the verified local package",
+      "test_id": "remote-package-hash-parity"
+    },
+    {
+      "id": "sandbox-extraction-only",
+      "statement": "dependency files are extracted only below the task sysroot and no host package state changes",
+      "test_id": "sandbox-extraction-boundary"
+    },
+    {
+      "id": "source-and-runtime-immutable",
+      "statement": "source inputs and installed IBus and Lay artifacts remain exact during transport",
+      "test_id": "transport-preservation-parity"
+    }
+  ],
+  "tests": [
+    {"id": "local-download-fault-policy", "kind": "fault_injection", "expected": "a failed or partial download is removed from the task temporary directory and is never transferred"},
+    {"id": "remote-transfer-fault-policy", "kind": "fault_injection", "expected": "a partial or mismatched remote copy is not extracted and only task-owned bytes may be removed"},
+    {"id": "remote-extraction-fault-policy", "kind": "fault_injection", "expected": "extraction failure changes only the task sysroot and never host package or installed paths"},
+    {"id": "local-package-hash-parity", "kind": "parity", "expected": "local package filename version architecture size and SHA-256 exactly match APT index metadata"},
+    {"id": "remote-package-hash-parity", "kind": "parity", "expected": "local and remote package SHA-256 and size are identical and dpkg-deb reports the pinned identity"},
+    {"id": "sandbox-extraction-boundary", "kind": "integration", "expected": "dpkg-deb extraction writes only below the remote task sysroot without package installation"},
+    {"id": "transport-preservation-parity", "kind": "parity", "expected": "all five source inputs and installed IBus and Lay hashes remain exact"}
+  ]
+}

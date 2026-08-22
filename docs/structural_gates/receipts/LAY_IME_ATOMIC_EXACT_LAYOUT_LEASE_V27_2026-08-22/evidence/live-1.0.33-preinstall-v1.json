@@ -1,0 +1,72 @@
+{
+  "schema": "lay.release-live-baseline.v1",
+  "captured_at": "2026-08-22T11:16:04+03:00",
+  "release_target": "1.0.34",
+  "installed_release": "1.0.33",
+  "active_text_backend": "ime",
+  "active_ibus_engine": "lay-ime-ru",
+  "loaded_extension_version": "1.0.33",
+  "source_extension_version": "1.0.34",
+  "global_ibus": {
+    "pid": 2076194,
+    "argv": "/usr/bin/ibus-daemon --panel disable",
+    "must_survive_install": true
+  },
+  "runtime": [
+    {
+      "role": "lay-daemon",
+      "pid": 1971272,
+      "ppid": 2200,
+      "rss_kib": 168404,
+      "pss_kib": 121340,
+      "exe_sha256": "f0821f3b1dbf87fb83db1119534d3e4a1aef489dd6d5588ca8a8f9b86a19194c"
+    },
+    {
+      "role": "lay-l1.1-serve",
+      "pid": 1971358,
+      "ppid": 1971272,
+      "rss_kib": 101388,
+      "pss_kib": 99302,
+      "exe_sha256": "6ab87a880e2c1ae7f1736ab7f934ef5600c2086c6c8b27c7386fa7c5923c71f8"
+    },
+    {
+      "role": "lay-ibus-engine",
+      "pid": 2076619,
+      "ppid": 2076194,
+      "rss_kib": 225260,
+      "pss_kib": 175867,
+      "exe_sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a"
+    },
+    {
+      "role": "lay-l3-online",
+      "pid": 3002,
+      "ppid": 2200,
+      "rss_kib": 53480,
+      "pss_kib": 26512,
+      "exe_sha256": "7de3aa6f10e09928a27b17c2932078a1bbe75a6cf02d7fdf225f0184724eff4a"
+    }
+  ],
+  "memory": {
+    "runtime_rss_sum_kib": 548532,
+    "runtime_pss_sum_kib": 423021,
+    "engine_pss_gate_delta_kib": 16384,
+    "engine_pss_gate_max_kib": 192251
+  },
+  "services": {
+    "lay-daemon.service": "active/running",
+    "lay-l3-online.service": "active/running",
+    "lay-ibus-engine.service": "inactive/dead; engine is IBus-managed"
+  },
+  "canonical_l2": {
+    "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-RU-FULL-v13.bin",
+    "bytes": 140556462,
+    "sha256": "cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b"
+  },
+  "release_stage": {
+    "path": "/home/ubu/.cache/lay/releases/1.0.34-22f6a4198d7c2aa388e58ff806dade001e7d0d0fa16d96b7810d1bee804894cf",
+    "source_sha256": "22f6a4198d7c2aa388e58ff806dade001e7d0d0fa16d96b7810d1bee804894cf",
+    "sha256sums_sha256": "607fd23b04cbdf590c37ab95e8053cd2d287f66654c3483c5ecdc93bf099eda4",
+    "binary_count": 10,
+    "sha256sum_check": "10/10 PASS"
+  }
+}

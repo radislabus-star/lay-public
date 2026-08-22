@@ -1,0 +1,124 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "active_input", "role": "interface"},
+    {"id": "canonical_token_extractor", "role": "producer"},
+    {"id": "typed_contour_field", "role": "producer"},
+    {"id": "productive_v90", "role": "producer"},
+    {"id": "final_candidate_lattice", "role": "evidence_owner"},
+    {"id": "decision_core", "role": "candidate_rank_owner"},
+    {"id": "transition_verifier", "role": "authorization_owner"},
+    {"id": "committed_tail_mutator", "role": "mutation_owner"},
+    {"id": "unsupported_input_abstain", "role": "evidence_owner"},
+    {"id": "explicit_disabled_deterministic", "role": "producer"},
+    {"id": "disabled_mode_lattice", "role": "evidence_owner"}
+  ],
+  "edges": [
+    {"id": "exec-supported-input-extractor", "from": "active_input", "relation": "calls", "to": "canonical_token_extractor", "events": ["nanda_supported_token"]},
+    {"id": "exec-supported-extractor-contours", "from": "canonical_token_extractor", "relation": "delegates", "to": "typed_contour_field", "events": ["nanda_supported_token"]},
+    {"id": "exec-supported-contours-v90", "from": "typed_contour_field", "relation": "delegates", "to": "productive_v90", "events": ["nanda_supported_token"]},
+    {"id": "exec-supported-v90-lattice", "from": "productive_v90", "relation": "delegates", "to": "final_candidate_lattice", "events": ["nanda_supported_token"]},
+    {"id": "exec-supported-lattice-decision", "from": "final_candidate_lattice", "relation": "delegates", "to": "decision_core", "events": ["nanda_supported_token"]},
+    {"id": "authority-extractor-contours", "from": "canonical_token_extractor", "relation": "produces_for", "to": "typed_contour_field", "events": ["nanda_supported_token"]},
+    {"id": "authority-contours-v90", "from": "typed_contour_field", "relation": "produces_for", "to": "productive_v90", "events": ["nanda_supported_token"]},
+    {"id": "authority-v90-lattice", "from": "productive_v90", "relation": "produces_for", "to": "final_candidate_lattice", "events": ["nanda_supported_token"]},
+    {"id": "authority-lattice-decision", "from": "final_candidate_lattice", "relation": "passes_to", "to": "decision_core", "events": ["nanda_supported_token"]},
+    {"id": "exec-unsupported-input-extractor", "from": "active_input", "relation": "calls", "to": "canonical_token_extractor", "events": ["nanda_unsupported_token"]},
+    {"id": "exec-unsupported-extractor-abstain", "from": "canonical_token_extractor", "relation": "delegates", "to": "unsupported_input_abstain", "events": ["nanda_unsupported_token"]},
+    {"id": "authority-unsupported-extractor-abstain", "from": "canonical_token_extractor", "relation": "produces_for", "to": "unsupported_input_abstain", "events": ["nanda_unsupported_token"]},
+    {"id": "exec-disabled-input-deterministic", "from": "active_input", "relation": "calls", "to": "explicit_disabled_deterministic", "events": ["nanda_explicitly_disabled"]},
+    {"id": "exec-disabled-deterministic-lattice", "from": "explicit_disabled_deterministic", "relation": "delegates", "to": "disabled_mode_lattice", "events": ["nanda_explicitly_disabled"]},
+    {"id": "exec-disabled-lattice-decision", "from": "disabled_mode_lattice", "relation": "delegates", "to": "decision_core", "events": ["nanda_explicitly_disabled"]},
+    {"id": "authority-disabled-deterministic-lattice", "from": "explicit_disabled_deterministic", "relation": "produces_for", "to": "disabled_mode_lattice", "events": ["nanda_explicitly_disabled"]},
+    {"id": "authority-disabled-lattice-decision", "from": "disabled_mode_lattice", "relation": "passes_to", "to": "decision_core", "events": ["nanda_explicitly_disabled"]},
+    {"id": "exec-space-decision-verifier", "from": "decision_core", "relation": "delegates", "to": "transition_verifier", "events": ["space_ready_apply"]},
+    {"id": "exec-space-verifier-mutator", "from": "transition_verifier", "relation": "delegates", "to": "committed_tail_mutator", "events": ["space_ready_apply"]},
+    {"id": "authority-space-verifier-mutator", "from": "transition_verifier", "relation": "authorizes", "to": "committed_tail_mutator", "events": ["space_ready_apply"]}
+  ],
+  "routes": [
+    {
+      "id": "canonical-typed-contour-execution",
+      "event": "nanda_supported_token",
+      "kind": "execution",
+      "entry": "active_input",
+      "terminal": "decision_core",
+      "required_roles": ["interface", "producer", "evidence_owner", "candidate_rank_owner"],
+      "path_cardinality": [
+        {"from": "active_input", "to": "typed_contour_field", "min": 1, "max": 1},
+        {"from": "active_input", "to": "productive_v90", "min": 1, "max": 1},
+        {"from": "active_input", "to": "decision_core", "min": 1, "max": 1},
+        {"from": "active_input", "to": "explicit_disabled_deterministic", "min": 0, "max": 0}
+      ]
+    },
+    {
+      "id": "canonical-typed-contour-authority",
+      "event": "nanda_supported_token",
+      "kind": "authority",
+      "entry": "canonical_token_extractor",
+      "terminal": "decision_core",
+      "required_roles": ["producer", "evidence_owner", "candidate_rank_owner"]
+    },
+    {
+      "id": "unsupported-fail-closed-execution",
+      "event": "nanda_unsupported_token",
+      "kind": "execution",
+      "entry": "active_input",
+      "terminal": "unsupported_input_abstain",
+      "required_roles": ["interface", "producer", "evidence_owner"],
+      "path_cardinality": [
+        {"from": "active_input", "to": "unsupported_input_abstain", "min": 1, "max": 1},
+        {"from": "active_input", "to": "typed_contour_field", "min": 0, "max": 0},
+        {"from": "active_input", "to": "explicit_disabled_deterministic", "min": 0, "max": 0}
+      ]
+    },
+    {
+      "id": "unsupported-fail-closed-authority",
+      "event": "nanda_unsupported_token",
+      "kind": "authority",
+      "entry": "canonical_token_extractor",
+      "terminal": "unsupported_input_abstain",
+      "required_roles": ["producer", "evidence_owner"]
+    },
+    {
+      "id": "explicit-disabled-execution",
+      "event": "nanda_explicitly_disabled",
+      "kind": "execution",
+      "entry": "active_input",
+      "terminal": "decision_core",
+      "required_roles": ["interface", "producer", "evidence_owner", "candidate_rank_owner"],
+      "path_cardinality": [
+        {"from": "active_input", "to": "explicit_disabled_deterministic", "min": 1, "max": 1},
+        {"from": "active_input", "to": "typed_contour_field", "min": 0, "max": 0},
+        {"from": "active_input", "to": "decision_core", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "explicit-disabled-authority",
+      "event": "nanda_explicitly_disabled",
+      "kind": "authority",
+      "entry": "explicit_disabled_deterministic",
+      "terminal": "decision_core",
+      "required_roles": ["producer", "evidence_owner", "candidate_rank_owner"]
+    },
+    {
+      "id": "space-apply-execution",
+      "event": "space_ready_apply",
+      "kind": "execution",
+      "entry": "decision_core",
+      "terminal": "committed_tail_mutator",
+      "required_roles": ["candidate_rank_owner", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [
+        {"from": "decision_core", "to": "committed_tail_mutator", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "space-apply-authority",
+      "event": "space_ready_apply",
+      "kind": "authority",
+      "entry": "transition_verifier",
+      "terminal": "committed_tail_mutator",
+      "required_roles": ["authorization_owner", "mutation_owner"]
+    }
+  ]
+}

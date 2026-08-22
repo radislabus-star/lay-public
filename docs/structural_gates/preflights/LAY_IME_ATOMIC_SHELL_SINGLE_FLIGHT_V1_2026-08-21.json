@@ -1,0 +1,254 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_ATOMIC_SHELL_SINGLE_FLIGHT_V1_2026-08-21",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "shell-input-method-source",
+      "kind": "file",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/js/misc/inputMethod.js",
+      "expect": {"mode": "0664", "size_bytes": 14169, "sha256": "f835a1eae1d1ff7340d7a9017ca18e76a5437e921d32fe9b3c94904c020c2fb0"}
+    },
+    {
+      "id": "shell-tests-meson",
+      "kind": "file",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/meson.build",
+      "expect": {"mode": "0664", "size_bytes": 3538, "sha256": "4040130da0dd0db3c03b60675773fcbe942c7ff79e3ce249dca7a01dab08e2eb"}
+    },
+    {
+      "id": "architecture-paper",
+      "kind": "file",
+      "path": "../../ime-backend-atomic-frame-v2-2026-08-20.md",
+      "expect": {"mode": "0664", "size_bytes": 117062, "sha256": "ab149aa35c3b846b85921dcde1e4a6924db809e39b7b1cadbec57327f238ae5b"}
+    },
+    {
+      "id": "mutter-owner-proof",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/mutter-slice3b-implementation-proof-v1.json",
+      "expect": {"mode": "0664", "size_bytes": 7273, "sha256": "7a935e8fc62577b0a22cb44d307675ec3a199244fa6baa5fce010ae2f2863716"}
+    },
+    {
+      "id": "ibus-production-profile-proof",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/ibus-production-profile-admission-proof-v1.json",
+      "expect": {"mode": "0664", "size_bytes": 4708, "sha256": "e38b65ec7c0ff7d3495eec3e0a98947f6d603c9a0c024055fb56fce45641fafd"}
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "add-single-flight-adapter", "kind": "source_edit"},
+      {"id": "wire-input-method-to-adapter", "kind": "source_edit"},
+      {"id": "add-state-machine-proof", "kind": "source_edit"},
+      {"id": "sync-three-components-remotely", "kind": "remote_filesystem_write"},
+      {"id": "build-and-run-isolated-proof", "kind": "remote_build"},
+      {"id": "record-result", "kind": "filesystem_write"}
+    ],
+    "forbidden": [
+      "local_build",
+      "runtime_deployment",
+      "installed_file_write",
+      "restart_gnome_shell",
+      "restart_or_signal_ibus",
+      "physical_input_or_text_mutation",
+      "same_event_legacy_fallback",
+      "second_mutation_owner",
+      "second_replay_owner",
+      "unbounded_queue",
+      "cross_focus_replay"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "pinned-shell-input-method",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/js/misc/inputMethod.js",
+      "sha256": "f835a1eae1d1ff7340d7a9017ca18e76a5437e921d32fe9b3c94904c020c2fb0",
+      "forbidden_effect_patterns": [
+        {"effect": "cross_focus_replay", "regex": "allowCrossFocusReplay|replayToReplacementFocus"},
+        {"effect": "installed_file_write", "regex": "(?:replace_contents|set_contents).{0,100}/(?:usr|home/ubu/[.]local)"},
+        {"effect": "local_build", "regex": "(?:cargo|meson|ninja|make)\\s"},
+        {"effect": "physical_input_or_text_mutation", "regex": "/dev/(?:input|uinput)|(?:ydotool|xdotool|wtype)\\b"},
+        {"effect": "restart_gnome_shell", "regex": "(?:restart|kill|signal).{0,80}gnome-shell"},
+        {"effect": "restart_or_signal_ibus", "regex": "(?:restart|kill|signal).{0,80}ibus(?:-daemon)?"},
+        {"effect": "runtime_deployment", "regex": "(?:systemctl|dpkg\\s+-i|apt(?:-get)?\\s+install)"},
+        {"effect": "same_event_legacy_fallback", "regex": "atomicFallbackToLegacy|legacyFallbackForAtomic"},
+        {"effect": "second_mutation_owner", "regex": "atomicLegacyMutation|sequentialAtomicCommit"},
+        {"effect": "second_replay_owner", "regex": "notify_key_event\\([^,]+,\\s*false\\)"},
+        {"effect": "unbounded_queue", "regex": "ATOMIC_QUEUE_LIMIT\\s*=\\s*(?:0|Infinity)|unboundedAtomicQueue"}
+      ]
+    },
+    {
+      "id": "pinned-shell-tests-meson",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/meson.build",
+      "sha256": "4040130da0dd0db3c03b60675773fcbe942c7ff79e3ce249dca7a01dab08e2eb",
+      "forbidden_effect_patterns": [
+        {"effect": "runtime_deployment", "regex": "(?:systemctl|dpkg\\s+-i|apt(?:-get)?\\s+install)"}
+      ]
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "installed-source-identity",
+      "producer": "installed GNOME Shell 50.1-0ubuntu1.1 resource",
+      "consumer": "Ubuntu 50.1-0ubuntu1.2 source baseline",
+      "comparison": "exact inputMethod.js SHA-256",
+      "test_id": "installed-source-parity"
+    },
+    {
+      "id": "mutter-lease-identity",
+      "producer": "freeze_atomic_lease",
+      "consumer": "submit, replay or no-effect completion",
+      "comparison": "same profile, capability epoch, focus lineage, native epoch and snapshot digest",
+      "test_id": "terminal-lease-identity-parity"
+    },
+    {
+      "id": "ibus-reply-identity",
+      "producer": "ProcessKeyEventAtomicV1 reply",
+      "consumer": "Shell terminal dispatcher",
+      "comparison": "exact event, context, capability digest, disposition and effect digest",
+      "test_id": "reply-identity-parity"
+    },
+    {
+      "id": "fifo-event-identity",
+      "producer": "owned ClutterEvent copy",
+      "consumer": "same-focus Mutter replay",
+      "comparison": "exact head event and frozen lineage, no replacement-focus dispatch",
+      "test_id": "fifo-event-identity-parity"
+    },
+    {
+      "id": "production-profile-identity",
+      "producer": "Mutter Section 21.14.2 profile lease",
+      "consumer": "IBus production admission and Shell capability serializer",
+      "comparison": "protocol, adapter kind, transaction kind, build digest, mask/count and guarantees",
+      "test_id": "production-profile-parity"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "one-rpc-in-flight",
+      "statement": "one Shell input context has at most one atomic RPC and one active Mutter lease",
+      "test_id": "single-flight-ordering"
+    },
+    {
+      "id": "one-native-terminal",
+      "statement": "each admitted event reaches exactly one submit, replay, no-effect completion or lineage termination",
+      "test_id": "terminal-lease-parity"
+    },
+    {
+      "id": "no-fallback",
+      "statement": "an atomic event never invokes process_key_event_async or legacy commit/delete callbacks as a retry",
+      "test_id": "legacy-fallback-absence"
+    },
+    {
+      "id": "fail-closed-lineage",
+      "statement": "focus, context, deadline, overflow or malformed reply emits zero mutation and cannot replay to another focus",
+      "test_id": "failure-matrix"
+    },
+    {
+      "id": "bounded-hot-route",
+      "statement": "queue is bounded at 64 and integrated hot p99 is at most 5 ms with max below 8 ms",
+      "test_id": "latency-and-queue"
+    },
+    {
+      "id": "mutter-only-mutator",
+      "statement": "Shell validates and transfers; MetaWaylandTextInputFocus remains the only native text mutation owner",
+      "test_id": "observed-route"
+    },
+    {
+      "id": "production-profile-only",
+      "statement": "the first Shell request serializes the exact admitted Mutter production profile and reaches the IBus engine",
+      "test_id": "production-profile-process-hop"
+    }
+  ],
+  "preserved_artifacts": [
+    {
+      "id": "mutter-slice3b-proof",
+      "path": "../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/mutter-slice3b-implementation-proof-v1.json",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "Shell cannot rewrite or broaden the isolated Mutter proof",
+      "baseline_check_id": "mutter-owner-proof"
+    },
+    {
+      "id": "ibus-production-profile-admission",
+      "path": "../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/ibus-production-profile-admission-proof-v1.json",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "Shell cannot widen or rewrite the exact IBus production admission proof",
+      "baseline_check_id": "ibus-production-profile-proof"
+    },
+    {
+      "id": "architecture-contract",
+      "path": "../../ime-backend-atomic-frame-v2-2026-08-20.md",
+      "policy": "read_only_during_code_then_append_measured_result",
+      "rollback_policy": "retain all negative and measured results",
+      "baseline_check_id": "architecture-paper"
+    }
+  ],
+  "runtime_comparisons": [],
+  "state_machine": {
+    "initial_state": "PREFLIGHT_REQUIRED",
+    "terminal_states": ["RECORDED", "EDIT_FAILED_RETAINED", "REMOTE_BUILD_FAILED_RETAINED", "INTEGRATION_FAILED_RETAINED", "EVIDENCE_FAILED_RETAINED"],
+    "steps": [
+      {
+        "id": "implement-shell-adapter-and-proof",
+        "from": "PREFLIGHT_REQUIRED",
+        "to": "SOURCE_READY",
+        "mutates": true,
+        "failure_state": "EDIT_FAILED_RETAINED",
+        "cleanup": "retain scoped source and test diff; touch no installed package or process",
+        "preserves": ["mutter-slice3b-proof", "ibus-production-profile-admission", "architecture-contract"],
+        "test_id": "source-scope"
+      },
+      {
+        "id": "remote-build-three-components",
+        "from": "SOURCE_READY",
+        "to": "REMOTE_BUILD_READY",
+        "mutates": true,
+        "failure_state": "REMOTE_BUILD_FAILED_RETAINED",
+        "cleanup": "terminate only task-owned remote jobs and retain logs",
+        "preserves": ["mutter-slice3b-proof", "ibus-production-profile-admission", "architecture-contract"],
+        "test_id": "remote-build-fault"
+      },
+      {
+        "id": "run-isolated-end-to-end-proof",
+        "from": "REMOTE_BUILD_READY",
+        "to": "INTEGRATION_PASSED",
+        "mutates": true,
+        "failure_state": "INTEGRATION_FAILED_RETAINED",
+        "cleanup": "tear down only isolated buses, compositor and clients; retain logs and reject deployment",
+        "preserves": ["mutter-slice3b-proof", "ibus-production-profile-admission", "architecture-contract"],
+        "test_id": "failure-matrix"
+      },
+      {
+        "id": "record-slice4-proof",
+        "from": "INTEGRATION_PASSED",
+        "to": "RECORDED",
+        "mutates": true,
+        "failure_state": "EVIDENCE_FAILED_RETAINED",
+        "cleanup": "retain raw logs and refuse packaging until receipt, route and paper agree",
+        "preserves": ["mutter-slice3b-proof"],
+        "test_id": "evidence-write-fault"
+      }
+    ]
+  },
+  "tests": [
+    {"id": "source-scope", "kind": "fault_injection", "expected": "only Shell input method adapter, its tests and registrations change"},
+    {"id": "installed-source-parity", "kind": "parity", "expected": "pre-edit source equals installed inputMethod.js SHA-256"},
+    {"id": "single-flight-ordering", "kind": "integration", "expected": "burst input preserves FIFO and never has more than one RPC or lease active"},
+    {"id": "terminal-lease-parity", "kind": "integration", "expected": "all dispositions close the exact lease once"},
+    {"id": "terminal-lease-identity-parity", "kind": "parity", "expected": "every terminal call receives the exact profile, capability, lineage, native epoch and snapshot frozen for that event"},
+    {"id": "reply-identity-parity", "kind": "parity", "expected": "accepted reply identity and digests equal the exact request envelope"},
+    {"id": "fifo-event-identity-parity", "kind": "parity", "expected": "the replayed event is the owned copy at the FIFO head under the same focus lineage"},
+    {"id": "reply-validation", "kind": "fault_injection", "expected": "every mismatched identity, digest, vector or disposition reaches zero Mutter mutation"},
+    {"id": "legacy-fallback-absence", "kind": "parity", "expected": "same atomic event has zero legacy ProcessKeyEvent, commit or delete retry"},
+    {"id": "failure-matrix", "kind": "fault_injection", "expected": "focus, context, timeout, overflow, cancellation and malformed replies cause zero cross-focus or duplicate effects"},
+    {"id": "latency-and-queue", "kind": "integration", "expected": "RPC p99 <=2 ms and integrated p99 <=5 ms, max <8 ms, queue overflow count zero"},
+    {"id": "observed-route", "kind": "parity", "expected": "observed source has one execution path, one replay path and Mutter as sole mutation owner"},
+    {"id": "production-profile-parity", "kind": "parity", "expected": "Shell serialized profile bytes equal the unchanged Mutter producer and exact IBus admission vocabulary"},
+    {"id": "production-profile-process-hop", "kind": "integration", "expected": "the exact Mutter production profile traverses Shell and IBus to one engine call in normal and private builds"},
+    {"id": "remote-build-fault", "kind": "fault_injection", "expected": "remote build failure stops before integration and changes no installed runtime"},
+    {"id": "remote-source-parity", "kind": "parity", "expected": "all local allowlisted hashes equal remote build inputs and build uses 20 jobs"},
+    {"id": "evidence-completeness", "kind": "parity", "expected": "receipt and architecture document separate measured, untested, verdict and runtime authority"},
+    {"id": "evidence-write-fault", "kind": "fault_injection", "expected": "missing route, receipt or architecture result blocks the recorded terminal state"}
+  ]
+}

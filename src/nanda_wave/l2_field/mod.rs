@@ -20,9 +20,10 @@ mod runtime_storage;
 mod teacher;
 
 pub(crate) use bridge::{
-    canonical_ime_candidates, canonical_text_candidates, canonical_text_readout,
+    canonical_ime_candidates_observed, canonical_text_candidates, canonical_text_readout_observed,
     cold_probe_surfaces,
 };
+pub(crate) use runtime::CanonicalFieldTelemetry;
 pub(crate) use runtime::L2FieldAuthority;
 pub(crate) use runtime::L2FieldAvailability;
 
@@ -50,13 +51,26 @@ fn productive_sidecar_state() -> &'static std::sync::RwLock<
     STATE.get_or_init(|| std::sync::RwLock::new(None))
 }
 
-fn productive_v1_state(
-) -> &'static std::sync::RwLock<Option<std::sync::Arc<productive_v1::PackagedProductiveRuntimeV1>>>
-{
-    static STATE: std::sync::OnceLock<
-        std::sync::RwLock<Option<std::sync::Arc<productive_v1::PackagedProductiveRuntimeV1>>>,
-    > = std::sync::OnceLock::new();
-    STATE.get_or_init(|| std::sync::RwLock::new(None))
+type ProductiveV1LoadResult =
+    Result<std::sync::Arc<productive_v1::PackagedProductiveRuntimeV1>, String>;
+
+fn load_cached_generation<T: Clone, E: Clone>(
+    state: &std::sync::Mutex<Option<Result<T, E>>>,
+    loader: impl FnOnce() -> Result<T, E>,
+) -> Result<(Result<T, E>, bool), &'static str> {
+    let mut state = state.lock().map_err(|_| "runtime lock poisoned")?;
+    if let Some(cached) = state.as_ref() {
+        return Ok((cached.clone(), false));
+    }
+    let loaded = loader();
+    *state = Some(loaded.clone());
+    Ok((loaded, true))
+}
+
+fn productive_v1_state() -> &'static std::sync::Mutex<Option<ProductiveV1LoadResult>> {
+    static STATE: std::sync::OnceLock<std::sync::Mutex<Option<ProductiveV1LoadResult>>> =
+        std::sync::OnceLock::new();
+    STATE.get_or_init(|| std::sync::Mutex::new(None))
 }
 
 pub fn default_l2_model_dir() -> std::path::PathBuf {
@@ -126,17 +140,55 @@ pub fn discover_installed_productive_l2_v1_package() -> std::io::Result<Option<s
 
 fn installed_productive_l2_v1(
 ) -> Result<std::sync::Arc<productive_v1::PackagedProductiveRuntimeV1>, String> {
-    if let Some(runtime) = productive_v1_state()
-        .read()
-        .map_err(|_| "productive V1 runtime lock poisoned")?
-        .clone()
-    {
-        return Ok(runtime);
+    // A package admission failure is a stable generation result, not a reason
+    // to re-read and re-hash every model file on each keystroke. Explicit
+    // reload replaces this cached result after package installation or repair.
+    let (loaded, loaded_now) = load_cached_generation(productive_v1_state(), load_productive_l2_v1)
+        .map_err(|_| "productive V1 runtime lock poisoned")?;
+    if loaded_now && loaded.is_ok() {
+        clear_productive_runtime_dependents();
     }
-    reload_productive_l2_v1_inner()
+    loaded
 }
 
 fn reload_productive_l2_v1_inner(
+) -> Result<std::sync::Arc<productive_v1::PackagedProductiveRuntimeV1>, String> {
+    let loaded = load_productive_l2_v1();
+    *productive_v1_state()
+        .lock()
+        .map_err(|_| "productive V1 runtime lock poisoned")? = Some(loaded.clone());
+    clear_productive_runtime_dependents();
+    loaded
+}
+
+#[cfg(test)]
+mod productive_runtime_cache_tests {
+    use std::sync::atomic::{AtomicUsize, Ordering};
+    use std::sync::Mutex;
+
+    use super::load_cached_generation;
+
+    #[test]
+    fn failed_admission_is_cached_until_explicit_reload() {
+        let state = Mutex::new(None);
+        let attempts = AtomicUsize::new(0);
+        let load = || {
+            attempts.fetch_add(1, Ordering::SeqCst);
+            Err::<usize, _>("fingerprint mismatch".to_string())
+        };
+
+        let (first, first_loaded) = load_cached_generation(&state, load).expect("first load");
+        let (second, second_loaded) = load_cached_generation(&state, load).expect("cached load");
+
+        assert_eq!(first, Err("fingerprint mismatch".to_string()));
+        assert_eq!(second, first);
+        assert!(first_loaded);
+        assert!(!second_loaded);
+        assert_eq!(attempts.load(Ordering::SeqCst), 1);
+    }
+}
+
+fn load_productive_l2_v1(
 ) -> Result<std::sync::Arc<productive_v1::PackagedProductiveRuntimeV1>, String> {
     let productive_path = discover_installed_productive_l2_v1_package()
         .map_err(|error| error.to_string())?
@@ -157,13 +209,17 @@ fn reload_productive_l2_v1_inner(
             canonical_l2_sha256,
         )?,
     );
-    *productive_v1_state()
-        .write()
-        .map_err(|_| "productive V1 runtime lock poisoned")? = Some(runtime.clone());
+    Ok(runtime)
+}
+
+fn clear_productive_runtime_dependents() {
     cache::clear();
     bridge::clear_prepared_field_cache();
     crate::nanda_wave::candidate_gate::clear_live_completion_cache();
-    Ok(runtime)
+}
+
+pub fn candidate_material_generation() -> u64 {
+    cache::stats().generation
 }
 
 pub fn reload_productive_l2_v1() -> serde_json::Value {
@@ -1075,6 +1131,25 @@ pub fn query_live_canonical_l2(
         repeat,
         productive_lemma_limit,
     ))
+}
+
+pub fn query_live_productive_v90(
+    original: &str,
+    repeat: usize,
+) -> std::io::Result<serde_json::Value> {
+    if original.trim().is_empty() {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::InvalidInput,
+            "live Productive V90 query text must not be empty",
+        ));
+    }
+    if repeat == 0 || repeat > 10_000 {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::InvalidInput,
+            "live Productive V90 query repeat must be in 1..=10000",
+        ));
+    }
+    Ok(bridge::query_live_productive_v90(original, repeat))
 }
 
 pub fn export_unseeded_l11_seed_corpus(

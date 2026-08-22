@@ -1,0 +1,92 @@
+{
+  "schema": "lay.ime.backend-atomic-frame.production-owner-observation.v1",
+  "task_id": "LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_OBSERVATION_V1_2026-08-21",
+  "observed_at": "2026-08-21T04:43:16+03:00",
+  "scope": "read-only local backend classification after isolated Slice 2 PASS",
+  "runtime_authority_changed": false,
+  "installed_files_changed": false,
+  "services_restarted": false,
+  "session": {
+    "type": "wayland",
+    "wayland_display": "wayland-0",
+    "display": ":0",
+    "desktop": "ubuntu:GNOME"
+  },
+  "processes": {
+    "lay_ibus_engine": {
+      "pid": 2076619,
+      "command": "/home/ubu/.local/bin/lay-ibus-engine --ibus --managed"
+    },
+    "wechat_main": {
+      "pid": 3471530,
+      "executable": "/opt/wechat/wechat",
+      "sha256": "921391facbec202f2f1487e8a3c8e7790d037e4dc966f65901064f3ab4c4ea54",
+      "observed_environment": [
+        "QT_IM_MODULE=ibus",
+        "XMODIFIERS=@im=ibus",
+        "WAYLAND_DISPLAY=wayland-0",
+        "DISPLAY=:0"
+      ],
+      "mapped_backend_facts": [
+        "X11 and XCB libraries present",
+        "libibus not mapped at observation",
+        "system Qt IBus plugin not mapped at observation"
+      ]
+    },
+    "wechat_app_ex": {
+      "pid": 3471726,
+      "executable": "/opt/wechat/RadiumWMPF/runtime/WeChatAppEx",
+      "sha256": "398447513175a126fbcadd0cfd6ebc165ceef2632e8281f6a33b2257bb96753b",
+      "mapped_backend_facts": [
+        "system libibus mapped",
+        "Wayland client libraries mapped",
+        "X11 and XCB libraries mapped",
+        "system Qt IBus plugin not mapped"
+      ]
+    }
+  },
+  "installed_adapter_facts": {
+    "ibus_wayland_executable": "absent",
+    "libibus": {
+      "path": "/usr/lib/x86_64-linux-gnu/libibus-1.0.so.5.0.534",
+      "sha256": "e1977b9d3d84ee94b63f6c04056134c10aa51d4e0621f7abee1115da12259ec1"
+    },
+    "qt5_ibus_plugin": {
+      "path": "/usr/lib/x86_64-linux-gnu/qt5/plugins/platforminputcontexts/libibusplatforminputcontextplugin.so",
+      "sha256": "ec262097595e8e9999b8eb43b40c2b566afe6590dfa511fd2bcffff5de4fec8b",
+      "mapped_by_observed_wechat_process": false
+    },
+    "qt6_ibus_plugin": {
+      "path": "/usr/lib/x86_64-linux-gnu/qt6/plugins/platforminputcontexts/libibusplatforminputcontextplugin.so",
+      "sha256": "8910597e0d1ba7b48c21f5973a692d8885e1c5246379a2a42fb579606f34aba2",
+      "mapped_by_observed_wechat_process": false
+    }
+  },
+  "lay_trace": {
+    "path": "/home/ubu/.local/share/lay/ibus_engine_debug.jsonl",
+    "recent_capability_classes": [
+      {
+        "caps": 41,
+        "surrounding_text_supported": true,
+        "observations": 7
+      },
+      {
+        "caps": 9,
+        "surrounding_text_supported": false,
+        "observations": 7
+      }
+    ],
+    "client_build_identity_recorded": false,
+    "limitation": "FocusInId client and object-path arguments are bound internally but omitted from the current trace, so capability classes cannot be assigned to a concrete adapter build."
+  },
+  "verdict": "BLOCKED_BEFORE_CODE",
+  "blocker": "No observed evidence binds the current WeChat editing surface to ibus-wayland, the system Qt5 plugin, the system Qt6 plugin, or another audited single-transaction mutation owner.",
+  "rejected_inference": "Application name, Wayland session presence, QT_IM_MODULE, surrounding-text capability, or a loaded libibus library alone cannot select a production atomic profile.",
+  "required_next_analysis": [
+    "Separate active-composition commit-only from committed-tail replace authority.",
+    "Define adapter-specific profile candidates for system Qt5, system Qt6, direct libibus consumers and IBus Wayland v2.",
+    "Prove which exact adapter build owns each physical client class before assigning a production profile.",
+    "Keep unsupported clients on legacy or suggestion-only routes without atomic replacement authority."
+  ]
+}
+

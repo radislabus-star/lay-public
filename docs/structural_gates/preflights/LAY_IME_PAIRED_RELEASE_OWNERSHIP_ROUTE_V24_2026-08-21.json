@@ -1,0 +1,97 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "clutter-key-event", "role": "interface"},
+    {"id": "shell-atomic-adapter", "role": "orchestrator"},
+    {"id": "mutter-atomic-profile", "role": "evidence_owner"},
+    {"id": "lay-atomic-proposal", "role": "producer"},
+    {"id": "shell-atomic-receipt", "role": "authorization_owner"},
+    {"id": "mutter-atomic-submit", "role": "mutation_owner"},
+    {"id": "shell-release-pair-ledger", "role": "evidence_owner"},
+    {"id": "shell-paired-release-authorizer", "role": "authorization_owner"},
+    {"id": "shell-release-consumer", "role": "mutation_owner"}
+  ],
+  "edges": [
+    {"id": "exec-press-event-adapter", "from": "clutter-key-event", "relation": "calls", "to": "shell-atomic-adapter", "events": ["frame-ready-press"]},
+    {"id": "exec-press-adapter-profile", "from": "shell-atomic-adapter", "relation": "delegates", "to": "mutter-atomic-profile", "events": ["frame-ready-press"]},
+    {"id": "exec-press-profile-lay", "from": "mutter-atomic-profile", "relation": "delegates", "to": "lay-atomic-proposal", "events": ["frame-ready-press"]},
+    {"id": "exec-press-lay-receipt", "from": "lay-atomic-proposal", "relation": "delegates", "to": "shell-atomic-receipt", "events": ["frame-ready-press"]},
+    {"id": "exec-press-receipt-submit", "from": "shell-atomic-receipt", "relation": "delegates", "to": "mutter-atomic-submit", "events": ["frame-ready-press"]},
+
+    {"id": "authority-press-profile-lay", "from": "mutter-atomic-profile", "relation": "passes_to", "to": "lay-atomic-proposal", "events": ["frame-ready-press"]},
+    {"id": "authority-press-lay-receipt", "from": "lay-atomic-proposal", "relation": "produces_for", "to": "shell-atomic-receipt", "events": ["frame-ready-press"]},
+    {"id": "authority-press-receipt-submit", "from": "shell-atomic-receipt", "relation": "authorizes", "to": "mutter-atomic-submit", "events": ["frame-ready-press"]},
+
+    {"id": "exec-paired-release-event-adapter", "from": "clutter-key-event", "relation": "calls", "to": "shell-atomic-adapter", "events": ["paired-nonmodifier-release"]},
+    {"id": "exec-paired-release-adapter-ledger", "from": "shell-atomic-adapter", "relation": "delegates", "to": "shell-release-pair-ledger", "events": ["paired-nonmodifier-release"]},
+    {"id": "exec-paired-release-ledger-authorizer", "from": "shell-release-pair-ledger", "relation": "delegates", "to": "shell-paired-release-authorizer", "events": ["paired-nonmodifier-release"]},
+    {"id": "exec-paired-release-authorizer-consumer", "from": "shell-paired-release-authorizer", "relation": "delegates", "to": "shell-release-consumer", "events": ["paired-nonmodifier-release"]},
+
+    {"id": "authority-paired-release-ledger-authorizer", "from": "shell-release-pair-ledger", "relation": "passes_to", "to": "shell-paired-release-authorizer", "events": ["paired-nonmodifier-release"]},
+    {"id": "authority-paired-release-authorizer-consumer", "from": "shell-paired-release-authorizer", "relation": "authorizes", "to": "shell-release-consumer", "events": ["paired-nonmodifier-release"]},
+
+    {"id": "exec-modifier-release-event-adapter", "from": "clutter-key-event", "relation": "calls", "to": "shell-atomic-adapter", "events": ["modifier-release"]},
+    {"id": "exec-modifier-release-adapter-profile", "from": "shell-atomic-adapter", "relation": "delegates", "to": "mutter-atomic-profile", "events": ["modifier-release"]},
+    {"id": "exec-modifier-release-profile-lay", "from": "mutter-atomic-profile", "relation": "delegates", "to": "lay-atomic-proposal", "events": ["modifier-release"]},
+    {"id": "exec-modifier-release-lay-receipt", "from": "lay-atomic-proposal", "relation": "delegates", "to": "shell-atomic-receipt", "events": ["modifier-release"]},
+    {"id": "exec-modifier-release-receipt-submit", "from": "shell-atomic-receipt", "relation": "delegates", "to": "mutter-atomic-submit", "events": ["modifier-release"]},
+
+    {"id": "authority-modifier-release-profile-lay", "from": "mutter-atomic-profile", "relation": "passes_to", "to": "lay-atomic-proposal", "events": ["modifier-release"]},
+    {"id": "authority-modifier-release-lay-receipt", "from": "lay-atomic-proposal", "relation": "produces_for", "to": "shell-atomic-receipt", "events": ["modifier-release"]},
+    {"id": "authority-modifier-release-receipt-submit", "from": "shell-atomic-receipt", "relation": "authorizes", "to": "mutter-atomic-submit", "events": ["modifier-release"]}
+  ],
+  "routes": [
+    {
+      "id": "frame-ready-press-execution",
+      "event": "frame-ready-press",
+      "kind": "execution",
+      "entry": "clutter-key-event",
+      "terminal": "mutter-atomic-submit",
+      "required_roles": ["interface", "orchestrator", "evidence_owner", "producer", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "clutter-key-event", "to": "mutter-atomic-submit", "min": 1, "max": 1}]
+    },
+    {
+      "id": "frame-ready-press-authority",
+      "event": "frame-ready-press",
+      "kind": "authority",
+      "entry": "mutter-atomic-profile",
+      "terminal": "mutter-atomic-submit",
+      "required_roles": ["evidence_owner", "producer", "authorization_owner", "mutation_owner"]
+    },
+    {
+      "id": "paired-release-execution",
+      "event": "paired-nonmodifier-release",
+      "kind": "execution",
+      "entry": "clutter-key-event",
+      "terminal": "shell-release-consumer",
+      "required_roles": ["interface", "orchestrator", "evidence_owner", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "clutter-key-event", "to": "shell-release-consumer", "min": 1, "max": 1}]
+    },
+    {
+      "id": "paired-release-authority",
+      "event": "paired-nonmodifier-release",
+      "kind": "authority",
+      "entry": "shell-release-pair-ledger",
+      "terminal": "shell-release-consumer",
+      "required_roles": ["evidence_owner", "authorization_owner", "mutation_owner"]
+    },
+    {
+      "id": "modifier-release-execution",
+      "event": "modifier-release",
+      "kind": "execution",
+      "entry": "clutter-key-event",
+      "terminal": "mutter-atomic-submit",
+      "required_roles": ["interface", "orchestrator", "evidence_owner", "producer", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "clutter-key-event", "to": "mutter-atomic-submit", "min": 1, "max": 1}]
+    },
+    {
+      "id": "modifier-release-authority",
+      "event": "modifier-release",
+      "kind": "authority",
+      "entry": "mutter-atomic-profile",
+      "terminal": "mutter-atomic-submit",
+      "required_roles": ["evidence_owner", "producer", "authorization_owner", "mutation_owner"]
+    }
+  ]
+}

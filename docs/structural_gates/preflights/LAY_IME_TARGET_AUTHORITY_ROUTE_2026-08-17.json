@@ -1,0 +1,79 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "input_frame", "role": "interface"},
+    {"id": "typed_contour_producer", "role": "producer"},
+    {"id": "typed_target_field", "role": "producer"},
+    {"id": "candidate_specific_l2_readout", "role": "evidence_owner"},
+    {"id": "context_selector", "role": "producer"},
+    {"id": "decision_core", "role": "candidate_rank_owner"},
+    {"id": "transition_and_backend_verifier", "role": "authorization_owner"},
+    {"id": "committed_tail_mutator", "role": "mutation_owner"}
+  ],
+  "edges": [
+    {"id": "exec-input-contour-unique", "from": "input_frame", "relation": "calls", "to": "typed_contour_producer", "events": ["unambiguous_correction"]},
+    {"id": "exec-contour-field-unique", "from": "typed_contour_producer", "relation": "delegates", "to": "typed_target_field", "events": ["unambiguous_correction"]},
+    {"id": "exec-field-l2-unique", "from": "typed_target_field", "relation": "delegates", "to": "candidate_specific_l2_readout", "events": ["unambiguous_correction"]},
+    {"id": "exec-l2-decision-unique", "from": "candidate_specific_l2_readout", "relation": "delegates", "to": "decision_core", "events": ["unambiguous_correction"]},
+    {"id": "exec-decision-verifier-unique", "from": "decision_core", "relation": "delegates", "to": "transition_and_backend_verifier", "events": ["unambiguous_correction"]},
+    {"id": "exec-verifier-mutator-unique", "from": "transition_and_backend_verifier", "relation": "delegates", "to": "committed_tail_mutator", "events": ["unambiguous_correction"]},
+
+    {"id": "exec-input-contour-ambiguous", "from": "input_frame", "relation": "calls", "to": "typed_contour_producer", "events": ["ambiguous_correction"]},
+    {"id": "exec-contour-field-ambiguous", "from": "typed_contour_producer", "relation": "delegates", "to": "typed_target_field", "events": ["ambiguous_correction"]},
+    {"id": "exec-field-context-ambiguous", "from": "typed_target_field", "relation": "delegates", "to": "context_selector", "events": ["ambiguous_correction"]},
+    {"id": "exec-context-l2-ambiguous", "from": "context_selector", "relation": "delegates", "to": "candidate_specific_l2_readout", "events": ["ambiguous_correction"]},
+    {"id": "exec-l2-decision-ambiguous", "from": "candidate_specific_l2_readout", "relation": "delegates", "to": "decision_core", "events": ["ambiguous_correction"]},
+    {"id": "exec-decision-verifier-ambiguous", "from": "decision_core", "relation": "delegates", "to": "transition_and_backend_verifier", "events": ["ambiguous_correction"]},
+    {"id": "exec-verifier-mutator-ambiguous", "from": "transition_and_backend_verifier", "relation": "delegates", "to": "committed_tail_mutator", "events": ["ambiguous_correction"]},
+
+    {"id": "data-contour-field-unique", "from": "typed_contour_producer", "relation": "produces_for", "to": "typed_target_field", "events": ["unambiguous_correction"]},
+    {"id": "data-field-l2-unique", "from": "typed_target_field", "relation": "passes_to", "to": "candidate_specific_l2_readout", "events": ["unambiguous_correction"]},
+    {"id": "data-l2-decision-unique", "from": "candidate_specific_l2_readout", "relation": "passes_to", "to": "decision_core", "events": ["unambiguous_correction"]},
+    {"id": "data-decision-verifier-unique", "from": "decision_core", "relation": "passes_to", "to": "transition_and_backend_verifier", "events": ["unambiguous_correction"]},
+    {"id": "data-verifier-mutator-unique", "from": "transition_and_backend_verifier", "relation": "authorizes", "to": "committed_tail_mutator", "events": ["unambiguous_correction"]},
+
+    {"id": "data-contour-field-ambiguous", "from": "typed_contour_producer", "relation": "produces_for", "to": "typed_target_field", "events": ["ambiguous_correction"]},
+    {"id": "data-field-context-ambiguous", "from": "typed_target_field", "relation": "passes_to", "to": "context_selector", "events": ["ambiguous_correction"]},
+    {"id": "data-context-l2-ambiguous", "from": "context_selector", "relation": "produces_for", "to": "candidate_specific_l2_readout", "events": ["ambiguous_correction"]},
+    {"id": "data-l2-decision-ambiguous", "from": "candidate_specific_l2_readout", "relation": "passes_to", "to": "decision_core", "events": ["ambiguous_correction"]},
+    {"id": "data-decision-verifier-ambiguous", "from": "decision_core", "relation": "passes_to", "to": "transition_and_backend_verifier", "events": ["ambiguous_correction"]},
+    {"id": "data-verifier-mutator-ambiguous", "from": "transition_and_backend_verifier", "relation": "authorizes", "to": "committed_tail_mutator", "events": ["ambiguous_correction"]}
+  ],
+  "routes": [
+    {
+      "id": "unambiguous-execution",
+      "event": "unambiguous_correction",
+      "kind": "execution",
+      "entry": "input_frame",
+      "terminal": "committed_tail_mutator",
+      "required_roles": ["interface", "producer", "evidence_owner", "candidate_rank_owner", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "input_frame", "to": "committed_tail_mutator", "min": 1, "max": 1}]
+    },
+    {
+      "id": "unambiguous-authority",
+      "event": "unambiguous_correction",
+      "kind": "authority",
+      "entry": "typed_contour_producer",
+      "terminal": "committed_tail_mutator",
+      "required_roles": ["producer", "evidence_owner", "candidate_rank_owner", "authorization_owner", "mutation_owner"]
+    },
+    {
+      "id": "ambiguous-execution",
+      "event": "ambiguous_correction",
+      "kind": "execution",
+      "entry": "input_frame",
+      "terminal": "committed_tail_mutator",
+      "required_roles": ["interface", "producer", "evidence_owner", "candidate_rank_owner", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "input_frame", "to": "committed_tail_mutator", "min": 1, "max": 1}]
+    },
+    {
+      "id": "ambiguous-authority",
+      "event": "ambiguous_correction",
+      "kind": "authority",
+      "entry": "typed_contour_producer",
+      "terminal": "committed_tail_mutator",
+      "required_roles": ["producer", "evidence_owner", "candidate_rank_owner", "authorization_owner", "mutation_owner"]
+    }
+  ]
+}

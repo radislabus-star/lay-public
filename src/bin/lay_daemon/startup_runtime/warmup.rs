@@ -78,15 +78,14 @@ fn runtime_warmup_plan(
     cfg: &LayConfig,
     enter_autocorrect_env: Option<&str>,
 ) -> RuntimeWarmupPlan {
-    let warm_smart = cfg.active_correction_engine() == CorrectionEngine::Smart;
+    let daemon_owns_text = cfg.active_text_backend().daemon_owns_text_mutation();
+    let warm_smart = daemon_owns_text && cfg.active_correction_engine() == CorrectionEngine::Smart;
     let enter_autocorrect_active =
         active_enter_autocorrect_from_env(cfg.enter_autocorrect, enter_autocorrect_env);
-    // The daemon owns the after-Space boundary decision even when IME owns
-    // rendering. Its compact lookup state must be ready before the first word.
-    let warm_typing_assist = cfg.typing_assist || enter_autocorrect_active;
-    let warm_l11_service = cfg.nanda_autocorrect;
-    let warm_l2_candidates = cfg.nanda_autocorrect;
-    let warm_l3_phrase = cfg.nanda_autocorrect || cfg.nanda_trace;
+    let warm_typing_assist = daemon_owns_text && (cfg.typing_assist || enter_autocorrect_active);
+    let warm_l11_service = daemon_owns_text && cfg.nanda_autocorrect;
+    let warm_l2_candidates = daemon_owns_text && cfg.nanda_autocorrect;
+    let warm_l3_phrase = daemon_owns_text && (cfg.nanda_autocorrect || cfg.nanda_trace);
     RuntimeWarmupPlan {
         spawn_background: !detect_only
             && (warm_smart

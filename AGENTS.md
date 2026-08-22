@@ -28,6 +28,16 @@ Rules:
 - Never dismiss or rhetorically rank L1 proof dimensions against each other. Per-class restoration, clean preservation, lattice coverage, false certainty, package/RSS budgets, and latency form one conjunctive contract; all must be reported and all required gates must pass.
 - The accepted L1 working gate is strict `unique top-1 > 95%` for every damage class. Aggregate top-1 cannot hide a failing class.
 
+## Consequence analysis before code changes
+
+- Before every code change, perform a consequence check scaled to its risk. For any runtime hot-path, authority-bearing, stateful, cached, concurrent, model/package, or architectural change, stop and write the analysis before editing production code.
+- The written analysis must cover at least: candidate/lattice retention, ranking and false authority, latency deadlines and tail behavior, CPU/RSS/allocation effects, cache identity and invalidation, package/delta reloads, learning and feedback semantics, concurrency and stale-result races, failure/rollback behavior, compatibility with IME and daemon consumers, and long-term maintenance/removal cost.
+- Analyze second-order effects, not only the reported example. State explicitly what can get worse, which existing invariant could be violated, how future packages or online updates change the conclusion, and whether the proposal creates another owner, route, cache, fallback, or source of truth.
+- Compare the current baseline with at least two viable designs for a nontrivial change. Record why the selected design wins and why the rejected designs fail. A fast local result is not sufficient if it narrows the candidate field, weakens competition, changes authority, or increases future route count.
+- Keep facts, hypotheses, estimates, and unverified assumptions separate. If a required consequence cannot yet be bounded, remain in analysis and gather evidence; do not start production implementation.
+- Before code starts, record the chosen route, invariants, expected regressions, rollback boundary, proof denominators, and removal/replacement plan in the owning architecture document or implementation preflight. A preflight without an explicit consequence analysis is incomplete.
+- Prefer spending a substantial analysis budget, including roughly 20k tokens when the risk warrants it, over repeated speculative compile/test/deploy cycles. Implementation speed is measured by accepted systemic results, not by how quickly the first patch is produced.
+
 ## Systemic wave-contour fixes
 
 - Never repair a failing L1.1/L2/L3/L4 case by adding a literal word, phrase, suffix, test name, source ID, or case-specific branch to runtime code.

@@ -1,0 +1,9 @@
+{
+  "id": "scene-profile",
+  "filter": "scene_uses_the_canonical_material_normalization_profile",
+  "exit_code": 0,
+  "log": {
+    "size_bytes": 34001,
+    "sha256": "605b5d0bc39c6e87bb0a657f80cf2296e9f43c3abb021c370daa43da5d982bc8"
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "atomic-engine",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic.rs",
+      "sha256": "19ced256a05e726e5a7f4365c2d5cd33130669c90d833d8d39807fef01535cd7",
+      "size_bytes": 16321
+    },
+    {
+      "exists": true,
+      "id": "architecture-paper",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/ime-backend-atomic-frame-v2-2026-08-20.md",
+      "sha256": "102c218ac1610c93c19aeb4a118390d47220fa59e518fa6a4ede518c430c503e",
+      "size_bytes": 122495
+    }
+  ],
+  "blockers": [
+    {
+      "code": "forbidden_effect_in_reused_source",
+      "field": "source_checks[0].forbidden_effect_patterns[6]",
+      "message": "profile_width_widening matched at line 13"
+    },
+    {
+      "code": "identity_parity_missing",
+      "field": "identity_contracts[0].test_id",
+      "message": "identity contract requires a parity test"
+    }
+  ],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 2,
+    "forbidden_side_effect_kinds": [
+      "installed_file_write",
+      "keyboard_or_session_restart",
+      "local_rust_build",
+      "profile_width_widening",
+      "runtime_deployment",
+      "same_event_legacy_fallback",
+      "second_native_mutation_owner",
+      "wire_translation_adapter"
+    ],
+    "identity_contracts": 1,
+    "invariants": 3,
+    "planned_side_effect_kinds": [
+      "filesystem_write",
+      "isolated_test",
+      "remote_build",
+      "source_edit"
+    ],
+    "preserved_artifacts": 1,
+    "runtime_comparisons": 0,
+    "source_checks": 1,
+    "tests": 7
+  },
+  "manifest_sha256": "7518f705df16387c19abd30105fc0a278e473b8a511fe2d7d7e87f3fb5c5922c",
+  "safe_to_implement": false,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [
+        {
+          "effect": "profile_width_widening",
+          "line": 13
+        }
+      ],
+      "id": "atomic-engine-source",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic.rs",
+      "sha256": "19ced256a05e726e5a7f4365c2d5cd33130669c90d833d8d39807fef01535cd7",
+      "size_bytes": 16321
+    }
+  ],
+  "task_id": "LAY_IME_ATOMIC_PROFILE_SCALAR_WIDTH_V1_2026-08-21",
+  "verdict": "BLOCKED_BEFORE_CODE"
+}

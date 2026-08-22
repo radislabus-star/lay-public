@@ -1,0 +1,105 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "ibus-input-context",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/bus/inputcontext.c",
+      "sha256": "fe51c9f7746cf11c29a4157a163b0fb38e73c47566ab39a13d92338459818bec",
+      "size_bytes": 150020
+    },
+    {
+      "exists": true,
+      "id": "ibus-atomic-process-test",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/ibus-atomic-process.c",
+      "sha256": "9e7342f18af12b55e4b309ad4dc3514f2b690c66de4d5ab8714055ed09168f33",
+      "size_bytes": 52478
+    },
+    {
+      "exists": true,
+      "id": "ibus-codec",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/ibusatomicframe.c",
+      "sha256": "c489cbbf189b67642877d7eca9ab05b1936fb38acad85d06c9e36d49e7e15b05",
+      "size_bytes": 59091
+    },
+    {
+      "exists": true,
+      "id": "slice2-proof",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/slice2-implementation-receipt-v1.json",
+      "sha256": "a0952422827d4f193784df53f953e5eab10cbdf2583133979ef512563759b647",
+      "size_bytes": 26073
+    },
+    {
+      "exists": true,
+      "id": "architecture-paper",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../ime-backend-atomic-frame-v2-2026-08-20.md",
+      "sha256": "c42535cef9d4b23bb71f026cde35bc9aa2d584e5e36daa57cb863d3386ba2798",
+      "size_bytes": 112331
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 5,
+    "forbidden_side_effect_kinds": [
+      "change_codec_or_wire_schema",
+      "installed_file_write",
+      "legacy_mutation_fallback",
+      "local_build",
+      "physical_input_or_text_mutation",
+      "restart_gnome_shell",
+      "restart_or_signal_ibus",
+      "runtime_deployment",
+      "weaken_event_or_native_epoch"
+    ],
+    "identity_contracts": 3,
+    "invariants": 4,
+    "planned_side_effect_kinds": [
+      "filesystem_write",
+      "remote_build",
+      "remote_filesystem_write",
+      "source_edit"
+    ],
+    "preserved_artifacts": 3,
+    "runtime_comparisons": 0,
+    "source_checks": 2,
+    "tests": 8
+  },
+  "manifest_sha256": "c0f88b70e4a5b5b7290043c9b3976b5d47d0855e4217b2d80f96000c72c930a1",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-ibus-input-context",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/bus/inputcontext.c",
+      "sha256": "fe51c9f7746cf11c29a4157a163b0fb38e73c47566ab39a13d92338459818bec",
+      "size_bytes": 150020
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-ibus-atomic-process-test",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/ibus-atomic-process.c",
+      "sha256": "9e7342f18af12b55e4b309ad4dc3514f2b690c66de4d5ab8714055ed09168f33",
+      "size_bytes": 52478
+    }
+  ],
+  "task_id": "LAY_IME_ATOMIC_IBUS_EPOCH_COMPATIBILITY_V1_2026-08-21",
+  "verdict": "READY_TO_IMPLEMENT"
+}

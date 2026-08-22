@@ -1,5 +1,4 @@
 use zbus::fdo;
-use zbus::object_server::SignalEmitter;
 
 use lay::manual_toggle::{plan_manual_toggle, ManualToggleRequest};
 use lay::text_edit::{
@@ -8,19 +7,30 @@ use lay::text_edit::{
 };
 
 use super::engine::{LayIbusEngine, ManualToggleAuthority};
+use super::output::EngineOutput;
 use super::trace;
 
 impl LayIbusEngine {
     pub(super) async fn manual_toggle_active_text_target(
         &mut self,
-        emitter: &SignalEmitter<'_>,
+        emitter: &mut EngineOutput<'_, '_>,
     ) -> fdo::Result<Option<bool>> {
         // PROTECTED USER CONTRACT: an immediate double Shift after autocorrect
         // restores the exact recorded input before any layout/manual toggle.
         // Keep this first; typing_transition_authority_contract enforces order.
         if self.defer_pending_ime_auto_undo_until_visible() {
             trace::record_auto_undo_retry("requested_exact_snapshot");
-            Self::require_surrounding_text(emitter)
+            let Some(connection) = emitter.connection() else {
+                return Ok(None);
+            };
+            connection
+                .emit_signal(
+                    None::<&str>,
+                    self.path.as_str(),
+                    "org.freedesktop.IBus.Engine",
+                    "RequireSurroundingText",
+                    &(),
+                )
                 .await
                 .map_err(|error| fdo::Error::Failed(error.to_string()))?;
             // The IME owns the pending rollback. Keep the daemon from replaying

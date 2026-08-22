@@ -18,7 +18,10 @@
 use crate::action_log::RecentActionGateTrace;
 use crate::config::{CorrectionSafety, LayConfig};
 use crate::correction_core::CorrectionMode;
-use crate::input_gate::{decide_input_gate, InputGateAction, InputGateRequest, InputGateTrigger};
+use crate::input_gate::{
+    decide_closed_exact_input_gate_observed, decide_input_gate_observed,
+    decide_input_gate_observed_with_exact, InputGateAction, InputGateRequest, InputGateTrigger,
+};
 use crate::text_edit::TransitionProof;
 use crate::text_edit::{
     plan_committed_tail_last_token_replacement, plan_input_gate_edit, plan_text_replacement,
@@ -40,13 +43,114 @@ pub struct ActiveCompositionAutocorrectDecision {
     pub input_gate: Option<RecentActionGateTrace>,
 }
 
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub struct ActiveCompositionAutocorrectTelemetry {
+    pub l11_us: u64,
+    pub productive_v90_us: u64,
+    pub field_total_us: u64,
+    pub field_producer_count: u64,
+    pub field_cache_disposition: &'static str,
+    pub field_generation: u64,
+    pub correction_l3_us: u64,
+    pub decision_total_us: u64,
+    pub total_us: u64,
+}
+
+pub struct ObservedActiveCompositionAutocorrect {
+    pub decision: Option<ActiveCompositionAutocorrectDecision>,
+    pub no_apply_stage: Option<AutocorrectNoApplyStage>,
+    pub telemetry: ActiveCompositionAutocorrectTelemetry,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum AutocorrectNoApplyStage {
+    Rank,
+    Verifier,
+}
+
+pub struct PreparedExactLayoutAutocorrect {
+    pub decision: Option<ActiveCompositionAutocorrectDecision>,
+    pub certificate: crate::exact_layout_authority::ExactLayoutContourCertificate,
+}
+
+pub struct ObservedExactLayoutAutocorrect {
+    pub prepared: Option<PreparedExactLayoutAutocorrect>,
+    pub telemetry: ActiveCompositionAutocorrectTelemetry,
+}
+
 pub fn decide_active_composition_autocorrect(
     request: ActiveCompositionAutocorrectRequest<'_>,
 ) -> Option<ActiveCompositionAutocorrectDecision> {
+    decide_active_composition_autocorrect_observed(request).decision
+}
+
+pub fn decide_active_composition_autocorrect_observed(
+    request: ActiveCompositionAutocorrectRequest<'_>,
+) -> ObservedActiveCompositionAutocorrect {
+    let correction_mode =
+        ActiveCompositionGateConfig::from_config(request.config).correction_mode();
+    decide_active_composition_autocorrect_with_evidence(
+        request,
+        correction_mode,
+        ActiveCompositionEvidence::FullField(None),
+    )
+}
+
+pub fn decide_active_composition_autocorrect_observed_with_exact(
+    request: ActiveCompositionAutocorrectRequest<'_>,
+    certificate: &crate::exact_layout_authority::ExactLayoutContourCertificate,
+) -> ObservedActiveCompositionAutocorrect {
+    let correction_mode =
+        ActiveCompositionGateConfig::from_config(request.config).correction_mode();
+    decide_active_composition_autocorrect_with_evidence(
+        request,
+        correction_mode,
+        ActiveCompositionEvidence::FullField(Some(certificate)),
+    )
+}
+
+pub fn prepare_exact_layout_active_composition_autocorrect_observed(
+    request: ActiveCompositionAutocorrectRequest<'_>,
+    frame: &crate::exact_layout_authority::ExactLayoutFrame,
+) -> ObservedExactLayoutAutocorrect {
+    let (gate_text, _) = active_composition_gate_text(request.text, request.committed_tail);
+    let gate_config = ActiveCompositionGateConfig::from_config(request.config);
+    let certificate = crate::exact_layout_authority::certify_closed_exact_layout(
+        &gate_text,
+        frame,
+        gate_config.auto_replace,
+        gate_config.auto_switch_layout,
+    );
+    let observed = decide_active_composition_autocorrect_with_evidence(
+        request,
+        gate_config.correction_mode(),
+        ActiveCompositionEvidence::ClosedExact(certificate.as_ref()),
+    );
+    let prepared = certificate.map(|certificate| PreparedExactLayoutAutocorrect {
+        decision: observed.decision,
+        certificate,
+    });
+    ObservedExactLayoutAutocorrect {
+        prepared,
+        telemetry: observed.telemetry,
+    }
+}
+
+#[derive(Clone, Copy)]
+enum ActiveCompositionEvidence<'a> {
+    FullField(Option<&'a crate::exact_layout_authority::ExactLayoutContourCertificate>),
+    ClosedExact(Option<&'a crate::exact_layout_authority::ExactLayoutContourCertificate>),
+}
+
+fn decide_active_composition_autocorrect_with_evidence(
+    request: ActiveCompositionAutocorrectRequest<'_>,
+    correction_mode: CorrectionMode,
+    evidence: ActiveCompositionEvidence<'_>,
+) -> ObservedActiveCompositionAutocorrect {
     let (gate_text, active_prefix) =
         active_composition_gate_text(request.text, request.committed_tail);
     let gate_config = ActiveCompositionGateConfig::from_config(request.config);
-    let decision = decide_input_gate(InputGateRequest {
+    let gate_request = InputGateRequest {
         trigger: InputGateTrigger::Space,
         text_tail: &gate_text,
         auto_replace: gate_config.auto_replace,
@@ -57,57 +161,100 @@ pub fn decide_active_composition_autocorrect(
         nanda_autocorrect: gate_config.nanda_autocorrect,
         nanda_candidate_route: crate::correction_core::CandidateReadoutRoute::live_default(),
         nanda_wave_options: request.config.active_nanda_wave_options(),
-        correction_mode: gate_config.correction_mode(),
-    });
-    let InputGateAction::ApplyReplacement {
-        ref replacement, ..
-    } = decision.action
-    else {
-        return None;
+        correction_mode,
     };
-    if replacement.as_str() == gate_text {
-        return None;
-    }
-    let replacement = if active_prefix.is_empty() {
-        replacement.clone()
-    } else {
-        let stripped = replacement.strip_prefix(&active_prefix)?;
-        stripped.to_string()
+    let observed = match evidence {
+        ActiveCompositionEvidence::FullField(None) => decide_input_gate_observed(gate_request),
+        ActiveCompositionEvidence::FullField(Some(certificate)) => {
+            decide_input_gate_observed_with_exact(gate_request, certificate)
+        }
+        ActiveCompositionEvidence::ClosedExact(certificate) => {
+            decide_closed_exact_input_gate_observed(gate_request, certificate)
+        }
     };
-    let (action_from_text, plan) = if let Some(projection) =
-        physical_committed_tail_projection_plan(request.text, request.committed_tail, &replacement)
-    {
-        projection
-    } else {
-        (
-            request.text,
-            plan_committed_tail_last_token_replacement(request.text, &replacement)
-                .or_else(|| plan_text_replacement(request.text, &replacement))?,
-        )
+    let route = observed.telemetry;
+    let telemetry = ActiveCompositionAutocorrectTelemetry {
+        l11_us: route.canonical_field.l11_us,
+        productive_v90_us: route.canonical_field.productive_v90_us,
+        field_total_us: route.canonical_field.total_us,
+        field_producer_count: route.canonical_field.field_producer_count,
+        field_cache_disposition: route.canonical_field.cache_disposition.as_str(),
+        field_generation: route.canonical_field.field_generation,
+        correction_l3_us: route.correction_l3_us,
+        decision_total_us: route.decision_total_us,
+        total_us: route.total_us,
     };
-    let action = plan_input_gate_edit(
-        "ibus-active-composition",
-        action_from_text,
-        &replacement,
-        plan,
-        &decision,
+    let gate_selected_apply = matches!(
+        observed.decision.action,
+        InputGateAction::ApplyReplacement { .. }
     );
-    if active_layout_preserves_known_token(
-        action.from_text(),
-        action.transition().proof(),
-        request.active_layout_is_ru,
-    ) {
-        return None;
+    let decision = (|| {
+        let decision = observed.decision;
+        let InputGateAction::ApplyReplacement {
+            ref replacement, ..
+        } = decision.action
+        else {
+            return None;
+        };
+        if replacement.as_str() == gate_text {
+            return None;
+        }
+        let replacement = if active_prefix.is_empty() {
+            replacement.clone()
+        } else {
+            let stripped = replacement.strip_prefix(&active_prefix)?;
+            stripped.to_string()
+        };
+        let (action_from_text, plan) = if let Some(projection) =
+            physical_committed_tail_projection_plan(
+                request.text,
+                request.committed_tail,
+                &replacement,
+            ) {
+            projection
+        } else {
+            (
+                request.text,
+                plan_committed_tail_last_token_replacement(request.text, &replacement)
+                    .or_else(|| plan_text_replacement(request.text, &replacement))?,
+            )
+        };
+        let action = plan_input_gate_edit(
+            "ibus-active-composition",
+            action_from_text,
+            &replacement,
+            plan,
+            &decision,
+        );
+        if matches!(evidence, ActiveCompositionEvidence::FullField(_))
+            && active_layout_preserves_known_token(
+                action.from_text(),
+                action.transition().proof(),
+                request.active_layout_is_ru,
+            )
+        {
+            return None;
+        }
+        let input_gate = decision
+            .trace
+            .as_ref()
+            .map(RecentActionGateTrace::from_input_gate)?;
+        Some(ActiveCompositionAutocorrectDecision {
+            replacement,
+            action,
+            input_gate: Some(input_gate),
+        })
+    })();
+    let no_apply_stage = decision.is_none().then_some(if gate_selected_apply {
+        AutocorrectNoApplyStage::Verifier
+    } else {
+        AutocorrectNoApplyStage::Rank
+    });
+    ObservedActiveCompositionAutocorrect {
+        decision,
+        no_apply_stage,
+        telemetry,
     }
-    let input_gate = decision
-        .trace
-        .as_ref()
-        .map(RecentActionGateTrace::from_input_gate)?;
-    Some(ActiveCompositionAutocorrectDecision {
-        replacement,
-        action,
-        input_gate: Some(input_gate),
-    })
 }
 
 /// Prevents automatic layout evidence from overturning an independently known
@@ -205,7 +352,7 @@ impl ActiveCompositionGateConfig {
 
     fn correction_mode(self) -> CorrectionMode {
         if self.nanda_autocorrect {
-            CorrectionMode::DeterministicThenNanda
+            CorrectionMode::NandaOnly
         } else {
             CorrectionMode::DeterministicOnly
         }
@@ -216,9 +363,19 @@ impl ActiveCompositionGateConfig {
 mod tests {
     use super::{
         active_composition_gate_text, decide_active_composition_autocorrect,
+        decide_active_composition_autocorrect_observed_with_exact,
+        prepare_exact_layout_active_composition_autocorrect_observed,
         ActiveCompositionAutocorrectRequest,
     };
     use crate::config::LayConfig;
+    use crate::exact_layout_authority::{
+        exact_authority_snapshot_if_warm, warm_up_exact_layout_authority_for_ibus,
+        ActiveDecoderLayout, ExactLayoutFrame, FactoryEngineProfile,
+    };
+    use crate::text_edit::{
+        decide_text_transition, LatentTextTransitionCandidate, TextTransitionDecision,
+        TextTransitionIntent, VisibleFieldState, VisibleTailSnapshot, VisibleTailSource,
+    };
 
     fn config() -> LayConfig {
         LayConfig {
@@ -238,6 +395,22 @@ mod tests {
         LayConfig {
             nanda_l2_phase_apply: true,
             ..config()
+        }
+    }
+
+    fn exact_us_frame(token: &str) -> ExactLayoutFrame {
+        warm_up_exact_layout_authority_for_ibus().expect("warm exact-layout authority");
+        ExactLayoutFrame {
+            frame_revision: 17,
+            frame_fingerprint: 0x27_10,
+            observed_token: token.to_string(),
+            active_composition: true,
+            factory_engine_profile: FactoryEngineProfile::UsQwerty,
+            active_decoder_layout: ActiveDecoderLayout::Us,
+            authority_snapshot: exact_authority_snapshot_if_warm(
+                FactoryEngineProfile::UsQwerty,
+                ActiveDecoderLayout::Us,
+            ),
         }
     }
 
@@ -272,7 +445,7 @@ mod tests {
     }
 
     #[test]
-    fn active_composition_autocorrect_can_use_nanda_fallback() {
+    fn active_composition_autocorrect_uses_the_nanda_owner() {
         assert_replacement("тфтвф ", "", "nanda ");
     }
 
@@ -319,6 +492,122 @@ mod tests {
     #[test]
     fn committed_tail_autocorrect_handles_plain_en_to_ru_layout_words() {
         assert_replacement("ghbdtn ", "ghbdtn", "привет ");
+    }
+
+    #[test]
+    fn exact_layout_scope_preserves_full_route_authority_and_proof() {
+        let cfg = config();
+        let request = || ActiveCompositionAutocorrectRequest {
+            text: "ghbdtn ",
+            committed_tail: "ghbdtn",
+            config: &cfg,
+            active_layout_is_ru: Some(false),
+        };
+        let prepared = prepare_exact_layout_active_composition_autocorrect_observed(
+            request(),
+            &exact_us_frame("ghbdtn"),
+        )
+        .prepared
+        .expect("exact layout certificate");
+        let full = decide_active_composition_autocorrect_observed_with_exact(
+            request(),
+            &prepared.certificate,
+        )
+        .decision
+        .expect("full layout decision");
+        let exact = prepared.decision.expect("exact layout decision");
+
+        assert_eq!(exact.replacement, full.replacement);
+        assert_eq!(exact.action.allow_apply(), full.action.allow_apply());
+        assert_eq!(
+            exact.action.transition().proof(),
+            full.action.transition().proof()
+        );
+    }
+
+    #[test]
+    fn exact_layout_scope_rejects_protected_composite_and_nonterminal_inputs() {
+        let cfg = config();
+        for token in ["pdf", "dnjpfvtyf", "cnjq"] {
+            let text = format!("{token} ");
+            let observed = prepare_exact_layout_active_composition_autocorrect_observed(
+                ActiveCompositionAutocorrectRequest {
+                    text: &text,
+                    committed_tail: token,
+                    config: &cfg,
+                    active_layout_is_ru: Some(false),
+                },
+                &exact_us_frame(token),
+            );
+            assert!(observed.prepared.is_none(), "token={token}");
+        }
+    }
+
+    #[test]
+    fn exact_layout_scope_preserves_left_context_and_closed_case_shape() {
+        let cfg = config();
+        for (token, committed_tail, expected_full, expected_live) in [
+            ("ghbdtn", "ghbdtn", "привет ", "привет "),
+            ("ghbdtn", "проверь ghbdtn", "проверь привет ", "привет "),
+            ("ghbdtn", "check ghbdtn", "check привет ", "привет "),
+            ("Ghbdtn", "check: Ghbdtn", "check: Привет ", "Привет "),
+            ("GHBDTN", "проверь GHBDTN", "проверь ПРИВЕТ ", "ПРИВЕТ "),
+        ] {
+            let text = format!("{token} ");
+            let prepared = prepare_exact_layout_active_composition_autocorrect_observed(
+                ActiveCompositionAutocorrectRequest {
+                    text: &text,
+                    committed_tail,
+                    config: &cfg,
+                    active_layout_is_ru: Some(false),
+                },
+                &exact_us_frame(token),
+            )
+            .prepared
+            .expect("closed exact layout");
+
+            assert_eq!(prepared.certificate.replacement_text(), expected_full);
+            assert_eq!(
+                prepared.decision.expect("exact decision").replacement,
+                expected_live
+            );
+        }
+    }
+
+    #[test]
+    fn exact_layout_scope_rejects_unknown_ru_and_inactive_profiles() {
+        let cfg = config();
+        let request = || ActiveCompositionAutocorrectRequest {
+            text: "ghbdtn ",
+            committed_tail: "ghbdtn",
+            config: &cfg,
+            active_layout_is_ru: Some(false),
+        };
+        for profile in [FactoryEngineProfile::Unknown, FactoryEngineProfile::Ru] {
+            let mut frame = exact_us_frame("ghbdtn");
+            frame.factory_engine_profile = profile;
+            assert!(
+                prepare_exact_layout_active_composition_autocorrect_observed(request(), &frame)
+                    .prepared
+                    .is_none()
+            );
+        }
+
+        let mut ru_decoder = exact_us_frame("ghbdtn");
+        ru_decoder.active_decoder_layout = ActiveDecoderLayout::Ru;
+        assert!(
+            prepare_exact_layout_active_composition_autocorrect_observed(request(), &ru_decoder)
+                .prepared
+                .is_none()
+        );
+
+        let mut inactive = exact_us_frame("ghbdtn");
+        inactive.active_composition = false;
+        assert!(
+            prepare_exact_layout_active_composition_autocorrect_observed(request(), &inactive)
+                .prepared
+                .is_none()
+        );
     }
 
     #[test]
@@ -488,6 +777,45 @@ mod tests {
             "action={:?}",
             decision.action
         );
+    }
+
+    #[test]
+    fn committed_tail_boundary_winner_survives_the_structural_adapter() {
+        let cfg = config();
+        let original = "вотслов";
+        let decision = decide_active_composition_autocorrect(ActiveCompositionAutocorrectRequest {
+            text: "вотслов ",
+            committed_tail: original,
+            config: &cfg,
+            active_layout_is_ru: Some(true),
+        })
+        .expect("boundary decision");
+        assert_eq!(decision.replacement, "вот слов ");
+        let selected_action = decision.action;
+        assert!(selected_action.allow_apply(), "action={selected_action:?}");
+
+        let state =
+            VisibleFieldState::committed_tail(original, Some("/test".to_string())).with_epoch(23);
+        let candidate = LatentTextTransitionCandidate::new(
+            VisibleTailSource::ImeCommittedTail,
+            original.chars().count() as u32,
+            decision.replacement,
+            TextTransitionIntent::ImeAutocorrect,
+            Some(VisibleTailSnapshot::new(
+                VisibleTailSource::ImeCommittedTail,
+                original,
+                Some("/test".to_string()),
+                23,
+            )),
+        )
+        .with_selected_action(selected_action.clone());
+
+        match decide_text_transition(&state, candidate) {
+            TextTransitionDecision::Apply { action, .. } => {
+                assert_eq!(action, selected_action);
+            }
+            other => panic!("unexpected decision: {other:?}"),
+        }
     }
 
     #[test]

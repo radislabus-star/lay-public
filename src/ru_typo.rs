@@ -15,6 +15,7 @@ mod guards;
 #[path = "ru_typo/hard_sign.rs"]
 mod hard_sign;
 mod keyboard;
+mod memo;
 #[path = "ru_typo/missing.rs"]
 mod missing;
 #[path = "ru_typo/repeated.rs"]

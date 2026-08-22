@@ -37,6 +37,54 @@ pub(crate) struct CanonicalL2FieldReadout {
     pub(crate) availability: L2FieldAvailability,
 }
 
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub(crate) enum CanonicalFieldCacheDisposition {
+    #[default]
+    NotRequested,
+    Produced,
+    Waited,
+    ReadyHit,
+    Failed,
+}
+
+impl CanonicalFieldCacheDisposition {
+    pub(crate) const fn as_str(self) -> &'static str {
+        match self {
+            Self::NotRequested => "not_requested",
+            Self::Produced => "produced",
+            Self::Waited => "waited",
+            Self::ReadyHit => "ready_hit",
+            Self::Failed => "failed",
+        }
+    }
+
+    pub(crate) const fn producer_count(self) -> u64 {
+        match self {
+            Self::Produced => 1,
+            _ => 0,
+        }
+    }
+}
+
+/// Observation-only receipt for one canonical field request. It is returned
+/// beside the semantic readout so Rayon execution cannot detach telemetry from
+/// the caller that owns the input frame.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub(crate) struct CanonicalFieldTelemetry {
+    pub(crate) l11_us: u64,
+    pub(crate) productive_v90_us: u64,
+    pub(crate) total_us: u64,
+    pub(crate) field_producer_count: u64,
+    pub(crate) cache_disposition: CanonicalFieldCacheDisposition,
+    pub(crate) field_generation: u64,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub(crate) struct ObservedCanonicalL2FieldReadout {
+    pub(crate) readout: CanonicalL2FieldReadout,
+    pub(crate) telemetry: CanonicalFieldTelemetry,
+}
+
 impl CanonicalL2FieldReadout {
     pub(crate) fn new(
         candidates: Vec<UnifiedCorrectionCandidate>,
@@ -64,10 +112,6 @@ impl CanonicalL2FieldReadout {
             authority: L2FieldAuthority::Unavailable,
             availability,
         }
-    }
-
-    pub(crate) fn is_cacheable(&self) -> bool {
-        !self.availability.is_transient()
     }
 }
 

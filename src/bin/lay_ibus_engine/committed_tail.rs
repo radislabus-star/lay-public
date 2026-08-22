@@ -1,20 +1,26 @@
+use super::output::EngineOutput;
 use std::time::Instant;
 use zbus::fdo;
-use zbus::object_server::SignalEmitter;
 
-use super::engine::{LayIbusEngine, PendingSystemOutcomeFeedback, SystemOutcomeKind};
+use super::engine::{
+    InputFrameIdentity, LayIbusEngine, PendingSystemOutcomeFeedback, SystemOutcomeKind,
+};
 use super::space_autocorrect_prefetch::{
-    self, SpaceAutocorrectKey, SpaceAutocorrectLookup, SpaceAutocorrectWork,
+    self, PreparedNoApplyStage, SpaceAutocorrectLookup, SpaceAutocorrectLookupReceipt,
+    SpaceAutocorrectWork,
 };
 use super::state::CommittedTailReplaceRequest;
 use super::text::make_ibus_text;
-use super::trace;
+use super::trace::{self, SpaceCorrectionLeaseOutcome};
 use lay::manual_toggle::{plan_manual_toggle, ManualToggleRequest, VisibleTail};
 use lay::text_edit::{VisibleTailSnapshot, VisibleTailSource};
 
 impl LayIbusEngine {
-    pub(super) fn schedule_space_autocorrect_prefetch(&self) {
+    pub(super) fn schedule_space_autocorrect_prefetch(&self, identity: &InputFrameIdentity) {
         if !self.config.auto_replace {
+            return;
+        }
+        if !self.input_frame_identity_matches(identity) {
             return;
         }
         let token = self.last_tail_token_text();
@@ -22,20 +28,24 @@ impl LayIbusEngine {
             return;
         }
         space_autocorrect_prefetch::schedule(SpaceAutocorrectWork {
-            key: self.space_autocorrect_key(),
-            boundary_text: format!("{token} "),
-            committed_tail: self.tail_buffer.clone(),
+            identity: identity.clone(),
             config: self.config.clone(),
         });
     }
 
-    fn space_autocorrect_key(&self) -> SpaceAutocorrectKey {
-        SpaceAutocorrectKey::new(
-            self.path.clone(),
-            self.tail_epoch,
-            self.tail_buffer.clone(),
-            self.layout_is_ru,
-        )
+    pub(super) fn take_space_autocorrect_lease(
+        &self,
+        identity: &InputFrameIdentity,
+    ) -> SpaceAutocorrectLookupReceipt {
+        space_autocorrect_prefetch::take(identity)
+    }
+
+    pub(super) fn invalidate_space_autocorrect_lease(&self, identity: &InputFrameIdentity) {
+        space_autocorrect_prefetch::invalidate(identity);
+    }
+
+    pub(super) fn invalidate_space_autocorrect_path(&self) {
+        space_autocorrect_prefetch::invalidate_path(&self.path);
     }
 
     /// Applies only a verified current-token correction after Space.
@@ -47,7 +57,9 @@ impl LayIbusEngine {
     /// routed here.
     pub(super) async fn autocorrect_committed_token_on_space(
         &mut self,
-        emitter: &SignalEmitter<'_>,
+        emitter: &mut EngineOutput<'_, '_>,
+        identity: &InputFrameIdentity,
+        lookup: SpaceAutocorrectLookupReceipt,
     ) -> fdo::Result<bool> {
         let total_started = Instant::now();
         if !self.config.auto_replace {
@@ -58,30 +70,91 @@ impl LayIbusEngine {
             return Ok(false);
         }
         let boundary_text = format!("{token} ");
-        let SpaceAutocorrectLookup::Ready {
-            decision,
-            decision_us,
-        } = space_autocorrect_prefetch::take(&self.space_autocorrect_key())
-        else {
-            trace::record(r#"{"kind":"ibus_space_autocorrect","status":"prefetch_not_ready"}"#);
-            trace::record_space_autocorrect_timing(
-                "prefetch_not_ready",
-                0,
-                0,
-                total_started.elapsed().as_micros(),
-            );
-            return Ok(false);
+        let lookup_wait_us = lookup.wait_us;
+        let worker_generation = lookup.worker_generation;
+        let lease = match lookup.lookup {
+            SpaceAutocorrectLookup::Ready(lease) => lease,
+            SpaceAutocorrectLookup::NoApply(stage) => {
+                let stage_name = match stage {
+                    PreparedNoApplyStage::Rank => "rank",
+                    PreparedNoApplyStage::Verifier => "verifier",
+                    PreparedNoApplyStage::Infrastructure => "infrastructure",
+                };
+                trace::record(format!(
+                    r#"{{"kind":"ibus_space_autocorrect","status":"full_no_apply","stage":"{stage_name}"}}"#,
+                ));
+                trace::record_space_autocorrect_timing(
+                    "full_no_apply",
+                    0,
+                    0,
+                    total_started.elapsed().as_micros(),
+                );
+                trace::record_space_correction_lease_outcome(
+                    SpaceCorrectionLeaseOutcome::Ready,
+                    worker_generation,
+                    identity,
+                    lookup_wait_us,
+                );
+                return Ok(false);
+            }
+            SpaceAutocorrectLookup::NotReady => {
+                trace::record(r#"{"kind":"ibus_space_autocorrect","status":"prefetch_not_ready"}"#);
+                trace::record_space_autocorrect_timing(
+                    "prefetch_not_ready",
+                    0,
+                    0,
+                    total_started.elapsed().as_micros(),
+                );
+                trace::record_space_correction_lease_outcome(
+                    SpaceCorrectionLeaseOutcome::NotReady,
+                    worker_generation,
+                    identity,
+                    lookup_wait_us,
+                );
+                return Ok(false);
+            }
+            SpaceAutocorrectLookup::Stale => {
+                trace::record(r#"{"kind":"ibus_space_autocorrect","status":"stale_lease"}"#);
+                trace::record_space_autocorrect_timing(
+                    "stale_lease",
+                    0,
+                    0,
+                    total_started.elapsed().as_micros(),
+                );
+                trace::record_space_correction_lease_outcome(
+                    SpaceCorrectionLeaseOutcome::Stale,
+                    worker_generation,
+                    identity,
+                    lookup_wait_us,
+                );
+                return Ok(false);
+            }
         };
-        let Some(decision) = decision else {
-            trace::record(r#"{"kind":"ibus_space_autocorrect","status":"prefetched_no_decision"}"#);
+        let decision_us = lease.decision_us;
+        if lease.identity != *identity
+            || lease.material_generation != lay::nanda_wave::candidate_material_generation()
+            || lease
+                .exact_certificate
+                .as_ref()
+                .is_some_and(|certificate| !identity.certificate_matches(certificate))
+            || !self.input_frame_identity_matches(identity)
+        {
+            trace::record(r#"{"kind":"ibus_space_autocorrect","status":"identity_mismatch"}"#);
             trace::record_space_autocorrect_timing(
-                "prefetched_no_decision",
+                "identity_mismatch",
                 decision_us,
                 0,
                 total_started.elapsed().as_micros(),
             );
+            trace::record_space_correction_lease_outcome(
+                SpaceCorrectionLeaseOutcome::Stale,
+                worker_generation,
+                identity,
+                lookup_wait_us,
+            );
             return Ok(false);
-        };
+        }
+        let decision = lease.decision;
         let layout_transition = decision
             .input_gate
             .as_ref()
@@ -98,6 +171,12 @@ impl LayIbusEngine {
                 0,
                 total_started.elapsed().as_micros(),
             );
+            trace::record_space_correction_lease_outcome(
+                SpaceCorrectionLeaseOutcome::Unauthorized,
+                worker_generation,
+                identity,
+                lookup_wait_us,
+            );
             return Ok(false);
         }
         if !autocorrect_replacement_has_one_trailing_space(&decision.replacement) {
@@ -107,6 +186,12 @@ impl LayIbusEngine {
                 decision_us,
                 0,
                 total_started.elapsed().as_micros(),
+            );
+            trace::record_space_correction_lease_outcome(
+                SpaceCorrectionLeaseOutcome::Unauthorized,
+                worker_generation,
+                identity,
+                lookup_wait_us,
             );
             return Ok(false);
         }
@@ -153,6 +238,16 @@ impl LayIbusEngine {
             replacement_us,
             total_started.elapsed().as_micros(),
         );
+        trace::record_space_correction_lease_outcome(
+            if handled {
+                SpaceCorrectionLeaseOutcome::Applied
+            } else {
+                SpaceCorrectionLeaseOutcome::Unauthorized
+            },
+            worker_generation,
+            identity,
+            lookup_wait_us,
+        );
         if handled {
             let transition = if layout_transition {
                 lay::typing_cpu::ObservedSystemTransition::LayoutProjection
@@ -166,7 +261,7 @@ impl LayIbusEngine {
 
     pub(super) async fn accept_stuck_tail(
         &mut self,
-        emitter: &SignalEmitter<'_>,
+        emitter: &mut EngineOutput<'_, '_>,
         with_space: bool,
     ) -> fdo::Result<bool> {
         if self.tail_buffer.trim().is_empty() {
@@ -236,7 +331,8 @@ impl LayIbusEngine {
             return Ok(false);
         }
         self.clear_preedit(emitter).await?;
-        Self::commit_text(emitter, make_ibus_text(authorized_plan.insert.clone()))
+        emitter
+            .commit_text(make_ibus_text(authorized_plan.insert.clone()))
             .await
             .map_err(|e| fdo::Error::Failed(e.to_string()))?;
         self.arm_pending_ime_completion_learning(
@@ -251,7 +347,7 @@ impl LayIbusEngine {
 
     async fn accept_stuck_tail_replacement(
         &mut self,
-        emitter: &SignalEmitter<'_>,
+        emitter: &mut EngineOutput<'_, '_>,
         replacement: String,
         with_space: bool,
     ) -> fdo::Result<bool> {
@@ -305,7 +401,7 @@ impl LayIbusEngine {
 
     pub(super) async fn toggle_committed_tail_target(
         &mut self,
-        emitter: &SignalEmitter<'_>,
+        emitter: &mut EngineOutput<'_, '_>,
     ) -> fdo::Result<Option<bool>> {
         let Some(plan) = self.committed_tail_toggle_plan() else {
             return Ok(None);
@@ -322,10 +418,7 @@ impl LayIbusEngine {
             )
             .await?;
         if handled {
-            lay::typing_cpu::TypingCpu::record_accepted_layout_projection(
-                &plan.edit.original_token,
-                &plan.replacement,
-            );
+            self.record_accepted_layout_projection(&plan.edit.original_token, &plan.replacement);
             self.sync_layout_after_manual_toggle(&plan.replacement);
             self.trace_key("double_shift_committed_tail", 0, 0, true, None);
         }
@@ -334,7 +427,7 @@ impl LayIbusEngine {
 
     pub(super) async fn undo_last_ime_autocorrect(
         &mut self,
-        emitter: &SignalEmitter<'_>,
+        emitter: &mut EngineOutput<'_, '_>,
     ) -> fdo::Result<Option<bool>> {
         let boundary_elided_snapshot = self.pending_ime_auto_undo_uses_boundary_elided_snapshot();
         let causal_precondition_snapshot =
@@ -369,7 +462,7 @@ impl LayIbusEngine {
             }
         };
         if handled {
-            lay::typing_cpu::TypingCpu::record_reverted_system_apply(
+            self.record_reverted_system_apply(
                 &accepted_context,
                 &rejected_context,
                 pending.transition,

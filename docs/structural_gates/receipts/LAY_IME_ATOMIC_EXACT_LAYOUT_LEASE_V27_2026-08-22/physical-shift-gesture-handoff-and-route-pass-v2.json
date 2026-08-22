@@ -1,0 +1,63 @@
+{
+  "schema": "lay.architecture-experiment-receipt.v1",
+  "id": "LAY_IME_ATOMIC_V27_PHYSICAL_SHIFT_GESTURE_HANDOFF_AND_ROUTE_PASS_V2_2026-08-22",
+  "tested": {
+    "scope": "corrected physical double-Shift undo denominator plus unchanged fixed 514-event atomic route",
+    "undo_run_id": "v27-shift-gesture-handoff-undo-v2",
+    "route_run_id": "v27-shift-gesture-handoff-route-v3",
+    "proof_source_sha256": "28e297a78745d113411727da341504932d26cfa098dc7fa55e0cdff7fff7ac4a",
+    "shell_parser_sha256": "5d728b4bdca9ea4b56f591cafa38d8e3876cc80b5cb5f7cc14cd0473aa064624",
+    "engine_sha256": "01033e4b02fe39e57f229946063a68cb9c36a4d960466acd060cf5e43a7d43b9",
+    "source_aggregate_sha256": "e8474ee0fa14142bc1e0839f85df0b821fd5715d3ddd0c7ddab6a9fece6ca3f0"
+  },
+  "measured": {
+    "undo": {
+      "exact_original_restored": true,
+      "paired_printable_releases": 7,
+      "shift_release_atomic_rpcs": 2,
+      "shift_release_native_replays": 1,
+      "paired_release_ledger_entries": 0,
+      "process_status": 0,
+      "legacy_key_calls": 0,
+      "leftovers_before_cleanup": 0,
+      "leftovers_after_cleanup": 0,
+      "engine_trace_lines": 96,
+      "engine_key_trace_records": 8
+    },
+    "fixed_route": {
+      "events_passed": 514,
+      "events_total": 514,
+      "p50_ms": 1.384,
+      "p99_ms": 3.193,
+      "max_ms": 3.896,
+      "paired_releases": 514,
+      "release_rpcs": 0,
+      "native_releases": 0,
+      "paired_release_ledger_entries": 0,
+      "process_status": 0,
+      "legacy_key_calls": 0,
+      "leftovers_before_cleanup": 0,
+      "leftovers_after_cleanup": 0
+    }
+  },
+  "artifacts": {
+    "undo_remote_log": "/home/e/projects/lay-atomic-full-route-20260821/logs/atomic-full-route-v27-shift-gesture-handoff-undo-v2.log",
+    "undo_remote_log_sha256": "cb37f50b31c203e9a6d2d05913cad63213d7e87df1034e6288df6e0ea71175a2",
+    "undo_remote_metrics_sha256": "71e2d97e8c08ac4e6658669b635a6a7e26379afeda8299f4d6eafc6549a9ac7a",
+    "undo_remote_cleanup_sha256": "51c2b10ec8a32ed49080c4ecd4e253069a91cfa583d631062ab2cf3837f80a6f",
+    "undo_remote_trace_sha256": "2514459b3db993adae3d1081ca78940e2077c4013ce772dd17100d7bb7459d68",
+    "route_remote_log": "/home/e/projects/lay-atomic-full-route-20260821/logs/atomic-full-route-v27-shift-gesture-handoff-route-v3.log",
+    "route_remote_log_sha256": "f00284ce7e7b023e635976de8a74c90a3da063949cf48e674eba1444e0596321",
+    "route_remote_metrics_sha256": "69e73fdcb39a3651e135654b9f002292854d26909287873ae974cb34ab6a388c",
+    "route_remote_cleanup_sha256": "51c2b10ec8a32ed49080c4ecd4e253069a91cfa583d631062ab2cf3837f80a6f",
+    "route_remote_trace_sha256": "e8b64f9e29d646d5f1134b925cff09f5a9faf7b74855e5614baa082059ba5d5a"
+  },
+  "not_tested": [
+    "final versioned Lay 1.0.34 binary",
+    "installed live double-Shift behavior",
+    "post-install aggregate RSS and PSS"
+  ],
+  "verdict": "V27_STAGED_PHYSICAL_AND_FIXED_ROUTE_PASS",
+  "runtime_authority_changed": false,
+  "installed_runtime": "lay 1.0.33"
+}

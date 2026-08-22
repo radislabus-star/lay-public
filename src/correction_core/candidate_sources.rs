@@ -7,13 +7,11 @@ enum L2CandidateSource {
 impl L2CandidateSource {
     const DETERMINISTIC_ONLY: [Self; 1] = [Self::Deterministic];
     const NANDA_ONLY: [Self; 1] = [Self::Nanda];
-    const DETERMINISTIC_THEN_NANDA: [Self; 2] = [Self::Deterministic, Self::Nanda];
 
     fn for_mode(mode: CorrectionMode) -> &'static [Self] {
         match mode {
             CorrectionMode::DeterministicOnly => &Self::DETERMINISTIC_ONLY,
             CorrectionMode::NandaOnly => &Self::NANDA_ONLY,
-            CorrectionMode::DeterministicThenNanda => &Self::DETERMINISTIC_THEN_NANDA,
         }
     }
 
@@ -22,6 +20,7 @@ impl L2CandidateSource {
         req: &CorrectionRequest<'_>,
         lattice: &mut L2CandidateLattice,
         l2_peak_context: Option<&crate::nanda_wave::l2_wave_peak::L2CorrectionPeakContext>,
+        canonical_telemetry: &mut crate::nanda_wave::l2_field::CanonicalFieldTelemetry,
     ) {
         match self {
             Self::Deterministic => {
@@ -30,9 +29,11 @@ impl L2CandidateSource {
             Self::Nanda => {
                 let candidates =
                     if req.nanda_candidate_route == CandidateReadoutRoute::CanonicalL2Field {
-                        let readout = crate::nanda_wave::l2_field::canonical_text_readout(req.text);
-                        lattice.set_l2_field_authority(readout.authority);
-                        readout.candidates
+                        let observed =
+                            crate::nanda_wave::l2_field::canonical_text_readout_observed(req.text);
+                        *canonical_telemetry = observed.telemetry;
+                        lattice.set_l2_field_authority(observed.readout.authority);
+                        observed.readout.candidates
                     } else {
                         nanda_text_candidates(req, l2_peak_context)
                     };
@@ -52,17 +53,62 @@ impl L2CandidateSource {
     }
 }
 
+fn retained_exact_layout_candidate(
+    req: &CorrectionRequest<'_>,
+    certificate: &crate::exact_layout_authority::ExactLayoutContourCertificate,
+) -> Option<UnifiedCorrectionCandidate> {
+    if !crate::typing_transition::decision::closed_exact_readout_route_preserves_retained_target(
+        req.nanda_candidate_route,
+    ) || !certificate.matches_candidate(req.text, certificate.replacement_text())
+    {
+        return None;
+    }
+    let replacement = certificate.replacement_text().to_string();
+    let origin = CandidateOrigin::Layout;
+    let gate = TransitionDecisionCore::admit_candidate_proposal(
+        req.text,
+        &replacement,
+        TypingErrorClass::WrongLayout,
+        origin,
+    );
+    Some(
+        UnifiedCorrectionCandidate::new(
+            replacement,
+            CorrectionDecisionSource::Deterministic,
+            origin,
+            ids::FAST_LAYOUT_EN_TO_RU,
+            TypingErrorClass::WrongLayout,
+            gate,
+        )
+        .with_closed_exact_layout_authority(certificate.clone()),
+    )
+}
+
 fn deterministic_text_candidates(req: &CorrectionRequest<'_>) -> Vec<UnifiedCorrectionCandidate> {
+    let timing_enabled = std::env::var_os("LAY_DETERMINISTIC_CANDIDATE_TIMING").is_some();
+    let total_started = std::time::Instant::now();
     let mut candidates = Vec::with_capacity(8);
+    let boundary_started = std::time::Instant::now();
     if let Some(candidate) = boundary_shift_transition_candidate(req) {
         candidates.push(candidate);
     }
+    let boundary_us = boundary_started.elapsed().as_micros();
     if !(req.auto_replace || req.typing_assist || req.auto_switch_layout) {
+        if timing_enabled {
+            eprintln!(
+                "lay_deterministic_candidate_timing total_us={} boundary_us={} layout_us=0 typing_us=0 composite_us=0 candidates={}",
+                total_started.elapsed().as_micros(),
+                boundary_us,
+                candidates.len(),
+            );
+        }
         return candidates;
     }
+    let layout_started = std::time::Instant::now();
     if let Some(candidate) = multiword_layout_projection_candidate(req) {
         candidates.push(candidate);
     }
+    let layout_us = layout_started.elapsed().as_micros();
 
     let pipeline = typing_assist_pipeline_for_context(
         req.auto_replace,
@@ -70,6 +116,7 @@ fn deterministic_text_candidates(req: &CorrectionRequest<'_>) -> Vec<UnifiedCorr
         req.typing_assist_pipeline,
         req.text,
     );
+    let typing_started = std::time::Instant::now();
     for (candidate, replacement) in
         collect_typing_assist_candidates_with_pipeline(req.text, req.auto_switch_layout, &pipeline)
     {
@@ -96,7 +143,21 @@ fn deterministic_text_candidates(req: &CorrectionRequest<'_>) -> Vec<UnifiedCorr
             gate,
         ));
     }
+    let typing_us = typing_started.elapsed().as_micros();
+    let composite_started = std::time::Instant::now();
     candidates.extend(deterministic_composite_text_candidates(req, &pipeline));
+    let composite_us = composite_started.elapsed().as_micros();
+    if timing_enabled {
+        eprintln!(
+            "lay_deterministic_candidate_timing total_us={} boundary_us={} layout_us={} typing_us={} composite_us={} candidates={}",
+            total_started.elapsed().as_micros(),
+            boundary_us,
+            layout_us,
+            typing_us,
+            composite_us,
+            candidates.len(),
+        );
+    }
     candidates
 }
 
@@ -295,6 +356,9 @@ fn layout_then_typo_candidate(
     if !req.auto_switch_layout {
         return None;
     }
+    if exact_physical_layout_projection_has_authority(req.text) {
+        return None;
+    }
 
     let (_, core, _) = split_edge_whitespace(req.text);
     let current_word = last_text_word(core)?;
@@ -342,6 +406,19 @@ fn layout_then_typo_candidate(
         TypingErrorClass::CompositeTypo,
         gate,
     ))
+}
+
+fn exact_physical_layout_projection_has_authority(text: &str) -> bool {
+    let Some((_, physical_token)) = split_last_trimmed_ws_token(text) else {
+        return false;
+    };
+    if !crate::layout_autoswitch::is_ascii_layout_letter_surface(physical_token) {
+        return false;
+    }
+    let projection = crate::dict::convert(physical_token, crate::dict::Direction::Us2Ru);
+    projection != physical_token
+        && is_cyrillic_letters_only(&projection)
+        && crate::layout_autoswitch::is_russian_layout_surface_authority_word(&projection)
 }
 
 fn is_protected_known_english_layout_word(word: &str) -> bool {
@@ -744,7 +821,7 @@ mod candidate_sources_tests {
             nanda_autocorrect: true,
             nanda_candidate_route: CandidateReadoutRoute::FullWave,
             nanda_wave_options: WaveOptions::default(),
-            mode: CorrectionMode::DeterministicThenNanda,
+            mode: CorrectionMode::NandaOnly,
         }
     }
 
@@ -780,6 +857,29 @@ mod candidate_sources_tests {
             .expect("boundary candidate");
 
         assert_eq!(candidate.gate.action, CandidateGateAction::Eligible);
+    }
+
+    #[test]
+    fn reused_deterministic_material_preserves_the_ordered_lattice() {
+        let pipeline = default_typing_assist_pipeline();
+        let req = request("данорм ", &pipeline);
+
+        let first = deterministic_text_candidates(&req);
+        let reused = deterministic_text_candidates(&req);
+
+        assert_eq!(reused, first);
+    }
+
+    #[test]
+    fn exact_physical_layout_projection_suppresses_partial_layout_then_typo() {
+        let pipeline = default_typing_assist_pipeline();
+        let req = request(",kznm ", &pipeline);
+
+        assert!(exact_physical_layout_projection_has_authority(req.text));
+        assert!(
+            layout_then_typo_candidate(&req, &pipeline).is_none(),
+            "an exact physical-token projection must not compete with a punctuation-preserving partial projection"
+        );
     }
 
     #[test]

@@ -1,0 +1,42 @@
+{
+  "planned": {
+    "id": "display-payload-before-visibility",
+    "series": "baseline49",
+    "denominator": "display",
+    "source_test": "src/bin/lay_ibus_engine/preedit/tests.rs::preedit_publisher_installs_payload_before_showing_it",
+    "target_kind": "bin",
+    "target": "lay-ibus-engine",
+    "compiled_selector": "preedit::tests::preedit_publisher_installs_payload_before_showing_it",
+    "expected_test_count": 1,
+    "expected_assertion_status": "PASS",
+    "expected_semantic_receipt": "visible bytes and receipt payload are from one generation",
+    "environment": {
+      "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+      "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+      "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+      "LAY_DEBUG_DECISION_CORE": "1",
+      "LAY_L2_FIELD_TRACE": "1",
+      "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+      "CARGO_BUILD_JOBS": "20"
+    },
+    "command": [
+      "scripts/cargo-guard.sh",
+      "test",
+      "--bin",
+      "lay-ibus-engine",
+      "preedit::tests::preedit_publisher_installs_payload_before_showing_it",
+      "--",
+      "--exact",
+      "--nocapture",
+      "--test-threads=1"
+    ]
+  },
+  "exit_code": 0,
+  "observed_test_count": 1,
+  "observed_status": "PASS",
+  "valid_execution": true,
+  "log": {
+    "size_bytes": 58168,
+    "sha256": "0bb831796518eac2aa1c6c28a3ef1022bd4db9553b2577643f3a0aa8a3d69175"
+  }
+}

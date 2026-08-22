@@ -1,8 +1,12 @@
 mod anchor_recovery_package;
 mod anchor_recovery_reduce;
+mod boundary_birth;
 mod calibrate;
+mod candidate_state;
 mod compiler;
 mod composite;
+mod conflict_cohort;
+mod contour_birth;
 mod corpus;
 mod delta;
 mod events;
@@ -12,6 +16,7 @@ mod format_validation;
 mod geometry;
 mod induce;
 mod live;
+mod material_frame;
 mod orchestrator;
 mod packaged_runtime;
 mod phase;
@@ -27,7 +32,11 @@ mod transition_reduce;
 mod trie;
 mod types;
 
-pub(in crate::nanda_wave::l2_field) use live::live_productive_v1_readout;
+pub(in crate::nanda_wave::l2_field) use live::{
+    canonical_live_scene_bytes, materialize_live_productive_v1_field,
+    prepare_live_productive_v1_field, CanonicalContourRelation, CanonicalContourSeed,
+    CanonicalFormGrounding, CanonicalSurfaceGrounding, PreparedCanonicalTokenField,
+};
 pub(super) use orchestrator::{
     audit_productive_anchor_recovery_v1, compile_productive_paradigm_field_v1,
     reinduce_productive_paradigm_field_v1, resume_productive_paradigm_field_v1,

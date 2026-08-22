@@ -1,0 +1,95 @@
+{
+  "schema": "lay.ime.unified-token-field.slice4.v1",
+  "generated_at": "2026-08-16T09:25:12+03:00",
+  "worktree": "/home/ubu/projects/lay-l1-exact-peak-search",
+  "branch": "codex/l1-exact-peak-search",
+  "baseline_head": "8b8f66bbf0f8a24b7edda670c67023083aa49e00",
+  "verdict": "PASS_SCOPED_OBSERVABILITY_AND_DUPLICATE_REMOVAL_RUNTIME_AUTHORITY_UNCHANGED",
+  "runtime_authority_changed": false,
+  "installed_version": "1.0.33",
+  "implemented": [
+    "canonical L1.1 and Productive V90 timing, cache disposition, field generation and producer count now travel as typed per-call telemetry instead of thread-local inference across rayon work",
+    "display and correction workers emit separate projections bound to the same InputFrameIdentity dimensions",
+    "Space lookup emits only the single-consumer correction-lease outcome and wait time; it no longer masquerades as a second token-field projection",
+    "lease outcomes are a closed typed vocabulary: ready, not_ready, stale, unauthorized and applied",
+    "trace JSON carries worker generation, tail epoch, engine path, L1.1, Productive V90, display L3, semantic L3, correction L3, cache, producer and decision timing fields",
+    "the obsolete direct canonical_ime_candidates wrapper and obsolete non-observed L2 lattice resolution entry were removed after observed replacements gained parity wrappers",
+    "passive display still excludes whitespace-bearing replacement edits while the verified Space correction lattice retains them"
+  ],
+  "trace_contract": {
+    "projection_kinds": ["display", "correction"],
+    "projection_records_per_input_frame": {
+      "display": 1,
+      "correction": 1
+    },
+    "maximum_summed_field_producer_count_per_frame": 1,
+    "lease_outcomes": ["ready", "not_ready", "stale", "unauthorized", "applied"],
+    "semantic_resolution_payload_changed": false,
+    "ranking_or_verifier_changed": false
+  },
+  "measured": {
+    "remote_host": "e@192.168.3.94",
+    "remote_logical_cpus": 20,
+    "remote_load_average_at_receipt": [2.79, 2.92, 3.01],
+    "remote_source_root": "/home/e/build/lay-unified-token-field-20260816",
+    "remote_target_root": "/home/e/build/lay-ime-boundary-layout-proof-20260815/target",
+    "remote_target_bytes": 2127290368,
+    "remote_source_parity": "rsync checksum dry-run with timestamps excluded returned no differences for Cargo.toml, Cargo.lock and src",
+    "source_manifest_sha256": "8f39f74038dace4654d120b2e17244dd69524f2b8e87771957b034c96c65fe52",
+    "lay_ibus_engine_check": {
+      "status": "PASS",
+      "cargo_duration_seconds": 1.03
+    },
+    "lay_ibus_engine_tests": {
+      "passed": 205,
+      "failed": 0,
+      "ignored": 0,
+      "duration_seconds": 8.31,
+      "log": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice4/lay-ibus-engine-tests.log",
+      "log_bytes": 59624,
+      "log_sha256": "5e0b3cddf315ca8356fef660c684038f8582e1c4a716808b0a994f254a84994c"
+    },
+    "observed_source_route": {
+      "verdict": "PASS",
+      "nodes": 26,
+      "edges": 38,
+      "routes": 15,
+      "source_evidence_verified": 64,
+      "source_evidence_expected": 64,
+      "issues": 0,
+      "warnings": 0,
+      "contract": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_UNIFIED_TOKEN_FIELD_OBSERVED_2026-08-16.json",
+      "receipt": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice4-observed-source-route.json",
+      "receipt_bytes": 15313,
+      "receipt_sha256": "1f2f109f724c8d71664edd49b1bc72f34c9f1b1cbd740819b9876a2146c82fc6"
+    }
+  },
+  "initial_test_failure": {
+    "passed": 204,
+    "failed": 1,
+    "failed_test": "preedit::preedit_readout_contract::preedit_rendering_does_not_own_l2_l3_material_acquisition",
+    "first_shared_mechanism": "the static architecture test still required the removed live_completion_candidates wrapper even though the implemented route now has exactly one live_completion_readout and zero legacy wrapper calls",
+    "repair_scope": "update the architecture test to require one observed readout and prohibit the legacy wrapper; runtime code was not changed",
+    "log": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice4/lay-ibus-engine-tests-initial-fail.log",
+    "log_bytes": 60229,
+    "log_sha256": "bae4da6603aa63e206594aafdeebc894c86bc50d8ac269bc94a3902be7f2b995"
+  },
+  "initial_route_veto": {
+    "verdict": "VETO",
+    "source_evidence_verified": 65,
+    "source_evidence_expected": 65,
+    "issue": "authority_stage_reversal",
+    "first_shared_mechanism": "the paper contract mislabeled PreparedCorrectionLease as a producer after the candidate-rank owner",
+    "repair_scope": "classify the lease as an orchestrator and terminate printable correction authority at correction_readout; no source or runtime code changed"
+  },
+  "not_tested": [
+    "fixed immediate-Space replay denominator and eligible NotReady rate",
+    "actual runtime trace cardinality over physical printable frames",
+    "physical WeChat, Telegram and browser input",
+    "Space and printable p50, p90, p99 and maximum latency",
+    "full aggregate L1.1 and 13-class restoration proof",
+    "glued-word recall and false-split aggregate proof",
+    "release build, installation, service activation, double-Shift physical rollback and rollback restoration"
+  ],
+  "promotion_scope": "permits fixed replay, latency and aggregate quality gates only; does not authorize release build, installation or runtime promotion"
+}

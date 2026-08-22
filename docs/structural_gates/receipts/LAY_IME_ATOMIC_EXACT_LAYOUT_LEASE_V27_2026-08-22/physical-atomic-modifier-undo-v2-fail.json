@@ -1,0 +1,28 @@
+{
+  "schema": "lay.atomic.physical-undo-proof.v1",
+  "run_id": "v27-atomic-modifier-undo-v2",
+  "date": "2026-08-22",
+  "scope": "staged compositor proof before installed runtime promotion",
+  "measured": {
+    "physical_shift_events": 4,
+    "atomic_event_identity_delta": 4,
+    "legacy_mutation_calls": 0,
+    "proof_owned_leftovers": 0,
+    "exact_source_restored": false
+  },
+  "first_failed_invariant": "fresh surrounding snapshot survives receipt settlement",
+  "trace": [
+    "ibus_auto_undo_lifecycle stage=remember pending=true",
+    "ibus_surrounding_text text_chars=7",
+    "ibus_auto_undo_lifecycle stage=defer reason=waiting_exact_snapshot snapshot_chars=0",
+    "ibus_auto_undo_retry status=requested_exact_snapshot"
+  ],
+  "root_cause": "commit_atomic_speculation replaces the live engine with a speculative clone created before the fresh SetSurroundingText observation",
+  "local_proof_source": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/shell/atomicInputMethodRoute.js",
+  "local_proof_source_sha256": "3f2d38ae86e5a984c055bb04837e299aee7aa41bcdf78d964670676fdb62e4bd",
+  "remote_proof_source": "/home/e/projects/gnome-shell-lay-atomic-20260821/source/tests/shell/atomicInputMethodRoute.js",
+  "remote_source_byte_identity": true,
+  "runtime_authority_changed": false,
+  "installed_lay_version": "1.0.33",
+  "verdict": "FAIL_FRESH_OBSERVATION_LOST_DURING_SETTLEMENT"
+}

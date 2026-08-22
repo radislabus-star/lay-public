@@ -1,0 +1,42 @@
+{
+  "planned": {
+    "id": "rollback-backend-error-retains",
+    "series": "baseline49",
+    "denominator": "rollback",
+    "source_test": "tests/text_mutation_monopoly_contract.rs::ime_auto_undo_restores_pending_snapshot_on_backend_error",
+    "target_kind": "test",
+    "target": "text_mutation_monopoly_contract",
+    "compiled_selector": "ime_auto_undo_restores_pending_snapshot_on_backend_error",
+    "expected_test_count": 1,
+    "expected_assertion_status": "PASS",
+    "expected_semantic_receipt": "backend refusal restores the exact pending receipt",
+    "environment": {
+      "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
+      "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+      "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+      "LAY_DEBUG_DECISION_CORE": "1",
+      "LAY_L2_FIELD_TRACE": "1",
+      "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+      "CARGO_BUILD_JOBS": "20"
+    },
+    "command": [
+      "scripts/cargo-guard.sh",
+      "test",
+      "--test",
+      "text_mutation_monopoly_contract",
+      "ime_auto_undo_restores_pending_snapshot_on_backend_error",
+      "--",
+      "--exact",
+      "--nocapture",
+      "--test-threads=1"
+    ]
+  },
+  "exit_code": 0,
+  "observed_test_count": 1,
+  "observed_status": "PASS",
+  "valid_execution": true,
+  "log": {
+    "size_bytes": 61176,
+    "sha256": "4d01a7e77e59956fa2ae6482b0f783121af554864ab682a14a72a7706bc1f068"
+  }
+}

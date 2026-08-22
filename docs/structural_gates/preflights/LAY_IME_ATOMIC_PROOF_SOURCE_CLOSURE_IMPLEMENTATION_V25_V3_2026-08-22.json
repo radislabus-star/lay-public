@@ -1,0 +1,89 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_ATOMIC_PROOF_SOURCE_CLOSURE_IMPLEMENTATION_V25_V3_2026-08-22",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "stage-driver",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/stage-atomic-proof-engine-remote.sh",
+      "expect": {"mode": "0755", "size_bytes": 3918, "sha256": "34dcf601c7555a2476064c63de2aba0064be78a0262b45a6790cbca273d8ae3a"}
+    },
+    {
+      "id": "atomic-engine-owner",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic.rs",
+      "expect": {"mode": "0664", "size_bytes": 19621, "sha256": "456762f0185b598605950f4954ec5bb5267f8e1049ed6eb05d33e718fa04f3f2"}
+    },
+    {
+      "id": "installed-lay-engine",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "expect": {"mode": "0755", "size_bytes": 6423488, "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a"}
+    }
+  ],
+  "source_checks": [
+    {
+      "id": "pinned-stage-driver",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/stage-atomic-proof-engine-remote.sh",
+      "sha256": "34dcf601c7555a2476064c63de2aba0064be78a0262b45a6790cbca273d8ae3a",
+      "forbidden_effect_patterns": [
+        {"effect": "copy_heavy_model_directories", "regex": "data/(morphology|lexical_grokking|l2)/[^ ]*\\.bin"},
+        {"effect": "mutable_target_engine", "regex": "selectCargoTargetAsProofOwner"},
+        {"effect": "installed_runtime_mutation", "regex": "installAtomicProofIntoLiveRuntime"},
+        {"effect": "local_heavy_build", "regex": "buildAtomicProofEngineOnDesktop"}
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "extend-source-closure", "kind": "source_edit"},
+      {"id": "record-failed-build", "kind": "filesystem_write"},
+      {"id": "sync-closed-source-mirror", "kind": "remote_filesystem_write"},
+      {"id": "retry-focused-remote-build", "kind": "remote_build"}
+    ],
+    "forbidden": [
+      "copy_heavy_model_directories",
+      "mutable_target_engine",
+      "installed_runtime_mutation",
+      "local_heavy_build"
+    ]
+  },
+  "preserved_artifacts": [
+    {"id": "atomic-engine-owner-preserved", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic.rs", "policy": "immutable", "cursor_policy": "none", "rollback_policy": "preserve_exact_bytes", "baseline_check_id": "atomic-engine-owner"},
+    {"id": "installed-lay-preserved", "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine", "policy": "immutable_before_deployment", "cursor_policy": "none", "rollback_policy": "preserve_exact_bytes", "baseline_check_id": "installed-lay-engine"}
+  ],
+  "identity_contracts": [
+    {
+      "id": "closed-local-remote-source-parity",
+      "producer": "current local Cargo metadata, source, scripts, tests and compile-time data inputs",
+      "consumer": "dedicated remote V25 source mirror",
+      "comparison": "same sorted relative-path SHA-256 aggregate before Cargo starts",
+      "test_id": "closed-source-parity"
+    }
+  ],
+  "runtime_comparisons": [],
+  "invariants": [
+    {"id": "compile-time-input-closure", "statement": "every repository-relative file required while compiling the focused atomic test target exists in the source mirror", "test_id": "focused-build"},
+    {"id": "no-heavy-model-copy", "statement": "the proof source mirror excludes runtime model packages not read by the compiler", "test_id": "source-budget"},
+    {"id": "installed-runtime-unchanged", "statement": "installed Lay 1.0.33 remains byte-identical", "test_id": "installed-runtime-parity"}
+  ],
+  "state_machine": {
+    "initial_state": "SOURCE_CLOSURE_FAILURE_RECORDED",
+    "steps": [
+      {"id": "edit-source-closure", "from": "SOURCE_CLOSURE_FAILURE_RECORDED", "to": "SOURCE_CLOSURE_EDITED", "mutates": true, "failure_state": "SOURCE_CLOSURE_EDIT_FAILED", "cleanup": "retain the failed build and restore only the stage-driver bytes", "preserves": ["atomic-engine-owner-preserved", "installed-lay-preserved"], "test_id": "source-edit-fault"},
+      {"id": "sync-and-build", "from": "SOURCE_CLOSURE_EDITED", "to": "IMMUTABLE_ENGINE_STAGED", "mutates": true, "failure_state": "SOURCE_CLOSURE_BUILD_FAILED", "cleanup": "do not replace active-engine unless build and artifact admission both pass", "preserves": ["atomic-engine-owner-preserved", "installed-lay-preserved"], "test_id": "sync-and-build-fault"}
+    ],
+    "terminal_states": ["IMMUTABLE_ENGINE_STAGED", "SOURCE_CLOSURE_EDIT_FAILED", "SOURCE_CLOSURE_BUILD_FAILED"]
+  },
+  "tests": [
+    {"id": "source-edit-fault", "kind": "fault_injection", "expected": "a partial staging edit changes no engine logic or installed runtime"},
+    {"id": "closed-source-parity", "kind": "parity", "expected": "local and remote closed-source aggregate SHA-256 values match"},
+    {"id": "sync-and-build-fault", "kind": "fault_injection", "expected": "a failed sync, test, build or admission leaves the previously selected engine unchanged"},
+    {"id": "focused-build", "kind": "parity", "expected": "atomic focused tests and release lay-ibus-engine build complete from the dedicated mirror"},
+    {"id": "source-budget", "kind": "parity", "expected": "only compile-time data is mirrored; large runtime model directories are absent"},
+    {"id": "installed-runtime-parity", "kind": "parity", "expected": "installed engine remains dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a"}
+  ]
+}

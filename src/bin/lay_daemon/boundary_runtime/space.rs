@@ -124,11 +124,12 @@ mod route_contract {
     use super::*;
 
     #[test]
-    fn focused_ime_does_not_disable_daemon_boundary_worker() {
+    fn boundary_worker_obeys_central_daemon_authority_policy() {
         let source = include_str!("space.rs");
         let forbidden_ime_owner = ["focused_ime_engine", "_handles_typing"].concat();
 
         assert!(source.contains("typing_assist_worker.submit"));
+        assert!(source.contains("active_typing_assist()"));
         assert!(!source.contains(&forbidden_ime_owner));
     }
 

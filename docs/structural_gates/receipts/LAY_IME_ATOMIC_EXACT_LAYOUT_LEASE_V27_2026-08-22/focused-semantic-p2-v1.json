@@ -1,0 +1,43 @@
+{
+  "kind": "lay_ime_atomic_exact_layout_lease_v27_focused_semantic_p2",
+  "schema_version": 1,
+  "measured_at": "2026-08-22",
+  "execution_host": "e@192.168.3.94",
+  "execution_root": "/home/e/projects/lay-v27-proof",
+  "toolchain": {
+    "rustc": "1.97.1 (8bab26f4f 2026-07-14)",
+    "cargo": "1.97.1 (c980f4866 2026-06-30)",
+    "lib_test_binary_sha256": "93f61c06f11ae8a9e1593446ed9bf49c742e03fbbbcd122d224c57a94ca74560",
+    "ibus_test_binary_sha256": "79382212851e525d6e9e0914ab5e3d8b16c287a027f220dac4faa6cb5948b79f"
+  },
+  "denominators": {
+    "exact_layout": { "passed": 9, "failed": 0 },
+    "retained_exact": { "passed": 3, "failed": 0 },
+    "exhaustive_closed_exact_taxonomy": { "passed": 1, "failed": 0 },
+    "space_prefetch_and_lease": { "passed": 8, "failed": 0 },
+    "complete_frame_identity": { "passed": 1, "failed": 0 },
+    "broad_layout_projection": { "passed": 28, "failed": 0 }
+  },
+  "measured_facts": [
+    "retained exact candidates survive ordinary frontier pressure and same-surface producer order",
+    "conflicting exact certificates fail closed",
+    "closed exact taxonomy is exhaustive for the currently declared typed variants",
+    "current Full NoApply dominates exact lease and every lease is consumed at most once",
+    "stale focus and material generations cannot consume or publish current work",
+    "Space take performs no exact or full decision computation",
+    "all complete frame identity fault dimensions are rejected"
+  ],
+  "not_tested": [
+    "independent oracle parity",
+    "generated positive and negative corpora",
+    "source mutation",
+    "concurrent race stress",
+    "physical Space and double-Shift",
+    "integrated latency",
+    "RSS and aggregate PSS",
+    "installed runtime"
+  ],
+  "runtime_authority_changed": false,
+  "installed_runtime": "Lay 1.0.33",
+  "verdict": "P2_FOCUSED_PASS_NOT_PROMOTED"
+}

@@ -3,6 +3,7 @@ use crate::word_reader::{split_word_punctuation, split_ws_segments};
 
 use super::super::english::is_known_english_layout_autoswitch_word;
 use super::candidate::ascii_to_russian_layout_candidate;
+use super::symbols::is_ascii_layout_letter_surface;
 
 pub(crate) fn correct_wrong_layout_ascii_phrase(text: &str) -> Option<String> {
     let segments = split_ws_segments(text);
@@ -14,6 +15,7 @@ pub(crate) fn correct_wrong_layout_ascii_phrase(text: &str) -> Option<String> {
     let mut converted_words = 0usize;
     let mut known_converted_words = 0usize;
     let mut clean_alpha_words = 0usize;
+    let mut known_physical_layout_words = 0usize;
     let mut single_letter_words = 0usize;
     let mut multi_letter_words = 0usize;
     let mut known_english_context_words = 0usize;
@@ -37,6 +39,9 @@ pub(crate) fn correct_wrong_layout_ascii_phrase(text: &str) -> Option<String> {
         if candidate.clean_alpha {
             clean_alpha_words += 1;
         }
+        if candidate.known && is_ascii_layout_letter_surface(segment) {
+            known_physical_layout_words += 1;
+        }
         if candidate.clean_alpha
             && !candidate.shift_letter_signal
             && ascii_segment_is_known_english_word(segment)
@@ -59,6 +64,7 @@ pub(crate) fn correct_wrong_layout_ascii_phrase(text: &str) -> Option<String> {
         converted_words,
         known_converted_words,
         clean_alpha_words,
+        known_physical_layout_words,
         has_shift_letter_signal,
     )
     .then_some(out)
@@ -86,6 +92,9 @@ pub(crate) fn is_confident_wrong_layout_ascii_pair(first: &str, second: &str) ->
         usize::from(first_candidate.known) + usize::from(second_candidate.known);
     let clean_alpha_words =
         usize::from(first_candidate.clean_alpha) + usize::from(second_candidate.clean_alpha);
+    let known_physical_layout_words =
+        usize::from(first_candidate.known && is_ascii_layout_letter_surface(first))
+            + usize::from(second_candidate.known && is_ascii_layout_letter_surface(second));
     let has_shift_letter_signal =
         first_candidate.shift_letter_signal || second_candidate.shift_letter_signal;
 
@@ -93,6 +102,7 @@ pub(crate) fn is_confident_wrong_layout_ascii_pair(first: &str, second: &str) ->
         2,
         known_converted_words,
         clean_alpha_words,
+        known_physical_layout_words,
         has_shift_letter_signal,
     )
 }
@@ -101,12 +111,15 @@ fn confident_wrong_layout_ascii_phrase(
     converted_words: usize,
     known_converted_words: usize,
     clean_alpha_words: usize,
+    known_physical_layout_words: usize,
     has_shift_letter_signal: bool,
 ) -> bool {
     let all_clean_known =
         clean_alpha_words == converted_words && known_converted_words == converted_words;
+    let all_known_physical =
+        known_physical_layout_words == converted_words && known_converted_words == converted_words;
     let shifted_physical_run = has_shift_letter_signal && known_converted_words > 0;
-    all_clean_known || shifted_physical_run
+    all_clean_known || all_known_physical || shifted_physical_run
 }
 
 #[cfg(test)]
@@ -123,6 +136,14 @@ mod tests {
         assert_eq!(
             correct_wrong_layout_ascii_phrase("HF<JNF NTCN CFV"),
             Some("РАБОТА ТЕСТ САМ".to_string())
+        );
+    }
+
+    #[test]
+    fn known_punctuation_key_tokens_project_as_one_phrase() {
+        assert_eq!(
+            correct_wrong_layout_ascii_phrase("b ,kznm"),
+            Some("и блять".to_string())
         );
     }
 

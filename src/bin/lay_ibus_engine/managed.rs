@@ -1,6 +1,6 @@
+use super::output::EngineOutput;
 use std::time::Instant;
 use zbus::fdo;
-use zbus::object_server::SignalEmitter;
 
 use super::composition_commit::ActiveCompositionCommit;
 use super::engine::{LayIbusEngine, WordInputMode};
@@ -12,11 +12,12 @@ use super::protocol::{
 impl LayIbusEngine {
     pub(super) async fn process_pressed_key(
         &mut self,
-        emitter: &SignalEmitter<'_>,
+        emitter: &mut EngineOutput<'_, '_>,
         keyval: u32,
         keycode: u32,
         state: u32,
     ) -> fdo::Result<bool> {
+        let pressed_started = Instant::now();
         if self.pending_passthrough_preedit_clear {
             self.clear_preedit(emitter).await?;
             self.pending_passthrough_preedit_clear = false;
@@ -64,14 +65,28 @@ impl LayIbusEngine {
         if keyval == KEY_SPACE {
             let space_started = Instant::now();
             if self.buffer.is_empty() {
-                self.clear_preedit(emitter).await?;
-                self.close_precognition_word_boundary();
                 let initial_mode = self.initial_word_input_mode();
                 let mode = *self.word_input_mode.get_or_insert(initial_mode);
                 let setup_us = space_started.elapsed().as_micros();
                 if mode == WordInputMode::ManagedCommit {
                     let autocorrect_started = Instant::now();
-                    if self.autocorrect_committed_token_on_space(emitter).await? {
+                    let frame = self.capture_input_frame_identity();
+                    let lookup = frame
+                        .as_ref()
+                        .map(|identity| self.take_space_autocorrect_lease(identity));
+                    self.clear_preedit(emitter).await?;
+                    self.cancel_precognition_display_generation();
+                    let autocorrected = match (frame.as_ref(), lookup) {
+                        (Some(identity), Some(lookup)) => {
+                            self.autocorrect_committed_token_on_space(emitter, identity, lookup)
+                                .await?
+                        }
+                        _ => false,
+                    };
+                    if autocorrected {
+                        if let Some(identity) = frame.as_ref() {
+                            self.invalidate_space_autocorrect_lease(identity);
+                        }
                         let autocorrect_us = autocorrect_started.elapsed().as_micros();
                         super::trace::record_space_key_timing(
                             "managed_autocorrect",
@@ -92,6 +107,9 @@ impl LayIbusEngine {
                     let autocorrect_us = autocorrect_started.elapsed().as_micros();
                     let commit_started = Instant::now();
                     self.commit_managed_passthrough_char(emitter, ' ').await?;
+                    if let Some(identity) = frame.as_ref() {
+                        self.invalidate_space_autocorrect_lease(identity);
+                    }
                     let commit_us = commit_started.elapsed().as_micros();
                     super::trace::record_space_key_timing(
                         "managed_fallback_commit",
@@ -103,6 +121,8 @@ impl LayIbusEngine {
                     self.trace_key("space_managed_commit", keyval, keycode, true, Some(' '));
                     return Ok(true);
                 }
+                self.clear_preedit(emitter).await?;
+                self.cancel_precognition_display_generation();
                 self.push_tail_char(' ');
                 super::trace::record_space_key_timing(
                     "terminal_passthrough",
@@ -165,19 +185,33 @@ impl LayIbusEngine {
                     false,
                     Some(visible_ch),
                 );
+                super::trace::record_printable_key_timing(
+                    "terminal_passthrough",
+                    pressed_started.elapsed().as_micros(),
+                );
                 return Ok(false);
             }
             self.commit_managed_passthrough_char(emitter, ch).await?;
             self.trace_key("printable_managed_commit", keyval, keycode, true, Some(ch));
+            super::trace::record_printable_key_timing(
+                "managed_commit",
+                pressed_started.elapsed().as_micros(),
+            );
             return Ok(true);
         }
         self.insert_composition_char(ch);
-        self.update_composition_preedit(emitter).await?;
+        let frame = self.capture_input_frame_identity();
+        self.update_composition_preedit_after_visible_input(emitter, frame)
+            .await?;
         self.trace_key("printable", keyval, keycode, true, Some(ch));
+        super::trace::record_printable_key_timing(
+            "active_composition",
+            pressed_started.elapsed().as_micros(),
+        );
         Ok(true)
     }
 
-    async fn commit_space(&mut self, emitter: &SignalEmitter<'_>) -> fdo::Result<bool> {
+    async fn commit_space(&mut self, emitter: &mut EngineOutput<'_, '_>) -> fdo::Result<bool> {
         if self.buffer.is_empty() {
             return Ok(false);
         }
@@ -214,9 +248,33 @@ mod word_boundary_route_contract {
         assert!(
             source.contains("space_managed_commit")
                 && source.contains("space_terminal_passthrough")
-                && source.contains("self.close_precognition_word_boundary();")
-                && source.contains("autocorrect_committed_token_on_space(emitter)"),
+                && source.contains("self.take_space_autocorrect_lease(identity)")
+                && source.contains("self.cancel_precognition_display_generation();")
+                && source.contains("autocorrect_committed_token_on_space("),
             "managed Space must close verified token transitions through the shared decision core"
+        );
+    }
+
+    #[test]
+    fn managed_space_takes_lease_before_closing_display_generation() {
+        let source = include_str!("managed.rs");
+        let route = source
+            .split("if mode == WordInputMode::ManagedCommit")
+            .nth(1)
+            .expect("managed Space route")
+            .split("self.push_tail_char(' ')")
+            .next()
+            .expect("managed route body");
+        let take = route
+            .find("take_space_autocorrect_lease")
+            .expect("lease take");
+        let close = route
+            .find("cancel_precognition_display_generation")
+            .expect("display generation close");
+
+        assert!(
+            take < close,
+            "Space must take its exact lease before display close"
         );
     }
 }

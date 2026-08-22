@@ -1,0 +1,170 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_ATOMIC_FOCUS_NAMESPACE_COMPATIBILITY_V2_2026-08-21",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "atomic-engine",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 15915,
+        "sha256": "73e31b0d17225bd7c91e3038fa8b3009989ed43cf04f74694eef2ad4aa5b3c8b"
+      }
+    },
+    {
+      "id": "architecture-paper",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/ime-backend-atomic-frame-v2-2026-08-20.md",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 122495,
+        "sha256": "102c218ac1610c93c19aeb4a118390d47220fa59e518fa6a4ede518c430c503e"
+      }
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "separate-focus-namespaces", "kind": "source_edit"},
+      {"id": "add-focus-parity-test", "kind": "source_edit"},
+      {"id": "remote-release-build", "kind": "remote_build"},
+      {"id": "real-engine-process-proof", "kind": "isolated_test"},
+      {"id": "record-result", "kind": "filesystem_write"}
+    ],
+    "forbidden": [
+      "runtime_deployment",
+      "installed_file_write",
+      "keyboard_or_session_restart",
+      "same_event_legacy_fallback",
+      "second_native_mutation_owner",
+      "identity_zero_acceptance",
+      "cross_focus_receipt_commit",
+      "local_rust_build"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "atomic-engine-source",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic.rs",
+      "sha256": "73e31b0d17225bd7c91e3038fa8b3009989ed43cf04f74694eef2ad4aa5b3c8b",
+      "forbidden_effect_patterns": [
+        {"effect": "same_event_legacy_fallback", "regex": "process_atomic_key_event[\\s\\S]{0,1000}process_key_event\\("},
+        {"effect": "second_native_mutation_owner", "regex": "(?:uinput|ydotool|xdotool|wtype)"},
+        {"effect": "runtime_deployment", "regex": "(?:systemctl|dpkg|gnome-session|ibus restart)"},
+        {"effect": "cross_focus_receipt_commit", "regex": "commit_speculative_to_replacement_focus"},
+        {"effect": "identity_zero_acceptance", "regex": "(?:envelope|lease)\\.3\\s*>=\\s*0"},
+        {"effect": "installed_file_write", "regex": "std::fs::write.{0,120}/(?:usr|home)"},
+        {"effect": "keyboard_or_session_restart", "regex": "(?:kill|signal|restart).{0,100}(?:ibus|gnome|mutter|lay-daemon)"},
+        {"effect": "local_rust_build", "regex": "Command::new\\(\"cargo\"\\)"}
+      ]
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "focus-namespace-parity",
+      "producer": "IBus daemon envelope focus_epoch and Mutter capability focus_lineage_identity",
+      "consumer": "Lay ProcessKeyEventAtomicV1 validator",
+      "comparison": "both are non-zero and independently bound; numerical equality is neither required nor inferred",
+      "test_id": "independent-focus-identities"
+    },
+    {
+      "id": "receipt-focus-binding",
+      "producer": "IBus daemon envelope focus_epoch",
+      "consumer": "Lay pending speculative image",
+      "comparison": "the next receipt settles only under the same daemon focus epoch and engine path",
+      "test_id": "receipt-focus-preserved"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "independent-namespaces",
+      "statement": "daemon focus epoch and Mutter focus lineage are distinct non-zero identity namespaces",
+      "test_id": "independent-focus-identities"
+    },
+    {
+      "id": "fail-closed-zero",
+      "statement": "zero daemon focus epoch or zero Mutter focus lineage is rejected",
+      "test_id": "zero-focus-rejected"
+    },
+    {
+      "id": "one-owner-route",
+      "statement": "the correction adds no fallback, signal mutator or second text owner",
+      "test_id": "owner-route-static"
+    }
+  ],
+  "preserved_artifacts": [
+    {
+      "id": "architecture-contract",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/ime-backend-atomic-frame-v2-2026-08-20.md",
+      "policy": "read_only_during_code_then_append_measured_result",
+      "rollback_policy": "retain the pre-experiment contract and negative real-engine result",
+      "baseline_check_id": "architecture-paper"
+    }
+  ],
+  "runtime_comparisons": [],
+  "state_machine": {
+    "initial_state": "PREFLIGHT_REQUIRED",
+    "terminal_states": [
+      "RECORDED",
+      "EDIT_FAILED_RETAINED",
+      "BUILD_FAILED_RETAINED",
+      "PROOF_FAILED_RETAINED",
+      "EVIDENCE_FAILED_RETAINED"
+    ],
+    "steps": [
+      {
+        "id": "edit-focus-validator",
+        "from": "PREFLIGHT_REQUIRED",
+        "to": "SOURCE_READY",
+        "mutates": true,
+        "failure_state": "EDIT_FAILED_RETAINED",
+        "cleanup": "retain scoped diff and change no installed runtime",
+        "preserves": ["architecture-contract"],
+        "test_id": "edit-fault"
+      },
+      {
+        "id": "remote-build",
+        "from": "SOURCE_READY",
+        "to": "BUILD_READY",
+        "mutates": true,
+        "failure_state": "BUILD_FAILED_RETAINED",
+        "cleanup": "terminate only task-owned remote jobs and retain logs",
+        "preserves": ["architecture-contract"],
+        "test_id": "build-fault"
+      },
+      {
+        "id": "real-engine-proof",
+        "from": "BUILD_READY",
+        "to": "PROOF_READY",
+        "mutates": true,
+        "failure_state": "PROOF_FAILED_RETAINED",
+        "cleanup": "stop isolated IBus and Lay test processes; block deployment",
+        "preserves": ["architecture-contract"],
+        "test_id": "proof-fault"
+      },
+      {
+        "id": "record-evidence",
+        "from": "PROOF_READY",
+        "to": "RECORDED",
+        "mutates": true,
+        "failure_state": "EVIDENCE_FAILED_RETAINED",
+        "cleanup": "retain raw result and block deployment until architecture and receipt agree",
+        "preserves": ["architecture-contract"],
+        "test_id": "evidence-fault"
+      }
+    ]
+  },
+  "tests": [
+    {"id": "independent-focus-identities", "kind": "parity", "expected": "different non-zero daemon focus and Mutter lineage identities are accepted"},
+    {"id": "zero-focus-rejected", "kind": "fault_injection", "expected": "zero identity in either namespace returns NativeUnhandled"},
+    {"id": "receipt-focus-preserved", "kind": "parity", "expected": "pending state is keyed by the unchanged daemon focus epoch"},
+    {"id": "owner-route-static", "kind": "parity", "expected": "no legacy fallback, signal mutation or second native owner is introduced"},
+    {"id": "edit-fault", "kind": "fault_injection", "expected": "partial edit changes no installed runtime"},
+    {"id": "build-fault", "kind": "fault_injection", "expected": "failed remote build leaves no task process and blocks proof"},
+    {"id": "proof-fault", "kind": "fault_injection", "expected": "failed isolated proof stops its engine and blocks deployment"},
+    {"id": "evidence-fault", "kind": "fault_injection", "expected": "missing result record blocks deployment"}
+  ]
+}

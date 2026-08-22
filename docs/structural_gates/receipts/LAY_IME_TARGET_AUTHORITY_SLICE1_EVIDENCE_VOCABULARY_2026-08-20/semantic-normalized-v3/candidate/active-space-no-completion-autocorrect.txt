@@ -1,0 +1,2 @@
+test composition_commit::tests::completion_with_space_does_not_trigger_autocorrect ... ok
+

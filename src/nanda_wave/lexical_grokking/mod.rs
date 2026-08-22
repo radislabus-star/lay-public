@@ -58,6 +58,7 @@ pub use proof::{
     prove_l1_lexical_grokking_composite, prove_l1_lexical_grokking_package,
     prove_l1_lexical_grokking_scale_package, prove_l1_lexical_grokking_scale_package_range,
 };
+pub(crate) use runtime::ExactL11SurfaceIndexV1;
 pub use runtime::{
     benchmark_diverse_restoration as benchmark_l1_diverse_restoration,
     benchmark_package as benchmark_l1_lexical_grokking,

@@ -1,0 +1,107 @@
+{
+  "schema": "lay.l2.productive-v90.active-binding-live-deploy.v1",
+  "receipt_id": "L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_LIVE_DEPLOY_2026-08-16",
+  "date": "2026-08-16",
+  "release": "1.0.33",
+  "verdict": "DEPLOYED_READY_LIVE_OWNER_HOT_LATENCY_PENDING",
+  "installed_runtime_authority_changed": true,
+  "automatic_productive_proof_gate": "FAIL_measured_shadow_gates",
+  "automatic_productive_proof_p99_us": 5286,
+  "automatic_productive_proof_budget_us": 5000,
+  "general_latency_gate_relaxed": false,
+  "decision_receipt": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_DEPLOY_DECISION_2026-08-16.json",
+  "installed_artifacts": {
+    "productive": {
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2m",
+      "bytes": 17309944,
+      "sha256": "40fb6a9f0d92c3c7502e47f9c70230d9b86020f622b08a5c799342f13e09ce44"
+    },
+    "recovery": {
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2r",
+      "bytes": 2123112,
+      "sha256": "de7972c80448dc792759d70de99cda6ec48c3d6af337763856601db563ab167e"
+    },
+    "l11_sha256": "bf5a1619a89038466ef786305cf35eda5f4af5b9f12b9140f7d3cac407e2f2a7",
+    "canonical_l2_v13_sha256": "cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b"
+  },
+  "admission": {
+    "status": "ready_live_owner",
+    "mmap_backed": true,
+    "resident_constant_cache_bytes_per_process": 12927216,
+    "recovery_paths": 62115,
+    "route": "L1.1 bounded lattice -> Productive V90 L2 -> common L3 -> DecisionCore -> verifier"
+  },
+  "runtime": {
+    "daemon_pid": 1447582,
+    "daemon_rss_kib": 402064,
+    "daemon_pss_kib": 281279,
+    "daemon_productive_maps": 2,
+    "managed_ibus_engine_pid": 1447607,
+    "managed_ibus_engine_rss_kib": 381724,
+    "managed_ibus_engine_pss_kib": 260906,
+    "managed_ibus_engine_productive_maps": 2,
+    "l11_service_pid": 1447668,
+    "l11_service_rss_kib": 183552,
+    "l11_service_pss_kib": 181497,
+    "l3_online_pid": 2023969,
+    "l3_online_rss_kib": 73120,
+    "l3_online_pss_kib": 32638,
+    "four_process_pss_kib": 756319,
+    "global_ibus_daemon_pid_before": 3702,
+    "global_ibus_daemon_pid_after": 3702,
+    "daemon_active": true,
+    "managed_engine_count": 1,
+    "gnome_layout": "lay-ime-us",
+    "ibus_engine": "lay-ime-us",
+    "gnome_extension_runtime": "OK version=1.0.33"
+  },
+  "non_normative_legacy_query_benchmark": {
+    "tokens": ["морфология", "работают", "проверка", "данорм"],
+    "hot_samples_per_token": 200,
+    "prepared_cache_hits_per_token": 200,
+    "standalone_cold_query_us_min": 1542144,
+    "standalone_cold_query_us_max": 2112715,
+    "hot_full_l2_p99_us_min": 7078,
+    "hot_full_l2_p99_us_max": 9631,
+    "hot_cached_field_p99_us_min": 799,
+    "hot_cached_field_p99_us_max": 2690,
+    "live_owner_route": false,
+    "use_for_live_latency_verdict": false,
+    "route": "query_live_canonical_l2 -> standalone_surface_field_readout_with_productive_limit",
+    "measurement_scope": "legacy standalone/compositional helper; not Productive V90 live owner and not synchronous IBus key latency"
+  },
+  "live_owner_latency": {
+    "hot_verdict": "UNKNOWN",
+    "cold_first_admission_trace_us_min": 3077311,
+    "cold_first_admission_trace_us_max": 3523037,
+    "cold_trace_scope": "fresh process including package discovery, hashing and first Productive V90 admission",
+    "inner_stage_observation": "sub-millisecond Productive setup, binding, traversal, reduce and readout after admission",
+    "required_next_measurement": "same-process repeated canonical_owned_text_candidates Productive V90 benchmark"
+  },
+  "status_process_admission": {
+    "samples": 5,
+    "elapsed_seconds_min": 2.01,
+    "elapsed_seconds_p50": 2.53,
+    "elapsed_seconds_max": 3.18,
+    "maximum_process_rss_kib": 62956,
+    "scope": "fresh standalone status process including package discovery, hashing and admission"
+  },
+  "rollback": {
+    "path": "/home/ubu/.local/lib/lay/rollback/1.0.33-pre-v90-v9-20260816-064416",
+    "old_productive_sha256": "9fd8c950398fb8ba47a2c9f2236880239d9f4376b191a691b0d01c47ddd3e438",
+    "old_recovery_sha256": "44a20f7aaf7578a960477fbfb1d30c9828b9d71f037e3ad1b2d57bc7fa5568c4",
+    "complete_pair_preserved": true
+  },
+  "software_continuity_checks": {
+    "clean_restore_outputs_preserved": ["работают", "морфология"],
+    "damaged_probe_output": {"input": "рабоают", "output": "рабоают"},
+    "journal_errors_after_reload": 0
+  },
+  "not_tested": [
+    "physical typing in WeChat, Telegram, browser and terminal",
+    "physical autocorrect followed by double-Shift rollback",
+    "physical Space p50, p90, p99 and lost-separator denominator",
+    "candidate quality outside the fixed Productive proof and three software probes"
+  ],
+  "next_owner": "route-bound same-process Productive V90 benchmark, then Unified IME Token Field Slice 1"
+}

@@ -1,0 +1,1494 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_RELEASE_1_0_34_LIVE_INSTALL_V6_2026-08-22",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "live-baseline-evidence",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_V27_2026-08-22/evidence/live-1.0.33-preinstall-v1.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 2290,
+        "sha256": "bafe5c583c52dcab2876eb8b4e71772099bf4ee5b939524b57d06c700d46fcc4"
+      }
+    },
+    {
+      "id": "fresh-rollback-memory-baseline",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_V27_2026-08-22/evidence/fresh-1.0.33-rollback-baseline-v2.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 1811,
+        "sha256": "2cc7c524deb3f74b126c06006c2fecbe6a7fab9a90ccf8ab570681735632cc3b"
+      }
+    },
+    {
+      "id": "failed-install-topology-correction",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_V27_2026-08-22/evidence/failed-live-install-attempt-v2-correction.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 1184,
+        "sha256": "3b3d5c77c7382e455b0f8570dcb3b4c60df201fa686b53b2196bbaec6cc7bebe"
+      }
+    },
+    {
+      "id": "ime-owner-topology-proof",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_V27_2026-08-22/evidence/ime-owner-topology-proof-v1.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 961,
+        "sha256": "55d43a212e73fafbd4118d46d6a445beea224a819044c55a2ff7f32d1d7cfe65"
+      }
+    },
+    {
+      "id": "daemon-runtime-warmup-owner",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/startup_runtime/warmup.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 3970,
+        "sha256": "db2feefff10a1cbefc5676176c3a9e05395d6ebef9d39f838425481c24094477"
+      }
+    },
+    {
+      "id": "daemon-runtime-warmup-owner-tests",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/startup_runtime/tests/warmup.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 2025,
+        "sha256": "354850ddc9f9a302c8a29d5366b66874f4ac8b200115439220e4f79887dfe16a"
+      }
+    },
+    {
+      "id": "text-backend-mutation-owner",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/text_backend.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 4166,
+        "sha256": "2650f5e0759a4eee5ec824857920365808d8c89c8c20010437a3ae22cc9f9625"
+      }
+    },
+    {
+      "id": "ime-engine-state-warmup-owner",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/state.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 42493,
+        "sha256": "b31753790706d433be76c2d5645e197bc91e2678da316f4650f1034f734381a5"
+      }
+    },
+    {
+      "id": "ime-engine-server-warmup-owner",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/server.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 2106,
+        "sha256": "a522a81166729dcafde60741865e7b35390ab57ea9244e89b52df55643c360a0"
+      }
+    },
+    {
+      "id": "release-env",
+      "kind": "file",
+      "path": "/home/ubu/.cache/lay/releases/1.0.34-22f6a4198d7c2aa388e58ff806dade001e7d0d0fa16d96b7810d1bee804894cf/release.env",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 216,
+        "sha256": "a50171e0afbc0be5d0259215c37dd08ee9d35fa2baadbdd8e9ac77736c2c5ba7"
+      }
+    },
+    {
+      "id": "release-sha256sums",
+      "kind": "file",
+      "path": "/home/ubu/.cache/lay/releases/1.0.34-22f6a4198d7c2aa388e58ff806dade001e7d0d0fa16d96b7810d1bee804894cf/SHA256SUMS",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 812,
+        "sha256": "607fd23b04cbdf590c37ab95e8053cd2d287f66654c3483c5ecdc93bf099eda4"
+      }
+    },
+    {
+      "id": "stage-lay",
+      "kind": "file",
+      "path": "/home/ubu/.cache/lay/releases/1.0.34-22f6a4198d7c2aa388e58ff806dade001e7d0d0fa16d96b7810d1bee804894cf/lay",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 6387624,
+        "sha256": "a584375ddc31684f1fb72f0bf8a546d0c94ff98f004f496c55d7d13a87909efd"
+      }
+    },
+    {
+      "id": "stage-lay-daemon",
+      "kind": "file",
+      "path": "/home/ubu/.cache/lay/releases/1.0.34-22f6a4198d7c2aa388e58ff806dade001e7d0d0fa16d96b7810d1bee804894cf/lay-daemon",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 8507984,
+        "sha256": "d5289fb490b9e18af9844987f60b963a817ef9753854e3e230f2c82bc9cfd356"
+      }
+    },
+    {
+      "id": "stage-lay-nanda-wave-eval",
+      "kind": "file",
+      "path": "/home/ubu/.cache/lay/releases/1.0.34-22f6a4198d7c2aa388e58ff806dade001e7d0d0fa16d96b7810d1bee804894cf/lay-nanda-wave-eval",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 6831488,
+        "sha256": "d5070897c695f0c48bf6971ce53acd3fef0a8f4f8323363969719720380935ae"
+      }
+    },
+    {
+      "id": "stage-lay-nanda-wave-train",
+      "kind": "file",
+      "path": "/home/ubu/.cache/lay/releases/1.0.34-22f6a4198d7c2aa388e58ff806dade001e7d0d0fa16d96b7810d1bee804894cf/lay-nanda-wave-train",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 11500736,
+        "sha256": "395c86ae2688a02527e4ea54c7df0b497e2b44db676742eeb46274f2e0e24ece"
+      }
+    },
+    {
+      "id": "stage-lay-test-input",
+      "kind": "file",
+      "path": "/home/ubu/.cache/lay/releases/1.0.34-22f6a4198d7c2aa388e58ff806dade001e7d0d0fa16d96b7810d1bee804894cf/lay-test-input",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 1839696,
+        "sha256": "eeab42f8c0c096533421bfb0d7981c9e03432b3f56a129bba730018f003c0cb4"
+      }
+    },
+    {
+      "id": "stage-lay-ngram-corpus",
+      "kind": "file",
+      "path": "/home/ubu/.cache/lay/releases/1.0.34-22f6a4198d7c2aa388e58ff806dade001e7d0d0fa16d96b7810d1bee804894cf/lay-ngram-corpus",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 787360,
+        "sha256": "ebb59308b97d71bbe3818d667414fd0771cb727c1dd27b2c870c808d604c15f3"
+      }
+    },
+    {
+      "id": "stage-lay-ibus-engine",
+      "kind": "file",
+      "path": "/home/ubu/.cache/lay/releases/1.0.34-22f6a4198d7c2aa388e58ff806dade001e7d0d0fa16d96b7810d1bee804894cf/lay-ibus-engine",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 6733816,
+        "sha256": "3bb009025f3bd12c676416aff637b439ccd4f4c0c2d69d4c7c34b0f49b904691"
+      }
+    },
+    {
+      "id": "stage-lay-memory-report",
+      "kind": "file",
+      "path": "/home/ubu/.cache/lay/releases/1.0.34-22f6a4198d7c2aa388e58ff806dade001e7d0d0fa16d96b7810d1bee804894cf/lay-memory-report",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 643128,
+        "sha256": "e2404a7637b65c6801a2f39b140613324c8310919ace06cca9318e84c20475d3"
+      }
+    },
+    {
+      "id": "stage-lay-l11-restore",
+      "kind": "file",
+      "path": "/home/ubu/.cache/lay/releases/1.0.34-22f6a4198d7c2aa388e58ff806dade001e7d0d0fa16d96b7810d1bee804894cf/lay-l11-restore",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 1954008,
+        "sha256": "35a05a08efed0ac9b27fd531eac5dbdf2afb626d79f5acb06aa50847da64c550"
+      }
+    },
+    {
+      "id": "stage-lay-l11-serve",
+      "kind": "file",
+      "path": "/home/ubu/.cache/lay/releases/1.0.34-22f6a4198d7c2aa388e58ff806dade001e7d0d0fa16d96b7810d1bee804894cf/lay-l11-serve",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 2165824,
+        "sha256": "b7c036bc31f16ccc79644b6f172f84c151d3b03dcc9daef7c68921bfcd1c3437"
+      }
+    },
+    {
+      "id": "installed-lay",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 6230136,
+        "sha256": "0a00e2343ab55922eae7f8955c53f4d9c77999c6b99e8136b12c95a871816680"
+      }
+    },
+    {
+      "id": "installed-lay-daemon",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 8342624,
+        "sha256": "f0821f3b1dbf87fb83db1119534d3e4a1aef489dd6d5588ca8a8f9b86a19194c"
+      }
+    },
+    {
+      "id": "installed-lay-nanda-wave-eval",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-nanda-wave-eval",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 6677944,
+        "sha256": "e05b44c4c860c868311dc5ccaeeb760e7648d50b2598d9dba6072c0d1c8cff70"
+      }
+    },
+    {
+      "id": "installed-lay-nanda-wave-train",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-nanda-wave-train",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 10996232,
+        "sha256": "7de3aa6f10e09928a27b17c2932078a1bbe75a6cf02d7fdf225f0184724eff4a"
+      }
+    },
+    {
+      "id": "installed-lay-test-input",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-test-input",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 1802240,
+        "sha256": "8f7b219dae95690a5d13a65c2349d05fb89486e20753864ee9cbddce3d68dc95"
+      }
+    },
+    {
+      "id": "installed-lay-ngram-corpus",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ngram-corpus",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 787360,
+        "sha256": "a46214e396837483ede309630ca481edc39a911a5d73202cbdf22eae45321b66"
+      }
+    },
+    {
+      "id": "installed-lay-ibus-engine",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 6423488,
+        "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a"
+      }
+    },
+    {
+      "id": "installed-lay-memory-report",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-memory-report",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 643128,
+        "sha256": "45e95a3fcde9eb0342ed82d1993af1679753c82abcae67cf2f1a4bf9a78caaad"
+      }
+    },
+    {
+      "id": "installed-lay-l1.1-restore",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-l1.1-restore",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 1953944,
+        "sha256": "74702dc52f7e81b1a8d4f2690406120b1d05c498bcb637791bfc41f5e54b69b6"
+      }
+    },
+    {
+      "id": "installed-lay-l1.1-serve",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-l1.1-serve",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 2165824,
+        "sha256": "6ab87a880e2c1ae7f1736ab7f934ef5600c2086c6c8b27c7386fa7c5923c71f8"
+      }
+    },
+    {
+      "id": "installed-extension-dbus_service.js",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/gnome-shell/extensions/lay@radislabus-star.github.io/dbus_service.js",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 9527,
+        "sha256": "f6e93ad6bfba3afb7f4fd84d4e294f3abaf34988ad036272f8953b02214ce992"
+      }
+    },
+    {
+      "id": "installed-extension-extension.js",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/gnome-shell/extensions/lay@radislabus-star.github.io/extension.js",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 2795,
+        "sha256": "928a59740d119d6b8531c61e0949cdcc236fc6bfb871c60b48f346ff81695776"
+      }
+    },
+    {
+      "id": "installed-extension-lay-impl.js",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/gnome-shell/extensions/lay@radislabus-star.github.io/lay-impl.js",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 14995,
+        "sha256": "84adee546a63146a3996c561c6c8ef9435952d1d14120fc51c9a43620c88a2dd"
+      }
+    },
+    {
+      "id": "installed-extension-metadata.json",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/gnome-shell/extensions/lay@radislabus-star.github.io/metadata.json",
+      "expect": {
+        "mode": "0644",
+        "size_bytes": 420,
+        "sha256": "ca27bebadcd451dfaf4c38326912c6a1ed16a0fafb57cb450b3f53748034158f"
+      }
+    },
+    {
+      "id": "installed-extension-prefs.js",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/gnome-shell/extensions/lay@radislabus-star.github.io/prefs.js",
+      "expect": {
+        "mode": "0644",
+        "size_bytes": 405,
+        "sha256": "04ec0e0c6f78053d4dbe879c7c9654615e907ea155e217a692ac03558f96e5f0"
+      }
+    },
+    {
+      "id": "installed-extension-recent_actions_menu.js",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/gnome-shell/extensions/lay@radislabus-star.github.io/recent_actions_menu.js",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 2878,
+        "sha256": "1ff33a0aa8d847b52777ae3ab6d3168e61c309d81aa76e7457ad2508b20dc5fa"
+      }
+    },
+    {
+      "id": "installed-extension-settings.js",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/gnome-shell/extensions/lay@radislabus-star.github.io/settings.js",
+      "expect": {
+        "mode": "0644",
+        "size_bytes": 809,
+        "sha256": "5f5d31fa6ae4bada86027fe2516a8913de6170721b927127ac5bf6a013c35696"
+      }
+    },
+    {
+      "id": "installed-extension-settings_view.js",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/gnome-shell/extensions/lay@radislabus-star.github.io/settings_view.js",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 9406,
+        "sha256": "af3f4693d86e7d5b59b0a6d2ad8892a82ba7ba565789ba85c630de6b1b8e369b"
+      }
+    },
+    {
+      "id": "installed-extension-tray_support.js",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/gnome-shell/extensions/lay@radislabus-star.github.io/tray_support.js",
+      "expect": {
+        "mode": "0644",
+        "size_bytes": 8489,
+        "sha256": "d98e989117f13c9a89f2521b17719c6653becd596f30b672919fd3cec613b5e5"
+      }
+    },
+    {
+      "id": "source-extension-dbus_service.js",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/extension/lay@radislabus-star.github.io/dbus_service.js",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 9527,
+        "sha256": "f6e93ad6bfba3afb7f4fd84d4e294f3abaf34988ad036272f8953b02214ce992"
+      }
+    },
+    {
+      "id": "source-extension-extension.js",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/extension/lay@radislabus-star.github.io/extension.js",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 2795,
+        "sha256": "928a59740d119d6b8531c61e0949cdcc236fc6bfb871c60b48f346ff81695776"
+      }
+    },
+    {
+      "id": "source-extension-lay-impl.js",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/extension/lay@radislabus-star.github.io/lay-impl.js",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 14995,
+        "sha256": "84adee546a63146a3996c561c6c8ef9435952d1d14120fc51c9a43620c88a2dd"
+      }
+    },
+    {
+      "id": "source-extension-metadata.json",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/extension/lay@radislabus-star.github.io/metadata.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 420,
+        "sha256": "f59c906e31fb4f5de0331e5e5a35a2e462149aa9ffc3af4eb8a78e86a3e36f73"
+      }
+    },
+    {
+      "id": "source-extension-prefs.js",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/extension/lay@radislabus-star.github.io/prefs.js",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 405,
+        "sha256": "04ec0e0c6f78053d4dbe879c7c9654615e907ea155e217a692ac03558f96e5f0"
+      }
+    },
+    {
+      "id": "source-extension-recent_actions_menu.js",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/extension/lay@radislabus-star.github.io/recent_actions_menu.js",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 2878,
+        "sha256": "1ff33a0aa8d847b52777ae3ab6d3168e61c309d81aa76e7457ad2508b20dc5fa"
+      }
+    },
+    {
+      "id": "source-extension-settings.js",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/extension/lay@radislabus-star.github.io/settings.js",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 809,
+        "sha256": "5f5d31fa6ae4bada86027fe2516a8913de6170721b927127ac5bf6a013c35696"
+      }
+    },
+    {
+      "id": "source-extension-settings_view.js",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/extension/lay@radislabus-star.github.io/settings_view.js",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 9406,
+        "sha256": "af3f4693d86e7d5b59b0a6d2ad8892a82ba7ba565789ba85c630de6b1b8e369b"
+      }
+    },
+    {
+      "id": "source-extension-tray_support.js",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/extension/lay@radislabus-star.github.io/tray_support.js",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 8489,
+        "sha256": "42660ce97f36850a8ef75c1b49abc8f95d73fc0e033d15802df9ec0bb4f49249"
+      }
+    },
+    {
+      "id": "canonical-l2-package",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-RU-FULL-v13.bin",
+      "expect": {
+        "mode": "0644",
+        "size_bytes": 140556462,
+        "sha256": "cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b"
+      }
+    },
+    {
+      "id": "lay-config",
+      "kind": "file",
+      "path": "/home/ubu/.config/lay/config.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 2979,
+        "sha256": "733ed3b0611b6e149e3695103e5dea4c1b321b8481710672c96100689090704f"
+      }
+    }
+  ],
+  "source_checks": [
+    {
+      "id": "release-installer",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/install-release-binaries.sh",
+      "sha256": "259850478a99bb32b1aaffa863ff72138f018b7ce1231611a05fad706d7ffd02",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "global_ibus_restart",
+          "regex": "ibus-daemon|ibus restart|systemctl.*org\\.freedesktop\\.IBus"
+        },
+        {
+          "effect": "global_ibus_kill",
+          "regex": "pkill.*ibus|killall.*ibus"
+        },
+        {
+          "effect": "local_cargo",
+          "regex": "cargo (build|test|check|run)"
+        },
+        {
+          "effect": "release_stage_mutation",
+          "regex": "rm .*SOURCE_DIR|mv .*SOURCE_DIR"
+        },
+        {
+          "effect": "model_rebuild",
+          "regex": "scripts/(rebuild|compile)|lay-nanda-wave-train\\s+--"
+        },
+        {
+          "effect": "user_config_mutation",
+          "regex": "config\\.json"
+        },
+        {
+          "effect": "worktree_destructive_cleanup",
+          "regex": "git (reset|clean|checkout)"
+        },
+        {
+          "effect": "unscoped_process_kill",
+          "regex": "pkill|killall"
+        },
+        {
+          "effect": "restart_unrelated_services",
+          "regex": "systemctl.*restart"
+        },
+        {
+          "effect": "model_network_download",
+          "regex": "curl|wget"
+        }
+      ]
+    },
+    {
+      "id": "extension-runtime-sync",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/check-gnome-extension-runtime.sh",
+      "sha256": "8350fc90cf330eaa5a084ed407943512151021a6e8c782903a80a6d20d7475e2",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "global_ibus_restart",
+          "regex": "ibus-daemon|ibus restart|systemctl.*org\\.freedesktop\\.IBus"
+        },
+        {
+          "effect": "global_ibus_kill",
+          "regex": "pkill.*ibus|killall.*ibus"
+        },
+        {
+          "effect": "unscoped_process_kill",
+          "regex": "pkill|killall"
+        },
+        {
+          "effect": "user_config_mutation",
+          "regex": "config\\.json"
+        }
+      ]
+    },
+    {
+      "id": "model-service-reloader",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/reload-lay-model-services.sh",
+      "sha256": "8e118b9849e21761b71c742191397b9b41840354db9ac14a43b9ec0fc77af175",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "global_ibus_restart",
+          "regex": "ibus-daemon|ibus restart|systemctl.*org\\.freedesktop\\.IBus"
+        },
+        {
+          "effect": "global_ibus_kill",
+          "regex": "pkill.*ibus|killall.*ibus"
+        },
+        {
+          "effect": "unscoped_process_kill",
+          "regex": "pkill|killall"
+        }
+      ]
+    },
+    {
+      "id": "managed-runtime-controller",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/lay-runtime-control.sh",
+      "sha256": "746d077115277775acb275e077b57823ace9e416d2575eaf0bc53d3327d64e6d",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "global_ibus_restart",
+          "regex": "ibus-daemon|ibus restart|systemctl.*org\\.freedesktop\\.IBus"
+        },
+        {
+          "effect": "global_ibus_kill",
+          "regex": "pkill.*ibus|killall.*ibus"
+        },
+        {
+          "effect": "unscoped_process_kill",
+          "regex": "pkill|killall"
+        },
+        {
+          "effect": "restart_unrelated_services",
+          "regex": "systemctl.*restart.*(gnome-shell|dbus|NetworkManager|graphical-session)"
+        }
+      ]
+    },
+    {
+      "id": "l2-package-resolver",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/resolve-l2-package.sh",
+      "sha256": "2a209f2b33133d51ca173a1eb69c6cdf431abadeac12f8911f9b7293a0698ce2",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "resolver_contract_bypass",
+          "regex": "LAY_L2_ALLOW_UNVERIFIED|skip.*verification"
+        }
+      ]
+    },
+    {
+      "id": "l2-package-contract",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/l2-package-contract.sh",
+      "sha256": "a07361f60ce1e39adeff77f58a637ff5701fb1c55425f2dcbb4e656a5a3e67f2",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "resolver_contract_bypass",
+          "regex": "UNVERIFIED|SKIP_SHA"
+        }
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {
+        "id": "create-content-addressed-rollback-snapshot",
+        "kind": "rollback_snapshot"
+      },
+      {
+        "id": "arm-keyboard-fallback-watchdog",
+        "kind": "transient_user_service"
+      },
+      {
+        "id": "replace-ten-release-binaries",
+        "kind": "filesystem_install"
+      },
+      {
+        "id": "verify-canonical-l2-offline-and-atomically-reinstall-identical-bytes",
+        "kind": "model_file_replace"
+      },
+      {
+        "id": "sync-runtime-extension",
+        "kind": "filesystem_edit"
+      },
+      {
+        "id": "reload-runtime-extension",
+        "kind": "gnome_extension_reload"
+      },
+      {
+        "id": "restart-lay-daemon-and-l3-only",
+        "kind": "managed_service_restart"
+      },
+      {
+        "id": "rotate-ibus-managed-lay-engine",
+        "kind": "managed_process_restart"
+      },
+      {
+        "id": "reselect-original-lay-ime-ru",
+        "kind": "session_input_route_change"
+      },
+      {
+        "id": "write-live-install-evidence",
+        "kind": "filesystem_write"
+      }
+    ],
+    "forbidden": [
+      "global_ibus_restart",
+      "global_ibus_kill",
+      "local_cargo",
+      "release_stage_mutation",
+      "model_rebuild",
+      "model_network_download",
+      "resolver_contract_bypass",
+      "user_config_mutation",
+      "worktree_destructive_cleanup",
+      "unscoped_process_kill",
+      "restart_unrelated_services"
+    ]
+  },
+  "state_machine": {
+    "initial_state": "FINAL_RELEASE_BINARY_PHYSICAL_PASS_INSTALL_NOT_STARTED",
+    "steps": [
+      {
+        "id": "create-rollback-snapshot",
+        "from": "FINAL_RELEASE_BINARY_PHYSICAL_PASS_INSTALL_NOT_STARTED",
+        "to": "ROLLBACK_SNAPSHOT_VERIFIED",
+        "mutates": true,
+        "failure_state": "ROLLBACK_SNAPSHOT_FAILED",
+        "cleanup": "remove only the incomplete new snapshot; installed runtime stays untouched",
+        "preserves": [
+          "preserve-lay",
+          "preserve-lay-daemon",
+          "preserve-lay-nanda-wave-eval",
+          "preserve-lay-nanda-wave-train",
+          "preserve-lay-test-input",
+          "preserve-lay-ngram-corpus",
+          "preserve-lay-ibus-engine",
+          "preserve-lay-memory-report",
+          "preserve-lay-l1.1-restore",
+          "preserve-lay-l1.1-serve",
+          "preserve-extension-dbus_service.js",
+          "preserve-extension-extension.js",
+          "preserve-extension-lay-impl.js",
+          "preserve-extension-metadata.json",
+          "preserve-extension-prefs.js",
+          "preserve-extension-recent_actions_menu.js",
+          "preserve-extension-settings.js",
+          "preserve-extension-settings_view.js",
+          "preserve-extension-tray_support.js",
+          "preserve-canonical-l2",
+          "preserve-lay-config"
+        ],
+        "test_id": "rollback-snapshot-fault"
+      },
+      {
+        "id": "arm-keyboard-recovery",
+        "from": "ROLLBACK_SNAPSHOT_VERIFIED",
+        "to": "KEYBOARD_RECOVERY_ARMED",
+        "mutates": true,
+        "failure_state": "KEYBOARD_RECOVERY_ARM_FAILED",
+        "cleanup": "remove an incomplete transient timer; do not install any byte",
+        "preserves": [
+          "preserve-lay",
+          "preserve-lay-daemon",
+          "preserve-lay-nanda-wave-eval",
+          "preserve-lay-nanda-wave-train",
+          "preserve-lay-test-input",
+          "preserve-lay-ngram-corpus",
+          "preserve-lay-ibus-engine",
+          "preserve-lay-memory-report",
+          "preserve-lay-l1.1-restore",
+          "preserve-lay-l1.1-serve",
+          "preserve-extension-dbus_service.js",
+          "preserve-extension-extension.js",
+          "preserve-extension-lay-impl.js",
+          "preserve-extension-metadata.json",
+          "preserve-extension-prefs.js",
+          "preserve-extension-recent_actions_menu.js",
+          "preserve-extension-settings.js",
+          "preserve-extension-settings_view.js",
+          "preserve-extension-tray_support.js",
+          "preserve-canonical-l2",
+          "preserve-lay-config"
+        ],
+        "test_id": "keyboard-recovery-arm-fault"
+      },
+      {
+        "id": "install-pinned-release",
+        "from": "KEYBOARD_RECOVERY_ARMED",
+        "to": "PINNED_BINARIES_INSTALLED",
+        "mutates": true,
+        "failure_state": "BINARY_INSTALL_FAILED",
+        "cleanup": "restore all ten binary and canonical L2 snapshot bytes before any managed process reload; retain xkb fallback",
+        "preserves": [
+          "preserve-lay",
+          "preserve-lay-daemon",
+          "preserve-lay-nanda-wave-eval",
+          "preserve-lay-nanda-wave-train",
+          "preserve-lay-test-input",
+          "preserve-lay-ngram-corpus",
+          "preserve-lay-ibus-engine",
+          "preserve-lay-memory-report",
+          "preserve-lay-l1.1-restore",
+          "preserve-lay-l1.1-serve",
+          "preserve-extension-dbus_service.js",
+          "preserve-extension-extension.js",
+          "preserve-extension-lay-impl.js",
+          "preserve-extension-metadata.json",
+          "preserve-extension-prefs.js",
+          "preserve-extension-recent_actions_menu.js",
+          "preserve-extension-settings.js",
+          "preserve-extension-settings_view.js",
+          "preserve-extension-tray_support.js",
+          "preserve-canonical-l2",
+          "preserve-lay-config"
+        ],
+        "test_id": "binary-install-fault"
+      },
+      {
+        "id": "sync-runtime-extension",
+        "from": "PINNED_BINARIES_INSTALLED",
+        "to": "EXTENSION_BYTES_SYNCED",
+        "mutates": true,
+        "failure_state": "EXTENSION_SYNC_FAILED",
+        "cleanup": "restore binaries L2 extension and Lay JS cache from snapshot, then reload the old extension",
+        "preserves": [
+          "preserve-lay",
+          "preserve-lay-daemon",
+          "preserve-lay-nanda-wave-eval",
+          "preserve-lay-nanda-wave-train",
+          "preserve-lay-test-input",
+          "preserve-lay-ngram-corpus",
+          "preserve-lay-ibus-engine",
+          "preserve-lay-memory-report",
+          "preserve-lay-l1.1-restore",
+          "preserve-lay-l1.1-serve",
+          "preserve-extension-dbus_service.js",
+          "preserve-extension-extension.js",
+          "preserve-extension-lay-impl.js",
+          "preserve-extension-metadata.json",
+          "preserve-extension-prefs.js",
+          "preserve-extension-recent_actions_menu.js",
+          "preserve-extension-settings.js",
+          "preserve-extension-settings_view.js",
+          "preserve-extension-tray_support.js",
+          "preserve-canonical-l2",
+          "preserve-lay-config"
+        ],
+        "test_id": "extension-sync-fault"
+      },
+      {
+        "id": "reload-runtime-extension",
+        "from": "EXTENSION_BYTES_SYNCED",
+        "to": "EXTENSION_1_0_34_LOADED",
+        "mutates": true,
+        "failure_state": "EXTENSION_RELOAD_FAILED",
+        "cleanup": "restore binaries L2 extension and cache, reload 1.0.33, and verify its D-Bus version",
+        "preserves": [
+          "preserve-lay",
+          "preserve-lay-daemon",
+          "preserve-lay-nanda-wave-eval",
+          "preserve-lay-nanda-wave-train",
+          "preserve-lay-test-input",
+          "preserve-lay-ngram-corpus",
+          "preserve-lay-ibus-engine",
+          "preserve-lay-memory-report",
+          "preserve-lay-l1.1-restore",
+          "preserve-lay-l1.1-serve",
+          "preserve-extension-dbus_service.js",
+          "preserve-extension-extension.js",
+          "preserve-extension-lay-impl.js",
+          "preserve-extension-metadata.json",
+          "preserve-extension-prefs.js",
+          "preserve-extension-recent_actions_menu.js",
+          "preserve-extension-settings.js",
+          "preserve-extension-settings_view.js",
+          "preserve-extension-tray_support.js",
+          "preserve-canonical-l2",
+          "preserve-lay-config"
+        ],
+        "test_id": "extension-reload-fault"
+      },
+      {
+        "id": "restart-model-services",
+        "from": "EXTENSION_1_0_34_LOADED",
+        "to": "MODEL_SERVICES_1_0_34",
+        "mutates": true,
+        "failure_state": "MODEL_SERVICE_RELOAD_FAILED",
+        "cleanup": "restore snapshot and restart only lay-daemon and lay-l3-online with 1.0.33; managed IBus engine remains unchanged until its own step",
+        "preserves": [
+          "preserve-lay",
+          "preserve-lay-daemon",
+          "preserve-lay-nanda-wave-eval",
+          "preserve-lay-nanda-wave-train",
+          "preserve-lay-test-input",
+          "preserve-lay-ngram-corpus",
+          "preserve-lay-ibus-engine",
+          "preserve-lay-memory-report",
+          "preserve-lay-l1.1-restore",
+          "preserve-lay-l1.1-serve",
+          "preserve-extension-dbus_service.js",
+          "preserve-extension-extension.js",
+          "preserve-extension-lay-impl.js",
+          "preserve-extension-metadata.json",
+          "preserve-extension-prefs.js",
+          "preserve-extension-recent_actions_menu.js",
+          "preserve-extension-settings.js",
+          "preserve-extension-settings_view.js",
+          "preserve-extension-tray_support.js",
+          "preserve-canonical-l2",
+          "preserve-lay-config"
+        ],
+        "test_id": "model-service-reload-fault"
+      },
+      {
+        "id": "rotate-managed-ime-engine",
+        "from": "MODEL_SERVICES_1_0_34",
+        "to": "ALL_LIVE_OWNERS_1_0_34",
+        "mutates": true,
+        "failure_state": "MANAGED_ENGINE_ROTATION_FAILED",
+        "cleanup": "keyboard watchdog selects xkb:ru, snapshot is restored, old Lay services are restarted, and lay-ime-ru is reselected only after old engine health passes",
+        "preserves": [
+          "preserve-lay",
+          "preserve-lay-daemon",
+          "preserve-lay-nanda-wave-eval",
+          "preserve-lay-nanda-wave-train",
+          "preserve-lay-test-input",
+          "preserve-lay-ngram-corpus",
+          "preserve-lay-ibus-engine",
+          "preserve-lay-memory-report",
+          "preserve-lay-l1.1-restore",
+          "preserve-lay-l1.1-serve",
+          "preserve-extension-dbus_service.js",
+          "preserve-extension-extension.js",
+          "preserve-extension-lay-impl.js",
+          "preserve-extension-metadata.json",
+          "preserve-extension-prefs.js",
+          "preserve-extension-recent_actions_menu.js",
+          "preserve-extension-settings.js",
+          "preserve-extension-settings_view.js",
+          "preserve-extension-tray_support.js",
+          "preserve-canonical-l2",
+          "preserve-lay-config"
+        ],
+        "test_id": "managed-engine-rotation-fault"
+      },
+      {
+        "id": "run-live-gate",
+        "from": "ALL_LIVE_OWNERS_1_0_34",
+        "to": "LIVE_GATE_PASS",
+        "mutates": true,
+        "failure_state": "LIVE_GATE_FAILED",
+        "cleanup": "poll owner readiness for at most 90 seconds; on any timeout SHA version singleton IBus memory or log failure restore the complete snapshot once and recover lay-ime-ru through the preserved global IBus",
+        "preserves": [
+          "preserve-lay",
+          "preserve-lay-daemon",
+          "preserve-lay-nanda-wave-eval",
+          "preserve-lay-nanda-wave-train",
+          "preserve-lay-test-input",
+          "preserve-lay-ngram-corpus",
+          "preserve-lay-ibus-engine",
+          "preserve-lay-memory-report",
+          "preserve-lay-l1.1-restore",
+          "preserve-lay-l1.1-serve",
+          "preserve-extension-dbus_service.js",
+          "preserve-extension-extension.js",
+          "preserve-extension-lay-impl.js",
+          "preserve-extension-metadata.json",
+          "preserve-extension-prefs.js",
+          "preserve-extension-recent_actions_menu.js",
+          "preserve-extension-settings.js",
+          "preserve-extension-settings_view.js",
+          "preserve-extension-tray_support.js",
+          "preserve-canonical-l2",
+          "preserve-lay-config"
+        ],
+        "test_id": "live-gate-fault"
+      },
+      {
+        "id": "disarm-keyboard-recovery",
+        "from": "LIVE_GATE_PASS",
+        "to": "LIVE_1_0_34",
+        "mutates": true,
+        "failure_state": "KEYBOARD_RECOVERY_DISARM_FAILED",
+        "cleanup": "write the success marker before timer cancellation so a surviving timer is a no-op; then remove the transient unit",
+        "preserves": [
+          "preserve-lay",
+          "preserve-lay-daemon",
+          "preserve-lay-nanda-wave-eval",
+          "preserve-lay-nanda-wave-train",
+          "preserve-lay-test-input",
+          "preserve-lay-ngram-corpus",
+          "preserve-lay-ibus-engine",
+          "preserve-lay-memory-report",
+          "preserve-lay-l1.1-restore",
+          "preserve-lay-l1.1-serve",
+          "preserve-extension-dbus_service.js",
+          "preserve-extension-extension.js",
+          "preserve-extension-lay-impl.js",
+          "preserve-extension-metadata.json",
+          "preserve-extension-prefs.js",
+          "preserve-extension-recent_actions_menu.js",
+          "preserve-extension-settings.js",
+          "preserve-extension-settings_view.js",
+          "preserve-extension-tray_support.js",
+          "preserve-canonical-l2",
+          "preserve-lay-config"
+        ],
+        "test_id": "keyboard-recovery-disarm-fault"
+      }
+    ],
+    "terminal_states": [
+      "LIVE_1_0_34",
+      "ROLLBACK_SNAPSHOT_FAILED",
+      "KEYBOARD_RECOVERY_ARM_FAILED",
+      "BINARY_INSTALL_FAILED",
+      "EXTENSION_SYNC_FAILED",
+      "EXTENSION_RELOAD_FAILED",
+      "MODEL_SERVICE_RELOAD_FAILED",
+      "MANAGED_ENGINE_ROTATION_FAILED",
+      "LIVE_GATE_FAILED",
+      "KEYBOARD_RECOVERY_DISARM_FAILED"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "preserve-lay",
+      "path": "/home/ubu/.local/lib/lay/bin/lay",
+      "policy": "rollback_snapshot_exact_bytes",
+      "cursor_policy": "none",
+      "rollback_policy": "restore_mode_size_sha256_then_restart_managed_owner",
+      "baseline_check_id": "installed-lay"
+    },
+    {
+      "id": "preserve-lay-daemon",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+      "policy": "rollback_snapshot_exact_bytes",
+      "cursor_policy": "none",
+      "rollback_policy": "restore_mode_size_sha256_then_restart_managed_owner",
+      "baseline_check_id": "installed-lay-daemon"
+    },
+    {
+      "id": "preserve-lay-nanda-wave-eval",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-nanda-wave-eval",
+      "policy": "rollback_snapshot_exact_bytes",
+      "cursor_policy": "none",
+      "rollback_policy": "restore_mode_size_sha256_then_restart_managed_owner",
+      "baseline_check_id": "installed-lay-nanda-wave-eval"
+    },
+    {
+      "id": "preserve-lay-nanda-wave-train",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-nanda-wave-train",
+      "policy": "rollback_snapshot_exact_bytes",
+      "cursor_policy": "none",
+      "rollback_policy": "restore_mode_size_sha256_then_restart_managed_owner",
+      "baseline_check_id": "installed-lay-nanda-wave-train"
+    },
+    {
+      "id": "preserve-lay-test-input",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-test-input",
+      "policy": "rollback_snapshot_exact_bytes",
+      "cursor_policy": "none",
+      "rollback_policy": "restore_mode_size_sha256_then_restart_managed_owner",
+      "baseline_check_id": "installed-lay-test-input"
+    },
+    {
+      "id": "preserve-lay-ngram-corpus",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ngram-corpus",
+      "policy": "rollback_snapshot_exact_bytes",
+      "cursor_policy": "none",
+      "rollback_policy": "restore_mode_size_sha256_then_restart_managed_owner",
+      "baseline_check_id": "installed-lay-ngram-corpus"
+    },
+    {
+      "id": "preserve-lay-ibus-engine",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "policy": "rollback_snapshot_exact_bytes",
+      "cursor_policy": "none",
+      "rollback_policy": "restore_mode_size_sha256_then_restart_managed_owner",
+      "baseline_check_id": "installed-lay-ibus-engine"
+    },
+    {
+      "id": "preserve-lay-memory-report",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-memory-report",
+      "policy": "rollback_snapshot_exact_bytes",
+      "cursor_policy": "none",
+      "rollback_policy": "restore_mode_size_sha256_then_restart_managed_owner",
+      "baseline_check_id": "installed-lay-memory-report"
+    },
+    {
+      "id": "preserve-lay-l1.1-restore",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-l1.1-restore",
+      "policy": "rollback_snapshot_exact_bytes",
+      "cursor_policy": "none",
+      "rollback_policy": "restore_mode_size_sha256_then_restart_managed_owner",
+      "baseline_check_id": "installed-lay-l1.1-restore"
+    },
+    {
+      "id": "preserve-lay-l1.1-serve",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-l1.1-serve",
+      "policy": "rollback_snapshot_exact_bytes",
+      "cursor_policy": "none",
+      "rollback_policy": "restore_mode_size_sha256_then_restart_managed_owner",
+      "baseline_check_id": "installed-lay-l1.1-serve"
+    },
+    {
+      "id": "preserve-extension-dbus_service.js",
+      "path": "/home/ubu/.local/share/gnome-shell/extensions/lay@radislabus-star.github.io/dbus_service.js",
+      "policy": "rollback_snapshot_exact_bytes",
+      "cursor_policy": "none",
+      "rollback_policy": "restore_exact_bytes_then_reload_extension",
+      "baseline_check_id": "installed-extension-dbus_service.js"
+    },
+    {
+      "id": "preserve-extension-extension.js",
+      "path": "/home/ubu/.local/share/gnome-shell/extensions/lay@radislabus-star.github.io/extension.js",
+      "policy": "rollback_snapshot_exact_bytes",
+      "cursor_policy": "none",
+      "rollback_policy": "restore_exact_bytes_then_reload_extension",
+      "baseline_check_id": "installed-extension-extension.js"
+    },
+    {
+      "id": "preserve-extension-lay-impl.js",
+      "path": "/home/ubu/.local/share/gnome-shell/extensions/lay@radislabus-star.github.io/lay-impl.js",
+      "policy": "rollback_snapshot_exact_bytes",
+      "cursor_policy": "none",
+      "rollback_policy": "restore_exact_bytes_then_reload_extension",
+      "baseline_check_id": "installed-extension-lay-impl.js"
+    },
+    {
+      "id": "preserve-extension-metadata.json",
+      "path": "/home/ubu/.local/share/gnome-shell/extensions/lay@radislabus-star.github.io/metadata.json",
+      "policy": "rollback_snapshot_exact_bytes",
+      "cursor_policy": "none",
+      "rollback_policy": "restore_exact_bytes_then_reload_extension",
+      "baseline_check_id": "installed-extension-metadata.json"
+    },
+    {
+      "id": "preserve-extension-prefs.js",
+      "path": "/home/ubu/.local/share/gnome-shell/extensions/lay@radislabus-star.github.io/prefs.js",
+      "policy": "rollback_snapshot_exact_bytes",
+      "cursor_policy": "none",
+      "rollback_policy": "restore_exact_bytes_then_reload_extension",
+      "baseline_check_id": "installed-extension-prefs.js"
+    },
+    {
+      "id": "preserve-extension-recent_actions_menu.js",
+      "path": "/home/ubu/.local/share/gnome-shell/extensions/lay@radislabus-star.github.io/recent_actions_menu.js",
+      "policy": "rollback_snapshot_exact_bytes",
+      "cursor_policy": "none",
+      "rollback_policy": "restore_exact_bytes_then_reload_extension",
+      "baseline_check_id": "installed-extension-recent_actions_menu.js"
+    },
+    {
+      "id": "preserve-extension-settings.js",
+      "path": "/home/ubu/.local/share/gnome-shell/extensions/lay@radislabus-star.github.io/settings.js",
+      "policy": "rollback_snapshot_exact_bytes",
+      "cursor_policy": "none",
+      "rollback_policy": "restore_exact_bytes_then_reload_extension",
+      "baseline_check_id": "installed-extension-settings.js"
+    },
+    {
+      "id": "preserve-extension-settings_view.js",
+      "path": "/home/ubu/.local/share/gnome-shell/extensions/lay@radislabus-star.github.io/settings_view.js",
+      "policy": "rollback_snapshot_exact_bytes",
+      "cursor_policy": "none",
+      "rollback_policy": "restore_exact_bytes_then_reload_extension",
+      "baseline_check_id": "installed-extension-settings_view.js"
+    },
+    {
+      "id": "preserve-extension-tray_support.js",
+      "path": "/home/ubu/.local/share/gnome-shell/extensions/lay@radislabus-star.github.io/tray_support.js",
+      "policy": "rollback_snapshot_exact_bytes",
+      "cursor_policy": "none",
+      "rollback_policy": "restore_exact_bytes_then_reload_extension",
+      "baseline_check_id": "installed-extension-tray_support.js"
+    },
+    {
+      "id": "preserve-canonical-l2",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-RU-FULL-v13.bin",
+      "policy": "content_identity",
+      "cursor_policy": "none",
+      "rollback_policy": "restore_exact_bytes_before_service_restart",
+      "baseline_check_id": "canonical-l2-package"
+    },
+    {
+      "id": "preserve-lay-config",
+      "path": "/home/ubu/.config/lay/config.json",
+      "policy": "immutable_during_release_install",
+      "cursor_policy": "none",
+      "rollback_policy": "preserve_exact_bytes",
+      "baseline_check_id": "lay-config"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "stage-to-installed-binary-parity",
+      "producer": "content-addressed 1.0.34 stage SHA256SUMS",
+      "consumer": "all ten installed binary paths including lay-l11 to lay-l1.1 name mapping",
+      "comparison": "exact size mode and SHA-256 after installation",
+      "test_id": "installed-binary-parity"
+    },
+    {
+      "id": "source-to-runtime-extension-parity",
+      "producer": "nine byte-pinned source extension files at version 1.0.34",
+      "consumer": "nine installed GNOME extension files and loaded D-Bus version",
+      "comparison": "exact file bytes plus loaded version 1.0.34",
+      "test_id": "extension-runtime-parity"
+    },
+    {
+      "id": "installed-to-live-exe-parity",
+      "producer": "installed 1.0.34 daemon engine and trainer bytes plus the installed but inactive serve binary",
+      "consumer": "new /proc PID exe bytes for three live owners and the empty IME sidecar process set",
+      "comparison": "exact SHA-256 for daemon engine and trainer, singleton live topology, and zero lay-l1.1-serve processes",
+      "test_id": "live-exe-parity"
+    },
+    {
+      "id": "rollback-snapshot-parity",
+      "producer": "preinstall 1.0.33 installed bytes extension cache config and canonical L2",
+      "consumer": "content-addressed rollback snapshot",
+      "comparison": "exact manifest SHA-256 before installation starts",
+      "test_id": "rollback-snapshot-parity"
+    },
+    {
+      "id": "canonical-l2-preservation",
+      "producer": "preinstall LAY-L2-RU-FULL-v13",
+      "consumer": "post-install canonical package",
+      "comparison": "exact 140556462 bytes and SHA-256 cce259fe...",
+      "test_id": "canonical-l2-parity"
+    },
+    {
+      "id": "global-ibus-continuity",
+      "producer": "preinstall global ibus-daemon PID 2076194 and active lay-ime-ru",
+      "consumer": "post-install session owner",
+      "comparison": "same global PID and restored active engine name",
+      "test_id": "global-ibus-continuity"
+    },
+    {
+      "id": "offline-resolver-binding",
+      "producer": "verified installed canonical L2 bytes with LAY_L2_OFFLINE=1",
+      "consumer": "release installer package source",
+      "comparison": "resolver returns the pinned local path before the first installed write and performs no network call",
+      "test_id": "offline-resolver"
+    }
+  ],
+  "runtime_comparisons": [
+    {
+      "id": "pre-post-runtime-topology",
+      "source": "live-1.0.33-preinstall-v1 and post-install live evidence",
+      "comparison": "exact_stable_projection",
+      "reason": "Lay owners rotate but the desktop input session and authority cardinality must not drift",
+      "stable_fields": [
+        "global_ibus.pid",
+        "global_ibus.argv",
+        "active_text_backend",
+        "active_ibus_engine",
+        "lay_daemon_count=1",
+        "lay_l11_serve_count=0",
+        "lay_ibus_engine_count=1",
+        "lay_l3_online_count=1"
+      ],
+      "expected_to_change_fields": [
+        "lay_daemon.pid",
+        "lay_ibus_engine.pid",
+        "lay_l3_online.pid",
+        "live_exe_sha256",
+        "loaded_extension_version"
+      ],
+      "observed_not_compared_fields": [
+        "process start timestamps",
+        "allocator addresses",
+        "shared page attribution"
+      ],
+      "test_id": "runtime-topology"
+    },
+    {
+      "id": "v27-engine-memory-budget",
+      "source": "fresh rollback 1.0.33 committed proportional engine baseline 265818 KiB and equally fresh post-install samples after complete owner readiness",
+      "comparison": "exact_stable_projection",
+      "reason": "the exact EN guard may add memory but cannot exceed the admitted V27 deployment budget",
+      "stable_fields": [
+        "engine_pss_plus_swap_pss_delta_kib<=16384",
+        "engine_pss_plus_swap_pss_post_kib<=282202"
+      ],
+      "expected_to_change_fields": [
+        "all process RSS and PSS samples"
+      ],
+      "observed_not_compared_fields": [
+        "kernel page cache",
+        "temporary startup peak before warmup settles"
+      ],
+      "test_id": "engine-pss-budget"
+    },
+    {
+      "id": "v27-total-committed-memory-budget",
+      "source": "fresh rollback 1.0.33 total committed proportional baseline 736062 KiB and equally fresh post-install samples after complete owner readiness",
+      "comparison": "exact_stable_projection",
+      "reason": "direct IME ownership removes the duplicate sidecar, so the complete Lay owner set must not exceed the prior four-process baseline",
+      "stable_fields": [
+        "total_owner_pss_plus_swap_pss_post_kib<=736062"
+      ],
+      "expected_to_change_fields": [
+        "per-owner RSS PSS and SwapPss samples",
+        "owner count changes from four to three"
+      ],
+      "observed_not_compared_fields": [
+        "kernel page cache",
+        "temporary startup peak before warmup settles"
+      ],
+      "test_id": "total-committed-memory-budget"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "release-stage-immutable",
+      "statement": "the proved 1.0.34 stage keeps release.env SHA256SUMS and all ten binary hashes unchanged",
+      "test_id": "stage-integrity"
+    },
+    {
+      "id": "complete-rollback-before-mutation",
+      "statement": "all affected installed bytes and cache files have a verified rollback copy before the first install write",
+      "test_id": "rollback-snapshot-parity"
+    },
+    {
+      "id": "rollback-modes-from-frozen-manifest",
+      "statement": "rollback restores original modes from FILES.tsv captured before snapshot chmod and never derives runtime modes from the later read-only snapshot files",
+      "test_id": "rollback-mode-manifest"
+    },
+    {
+      "id": "no-mixed-live-version",
+      "statement": "no successful state may combine 1.0.33 and 1.0.34 installed or live Lay owners",
+      "test_id": "live-exe-parity"
+    },
+    {
+      "id": "bounded-owner-readiness",
+      "statement": "the live gate polls daemon engine and L3 singleton readiness plus zero IME sidecars for at most 90 seconds instead of assuming a fixed warmup duration",
+      "test_id": "owner-readiness-deadline"
+    },
+    {
+      "id": "global-ibus-survives",
+      "statement": "PID 2076194 is never signalled restarted or replaced by the deployment",
+      "test_id": "global-ibus-continuity"
+    },
+    {
+      "id": "keyboard-remains-recoverable",
+      "statement": "an independent timer selects xkb:ru if deployment does not write its success marker",
+      "test_id": "keyboard-recovery-live"
+    },
+    {
+      "id": "original-ime-restored",
+      "statement": "successful install returns active engine lay-ime-ru and unsuccessful install returns either healthy old lay-ime-ru or working xkb:ru",
+      "test_id": "runtime-topology"
+    },
+    {
+      "id": "canonical-model-unchanged",
+      "statement": "release installation neither rebuilds nor changes canonical L2 package bytes",
+      "test_id": "canonical-l2-parity"
+    },
+    {
+      "id": "extension-version-coherent",
+      "statement": "source installed and loaded extension all report 1.0.34 only after byte parity",
+      "test_id": "extension-runtime-parity"
+    },
+    {
+      "id": "bounded-engine-memory",
+      "statement": "after complete fresh owner readiness lay-ibus-engine PSS plus SwapPss increases by no more than 16 MiB from the comparable fresh 265818 KiB baseline",
+      "test_id": "engine-pss-budget"
+    },
+    {
+      "id": "bounded-total-committed-memory",
+      "statement": "after complete fresh owner readiness the three-process direct IME topology consumes no more than the comparable four-process 1.0.33 baseline of 736062 KiB PSS plus SwapPss",
+      "test_id": "total-committed-memory-budget"
+    },
+    {
+      "id": "post-activation-clean",
+      "statement": "new Lay owners are singleton active and the bounded journal scan contains no panic abort stuck-key or protocol integrity failure",
+      "test_id": "post-activation-journal"
+    }
+  ],
+  "tests": [
+    {
+      "id": "rollback-snapshot-fault",
+      "kind": "fault_injection",
+      "expected": "an incomplete snapshot is rejected and no installed or live byte changes"
+    },
+    {
+      "id": "keyboard-recovery-arm-fault",
+      "kind": "fault_injection",
+      "expected": "failure to arm independent recovery stops before installation"
+    },
+    {
+      "id": "binary-install-fault",
+      "kind": "fault_injection",
+      "expected": "any missing or mismatched installed binary restores all ten 1.0.33 binaries and leaves the current keyboard route usable"
+    },
+    {
+      "id": "extension-sync-fault",
+      "kind": "fault_injection",
+      "expected": "partial extension sync restores the complete old extension and cache before reload"
+    },
+    {
+      "id": "extension-reload-fault",
+      "kind": "fault_injection",
+      "expected": "loaded version mismatch restores and reloads extension 1.0.33"
+    },
+    {
+      "id": "model-service-reload-fault",
+      "kind": "fault_injection",
+      "expected": "daemon or L3 failure restores bytes and restarts only the old Lay-managed services"
+    },
+    {
+      "id": "managed-engine-rotation-fault",
+      "kind": "fault_injection",
+      "expected": "engine startup failure activates xkb:ru through the surviving global IBus and rolls back Lay"
+    },
+    {
+      "id": "live-gate-fault",
+      "kind": "fault_injection",
+      "expected": "any failed live gate causes complete rollback instead of partial promotion"
+    },
+    {
+      "id": "keyboard-recovery-disarm-fault",
+      "kind": "fault_injection",
+      "expected": "success marker makes a surviving timer a no-op and keyboard remains on lay-ime-ru"
+    },
+    {
+      "id": "stage-integrity",
+      "kind": "parity",
+      "expected": "sha256sum -c reports 10/10 and stage metadata hashes equal the final physical PASS receipt"
+    },
+    {
+      "id": "installed-binary-parity",
+      "kind": "parity",
+      "expected": "all ten installed binary hashes equal the stage manifest with the two explicit L1.1 filename mappings"
+    },
+    {
+      "id": "extension-runtime-parity",
+      "kind": "parity",
+      "expected": "all nine runtime extension files equal source and loaded D-Bus version is 1.0.34"
+    },
+    {
+      "id": "live-exe-parity",
+      "kind": "parity",
+      "expected": "daemon engine and online trainer /proc exe hashes equal their installed 1.0.34 files, each role is singleton, and lay-l1.1-serve has no live process"
+    },
+    {
+      "id": "rollback-snapshot-parity",
+      "kind": "parity",
+      "expected": "snapshot manifest covers ten binaries nine extension files affected Lay JS cache canonical L2 config and runtime baseline evidence"
+    },
+    {
+      "id": "rollback-mode-manifest",
+      "kind": "parity",
+      "expected": "runtime extension and Lay JS cache modes exactly equal FILES.tsv after rollback while snapshot files remain read-only"
+    },
+    {
+      "id": "canonical-l2-parity",
+      "kind": "parity",
+      "expected": "canonical L2 bytes and SHA remain exactly unchanged"
+    },
+    {
+      "id": "global-ibus-continuity",
+      "kind": "parity",
+      "expected": "global ibus-daemon remains PID 2076194 with the same argv and is not in any deployment signal target"
+    },
+    {
+      "id": "offline-resolver",
+      "kind": "parity",
+      "expected": "with LAY_L2_OFFLINE=1 the resolver returns the existing verified canonical package before installation"
+    },
+    {
+      "id": "runtime-topology",
+      "kind": "integration",
+      "expected": "lay-daemon lay-ibus-engine and lay-l3-online are one each, lay-l1.1-serve is absent by design, services are active, and active engine is lay-ime-ru"
+    },
+    {
+      "id": "owner-readiness-deadline",
+      "kind": "integration",
+      "expected": "all three live owners become singleton and SHA-readable while lay-l1.1-serve remains absent within 90 seconds; timeout fails closed and invokes one rollback"
+    },
+    {
+      "id": "keyboard-recovery-live",
+      "kind": "integration",
+      "expected": "armed transient recovery unit and success marker behavior are inspected before engine rotation"
+    },
+    {
+      "id": "engine-pss-budget",
+      "kind": "integration",
+      "expected": "after owner readiness the maximum of five engine PSS plus SwapPss samples is at most 282202 KiB and delta is at most 16384 KiB"
+    },
+    {
+      "id": "total-committed-memory-budget",
+      "kind": "integration",
+      "expected": "after owner readiness the maximum of five sums across daemon engine and online trainer PSS plus SwapPss is at most 736062 KiB"
+    },
+    {
+      "id": "post-activation-journal",
+      "kind": "integration",
+      "expected": "bounded logs since deployment start contain no panic abort stuck-key repeated-key protocol corruption or service restart loop"
+    }
+  ]
+}

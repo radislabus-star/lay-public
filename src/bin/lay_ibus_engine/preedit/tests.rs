@@ -80,8 +80,16 @@ fn typed_continuation_suppresses_only_the_declined_full_target() {
         0.8,
         lay::typing_cpu::ImeCandidateSource::L2Completion,
     );
-    assert!(fast.proposal_repeats_declined_target("пров", &declined));
-    assert!(!fast.proposal_repeats_declined_target("пров", &alternative));
+    assert!(proposal_repeats_declined_target(
+        &fast.declined_target_surfaces,
+        "пров",
+        &declined
+    ));
+    assert!(!proposal_repeats_declined_target(
+        &fast.declined_target_surfaces,
+        "пров",
+        &alternative
+    ));
     assert_eq!(fast.observed_prediction_target(), Some("проверка"));
 }
 
@@ -162,6 +170,145 @@ fn wrong_layout_letter_symbols_stay_inside_the_fast_token() {
 
     fast.push('!');
     assert_eq!(fast.token(), "");
+}
+
+#[test]
+fn leading_layout_symbol_waits_for_a_letter_before_becoming_a_candidate() {
+    let mut fast = PreeditFastState::default();
+
+    fast.push(',');
+    assert_eq!(fast.token(), ",");
+    assert!(!fast.is_ascii_live_candidate_token());
+
+    fast.push('k');
+    assert_eq!(fast.token(), ",k");
+    assert!(fast.is_ascii_live_candidate_token());
+}
+
+#[test]
+fn background_result_requires_the_current_focus_tail_and_token_identity() {
+    let shared = Arc::new(Mutex::new(Default::default()));
+    let mut engine = LayIbusEngine::new(
+        "/engine/a".to_string(),
+        Arc::clone(&shared),
+        true,
+        true,
+        LayConfig {
+            text_backend: "ime".to_string(),
+            nanda_precognition: true,
+            correction_safety: "normal".to_string(),
+            ..LayConfig::default()
+        },
+    );
+    assert!(engine.bind_focus_path());
+    for ch in "пров".chars() {
+        engine.push_tail_char(ch);
+    }
+    let current = engine
+        .capture_input_frame_identity()
+        .expect("live input frame");
+    assert!(engine.precognition_identity_matches(&current));
+
+    let mut stale = current.clone();
+    stale.tail_epoch = stale.tail_epoch.wrapping_add(1);
+    assert!(!engine.precognition_identity_matches(&stale));
+
+    shared.lock().expect("shared state").active_path = Some("/engine/b".to_string());
+    assert!(!engine.precognition_identity_matches(&current));
+}
+
+#[test]
+fn display_cancellation_does_not_change_space_authority_identity() {
+    let shared = Arc::new(Mutex::new(Default::default()));
+    let mut engine = LayIbusEngine::new(
+        "/engine/a".to_string(),
+        Arc::clone(&shared),
+        true,
+        true,
+        LayConfig {
+            text_backend: "ime".to_string(),
+            nanda_precognition: true,
+            ..LayConfig::default()
+        },
+    );
+    assert!(engine.bind_focus_path());
+    for ch in "слово".chars() {
+        engine.push_tail_char(ch);
+    }
+    let frame = engine
+        .capture_input_frame_identity()
+        .expect("current input frame");
+
+    engine.cancel_precognition_display_generation();
+
+    assert!(engine.input_frame_authority_matches(&frame));
+    assert!(engine.precognition_identity_matches(&frame));
+}
+
+#[test]
+fn space_authority_rejects_complete_frame_identity_faults() {
+    let shared = Arc::new(Mutex::new(Default::default()));
+    let mut engine = LayIbusEngine::new(
+        "/engine/a".to_string(),
+        Arc::clone(&shared),
+        true,
+        true,
+        LayConfig {
+            text_backend: "ime".to_string(),
+            nanda_precognition: true,
+            ..LayConfig::default()
+        },
+    );
+    assert!(engine.bind_focus_path());
+    for ch in "слово".chars() {
+        engine.push_tail_char(ch);
+    }
+    let frame = engine
+        .capture_input_frame_identity()
+        .expect("current input frame");
+    assert!(engine.input_frame_authority_matches(&frame));
+    assert!(engine.input_frame_identity_matches(&frame));
+
+    engine.focus_receipt = Some("different-focus".to_string());
+    assert!(!engine.input_frame_authority_matches(&frame));
+    assert!(!engine.input_frame_identity_matches(&frame));
+    engine.focus_receipt.clone_from(&frame.focus_receipt);
+
+    engine.tail_buffer.push('x');
+    assert!(!engine.input_frame_authority_matches(&frame));
+    assert!(!engine.input_frame_identity_matches(&frame));
+    engine.tail_buffer.clone_from(&frame.committed_tail);
+
+    engine.layout_is_ru = !frame.active_layout_is_ru;
+    assert!(!engine.input_frame_authority_matches(&frame));
+    assert!(!engine.input_frame_identity_matches(&frame));
+    engine.layout_is_ru = frame.active_layout_is_ru;
+
+    engine.config.auto_replace = !engine.config.auto_replace;
+    assert!(!engine.input_frame_authority_matches(&frame));
+    assert!(!engine.input_frame_identity_matches(&frame));
+    engine.config.auto_replace = !engine.config.auto_replace;
+
+    engine.factory_engine_profile = lay::exact_layout_authority::FactoryEngineProfile::Unknown;
+    assert!(!engine.input_frame_authority_matches(&frame));
+    assert!(!engine.input_frame_identity_matches(&frame));
+    engine.factory_engine_profile = frame.factory_engine_profile;
+
+    engine.cursor_cell_width = engine.cursor_cell_width.saturating_add(1);
+    assert!(!engine.input_frame_authority_matches(&frame));
+    assert!(!engine.input_frame_identity_matches(&frame));
+    engine.cursor_cell_width = 0;
+
+    let active_input_at = engine.last_tail_input_at;
+    engine.last_tail_input_at = None;
+    assert!(engine.input_frame_authority_matches(&frame));
+    assert!(!engine.input_frame_identity_matches(&frame));
+    engine.last_tail_input_at = active_input_at;
+    assert!(engine.input_frame_identity_matches(&frame));
+
+    let mut stale_fingerprint = frame.clone();
+    stale_fingerprint.frame_fingerprint ^= 1;
+    assert!(!engine.input_frame_identity_matches(&stale_fingerprint));
 }
 
 #[test]
@@ -262,6 +409,7 @@ fn whitespace_cancels_pending_inactive_preedit_flush() {
 
     engine.push_tail_char('п');
     engine.preedit_dirty = true;
+    engine.pending_display_frame = engine.capture_input_frame_identity();
     engine.preedit_suffix = "ривет".to_string();
     engine.preedit_candidates = vec!["ривет".to_string(), "роект".to_string()];
     engine.preedit_candidate_index = 1;
@@ -275,6 +423,7 @@ fn whitespace_cancels_pending_inactive_preedit_flush() {
     assert!(engine.preedit_suffix.is_empty());
     assert!(engine.preedit_candidates.is_empty());
     assert_eq!(engine.preedit_candidate_index, 0);
+    assert!(engine.pending_display_frame.is_none());
 }
 
 #[test]
@@ -829,6 +978,7 @@ fn ascii_known_word_completion_allows_single_letter_suffix() {
         true,
         true,
         LayConfig {
+            text_backend: "ime".to_string(),
             nanda_precognition: true,
             correction_safety: "experimental".to_string(),
             ..LayConfig::default()

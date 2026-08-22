@@ -3,6 +3,9 @@ use std::collections::{BTreeMap, BTreeSet};
 use crate::nanda_wave::lexical_grokking::restoration::{
     AbstainReason, RestorationCandidate, RestorationReadout,
 };
+use crate::typing_transition::target_evidence::{
+    stable_bytes_ref, EnumerationCompletenessV1, IncompletenessReasonV1,
+};
 
 use super::calibrate::ProductiveCalibratedVerdictV1;
 use super::packaged_runtime::{PackagedProductiveCandidateV1, PackagedProductiveReadoutV1};
@@ -10,6 +13,7 @@ use super::types::{ContradictionCertificateV1, ProductiveCandidateIdentityV1};
 
 const MAX_GROUNDED_LANE: usize = 32;
 const MAX_PRODUCTIVE_LANE: usize = 32;
+const MAX_CONTOUR_LANE: usize = 8;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(super) struct CompositeGroundedCandidateV1 {
@@ -43,6 +47,7 @@ pub(super) struct CompositeSurfaceGroupV1 {
     pub(super) grounded_terminal_ids: Vec<u32>,
     pub(super) productive_identities: Vec<ProductiveCandidateIdentityV1>,
     pub(super) grounded_protection: bool,
+    pub(super) contour_grounding: bool,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -150,6 +155,81 @@ impl CompositeL2LatticeV1 {
             candidate.candidate.terminal_id == terminal_id && candidate.protected_winner
         })
     }
+
+    pub(super) fn common_completeness(&self) -> EnumerationCompletenessV1 {
+        if self.productive_integrity_error.is_some() {
+            return EnumerationCompletenessV1::failed(IncompletenessReasonV1::IntegrityFailure);
+        }
+
+        let mut logical_count_lower_bound = self.surface_groups.len();
+        let mut overflow = self.productive_overflow;
+        if let CompositeGroundedVerdictV1::TiedOverflow {
+            total_candidates, ..
+        } = &self.original_l11_verdict
+        {
+            logical_count_lower_bound = logical_count_lower_bound.max(*total_candidates);
+            overflow = true;
+        }
+        if self.productive_overflow {
+            logical_count_lower_bound =
+                logical_count_lower_bound.max(self.surface_groups.len().saturating_add(1));
+        }
+
+        let digest = self
+            .surface_groups
+            .iter()
+            .fold([0_u64; 2], |mut digest, group| {
+                let surface = u64::from(stable_bytes_ref(group.normalized_surface.as_bytes()));
+                digest[0] ^= surface.rotate_left((group.normalized_surface.len() % 63) as u32);
+                digest[1] = digest[1].wrapping_add(surface);
+                digest
+            });
+        if overflow {
+            EnumerationCompletenessV1::overflow(
+                self.surface_groups.len(),
+                logical_count_lower_bound,
+                IncompletenessReasonV1::UpstreamIncomplete,
+                digest,
+            )
+        } else {
+            EnumerationCompletenessV1::complete(self.surface_groups.len(), digest)
+        }
+    }
+
+    pub(super) fn merge_contour_surfaces(
+        &mut self,
+        surfaces: impl IntoIterator<Item = String>,
+    ) -> Result<(), String> {
+        let normalized = surfaces
+            .into_iter()
+            .map(|surface| super::super::compositional::normalize_surface(&surface))
+            .filter(|surface| !surface.is_empty())
+            .collect::<BTreeSet<_>>();
+        if normalized.len() > MAX_CONTOUR_LANE {
+            return Err("typed contour lane exceeds 8 candidates".to_string());
+        }
+
+        for surface in normalized.iter() {
+            if let Some(group) = self
+                .surface_groups
+                .iter_mut()
+                .find(|group| group.normalized_surface == *surface)
+            {
+                group.contour_grounding = true;
+                continue;
+            }
+            self.surface_groups.push(CompositeSurfaceGroupV1 {
+                normalized_surface: surface.clone(),
+                grounded_terminal_ids: Vec::new(),
+                productive_identities: Vec::new(),
+                grounded_protection: false,
+                contour_grounding: true,
+            });
+        }
+        self.surface_groups
+            .sort_by(|left, right| left.normalized_surface.cmp(&right.normalized_surface));
+        Ok(())
+    }
 }
 
 fn grounded_snapshot(
@@ -209,6 +289,7 @@ fn surface_groups(
                 grounded_terminal_ids: Vec::new(),
                 productive_identities: Vec::new(),
                 grounded_protection: false,
+                contour_grounding: false,
             });
         group
             .grounded_terminal_ids
@@ -225,6 +306,7 @@ fn surface_groups(
                 grounded_terminal_ids: Vec::new(),
                 productive_identities: Vec::new(),
                 grounded_protection: false,
+                contour_grounding: false,
             });
         group
             .productive_identities
@@ -403,5 +485,53 @@ mod tests {
         assert!(lattice.grounded_winner_is_preserved());
         assert_eq!(lattice.grounded_candidates[0].candidate.terminal_id, 7);
         assert!(lattice.grounded_candidates[0].protected_winner);
+    }
+
+    #[test]
+    fn common_completeness_preserves_complete_overflow_and_failed_states() {
+        let l11 = RestorationReadout::Abstain {
+            reason: AbstainReason::NoCandidates,
+            geometry_distance: None,
+            candidates: Vec::new(),
+        };
+        let mut lattice = CompositeL2LatticeV1::assemble(
+            &l11,
+            |_| None,
+            productive_readout(vec![
+                productive(1, "first".to_string()),
+                productive(2, "second".to_string()),
+            ]),
+            None,
+        )
+        .expect("composite lattice");
+
+        let complete = lattice.common_completeness();
+        assert_eq!(
+            complete.state(),
+            crate::typing_transition::target_evidence::EnumerationStateV1::Complete
+        );
+        assert_eq!(complete.retained_count(), 2);
+        assert_eq!(complete.logical_count_lower_bound(), 2);
+
+        lattice.productive_overflow = true;
+        let overflow = lattice.common_completeness();
+        assert_eq!(
+            overflow.state(),
+            crate::typing_transition::target_evidence::EnumerationStateV1::Overflow
+        );
+        assert_eq!(
+            overflow.reason(),
+            IncompletenessReasonV1::UpstreamIncomplete
+        );
+        assert_eq!(overflow.retained_count(), 2);
+        assert!(overflow.logical_count_lower_bound() >= 3);
+
+        lattice.productive_integrity_error = Some("invalid package".to_string());
+        let failed = lattice.common_completeness();
+        assert_eq!(
+            failed.state(),
+            crate::typing_transition::target_evidence::EnumerationStateV1::Failed
+        );
+        assert_eq!(failed.reason(), IncompletenessReasonV1::IntegrityFailure);
     }
 }

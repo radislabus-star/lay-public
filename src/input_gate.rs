@@ -86,6 +86,11 @@ pub struct InputGateDecision {
     pub trace: Option<InputGateDecisionTrace>,
 }
 
+pub(crate) struct ObservedInputGateDecision {
+    pub(crate) decision: InputGateDecision,
+    pub(crate) telemetry: crate::correction_core::CorrectionRouteTelemetry,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct InputGateDecisionTrace {
     pub stage: InputGateStage,
@@ -120,8 +125,18 @@ pub struct InputGateRequest<'a> {
 }
 
 pub fn decide_input_gate(req: InputGateRequest<'_>) -> InputGateDecision {
-    match req.trigger {
-        InputGateTrigger::Space | InputGateTrigger::Enter => decide_space_autocorrect(req),
+    decide_input_gate_observed(req).decision
+}
+
+pub(crate) fn decide_input_gate_observed(req: InputGateRequest<'_>) -> ObservedInputGateDecision {
+    if matches!(
+        req.trigger,
+        InputGateTrigger::Space | InputGateTrigger::Enter
+    ) {
+        return decide_space_autocorrect_observed(req);
+    }
+    let decision = match req.trigger {
+        InputGateTrigger::Space | InputGateTrigger::Enter => unreachable!("handled above"),
         InputGateTrigger::DoubleShift => InputGateDecision {
             trigger: req.trigger,
             stage: InputGateStage::ManualToggle,
@@ -164,11 +179,60 @@ pub fn decide_input_gate(req: InputGateRequest<'_>) -> InputGateDecision {
                 "live_input_observe_only",
             )),
         },
+    };
+    ObservedInputGateDecision {
+        decision,
+        telemetry: crate::correction_core::CorrectionRouteTelemetry::default(),
     }
 }
 
-fn decide_space_autocorrect(req: InputGateRequest<'_>) -> InputGateDecision {
-    let resolution = crate::correction_core::resolve_text_correction(CorrectionRequest {
+pub(crate) fn decide_input_gate_observed_with_exact(
+    req: InputGateRequest<'_>,
+    certificate: &crate::exact_layout_authority::ExactLayoutContourCertificate,
+) -> ObservedInputGateDecision {
+    if !matches!(
+        req.trigger,
+        InputGateTrigger::Space | InputGateTrigger::Enter
+    ) {
+        return decide_input_gate_observed(req);
+    }
+    decide_space_autocorrect_observed_internal(
+        req,
+        SpaceCorrectionEvidence::FullField(Some(certificate)),
+    )
+}
+
+pub(crate) fn decide_closed_exact_input_gate_observed(
+    req: InputGateRequest<'_>,
+    certificate: Option<&crate::exact_layout_authority::ExactLayoutContourCertificate>,
+) -> ObservedInputGateDecision {
+    if !matches!(
+        req.trigger,
+        InputGateTrigger::Space | InputGateTrigger::Enter
+    ) {
+        return decide_input_gate_observed(req);
+    }
+    decide_space_autocorrect_observed_internal(
+        req,
+        SpaceCorrectionEvidence::ClosedExact(certificate),
+    )
+}
+
+fn decide_space_autocorrect_observed(req: InputGateRequest<'_>) -> ObservedInputGateDecision {
+    decide_space_autocorrect_observed_internal(req, SpaceCorrectionEvidence::FullField(None))
+}
+
+#[derive(Clone, Copy)]
+enum SpaceCorrectionEvidence<'a> {
+    FullField(Option<&'a crate::exact_layout_authority::ExactLayoutContourCertificate>),
+    ClosedExact(Option<&'a crate::exact_layout_authority::ExactLayoutContourCertificate>),
+}
+
+fn decide_space_autocorrect_observed_internal(
+    req: InputGateRequest<'_>,
+    evidence: SpaceCorrectionEvidence<'_>,
+) -> ObservedInputGateDecision {
+    let correction_request = CorrectionRequest {
         text: req.text_tail,
         auto_replace: req.auto_replace,
         typing_assist: req.typing_assist,
@@ -179,15 +243,36 @@ fn decide_space_autocorrect(req: InputGateRequest<'_>) -> InputGateDecision {
         nanda_candidate_route: req.nanda_candidate_route,
         nanda_wave_options: req.nanda_wave_options,
         mode: req.correction_mode,
-    });
+    };
+    let observed = match evidence {
+        SpaceCorrectionEvidence::FullField(None) => {
+            crate::correction_core::resolve_text_correction_observed(correction_request)
+        }
+        SpaceCorrectionEvidence::FullField(Some(certificate)) => {
+            crate::correction_core::resolve_text_correction_observed_with_exact(
+                correction_request,
+                certificate,
+            )
+        }
+        SpaceCorrectionEvidence::ClosedExact(certificate) => {
+            crate::correction_core::resolve_closed_exact_text_correction_observed(
+                correction_request,
+                certificate,
+            )
+        }
+    };
+    let resolution = observed.resolution;
     let action = word_boundary_action(&resolution);
 
-    InputGateDecision {
-        trigger: req.trigger,
-        stage: InputGateStage::WordBoundary,
-        trace: Some(word_boundary_trace(&resolution, action.outcome())),
-        action,
-        correction: Some(resolution),
+    ObservedInputGateDecision {
+        decision: InputGateDecision {
+            trigger: req.trigger,
+            stage: InputGateStage::WordBoundary,
+            trace: Some(word_boundary_trace(&resolution, action.outcome())),
+            action,
+            correction: Some(resolution),
+        },
+        telemetry: observed.telemetry,
     }
 }
 
@@ -339,7 +424,7 @@ mod tests {
             nanda_autocorrect: true,
             nanda_candidate_route: CandidateReadoutRoute::FullWave,
             nanda_wave_options: WaveOptions::default(),
-            correction_mode: CorrectionMode::DeterministicThenNanda,
+            correction_mode: CorrectionMode::NandaOnly,
         }
     }
 
@@ -484,7 +569,7 @@ mod tests {
             nanda_autocorrect: false,
             nanda_candidate_route: CandidateReadoutRoute::FullWave,
             nanda_wave_options: WaveOptions::default(),
-            correction_mode: CorrectionMode::DeterministicThenNanda,
+            correction_mode: CorrectionMode::DeterministicOnly,
         });
         assert_eq!(decision.action, InputGateAction::KeepOriginal);
         assert_eq!(

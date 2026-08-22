@@ -1,0 +1,105 @@
+{
+  "schema": "lay.ime-target-authority-slice4-conflict-cohort-final-receipt.v1",
+  "created_at": "2026-08-20T14:32:00Z",
+  "verdict": "PASS_SLICE4_CONFLICT_COHORT_SHADOW_RUNTIME_UNCHANGED",
+  "claim_scope": "complete frame-bound conflict cohort, canonical ordering and Winner Tied ABSTAIN shadow settlement",
+  "preflight": {
+    "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE4_CONFLICT_COHORT_IMPLEMENTATION_PREFLIGHT_V2_2026-08-20.json",
+    "sha256": "485f1e14a4c248e099243054024e8fd9191a4655713c54af171daea091981efa",
+    "verdict": "READY_TO_IMPLEMENT",
+    "safe_to_implement": true
+  },
+  "implementation": {
+    "source_sha256": {
+      "src/nanda_wave/l2_field/productive_v1/candidate_state.rs": "b69b1b4f33bb9856dc7993f17a0509fb2202d5d7390ba15b2665b945efc56320",
+      "src/nanda_wave/l2_field/productive_v1/conflict_cohort.rs": "0e4635bca16a79c5a696d8add87203aa5771960223d87e4d3cbb0756865357f9",
+      "src/nanda_wave/l2_field/productive_v1/mod.rs": "a7fc18e949b28a7deedb16ab33a42a57327888d4173c9332b06b63d5aef02573",
+      "src/nanda_wave/l2_field/productive_v1/proof.rs": "27aa75c2c6cfb172a6cbf5a64a22ad05f13fdd4120fc2ea5f745a685edd72b49",
+      "src/typing_transition/target_evidence.rs": "28c62b4ff746ab34506906102620d5f9ad57de1b5946a30aa6f9894fe456b7da"
+    },
+    "conflict_cohort_unit_tests": "10/10 PASS",
+    "local_format": "scripts/cargo-guard.sh fmt --all PASS",
+    "local_check": "scripts/cargo-guard.sh check --lib PASS",
+    "remote_release_build": "PASS on e@192.168.3.94 through scripts/cargo-guard.sh"
+  },
+  "proofs": {
+    "smoke": {
+      "receipt": "slice4-conflict-cohort-smoke-13x1.json",
+      "sha256": "697707a2189b4704a1c85255fb5e4922efe6786af0ffdb8e2853d77d0a392e4d",
+      "cohort_derivations": 39,
+      "winner": 0,
+      "tied": 3,
+      "abstain": 36,
+      "context_mismatches": 0,
+      "false_singletons": 0
+    },
+    "fixed": {
+      "receipt": "slice4-conflict-cohort-fixed-13x100.json",
+      "sha256": "14c270c8e6c3c236d53053ce31a71bf22d959fff8929c86232df7ebb97524d00",
+      "time_receipt": "slice4-conflict-cohort-fixed-13x100.time.txt",
+      "time_sha256": "8ff9f7273987103fff17c9ae534f72af37bc6e7561b09bfb37010f40d4bbe5d5",
+      "evaluated": 2600,
+      "material_pairs": 1300,
+      "context_comparisons": 3900,
+      "cohort_derivations": 3900,
+      "winner": 0,
+      "tied": 1050,
+      "abstain": 2850,
+      "context_mismatches": 0,
+      "incomplete_winners": 0,
+      "false_singletons": 0,
+      "lost_grounded_targets": 0,
+      "multiple_component_authority": 0,
+      "preservation_bypass": 0
+    }
+  },
+  "completeness_scope": {
+    "complete_material": 423,
+    "upstream_incomplete_material": 877,
+    "rule": "whole-field incompleteness blocks Winner while retaining known grounded members in the canonical cohort",
+    "authority_from_incomplete_material": 0
+  },
+  "safety": {
+    "manifest_h": 1280,
+    "h_to_b_losses": 0,
+    "b_to_s0_losses": 0,
+    "semantic_non_latency_gate": true,
+    "false_singleton": 0,
+    "integrity_errors": 0,
+    "runtime_authority_changed": false
+  },
+  "resource_observation": {
+    "workers": 20,
+    "wall_seconds": 19.52,
+    "cpu_percent": 678,
+    "peak_rss_kib": 392416,
+    "maximum_class_p99_us": 14566,
+    "latency_gate_us": 5000,
+    "latency_promotion_claimed": false,
+    "causal_scope": "the historical aggregate remains latency-failed because Productive traversal p99 exceeds 5 ms; conflict-cohort settlement is post-frame shadow work and Slice 4 makes no live latency or promotion claim"
+  },
+  "tested": [
+    "exact-footprint conflict components and deterministic canonical ordering",
+    "duplicate-output semantic-root merge independent of producer arrival",
+    "complete retained-target coverage for every derived cohort",
+    "conflicting Born targets blocking singleton authority",
+    "Rejected targets excluded from grounded tie membership",
+    "original preservation consumed before Winner",
+    "fixed 13x100 cohort counters and cross-context hash parity"
+  ],
+  "not_tested": [
+    "automatic Winner coverage in the fixed corpus because the measured fixed cohort produced zero Winners",
+    "missing-target birth or retention repair",
+    "Boundary split and merge internalization",
+    "authority transfer into live L2 L3 L4 DecisionCore or verifier",
+    "queue-inclusive daemon or IBus latency",
+    "physical application behavior",
+    "automatic mutation rollback package rebuild or deployment"
+  ],
+  "source_report_verdict": "FAIL_measured_shadow_gates",
+  "source_report_verdict_explanation": "the historical aggregate includes the pre-existing Productive traversal latency gate; all Slice 4 cohort, completeness, preservation, safety and parity conditions pass",
+  "runtime_authority_changed": false,
+  "deployment_actions": 0,
+  "installed_version_changed": false,
+  "next_gate": "Slice 5 bounded missing-target birth and retention shadow"
+}

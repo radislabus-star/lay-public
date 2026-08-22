@@ -1,0 +1,336 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-ime-canonical-only-correction-v4-2026-08-16",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "correction-core-source",
+      "kind": "file",
+      "path": "../../../src/correction_core.rs",
+      "expect": {"size_bytes": 39822, "sha256": "3e98c1af69b76583544964b7c92e238e10835a425ff2b7023d4434457feab21e", "mode": "0664"}
+    },
+    {
+      "id": "candidate-sources-source",
+      "kind": "file",
+      "path": "../../../src/correction_core/candidate_sources.rs",
+      "expect": {"size_bytes": 53593, "sha256": "3986c339723c26c5e6694f3a0787917a8a890aab1e7b8d85d08a9eafb945ef5b", "mode": "0664"}
+    },
+    {
+      "id": "ime-correction-source",
+      "kind": "file",
+      "path": "../../../src/ime_correction.rs",
+      "expect": {"size_bytes": 30233, "sha256": "d3fee31b56611fd381f4f28329b5de8d406061b36b2abe3e0616b1615e03bf80", "mode": "0664"}
+    },
+    {
+      "id": "input-gate-source",
+      "kind": "file",
+      "path": "../../../src/input_gate.rs",
+      "expect": {"size_bytes": 18620, "sha256": "0684238bf030f6120938f8abad1a4d63eacd8638d837b8003b12c2190037f021", "mode": "0664"}
+    },
+    {
+      "id": "main-source",
+      "kind": "file",
+      "path": "../../../src/main.rs",
+      "expect": {"size_bytes": 21693, "sha256": "80618b5d3e04e53c8bef4faeeb193a5c9d8a28c1727e36fbb4156a31308c5736", "mode": "0664"}
+    },
+    {
+      "id": "daemon-gate-source",
+      "kind": "file",
+      "path": "../../../src/bin/lay_daemon/typing_assist_runtime/decoder/gate.rs",
+      "expect": {"size_bytes": 4844, "sha256": "3634c61dd8209df6d980cfedfb7455e5ba0851bf464a2ced75889fc39bfdd877", "mode": "0664"}
+    },
+    {
+      "id": "candidate-resolution-source",
+      "kind": "file",
+      "path": "../../../src/typing_transition/candidate_resolution.rs",
+      "expect": {"size_bytes": 3812, "sha256": "287f9f189bcb0068c04b0ea809faf6c21fb4cd334acb218109f3730d52bcb6ff", "mode": "0664"}
+    },
+    {
+      "id": "decision-core-source",
+      "kind": "file",
+      "path": "../../../src/typing_transition/decision.rs",
+      "expect": {"size_bytes": 27803, "sha256": "f4ba3c3554650b19e178458818a11b165586a3ab86ff54fd106cd2d1d7054f1e", "mode": "0664"}
+    },
+    {
+      "id": "structural-verifier-source",
+      "kind": "file",
+      "path": "../../../src/text_edit/structural_verifier.rs",
+      "expect": {"size_bytes": 7730, "sha256": "19201157bc09df5cca617132d67a242474aaa331ca58dc18acb0152818b7b826", "mode": "0664"}
+    },
+    {
+      "id": "committed-tail-source",
+      "kind": "file",
+      "path": "../../../src/bin/lay_ibus_engine/committed_tail.rs",
+      "expect": {"size_bytes": 25042, "sha256": "72e567392a1790467ecb1797b1a031949bf61e8615742eead57a8c5ecfbfa753", "mode": "0664"}
+    },
+    {
+      "id": "space-worker-source",
+      "kind": "file",
+      "path": "../../../src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
+      "expect": {"size_bytes": 19054, "sha256": "aadf3825838230627b3f050c9308a8c2f957801ac67e4168011531e7b55aac1a", "mode": "0664"}
+    },
+    {
+      "id": "route-v4-contract",
+      "kind": "file",
+      "path": "LAY_IME_CANONICAL_ONLY_CORRECTION_ROUTE_V4_2026-08-16.json",
+      "expect": {"size_bytes": 3968, "sha256": "27fe699596118b9d64473a4892e48946f563a9f6e1fdf236875c406e55a642c8", "mode": "0664"}
+    },
+    {
+      "id": "route-v4-pass",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_CANONICAL_ONLY_CORRECTION_ROUTE_DESIGN_V4_2026-08-16.json",
+      "expect": {"size_bytes": 6200, "sha256": "16d8e1a0dbc3825121227cbd631f1b1ef8f18aad674fe15983b78f34700dac64", "mode": "0664"}
+    },
+    {
+      "id": "installed-engine",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "expect": {"size_bytes": 6423488, "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a", "mode": "0755"}
+    },
+    {
+      "id": "installed-productive-v90",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2m",
+      "expect": {"size_bytes": 17309944, "sha256": "40fb6a9f0d92c3c7502e47f9c70230d9b86020f622b08a5c799342f13e09ce44", "mode": "0644", "prefix_hex": "4c41595032563100"}
+    }
+  ],
+  "source_checks": [
+    {
+      "id": "candidate-source-has-no-case-branch",
+      "path": "../../../src/correction_core/candidate_sources.rs",
+      "sha256": "3986c339723c26c5e6694f3a0787917a8a890aab1e7b8d85d08a9eafb945ef5b",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "literal_surface_runtime_branch",
+          "regex": "(?i)(?:if|match)[^\\n]{0,160}\\\"(?:данорм|еленапросит|докуентыдля|врмея|ytn|cj,frf)\\\""
+        }
+      ]
+    },
+    {
+      "id": "single-final-readout-source",
+      "path": "../../../src/typing_transition/candidate_resolution.rs",
+      "sha256": "287f9f189bcb0068c04b0ea809faf6c21fb4cd334acb218109f3730d52bcb6ff",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "second_decision_readout",
+          "regex": "(?s)into_observed_resolution_with_peak_context.{0,1200}into_observed_resolution_with_peak_context"
+        }
+      ]
+    },
+    {
+      "id": "verifier-remains-fail-closed",
+      "path": "../../../src/text_edit/structural_verifier.rs",
+      "sha256": "19201157bc09df5cca617132d67a242474aaa331ca58dc18acb0152818b7b826",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "weaken_verifier_authority",
+          "regex": "(?i)(?:allow|eligible|authorized).{0,100}(?:without|bypass|skip).{0,100}(?:proof|plan|verif)"
+        }
+      ]
+    },
+    {
+      "id": "double-shift-contract-remains-intact",
+      "path": "../../../src/bin/lay_ibus_engine/committed_tail.rs",
+      "sha256": "72e567392a1790467ecb1797b1a031949bf61e8615742eead57a8c5ecfbfa753",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "change_double_shift_contract",
+          "regex": "(?i)(?:double.?shift|auto.?undo).{0,120}(?:disable|remove|skip|ignore)"
+        }
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "remove-hybrid-correction-mode", "kind": "source_edit"},
+      {"id": "route-nanda-enabled-callers-to-nanda-only", "kind": "source_edit"},
+      {"id": "retain-explicit-nanda-disabled-deterministic-mode", "kind": "source_edit"},
+      {"id": "migrate-route-contract-tests", "kind": "source_edit"},
+      {"id": "run-remote-focused-and-systemic-proof", "kind": "remote_test"}
+    ],
+    "forbidden": [
+      "literal_surface_runtime_branch",
+      "second_decision_readout",
+      "weaken_verifier_authority",
+      "change_double_shift_contract"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "installed-engine-runtime",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "policy": "read_only_until_all_software_and_replay_gates_pass",
+      "rollback_policy": "retain exact installed 1.0.33 bytes during source implementation",
+      "baseline_check_id": "installed-engine"
+    },
+    {
+      "id": "productive-v90-package",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2m",
+      "policy": "read_only_runtime_input",
+      "rollback_policy": "never modify while deleting the legacy runtime route",
+      "baseline_check_id": "installed-productive-v90"
+    },
+    {
+      "id": "structural-verifier-authority",
+      "path": "../../../src/text_edit/structural_verifier.rs",
+      "policy": "read_only_authority_boundary",
+      "rollback_policy": "never weaken to compensate for a canonical candidate gap",
+      "baseline_check_id": "structural-verifier-source"
+    },
+    {
+      "id": "double-shift-rollback-owner",
+      "path": "../../../src/bin/lay_ibus_engine/committed_tail.rs",
+      "policy": "read_only_rollback_contract",
+      "rollback_policy": "preserve exact original-token restoration behavior",
+      "baseline_check_id": "committed-tail-source"
+    }
+  ],
+  "state_machine": {
+    "initial_state": "V4_DESIGN_PASS_RUNTIME_1_0_33",
+    "terminal_states": [
+      "CANONICAL_ONLY_SOFTWARE_PASS_RUNTIME_1_0_33_UNCHANGED",
+      "BLOCKED_BEFORE_DEPLOY_RUNTIME_1_0_33_UNCHANGED"
+    ],
+    "steps": [
+      {
+        "id": "remove-active-hybrid-route",
+        "from": "V4_DESIGN_PASS_RUNTIME_1_0_33",
+        "to": "CANONICAL_ONLY_SOURCE_READY",
+        "mutates": true,
+        "failure_state": "BLOCKED_BEFORE_DEPLOY_RUNTIME_1_0_33_UNCHANGED",
+        "cleanup": "retain the scoped source diff and failure evidence; do not alter the installed engine or packages",
+        "preserves": [
+          "installed-engine-runtime",
+          "productive-v90-package",
+          "structural-verifier-authority",
+          "double-shift-rollback-owner"
+        ],
+        "test_id": "source-edit-fault"
+      },
+      {
+        "id": "run-remote-systemic-proof",
+        "from": "CANONICAL_ONLY_SOURCE_READY",
+        "to": "CANONICAL_ONLY_SOFTWARE_PASS_RUNTIME_1_0_33_UNCHANGED",
+        "mutates": false,
+        "failure_state": "BLOCKED_BEFORE_DEPLOY_RUNTIME_1_0_33_UNCHANGED",
+        "cleanup": "retain failing class receipts and reject deployment without changing the installed runtime",
+        "preserves": [
+          "installed-engine-runtime",
+          "productive-v90-package",
+          "structural-verifier-authority",
+          "double-shift-rollback-owner"
+        ],
+        "test_id": "remote-systemic-proof"
+      }
+    ]
+  },
+  "tests": [
+    {
+      "id": "source-edit-fault",
+      "kind": "fault_injection",
+      "expected": "any incomplete caller migration fails compilation or the no-hybrid static audit while installed 1.0.33 remains unchanged"
+    },
+    {
+      "id": "active-caller-parity",
+      "kind": "parity",
+      "expected": "every Nanda-enabled IME, daemon and CLI caller selects NandaOnly; DeterministicOnly remains reachable only from explicit Nanda-disabled or legacy standalone requests"
+    },
+    {
+      "id": "single-final-readout",
+      "kind": "integration",
+      "expected": "one active correction request executes one canonical producer, one final lattice and one DecisionCore readout with zero deterministic candidate births"
+    },
+    {
+      "id": "remote-systemic-proof",
+      "kind": "integration",
+      "expected": "remote guarded checks pass lexical damage, boundary, layout, mixed-script, clean preservation, false-authority, false-split, latency and rollback contracts"
+    },
+    {
+      "id": "double-shift-rollback",
+      "kind": "integration",
+      "expected": "autocorrection followed immediately by double Shift restores the exact original token"
+    },
+    {
+      "id": "canonical-route-identity",
+      "kind": "parity",
+      "expected": "source audit and runtime trace agree on canonical L1.1 plus Productive V90 as the sole Nanda-enabled candidate producer"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "no-active-hybrid-route",
+      "statement": "Nanda-enabled input cannot call deterministic_text_candidates before or after canonical readout",
+      "test_id": "active-caller-parity"
+    },
+    {
+      "id": "one-rank-owner",
+      "statement": "the canonical route constructs one final lattice and invokes DecisionCore exactly once",
+      "test_id": "single-final-readout"
+    },
+    {
+      "id": "quality-remains-conjunctive",
+      "statement": "latency improvement cannot hide a restoration, clean-preservation, lattice, false-authority, false-split or rollback regression",
+      "test_id": "remote-systemic-proof"
+    },
+    {
+      "id": "verifier-and-rollback-unchanged",
+      "statement": "the existing verifier remains the authorization owner and double Shift retains exact original-token rollback",
+      "test_id": "double-shift-rollback"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "active-caller-to-candidate-producer",
+      "producer": "Nanda-enabled IME daemon and CLI CorrectionRequest modes",
+      "consumer": "canonical L1.1 plus Productive V90 candidate source",
+      "comparison": "all active callers select NandaOnly and no hybrid enum variant or source ordering remains",
+      "test_id": "active-caller-parity"
+    },
+    {
+      "id": "canonical-route-to-runtime-trace",
+      "producer": "canonical-only source route",
+      "consumer": "remote runtime trace",
+      "comparison": "candidate source cardinality, DecisionCore invocation count and deterministic birth count",
+      "test_id": "canonical-route-identity"
+    }
+  ],
+  "runtime_comparisons": [
+    {
+      "id": "hybrid-baseline-to-canonical-only",
+      "source": "fixed remote proof and immediate-Space replay",
+      "comparison": "exact_stable_projection",
+      "stable_fields": [
+        "case_identity",
+        "target_retained",
+        "selected_surface",
+        "selected_gate_action",
+        "selected_transition_operator",
+        "selected_transition_proof",
+        "verifier_effect",
+        "space_wait_budget_us",
+        "productive_package_sha256",
+        "double_shift_restored_surface",
+        "late_edit_count"
+      ],
+      "expected_to_change_fields": [
+        "correction_mode",
+        "executed_candidate_sources",
+        "deterministic_candidate_count",
+        "candidate_surfaces",
+        "candidate_evidence",
+        "correction_total_us",
+        "binary_sha256"
+      ],
+      "observed_not_compared_fields": [
+        "wall_clock_timestamp",
+        "trace_line_number",
+        "managed_process_pid",
+        "online_learning_generation"
+      ],
+      "reason": "remove the legacy producer without hiding changes in selected authority, safety or rollback",
+      "test_id": "canonical-route-identity"
+    }
+  ]
+}

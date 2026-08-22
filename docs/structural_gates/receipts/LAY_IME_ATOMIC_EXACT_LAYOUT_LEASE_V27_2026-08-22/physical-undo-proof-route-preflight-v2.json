@@ -1,0 +1,86 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "physical-undo-proof-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/shell/atomicInputMethodRoute.js",
+      "sha256": "932af7eddb7eb0c931a590ced704a4ee960ffdcb5a0601a318598371bba38b92",
+      "size_bytes": 16911
+    },
+    {
+      "exists": true,
+      "id": "atomic-legacy-bridge-guard",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/bridge_actions.rs",
+      "sha256": "0a0ee33063084260387fc51a28c30c8a824e32b281ae3a5e64db935a8508afa1",
+      "size_bytes": 7775
+    },
+    {
+      "exists": true,
+      "id": "installed-lay-engine",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a",
+      "size_bytes": 6423488
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 3,
+    "forbidden_side_effect_kinds": [
+      "candidate_or_model_change",
+      "historical_receipt_rewrite",
+      "installed_runtime_mutation",
+      "legacy_text_mutation_acceptance",
+      "local_build",
+      "manual_toggle_v2_enablement_in_atomic_mode",
+      "production_lay_source_edit",
+      "verifier_or_safety_gate_weakening"
+    ],
+    "identity_contracts": 2,
+    "invariants": 4,
+    "planned_side_effect_kinds": [
+      "ephemeral_process_start",
+      "filesystem_write",
+      "remote_filesystem_write",
+      "source_edit"
+    ],
+    "preserved_artifacts": 2,
+    "runtime_comparisons": 0,
+    "source_checks": 2,
+    "tests": 7
+  },
+  "manifest_sha256": "a72d851f2d75cc3b4f668a3620ab6354096050ca595209cd7ea36128d7554023",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-physical-undo-proof-source",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/shell/atomicInputMethodRoute.js",
+      "sha256": "932af7eddb7eb0c931a590ced704a4ee960ffdcb5a0601a318598371bba38b92",
+      "size_bytes": 16911
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-atomic-legacy-bridge-guard",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/bridge_actions.rs",
+      "sha256": "0a0ee33063084260387fc51a28c30c8a824e32b281ae3a5e64db935a8508afa1",
+      "size_bytes": 7775
+    }
+  ],
+  "task_id": "LAY_IME_ATOMIC_V27_PHYSICAL_UNDO_PROOF_ROUTE_CORRECTION_V2_2026-08-22",
+  "verdict": "READY_TO_IMPLEMENT"
+}

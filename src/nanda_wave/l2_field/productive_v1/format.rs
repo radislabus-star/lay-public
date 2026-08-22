@@ -246,6 +246,7 @@ pub(super) struct ProductivePackageHeaderV1 {
 #[derive(Clone, Debug)]
 pub(super) struct ProductivePackageViewV1 {
     backing: PackageBytes,
+    package_sha256: [u8; 32],
     pub(super) header: ProductivePackageHeaderV1,
     directory: BTreeMap<ProductiveSectionKindV1, SectionDirectoryEntryV1>,
 }
@@ -261,8 +262,10 @@ impl ProductivePackageViewV1 {
 
     fn from_backing(backing: PackageBytes) -> Result<Self, String> {
         let (header, directory) = decode_and_validate(backing.as_slice())?;
+        let package_sha256 = Sha256::digest(backing.as_slice()).into();
         Ok(Self {
             backing,
+            package_sha256,
             header,
             directory,
         })
@@ -363,7 +366,7 @@ impl ProductivePackageViewV1 {
     }
 
     pub(super) fn package_sha256(&self) -> [u8; 32] {
-        Sha256::digest(self.backing.as_slice()).into()
+        self.package_sha256
     }
 
     pub(super) fn mmap_backed(&self) -> bool {
@@ -1235,6 +1238,8 @@ mod tests {
         assert_eq!(view.header.split_seed, 17);
         assert!(view.section(ProductiveSectionKindV1::SlotKeys).is_empty());
         assert_eq!(view.backing_bytes(), bytes.len());
+        let expected_sha256: [u8; 32] = Sha256::digest(&bytes).into();
+        assert_eq!(view.package_sha256(), expected_sha256);
         assert!(!view.mmap_backed());
     }
 

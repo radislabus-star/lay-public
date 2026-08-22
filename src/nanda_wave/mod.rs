@@ -46,8 +46,8 @@ pub use eval::{evaluate_wave, evaluate_wave_with_options, WaveEvalResult, WaveEv
 pub use l2_candidate_phase::L2PhaseTrainingEntry;
 pub(crate) use l2_candidate_phase::{PhaseReadout, PhaseVerdict};
 pub use l2_field::{
-    audit_productive_anchor_recovery_v1, canonical_l2_status, compact_canonical_l2_package,
-    compile_canonical_l2_package, compile_productive_l2_sidecar,
+    audit_productive_anchor_recovery_v1, candidate_material_generation, canonical_l2_status,
+    compact_canonical_l2_package, compile_canonical_l2_package, compile_productive_l2_sidecar,
     compile_productive_paradigm_field_v1, default_l2_model_dir, discover_installed_l2_package,
     discover_installed_productive_l2_sidecar, discover_installed_productive_l2_v1_package,
     estimate_productive_semantic_transducer_heldout_v1, estimate_productive_semantic_transducer_v1,
@@ -56,8 +56,8 @@ pub use l2_field::{
     prove_contextual_compositional_l2_restoration, prove_productive_l2_restoration,
     prove_productive_l2_sidecar, prove_productive_paradigm_field_v1,
     prove_productive_paradigm_field_v1_semantic, query_canonical_l2_package,
-    query_live_canonical_l2, reinduce_productive_paradigm_field_v1, reload_productive_l2_sidecar,
-    reload_productive_l2_v1, resume_productive_paradigm_field_v1,
+    query_live_canonical_l2, query_live_productive_v90, reinduce_productive_paradigm_field_v1,
+    reload_productive_l2_sidecar, reload_productive_l2_v1, resume_productive_paradigm_field_v1,
     resume_productive_paradigm_field_v1_shared_support, CANONICAL_L2_ACTIVE_LEMMA_LIMIT,
     CANONICAL_L2_ATOM_RELATION_LIMIT, CANONICAL_L2_FEATURE_LIMIT, CANONICAL_L2_FORM_LIMIT,
     CANONICAL_L2_LEMMA_FRONTIER, CANONICAL_L2_PRODUCTIVE_FORM_LIMIT,
@@ -1645,6 +1645,18 @@ pub fn warm_up_l2_for_ime() {
 pub fn warm_up_l3_phrase_memory() {
     context_phase::warm_default_memory();
     let _ = llmwave::load_default_memory();
+}
+
+pub(crate) fn warm_up_exact_layout_terminal_authority() -> Option<u64> {
+    lexical_phase::default_memory().map(lexical_phase::LexicalPhaseMemory::corpus_fingerprint)
+}
+
+pub(crate) fn exact_layout_terminal_contains_if_warm(
+    surface: &str,
+    expected_fingerprint: u64,
+) -> Option<bool> {
+    let memory = lexical_phase::default_memory_if_warm()?;
+    (memory.corpus_fingerprint() == expected_fingerprint).then(|| memory.contains_surface(surface))
 }
 
 pub fn ensure_l2_ime_warmup_started() {

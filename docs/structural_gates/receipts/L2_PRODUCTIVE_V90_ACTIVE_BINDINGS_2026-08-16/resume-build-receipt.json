@@ -1,0 +1,86 @@
+{
+  "actual_calibration": {
+    "authority_blocked_by_target_loss": true,
+    "candidate_rows": 3599,
+    "fitted_groups": 121,
+    "source_groups": 1348,
+    "target_lost_groups": 1227,
+    "target_retained_groups": 121
+  },
+  "anchor_recovery_support_policy": "fine_applicability_with_shared_certificate",
+  "evidence": {
+    "bootstrap_calibration_groups": 1348,
+    "context_occurrence_events": 15942,
+    "direct_contradiction_events": 20,
+    "exact_only_morphology_events": 74,
+    "exact_only_morphology_forms": 74,
+    "excluded_context_occurrence_events": 47,
+    "excluded_direct_contradiction_events": 0,
+    "feedback_events": 0,
+    "phase_profiles": 50750,
+    "proof_events": 2501633,
+    "selected_phase_centers": 0,
+    "training_pairs": 20
+  },
+  "induction": {
+    "anchor_recovery_definitions": 62115,
+    "bound_lemma_pos_basins": 94151,
+    "exact_allomorph_observations": 5824,
+    "paradigms": 2099,
+    "transferable_observations": 2595033,
+    "transition_observations": 2600857
+  },
+  "kind": "l2_productive_paradigm_field_v1_resume_after_induction",
+  "package": {
+    "anchor_recovery": {
+      "bytes": 2123112,
+      "indexes": 161,
+      "operations": 43736,
+      "path": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2r",
+      "postings": 62115,
+      "programs": 10793,
+      "sha256": "de7972c80448dc792759d70de99cda6ec48c3d6af337763856601db563ab167e",
+      "shared_support_certified_postings": 25200
+    },
+    "bindings": 94151,
+    "bytes": 17309944,
+    "mmap_backed": true,
+    "operations": 270449,
+    "paradigms": 2099,
+    "path": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+    "programs": 77854,
+    "resident_cache_bytes": 12927216,
+    "sha256": "40fb6a9f0d92c3c7502e47f9c70230d9b86020f622b08a5c799342f13e09ce44",
+    "terminals": 72104,
+    "trie_arcs": 80247,
+    "trie_nodes": 82346
+  },
+  "proof_status": "PENDING_fixed_read_only_proof",
+  "reduced": {
+    "imported_identity_verified": true,
+    "train_events": 2600857,
+    "train_forms": 2600857,
+    "train_lemmas": 74852
+  },
+  "reused_complete_stages": [
+    "raw_corpus_pass",
+    "morphology_external_sort",
+    "imported_ownership_reduce",
+    "transition_paradigm_induction",
+    "context_typed_replay",
+    "context_external_sort"
+  ],
+  "runtime_authority_changed": false,
+  "stage_timings_ms": {
+    "actual_candidate_calibration": 12607,
+    "bootstrap_package": 9210,
+    "evidence_reduce_and_fit": 12709,
+    "final_deterministic_package": 7985,
+    "resume_induce_shared_support_anchor_recovery": 41526,
+    "resume_reopen_induction": 4971,
+    "resume_reopen_reduced_morphology": 8183
+  },
+  "total_ms": 97346,
+  "verdict": "PASS_shadow_suggest_only_package",
+  "workers": 20
+}

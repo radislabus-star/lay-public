@@ -687,6 +687,17 @@ fn main() -> io::Result<()> {
         );
         return Ok(());
     }
+    if let Some(text) = arg_string(&args, "--query-live-productive-v90") {
+        let report = lay::nanda_wave::query_live_productive_v90(
+            &text,
+            arg_usize(&args, "--repeat").unwrap_or(200),
+        )?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
     if let Some(text) = arg_string(&args, "--query-live-l2-context") {
         println!(
             "{}",
@@ -1709,6 +1720,7 @@ fn print_usage() {
 	           --estimate-productive-semantic-transducer-v1 PACKAGE.p2m [--receipt PATH]\n\
 	           --estimate-productive-semantic-transducer-heldout-v1 PACKAGE.p2m --memory L1.bin --l2-package L2.bin --axis-schema AXIS.json --work-dir DIR [--heldout-per-class N] [--workers N] [--receipt PATH]\n\
            --query-live-l2 TEXT [--repeat N] [--productive-lemma-limit N]\n\
+           --query-live-productive-v90 TEXT [--repeat N]\n\
            --query-live-l2-context TEXT\n\
            --l3-context-phase-status [--memory PATH]\n\
            --l4-cross-scene-status PATH\n\

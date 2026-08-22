@@ -1,0 +1,127 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "lexical_input", "role": "interface"},
+    {"id": "typed_contour_enumerator", "role": "producer"},
+    {"id": "l11_grounding_adapter", "role": "producer"},
+    {"id": "context_neutral_productive_enumerator", "role": "producer"},
+    {"id": "enumeration_completeness", "role": "evidence_owner"},
+    {"id": "prepared_target_material", "role": "evidence_owner"},
+
+    {"id": "frame_event", "role": "interface"},
+    {"id": "frame_target_binder", "role": "evidence_owner"},
+    {"id": "frame_target_assessments", "role": "evidence_owner"},
+    {"id": "frame_original_preservation", "role": "evidence_owner"},
+    {"id": "conflict_cohort_readout", "role": "evidence_owner"},
+    {"id": "context_frame_evidence", "role": "evidence_owner"},
+    {"id": "context_tie_selector", "role": "candidate_rank_owner"},
+    {"id": "context_calibration_guard", "role": "authorization_owner"},
+    {"id": "context_shadow_observer", "role": "observer"},
+
+    {"id": "abstain_readout", "role": "candidate_rank_owner"},
+    {"id": "abstain_observer", "role": "observer"},
+    {"id": "decision_core", "role": "candidate_rank_owner"},
+    {"id": "compound_edit_authorization", "role": "authorization_owner"},
+    {"id": "event_mutator", "role": "mutation_owner"}
+  ],
+  "edges": [
+    {"id": "exec-input-contours", "from": "lexical_input", "relation": "calls", "to": "typed_contour_enumerator", "events": ["material_prepare"]},
+    {"id": "exec-contours-l11", "from": "typed_contour_enumerator", "relation": "delegates", "to": "l11_grounding_adapter", "events": ["material_prepare"]},
+    {"id": "exec-l11-productive", "from": "l11_grounding_adapter", "relation": "delegates", "to": "context_neutral_productive_enumerator", "events": ["material_prepare"]},
+    {"id": "exec-productive-completeness", "from": "context_neutral_productive_enumerator", "relation": "delegates", "to": "enumeration_completeness", "events": ["material_prepare"]},
+    {"id": "exec-completeness-material", "from": "enumeration_completeness", "relation": "delegates", "to": "prepared_target_material", "events": ["material_prepare"]},
+    {"id": "data-contours-l11", "from": "typed_contour_enumerator", "relation": "passes_to", "to": "l11_grounding_adapter", "events": ["material_prepare"]},
+    {"id": "data-l11-productive", "from": "l11_grounding_adapter", "relation": "passes_to", "to": "context_neutral_productive_enumerator", "events": ["material_prepare"]},
+    {"id": "data-productive-completeness", "from": "context_neutral_productive_enumerator", "relation": "passes_to", "to": "enumeration_completeness", "events": ["material_prepare"]},
+    {"id": "data-completeness-material", "from": "enumeration_completeness", "relation": "passes_to", "to": "prepared_target_material", "events": ["material_prepare"]},
+
+    {"id": "exec-frame-bind", "from": "frame_event", "relation": "calls", "to": "frame_target_binder", "events": ["frame_l2_winner", "frame_context_tie", "frame_preserve", "frame_overflow"]},
+    {"id": "data-material-bind", "from": "prepared_target_material", "relation": "passes_to", "to": "frame_target_binder", "events": ["frame_l2_winner", "frame_context_tie", "frame_preserve", "frame_overflow"]},
+    {"id": "exec-bind-assess", "from": "frame_target_binder", "relation": "delegates", "to": "frame_target_assessments", "events": ["frame_l2_winner", "frame_context_tie", "frame_overflow"]},
+    {"id": "data-bind-assess", "from": "frame_target_binder", "relation": "passes_to", "to": "frame_target_assessments", "events": ["frame_l2_winner", "frame_context_tie", "frame_overflow"]},
+    {"id": "exec-assess-cohort", "from": "frame_target_assessments", "relation": "delegates", "to": "conflict_cohort_readout", "events": ["frame_l2_winner"]},
+    {"id": "data-assess-cohort", "from": "frame_target_assessments", "relation": "passes_to", "to": "conflict_cohort_readout", "events": ["frame_l2_winner"]},
+
+    {"id": "exec-cohort-l2-decision", "from": "conflict_cohort_readout", "relation": "delegates", "to": "decision_core", "events": ["frame_l2_winner"]},
+    {"id": "data-cohort-l2-decision", "from": "conflict_cohort_readout", "relation": "passes_to", "to": "decision_core", "events": ["frame_l2_winner"]},
+    {"id": "exec-l2-decision-authorize", "from": "decision_core", "relation": "delegates", "to": "compound_edit_authorization", "events": ["frame_l2_winner"]},
+    {"id": "data-l2-decision-authorize", "from": "decision_core", "relation": "passes_to", "to": "compound_edit_authorization", "events": ["frame_l2_winner"]},
+    {"id": "exec-l2-authorize-mutate", "from": "compound_edit_authorization", "relation": "delegates", "to": "event_mutator", "events": ["frame_l2_winner"]},
+    {"id": "data-l2-authorize-mutate", "from": "compound_edit_authorization", "relation": "authorizes", "to": "event_mutator", "events": ["frame_l2_winner"]},
+
+    {"id": "exec-assess-context-evidence", "from": "frame_target_assessments", "relation": "delegates", "to": "context_frame_evidence", "events": ["frame_context_tie"]},
+    {"id": "data-assess-context-evidence", "from": "frame_target_assessments", "relation": "passes_to", "to": "context_frame_evidence", "events": ["frame_context_tie"]},
+    {"id": "exec-context-evidence-cohort", "from": "context_frame_evidence", "relation": "delegates", "to": "conflict_cohort_readout", "events": ["frame_context_tie"]},
+    {"id": "data-context-evidence-cohort", "from": "context_frame_evidence", "relation": "passes_to", "to": "conflict_cohort_readout", "events": ["frame_context_tie"]},
+    {"id": "exec-context-select", "from": "conflict_cohort_readout", "relation": "delegates", "to": "context_tie_selector", "events": ["frame_context_tie"]},
+    {"id": "data-context-select", "from": "conflict_cohort_readout", "relation": "passes_to", "to": "context_tie_selector", "events": ["frame_context_tie"]},
+    {"id": "exec-context-calibration", "from": "context_tie_selector", "relation": "delegates", "to": "context_calibration_guard", "events": ["frame_context_tie"]},
+    {"id": "exec-context-shadow", "from": "context_calibration_guard", "relation": "delegates", "to": "context_shadow_observer", "events": ["frame_context_tie"]},
+    {"id": "observe-context-shadow", "from": "context_calibration_guard", "relation": "observes", "to": "context_shadow_observer", "events": ["frame_context_tie"]},
+
+    {"id": "exec-frame-preserve", "from": "frame_target_binder", "relation": "delegates", "to": "frame_original_preservation", "events": ["frame_preserve"]},
+    {"id": "exec-preserve-abstain", "from": "frame_original_preservation", "relation": "delegates", "to": "abstain_readout", "events": ["frame_preserve"]},
+    {"id": "exec-preserve-abstain-observer", "from": "abstain_readout", "relation": "delegates", "to": "abstain_observer", "events": ["frame_preserve"]},
+    {"id": "observe-preserve-abstain", "from": "abstain_readout", "relation": "observes", "to": "abstain_observer", "events": ["frame_preserve"]},
+
+    {"id": "exec-assess-overflow-abstain", "from": "frame_target_assessments", "relation": "delegates", "to": "abstain_readout", "events": ["frame_overflow"]},
+    {"id": "exec-overflow-abstain-observer", "from": "abstain_readout", "relation": "delegates", "to": "abstain_observer", "events": ["frame_overflow"]},
+    {"id": "observe-overflow-abstain", "from": "abstain_readout", "relation": "observes", "to": "abstain_observer", "events": ["frame_overflow"]}
+  ],
+  "routes": [
+    {
+      "id": "material-prepare-execution",
+      "event": "material_prepare",
+      "kind": "execution",
+      "entry": "lexical_input",
+      "terminal": "prepared_target_material",
+      "required_roles": ["interface", "producer", "evidence_owner"],
+      "path_cardinality": [{"from": "lexical_input", "to": "prepared_target_material", "min": 1, "max": 1}]
+    },
+    {
+      "id": "frame-l2-execution",
+      "event": "frame_l2_winner",
+      "kind": "execution",
+      "entry": "frame_event",
+      "terminal": "event_mutator",
+      "required_roles": ["interface", "evidence_owner", "candidate_rank_owner", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "frame_event", "to": "event_mutator", "min": 1, "max": 1}]
+    },
+    {
+      "id": "frame-l2-authority",
+      "event": "frame_l2_winner",
+      "kind": "authority",
+      "entry": "conflict_cohort_readout",
+      "terminal": "event_mutator",
+      "required_roles": ["candidate_rank_owner", "authorization_owner", "mutation_owner"]
+    },
+    {
+      "id": "frame-context-shadow-execution",
+      "event": "frame_context_tie",
+      "kind": "execution",
+      "entry": "frame_event",
+      "terminal": "context_shadow_observer",
+      "required_roles": ["interface", "evidence_owner", "candidate_rank_owner", "authorization_owner", "observer"],
+      "path_cardinality": [{"from": "frame_event", "to": "context_shadow_observer", "min": 1, "max": 1}]
+    },
+    {
+      "id": "frame-preserve-execution",
+      "event": "frame_preserve",
+      "kind": "execution",
+      "entry": "frame_event",
+      "terminal": "abstain_observer",
+      "required_roles": ["interface", "evidence_owner", "candidate_rank_owner", "observer"],
+      "path_cardinality": [{"from": "frame_event", "to": "abstain_observer", "min": 1, "max": 1}]
+    },
+    {
+      "id": "frame-overflow-execution",
+      "event": "frame_overflow",
+      "kind": "execution",
+      "entry": "frame_event",
+      "terminal": "abstain_observer",
+      "required_roles": ["interface", "evidence_owner", "candidate_rank_owner", "observer"],
+      "path_cardinality": [{"from": "frame_event", "to": "abstain_observer", "min": 1, "max": 1}]
+    }
+  ]
+}

@@ -1171,6 +1171,887 @@ Runtime authority changed:
 
 - `false`
 
+## 13. 2026-08-16 Immediate-Space Delivery Boundary
+
+The fixed managed-IME replay disproved the assumption that scheduling the
+correction projection first was sufficient. The Productive V90 field is
+single-flighted, but deterministic candidate material still runs outside that
+reusable field on one non-preemptive correction worker.
+
+Measured facts from the fixed `4` warmup plus `20` eligible replay:
+
+```text
+eligible NotReady                            20 / 20
+eligible correction projections              4 / 20
+eligible display projections                20 / 20
+late edits after fallback                         0
+Space p99                                  8.245 ms
+printable p99                              0.194 ms
+late final correction runs        108.974-125.444 ms
+late final DecisionCore portion          0.311-0.588 ms
+late final correction L3 portion         0.020-0.067 ms
+late final L1.1 / Productive V90                 0 / 0
+```
+
+Thus the first loss is before `DecisionCore`: deterministic candidate
+materialization occupies the correction worker. A later character supersedes
+the desired generation but cannot preempt the already running generation.
+When Space arrives, the final generation is either still queued or itself far
+over the deadline. Literal fallback correctly prevents a delayed mutation, but
+the correction is lost.
+
+A remote optimized focused profile separated this stage without changing
+runtime authority:
+
+```text
+deterministic candidate total             309.176 ms
+Boundary birth                              0.001 ms
+primary typing-rule pass                  262.995 ms
+composite candidate pass                   46.160 ms
+experimental_layout_ru_to_en              186.075 ms
+single_letter_substitution                 25.014 ms
+```
+
+The number is a cold focused-unit observation, not a physical latency
+percentile. Its architectural result is nevertheless conclusive: Boundary
+generation is not the bottleneck. Layout protection expands Russian typo
+evidence, the normal typo lane repeats those searches, and the composite lane
+performs another word-only expansion. These pure word-repair results must be
+materialized once and reused by typed operation identity.
+
+The canonical ownership boundary is therefore refined to:
+
+```text
+immutable reusable material
+├── Productive V90 field material
+└── pure deterministic token/local-structure candidate material
+            |
+            v
+per-frame current-context projection
+-> L3/L4/DecisionCore
+-> PreparedCorrectionLease(InputFrameIdentity)
+-> verifier
+-> committed-tail mutator
+```
+
+Reusable material may be retained after GUI-frame supersession because it has
+no mutation authority. The following objects remain strictly per-frame and
+must be discarded on supersession: selected winner, online context scores,
+`AuthorizedEdit`, exact GUI identity, feedback state and mutation permission.
+
+The bounded worker may preserve one final queued request as `material_only`
+after literal fallback. It may populate the pure material memo, but its
+superseded generation cannot publish a lease. A later printable replaces this
+single queued item; no per-key thread or unbounded backlog is permitted.
+
+Rejected consequences:
+
+- extending the Space wait would move the lag into the input thread;
+- one worker per printable would multiply stale dictionary work and CPU tails;
+- caching final decisions would freeze online context and create stale
+  authority;
+- a Boundary-only bypass would remove morphology and lexical competitors;
+- literal token exceptions would repair fixtures rather than the mechanism.
+
+The next proof must report hot reuse and cold first-touch separately. A hot
+PASS does not prove a cold unknown token can finish inside `8 ms`.
+
+Exact receipt:
+
+`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice5/immediate-space-replay-attempt2.json`
+
+Runtime authority changed:
+
+- `false`
+
+## 13. 2026-08-16 Unified Token Field Slice 2
+
+The live Productive V90 route now has one bounded immutable field owner:
+
+```text
+exact scene + ordered L1.1 seeds + package generation
+-> CanonicalTokenKey
+-> bounded single-flight cache
+-> Arc<PreparedCanonicalTokenField>
+-> separate text or IME materialization
+-> request-time L3/L4
+-> DecisionCore
+-> verifier
+```
+
+The cache holds at most `128` ready fields and `32` computing keys, with at
+most `8` waiters on one key. A producer computes outside the mutex. Transient
+failure is removed rather than cached as lexical truth. Package reload advances
+the generation, clears ready entries and rejects an old producer publication.
+
+One rejected intermediate exposed an identity-cost defect. The structural key
+correctly included Productive package SHA-256, but the accessor recomputed the
+digest over the complete `16.5 MiB` mmap twice on every cache lookup. A cache
+hit therefore took up to `160.398 ms` even though candidate materialization was
+about `0.3 ms`. The package view now computes and stores its exact 32-byte
+digest once during checked immutable admission. Explicit reload remains the
+only generation transition and invalidates dependent caches.
+
+Measured release facts:
+
+```text
+format/cache/live focused tests                    17 / 17 PASS
+baseline/new semantic projections                    4 / 4 PASS
+ordered candidate/authority mismatches                       0
+
+morphology hot p99                              4.643 -> 4.287 ms
+glued hot p99                                   4.046 -> 3.083 ms
+damaged-prefix hot p99                          8.060 -> 8.187 ms
+
+ready request cache disposition              1 producer + 199 hits
+release benchmark binary                              11,030,088 B
+standalone benchmark peak RSS                 316,004-319,368 KiB
+runtime authority changed                                    false
+```
+
+The general `<=5 ms` gate is still open because the damaged-prefix route is
+`8.187 ms` p99. This is reported separately from the accepted single-flight
+mechanism. Slice 2 permits the shared GUI identity and scheduling work in Slice
+3; it does not authorize deployment or claim full quality/latency promotion.
+
+Exact receipt:
+
+`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice2-single-flight-reuse.json`
+
+## 13. 2026-08-16 Productive V90 Active-Binding Rebuild
+
+### What Was Tested
+
+The frozen Productive V90 induction was copied to a new isolated remote work
+root and resumed against the active L1.1 V9 package and unchanged canonical L2
+V13 package. Shared-support recovery, evidence reduction, calibration and final
+package compilation completed without touching the installed Lay runtime.
+
+### Measured Facts
+
+```text
+L1.1 V9 SHA-256                      bf5a1619a89038466ef786305cf35eda5f4af5b9f12b9140f7d3cac407e2f2a7
+canonical L2 V13 SHA-256             cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b
+Productive package bytes             17,309,944
+Productive package SHA-256           40fb6a9f0d92c3c7502e47f9c70230d9b86020f622b08a5c799342f13e09ce44
+recovery sidecar bytes                2,123,112
+recovery sidecar SHA-256             de7972c80448dc792759d70de99cda6ec48c3d6af337763856601db563ab167e
+resume wall                               97.37 s
+resume peak RSS                         627,440 KiB
+manifest entries / H                  1,300 / 1,280
+frozen payload SHA-256               2f54844d7f7900734049d2ed2ae53150eead60da3223c0efc4256ba804b7f89b
+runtime authority changed                         false
+```
+
+The compiler verdict is `PASS_shadow_suggest_only_package`, with
+`authority_blocked_by_target_loss=true`. Package construction therefore does
+not prove morphology quality or authorize installation.
+
+### Proof Identity Boundary
+
+The old frozen manifest names Productive `9fd8c950...` and L1.1 `47fa757a...`.
+The new package names Productive `40fb6a9f...` and L1.1 `bf5a1619...`. Proof
+code must admit these only as two exact atomic generation rows while retaining
+the unchanged spool, canonical package, axis schema, manifest payload, 1,300
+case identities, `H=1,280`, and oracle bindings. Cross-generation pairs and
+unknown digests remain rejected. The frozen manifest is not rewritten.
+
+### What Was Not Tested
+
+- fixed `13 x 100 x 2` Productive quality and safety proof;
+- installed Productive admission;
+- daemon or IBus latency and physical input;
+- the later unified-token-field runtime slices.
+
+### Verdict
+
+- package build: `PASS_shadow_suggest_only_package`;
+- quality/safety parity: `EXACT` against the accepted semantic V90 baseline;
+- automatic latency gate: `FAIL_measured_shadow_gates` at `5.286 ms` versus
+  the frozen `5.000 ms` threshold;
+- deployment: approved only as a fingerprint-only rebind under the existing
+  receipt-scoped `5.317 ms` V90 exception;
+- runtime authority changed: `false`.
+
+Exact receipts:
+
+```text
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_2026-08-16/resume-build-receipt.json
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_2026-08-16/resume-build.time.txt
+```
+
+### Fixed Proof And Semantic Identity
+
+The first full replay accidentally selected `shared_replay_owner=legacy`. Its
+raw top-1 `272` and `2,526` base-projection failures are retained as
+non-normative route-error evidence. They do not characterize Productive V90.
+
+The corrected semantic proof measured `H/B/S0=1280/1280/1280`, semantic/base
+raw top-1 `1109/267`, zero base-projection failures, zero false singleton and
+zero integrity errors. The clean one-worker proof produced exact old/new
+quality and safety parity across `2,600` cases and all `2,600` independent
+probe comparisons. New maximum class p99 is `5.286 ms`, compared with the
+already accepted old V90 checkpoint of `5.317 ms`.
+
+The formal automatic verdict remains `FAIL_measured_shadow_gates`; the frozen
+`5.000 ms` threshold was neither edited nor reported as passing. The deployment
+decision reuses only the 2026-08-12 receipt-scoped V90 exception because the new
+generation is the same semantics bound to active L1.1 V9 and is faster than the
+accepted generation.
+
+Byte comparison proves the scope:
+
+```text
+Productive payload after 256-byte header
+  SHA-256  6a959bf04e5011b576c333b87cd00a0c400d5b735581a259c1af89e0fc03aeb8
+  verdict  byte-identical
+
+recovery payload after 256-byte header
+  SHA-256  ad3d1c03d3a48fc81838d63644f3be51fc0d7d2405e0850f73a71ad5730a31ed
+  verdict  byte-identical
+```
+
+Only the Productive header L1.1 fingerprint/checksum and the recovery header's
+base-package SHA-256 differ. No morphology payload, candidate ordering,
+authority rule or runtime route changed.
+
+Exact receipts:
+
+```text
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_2026-08-16/productive-v90-active-v9-v13-full-13x100.json
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_2026-08-16/productive-v90-active-v9-v13-semantic-full-13x100.json
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_2026-08-16/productive-v90-active-v9-v13-semantic-normative-clean-workers1-13x100.json
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_2026-08-16/baseline-v90-semantic-normative-clean-workers1-13x100.json
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_DEPLOY_DECISION_2026-08-16.json
+```
+
+### Live Active-Binding Deployment
+
+The V9-bound pair was installed over the incompatible generation after a full
+rollback snapshot. The installed `1.0.33` loader admitted the exact pair before
+managed runtime reload. Only `lay-daemon` and the managed `lay-ibus-engine`
+were restarted; global `ibus-daemon` remained PID `3702`.
+
+```text
+status                                      ready_live_owner
+Productive SHA-256                          40fb6a9f0d92c3c7502e47f9c70230d9b86020f622b08a5c799342f13e09ce44
+recovery SHA-256                            de7972c80448dc792759d70de99cda6ec48c3d6af337763856601db563ab167e
+daemon PID / package maps                   1447582 / 2
+managed engine PID / package maps           1447607 / 2
+global IBus PID                             3702
+rollback                                    /home/ubu/.local/lib/lay/rollback/1.0.33-pre-v90-v9-20260816-064416
+```
+
+Installed direct-query measurements exposed a route mismatch:
+
+```text
+legacy helper cold query                    1.542-2.113 s
+legacy helper cached field p99              0.799-2.690 ms
+legacy helper whole p99                     7.078-9.631 ms
+legacy helper samples                       4 x 200 hot
+four-process stable PSS                     756,319 KiB
+```
+
+`--query-live-l2` still calls the legacy
+`standalone_surface_field_readout_with_productive_limit()` route. Current live
+display and correction paths instead call
+`canonical_owned_text_candidates() -> Productive V90`. These numbers are
+therefore non-normative route-drift evidence and neither pass nor fail live
+latency. Cold live traces measured `3.077-3.523 s` including first package
+admission, while the inner Productive stages were sub-millisecond. Package
+owner restoration is a PASS; installed hot latency remains `UNKNOWN` until a
+dedicated same-process live-owner benchmark exists.
+
+Exact receipt:
+
+`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_LIVE_DEPLOY_2026-08-16.json`
+
+## 46. 2026-08-16 Unified IME Token Field Plan
+
+The `данорм -> да норм` physical failure was narrowed to a delivery failure,
+not a literal-word or Boundary-birth defect. The full correction route can
+produce the Boundary candidate, but the matching Space decision may not be
+ready inside the existing 8 ms wait budget.
+
+The paper design selects one immutable canonical L1.1 -> Productive V90 token
+field with two typed projections:
+
+```text
+one canonical token identity
+-> one bounded single-flight L2 field owner
+   -> display projection, no mutation authority
+   -> correction projection, full candidate competition
+-> exact Space lease
+-> verifier
+-> one committed-tail mutator
+```
+
+The design deliberately does not serialize both projections in one worker.
+Display and correction have different deadlines and feedback semantics; one
+serial executor would create head-of-line blocking. They may use separate
+background consumers, but they must share one immutable field computation and
+must not create a second correction authority route.
+
+Measured prerequisite status at design time:
+
+```text
+Productive V90 status     unavailable
+reason                    package fingerprint mismatch
+runtime authority changed false
+```
+
+Therefore implementation remains `BLOCKED_BEFORE_CODE` until a Productive V90
+package matching the active L1.1 and canonical V13 hashes is admitted and
+warmed. Fingerprint validation must not be weakened, and a Boundary-only fast
+return is forbidden because it would hide the failed morphology owner and
+remove candidate competition.
+
+Full consequence analysis, state machines, file slices, rollback policy and
+promotion gates:
+
+`/home/ubu/projects/lay-l1-exact-peak-search/docs/ime-unified-token-field-implementation-plan-2026-08-16.md`
+
+Design route contract:
+
+`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_UNIFIED_TOKEN_FIELD_ROUTE_2026-08-16.json`
+
+Exact structural receipt:
+
+`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_ROUTE_DESIGN_2026-08-16.json`
+
+### 46.1 Implemented GUI identity and Space lease
+
+The design prerequisite was later restored without weakening package
+fingerprints. Slices 1 and 2 extracted and single-flighted the immutable field;
+Slice 3 now implements the GUI ownership boundary:
+
+```text
+managed printable commit
+-> publish tail_epoch
+-> capture one InputFrameIdentity
+-> schedule prepared Space correction first
+-> schedule passive display from the same identity
+
+Space
+-> take exact single-consumer lease
+-> cancel display generation only
+-> revalidate path/focus/tail_epoch/exact tail/layout/config
+-> verifier + one committed-tail mutator
+   | ready and authorized -> replacement + exactly one Space
+   | absent/stale/blocked -> exactly one literal Space, no late edit
+```
+
+`PrecognitionIdentity` and `SpaceAutocorrectKey` no longer exist as competing
+partial identities. Backspace, focus/reset, layout and config transitions
+invalidate stale work. Display cancellation alone does not invalidate a
+matching correction lease.
+
+The first complete IBus test run exposed one independent adapter leak: a
+multi-token Boundary replacement was shown as passive preedit. The repair is
+operation-shaped, not lexical: whitespace-bearing replacements stay available
+to the verified Space route but are excluded from passive display. The final
+remote target is `202 / 202 PASS`; installed runtime remains `1.0.33` and was
+not changed.
+
+Exact measured receipt:
+
+`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice3-shared-gui-identity.json`
+
+What was tested:
+
+- structural separation of correction preparation, display refresh, ready
+  Space apply, literal-Space fallback, observation and proof routes;
+- one owner per typed role inside each named event;
+- exact static path cardinality for the declared design.
+
+Measured structural result:
+
+```text
+verdict                              PASS
+nodes                                  20
+edges                                  33
+issues                                  0
+warnings                                0
+ready_for_implementation_preflight   true
+safe_to_edit                         false
+```
+
+What was not tested:
+
+- source parity of the proposed design;
+- implementation correctness;
+- candidate-quality parity;
+- latency, CPU or RSS after the proposed refactor;
+- physical GUI behavior.
+
+Runtime authority changed:
+
+- `false`
+
+### 46.2 Implemented observability and source-bound route
+
+Slice 4 removes telemetry ambiguity without moving semantic authority. The
+canonical field now returns typed timing and single-flight evidence to each
+caller. Display and correction project that evidence independently, while
+Space records only consumption of the prepared correction lease:
+
+```text
+InputFrameIdentity
+-> correction worker -> canonical single-flight field -> correction readout
+   -> PreparedCorrectionLease
+   -> correction projection receipt
+-> display worker -> same canonical single-flight field -> display readout
+   -> preedit renderer
+   -> display projection receipt
+
+Space
+-> exact lease lookup
+-> ready: verifier -> backend authorizer -> committed-tail mutator
+-> miss/stale/blocked: literal user-Space mutator
+-> lease outcome receipt
+```
+
+The ready correction and literal fallback have different physical mutation
+functions and are mutually exclusive event scenarios. Calling both one source
+callsite would be false. Each event still has exactly one mutation owner; the
+literal fallback is not a second committed-tail replacement authority.
+
+The field projection trace contains worker generation, tail epoch, engine path,
+field producer count, cache disposition, field generation, L1.1 time,
+Productive V90 time, display/semantic/correction L3 time and decision totals.
+The Space lease outcome is a closed typed set:
+
+```text
+ready | not_ready | stale | unauthorized | applied
+```
+
+The obsolete direct `canonical_ime_candidates()` wrapper and the obsolete
+non-observed `into_resolution_with_peak_context()` entry were removed only
+after their observed replacements preserved the semantic wrappers. Ranking,
+candidate bytes, verifier behavior and runtime authority were not changed.
+
+Measured software evidence:
+
+```text
+remote lay-ibus-engine tests            205 / 205 PASS
+observed-source nodes / edges              26 / 38
+observed-source routes                          15
+source evidence                          64 / 64 PASS
+issues / warnings                             0 / 0
+installed Lay                                  1.0.33
+runtime authority changed                        false
+```
+
+The first full run was `204 / 205` because a static test still required the
+removed legacy readout wrapper; only that test contract changed. The first
+source-bound packet had `65 / 65` valid markers but returned `VETO` because the
+paper packet mislabeled the lease as a producer after a rank owner. Reclassifying
+the lease as an orchestrator and ending correction authority at the readout
+resolved the paper defect without touching runtime code.
+
+Not yet proved:
+
+- actual physical per-frame projection cardinality;
+- fixed immediate-Space eligible `NotReady` rate;
+- Space and printable latency percentiles;
+- aggregate restoration, false authority, glued-word recall and false-split
+  quality;
+- physical WeChat, Telegram and browser behavior;
+- release build, deployment and rollback.
+
+Exact receipts:
+
+`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice4-observability-and-duplicate-removal.json`
+
+`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice4-observed-source-route.json`
+
+### 46.3 Canonical-only correction route and physical-token ownership
+
+The active hybrid correction route is rejected. With Nanda enabled, the source
+route must contain one candidate producer chain:
+
+```text
+active input
+-> one canonical token extractor
+-> bounded L1.1 lattice
+-> Productive V90
+-> one final candidate lattice
+-> one DecisionCore
+-> verifier
+```
+
+`DeterministicThenNanda` and its ordered pair of candidate producers have been
+removed from the source. `DeterministicOnly` remains a disjoint explicit mode
+only when Nanda is disabled; it is not a fallback after a canonical abstention,
+timeout, unavailable package, or empty L1.1 lattice.
+
+The first canonical-only proof exposed a token-ownership defect before L1.1:
+
+```text
+physical IME token       current bridge token       result
+ytn                      ytn, then rejected          UnsupportedInput
+cj,frf                   frf                         wrong query identity
+```
+
+The L1.1 V9 package itself is not the source of those two losses. A direct
+bounded query against the admitted V9 package measured:
+
+```text
+ytn, limit 32            contains нет at rank 2
+cj,frf, limit 8          contains only собака
+врмея, limit 8           contains время at rank 1
+звгрузи, limit 8         empty lattice
+```
+
+Therefore the next source change is one systemic extractor, not another
+candidate lane. It must preserve the complete physical layout surface,
+including layout-letter punctuation, and admit only one of these typed inputs:
+
+```text
+Cyrillic lexical token
+ASCII physical-layout surface
+```
+
+URLs, CLI options, technical identifiers, protected ASCII tokens, and known
+English words fail closed before L1.1. The accepted token bytes must be reused
+unchanged by L1.1, the Productive V90 cache key, field preparation, field
+materialization, and candidate transition classification. A layout-derived
+Russian surface must retain `CandidateOrigin::Layout`; it must not be relabeled
+as a generic L2 lexical mutation.
+
+`звгрузи -> загрузи` is a separate measured empty-seed mechanism at L1.1. It is
+not permission to restore `deterministic_text_candidates()` to the active
+route. Its class must be measured and repaired at the wave contour or retained
+as `ABSTAIN` until that independent gate passes.
+
+What was tested at this checkpoint:
+
+- the admitted V9 package was queried directly for the four surfaces above;
+- the active source callers were statically inspected after hybrid-mode
+  removal;
+- the physical-token loss was localized to
+  `canonical_owned_text_candidates_observed()` before the L1.1 socket call.
+
+What was not yet tested:
+
+- the new extractor implementation;
+- Productive V90 materialization from layout-derived L1.1 seeds;
+- aggregate layout, lexical, boundary, clean-preservation, false-authority,
+  false-split, latency, or double-Shift rollback gates;
+- release build, deployment, or physical GUI behavior.
+
+Verdict scope: route diagnosis and design only. Runtime authority changed:
+`false`; installed Lay remains `1.0.33`.
+
+Design contract:
+
+`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_CANONICAL_LAYOUT_TOKEN_OWNERSHIP_ROUTE_V1_2026-08-16.json`
+
+The exact design receipt and direct V9 query receipt are written under:
+
+`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_CANONICAL_LAYOUT_TOKEN_OWNERSHIP_2026-08-16/`
+
+### 46.4 Typed contour field after hybrid removal
+
+The first implementation checkpoint used the compatible V9-bound Productive
+package rather than the stale package from the initial remote replay:
+
+```text
+Productive p2m SHA-256  40fb6a9f0d92c3c7502e47f9c70230d9b86020f622b08a5c799342f13e09ce44
+package bytes           17,309,944
+IME focused proof       14 / 36 PASS
+failed tests            22
+stale producer checks    3
+behavioral failures     19
+installed Lay           1.0.33
+runtime authority changed false
+```
+
+The three stale checks require the historical `glued_phrase` producer ID even
+though the same boundary operation is now emitted by
+`CanonicalL2FieldBoundary`. They must assert typed origin, verdict, transition
+proof, and safety effect instead of restoring the old producer.
+
+The 19 behavioral failures reduce to seven shared mechanisms:
+
+1. exact RU-to-EN keyboard targets such as `тфтвф -> nanda` and
+   `цусрфе -> wechat` are present but are relabeled as generic `L2Surface`, so
+   they lose layout authority;
+2. some exact reverse-layout targets such as `зва -> pdf` are absent because
+   only the raw contour is sent to L1.1;
+3. mixed-script surfaces are rejected before the field, including one wrong-key
+   prefix and one duplicate-prefix-plus-typo shape;
+4. short and internal-layout-key surfaces do not share the canonical field,
+   leaving `yt -> не` absent and `ye;ty -> нужен` exposed to unrelated lexical
+   noise;
+5. bounded L1.1 does not retain several exact package forms that are one inverse
+   edit from the observation, including insertion, deletion, and edge recovery;
+6. some retained targets remain non-authoritative because their own contour
+   provenance is unavailable at materialization;
+7. a boundary proposal can win while a stronger canonical lexical target is
+   missing from the final lattice, as in the general `пер хвачу` false-split
+   mechanism.
+
+The shared defect is the field-level `physical_layout: bool`. Layout is a
+relation between one observed contour and one candidate, not a property of all
+candidates in a request. The accepted replacement is a typed contour field:
+
+```text
+observed token
+-> canonical token extractor
+-> bounded contour set
+   + Identity
+   + ExactLayout
+   + LayoutThenTypo
+   + InverseGeometry
+-> one merged L1.1/canonical grounding field
+-> Productive V90
+-> one candidate lattice
+-> common L3
+-> one DecisionCore
+-> verifier
+```
+
+`Identity` is the raw L1.1 observation. `ExactLayout` is a byte-exact keyboard
+projection. `LayoutThenTypo` is a candidate recovered from that projected
+contour after additional damage. `InverseGeometry` is a bounded exact-form
+lookup through the canonical form index and is not allowed to impersonate an
+independent L1.1 observation.
+
+The cache identity must bind the ordered contour surfaces, relation tags,
+bounded L1.1 lattices, inverse form references, scene bytes, and all three
+package hashes. A candidate origin is derived from its own surface and lemma
+provenance. No field-wide layout flag remains.
+
+The separate `short_layout_candidates()` donor is removed after one-symbol and
+two-symbol layout contours enter the same field. URLs, CLI options, technical
+identifiers, protected ASCII, and known clean English still fail closed before
+the field. `deterministic_text_candidates()` remains unreachable from a
+Nanda-enabled event and is not executed after unsupported input, empty lattice,
+timeout, package failure, tie, or abstention.
+
+Measured evidence retained for this checkpoint:
+
+```text
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TYPED_CONTOUR_FIELD_2026-08-16/hybrid-removed-compatible-package.log
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TYPED_CONTOUR_FIELD_2026-08-16/compatible-package-debug.log
+```
+
+What has not been tested at this checkpoint:
+
+- typed contour implementation;
+- focused `36 / 36` parity;
+- aggregate restoration and per-class quality;
+- clean preservation, false authority, false split, latency, RSS, rollback, or
+  physical GUI behavior;
+- release build, installation, or deployment.
+
+Verdict scope: measured failure classification plus pre-implementation design.
+Runtime authority changed: `false`.
+
+## 13. 2026-08-16 Nonblocking IME Precognition (`1.0.32`)
+
+### 13.1 Observed Failure
+
+The installed `1.0.31` IME performed full candidate materialization on the
+printable-key path. The local trace retained 339 valid timing records with:
+
+```text
+p50                         2.508 ms
+p90                        94.499 ms
+p99                      2408.008 ms
+max                      2823.807 ms
+events >=100 ms                  34
+events >=1 s                     30
+```
+
+The first shared mechanism was package admission, not legitimate L3 work. The
+installed productive V90 package fingerprint does not match the active L1.1 V9
+and canonical L2 V13 packages. Before this fix, every uncached letter retried
+package discovery, hashing, and failed admission.
+
+### 13.2 Accepted Runtime Route
+
+```text
+printable key
+-> commit or publish the visible character
+-> capture exact path + focus + tail epoch + context + token identity
+-> replace the one latest-only background work slot
+-> full unchanged L2/L3 candidate materialization
+-> reject a superseded generation
+-> reject any identity mismatch
+-> publish preedit candidates
+```
+
+The Space route remains separate:
+
+```text
+Space
+-> DecisionCore
+-> verifier
+-> authorized mutation or fail closed
+```
+
+No candidate source was removed and no steady-state candidate limit was
+narrowed. The IME remains a display/output adapter; the shared candidate core
+still owns ranking and the verifier still owns mutation admission.
+
+### 13.3 Stable Failed Admission
+
+Productive package admission is now a process-generation result:
+
+- a successful runtime is cached;
+- a failed admission and its exact error are cached;
+- ordinary input reads either cached result in O(1);
+- only explicit package reload can replace the cached generation;
+- a failed explicit reload clears dependent candidate caches and remains
+  fail-closed.
+
+This does not make the incompatible V90 package compatible. It prevents that
+known incompatibility from becoming repeated keyboard-path IO. A compatible
+package still requires its own package proof and explicit reload.
+
+### 13.4 Measured Software Proof
+
+Remote host: `e@192.168.3.94`, 20 logical CPUs.
+
+```text
+full IME tests                     195 / 195 PASS
+authority contract                  20 / 20 PASS
+mutation monopoly                   16 / 16 PASS
+input-gate tests                      6 / 6 PASS
+transition replay false applies              0
+unsafe-edit gate failures                    0
+
+warmed candidate materialization n         140
+p50                                      11 us
+p90                                      18 us
+p99                                      19 us
+max                                      20 us
+
+largest observed cold readout stage      310.643 ms
+```
+
+The cold readout number is intentionally not claimed as key latency: it is now
+background work. The new `ibus_printable_key_timing` and existing
+`ibus_space_key_timing` records are the post-install proof owners for perceived
+key latency.
+
+### 13.5 Scope Boundary
+
+Tested:
+
+- failed-admission caching;
+- superseded-generation rejection;
+- exact focus/tail/token identity rejection;
+- renderer/readout ownership separation;
+- full IME and changed-source release gates;
+- transition replay and unsafe-edit scoreboards;
+- remote warmed and cold candidate-materialization timings.
+
+Not tested at this software-only checkpoint:
+
+- post-install physical typing in Telegram, WeChat, browser, and terminal;
+- live printable-key `p99 <=5 ms` and `max <20 ms`;
+- live Space latency during an applied autocorrection;
+- physical double-Shift rollback after autocorrection;
+- a compatible productive V90 package;
+- aggregate L1.1 per-class quality, package-size, and RSS gates, which this
+  scheduling change does not alter.
+
+Runtime authority changed at this checkpoint:
+
+- source route: `true`;
+- installed runtime: `false`;
+- candidate ranking owner: `false`;
+- mutation/verifier owner: `false`.
+
+Exact receipt:
+
+`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_NONBLOCKING_PRECOGNITION_SOFTWARE_PROOF_2026-08-16.json`
+
+## 2026-08-15 IBus Space Boundary And Physical Layout Recovery
+
+This change closes two first-mechanism failures in the committed-token route.
+It does not add literal runtime exceptions for the reported strings.
+
+### 13.1 Failure Mechanisms
+
+For glued words, `BoundaryCell32` could select a valid split such as
+`вотслов -> вот слов`, but the committed-tail structural adapter rebuilt a
+generic action and substituted the selected winner only after verification.
+The candidate surface survived while its exact DecisionCore action authority
+did not.
+
+For physical-layout text, a leading punctuation key such as `,` reset the fast
+preedit token before the following ASCII letters arrived. The complete physical
+token `,kznm` therefore fragmented into the visible partial `,лять`. At the same
+time, the exact layout projection and the broader `layout_then_typo` producer
+could compete for the same input.
+
+### 13.2 Implemented Route
+
+```text
+printable physical input
+-> one live preedit token, including valid layout-letter symbols
+-> one visible candidate readout
+-> schedule an exact path + epoch + tail + layout prefetch
+-> BoundaryCell32 or exact whole-phrase layout birth
+-> one DecisionCore winner and its selected EditAction
+
+Space
+-> take only the matching prefetched generation, bounded by 8 ms
+-> verify snapshot + epoch + from + to + allow_apply + exact plan
+-> one backend authorizer
+-> one committed-tail mutator
+-> one outcome trace
+```
+
+The selected action is now carried inside `LatentTextTransitionCandidate` and
+accepted only when it is byte-for-byte and plan-for-plan identical to the
+structural verifier result. A mismatch returns `UnsafeEdit`; there is no late
+winner substitution.
+
+The layout route keeps a leading physical-layout symbol in `PreeditFastState`
+but does not expose it as a candidate until an ASCII letter follows. Known
+multi-token physical input can then project atomically, while an exact physical
+projection suppresses the partial `layout_then_typo` lane.
+
+### 13.3 Measured Facts
+
+- focused remote proof: `15/15 PASS`, `0` failed;
+- full remote `scripts/check-lay-changed.sh`: `PASS`;
+- observed-source route gate: `PASS`, `37/37` source evidence checks;
+- static execution cardinality: one visible-input path, one prefetch path, one
+  Space-apply path;
+- isolated hot precognition generation: p50 `11 us`, p90 `19 us`, p99 `20 us`,
+  max `24 us`;
+- unsafe replay: `200` records, `0` gate failures, `0` observed risk, `0` slow
+  output;
+- existing Space prefetch wait budget remains `8 ms`.
+
+Exact receipts:
+
+- `docs/structural_gates/receipts/LAY_IME_SPACE_BOUNDARY_LAYOUT_RECOVERY_PROOF_2026-08-15.json`;
+- `docs/structural_gates/receipts/LAY_IME_SPACE_BOUNDARY_LAYOUT_RECOVERY_ROUTE_DESIGN_2026-08-15.json`;
+- `docs/structural_gates/receipts/LAY_IME_SPACE_BOUNDARY_LAYOUT_RECOVERY_ROUTE_OBSERVED_2026-08-15.json`.
+
+### 13.4 Scope Boundary Before Deployment
+
+Not yet proven at this point in the change:
+
+- physical GUI application of `вотслов + Space -> вот слов `;
+- physical GUI application of `b ,kznm -> и блять`;
+- double-Shift rollback and stuck-key behavior with the release binary;
+- live Space latency and `prefetch_not_ready` frequency across applications;
+- broad glued-word recall and false-split percentages.
+
+Runtime authority changed:
+
+- `false`; the installed `1.0.30` binary is still byte-identical to its
+  pre-change image. Source promotion and physical verification follow in the
+  release step.
+
 ## 13. 2026-08-12 Productive V90 Live Ownership Handoff
 
 ### Canonical live route
@@ -6687,3 +7568,597 @@ What was not yet completed:
 Runtime authority changed:
 
 - `false`
+
+## 13. 2026-08-17 Candidate-Specific Target Authority
+
+The current canonical correction route still has an authority ownership defect,
+not merely a ranking defect:
+
+```text
+canonical_text_readout_observed
+├── L1.1 -> Productive V90 -> field-wide authority
+└── old Boundary projection -> independently admitted candidate
+```
+
+`PreparedCanonicalTokenField` currently converts every field with more than one
+surface into a common L3 tie. Correct lexical/geometric targets are therefore
+often demoted to `SuggestOnly`. In parallel, the historical Boundary producer
+can emit an `Eligible` split and beat the correct whole-token target. L3 cannot
+honestly repair this because context may select among grounded targets but may
+not invent lexical grounding.
+
+Revision 5 separates cacheable material, frame settlement and event authority;
+the earlier draft had combined them:
+
+```text
+context-neutral `TokenContour | BoundaryWindowContour`
+-> MaterialTargetIdentityV1 + bounded semantic witnesses + completeness
+-> exact frame span/projection/replay
+-> CandidateState: Born | Grounded | Rejected
+-> exact edit-footprint conflict cohort
+-> CohortVerdict: Winner | Tied | ABSTAIN
+-> L2Certified or calibrated ContextCertified
+-> DecisionCore -> one transaction protocol -> one state-correct event mutator
+```
+
+The owning paper now compares the current dual route, widened-frontier,
+context-first and separate-fast-mutator alternatives against the selected
+route across retention, false authority, latency/RSS, cache/reload, online
+learning, concurrency, rollback and removal cost. The selected route accepts a
+possible reduction in automatic coverage when evidence is incomplete; that is
+reported as abstention rather than hidden as a quality win.
+
+`MaterialTargetIdentityV1` contains no focus, tail epoch, replacement span,
+surrounding context, context score or selected winner. Those belong to
+`FrameTargetIdentityV1` and `SettledFrameEvidenceV1`. A frame rejection can never be
+cached as lexical material.
+
+`BoundaryWindowContour` binds both exact tokens and the exact separator. A
+split uses `CompositeBoundaryGroundingV1` to ground every emitted part and its
+segmentation; a merge binds the merged lexical center while clean two-token
+preservation remains a separate veto. The token-only identity from Revision 3
+could not represent this contract.
+
+This corrects a second current-source defect: Productive V90 currently receives
+the two-left-token scene while constructing `PreparedCanonicalTokenField`, and
+`CanonicalTokenKey` caches `scene_bytes`. That can hide an alternative before
+the cohort is formed. The selected architecture requires context-neutral target
+membership; different left contexts over the same lexical input may change only
+frame settlement, never target birth, grounding or completeness. If Productive
+cannot enumerate that bounded set without context, promotion stops at the
+Productive contract instead of approximating a singleton.
+
+The decision vocabulary remains:
+
+```text
+CandidateState
+  Born | Grounded | Rejected
+
+CohortVerdict
+  Winner | Tied | ABSTAIN
+
+AuthorityCertificate
+  L2Certified | ContextCertified
+```
+
+Target rejection, lexical settlement reasons, absolute authority blockers,
+original preservation and context observations are separate types. Context
+never changes `CandidateState` or cohort membership. A calibrated context
+selector may resolve an explicitly admitted complete morphology/lexical tie,
+but never overflow, incomplete enumeration or multiple edit components.
+`Tied` contains at least two known grounded targets; an incomplete field with
+zero or one retained target is
+`ABSTAIN(IncompleteEnumeration)`, not a one-member tie.
+A conflicting `Born` target from an incomplete or failed grounding lookup is an
+unresolved alternative: it is not a grounded tie member, but it blocks a
+grounded singleton until the lookup becomes complete or rejects it. Cohorts are
+canonically ordered by exact footprint, target, evidence and completeness bytes
+before hashing; producer arrival, score and provenance cannot affect context
+identity.
+
+Each exact target retains a deterministic bounded set of at most four
+independent relation/grounding/geometry witnesses. A target and witness
+overflow blocks automatic authority instead of silently pruning proof. The
+original input is a separate preservation/default state, never a replacement
+candidate or target grounding.
+
+Witness independence is defined by relation, canonical operator, exact
+grounding, package generations and derivation root. Producer/source provenance
+is merged diagnostic metadata and cannot manufacture a second witness. The
+24-byte witness ceiling is achieved only with typed references into immutable
+prepared-field tables; all dereferenced bytes and table storage remain part of
+the retained-memory gate.
+
+The selected automatic contract is:
+
+```text
+exact target identity
++ grounded typed relation witness
++ exact replay geometry
++ complete conflict-cohort enumeration
++ one compatible target
++ no preservation veto, hard contradiction or overflow
+-> L2Certified
+
+multiple compatible grounded targets
+-> Tied
+-> bounded context selection
+-> ContextCertified or ABSTAIN
+```
+
+Score-margin authority is disabled. `ContextCertified` is also disabled for
+live emission until a separate fixed heldout context-authority calibration
+passes with zero false authority. Current context is exactly two left tokens;
+it is not sentence understanding. Until that gate, a lexical tie remains
+`ABSTAIN` and context may only rank display or shadow output.
+
+An online overlay generation is `DisplayOnly`, `ShadowSettlement` or
+`AuthorityEligible(proof_receipt_hash)`. Merely binding a generation ID does
+not authorize it. New online learning can affect display, but cannot change
+automatic correction until the exact overlay bytes pass their own promotion
+gate.
+
+Boundary split/merge becomes a typed hypothesis inside the same prepared field
+and competes with the whole-token target before cohort settlement. Source IDs,
+lane kinds and raw surface cardinality remain provenance/readout metadata; they
+never grant authority.
+
+The L1.1 seed-service lattice can contain 128 members, while the typed
+restoration readout retains at most 32 plus explicit `TiedOverflow`. The stored
+Productive target envelope then remains `32 + 32 + 8 + 2 = 74`; it is not an
+enumeration-completeness claim. L1.1 `TiedOverflow`, Productive, contour or
+Boundary overflow is preserved explicitly and blocks singleton authority. In
+particular, retaining two Boundary hypotheses cannot hide a third conflicting
+split and then call the first one a winner.
+The same distinction applies to computation: deterministic posting, replay,
+grounding and operator-work ceilings must be frozen before Slice 2. Exhaustion
+is `Overflow(WorkBudgetExceeded)`, never `Complete`; the 74-target storage bound
+does not authorize unbounded context-neutral enumeration.
+
+Display, explicit Tab, committed-tail Space, active-composition Space, stale
+publication and double-Shift rollback are separate event routes. They share
+immutable prepared target material and exact identities, but each has one
+event-specific rank/authorization/mutation owner. Tab consumes a visible user
+selection receipt; automatic Space requires `L2Certified` or
+an independently promoted `ContextCertified`; rollback consumes the exact
+autocorrection receipt. Deferred rollback is frame-bound, finite, never
+auto-retried and may be retried only by one later explicit gesture while valid.
+Physical active-composition Space remains a separate raw commit route from
+library APIs that merely calculate hypothetical active-composition corrections.
+
+Tab, committed Space, active-composition Space and rollback share one explicit
+authorization/transaction protocol, not one physical mutator. Corrected/raw
+Space and rollback use the committed-tail mutator; Tab and active Space use the
+active-composition mutator. Committed Space selects exactly one of
+`CorrectAndAppendSpace | RawSpace` before final authorization and never re-enters
+selection after refusal or output start. A backend refusal may restore a
+pending rollback only when zero output is proved. Every other zero-output
+attempt is `AttemptedNoEffect` only after complete effect-vector equality and a
+durable terminal state. Once any output was emitted, the event enters bounded
+`RecoveryRequired`; raw Space partial output is included, and no compensation
+runs until the exact full effect snapshot is observed.
+Rollback deadlines bind a monotonic boot/process epoch and are invalid after an
+epoch change.
+
+Journal-required output uses the Revision-8 `OrderedGroupCommitV1` paper
+strategy: exact intent is durable before effect, the prior terminal state may be
+co-committed with the next prepare, and one `SameLineageStateBarrierV1` blocks
+both Lay and native state changes until terminal durability. Two independent
+foreground durability waits per steady-state event are rejected before runtime
+integration. A non-overlapped terminal state may still cause a separate
+background storage sync; actual sync calls, bytes, queueing and I/O time remain
+measured costs, and any inherited next-event wait is foreground latency.
+`RecoveryQuarantined` is nonterminal and native-only; explicit
+reset preserves the incident, rotates journal generation, establishes a new
+baseline and emits no correction learning.
+Startup reconciliation first uses a zero-mutator exact observation route. Only
+an observed compensable state may enter the separately authorized recovery
+mutator; both paths persist exact terminal settlement before opening the
+lineage barrier. Reset has its own durable receipt, while emergency key cleanup
+has an independent idempotent effect proof and cannot settle text output.
+
+Measured diagnostic baseline before implementation:
+
+```text
+focused exact-layout admission        5 / 5 PASS
+immutable full canonical gate         18 / 36 PASS
+immutable deep representative series   0 / 12 PASS
+immutable baseline parity             46 / 49 PASS
+remote execution receipts             97 / 97 valid
+future source-absence proof            59 / 59 PASS
+Slice 0 baseline freeze                    PASS
+measured current-route latency           7 / 7 PASS
+complete EventRuntimeBudgetV1     FAIL_COVERAGE, not PASS
+runtime authority changed                  false
+```
+
+The complete evidence model, state machine, operator matrix, cache and learning
+semantics, proof denominators, migration slices and rollback boundary are in:
+
+`/home/ubu/projects/lay-l1-exact-peak-search/docs/ime-canonical-target-authority-paper-2026-08-17.md`
+
+Source-bound review result:
+
+```text
+current observed correction route                 VETO
+source markers                                  21/21
+event-route design, event-only scope                PASS
+event route size                     33 nodes / 51 edges / 12 routes
+material/frame/context-neutral design               PASS
+material route size                   23 nodes / 44 edges / 7 routes
+output transaction design                              PASS
+output route size                    49 nodes / 94 edges / 57 routes
+structural design issues                                  0
+durable diagnostic raw logs                       13/13
+frozen event/Boundary case definitions            108
+baseline parity cases                              49
+future-contract cases assigned to owning slices    59
+immutable remote execution integrity             PASS, 97/97 valid
+immutable assertion result                       FAIL, 64/97 PASS
+frozen baseline parity                           FAIL, 46/49 PASS
+future-contract source absence                   PASS, 59/59
+Slice 0 baseline freeze                          PASS only in frozen scope
+measured current-route latency                   PASS, 7/7 implemented strata
+complete EventRuntimeBudgetV1                    FAIL_COVERAGE, four Slice 7 routes absent
+external historical partial manifest             PRESENT, superseded/non-promotable
+final Slice 0 repository results manifest         PRESENT, baseline-only PASS
+Slice 1 implementation preflight V7               SUPERSEDED, placeholder hashes
+Slice 1 implementation preflight V8               PASS, exact immutable manifests
+Slice 1 evidence vocabulary                       PASS, 13/13 contracts
+Slice 1 semantic output parity                     PASS, 49/49 exact
+Slice 1 remote RSS delta                           PASS, 1,280/5,120 KiB
+Slice 2 deterministic work budgets       PASS, exact V90/V9/V13 tuple
+Slice 2 material/frame shadow             PASS, runtime unchanged
+Slice 2 upstream incomplete fields        877/1,300, authority blocked
+Slice 7 durability microproof             UNEXECUTED BLOCKER
+Slice 9 numeric context risk policy       UNFROZEN BLOCKER
+runtime authority changed                           false
+deployment authorized                               false
+```
+
+The previous broad `READY_TO_IMPLEMENT` and Revision-3 Slice 1 receipts are
+superseded: they covered
+multiple behavior-changing slices with one source baseline and did not model
+the contracts above. The Revision-3 material route also placed context evidence
+before cohort construction. Each source-mutating slice now requires a new preflight.
+The 36-case IME denominator is frozen into disjoint first-loss subsets for
+birth/retention, lexical authority and context settlement. Slice 8 cannot claim
+final `36/36` when a nonempty context subset remains for Slice 9.
+An intermediate `LexicalOwnerRelease` may claim only its birth/retention and
+lexical-authority subsets; only `FullTargetAuthorityRelease` may claim final
+`36/36`.
+The migration has Slice 0 plus twelve implementation/release slices: immutable
+rerun, vocabulary, context-neutral material/frame binding, candidate state,
+conflict cohort, missing target birth, Boundary internalization, crash-safe
+event transaction, lexical live readout, separately calibrated context
+authority, compatibility-route removal, performance/failure proof, and then a
+versioned physical release. The exact ordering and gates live in the paper
+linked above. This paragraph describes the pre-Slice-1 checkpoint; the bounded
+vocabulary-only implementation result is recorded below.
+
+The 2026-08-20 immutable attempt-3 run provides complete execution identity,
+not a promotion result. Its exact external evidence root is:
+
+```text
+/home/ubu/projects/lay-immutable-evidence/ime-target-authority-slice0-20260820
+```
+
+The source archive contains 2,214 hash-valid files and is bound to 97 exact
+remote invocations. All 97 produced one valid receipt; 64 assertions passed and
+33 failed. Series results are `18/36`, `0/12` and `46/49`. The three baseline
+failures are `false-split-ambiguous-short-shift`,
+`false-split-non-boundary-source` and `split-authority-binds-target`. All 59
+future required-test names are byte-absent from frozen `src/` and `tests/`.
+The failures are frozen behavior debt for their owning later slices, not a
+blocker to the vocabulary-only Slice 1; requiring behavior repair first would
+contradict Slice 1's parity-only contract.
+
+Their first shared mechanism is not a word list. Boundary birth, target
+binding, proposal admission and DecisionCore currently infer separate surface-
+shape booleans instead of carrying one exact typed Boundary evidence object.
+This allows verifier-valid shape to act as authority, loses one admitted birth
+path during target binding, and applies a Boundary-specific downgrade to a
+non-Boundary producer before preservation. The selected Slice 1 vocabulary must
+make observed contour, exact split target, segmentation, operator and
+completeness one value consumed by both IME and full correction; the verifier
+remains safety-only.
+
+The authoritative local V3 private-owner probe measures the exact installed
+engine through the outer D-Bus request/reply clock. Printable, committed Space,
+explicit accept, rollback, layout, refusal and owner-handoff strata pass their
+individual limits with p99 values `0.347`, `8.566`, `0.864`, `0.967`, `0.772`,
+`0.401` and `0.289 ms`. Rollback restores `128/128` distinct frozen inputs;
+14,546 trace rows are contiguous with zero typed failures. Active-composition
+Space, repeat identity, durability prepare/co-commit and the same-lineage
+barrier are absent from the installed runtime and belong to Slice 7. Therefore
+current-route latency is `PASS 7/7`, while complete `EventRuntimeBudgetV1`
+remains `FAIL_COVERAGE`. Missing Slice 7 routes do not block the vocabulary-only
+Slice 1, but they block Slice 7 exit and final promotion.
+
+The repository artifacts are exact and machine-readable:
+
+```text
+docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_BASELINE_2026-08-17/immutable-rerun/source-at-execution.sha256-manifest.json
+  SHA-256 45389cef6c5843473799a5e2df0c066c12ac77e43b5b598d2c3d91158f5af511
+docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_BASELINE_2026-08-17/immutable-rerun/results-manifest.json
+  SHA-256 986ea9be4a89c64c3e29b4102d9d554fb63843bd32dd0baa79de812a573c97da
+```
+
+The results manifest claims `PASS_BASELINE_FREEZE_ONLY`; it preserves remote
+assertion quality as `FAIL 64/97` and complete latency as `FAIL_COVERAGE`.
+Neither deployment nor a runtime-owner change follows from it.
+
+Exact first-loss receipt:
+
+```text
+/home/ubu/projects/lay-immutable-evidence/ime-target-authority-slice0-20260820/baseline49-boundary-first-loss-analysis.json
+```
+
+Exact active design receipts:
+
+- `docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_EVENTS_ROUTE_DESIGN_PASS_V4_2026-08-17.json`
+  proves pre-output event/command/gesture identity with 33 nodes, 51 edges and
+  12 routes;
+- `docs/structural_gates/receipts/LAY_IME_TARGET_MATERIAL_FRAME_ROUTE_DESIGN_PASS_V6_2026-08-17.json`
+  proves preservation-first material/frame order with 23 nodes, 44 edges and 7
+  routes;
+- `docs/structural_gates/receipts/LAY_IME_TARGET_OUTPUT_TRANSACTION_ROUTE_DESIGN_PASS_V8_2026-08-17.json`
+  proves the durability strategy, three state-specific output mutators,
+  same-lineage dispatch/hold barrier, nonterminal quarantine, explicit reset,
+  split observed/compensating startup recovery and proved key cleanup with 49
+  nodes, 94 edges and 57 routes;
+- `docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_BASELINE_2026-08-17/event-and-boundary-cases-v7.json`
+  freezes 108 definitions: 49 executable baseline cases and 59 future contracts
+  assigned to their first required migration slice;
+- `docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE1_IMPLEMENTATION_PREFLIGHT_V7_BLOCKED_2026-08-17.json`
+  reports 39 pinned baselines, 10 source scans, 13 mapped tests and 11 invariants
+  but is superseded because its two immutable-rerun entries carry impossible
+  placeholder hashes;
+- `docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE1_IMPLEMENTATION_PREFLIGHT_V8_2026-08-20.json`
+  pins the real immutable manifests and passed before the isolated source edit;
+- `docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE1_EVIDENCE_VOCABULARY_2026-08-20/final-receipt.json`
+  proves the vocabulary-only Slice 1 implementation and no runtime authority or
+  deployment change. It does not authorize Slice 2.
+
+### Slice 1 Evidence Vocabulary Result, 2026-08-20
+
+`src/typing_transition/target_evidence.rs` now owns one bounded vocabulary for
+semantic witness roots, exact material/frame identities, enumeration
+completeness, proof-scoped overflow, prepared-material leases, conflict cohorts
+and future certificates. Legacy L2 and live replacement enums project into it
+only at named adapters. Common evidence is computed on demand and is not yet a
+rank, admission, display, cache, mutation or verifier owner.
+
+```text
+remote builds                              4/4 PASS
+focused contract groups                    5/5 PASS
+frozen executions                         49/49 valid
+normalized semantic logs                  49/49 exact
+baseline status differences                         0
+adapter fault injections                    2/2 rejected
+TargetWitnessV1                                  24 B
+TargetEvidenceSetV1                            128 B
+evidence payload per prepared field          9,472 B
+complete PreparedTargetMaterialV1           11,376 B
+160-field retained delta                  1,820,160 B
+remote median RSS delta                       1,280 KiB
+RSS delta ceiling                              5,120 KiB
+runtime authority changed                           false
+deployment actions                                      0
+```
+
+The payload and complete-object ceilings are distinct: 74 evidence sets consume
+exactly `9,472 B`; target identities and the material envelope bring the object
+to `11,376 B`, still below the `12,288 B` total retained-delta ceiling.
+Malformed accelerators are reconstructed from exact semantic roots before
+retention. A narrow completeness claim requires a non-zero exhaustive
+partition-proof reference. Scope mismatch becomes an order-independent
+whole-field integrity failure. Compile-time exhaustive destructuring keeps
+frame-bound state outside cacheable prepared material.
+
+The three frozen baseline failures remain unchanged at `46/49`; Slice 1 proves
+parity, not repair. The next gate is a new Slice 2 preflight that freezes
+deterministic per-producer and aggregate enumeration-work budgets before
+context-neutral prepared material and exact frame binding are implemented.
+
+### Slice 2 Deterministic Work Measurement Result, 2026-08-20
+
+Proof-only instrumentation now measures complete per-field work before the
+material/frame split changes any runtime owner. It counts posting visits,
+relation replays, grounding lookups, generated logical targets and operator
+steps independently for canonical grounding, cold binding and Productive
+traversal, then reconstructs an exact aggregate. The measurement is disabled
+unless `LAY_PRODUCTIVE_WORK_MEASUREMENT` is present and changes no candidate,
+rank, verdict, package or authority.
+
+The remote release binary consumed the exact active package tuple:
+
+```text
+Productive V90  40fb6a9f0d92c3c7502e47f9c70230d9b86020f622b08a5c799342f13e09ce44
+L1.1 V9         bf5a1619a89038466ef786305cf35eda5f4af5b9f12b9140f7d3cac407e2f2a7
+canonical L2    cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b
+axis schema     b5b24f952e83e1e9738db0f89a9d2e9e16eaf7af754990114a562d42be3c060b
+frozen manifest 13e2db3470006303de3d87b2f999988db1661157760fec447e54ac37d5b495ea
+```
+
+The `13 x 1` smoke passed `13/13`. The fixed `13 x 100` proof passed
+`1,300/1,300` unique measurement samples with exact aggregate reconstruction
+and no counter errors. The largest measured field required `229` grounding
+lookups, `88,130` posting visits, `103,803` aggregate relation replays, `6,348`
+generated logical targets and `382,340` aggregate operator steps. Cold binding
+owns `90,225,248 / 92,746,251` total operator steps, so future preparation must
+cache context-neutral binding material rather than replay it during frame-only
+readout.
+
+Frozen budgets for the exact V90/V9/V13 generation are:
+
+```text
+producer                  posting   relation   grounding   generated   operator
+canonical_grounding             0          0         256           0          0
+cold_binding               131,072    131,072           0           0    524,288
+productive_traversal             0      8,192           0       8,192     16,384
+aggregate                  131,072    131,072         256       8,192    524,288
+```
+
+Each non-zero ceiling is the smallest power of two not below the corresponding
+fixed-proof maximum. Zero producer dimensions remain forbidden rather than
+receiving speculative capacity. The aggregate budget is checked independently;
+it is deliberately not the sum of producer ceilings. Budget exhaustion must
+produce explicit incomplete material and block automatic authority.
+
+Safety and semantic parity remained unchanged:
+
+```text
+evaluated semantic comparisons             2,600
+H / H -> B / B -> S0                 1,280 / 0 / 0
+false singleton / integrity errors          0 / 0
+probe structural parity                2,600/2,600
+non-latency normalized parity SHA-256
+905ce2d6ad7cb5c28e852fa0e603927feabb5e2afde031ab7826c8c51f256b4b
+measurement sample digest
+31e49ea32a391580f2f9b5c56256a5aecf1b2a25a0d39a7072c228d713e62ea8
+```
+
+The instrumented proof measured `19.47 s`, `660%` CPU and `391,408 KiB` peak
+RSS. This is proof throughput evidence only; stage telemetry changes timing and
+the host was not an isolated hot-path benchmark. No latency promotion follows.
+
+Tested: exact package identity, complete fixed work denominator, deterministic
+producer/aggregate accounting, semantic non-latency parity and fail-closed
+measurement integrity. Not tested: the actual context-neutral material/frame
+implementation, exhaustion behavior in that implementation, live cache leases,
+daemon/IBus performance, multi-client applications or automatic authority.
+Runtime authority changed: `false`. Deployment actions: `0`.
+
+Exact receipts:
+
+```text
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE2_WORK_MEASUREMENT_2026-08-20/final-receipt.json
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE2_WORK_MEASUREMENT_2026-08-20/slice2-work-full-13x100.json
+```
+
+Verdict: `PASS_WORK_BUDGET_FREEZE_RUNTIME_UNCHANGED`. This closes only the
+numeric blocker. The next source mutation requires a new implementation
+preflight for context-neutral prepared material, exact frame binding and
+shadow-only readout.
+
+### Slice 2 Context-Neutral Material/Frame Result, 2026-08-20
+
+The prepared-material boundary is now implemented in the isolated
+`codex/l1-exact-peak-search` worktree. Context-neutral Productive enumeration
+owns lexical target formation. `PreparedTargetMaterialV1` owns deterministic
+target/evidence storage and completeness. `ExactInputFrameV1` owns volatile
+source-window, caret, selection, preedit, case and punctuation identity. A
+bounded lease registry prevents use after field generation reuse and limits
+retention to 32 fields with at most 8 consumers each.
+
+```text
+L1.1/canonical/Productive evidence
+-> context-neutral bounded enumeration
+-> PreparedTargetMaterialV1 + exact digest
+-> PreparedMaterialLeaseV1
+-> ExactInputFrameV1
+-> digest + generation + UTF-8 frame validation
+-> proof-only shadow replay
+```
+
+The fixed remote denominator passed all semantic and integrity contracts:
+
+```text
+material pairs / unique pairs       1,300 / 1,300
+work-budget passes                   1,300 / 1,300
+context comparisons                         3,900
+frame bindings                       3,864 / 3,864
+stale-frame accepts                    0 / 3,864
+H -> B / B -> S0                            0 / 0
+false singleton / integrity errors          0 / 0
+semantic non-latency gate                   PASS
+```
+
+Completeness remains a separate authority dimension: `423` materials are
+`Complete`, while `877` are `UPSTREAM_INCOMPLETE`. The latter are preserved for
+diagnostics and later upstream work but cannot become automatic authority.
+
+Measured proof resources were `20.72 s` wall, `636%` CPU and `392,048 KiB`
+peak RSS on 20 workers. Instrumented maximum class p99 was `19.258 ms`, so no
+hot-path latency or promotion PASS is claimed. Runtime authority changed:
+`false`; deployment actions: `0`; installed version remains `1.0.33`.
+
+Receipt:
+
+`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE2_MATERIAL_FRAME_2026-08-20/final-receipt.json`
+
+The next gate is Slice 3 candidate-state implementation preflight. It must
+consume the material completeness state without weakening it and must not add a
+parallel live owner.
+
+### Slice 3 Candidate-State Shadow Result, 2026-08-20
+
+`CandidateStateV1` is now derived only after material lease, exact frame,
+replacement span and projected-target replay validation. The state owner is
+`productive_v1/candidate_state.rs`; it has no API for context, scoring, ranking,
+display, admission or mutation.
+
+```text
+BoundFrameTargetV1
+-> per-witness geometry assessment
+-> complete target-grounding namespace check
+-> Born | Grounded | Rejected(reason)
+-> absolute authority blocker set
+```
+
+Target and field completeness are intentionally distinct. Incomplete target
+grounding remains `Born`. Field-level `UPSTREAM_INCOMPLETE` does not erase a
+valid exact grounding for a retained target, but its blocker prevents every
+future Winner or certificate until the complete conflict field is proven.
+Original preservation is a separate frame-bound result outside target storage.
+
+The fixed `13x100` proof measured:
+
+```text
+candidate-state derivations               3,864 / 3,864
+Born / Grounded / Rejected                0 / 3,864 / 0
+false grounding / cross-context mismatch          0 / 0
+stale candidate-state accepts                     0
+original-preservation comparisons          3,900 / 3,900
+H -> B / B -> S0                                  0 / 0
+probe parity                                2,600 / 2,600
+false singleton / integrity errors                0 / 0
+```
+
+The proof consumed `19.77 s` wall, `674%` CPU and `392,048 KiB` peak RSS on 20
+workers. Instrumented Productive traversal still puts maximum class p99 at
+`16.181 ms`, so live latency and promotion remain failed and unclaimed. Slice 3
+is a shadow-only semantic PASS; runtime authority, packages, installed version
+`1.0.33`, daemon and IBus were unchanged.
+
+Receipt:
+
+`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE3_CANDIDATE_STATE_2026-08-20/final-receipt.json`
+
+Next gate: Slice 4 complete conflict-cohort construction and deterministic
+`Winner | Tied | ABSTAIN` shadow verdict.
+
+### Slice 4 Conflict-Cohort Shadow Result, 2026-08-20
+
+`productive_v1/conflict_cohort.rs` now owns the single post-validity lexical
+cohort. It binds exact edit footprints, merges semantic duplicates, constructs
+conflict components and consumes original preservation before deriving a
+context-free `Winner | Tied | ABSTAIN` verdict. L3/L4, scores, rank and live
+admission do not participate.
+
+The fixed `13x100` proof derived `3,900/3,900` cohorts with zero context/hash
+mismatch, incomplete Winner, false singleton, lost grounded target,
+multiple-component authority or preservation bypass. The measured verdicts
+were `0 Winner`, `1,050 Tied` and `2,850 ABSTAIN`; `877/1,300` fields remain
+explicitly upstream-incomplete and therefore cannot issue authority.
+
+This is a shadow-only semantic PASS. Productive maximum class p99 remains
+`14.566 ms`, above the `5 ms` promotion gate. Runtime ownership, installed
+packages, daemon/IBus and version `1.0.33` were unchanged.
+
+Receipt:
+
+`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE4_CONFLICT_COHORT_2026-08-20/final-receipt.json`
+
+Next gate: Slice 5 missing-target birth and retention shadow.

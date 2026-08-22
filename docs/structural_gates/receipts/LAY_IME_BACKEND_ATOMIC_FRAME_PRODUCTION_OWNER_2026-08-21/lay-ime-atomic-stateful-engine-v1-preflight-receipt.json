@@ -1,0 +1,256 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "engine-root",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine.rs",
+      "sha256": "9b61f72d200d968962215592c5f7758b3a5d1dd72b4bbd8085a8ee3d254c0578",
+      "size_bytes": 2113
+    },
+    {
+      "exists": true,
+      "id": "engine-state-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/engine.rs",
+      "sha256": "f2bac4a739a53e9d05f8aaad55129bbac001c11a7dc8fae6d1f7d119fd91192f",
+      "size_bytes": 13010
+    },
+    {
+      "exists": true,
+      "id": "engine-types",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/engine/types.rs",
+      "sha256": "0fbd2fe1f22ed7c7926073e3c94bbefc90b7b716c1fb0d37e71fadbaa2c9dc05",
+      "size_bytes": 9288
+    },
+    {
+      "exists": true,
+      "id": "shared-state-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/protocol/state.rs",
+      "sha256": "bf3bbd00dbb135ca4aff5689e97945a391481e3f7e796e9b08fdd2d262e1bb53",
+      "size_bytes": 1077
+    },
+    {
+      "exists": true,
+      "id": "ibus-interface",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/ibus_interface.rs",
+      "sha256": "bf8ff69e4309899ae03d00129973b52e1a51ca3b86526a8fc8e181fa5b535b0b",
+      "size_bytes": 12613
+    },
+    {
+      "exists": true,
+      "id": "preedit-route",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/preedit.rs",
+      "sha256": "220c3b8b166a79468402a88d0ec21c3da9a276fe6b7a8a44eca4ab59c088a609",
+      "size_bytes": 30862
+    },
+    {
+      "exists": true,
+      "id": "managed-route",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/managed.rs",
+      "sha256": "288c83cefbd98dccfcd9ad6c379ccbe1e8824be3ff170fb928ba4459d1567339",
+      "size_bytes": 11774
+    },
+    {
+      "exists": true,
+      "id": "composition-commit-route",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/composition_commit.rs",
+      "sha256": "0005503245603ff4632912a2b5f0107a5299648532c5478f9a989afa82eeaae3",
+      "size_bytes": 14086
+    },
+    {
+      "exists": true,
+      "id": "composition-edit-route",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/composition_edit.rs",
+      "sha256": "8820fa7bf993e5a3e0ecb72b4adb9ab1da093e99c71824f293f0933c649b35a3",
+      "size_bytes": 8341
+    },
+    {
+      "exists": true,
+      "id": "committed-tail-route",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/committed_tail.rs",
+      "sha256": "72e567392a1790467ecb1797b1a031949bf61e8615742eead57a8c5ecfbfa753",
+      "size_bytes": 25042
+    },
+    {
+      "exists": true,
+      "id": "state-route",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/state.rs",
+      "sha256": "e0010783e73c8b95140a5c013329dc1032e69a60c2491844bd5e9bc54fa1efd6",
+      "size_bytes": 40998
+    },
+    {
+      "exists": true,
+      "id": "layout-route",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/layout_sync.rs",
+      "sha256": "db948de33f7a725dedd4fd2992f09f2bc1bef0f39ad2f25d35ccbfa248066c99",
+      "size_bytes": 9039
+    },
+    {
+      "exists": true,
+      "id": "architecture-paper",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/ime-backend-atomic-frame-v2-2026-08-20.md",
+      "sha256": "044df98dbf5c8f2f31ec6b40498d9eff1e33f1ab8c9a85be08add811833ef1db",
+      "size_bytes": 122475
+    },
+    {
+      "exists": true,
+      "id": "mutter-owner-proof",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/mutter-slice3b-implementation-proof-v1.json",
+      "sha256": "7a935e8fc62577b0a22cb44d307675ec3a199244fa6baa5fce010ae2f2863716",
+      "size_bytes": 7273
+    },
+    {
+      "exists": true,
+      "id": "ibus-admission-proof",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/ibus-production-profile-admission-proof-v1.json",
+      "sha256": "e38b65ec7c0ff7d3495eec3e0a98947f6d603c9a0c024055fb56fce45641fafd",
+      "size_bytes": 4708
+    }
+  ],
+  "blockers": [
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: installed_file_write"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: local_build"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: restart_or_signal_keyboard_route"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: second_native_mutation_owner"
+    },
+    {
+      "code": "fault_injection_missing",
+      "field": "state_machine.steps[0].test_id",
+      "message": "mutating failure requires a fault_injection test"
+    },
+    {
+      "code": "fault_injection_missing",
+      "field": "state_machine.steps[2].test_id",
+      "message": "mutating failure requires a fault_injection test"
+    },
+    {
+      "code": "fault_injection_missing",
+      "field": "state_machine.steps[3].test_id",
+      "message": "mutating failure requires a fault_injection test"
+    },
+    {
+      "code": "fault_injection_missing",
+      "field": "state_machine.steps[4].test_id",
+      "message": "mutating failure requires a fault_injection test"
+    },
+    {
+      "code": "identity_parity_missing",
+      "field": "identity_contracts[2].test_id",
+      "message": "identity contract requires a parity test"
+    },
+    {
+      "code": "identity_parity_missing",
+      "field": "identity_contracts[3].test_id",
+      "message": "identity contract requires a parity test"
+    }
+  ],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 15,
+    "forbidden_side_effect_kinds": [
+      "cross_focus_state_commit",
+      "installed_file_write",
+      "legacy_signal_from_atomic_method",
+      "local_build",
+      "physical_text_mutation",
+      "pre_receipt_layout_or_learning_authority",
+      "restart_or_signal_keyboard_route",
+      "runtime_deployment",
+      "same_event_legacy_fallback",
+      "second_native_mutation_owner",
+      "shared_mutable_speculative_state",
+      "unbounded_effect_vector"
+    ],
+    "identity_contracts": 5,
+    "invariants": 7,
+    "planned_side_effect_kinds": [
+      "filesystem_write",
+      "remote_build",
+      "source_edit"
+    ],
+    "preserved_artifacts": 3,
+    "runtime_comparisons": 0,
+    "source_checks": 3,
+    "tests": 15
+  },
+  "manifest_sha256": "0a4bba7d0d89cd246aa4841566400c52531ef902a9855207111e6fd7fc09ed75",
+  "safe_to_implement": false,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-ibus-interface",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/ibus_interface.rs",
+      "sha256": "bf8ff69e4309899ae03d00129973b52e1a51ca3b86526a8fc8e181fa5b535b0b",
+      "size_bytes": 12613
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-engine-state",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/engine.rs",
+      "sha256": "f2bac4a739a53e9d05f8aaad55129bbac001c11a7dc8fae6d1f7d119fd91192f",
+      "size_bytes": 13010
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-layout-route",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/layout_sync.rs",
+      "sha256": "db948de33f7a725dedd4fd2992f09f2bc1bef0f39ad2f25d35ccbfa248066c99",
+      "size_bytes": 9039
+    }
+  ],
+  "task_id": "LAY_IME_ATOMIC_STATEFUL_ENGINE_V1_2026-08-21",
+  "verdict": "BLOCKED_BEFORE_CODE"
+}

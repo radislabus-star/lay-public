@@ -1,0 +1,80 @@
+{
+  "schema": "lay.ime.atomic-exact-layout-lease.system-proof-receipt.v1",
+  "task_id": "LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_V27_2026-08-22",
+  "created_at": "2026-08-22",
+  "remote": "e@192.168.3.94:/home/e/projects/lay-v27-proof",
+  "verdict": "P4_SOFTWARE_P5_SOFTWARE_P6_SOFTWARE_P7_COMPONENT_PASS_NOT_PROMOTED",
+  "runtime_authority_changed": false,
+  "installed_runtime": "Lay 1.0.33",
+  "proof_binary": {
+    "path": "/home/e/projects/lay-v27-proof/target/release/deps/lay_ibus_engine-f685c25f01df2389",
+    "sha256": "7cc39b520a4f787bb386338f6102b01e9deadf76f4571bad556d9199dd181d63"
+  },
+  "source_sha256": {
+    "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs": "d9459e914c9decb84355ba2c2ba32f5a64794b1e157beae262a01e1bf651baa9",
+    "src/bin/lay_ibus_engine/space_autocorrect_prefetch/proof.rs": "fc918e095a202ac207814924e79c65cedb988297263b0978d3e3d61a61910e48",
+    "src/bin/lay_ibus_engine/atomic/proof.rs": "07569593ad30fb94fca0f2a241fc5338e33ca93e71f95954fcdd4e6ebd92c08c",
+    "src/exact_layout_authority.rs": "b0806d086e916009d93f338d6b10c3bd4aeb009f95e478f1eb28bff69e59b8f0"
+  },
+  "p4_race_fault": {
+    "identity_faults_rejected": 13,
+    "identity_faults_total": 13,
+    "authority_fingerprint_faults_rejected": 6,
+    "authority_fingerprint_faults_total": 6,
+    "lock_contention_fail_closed": true,
+    "poisoned_lock_fail_closed": true,
+    "partial_published_states": 0,
+    "late_older_publication_applies": 0,
+    "double_take_maximum_applies": 1
+  },
+  "p5_space": {
+    "fallback_cases_passed": 5,
+    "fallback_cases_total": 5,
+    "lost_space": 0,
+    "duplicate_space": 0,
+    "word_glue": 0,
+    "exact_apply_trailing_spaces": 1,
+    "atomic_refusal_partial_effects": 0,
+    "legacy_retries": 0
+  },
+  "p6_software_undo": {
+    "exact_apply_round_trips": 1,
+    "exact_apply_round_trip_total": 1,
+    "common_atomic_output_owner": true,
+    "common_undo_owner": true,
+    "physical_compositor_proof": "not_tested"
+  },
+  "p7_component_latency": {
+    "concurrently_busy_stale_full_worker": true,
+    "first_run": {
+      "internal_full_wait_budget_us": 4000,
+      "space_full_wait_p99_us": 4220,
+      "verdict": "FAIL"
+    },
+    "accepted_run": {
+      "internal_full_wait_budget_us": 3500,
+      "printable_exact_miss": {"n": 2048, "p99_us": 5, "budget_us": 250, "pass": true},
+      "printable_exact_hit": {"n": 2048, "p99_us": 11, "budget_us": 2000, "pass": true},
+      "space_exact_lookup": {"n": 2048, "p99_us": 0, "budget_us": 1000, "pass": true},
+      "space_full_timeout": {"n": 128, "p99_us": 3680},
+      "space_full_completion": {"n": 128, "p99_us": 598},
+      "space_full_wait": {"n": 256, "p99_us": 3680, "budget_us": 4000, "pass": true}
+    }
+  },
+  "commands": [
+    "scripts/cargo-guard.sh test --bin lay-ibus-engine v27_race_fault_and_space_effect_matrix -- --nocapture --test-threads=1",
+    "scripts/cargo-guard.sh test --lib authority_snapshot_fingerprint_fault_matrix_is_fail_closed -- --nocapture --test-threads=1",
+    "scripts/cargo-guard.sh test --lib exact_snapshot_readout_is_warm_only_and_cannot_initialize_data -- --nocapture --test-threads=1",
+    "scripts/cargo-guard.sh test --bin lay-ibus-engine v27_atomic_space_refusal_and_double_shift_round_trip -- --nocapture --test-threads=1",
+    "scripts/cargo-guard.sh test --release --bin lay-ibus-engine v27_component_latency_denominators -- --nocapture --test-threads=1"
+  ],
+  "not_tested": [
+    "controlled lay-ibus-engine RSS delta",
+    "lay-daemon exact-guard PSS delta",
+    "aggregate active-Lay PSS delta",
+    "post-edit observed-source route parity",
+    "fixed 514-event RPC route",
+    "physical compositor double-Shift undo",
+    "installed desktop runtime"
+  ]
+}

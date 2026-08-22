@@ -1,0 +1,526 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "PASS",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": true,
+  "contract": "docs/structural_gates/preflights/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_ROUTE_V2_2026-08-21.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "source_root": null,
+  "node_count": 14,
+  "edge_count": 20,
+  "routes": [
+    {
+      "id": "atomic-frame-execution",
+      "event": "atomic_frame_submitted",
+      "kind": "execution",
+      "entry": "physical_event",
+      "via": [],
+      "terminal": "submission_receipt",
+      "path_count": 1,
+      "paths": [
+        [
+          "physical_event",
+          "mutter_focus_lease",
+          "shell_single_flight",
+          "ibus_atomic_rpc",
+          "lay_effect_proposal",
+          "daemon_frame_validator",
+          "shell_reply_admission",
+          "mutter_text_input_v3_frame",
+          "submission_receipt"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "daemon_frame_validator"
+        ],
+        "orchestrator": [
+          "ibus_atomic_rpc",
+          "shell_single_flight"
+        ],
+        "producer": [
+          "lay_effect_proposal",
+          "mutter_focus_lease"
+        ],
+        "mutation_owner": [
+          "mutter_text_input_v3_frame"
+        ],
+        "interface": [
+          "physical_event"
+        ],
+        "authorization_owner": [
+          "shell_reply_admission"
+        ],
+        "observer": [
+          "submission_receipt"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "physical_event",
+          "to": "submission_receipt",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "physical_event",
+              "mutter_focus_lease",
+              "shell_single_flight",
+              "ibus_atomic_rpc",
+              "lay_effect_proposal",
+              "daemon_frame_validator",
+              "shell_reply_admission",
+              "mutter_text_input_v3_frame",
+              "submission_receipt"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "atomic-frame-authority",
+      "event": "atomic_frame_submitted",
+      "kind": "authority",
+      "entry": "mutter_focus_lease",
+      "via": [],
+      "terminal": "mutter_text_input_v3_frame",
+      "path_count": 1,
+      "paths": [
+        [
+          "mutter_focus_lease",
+          "lay_effect_proposal",
+          "daemon_frame_validator",
+          "shell_reply_admission",
+          "mutter_text_input_v3_frame"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "daemon_frame_validator"
+        ],
+        "producer": [
+          "lay_effect_proposal",
+          "mutter_focus_lease"
+        ],
+        "mutation_owner": [
+          "mutter_text_input_v3_frame"
+        ],
+        "authorization_owner": [
+          "shell_reply_admission"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "mutter_focus_lease",
+          "to": "mutter_text_input_v3_frame",
+          "via": [],
+          "graph": "authority",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "mutter_focus_lease",
+              "lay_effect_proposal",
+              "daemon_frame_validator",
+              "shell_reply_admission",
+              "mutter_text_input_v3_frame"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "profile-refusal-execution",
+      "event": "profile_refused",
+      "kind": "execution",
+      "entry": "physical_event",
+      "via": [],
+      "terminal": "native_unhandled",
+      "path_count": 1,
+      "paths": [
+        [
+          "physical_event",
+          "mutter_focus_lease",
+          "native_unhandled"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "mutter_focus_lease"
+        ],
+        "observer": [
+          "native_unhandled"
+        ],
+        "interface": [
+          "physical_event"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "physical_event",
+          "to": "native_unhandled",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "physical_event",
+              "mutter_focus_lease",
+              "native_unhandled"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "frame-refusal-execution",
+      "event": "frame_refused",
+      "kind": "execution",
+      "entry": "physical_event",
+      "via": [],
+      "terminal": "native_unhandled",
+      "path_count": 1,
+      "paths": [
+        [
+          "physical_event",
+          "mutter_focus_lease",
+          "shell_single_flight",
+          "ibus_atomic_rpc",
+          "lay_effect_proposal",
+          "daemon_frame_validator",
+          "shell_reply_admission",
+          "mutter_focus_bound_replay",
+          "native_unhandled"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "daemon_frame_validator"
+        ],
+        "orchestrator": [
+          "ibus_atomic_rpc",
+          "shell_single_flight"
+        ],
+        "producer": [
+          "lay_effect_proposal",
+          "mutter_focus_lease"
+        ],
+        "mutation_owner": [
+          "mutter_focus_bound_replay"
+        ],
+        "observer": [
+          "native_unhandled"
+        ],
+        "interface": [
+          "physical_event"
+        ],
+        "authorization_owner": [
+          "shell_reply_admission"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "physical_event",
+          "to": "native_unhandled",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "physical_event",
+              "mutter_focus_lease",
+              "shell_single_flight",
+              "ibus_atomic_rpc",
+              "lay_effect_proposal",
+              "daemon_frame_validator",
+              "shell_reply_admission",
+              "mutter_focus_bound_replay",
+              "native_unhandled"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "frame-refusal-authority",
+      "event": "frame_refused",
+      "kind": "authority",
+      "entry": "shell_reply_admission",
+      "via": [],
+      "terminal": "mutter_focus_bound_replay",
+      "path_count": 1,
+      "paths": [
+        [
+          "shell_reply_admission",
+          "mutter_focus_bound_replay"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "mutter_focus_bound_replay"
+        ],
+        "authorization_owner": [
+          "shell_reply_admission"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "shell_reply_admission",
+          "to": "mutter_focus_bound_replay",
+          "via": [],
+          "graph": "authority",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "shell_reply_admission",
+              "mutter_focus_bound_replay"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "focus-lineage-execution",
+      "event": "focus_lineage_terminated",
+      "kind": "execution",
+      "entry": "physical_event",
+      "via": [],
+      "terminal": "focus_lineage_terminated",
+      "path_count": 1,
+      "paths": [
+        [
+          "physical_event",
+          "mutter_focus_lease",
+          "shell_single_flight",
+          "focus_lineage_terminated"
+        ]
+      ],
+      "role_owners": {
+        "observer": [
+          "focus_lineage_terminated"
+        ],
+        "producer": [
+          "mutter_focus_lease"
+        ],
+        "interface": [
+          "physical_event"
+        ],
+        "orchestrator": [
+          "shell_single_flight"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "physical_event",
+          "to": "focus_lineage_terminated",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "physical_event",
+              "mutter_focus_lease",
+              "shell_single_flight",
+              "focus_lineage_terminated"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "submission-observation",
+      "event": "atomic_frame_submitted",
+      "kind": "observation",
+      "entry": "submission_receipt",
+      "via": [],
+      "terminal": "surrounding_postcondition",
+      "path_count": 1,
+      "paths": [
+        [
+          "submission_receipt",
+          "surrounding_postcondition"
+        ]
+      ],
+      "role_owners": {
+        "observer": [
+          "submission_receipt",
+          "surrounding_postcondition"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "submission_receipt",
+          "to": "surrounding_postcondition",
+          "via": [],
+          "graph": "observation",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "submission_receipt",
+              "surrounding_postcondition"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "submission-proof",
+      "event": "atomic_frame_submitted",
+      "kind": "proof",
+      "entry": "surrounding_postcondition",
+      "via": [],
+      "terminal": "production_fault_matrix",
+      "path_count": 1,
+      "paths": [
+        [
+          "surrounding_postcondition",
+          "production_fault_matrix"
+        ]
+      ],
+      "role_owners": {
+        "proof_owner": [
+          "production_fault_matrix"
+        ],
+        "observer": [
+          "surrounding_postcondition"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "surrounding_postcondition",
+          "to": "production_fault_matrix",
+          "via": [],
+          "graph": "proof",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "surrounding_postcondition",
+              "production_fault_matrix"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "refusal-proof",
+      "event": "frame_refused",
+      "kind": "proof",
+      "entry": "daemon_frame_validator",
+      "via": [],
+      "terminal": "production_fault_matrix",
+      "path_count": 1,
+      "paths": [
+        [
+          "daemon_frame_validator",
+          "production_fault_matrix"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "daemon_frame_validator"
+        ],
+        "proof_owner": [
+          "production_fault_matrix"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "daemon_frame_validator",
+          "to": "production_fault_matrix",
+          "via": [],
+          "graph": "proof",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "daemon_frame_validator",
+              "production_fault_matrix"
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {
+    "atomic_frame_submitted": {
+      "evidence_owner": [
+        "daemon_frame_validator"
+      ],
+      "render_owner": [],
+      "mutation_owner": [
+        "mutter_text_input_v3_frame"
+      ],
+      "display_rank_owner": [],
+      "authorization_owner": [
+        "shell_reply_admission"
+      ],
+      "candidate_rank_owner": []
+    },
+    "frame_refused": {
+      "evidence_owner": [],
+      "render_owner": [],
+      "mutation_owner": [
+        "mutter_focus_bound_replay"
+      ],
+      "display_rank_owner": [],
+      "authorization_owner": [
+        "shell_reply_admission"
+      ],
+      "candidate_rank_owner": []
+    }
+  },
+  "source_evidence": {
+    "expected": 0,
+    "verified": 0,
+    "complete": true
+  },
+  "issues": [],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": false,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

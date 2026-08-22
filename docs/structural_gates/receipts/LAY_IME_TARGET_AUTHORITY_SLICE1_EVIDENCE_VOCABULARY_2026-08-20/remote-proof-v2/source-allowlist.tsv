@@ -1,0 +1,9 @@
+ALLOWLIST_CHANGED	src/correction_core.rs
+ALLOWLIST_CHANGED	src/nanda_wave/l2.rs
+ALLOWLIST_CHANGED	src/nanda_wave/l2_field/productive_v1/composite.rs
+ALLOWLIST_CHANGED	src/nanda_wave/l2_field/productive_v1/live.rs
+ALLOWLIST_CHANGED	src/nanda_wave/l2_field/productive_v1/scene.rs
+ALLOWLIST_CHANGED	src/typing_transition/live_candidate.rs
+ALLOWLIST_CHANGED	src/typing_transition/mod.rs
+ALLOWLIST_CREATED	src/typing_transition/target_evidence.rs
+SUMMARY	source_changed=7	outside=0	missing=0

@@ -1,0 +1,376 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-ime-candidate-specific-target-authority-2026-08-17",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "productive-live-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/live.rs",
+      "expect": {"size_bytes": 40220, "sha256": "e88694537541b82100996e468efa06a8476591474eb626f3328cb1ace1dbeb20", "mode": "0664"}
+    },
+    {
+      "id": "bridge-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/bridge.rs",
+      "expect": {"size_bytes": 109138, "sha256": "bf47a5a7b4ae33541efc15a8de91fa406abd69044653f89aff0a6bfd4f143708", "mode": "0664"}
+    },
+    {
+      "id": "l2-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2.rs",
+      "expect": {"size_bytes": 18385, "sha256": "fae4844e2113ce082418dfbd389dc2060ca0c755984cac66057433e352eb3908", "mode": "0664"}
+    },
+    {
+      "id": "live-candidate-source",
+      "kind": "file",
+      "path": "../../../src/typing_transition/live_candidate.rs",
+      "expect": {"size_bytes": 20491, "sha256": "068cfee219e4b5943b80c8a9e1c9bd7a5be9c282d4cd0395d2360bffd914bcdf", "mode": "0664"}
+    },
+    {
+      "id": "correction-core-source",
+      "kind": "file",
+      "path": "../../../src/correction_core.rs",
+      "expect": {"size_bytes": 39794, "sha256": "7de1ed9a64b8b891c3944e4d2460dfdb7f11530fafc5838199410ee55119b5a9", "mode": "0664"}
+    },
+    {
+      "id": "decision-source",
+      "kind": "file",
+      "path": "../../../src/typing_transition/decision.rs",
+      "expect": {"size_bytes": 27803, "sha256": "f4ba3c3554650b19e178458818a11b165586a3ab86ff54fd106cd2d1d7054f1e", "mode": "0664"}
+    },
+    {
+      "id": "cache-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/cache.rs",
+      "expect": {"size_bytes": 23664, "sha256": "9da969bfff12dba0217954647b1ba8e21302365770abaa82178953fcf63fec07", "mode": "0664"}
+    },
+    {
+      "id": "verifier-source",
+      "kind": "file",
+      "path": "../../../src/text_edit/structural_verifier.rs",
+      "expect": {"size_bytes": 7730, "sha256": "19201157bc09df5cca617132d67a242474aaa331ca58dc18acb0152818b7b826", "mode": "0664"}
+    },
+    {
+      "id": "double-shift-source",
+      "kind": "file",
+      "path": "../../../src/bin/lay_ibus_engine/committed_tail.rs",
+      "expect": {"size_bytes": 25042, "sha256": "72e567392a1790467ecb1797b1a031949bf61e8615742eead57a8c5ecfbfa753", "mode": "0664"}
+    },
+    {
+      "id": "productive-package-runtime-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/packaged_runtime.rs",
+      "expect": {"size_bytes": 176152, "sha256": "bc77fea032b0a79ee4cf34e1d4c67d389e802112768983d9b8c054faefcae7f2", "mode": "0664"}
+    },
+    {
+      "id": "release-installer-source",
+      "kind": "file",
+      "path": "../../../scripts/install-release-binaries.sh",
+      "expect": {"size_bytes": 2333, "sha256": "259850478a99bb32b1aaffa863ff72138f018b7ce1231611a05fad706d7ffd02", "mode": "0775"}
+    },
+    {
+      "id": "authority-paper",
+      "kind": "file",
+      "path": "../../../docs/ime-canonical-target-authority-paper-2026-08-17.md",
+      "expect": {"size_bytes": 31059, "sha256": "19cc72a71f0843208a731516d90886f4af1ac8f89a93b9bcb2e79d517dc0ca63", "mode": "0664"}
+    },
+    {
+      "id": "target-route-contract",
+      "kind": "file",
+      "path": "LAY_IME_TARGET_AUTHORITY_ROUTE_2026-08-17.json",
+      "expect": {"size_bytes": 6181, "sha256": "b092dc67a2ca286a12fb06e9fd96b5e873a0df56a6a54fb2fca977d144d4e6f3", "mode": "0664"}
+    },
+    {
+      "id": "target-route-pass",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_ROUTE_DESIGN_PASS_2026-08-17.json",
+      "expect": {"size_bytes": 7284, "sha256": "b67b09665135630903c54746865995e089df7a6e8c4ad453a0f3a758740dae02", "mode": "0664"}
+    },
+    {
+      "id": "current-route-veto",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_CURRENT_OBSERVED_VETO_2026-08-17.json",
+      "expect": {"size_bytes": 6449, "sha256": "d06c665030ea63747665047a609e699431a5876c26880f65d5319b37f73658cf", "mode": "0664"}
+    },
+    {
+      "id": "installed-engine",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "expect": {"size_bytes": 6423488, "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a", "mode": "0755"}
+    },
+    {
+      "id": "installed-productive-v90",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2m",
+      "expect": {"size_bytes": 17309944, "sha256": "40fb6a9f0d92c3c7502e47f9c70230d9b86020f622b08a5c799342f13e09ce44", "mode": "0644", "prefix_hex": "4c41595032563100"}
+    }
+  ],
+  "source_checks": [
+    {
+      "id": "productive-live-no-literal-or-fallback",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/live.rs",
+      "sha256": "e88694537541b82100996e468efa06a8476591474eb626f3328cb1ace1dbeb20",
+      "forbidden_effect_patterns": [
+        {"effect": "literal_surface_runtime_branch", "regex": "(?i)(?:if|match)[^\\n]{0,160}(?:прохоил|видешь|врмея|читайл|перхвачу)"},
+        {"effect": "deterministic_fallback", "regex": "deterministic_text_candidates"},
+        {"effect": "synchronous_hot_path_wait", "regex": "(?:thread::sleep|recv_timeout|Condvar::wait)"}
+      ]
+    },
+    {
+      "id": "bridge-no-literal-second-owner-or-topk-expansion",
+      "path": "../../../src/nanda_wave/l2_field/bridge.rs",
+      "sha256": "bf47a5a7b4ae33541efc15a8de91fa406abd69044653f89aff0a6bfd4f143708",
+      "forbidden_effect_patterns": [
+        {"effect": "literal_surface_runtime_branch", "regex": "(?i)(?:if|match)[^\\n]{0,160}(?:прохоил|видешь|врмея|читайл|перхвачу)"},
+        {"effect": "deterministic_fallback", "regex": "deterministic_text_candidates"},
+        {"effect": "unbounded_candidate_collection", "regex": "collect::<Vec<_>>\\(\\)\\s*;\\s*[^\\n]*sort_unstable"}
+      ]
+    },
+    {
+      "id": "l2-no-literal-authority",
+      "path": "../../../src/nanda_wave/l2.rs",
+      "sha256": "fae4844e2113ce082418dfbd389dc2060ca0c755984cac66057433e352eb3908",
+      "forbidden_effect_patterns": [
+        {"effect": "literal_surface_runtime_branch", "regex": "(?i)(?:if|match)[^\\n]{0,160}(?:прохоил|видешь|врмея|читайл|перхвачу)"},
+        {"effect": "automatic_boundary_authority", "regex": "target_evidence\\s*:\\s*L2ImeTargetEvidence::Boundary.{0,300}gate\\s*:\\s*Eligible"}
+      ]
+    },
+    {
+      "id": "decision-no-second-producer",
+      "path": "../../../src/typing_transition/decision.rs",
+      "sha256": "f4ba3c3554650b19e178458818a11b165586a3ab86ff54fd106cd2d1d7054f1e",
+      "forbidden_effect_patterns": [
+        {"effect": "post_refusal_fallback", "regex": "(?s)(?:selected_index\\s*:\\s*None|Reject).{0,1200}(?:canonical_text|deterministic_text|boundary_split|ime_l2)"},
+        {"effect": "literal_surface_runtime_branch", "regex": "(?i)(?:if|match)[^\\n]{0,160}(?:прохоил|видешь|врмея|читайл|перхвачу)"}
+      ]
+    },
+    {
+      "id": "correction-core-no-persistent-feedback-migration",
+      "path": "../../../src/correction_core.rs",
+      "sha256": "7de1ed9a64b8b891c3944e4d2460dfdb7f11530fafc5838199410ee55119b5a9",
+      "forbidden_effect_patterns": [
+        {"effect": "persistent_feedback_schema_change", "regex": "(?s)(?:File::create|OpenOptions|write_all).{0,300}(?:feedback|learning|usage|accept|rollback)"}
+      ]
+    },
+    {
+      "id": "cache-no-authority-or-unbounded-growth",
+      "path": "../../../src/nanda_wave/l2_field/cache.rs",
+      "sha256": "9da969bfff12dba0217954647b1ba8e21302365770abaa82178953fcf63fec07",
+      "forbidden_effect_patterns": [
+        {"effect": "cache_authorized_edit", "regex": "(?:AuthorizedEdit|PreparedCorrectionLease|selected_winner)"},
+        {"effect": "unbounded_cache", "regex": "SingleFlightCache::new\\(usize::MAX"}
+      ]
+    },
+    {
+      "id": "verifier-remains-fail-closed",
+      "path": "../../../src/text_edit/structural_verifier.rs",
+      "sha256": "19201157bc09df5cca617132d67a242474aaa331ca58dc18acb0152818b7b826",
+      "forbidden_effect_patterns": [
+        {"effect": "weaken_verifier_authority", "regex": "(?i)(?:allow|eligible|authorized).{0,100}(?:without|bypass|skip).{0,100}(?:proof|plan|verif)"}
+      ]
+    },
+    {
+      "id": "double-shift-remains-intact",
+      "path": "../../../src/bin/lay_ibus_engine/committed_tail.rs",
+      "sha256": "72e567392a1790467ecb1797b1a031949bf61e8615742eead57a8c5ecfbfa753",
+      "forbidden_effect_patterns": [
+        {"effect": "change_double_shift_contract", "regex": "(?i)(?:double.?shift|auto.?undo).{0,120}(?:disable|remove|skip|ignore)"}
+      ]
+    },
+    {
+      "id": "productive-package-remains-read-only",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/packaged_runtime.rs",
+      "sha256": "bc77fea032b0a79ee4cf34e1d4c67d389e802112768983d9b8c054faefcae7f2",
+      "forbidden_effect_patterns": [
+        {"effect": "rewrite_productive_package", "regex": "(?s)(?:File::create|OpenOptions::new\\(\\).{0,200}write\\(true\\)).{0,300}(?:PRODUCTIVE|p2m)"}
+      ]
+    },
+    {
+      "id": "release-gate-remains-conjunctive",
+      "path": "../../../scripts/install-release-binaries.sh",
+      "sha256": "259850478a99bb32b1aaffa863ff72138f018b7ce1231611a05fad706d7ffd02",
+      "forbidden_effect_patterns": [
+        {"effect": "deploy_before_conjunctive_pass", "regex": "(?i)(?:skip|bypass).{0,80}(?:proof|gate|conjunctive)"}
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "introduce-one-target-evidence-contract", "kind": "source_edit"},
+      {"id": "bridge-existing-evidence-vocabularies", "kind": "source_edit"},
+      {"id": "derive-candidate-state", "kind": "source_edit"},
+      {"id": "remove-field-wide-l3-authority-rule", "kind": "source_edit"},
+      {"id": "internalize-boundary-hypothesis", "kind": "source_edit"},
+      {"id": "remove-parallel-boundary-authority-route", "kind": "source_edit"},
+      {"id": "bump-target-evidence-cache-identity", "kind": "source_edit"},
+      {"id": "add-stage-denominator-receipts", "kind": "source_edit"},
+      {"id": "run-remote-focused-and-conjunctive-proofs", "kind": "remote_test"},
+      {"id": "update-architecture-receipts-and-graph", "kind": "documentation_edit"}
+    ],
+    "forbidden": [
+      "literal_surface_runtime_branch",
+      "deterministic_fallback",
+      "post_refusal_fallback",
+      "automatic_boundary_authority",
+      "unbounded_candidate_collection",
+      "unbounded_cache",
+      "cache_authorized_edit",
+      "synchronous_hot_path_wait",
+      "weaken_verifier_authority",
+      "change_double_shift_contract",
+      "rewrite_productive_package",
+      "persistent_feedback_schema_change",
+      "deploy_before_conjunctive_pass"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "installed-engine-runtime",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "policy": "read_only_until_conjunctive_software_pass",
+      "rollback_policy": "retain exact installed 1.0.33 bytes",
+      "baseline_check_id": "installed-engine"
+    },
+    {
+      "id": "productive-v90-package",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2m",
+      "policy": "read_only_runtime_input",
+      "rollback_policy": "never rewrite package bytes for target authority migration",
+      "baseline_check_id": "installed-productive-v90"
+    },
+    {
+      "id": "structural-verifier-authority",
+      "path": "../../../src/text_edit/structural_verifier.rs",
+      "policy": "read_only_authorization_boundary",
+      "rollback_policy": "never weaken verifier checks to compensate for birth, retention or certificate defects",
+      "baseline_check_id": "verifier-source"
+    },
+    {
+      "id": "double-shift-contract",
+      "path": "../../../src/bin/lay_ibus_engine/committed_tail.rs",
+      "policy": "read_only_rollback_boundary",
+      "rollback_policy": "preserve exact original-token restoration after automatic correction",
+      "baseline_check_id": "double-shift-source"
+    }
+  ],
+  "state_machine": {
+    "initial_state": "TARGET_AUTHORITY_DESIGN_PASS_RUNTIME_1_0_33",
+    "terminal_states": [
+      "TARGET_AUTHORITY_SOFTWARE_PASS_RUNTIME_1_0_33_UNCHANGED",
+      "BLOCKED_BEFORE_DEPLOY_RUNTIME_1_0_33_UNCHANGED"
+    ],
+    "steps": [
+      {
+        "id": "unify-target-evidence-vocabulary",
+        "from": "TARGET_AUTHORITY_DESIGN_PASS_RUNTIME_1_0_33",
+        "to": "TARGET_EVIDENCE_PARITY_READY",
+        "mutates": true,
+        "failure_state": "BLOCKED_BEFORE_DEPLOY_RUNTIME_1_0_33_UNCHANGED",
+        "cleanup": "retain scoped source diff and failing receipts; do not alter installed runtime or package bytes",
+        "preserves": ["installed-engine-runtime", "productive-v90-package", "structural-verifier-authority", "double-shift-contract"],
+        "test_id": "target-evidence-migration-fault"
+      },
+      {
+        "id": "derive-candidate-specific-authority",
+        "from": "TARGET_EVIDENCE_PARITY_READY",
+        "to": "CANDIDATE_AUTHORITY_SHADOW_READY",
+        "mutates": true,
+        "failure_state": "BLOCKED_BEFORE_DEPLOY_RUNTIME_1_0_33_UNCHANGED",
+        "cleanup": "retain old live authority, keep new state derivation shadow-only, record failed stage denominators",
+        "preserves": ["installed-engine-runtime", "productive-v90-package", "structural-verifier-authority", "double-shift-contract"],
+        "test_id": "authority-derivation-fault"
+      },
+      {
+        "id": "internalize-boundary-and-remove-parallel-owner",
+        "from": "CANDIDATE_AUTHORITY_SHADOW_READY",
+        "to": "SINGLE_TARGET_FIELD_SOURCE_READY",
+        "mutates": true,
+        "failure_state": "BLOCKED_BEFORE_DEPLOY_RUNTIME_1_0_33_UNCHANGED",
+        "cleanup": "restore shadow comparison boundary, retain observed route VETO and failed false-split receipts, do not deploy",
+        "preserves": ["installed-engine-runtime", "productive-v90-package", "structural-verifier-authority", "double-shift-contract"],
+        "test_id": "boundary-internalization-fault"
+      },
+      {
+        "id": "run-remote-conjunctive-proof",
+        "from": "SINGLE_TARGET_FIELD_SOURCE_READY",
+        "to": "TARGET_AUTHORITY_SOFTWARE_PASS_RUNTIME_1_0_33_UNCHANGED",
+        "mutates": false,
+        "failure_state": "BLOCKED_BEFORE_DEPLOY_RUNTIME_1_0_33_UNCHANGED",
+        "cleanup": "retain every failing receipt, stop temporary proof processes and reject version, installation and live-owner promotion",
+        "preserves": ["installed-engine-runtime", "productive-v90-package", "structural-verifier-authority", "double-shift-contract"],
+        "test_id": "remote-conjunctive-proof"
+      }
+    ]
+  },
+  "tests": [
+    {"id": "target-evidence-migration-fault", "kind": "fault_injection", "expected": "partial enum conversion fails compile or semantic parity while installed 1.0.33 remains unchanged"},
+    {"id": "authority-derivation-fault", "kind": "fault_injection", "expected": "missing relation, target grounding, geometry, cohort or contradiction data produces Rejected or NeedsContext, never a singleton authority"},
+    {"id": "boundary-internalization-fault", "kind": "fault_injection", "expected": "one-sided grounding, changed letters, stale context or whole-token conflict prevents Boundary certification and cannot invoke the removed parallel route"},
+    {"id": "evidence-roundtrip-parity", "kind": "parity", "expected": "L2ImeTargetEvidence, ReplacementTargetEvidence and UnifiedCorrectionCandidate adapters preserve exact target relation and never promote None"},
+    {"id": "candidate-state-table", "kind": "parity", "expected": "Born, Grounded, L2Certified, NeedsContext and Rejected follow the paper truth table for every operator class"},
+    {"id": "stage-denominator-proof", "kind": "integration", "expected": "every case records admission, birth, retention, certificate, selection and verifier outcomes without changing the denominator"},
+    {"id": "focused-correction-36", "kind": "integration", "expected": "full fixed canonical correction gate passes 36 of 36 and focused and concurrent runs agree"},
+    {"id": "boundary-positive-and-false-split", "kind": "integration", "expected": "true split and merge recall are reported separately and false authority and false split remain zero"},
+    {"id": "cache-generation-parity", "kind": "parity", "expected": "target evidence schema, ordered L1.1 lattice, contours, scene and all package hashes participate in cache identity; stale publication is rejected"},
+    {"id": "single-owner-route-proof", "kind": "parity", "expected": "observed source and runtime trace have one typed field, one candidate-specific readout, one DecisionCore, one verifier and one mutator with no parallel Boundary owner"},
+    {"id": "remote-conjunctive-proof", "kind": "integration", "expected": "remote guarded proof passes every L1 class above 95 percent plus clean preservation, lattice coverage, false certainty, package, RSS, latency and all correction-route safety denominators"},
+    {"id": "hot-path-and-space-proof", "kind": "integration", "expected": "printable and Space IBus threads perform no heavy synchronous field work, Space consumes only an exact ready lease and emits exactly one separator"},
+    {"id": "rollback-and-verifier-proof", "kind": "parity", "expected": "unchanged transition and backend verification remain fail-closed and immediate double Shift restores the exact pre-autocorrection token"}
+  ],
+  "invariants": [
+    {"id": "authority-is-target-specific", "statement": "authority is derived from relation, target grounding, geometry, cohort and contradictions for one observed-target pair", "test_id": "candidate-state-table"},
+    {"id": "context-does-not-create-lexical-proof", "statement": "L3 and L4 may select among grounded compatible targets but cannot birth, ground or resurrect a target", "test_id": "candidate-state-table"},
+    {"id": "boundary-is-one-field-hypothesis", "statement": "Boundary split and merge compete with whole-token targets before certificate issuance and have no independent Eligible route", "test_id": "boundary-positive-and-false-split"},
+    {"id": "grounded-l11-target-retained", "statement": "a grounded L1.1 candidate remains in the bounded lattice unless explicit independently measured contradiction rejects it", "test_id": "stage-denominator-proof"},
+    {"id": "one-authority-route", "statement": "one event has one evidence owner, one DecisionCore, one verifier and one mutator", "test_id": "single-owner-route-proof"},
+    {"id": "cache-never-owns-authority", "statement": "cache stores immutable material only and cannot retain a selected winner, context result, lease or AuthorizedEdit", "test_id": "cache-generation-parity"},
+    {"id": "quality-is-conjunctive", "statement": "focused recovery cannot hide per-class, preservation, coverage, false-certainty, boundary, package, RSS, latency or rollback regressions", "test_id": "remote-conjunctive-proof"},
+    {"id": "hot-input-never-waits-for-field", "statement": "printable and Space handlers never synchronously compute or unboundedly wait for L1.1 or Productive V90", "test_id": "hot-path-and-space-proof"},
+    {"id": "verifier-and-rollback-unchanged", "statement": "verifier authority and exact double Shift rollback are preserved", "test_id": "rollback-and-verifier-proof"}
+  ],
+  "identity_contracts": [
+    {"id": "field-to-target-evidence", "producer": "typed contour field", "consumer": "candidate-specific L2 readout", "comparison": "exact observed hash, target identity, relation, grounding, geometry witness, cohort and contradiction mask", "test_id": "evidence-roundtrip-parity"},
+    {"id": "l2-to-context", "producer": "NeedsContext grounded cohort", "consumer": "L3/L4 context selector", "comparison": "exact ordered compatible target identities with no ungrounded births", "test_id": "candidate-state-table"},
+    {"id": "target-evidence-to-cache", "producer": "immutable target field", "consumer": "CanonicalTokenKey generation", "comparison": "scene, contour identity, ordered L1.1 lattice, all package hashes and target evidence schema", "test_id": "cache-generation-parity"},
+    {"id": "source-route-to-runtime-trace", "producer": "single canonical source route", "consumer": "remote runtime route receipt", "comparison": "one field, one readout, one DecisionCore, one verifier and one mutator", "test_id": "single-owner-route-proof"},
+    {"id": "selected-target-to-verifier", "producer": "DecisionCore selected target and typed operation", "consumer": "transition and backend verifier", "comparison": "exact source, target, operation, edit plan and frame identity", "test_id": "rollback-and-verifier-proof"}
+  ],
+  "runtime_comparisons": [
+    {
+      "id": "current-observed-to-target-authority",
+      "source": "fixed 36-case correction gate, fixed L1 proof, boundary denominators and immediate-Space replay",
+      "comparison": "exact_stable_projection",
+      "stable_fields": [
+        "case_identity",
+        "observed_surface",
+        "target_surface",
+        "l11_package_sha256",
+        "canonical_l2_package_sha256",
+        "productive_package_sha256",
+        "selected_transition_operator",
+        "selected_transition_proof",
+        "verifier_effect",
+        "mutation_count",
+        "double_shift_restored_surface",
+        "late_edit_count"
+      ],
+      "expected_to_change_fields": [
+        "candidate_gate_action",
+        "candidate_evidence_schema",
+        "candidate_state",
+        "boundary_source_route",
+        "candidate_source_id",
+        "candidate_order",
+        "l3_invocation_count",
+        "correction_total_us",
+        "binary_sha256"
+      ],
+      "observed_not_compared_fields": ["wall_clock_timestamp", "trace_line_number", "managed_process_pid", "online_learning_generation"],
+      "reason": "replace field-wide and parallel-producer authority with one target-specific evidence route while preserving package and verifier contracts",
+      "test_id": "remote-conjunctive-proof"
+    }
+  ]
+}

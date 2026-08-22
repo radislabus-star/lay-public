@@ -1,0 +1,569 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "observed_source",
+  "source_root": "../../..",
+  "nodes": [
+    {
+      "id": "printable_key",
+      "role": "interface",
+      "evidence": {"path": "src/bin/lay_ibus_engine/composition_commit.rs", "line": 162, "contains": "pub(super) async fn commit_managed_passthrough_char("}
+    },
+    {
+      "id": "input_frame",
+      "role": "producer",
+      "evidence": {"path": "src/bin/lay_ibus_engine/engine/types.rs", "line": 68, "contains": "pub(crate) struct InputFrameIdentity {"}
+    },
+    {
+      "id": "correction_scheduler",
+      "role": "orchestrator",
+      "evidence": {"path": "src/bin/lay_ibus_engine/committed_tail.rs", "line": 18, "contains": "pub(super) fn schedule_space_autocorrect_prefetch"}
+    },
+    {
+      "id": "correction_worker",
+      "role": "orchestrator",
+      "evidence": {"path": "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs", "line": 164, "contains": "fn run_worker("}
+    },
+    {
+      "id": "display_scheduler",
+      "role": "orchestrator",
+      "evidence": {"path": "src/bin/lay_ibus_engine/preedit.rs", "line": 461, "contains": "fn schedule_background_precognition("}
+    },
+    {
+      "id": "display_worker",
+      "role": "orchestrator",
+      "evidence": {"path": "src/bin/lay_ibus_engine/precognition_worker.rs", "line": 71, "contains": "fn run_worker("}
+    },
+    {
+      "id": "single_flight_field",
+      "role": "orchestrator",
+      "evidence": {"path": "src/nanda_wave/l2_field/cache.rs", "line": 153, "contains": "struct SingleFlightCache<T> {"}
+    },
+    {
+      "id": "canonical_token_field",
+      "role": "evidence_owner",
+      "evidence": {"path": "src/nanda_wave/l2_field/productive_v1/live.rs", "line": 34, "contains": "struct PreparedCanonicalTokenField {"}
+    },
+    {
+      "id": "correction_readout",
+      "role": "candidate_rank_owner",
+      "evidence": {"path": "src/correction_core.rs", "line": 472, "contains": "pub(crate) fn resolve_text_correction_observed("}
+    },
+    {
+      "id": "correction_lease",
+      "role": "orchestrator",
+      "evidence": {"path": "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs", "line": 21, "contains": "pub(crate) struct PreparedCorrectionLease {"}
+    },
+    {
+      "id": "display_candidate_readout",
+      "role": "candidate_rank_owner",
+      "evidence": {"path": "src/bin/lay_ibus_engine/preedit_readout.rs", "line": 84, "contains": "fn word_candidate_readout_for_input("}
+    },
+    {
+      "id": "display_projection",
+      "role": "display_rank_owner",
+      "evidence": {"path": "src/bin/lay_ibus_engine/preedit_readout.rs", "line": 190, "contains": "pub(crate) fn materialize_precognition_candidates_observed("}
+    },
+    {
+      "id": "preedit_renderer",
+      "role": "render_owner",
+      "evidence": {"path": "src/bin/lay_ibus_engine/preedit.rs", "line": 541, "contains": "pub(crate) async fn apply_background_precognition("}
+    },
+    {
+      "id": "space_key",
+      "role": "interface",
+      "evidence": {"path": "src/bin/lay_ibus_engine/managed.rs", "line": 65, "contains": "if keyval == KEY_SPACE {"}
+    },
+    {
+      "id": "space_lookup",
+      "role": "orchestrator",
+      "evidence": {"path": "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs", "line": 77, "contains": "fn take(&self, identity: &InputFrameIdentity)"}
+    },
+    {
+      "id": "transition_verifier",
+      "role": "evidence_owner",
+      "evidence": {"path": "src/bin/lay_ibus_engine/state.rs", "line": 425, "contains": "match decide_text_transition(&visible_state, transition_candidate)"}
+    },
+    {
+      "id": "backend_authorizer",
+      "role": "authorization_owner",
+      "evidence": {"path": "src/bin/lay_ibus_engine/state.rs", "line": 469, "contains": "authorize_backend_edit(TextEditBackend::Ime, edit_action.clone())"}
+    },
+    {
+      "id": "committed_tail_mutator",
+      "role": "mutation_owner",
+      "evidence": {"path": "src/bin/lay_ibus_engine/state.rs", "line": 568, "contains": "Self::commit_text(emitter, make_ibus_text(commit_text))"}
+    },
+    {
+      "id": "literal_space_authority",
+      "role": "authorization_owner",
+      "evidence": {"path": "src/bin/lay_ibus_engine/managed.rs", "line": 107, "contains": "let autocorrect_us = autocorrect_started.elapsed().as_micros();"}
+    },
+    {
+      "id": "literal_space_mutator",
+      "role": "mutation_owner",
+      "evidence": {"path": "src/bin/lay_ibus_engine/composition_commit.rs", "line": 167, "contains": "Self::commit_text(emitter, make_ibus_text(ch.to_string()))"}
+    },
+    {
+      "id": "display_receipt",
+      "role": "producer",
+      "evidence": {"path": "src/bin/lay_ibus_engine/trace.rs", "line": 258, "contains": "pub(crate) fn record_precognition_timing("}
+    },
+    {
+      "id": "correction_receipt",
+      "role": "producer",
+      "evidence": {"path": "src/bin/lay_ibus_engine/trace.rs", "line": 343, "contains": "pub(crate) fn record_correction_projection_timing("}
+    },
+    {
+      "id": "space_lease_receipt",
+      "role": "producer",
+      "evidence": {"path": "src/bin/lay_ibus_engine/trace.rs", "line": 326, "contains": "pub(crate) fn record_space_correction_lease_outcome("}
+    },
+    {
+      "id": "mutation_receipt",
+      "role": "producer",
+      "evidence": {"path": "src/bin/lay_ibus_engine/trace.rs", "line": 206, "contains": "pub(crate) fn record_committed_tail_replace("}
+    },
+    {
+      "id": "runtime_trace",
+      "role": "observer",
+      "evidence": {"path": "src/bin/lay_ibus_engine/trace.rs", "line": 449, "contains": "fn write_record("}
+    },
+    {
+      "id": "route_proof",
+      "role": "proof_owner",
+      "evidence": {"path": "src/bin/lay_ibus_engine/trace.rs", "line": 594, "contains": "fn one_frame_has_one_projection_per_role_and_at_most_one_field_producer()"}
+    }
+  ],
+  "edges": [
+    {
+      "id": "exec-printable-frame",
+      "from": "printable_key",
+      "relation": "calls",
+      "to": "input_frame",
+      "events": ["printable_correction_prepare", "printable_display_refresh"],
+      "evidence": {"path": "src/bin/lay_ibus_engine/composition_commit.rs", "line": 172, "contains": "let frame = self.capture_input_frame_identity();"}
+    },
+    {
+      "id": "exec-frame-correction-scheduler",
+      "from": "input_frame",
+      "relation": "delegates",
+      "to": "correction_scheduler",
+      "events": ["printable_correction_prepare"],
+      "evidence": {"path": "src/bin/lay_ibus_engine/composition_commit.rs", "line": 175, "contains": "self.schedule_space_autocorrect_prefetch(identity);"}
+    },
+    {
+      "id": "exec-correction-scheduler-worker",
+      "from": "correction_scheduler",
+      "relation": "delegates",
+      "to": "correction_worker",
+      "events": ["printable_correction_prepare"],
+      "evidence": {"path": "src/bin/lay_ibus_engine/committed_tail.rs", "line": 29, "contains": "space_autocorrect_prefetch::schedule(SpaceAutocorrectWork {"}
+    },
+    {
+      "id": "exec-correction-worker-single-flight",
+      "from": "correction_worker",
+      "relation": "delegates",
+      "to": "single_flight_field",
+      "events": ["printable_correction_prepare"],
+      "evidence": {"path": "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs", "line": 184, "contains": "decide_active_composition_autocorrect_observed(ActiveCompositionAutocorrectRequest {"}
+    },
+    {
+      "id": "exec-correction-single-flight-field",
+      "from": "single_flight_field",
+      "relation": "delegates",
+      "to": "canonical_token_field",
+      "events": ["printable_correction_prepare"],
+      "evidence": {"path": "src/nanda_wave/l2_field/bridge.rs", "line": 368, "contains": "match super::cache::get_or_prepare(key, || {"}
+    },
+    {
+      "id": "exec-correction-field-readout",
+      "from": "canonical_token_field",
+      "relation": "delegates",
+      "to": "correction_readout",
+      "events": ["printable_correction_prepare"],
+      "evidence": {"path": "src/correction_core.rs", "line": 503, "contains": "lattice.into_observed_resolution_with_peak_context(l2_peak_context.as_ref());"}
+    },
+    {
+      "id": "exec-correction-readout-lease",
+      "from": "correction_readout",
+      "relation": "delegates",
+      "to": "correction_lease",
+      "events": ["printable_correction_prepare"],
+      "evidence": {"path": "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs", "line": 197, "contains": "let completed = PreparedCorrectionLease {"}
+    },
+    {
+      "id": "authority-frame-correction-field",
+      "from": "input_frame",
+      "relation": "produces_for",
+      "to": "canonical_token_field",
+      "events": ["printable_correction_authority"],
+      "evidence": {"path": "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs", "line": 186, "contains": "committed_tail: &work.identity.committed_tail,"}
+    },
+    {
+      "id": "authority-correction-field-readout",
+      "from": "canonical_token_field",
+      "relation": "passes_to",
+      "to": "correction_readout",
+      "events": ["printable_correction_authority"],
+      "evidence": {"path": "src/correction_core/candidate_sources.rs", "line": 37, "contains": "lattice.set_l2_field_authority(observed.readout.authority);"}
+    },
+    {
+      "id": "exec-frame-display-scheduler",
+      "from": "input_frame",
+      "relation": "delegates",
+      "to": "display_scheduler",
+      "events": ["printable_display_refresh"],
+      "evidence": {"path": "src/bin/lay_ibus_engine/composition_commit.rs", "line": 180, "contains": "self.refresh_precognition_after_visible_input(emitter, frame)"}
+    },
+    {
+      "id": "exec-display-scheduler-worker",
+      "from": "display_scheduler",
+      "relation": "delegates",
+      "to": "display_worker",
+      "events": ["printable_display_refresh"],
+      "evidence": {"path": "src/bin/lay_ibus_engine/preedit.rs", "line": 478, "contains": "super::precognition_worker::schedule(PrecognitionWork {"}
+    },
+    {
+      "id": "exec-display-worker-single-flight",
+      "from": "display_worker",
+      "relation": "delegates",
+      "to": "single_flight_field",
+      "events": ["printable_display_refresh"],
+      "evidence": {"path": "src/bin/lay_ibus_engine/precognition_worker.rs", "line": 90, "contains": "let materialized = materialize_precognition_candidates_observed(&work.input);"}
+    },
+    {
+      "id": "exec-display-single-flight-field",
+      "from": "single_flight_field",
+      "relation": "delegates",
+      "to": "canonical_token_field",
+      "events": ["printable_display_refresh"],
+      "evidence": {"path": "src/nanda_wave/candidate_gate.rs", "line": 563, "contains": "super::l2_field::canonical_ime_candidates_observed("}
+    },
+    {
+      "id": "exec-display-field-readout",
+      "from": "canonical_token_field",
+      "relation": "delegates",
+      "to": "display_candidate_readout",
+      "events": ["printable_display_refresh"],
+      "evidence": {"path": "src/nanda_wave/candidate_gate.rs", "line": 568, "contains": "canonical_telemetry = telemetry;"}
+    },
+    {
+      "id": "exec-display-readout-projection",
+      "from": "display_candidate_readout",
+      "relation": "delegates",
+      "to": "display_projection",
+      "events": ["printable_display_refresh"],
+      "evidence": {"path": "src/bin/lay_ibus_engine/preedit_readout.rs", "line": 200, "contains": "let (word_candidates, word_timing) = word_candidate_readout_for_input(input);"}
+    },
+    {
+      "id": "exec-display-projection-renderer",
+      "from": "display_projection",
+      "relation": "delegates",
+      "to": "preedit_renderer",
+      "events": ["printable_display_refresh"],
+      "evidence": {"path": "src/bin/lay_ibus_engine/precognition_worker.rs", "line": 113, "contains": "let applied = zbus::block_on(apply_completed("}
+    },
+    {
+      "id": "authority-frame-display-field",
+      "from": "input_frame",
+      "relation": "produces_for",
+      "to": "canonical_token_field",
+      "events": ["printable_display_authority"],
+      "evidence": {"path": "src/bin/lay_ibus_engine/preedit_readout.rs", "line": 113, "contains": "context_prefix: &input.context_prefix,"}
+    },
+    {
+      "id": "authority-display-field-readout",
+      "from": "canonical_token_field",
+      "relation": "passes_to",
+      "to": "display_candidate_readout",
+      "events": ["printable_display_authority"],
+      "evidence": {"path": "src/nanda_wave/candidate_gate.rs", "line": 569, "contains": "merge_live_candidate_material(&mut candidates, canonical);"}
+    },
+    {
+      "id": "authority-display-readout-projection",
+      "from": "display_candidate_readout",
+      "relation": "passes_to",
+      "to": "display_projection",
+      "events": ["printable_display_authority"],
+      "evidence": {"path": "src/bin/lay_ibus_engine/preedit_readout.rs", "line": 209, "contains": "let candidates = select_ime_candidate_proposals(ImeCandidateReadoutRequest {"}
+    },
+    {
+      "id": "authority-display-projection-renderer",
+      "from": "display_projection",
+      "relation": "passes_to",
+      "to": "preedit_renderer",
+      "events": ["printable_display_authority"],
+      "evidence": {"path": "src/bin/lay_ibus_engine/precognition_worker.rs", "line": 117, "contains": "candidates,"}
+    },
+    {
+      "id": "exec-space-key-lookup",
+      "from": "space_key",
+      "relation": "calls",
+      "to": "space_lookup",
+      "events": ["space_ready_apply", "space_literal_fallback"],
+      "evidence": {"path": "src/bin/lay_ibus_engine/managed.rs", "line": 76, "contains": ".map(|identity| self.take_space_autocorrect_lease(identity));"}
+    },
+    {
+      "id": "exec-space-lookup-lease",
+      "from": "space_lookup",
+      "relation": "delegates",
+      "to": "correction_lease",
+      "events": ["space_ready_apply"],
+      "evidence": {"path": "src/bin/lay_ibus_engine/committed_tail.rs", "line": 76, "contains": "SpaceAutocorrectLookup::Ready(lease) => lease,"}
+    },
+    {
+      "id": "exec-space-lease-verifier",
+      "from": "correction_lease",
+      "relation": "delegates",
+      "to": "transition_verifier",
+      "events": ["space_ready_apply"],
+      "evidence": {"path": "src/bin/lay_ibus_engine/committed_tail.rs", "line": 199, "contains": ".replace_committed_tail("}
+    },
+    {
+      "id": "exec-space-verifier-authorizer",
+      "from": "transition_verifier",
+      "relation": "delegates",
+      "to": "backend_authorizer",
+      "events": ["space_ready_apply"],
+      "evidence": {"path": "src/bin/lay_ibus_engine/state.rs", "line": 468, "contains": "let backend_action ="}
+    },
+    {
+      "id": "exec-space-authorizer-mutator",
+      "from": "backend_authorizer",
+      "relation": "delegates",
+      "to": "committed_tail_mutator",
+      "events": ["space_ready_apply"],
+      "evidence": {"path": "src/bin/lay_ibus_engine/state.rs", "line": 568, "contains": "Self::commit_text(emitter, make_ibus_text(commit_text))"}
+    },
+    {
+      "id": "authority-space-lease-verifier",
+      "from": "correction_lease",
+      "relation": "passes_to",
+      "to": "transition_verifier",
+      "events": ["space_ready_authority"],
+      "evidence": {"path": "src/bin/lay_ibus_engine/committed_tail.rs", "line": 206, "contains": ".with_winner_action(decision.action)"}
+    },
+    {
+      "id": "authority-space-verifier-authorizer",
+      "from": "transition_verifier",
+      "relation": "passes_to",
+      "to": "backend_authorizer",
+      "events": ["space_ready_authority"],
+      "evidence": {"path": "src/bin/lay_ibus_engine/state.rs", "line": 469, "contains": "authorize_backend_edit(TextEditBackend::Ime, edit_action.clone())"}
+    },
+    {
+      "id": "authority-space-authorizer-mutator",
+      "from": "backend_authorizer",
+      "relation": "authorizes",
+      "to": "committed_tail_mutator",
+      "events": ["space_ready_authority"],
+      "evidence": {"path": "src/bin/lay_ibus_engine/state.rs", "line": 525, "contains": "let text = authorized_plan.insert.clone();"}
+    },
+    {
+      "id": "exec-space-lookup-literal-authority",
+      "from": "space_lookup",
+      "relation": "delegates",
+      "to": "literal_space_authority",
+      "events": ["space_literal_fallback"],
+      "evidence": {"path": "src/bin/lay_ibus_engine/managed.rs", "line": 107, "contains": "let autocorrect_us = autocorrect_started.elapsed().as_micros();"}
+    },
+    {
+      "id": "exec-literal-authority-mutator",
+      "from": "literal_space_authority",
+      "relation": "delegates",
+      "to": "literal_space_mutator",
+      "events": ["space_literal_fallback"],
+      "evidence": {"path": "src/bin/lay_ibus_engine/managed.rs", "line": 109, "contains": "self.commit_managed_passthrough_char(emitter, ' ').await?;"}
+    },
+    {
+      "id": "authority-literal-space-mutator",
+      "from": "literal_space_authority",
+      "relation": "authorizes",
+      "to": "literal_space_mutator",
+      "events": ["space_literal_authority"],
+      "evidence": {"path": "src/bin/lay_ibus_engine/composition_commit.rs", "line": 167, "contains": "Self::commit_text(emitter, make_ibus_text(ch.to_string()))"}
+    },
+    {
+      "id": "observe-display-projection",
+      "from": "display_receipt",
+      "relation": "observes",
+      "to": "runtime_trace",
+      "events": ["display_observation"],
+      "evidence": {"path": "src/bin/lay_ibus_engine/precognition_worker.rs", "line": 185, "contains": "trace::record_precognition_timing("}
+    },
+    {
+      "id": "observe-correction-projection",
+      "from": "correction_receipt",
+      "relation": "observes",
+      "to": "runtime_trace",
+      "events": ["correction_observation"],
+      "evidence": {"path": "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs", "line": 215, "contains": "trace::record_correction_projection_timing("}
+    },
+    {
+      "id": "observe-space-lease",
+      "from": "space_lease_receipt",
+      "relation": "observes",
+      "to": "runtime_trace",
+      "events": ["space_lease_observation"],
+      "evidence": {"path": "src/bin/lay_ibus_engine/trace.rs", "line": 335, "contains": "write_record(space_lease_line("}
+    },
+    {
+      "id": "observe-committed-tail-mutation",
+      "from": "mutation_receipt",
+      "relation": "observes",
+      "to": "runtime_trace",
+      "events": ["mutation_observation"],
+      "evidence": {"path": "src/bin/lay_ibus_engine/state.rs", "line": 547, "contains": "trace::record_committed_tail_replace(source, output_route, backspaces, &logical_text);"}
+    },
+    {
+      "id": "prove-single-flight",
+      "from": "single_flight_field",
+      "relation": "proves",
+      "to": "route_proof",
+      "events": ["single_flight_proof"],
+      "evidence": {"path": "src/nanda_wave/l2_field/cache.rs", "line": 528, "contains": "fn simultaneous_requests_execute_one_field_producer()"}
+    },
+    {
+      "id": "prove-projection-cardinality",
+      "from": "correction_readout",
+      "relation": "proves",
+      "to": "route_proof",
+      "events": ["projection_cardinality_proof"],
+      "evidence": {"path": "src/bin/lay_ibus_engine/trace.rs", "line": 594, "contains": "fn one_frame_has_one_projection_per_role_and_at_most_one_field_producer()"}
+    },
+    {
+      "id": "prove-display-owner",
+      "from": "display_candidate_readout",
+      "relation": "proves",
+      "to": "route_proof",
+      "events": ["display_owner_proof"],
+      "evidence": {"path": "src/bin/lay_ibus_engine/preedit_readout.rs", "line": 251, "contains": "fn preedit_rendering_does_not_own_l2_l3_material_acquisition()"}
+    }
+  ],
+  "routes": [
+    {
+      "id": "printable-correction-execution",
+      "event": "printable_correction_prepare",
+      "kind": "execution",
+      "entry": "printable_key",
+      "terminal": "correction_lease",
+      "required_roles": ["interface", "producer", "orchestrator", "evidence_owner", "candidate_rank_owner"],
+      "path_cardinality": [{"from": "printable_key", "to": "correction_lease", "min": 1, "max": 1}]
+    },
+    {
+      "id": "printable-correction-authority",
+      "event": "printable_correction_authority",
+      "kind": "authority",
+      "entry": "input_frame",
+      "terminal": "correction_readout",
+      "required_roles": ["producer", "evidence_owner", "candidate_rank_owner"]
+    },
+    {
+      "id": "printable-display-execution",
+      "event": "printable_display_refresh",
+      "kind": "execution",
+      "entry": "printable_key",
+      "terminal": "preedit_renderer",
+      "required_roles": ["interface", "producer", "orchestrator", "evidence_owner", "candidate_rank_owner", "display_rank_owner", "render_owner"],
+      "path_cardinality": [{"from": "printable_key", "to": "preedit_renderer", "min": 1, "max": 1}]
+    },
+    {
+      "id": "printable-display-authority",
+      "event": "printable_display_authority",
+      "kind": "authority",
+      "entry": "input_frame",
+      "terminal": "preedit_renderer",
+      "required_roles": ["producer", "evidence_owner", "candidate_rank_owner", "display_rank_owner", "render_owner"]
+    },
+    {
+      "id": "space-ready-execution",
+      "event": "space_ready_apply",
+      "kind": "execution",
+      "entry": "space_key",
+      "terminal": "committed_tail_mutator",
+      "required_roles": ["interface", "orchestrator", "evidence_owner", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "space_key", "to": "committed_tail_mutator", "min": 1, "max": 1}]
+    },
+    {
+      "id": "space-ready-authority",
+      "event": "space_ready_authority",
+      "kind": "authority",
+      "entry": "correction_lease",
+      "terminal": "committed_tail_mutator",
+      "required_roles": ["orchestrator", "evidence_owner", "authorization_owner", "mutation_owner"]
+    },
+    {
+      "id": "space-fallback-execution",
+      "event": "space_literal_fallback",
+      "kind": "execution",
+      "entry": "space_key",
+      "terminal": "literal_space_mutator",
+      "required_roles": ["interface", "orchestrator", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "space_key", "to": "literal_space_mutator", "min": 1, "max": 1}]
+    },
+    {
+      "id": "space-fallback-authority",
+      "event": "space_literal_authority",
+      "kind": "authority",
+      "entry": "literal_space_authority",
+      "terminal": "literal_space_mutator",
+      "required_roles": ["authorization_owner", "mutation_owner"]
+    },
+    {
+      "id": "display-observation",
+      "event": "display_observation",
+      "kind": "observation",
+      "entry": "display_receipt",
+      "terminal": "runtime_trace",
+      "required_roles": ["producer", "observer"]
+    },
+    {
+      "id": "correction-observation",
+      "event": "correction_observation",
+      "kind": "observation",
+      "entry": "correction_receipt",
+      "terminal": "runtime_trace",
+      "required_roles": ["producer", "observer"]
+    },
+    {
+      "id": "space-lease-observation",
+      "event": "space_lease_observation",
+      "kind": "observation",
+      "entry": "space_lease_receipt",
+      "terminal": "runtime_trace",
+      "required_roles": ["producer", "observer"]
+    },
+    {
+      "id": "mutation-observation",
+      "event": "mutation_observation",
+      "kind": "observation",
+      "entry": "mutation_receipt",
+      "terminal": "runtime_trace",
+      "required_roles": ["producer", "observer"]
+    },
+    {
+      "id": "single-flight-proof",
+      "event": "single_flight_proof",
+      "kind": "proof",
+      "entry": "single_flight_field",
+      "terminal": "route_proof",
+      "required_roles": ["orchestrator", "proof_owner"]
+    },
+    {
+      "id": "projection-cardinality-proof",
+      "event": "projection_cardinality_proof",
+      "kind": "proof",
+      "entry": "correction_readout",
+      "terminal": "route_proof",
+      "required_roles": ["candidate_rank_owner", "proof_owner"]
+    },
+    {
+      "id": "display-owner-proof",
+      "event": "display_owner_proof",
+      "kind": "proof",
+      "entry": "display_candidate_readout",
+      "terminal": "route_proof",
+      "required_roles": ["candidate_rank_owner", "proof_owner"]
+    }
+  ]
+}

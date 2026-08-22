@@ -1,0 +1,102 @@
+{
+  "schema": "lay.ime-target-authority-slice2-material-frame-final-receipt.v1",
+  "created_at": "2026-08-20T12:46:28Z",
+  "verdict": "PASS_SLICE2_SHADOW_FAIL_CLOSED_RUNTIME_UNCHANGED",
+  "claim_scope": "context-neutral Productive enumeration, bounded prepared material, exact frame binding and proof-only shadow replay",
+  "preflight": {
+    "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE2_MATERIAL_FRAME_IMPLEMENTATION_PREFLIGHT_V3_2026-08-20.json",
+    "sha256": "8b76770afd06972616456586da6858f837a678cdcda5af5f3040f589df308fcb",
+    "verdict": "READY_TO_IMPLEMENT",
+    "safe_to_implement": true
+  },
+  "implementation": {
+    "source_sha256": {
+      "src/typing_transition/target_evidence.rs": "0f896ee6683b2c86ce575a58c7110b0c8a944308ebb4b9007be39da1aa82f598",
+      "src/nanda_wave/l2_field/productive_v1/mod.rs": "a4352f93e79f6a219b9195b467d24e433f53a69d8a441fcf04b64ca7cedf573e",
+      "src/nanda_wave/l2_field/productive_v1/packaged_runtime.rs": "0f6034588b006580e01a38296b01b47e690a09f1210ae0892b90c8ccf387e8ea",
+      "src/nanda_wave/l2_field/productive_v1/proof.rs": "97ec30d66b0827d9995f47f5380a2cb71c1de20a10cda01d1e66741b16f077da",
+      "src/nanda_wave/l2_field/productive_v1/material_frame.rs": "5fecb57c3f9a4b4c6fc6ac48dcd3155715a1a9892f25245575df1481eee36e53"
+    },
+    "local_check": "scripts/cargo-guard.sh check --lib PASS",
+    "remote_fault_injection": "6/6 PASS"
+  },
+  "proofs": {
+    "smoke": {
+      "receipt": "slice2-material-smoke-13x1-v2.json",
+      "sha256": "d1f40d720d88ea681f9e1f20a8da51200950bd9532b64d166f73498afc10a087",
+      "material_pairs": 13,
+      "failed_material": 0,
+      "stale_reuse_accepts": 0
+    },
+    "fixed": {
+      "receipt": "slice2-material-final-13x100.json",
+      "sha256": "b1fe48255c103da199f753d65c4dc90c019b017d8d66cb65db0f5c0f7a157eea",
+      "time_receipt": "slice2-material-final-13x100.time.txt",
+      "time_sha256": "cdd4cdf7dd3df85696c137ee3e945b6edf04d193c0e5ae16268d7a4cd8dbc32f",
+      "evaluated": 2600,
+      "material_pairs": 1300,
+      "unique_material_pairs": 1300,
+      "expected_material_pairs": 1300,
+      "context_comparisons": 3900,
+      "context_bindings": 3864,
+      "expected_context_bindings": 3864,
+      "bindable_frame_targets": 3864,
+      "stale_reuse_attempts": 3864,
+      "stale_reuse_accepts": 0,
+      "work_budget_respected": 1300,
+      "context_material_digest_failures": 0,
+      "failed_material": 0
+    }
+  },
+  "material_completeness": {
+    "complete": 423,
+    "explicit_incomplete": 877,
+    "incompleteness_reasons": {
+      "NONE": 423,
+      "UPSTREAM_INCOMPLETE": 877
+    },
+    "authority_rule": "only complete material may be considered by later authority slices; UPSTREAM_INCOMPLETE is fail-closed and cannot produce Winner, L2Certified or ContextCertified"
+  },
+  "safety": {
+    "manifest_h": 1280,
+    "h_to_b_losses": 0,
+    "b_to_s0_losses": 0,
+    "false_singleton": 0,
+    "integrity_errors": 0,
+    "probe_parity": "2600/2600 exact",
+    "semantic_non_latency_gate": true
+  },
+  "resource_observation": {
+    "workers": 20,
+    "wall_seconds": 20.72,
+    "cpu_percent": 636,
+    "peak_rss_kib": 392048,
+    "maximum_class_p99_us": 19258,
+    "latency_gate_us": 5000,
+    "latency_promotion_claimed": false,
+    "latency_note": "concurrent proof instrumentation exceeded the latency gate; this does not invalidate semantic parity but blocks any latency or live-runtime promotion claim"
+  },
+  "tested": [
+    "context-neutral Productive enumeration under frozen producer and aggregate work budgets",
+    "deterministic 74-target prepared material identity",
+    "exact UTF-8 input-frame identity and replay",
+    "bounded field and consumer leases",
+    "stale-frame rejection",
+    "fixed 13x100 material/frame denominator",
+    "semantic non-latency parity and fail-closed incompleteness"
+  ],
+  "not_tested": [
+    "authority transfer from prepared material into the live L2 readout",
+    "L3/L4/DecisionCore/verifier authority transfer",
+    "queue-inclusive daemon or IBus latency",
+    "physical application behavior",
+    "automatic mutation or rollback",
+    "package rebuild or deployment"
+  ],
+  "source_report_verdict": "FAIL_measured_shadow_gates",
+  "source_report_verdict_explanation": "the historical aggregate verdict includes the failed instrumented latency gate; the independently recorded semantic non-latency gate and Slice 2 material/frame shadow contract pass",
+  "runtime_authority_changed": false,
+  "deployment_actions": 0,
+  "installed_version_changed": false,
+  "next_gate": "Slice 3 candidate-state implementation preflight; 877 UPSTREAM_INCOMPLETE fields remain ineligible for authority"
+}

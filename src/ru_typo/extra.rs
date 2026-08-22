@@ -11,9 +11,16 @@ use scoring::{best_common_extra_letter_candidate, best_extra_letter_candidate};
 use super::guards::{
     correct_invalid_adjective_tail, looks_like_plausible_russian_past_tense, unknown_cyrillic_lower,
 };
+use super::memo::{memoized_text, WordMaterialKind};
 use super::missing::missing_letter_candidate_exists;
 
 pub fn correct_extra_letters(word: &str) -> Option<String> {
+    memoized_text(WordMaterialKind::ExtraLetters, word, || {
+        correct_extra_letters_uncached(word)
+    })
+}
+
+fn correct_extra_letters_uncached(word: &str) -> Option<String> {
     let lower = unknown_cyrillic_lower(word, 6)?;
     if reflexive_confusion_sources().any(|suffix| lower.ends_with(suffix))
         || looks_like_short_function_word_glued_to_known_word(&lower)

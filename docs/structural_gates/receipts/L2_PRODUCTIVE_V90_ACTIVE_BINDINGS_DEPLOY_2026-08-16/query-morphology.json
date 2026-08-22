@@ -1,0 +1,314 @@
+{
+  "all_iterations": {
+    "max_us": 1542144,
+    "mean_us": 12653,
+    "min_us": 3308,
+    "p50_us": 4209,
+    "p95_us": 8259,
+    "p99_us": 9793,
+    "samples": 201
+  },
+  "authority": {
+    "kind": "tied",
+    "surfaces": [
+      "морфологи",
+      "морфологии",
+      "морфологий",
+      "морфологию",
+      "морфологиям",
+      "морфологиях"
+    ]
+  },
+  "cache_mode": "bounded_prepared_frontier_lru",
+  "candidates": [
+    {
+      "error_class": "letter-substitution",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "known_current_word_surface_drift",
+      "productive": false,
+      "replacement": "морфологии",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "letter-substitution",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "known_current_word_surface_drift",
+      "productive": false,
+      "replacement": "морфологий",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "letter-substitution",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "known_current_word_surface_drift",
+      "productive": false,
+      "replacement": "морфологию",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "missing-letter",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "known_current_word_surface_drift",
+      "productive": false,
+      "replacement": "морфологиям",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "missing-letter",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "known_current_word_surface_drift",
+      "productive": false,
+      "replacement": "морфологиях",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "extra-letter",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "known_current_word_surface_drift",
+      "productive": false,
+      "replacement": "морфологи",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "productive": false,
+      "replacement": "морфонология",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "productive": false,
+      "replacement": "морфологией",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "productive": false,
+      "replacement": "морфологиею",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "l2_surface_stem_truncation_low",
+      "productive": false,
+      "replacement": "морфолог",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "l2_surface_stem_truncation_low",
+      "productive": false,
+      "replacement": "морфолога",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "l2_surface_stem_truncation_low",
+      "productive": false,
+      "replacement": "морфологе",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "l2_surface_stem_truncation_low",
+      "productive": false,
+      "replacement": "морфологу",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "productive": false,
+      "replacement": "мифология",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "productive": false,
+      "replacement": "мерология",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "productive": false,
+      "replacement": "мерологией",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "productive": false,
+      "replacement": "мерологиею",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "productive": false,
+      "replacement": "мерологии",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "productive": false,
+      "replacement": "мерологий",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "productive": false,
+      "replacement": "мерологию",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "productive": false,
+      "replacement": "мерологиям",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "productive": false,
+      "replacement": "мерологиями",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "productive": false,
+      "replacement": "мерологиях",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "productive": false,
+      "replacement": "морфонологией",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "productive": false,
+      "replacement": "морфонологиею",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "productive": false,
+      "replacement": "морфонологиями",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "productive": false,
+      "replacement": "морфологам",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "productive": false,
+      "replacement": "морфологах",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "productive": false,
+      "replacement": "морфологом",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "productive": false,
+      "replacement": "морфологиями",
+      "source_id": "CanonicalL2FieldSurface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "protected_current_surface_rewrite_requires_context_authority",
+      "productive": false,
+      "replacement": "морфологов",
+      "source_id": "CanonicalL2FieldSurface"
+    }
+  ],
+  "cold_us": 1542144,
+  "field": {
+    "max_us": 12289,
+    "mean_us": 511,
+    "min_us": 287,
+    "p50_us": 394,
+    "p95_us": 777,
+    "p99_us": 839,
+    "samples": 201
+  },
+  "hot": {
+    "max_us": 10477,
+    "mean_us": 5006,
+    "min_us": 3308,
+    "p50_us": 4195,
+    "p95_us": 8207,
+    "p99_us": 9594,
+    "samples": 200
+  },
+  "kind": "canonical_l2_live_query",
+  "peak_rss_kib": 284132,
+  "pre_productive_surface_count": 13,
+  "prepared_cache_hits": 200,
+  "productive": {
+    "max_us": 20,
+    "mean_us": 0,
+    "min_us": 0,
+    "p50_us": 0,
+    "p95_us": 0,
+    "p99_us": 0,
+    "samples": 201
+  },
+  "productive_form_limit": 8,
+  "productive_lemma_limit": 32,
+  "productive_surfaces": [],
+  "repeat": 201,
+  "resident_rss_kib": 284132,
+  "runtime_authority_changed": false,
+  "seed_count": 13,
+  "status": "ready",
+  "text": "морфология"
+}

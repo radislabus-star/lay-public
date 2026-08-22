@@ -25,7 +25,7 @@ mod tests {
     }
 
     #[test]
-    fn l2_candidate_sources_follow_correction_mode_order() {
+    fn l2_candidate_sources_follow_correction_mode_selection() {
         assert_eq!(
             L2CandidateSource::for_mode(CorrectionMode::DeterministicOnly),
             &[L2CandidateSource::Deterministic]
@@ -33,10 +33,6 @@ mod tests {
         assert_eq!(
             L2CandidateSource::for_mode(CorrectionMode::NandaOnly),
             &[L2CandidateSource::Nanda]
-        );
-        assert_eq!(
-            L2CandidateSource::for_mode(CorrectionMode::DeterministicThenNanda),
-            &[L2CandidateSource::Deterministic, L2CandidateSource::Nanda]
         );
     }
 
@@ -200,11 +196,8 @@ mod tests {
     #[test]
     fn exact_layout_projection_is_selected_without_missing_letter_recovery() {
         let pipeline = default_typing_assist_pipeline();
-        let resolution = resolve_text_correction(request(
-            "ltkfq ",
-            &pipeline,
-            CorrectionMode::DeterministicThenNanda,
-        ));
+        let resolution =
+            resolve_text_correction(request("ltkfq ", &pipeline, CorrectionMode::NandaOnly));
 
         let selected = resolution
             .selected
@@ -212,19 +205,18 @@ mod tests {
             .unwrap_or_else(|| panic!("resolution={resolution:#?}"));
         assert_eq!(selected.replacement, "делай ");
         assert_eq!(selected.origin, CandidateOrigin::Layout);
-        assert_eq!(selected.source, CorrectionDecisionSource::Nanda);
-        assert_eq!(selected.source_id, "LayoutWordCell32");
-        assert!(selected.has_origin(CandidateOrigin::LayoutThenTypo));
+        assert_eq!(selected.gate.action, CandidateGateAction::Eligible);
+        assert!(
+            !selected.has_origin(CandidateOrigin::LayoutThenTypo),
+            "an exact layout projection must not inherit secondary typo authority: {selected:?}"
+        );
     }
 
     #[test]
     fn stable_layout_projection_precedes_secondary_typo_repair_from_logs() {
         let pipeline = default_typing_assist_pipeline();
-        let resolution = resolve_text_correction(request(
-            "cnjq ",
-            &pipeline,
-            CorrectionMode::DeterministicThenNanda,
-        ));
+        let resolution =
+            resolve_text_correction(request("cnjq ", &pipeline, CorrectionMode::NandaOnly));
 
         let selected = resolution
             .selected
@@ -238,6 +230,8 @@ mod tests {
                 .all(|candidate| candidate.replacement != "сотой "),
             "stable raw projection must not enter a second typo pass: {resolution:#?}"
         );
+        assert_eq!(selected.origin, CandidateOrigin::Layout);
+        assert!(!selected.has_origin(CandidateOrigin::LayoutThenTypo));
     }
 
     #[test]
@@ -395,8 +389,14 @@ mod tests {
         if std::env::var_os("LAY_ENFORCE_CANONICAL_L2_FIELD_LATENCY_BUDGET").is_some()
             || std::env::var_os("LAY_ENFORCE_L2_FIELD_SHADOW_LATENCY_BUDGET").is_some()
         {
-            assert!(p99 <= 5_000, "CanonicalL2Field p99 exceeded budget: {p99}us");
-            assert!(max <= 10_000, "CanonicalL2Field max exceeded budget: {max}us");
+            assert!(
+                p99 <= 5_000,
+                "CanonicalL2Field p99 exceeded budget: {p99}us"
+            );
+            assert!(
+                max <= 10_000,
+                "CanonicalL2Field max exceeded budget: {max}us"
+            );
         }
     }
 
@@ -460,11 +460,7 @@ mod tests {
     #[test]
     fn live_canonical_l2_field_applies_verified_two_content_boundary() {
         let pipeline = default_typing_assist_pipeline();
-        let mut req = request(
-            "Еленапросит ",
-            &pipeline,
-            CorrectionMode::DeterministicThenNanda,
-        );
+        let mut req = request("Еленапросит ", &pipeline, CorrectionMode::NandaOnly);
         req.nanda_candidate_route = CandidateReadoutRoute::live_default();
 
         let resolution = resolve_text_correction(req);
@@ -480,13 +476,49 @@ mod tests {
     }
 
     #[test]
+    fn live_canonical_l2_field_applies_verified_short_left_boundary() {
+        let pipeline = default_typing_assist_pipeline();
+        let mut req = request("данорм ", &pipeline, CorrectionMode::NandaOnly);
+        req.nanda_candidate_route = CandidateReadoutRoute::live_default();
+
+        let resolution = resolve_text_correction(req);
+        let selected = resolution
+            .selected
+            .as_ref()
+            .unwrap_or_else(|| panic!("short-left field boundary lost: {resolution:#?}"));
+
+        assert_eq!(selected.replacement, "да норм ");
+        assert_eq!(selected.origin, CandidateOrigin::Boundary);
+        assert_eq!(selected.error_class, TypingErrorClass::GluedWords);
+        assert_eq!(selected.source_id, "CanonicalL2FieldBoundary");
+        assert_eq!(selected.gate.action, CandidateGateAction::Eligible);
+        assert_eq!(
+            resolution
+                .decision
+                .as_ref()
+                .map(|decision| decision.replacement.as_str()),
+            Some("да норм ")
+        );
+        let transition = resolution
+            .selected_transition
+            .as_ref()
+            .expect("DecisionCore boundary receipt")
+            .diagnostic_transition();
+        assert!(transition.is_verified());
+        assert_eq!(
+            transition.operator(),
+            Some(crate::text_edit::TransitionOperator::BoundaryMergeSplit)
+        );
+        assert_eq!(
+            transition.proof(),
+            Some(crate::text_edit::TransitionProof::Boundary)
+        );
+    }
+
+    #[test]
     fn live_canonical_l2_field_applies_bounded_typo_plus_boundary_repair() {
         let pipeline = default_typing_assist_pipeline();
-        let mut req = request(
-            "Готовь докуентыдля ",
-            &pipeline,
-            CorrectionMode::DeterministicThenNanda,
-        );
+        let mut req = request("Готовь докуентыдля ", &pipeline, CorrectionMode::NandaOnly);
         req.nanda_candidate_route = CandidateReadoutRoute::live_default();
 
         let resolution = resolve_text_correction(req);
@@ -509,7 +541,7 @@ mod tests {
             ("Готовь документыдля ", "Готовь документы для "),
             ("Какие документыим ", "Какие документы им "),
         ] {
-            let mut req = request(input, &pipeline, CorrectionMode::DeterministicThenNanda);
+            let mut req = request(input, &pipeline, CorrectionMode::NandaOnly);
             req.nanda_candidate_route = CandidateReadoutRoute::live_default();
 
             let resolution = resolve_text_correction(req);
@@ -529,7 +561,7 @@ mod tests {
     fn live_l2_field_owner_blocks_reference_only_semantic_word_drift() {
         let pipeline = default_typing_assist_pipeline();
         for input in ["модель генерит ", "окончанием слов "] {
-            let mut req = request(input, &pipeline, CorrectionMode::DeterministicThenNanda);
+            let mut req = request(input, &pipeline, CorrectionMode::NandaOnly);
             req.nanda_candidate_route = CandidateReadoutRoute::live_default();
             let resolution = resolve_text_correction(req);
 
@@ -586,11 +618,7 @@ mod tests {
             ),
         );
         let pipeline = default_typing_assist_pipeline();
-        let mut req = request(
-            "понял сомтрю ",
-            &pipeline,
-            CorrectionMode::DeterministicThenNanda,
-        );
+        let mut req = request("понял сомтрю ", &pipeline, CorrectionMode::NandaOnly);
         req.nanda_candidate_route = CandidateReadoutRoute::live_default();
         let resolution = resolve_text_correction(req);
         crate::hot_field::set_process_policy(previous_policy);
@@ -617,11 +645,7 @@ mod tests {
             ),
         );
         let pipeline = default_typing_assist_pipeline();
-        let mut req = request(
-            "преоверка ",
-            &pipeline,
-            CorrectionMode::DeterministicThenNanda,
-        );
+        let mut req = request("преоверка ", &pipeline, CorrectionMode::NandaOnly);
         req.nanda_candidate_route = CandidateReadoutRoute::live_default();
         let resolution = resolve_text_correction(req);
         crate::hot_field::set_process_policy(previous_policy);
@@ -645,11 +669,7 @@ mod tests {
             ),
         );
         let pipeline = default_typing_assist_pipeline();
-        let mut req = request(
-            "проевряю ",
-            &pipeline,
-            CorrectionMode::DeterministicThenNanda,
-        );
+        let mut req = request("проевряю ", &pipeline, CorrectionMode::NandaOnly);
         req.nanda_candidate_route = CandidateReadoutRoute::live_default();
         let resolution = resolve_text_correction(req);
         crate::hot_field::set_process_policy(previous_policy);
@@ -674,7 +694,7 @@ mod tests {
             ),
         );
         let pipeline = default_typing_assist_pipeline();
-        let mut req = request("ландо ", &pipeline, CorrectionMode::DeterministicThenNanda);
+        let mut req = request("ландо ", &pipeline, CorrectionMode::NandaOnly);
         req.nanda_candidate_route = CandidateReadoutRoute::live_default();
         let resolution = resolve_text_correction(req);
         crate::hot_field::set_process_policy(previous_policy);
@@ -699,7 +719,7 @@ mod tests {
             ),
         );
         let pipeline = default_typing_assist_pipeline();
-        let mut req = request("мжоет ", &pipeline, CorrectionMode::DeterministicThenNanda);
+        let mut req = request("мжоет ", &pipeline, CorrectionMode::NandaOnly);
         req.nanda_candidate_route = CandidateReadoutRoute::live_default();
         let resolution = resolve_text_correction(req);
         crate::hot_field::set_process_policy(previous_policy);
@@ -768,7 +788,7 @@ mod tests {
         let resolution = resolve_text_correction(request(
             "djn nfrjt djn yt gthtdfhfxbdftncz ",
             &pipeline,
-            CorrectionMode::DeterministicThenNanda,
+            CorrectionMode::NandaOnly,
         ));
 
         assert_eq!(
@@ -955,7 +975,7 @@ mod tests {
         let resolution = resolve_text_correction(request(
             "я думаю допусти мнабираю ",
             &pipeline,
-            CorrectionMode::DeterministicThenNanda,
+            CorrectionMode::NandaOnly,
         ));
 
         let selected = resolution
@@ -973,7 +993,7 @@ mod tests {
         let resolution = resolve_text_correction(request(
             "я вижу видит фразу ",
             &pipeline,
-            CorrectionMode::DeterministicThenNanda,
+            CorrectionMode::NandaOnly,
         ));
 
         assert!(resolution.selected.is_none(), "resolution={resolution:#?}");
@@ -987,11 +1007,8 @@ mod tests {
             "коле Азейбарджан ",
             "Переносимые операторы ",
         ] {
-            let resolution = resolve_text_correction(request(
-                text,
-                &pipeline,
-                CorrectionMode::DeterministicThenNanda,
-            ));
+            let resolution =
+                resolve_text_correction(request(text, &pipeline, CorrectionMode::NandaOnly));
 
             assert!(
                 resolution.selected.as_ref().is_none_or(|candidate| {
@@ -1005,11 +1022,8 @@ mod tests {
     #[test]
     fn ambiguous_short_boundary_shift_is_suggestion_only() {
         let pipeline = default_typing_assist_pipeline();
-        let resolution = resolve_text_correction(request(
-            "во тты ",
-            &pipeline,
-            CorrectionMode::DeterministicThenNanda,
-        ));
+        let resolution =
+            resolve_text_correction(request("во тты ", &pipeline, CorrectionMode::NandaOnly));
 
         assert!(resolution.selected.is_none(), "resolution={resolution:#?}");
         assert!(resolution.candidates.iter().any(|candidate| {
@@ -1024,7 +1038,7 @@ mod tests {
         let resolution = resolve_text_correction(request(
             "самка схема парочинная ",
             &pipeline,
-            CorrectionMode::DeterministicThenNanda,
+            CorrectionMode::NandaOnly,
         ));
 
         assert!(resolution.selected.is_none(), "resolution={resolution:#?}");
@@ -1040,11 +1054,8 @@ mod tests {
     #[test]
     fn split_phrase_candidate_wins_over_l2_shortcut() {
         let pipeline = default_typing_assist_pipeline();
-        let resolution = resolve_text_correction(request(
-            "тоесть ",
-            &pipeline,
-            CorrectionMode::DeterministicThenNanda,
-        ));
+        let resolution =
+            resolve_text_correction(request("тоесть ", &pipeline, CorrectionMode::NandaOnly));
 
         let selected = resolution
             .selected
@@ -1057,11 +1068,8 @@ mod tests {
     #[test]
     fn unknown_russian_shape_is_classified_before_candidate_generation() {
         let pipeline = default_typing_assist_pipeline();
-        let resolution = resolve_text_correction(request(
-            "приудишна ",
-            &pipeline,
-            CorrectionMode::DeterministicThenNanda,
-        ));
+        let resolution =
+            resolve_text_correction(request("приудишна ", &pipeline, CorrectionMode::NandaOnly));
 
         assert_eq!(resolution.event.current_word, "приудишна");
         assert_eq!(
@@ -1235,11 +1243,8 @@ mod tests {
     fn english_word_centers_beat_more_expensive_cross_script_projections() {
         let pipeline = default_typing_assist_pipeline();
         for (original, expected) in [("dowenload ", "download "), ("adress ", "address ")] {
-            let resolution = resolve_text_correction(request(
-                original,
-                &pipeline,
-                CorrectionMode::DeterministicThenNanda,
-            ));
+            let resolution =
+                resolve_text_correction(request(original, &pipeline, CorrectionMode::NandaOnly));
             let decision = resolution
                 .decision
                 .unwrap_or_else(|| panic!("same-script candidate for {original:?}"));
@@ -1256,7 +1261,7 @@ mod tests {
             ("учьфзду ", "example "),
             ("фвкуыы ", "address "),
         ] {
-            let mut req = request(original, &pipeline, CorrectionMode::DeterministicThenNanda);
+            let mut req = request(original, &pipeline, CorrectionMode::NandaOnly);
             req.nanda_wave_options = req.nanda_wave_options.with_l2_phase_apply(true);
             let resolution = resolve_text_correction(req);
             let selected = resolution
@@ -1274,7 +1279,7 @@ mod tests {
         let pipeline = default_typing_assist_pipeline();
         for original in ["привет ", "проверка ", "работает ", "скачать "]
         {
-            let mut req = request(original, &pipeline, CorrectionMode::DeterministicThenNanda);
+            let mut req = request(original, &pipeline, CorrectionMode::NandaOnly);
             req.nanda_wave_options = req.nanda_wave_options.with_l2_phase_apply(true);
             let resolution = resolve_text_correction(req);
             assert!(
@@ -1310,7 +1315,7 @@ mod tests {
         let resolution = resolve_text_correction(request(
             "мы отвравим ",
             &pipeline,
-            CorrectionMode::DeterministicThenNanda,
+            CorrectionMode::NandaOnly,
         ));
 
         let selected = resolution
@@ -1327,7 +1332,7 @@ mod tests {
         let resolution = resolve_text_correction(request(
             "мы отвравим ",
             &pipeline,
-            CorrectionMode::DeterministicThenNanda,
+            CorrectionMode::NandaOnly,
         ));
 
         let selected = resolution.selected.as_ref().expect("selected candidate");
@@ -1365,7 +1370,11 @@ mod tests {
             CandidateOrigin::L2Surface,
         );
 
-        assert_eq!(decision.action, CandidateGateAction::Eligible, "{decision:?}");
+        assert_eq!(
+            decision.action,
+            CandidateGateAction::Eligible,
+            "{decision:?}"
+        );
     }
 
     #[test]
@@ -1377,7 +1386,11 @@ mod tests {
             CandidateOrigin::L2Surface,
         );
 
-        assert_eq!(decision.action, CandidateGateAction::Eligible, "{decision:?}");
+        assert_eq!(
+            decision.action,
+            CandidateGateAction::Eligible,
+            "{decision:?}"
+        );
     }
 
     #[test]
@@ -1386,7 +1399,7 @@ mod tests {
         let resolution = resolve_text_correction(request(
             "давай лушее ",
             &pipeline,
-            CorrectionMode::DeterministicThenNanda,
+            CorrectionMode::NandaOnly,
         ));
 
         let selected = resolution.selected.expect("safe candidate should remain");
@@ -1519,11 +1532,8 @@ mod tests {
             ("очереди ", "очередьи "),
             ("пользоватся? ", "пользовается "),
         ] {
-            let resolution = resolve_text_correction(request(
-                input,
-                &pipeline,
-                CorrectionMode::DeterministicThenNanda,
-            ));
+            let resolution =
+                resolve_text_correction(request(input, &pipeline, CorrectionMode::NandaOnly));
 
             assert!(
                 resolution
@@ -1549,11 +1559,8 @@ mod tests {
             ("модели ", "модель "),
             ("вышли ", "вышил "),
         ] {
-            let resolution = resolve_text_correction(request(
-                input,
-                &pipeline,
-                CorrectionMode::DeterministicThenNanda,
-            ));
+            let resolution =
+                resolve_text_correction(request(input, &pipeline, CorrectionMode::NandaOnly));
 
             assert_ne!(
                 resolution
@@ -1576,11 +1583,8 @@ mod tests {
             ("Пиши ", "Приши "),
             ("переделаем ", "переделам "),
         ] {
-            let resolution = resolve_text_correction(request(
-                input,
-                &pipeline,
-                CorrectionMode::DeterministicThenNanda,
-            ));
+            let resolution =
+                resolve_text_correction(request(input, &pipeline, CorrectionMode::NandaOnly));
 
             assert_ne!(
                 resolution
@@ -1607,11 +1611,8 @@ mod tests {
             ("переспективнее ", "перспективнее "),
             ("отвликайся ", "отвлекайся "),
         ] {
-            let resolution = resolve_text_correction(request(
-                input,
-                &pipeline,
-                CorrectionMode::DeterministicThenNanda,
-            ));
+            let resolution =
+                resolve_text_correction(request(input, &pipeline, CorrectionMode::NandaOnly));
 
             let selected = resolution
                 .selected
@@ -1635,7 +1636,7 @@ mod tests {
         let resolution = resolve_text_correction(request(
             "где эсперемнт ",
             &pipeline,
-            CorrectionMode::DeterministicThenNanda,
+            CorrectionMode::NandaOnly,
         ));
 
         let selected = resolution.selected.expect("selected candidate");
@@ -1650,7 +1651,7 @@ mod tests {
         let resolution = resolve_text_correction(request(
             "на сколько ффективная ",
             &pipeline,
-            CorrectionMode::DeterministicThenNanda,
+            CorrectionMode::NandaOnly,
         ));
 
         let selected = resolution.selected.expect("selected candidate");
@@ -1714,11 +1715,8 @@ mod tests {
             ("руских ", "русских ", TypingErrorClass::MissingLetter),
             ("звгрузи ", "загрузи ", TypingErrorClass::LetterSubstitution),
         ] {
-            let resolution = resolve_text_correction(request(
-                input,
-                &pipeline,
-                CorrectionMode::DeterministicThenNanda,
-            ));
+            let resolution =
+                resolve_text_correction(request(input, &pipeline, CorrectionMode::NandaOnly));
 
             let selected = resolution
                 .selected
@@ -1879,11 +1877,8 @@ mod tests {
             ("реально помагаешь ", "реально понимаешь "),
             ("она спраивтя ", "она спрашивая "),
         ] {
-            let resolution = resolve_text_correction(request(
-                input,
-                &pipeline,
-                CorrectionMode::DeterministicThenNanda,
-            ));
+            let resolution =
+                resolve_text_correction(request(input, &pipeline, CorrectionMode::NandaOnly));
             assert_ne!(
                 resolution
                     .decision
@@ -1905,11 +1900,8 @@ mod tests {
             "слово грокать ",
             "тоже грокнулся. ",
         ] {
-            let resolution = resolve_text_correction(request(
-                input,
-                &pipeline,
-                CorrectionMode::DeterministicThenNanda,
-            ));
+            let resolution =
+                resolve_text_correction(request(input, &pipeline, CorrectionMode::NandaOnly));
 
             assert_eq!(resolution.decision, None, "input={input:?}: {resolution:?}");
             assert!(
@@ -1985,11 +1977,8 @@ mod tests {
         let pipeline = default_typing_assist_pipeline();
         for input in ["мете ты ", "тут тоже ", "я позвол ", "мы токенов "]
         {
-            let resolution = resolve_text_correction(request(
-                input,
-                &pipeline,
-                CorrectionMode::DeterministicThenNanda,
-            ));
+            let resolution =
+                resolve_text_correction(request(input, &pipeline, CorrectionMode::NandaOnly));
 
             assert_eq!(
                 resolution.decision, None,
@@ -2004,7 +1993,7 @@ mod tests {
         let resolution = resolve_text_correction(request(
             "посмотреть влогах ",
             &pipeline,
-            CorrectionMode::DeterministicThenNanda,
+            CorrectionMode::NandaOnly,
         ));
 
         let selected = resolution.selected.expect("selected boundary candidate");
@@ -2122,7 +2111,7 @@ mod tests {
     #[test]
     fn l2_field_cannot_delete_known_case_ending_without_context_proof() {
         let pipeline = default_typing_assist_pipeline();
-        let mut req = request("в коде ", &pipeline, CorrectionMode::DeterministicThenNanda);
+        let mut req = request("в коде ", &pipeline, CorrectionMode::NandaOnly);
         req.nanda_candidate_route = CandidateReadoutRoute::CanonicalL2Field;
         let resolution = resolve_text_correction(req);
 
@@ -2154,7 +2143,7 @@ mod tests {
         let resolution = resolve_text_correction(request(
             "давай там посмотри ",
             &pipeline,
-            CorrectionMode::DeterministicThenNanda,
+            CorrectionMode::NandaOnly,
         ));
 
         assert_ne!(
@@ -2184,11 +2173,7 @@ mod tests {
             ),
         );
         let pipeline = default_typing_assist_pipeline();
-        let mut req = request(
-            "давай там посмотри ",
-            &pipeline,
-            CorrectionMode::DeterministicThenNanda,
-        );
+        let mut req = request("давай там посмотри ", &pipeline, CorrectionMode::NandaOnly);
         req.nanda_candidate_route = CandidateReadoutRoute::live_default();
         let resolution = resolve_text_correction(req);
         crate::hot_field::set_process_policy(previous_policy);
@@ -2307,13 +2292,12 @@ mod tests {
         let resolution = resolve_text_correction(request(
             "на сколько ффетивная ",
             &pipeline,
-            CorrectionMode::DeterministicThenNanda,
+            CorrectionMode::NandaOnly,
         ));
 
-        let selected = resolution
-            .selected
-            .clone()
-            .unwrap_or_else(|| panic!("selected default-route sparse omission center: {resolution:#?}"));
+        let selected = resolution.selected.clone().unwrap_or_else(|| {
+            panic!("selected default-route sparse omission center: {resolution:#?}")
+        });
         assert_eq!(selected.replacement, "на сколько эффективная ");
         assert_eq!(selected.source, CorrectionDecisionSource::Nanda);
         assert!(selected.has_source_id("L2SurfaceMotifCell32"));
@@ -2333,10 +2317,9 @@ mod tests {
             CorrectionMode::NandaOnly,
         ));
 
-        let selected = resolution
-            .selected
-            .clone()
-            .unwrap_or_else(|| panic!("selected sparse omission over suffix drift: {resolution:#?}"));
+        let selected = resolution.selected.clone().unwrap_or_else(|| {
+            panic!("selected sparse omission over suffix drift: {resolution:#?}")
+        });
         assert_eq!(selected.replacement, "на сколько переподключаю ");
         assert_eq!(selected.source, CorrectionDecisionSource::Nanda);
         assert!(selected.has_source_id("L2WordAttractorCell32"));
@@ -2419,7 +2402,7 @@ mod tests {
             nanda_autocorrect: false,
             nanda_candidate_route: CandidateReadoutRoute::FullWave,
             nanda_wave_options: WaveOptions::default(),
-            mode: CorrectionMode::DeterministicThenNanda,
+            mode: CorrectionMode::NandaOnly,
         });
         assert_eq!(decision, None);
     }

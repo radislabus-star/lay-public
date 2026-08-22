@@ -1,0 +1,256 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "mutter-snapshot-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-text-input.c",
+      "sha256": "8f0b437658eb3b70de352ca87c43271baa5ab16cf56e51bf0cf77d7f3592691d",
+      "size_bytes": 52566
+    },
+    {
+      "exists": true,
+      "id": "mutter-owner-fixture",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/tests/wayland-text-input-atomic-frame-tests.c",
+      "sha256": "380c157bb36bf1ed2063fc66e9875f1cd7b124161028f1a74737e28563faf120",
+      "size_bytes": 20466
+    },
+    {
+      "exists": true,
+      "id": "shell-profile-fixture",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/unit/inputMethodAtomic.js",
+      "sha256": "4b821f3a732f802386fdd92d4910c3ccd6bf3f62924f275a895b7679032331e2",
+      "size_bytes": 5737
+    },
+    {
+      "exists": true,
+      "id": "shell-runtime-transporter",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/js/misc/inputMethodAtomic.js",
+      "sha256": "d40801329973da6c3e96f35edc2f478ad82c7752f4e245cb01f69904a24e19c0",
+      "size_bytes": 15841
+    },
+    {
+      "exists": true,
+      "id": "ibus-atomic-header",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/ibusatomicframeprivate.h",
+      "sha256": "2b65333555b721376213b05014b7ba1b5b39a61d4345fae60035b019dd840648",
+      "size_bytes": 16062
+    },
+    {
+      "exists": true,
+      "id": "ibus-snapshot-verifier",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/ibusatomicframe.c",
+      "sha256": "f05d053085c01d3298625364845144a8ea2709c281d7ebeaca60c0c0e172d58f",
+      "size_bytes": 61576
+    },
+    {
+      "exists": true,
+      "id": "ibus-verifier-fixture",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/ibus-atomic-frame.c",
+      "sha256": "57f1965420904228b9029ee12d684a0350af631c2b4e01eccdb9af0914293e34",
+      "size_bytes": 62611
+    },
+    {
+      "exists": true,
+      "id": "ibus-v20-admission-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/bus/inputcontext.c",
+      "sha256": "4081c8277ec9308b85bdd8e32af8a36da69278bbd35de2c66cde03fb13ecf90c",
+      "size_bytes": 150019
+    },
+    {
+      "exists": true,
+      "id": "lay-profile-validator",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic.rs",
+      "sha256": "45b06512eb69f04a967ae40ac7f30438f523d197d8d3e46a23df586016340319",
+      "size_bytes": 16640
+    },
+    {
+      "exists": true,
+      "id": "lay-effect-producer",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/output.rs",
+      "sha256": "7ef339f78503de6d779c882c879021c22ef9f65b1d07cc09fb7b0d765131e1bc",
+      "size_bytes": 9869
+    },
+    {
+      "exists": true,
+      "id": "full-route-proof-driver",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh",
+      "sha256": "f86b82106f1e55100a253a20eeb5cfd861b0127827670ad6d534d81732eee83f",
+      "size_bytes": 10143
+    },
+    {
+      "exists": true,
+      "id": "v22-snapshot-rejection-evidence",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/atomic-full-route-v22-admission-classify.ibus-daemon.log",
+      "sha256": "8b145d4f612b8a5b0b3e2a929582c1dc02c61a8fe6429390766d91f36011530b",
+      "size_bytes": 776
+    },
+    {
+      "exists": true,
+      "id": "installed-mutter",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/usr/lib/x86_64-linux-gnu/libmutter-18.so.0.0.0",
+      "sha256": "fec9023139ac8eff93fcc1af90413613cdb526e7f02389dc9d8fe90f7abc81e5",
+      "size_bytes": 2755048
+    },
+    {
+      "exists": true,
+      "id": "installed-shell",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/usr/lib/gnome-shell/libshell-18.so",
+      "sha256": "94e81e3ff3820b3f8454d596c3a9ee7fa437b770b899098db85f15640a7abb73",
+      "size_bytes": 3107408
+    },
+    {
+      "exists": true,
+      "id": "installed-ibus",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/usr/lib/x86_64-linux-gnu/libibus-1.0.so.5.0.534",
+      "sha256": "e1977b9d3d84ee94b63f6c04056134c10aa51d4e0621f7abee1115da12259ec1",
+      "size_bytes": 542936
+    },
+    {
+      "exists": true,
+      "id": "installed-lay-engine",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a",
+      "size_bytes": 6423488
+    }
+  ],
+  "blockers": [
+    {
+      "code": "test_contract_incomplete",
+      "field": "tests[9]",
+      "message": "valid kind and non-empty expected result are required"
+    },
+    {
+      "code": "test_contract_incomplete",
+      "field": "tests[14]",
+      "message": "valid kind and non-empty expected result are required"
+    },
+    {
+      "code": "test_contract_incomplete",
+      "field": "tests[16]",
+      "message": "valid kind and non-empty expected result are required"
+    }
+  ],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 16,
+    "forbidden_side_effect_kinds": [
+      "dual_production_digest_admission",
+      "historical_receipt_rewrite",
+      "installed_file_write",
+      "legacy_fallback_change",
+      "live_keyboard_signal",
+      "live_session_restart",
+      "local_build",
+      "orphaned_test_process",
+      "permanent_delete_suppression",
+      "profile_digest_semantic_reuse",
+      "runtime_deployment",
+      "second_native_mutation_owner",
+      "second_snapshot_owner",
+      "shell_snapshot_recomputation",
+      "snapshot_equality_bypass",
+      "unbounded_remote_build",
+      "v20_admission_control_flow_edit",
+      "v21_diagnostic_retained",
+      "wildcard_profile_admission"
+    ],
+    "identity_contracts": 4,
+    "invariants": 8,
+    "planned_side_effect_kinds": [
+      "ephemeral_process_start",
+      "filesystem_write",
+      "remote_build",
+      "remote_filesystem_write",
+      "source_edit",
+      "test_source_edit"
+    ],
+    "preserved_artifacts": 8,
+    "runtime_comparisons": 0,
+    "source_checks": 5,
+    "tests": 17
+  },
+  "manifest_sha256": "70b9dcf84ffd08c4bfcf9b5143e4807794e7912a4ca259a3af26a76de9974acc",
+  "safe_to_implement": false,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-mutter-owner",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-text-input.c",
+      "sha256": "8f0b437658eb3b70de352ca87c43271baa5ab16cf56e51bf0cf77d7f3592691d",
+      "size_bytes": 52566
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-shell-transporter",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/js/misc/inputMethodAtomic.js",
+      "sha256": "d40801329973da6c3e96f35edc2f478ad82c7752f4e245cb01f69904a24e19c0",
+      "size_bytes": 15841
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-ibus-verifier",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/ibusatomicframe.c",
+      "sha256": "f05d053085c01d3298625364845144a8ea2709c281d7ebeaca60c0c0e172d58f",
+      "size_bytes": 61576
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-v20-admission",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/bus/inputcontext.c",
+      "sha256": "4081c8277ec9308b85bdd8e32af8a36da69278bbd35de2c66cde03fb13ecf90c",
+      "size_bytes": 150019
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-full-route-driver",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh",
+      "sha256": "f86b82106f1e55100a253a20eeb5cfd861b0127827670ad6d534d81732eee83f",
+      "size_bytes": 10143
+    }
+  ],
+  "task_id": "LAY_IME_ATOMIC_CANONICAL_SNAPSHOT_V23_2026-08-21",
+  "verdict": "BLOCKED_BEFORE_CODE"
+}

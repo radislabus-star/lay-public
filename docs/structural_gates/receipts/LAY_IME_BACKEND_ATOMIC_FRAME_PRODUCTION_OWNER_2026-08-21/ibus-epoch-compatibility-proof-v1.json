@@ -1,0 +1,71 @@
+{
+  "schema": "lay.ime.atomic-ibus-epoch-compatibility-proof.v1",
+  "task_id": "LAY_IME_ATOMIC_IBUS_EPOCH_COMPATIBILITY_V1_2026-08-21",
+  "generated_at": "2026-08-21T14:22:04+03:00",
+  "verdict": "PASS",
+  "preflight": {
+    "verdict": "READY_TO_IMPLEMENT",
+    "safe_to_implement": true,
+    "manifest_sha256": "c0f88b70e4a5b5b7290043c9b3976b5d47d0855e4217b2d80f96000c72c930a1"
+  },
+  "change": {
+    "mechanism": "capability epoch is nondecreasing while input-event and native-transaction epochs remain strictly increasing",
+    "runtime_files": ["bus/inputcontext.c"],
+    "test_files": ["src/tests/ibus-atomic-process.c"],
+    "wire_schema_changed": false,
+    "codec_changed": false,
+    "legacy_route_changed": false
+  },
+  "remote_environment": {
+    "host": "e@192.168.3.94",
+    "logical_cpus": 20,
+    "sandbox": "/home/e/projects/ibus-lay-atomic-epoch-20260821",
+    "build_jobs": 20,
+    "final_load_1_5_15": [2.10, 1.96, 1.83],
+    "available_memory_kib": 23467056,
+    "leftover_task_processes": 0
+  },
+  "builds": {
+    "normal": {"result": "PASS", "elapsed_seconds": 0.43, "max_rss_kib": 56924},
+    "private": {"result": "PASS", "elapsed_seconds": 0.33, "max_rss_kib": 57120}
+  },
+  "proofs": {
+    "normal_codec": {"passed": 18, "total": 18, "result": "PASS"},
+    "normal_real_hop": {"passed": 1, "total": 1, "result": "PASS"},
+    "private_codec": {"passed": 18, "total": 18, "result": "PASS"},
+    "private_real_hop": {"passed": 1, "total": 1, "result": "PASS"},
+    "unchanged_capability_consecutive_events": "PASS",
+    "lower_capability_refusal": "PASS",
+    "repeated_event_refusal": "PASS",
+    "repeated_native_epoch_refusal": "PASS"
+  },
+  "source_parity": [
+    {
+      "path": "bus/inputcontext.c",
+      "local_sha256": "4081c8277ec9308b85bdd8e32af8a36da69278bbd35de2c66cde03fb13ecf90c",
+      "remote_sha256": "4081c8277ec9308b85bdd8e32af8a36da69278bbd35de2c66cde03fb13ecf90c",
+      "match": true
+    },
+    {
+      "path": "src/tests/ibus-atomic-process.c",
+      "local_sha256": "28f995d33fb21ba62e1badb4a38ef54d59069be540c21fb3ca49e96900a30ce5",
+      "remote_sha256": "28f995d33fb21ba62e1badb4a38ef54d59069be540c21fb3ca49e96900a30ce5",
+      "match": true
+    },
+    {
+      "path": "src/ibusatomicframe.c",
+      "local_sha256": "c489cbbf189b67642877d7eca9ab05b1936fb38acad85d06c9e36d49e7e15b05",
+      "remote_sha256": "c489cbbf189b67642877d7eca9ab05b1936fb38acad85d06c9e36d49e7e15b05",
+      "match": true
+    }
+  ],
+  "not_tested": [
+    "GNOME Shell adapter",
+    "Mutter end-to-end integration",
+    "installation or session restart",
+    "physical applications and keyboard input",
+    "production latency"
+  ],
+  "runtime_authority_changed": false,
+  "deployment_authority": false
+}

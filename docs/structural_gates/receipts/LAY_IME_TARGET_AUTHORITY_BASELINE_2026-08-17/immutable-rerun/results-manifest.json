@@ -1,0 +1,168 @@
+{
+  "schema": "lay.ime-target-authority-slice0-results-manifest.v1",
+  "created_at": "2026-08-20T09:48:52Z",
+  "status": "PASS_BASELINE_FREEZE_ONLY",
+  "claim_scope": "Slice 0 immutable denominator and current-runtime observation freeze only; this manifest does not claim assertion quality, complete EventRuntimeBudgetV1 coverage, implementation correctness, deployment authority, or runtime-owner promotion",
+  "slice0_baseline_freeze": {
+    "verdict": "PASS",
+    "source_files_hash_valid": 2214,
+    "source_files_denominator": 2214,
+    "remote_execution_receipts_valid": 97,
+    "remote_execution_receipts_denominator": 97,
+    "invalid_remote_executions": 0,
+    "frozen_event_definitions": 108,
+    "executable_baseline_definitions": 49,
+    "deferred_future_contract_definitions": 59,
+    "future_contract_source_absence_pass": 59,
+    "future_contract_source_absence_denominator": 59,
+    "runtime_authority_changed": false
+  },
+  "source_at_execution": {
+    "repository_path": "source-at-execution.sha256-manifest.json",
+    "external_path": "/home/ubu/projects/lay-immutable-evidence/ime-target-authority-slice0-20260820/source-at-execution.sha256-manifest.json",
+    "size_bytes": 807272,
+    "mode": "0664",
+    "sha256": "45389cef6c5843473799a5e2df0c066c12ac77e43b5b598d2c3d91158f5af511",
+    "source_archive": {
+      "external_path": "/home/ubu/projects/lay-immutable-evidence/ime-target-authority-slice0-20260820/source.tar.zst",
+      "size_bytes": 167429239,
+      "sha256": "9b49c1445df9e40f5a82d492b55a23dc71f5dbd5ca6bfb4fceb5cea467179427"
+    }
+  },
+  "remote_execution": {
+    "integrity_verdict": "PASS",
+    "assertion_quality_verdict": "FAIL",
+    "valid_executions": 97,
+    "pass": 64,
+    "fail": 33,
+    "invalid": 0,
+    "series": {
+      "ime36": {"pass": 18, "fail": 18, "total": 36},
+      "deep12": {"pass": 0, "fail": 12, "total": 12},
+      "baseline49": {"pass": 46, "fail": 3, "total": 49}
+    },
+    "baseline_failures": [
+      "false-split-ambiguous-short-shift",
+      "false-split-non-boundary-source",
+      "split-authority-binds-target"
+    ],
+    "run_summary": {
+      "external_path": "/home/ubu/projects/lay-immutable-evidence/ime-target-authority-slice0-20260820/output/run-summary.json",
+      "size_bytes": 212007,
+      "mode": "0664",
+      "sha256": "d4893be63c3d61e6a1b03da040a2a06fa8f871bd4f04fae3bde2a3435be44e3f"
+    },
+    "validation": {
+      "external_path": "/home/ubu/projects/lay-immutable-evidence/ime-target-authority-slice0-20260820/remote-run-validation.json",
+      "size_bytes": 23238,
+      "mode": "0664",
+      "sha256": "b44f7b9d1ad3ecf3258b429cb97241f2b9b333de1aa927efc3a5860194bad954"
+    },
+    "future_source_absence": {
+      "external_path": "/home/ubu/projects/lay-immutable-evidence/ime-target-authority-slice0-20260820/future59-source-absence.json",
+      "size_bytes": 12976,
+      "mode": "0664",
+      "sha256": "722c08c79321e5c978fd73e33a47ab2a2862e91100e7ad73cc2ec2562055ef7e"
+    },
+    "first_loss_analysis": {
+      "external_path": "/home/ubu/projects/lay-immutable-evidence/ime-target-authority-slice0-20260820/baseline49-boundary-first-loss-analysis.json",
+      "size_bytes": 5293,
+      "mode": "0664",
+      "sha256": "950cbab11bdf22a99deb0375500842287bb874bcbe8d35f3fc83eabdd401ee0e",
+      "verdict": "ONE_SHARED_TYPED_BOUNDARY_EVIDENCE_DEFECT_CONFIRMED"
+    }
+  },
+  "local_runtime_probe": {
+    "scope": "private local D-Bus request/reply route using the exact installed lay-ibus-engine; no compositor, focused application, physical-key, or deployment claim",
+    "measured_current_route_strata_verdict": "PASS",
+    "measured_current_route_strata_pass": 7,
+    "measured_current_route_strata_denominator": 7,
+    "latency_verdict": "FAIL_COVERAGE",
+    "complete_event_runtime_budget_verdict": "FAIL_CURRENT_RUNTIME_ROUTES_NOT_IMPLEMENTED",
+    "gates": {
+      "printable": {"count": 512, "p99_us": 347, "max_us": 458, "verdict": "PASS"},
+      "committed_space": {"count": 256, "p99_us": 8566, "max_us": 11033, "verdict": "PASS"},
+      "explicit_accept": {"count": 128, "p99_us": 864, "max_us": 1089, "verdict": "PASS"},
+      "rollback": {"count": 128, "p99_us": 967, "max_us": 2304, "verdict": "PASS"},
+      "layout": {"count": 128, "p99_us": 772, "max_us": 856, "verdict": "PASS"},
+      "failure_refusal": {"count": 128, "p99_us": 401, "max_us": 402, "verdict": "PASS"},
+      "owner_handoff": {"count": 128, "p99_us": 289, "max_us": 313, "verdict": "PASS"}
+    },
+    "cold_first_touch": {
+      "count": 1,
+      "p99_us": 407,
+      "classification": "INFORMATIONAL_ONLY_NOT_A_COLD_START_PASS"
+    },
+    "rollback_semantics": {
+      "planned": 128,
+      "restored": 128,
+      "unique_frozen_inputs": 128,
+      "semantic_failures": 0
+    },
+    "event_trace": {
+      "rows": 14546,
+      "first_sequence": 1,
+      "last_sequence": 14546,
+      "contiguous": true,
+      "typed_failures": 0
+    },
+    "missing_required_strata": {
+      "active_composition_space": {"status": "NOT_IMPLEMENTED_IN_INSTALLED_RUNTIME", "first_required_slice": 7},
+      "repeat_identity": {"status": "NOT_IMPLEMENTED_IN_INSTALLED_RUNTIME", "first_required_slice": 7},
+      "durability_prepare_co_commit": {"status": "NOT_IMPLEMENTED_IN_INSTALLED_RUNTIME", "first_required_slice": 7},
+      "same_lineage_barrier": {"status": "NOT_IMPLEMENTED_IN_INSTALLED_RUNTIME", "first_required_slice": 7}
+    },
+    "probe": {
+      "external_path": "/home/ubu/projects/lay-immutable-evidence/ime-target-authority-slice0-20260820/private-ibus-latency-probe-v3.py",
+      "size_bytes": 52724,
+      "mode": "0700",
+      "sha256": "9bc5bf27c33ba48e0deedea8a33f74234cd8f20e60563e447947e14bf863dda9"
+    },
+    "execution_plan": {
+      "external_path": "/home/ubu/projects/lay-immutable-evidence/ime-target-authority-slice0-20260820/private-ibus-latency-probe-execution-plan-v3.json",
+      "size_bytes": 6408,
+      "mode": "0600",
+      "sha256": "5990ff0c660ffb84188ea1cae1ee0e1636fff2024863c2a3eab993219ddbb88d"
+    },
+    "preflight": {
+      "external_path": "/home/ubu/projects/lay-immutable-evidence/ime-target-authority-slice0-20260820/private-ibus-latency-probe-preflight-v3.json",
+      "size_bytes": 15861,
+      "mode": "0664",
+      "sha256": "fd3ff438d25c307a120aecb1c3e8030f464743c401da64df495a6f61a35ce5f3",
+      "receipt_sha256": "adbcc5e035a1c0241fe39d08e40bdcf088f1ae3c644e8bfed3cb8f4dd63e0d7b",
+      "verdict": "READY_TO_IMPLEMENT"
+    },
+    "run": {
+      "external_path": "/home/ubu/projects/lay-immutable-evidence/ime-target-authority-slice0-20260820/private-ibus-latency-probe-run-v3.json",
+      "size_bytes": 6139622,
+      "mode": "0600",
+      "sha256": "5139ea7da6ec4af9389e08b2b91233ea3187abd1bb1da8414676fc6925f48350"
+    },
+    "trace": {
+      "external_path": "/home/ubu/projects/lay-immutable-evidence/ime-target-authority-slice0-20260820/private-ibus-latency-probe-run-v3.trace.jsonl",
+      "size_bytes": 512000,
+      "mode": "0600",
+      "sha256": "4ab97a1f9ae77e85d11bff70e6f445ba7bf28eeb31b4ba869895d87c2c1f54a4",
+      "repository_publishable": false
+    }
+  },
+  "promotion_boundary": {
+    "slice1_vocabulary_preflight_may_be_reissued": true,
+    "slice1_implementation_authorized_by_this_manifest": false,
+    "missing_slice7_strata_block_slice1": false,
+    "missing_slice7_strata_block_slice7_exit": true,
+    "complete_event_runtime_budget_required_for_final_promotion": true,
+    "deployment_authorized": false,
+    "runtime_owner_change_authorized": false,
+    "quality_pass_claimed": false,
+    "complete_latency_pass_claimed": false
+  },
+  "cleanup": {
+    "private_probe_cleanup_complete": true,
+    "temporary_root_removed": true,
+    "production_runtime_parity_stable": true,
+    "production_bus_calls": 0,
+    "physical_input_calls": 0,
+    "deployment_actions": 0
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "atomic-key-interface", "role": "interface"},
+    {"id": "atomic-receipt-validator", "role": "authorization_owner"},
+    {"id": "pending-speculative-state", "role": "producer"},
+    {"id": "observation-revision-arbiter", "role": "orchestrator"},
+    {"id": "committed-engine-state", "role": "mutation_owner"},
+    {"id": "set-surrounding-interface", "role": "interface"},
+    {"id": "external-surrounding-observation", "role": "observer"},
+    {"id": "visible-postcondition-observer", "role": "observer"},
+    {"id": "physical-route-observer", "role": "observer"},
+    {"id": "physical-undo-receipt", "role": "proof_owner"}
+  ],
+  "edges": [
+    {"id": "settlement-input-validator", "from": "atomic-key-interface", "relation": "calls", "to": "atomic-receipt-validator", "events": ["receipt-settlement"]},
+    {"id": "settlement-validator-speculation", "from": "atomic-receipt-validator", "relation": "delegates", "to": "pending-speculative-state", "events": ["receipt-settlement"]},
+    {"id": "settlement-speculation-arbiter", "from": "pending-speculative-state", "relation": "delegates", "to": "observation-revision-arbiter", "events": ["receipt-settlement"]},
+    {"id": "settlement-arbiter-state", "from": "observation-revision-arbiter", "relation": "delegates", "to": "committed-engine-state", "events": ["receipt-settlement"]},
+
+    {"id": "authority-validator-speculation", "from": "atomic-receipt-validator", "relation": "authorizes", "to": "pending-speculative-state", "events": ["atomic-state-authority"]},
+    {"id": "authority-speculation-arbiter", "from": "pending-speculative-state", "relation": "passes_to", "to": "observation-revision-arbiter", "events": ["atomic-state-authority"]},
+    {"id": "authority-arbiter-state", "from": "observation-revision-arbiter", "relation": "authorizes", "to": "committed-engine-state", "events": ["atomic-state-authority"]},
+
+    {"id": "observation-interface-source", "from": "set-surrounding-interface", "relation": "observes", "to": "external-surrounding-observation", "events": ["fresh-surrounding-observation"]},
+    {"id": "observation-source-arbiter", "from": "external-surrounding-observation", "relation": "observes", "to": "observation-revision-arbiter", "events": ["fresh-surrounding-observation"]},
+    {"id": "observation-arbiter-postcondition", "from": "observation-revision-arbiter", "relation": "observes", "to": "visible-postcondition-observer", "events": ["fresh-surrounding-observation"]},
+
+    {"id": "proof-observer-receipt", "from": "physical-route-observer", "relation": "proves", "to": "physical-undo-receipt", "events": ["physical-double-shift-proof"]}
+  ],
+  "routes": [
+    {
+      "id": "receipt-settlement-execution",
+      "event": "receipt-settlement",
+      "kind": "execution",
+      "entry": "atomic-key-interface",
+      "terminal": "committed-engine-state",
+      "required_roles": ["interface", "authorization_owner", "producer", "orchestrator", "mutation_owner"],
+      "path_cardinality": [{"from": "atomic-key-interface", "to": "committed-engine-state", "min": 1, "max": 1}]
+    },
+    {
+      "id": "atomic-state-authority",
+      "event": "atomic-state-authority",
+      "kind": "authority",
+      "entry": "atomic-receipt-validator",
+      "terminal": "committed-engine-state",
+      "required_roles": ["authorization_owner", "producer", "orchestrator", "mutation_owner"],
+      "path_cardinality": [{"from": "atomic-receipt-validator", "to": "committed-engine-state", "min": 1, "max": 1}]
+    },
+    {
+      "id": "fresh-surrounding-observation",
+      "event": "fresh-surrounding-observation",
+      "kind": "observation",
+      "entry": "set-surrounding-interface",
+      "terminal": "visible-postcondition-observer",
+      "required_roles": ["interface", "observer", "orchestrator"],
+      "path_cardinality": [{"from": "set-surrounding-interface", "to": "visible-postcondition-observer", "min": 1, "max": 1}]
+    },
+    {
+      "id": "physical-double-shift-proof",
+      "event": "physical-double-shift-proof",
+      "kind": "proof",
+      "entry": "physical-route-observer",
+      "terminal": "physical-undo-receipt",
+      "required_roles": ["observer", "proof_owner"]
+    }
+  ]
+}

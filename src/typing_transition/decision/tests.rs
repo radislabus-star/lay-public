@@ -8,6 +8,143 @@ use crate::correction_core::{
     TypingErrorClass, TypingErrorEvent, UnifiedCorrectionCandidate,
 };
 
+#[test]
+fn closed_exact_taxonomy_is_exhaustive_and_fail_closed() {
+    use crate::candidate_contract::CandidateReadoutRoute;
+    use crate::text_edit::TransitionProof;
+    use crate::transition_relation::TransitionOperatorKind;
+    use crate::typing_candidate::TypingCandidateFamily;
+    use crate::typing_transition::live_candidate::{LiveCandidateLane, ReplacementTargetEvidence};
+    use crate::typing_transition::target_evidence::{
+        CompletenessScopeKindV1, EnumerationStateV1, IncompletenessReasonV1,
+    };
+
+    assert!(super::closed_exact_readout_route_preserves_retained_target(
+        CandidateReadoutRoute::CanonicalL2Field
+    ));
+    assert!(super::closed_exact_readout_route_preserves_retained_target(
+        CandidateReadoutRoute::FullWave
+    ));
+
+    for lane in [
+        LiveCandidateLane::ExactCompletion,
+        LiveCandidateLane::LexicalRepairReplacement,
+        LiveCandidateLane::CorrectedPrefixReplacement,
+        LiveCandidateLane::GeneralReplacement,
+        LiveCandidateLane::BoundaryReplacement,
+    ] {
+        assert!(!super::exact_live_candidate_lane(lane));
+    }
+    assert!(super::exact_live_candidate_lane(
+        LiveCandidateLane::LayoutReplacement
+    ));
+
+    for family in [
+        TypingCandidateFamily::Exact,
+        TypingCandidateFamily::Visual,
+        TypingCandidateFamily::Structural,
+        TypingCandidateFamily::Typo,
+        TypingCandidateFamily::Cleanup,
+        TypingCandidateFamily::Unknown,
+    ] {
+        assert!(!super::exact_typing_candidate_family(family));
+    }
+    assert!(super::exact_typing_candidate_family(
+        TypingCandidateFamily::Layout
+    ));
+
+    for evidence in [
+        ReplacementTargetEvidence::None,
+        ReplacementTargetEvidence::VerifiedLexicalEdit,
+        ReplacementTargetEvidence::ContextBoundLexicalEdit,
+        ReplacementTargetEvidence::VerifiedBoundary,
+    ] {
+        assert!(!super::exact_replacement_target_evidence(evidence));
+    }
+    assert!(super::exact_replacement_target_evidence(
+        ReplacementTargetEvidence::ExactLayoutProjection
+    ));
+
+    assert!(super::exact_enumeration_state(EnumerationStateV1::Complete));
+    assert!(!super::exact_enumeration_state(
+        EnumerationStateV1::Overflow
+    ));
+    assert!(!super::exact_enumeration_state(EnumerationStateV1::Failed));
+    assert!(super::exact_completeness_scope_kind(
+        CompletenessScopeKindV1::WholePreparedField
+    ));
+    assert!(!super::exact_completeness_scope_kind(
+        CompletenessScopeKindV1::EditFootprintPartition
+    ));
+    assert!(!super::exact_completeness_scope_kind(
+        CompletenessScopeKindV1::RelationPartition
+    ));
+    assert!(super::exact_incompleteness_reason(
+        IncompletenessReasonV1::None
+    ));
+    for reason in [
+        IncompletenessReasonV1::StorageCapacity,
+        IncompletenessReasonV1::WorkBudgetExceeded,
+        IncompletenessReasonV1::UpstreamIncomplete,
+        IncompletenessReasonV1::IntegrityFailure,
+    ] {
+        assert!(!super::exact_incompleteness_reason(reason));
+    }
+
+    assert!(super::exact_transition_proof(TransitionProof::Layout));
+    for proof in [
+        TransitionProof::Typo,
+        TransitionProof::Boundary,
+        TransitionProof::Completion,
+        TransitionProof::Context,
+        TransitionProof::Grammar,
+        TransitionProof::VisibleState,
+        TransitionProof::DecoderPlan,
+        TransitionProof::ManualIntent,
+        TransitionProof::UndoRecord,
+        TransitionProof::NativeIntent,
+        TransitionProof::Invariant,
+    ] {
+        assert!(!super::exact_transition_proof(proof));
+    }
+
+    assert!(super::exact_transition_operator_kind(
+        TransitionOperatorKind::LayoutProjection
+    ));
+    for operator in [
+        TransitionOperatorKind::AdjacentTransposition,
+        TransitionOperatorKind::MissingLetterRepair,
+        TransitionOperatorKind::RepeatedLetterRepair,
+        TransitionOperatorKind::ExtraLetterRepair,
+        TransitionOperatorKind::LetterSubstitution,
+        TransitionOperatorKind::BoundarySplit,
+        TransitionOperatorKind::BoundaryMerge,
+        TransitionOperatorKind::AcceptCompletion,
+        TransitionOperatorKind::CompositeTypo,
+        TransitionOperatorKind::ContextChoice,
+        TransitionOperatorKind::ManualToggle,
+        TransitionOperatorKind::Other,
+    ] {
+        assert!(!super::exact_transition_operator_kind(operator));
+    }
+
+    assert!(!super::exact_candidate_authority(
+        &crate::correction_core::CandidateAuthorityEvidence::None
+    ));
+    assert!(!super::exact_candidate_authority(
+        &crate::correction_core::CandidateAuthorityEvidence::Conflict
+    ));
+
+    let no_certificate = super::TransitionDecisionCore::evaluate_candidates(
+        &event("ghbdtn "),
+        &[],
+        super::TransitionDecisionPolicy::default(),
+        super::DecisionEvidenceMode::ClosedExactAbsent,
+    );
+    assert!(no_certificate.selected_index.is_none());
+    assert!(no_certificate.selected_transition.is_none());
+}
+
 fn morphology_evidence(
     lemma_id: u32,
     target_feature_mask: u32,
@@ -163,7 +300,7 @@ fn productive_v90_tie_requires_common_l3_and_verified_transition() {
         &event,
         &candidates,
         super::TransitionDecisionPolicy::default(),
-        None,
+        super::DecisionEvidenceMode::FullField(None),
     );
 
     assert!(batch.evaluations[0].signals.l3_pairwise_certified);
@@ -233,7 +370,7 @@ fn suggest_only_verified_tail_boundary_can_enter_authority_evaluation() {
         &event,
         &[candidate],
         super::TransitionDecisionPolicy::default(),
-        None,
+        super::DecisionEvidenceMode::FullField(None),
     );
 
     assert_eq!(batch.selected_index, Some(0), "{batch:#?}");

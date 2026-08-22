@@ -1,0 +1,319 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-l2-productive-v90-active-bindings-rebuild-2026-08-16",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "active-l11-v9",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.v9.bin",
+      "expect": {
+        "size_bytes": 77962328,
+        "sha256": "bf5a1619a89038466ef786305cf35eda5f4af5b9f12b9140f7d3cac407e2f2a7",
+        "mode": "0644",
+        "prefix_hex": "4c41594c31563900"
+      }
+    },
+    {
+      "id": "active-canonical-l2-v13",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-RU-FULL-v13.bin",
+      "expect": {
+        "size_bytes": 140556462,
+        "sha256": "cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b",
+        "mode": "0644",
+        "prefix_hex": "4c41594c32433031"
+      }
+    },
+    {
+      "id": "installed-incompatible-productive-v90",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2m",
+      "expect": {
+        "size_bytes": 17309944,
+        "sha256": "9fd8c950398fb8ba47a2c9f2236880239d9f4376b191a691b0d01c47ddd3e438",
+        "mode": "0644",
+        "prefix_hex": "4c41595032563100"
+      }
+    },
+    {
+      "id": "installed-incompatible-productive-recovery-v90",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2r",
+      "expect": {
+        "size_bytes": 2123112,
+        "sha256": "44a20f7aaf7578a960477fbfb1d30c9828b9d71f037e3ad1b2d57bc7fa5568c4",
+        "mode": "0644"
+      }
+    },
+    {
+      "id": "productive-orchestrator-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/orchestrator.rs",
+      "expect": {
+        "size_bytes": 30736,
+        "sha256": "bf4a87539a9e4541f0f33f3634fbdf6d013040c32d8a4548fa9732c67ca544a3",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "productive-compiler-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/compiler.rs",
+      "expect": {
+        "size_bytes": 86311,
+        "sha256": "9a446f682339437d26e7b06a6c7f0e4bb152820f7144ccc1a97311537e680bc8",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "productive-runtime-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/packaged_runtime.rs",
+      "expect": {
+        "size_bytes": 175860,
+        "sha256": "0898a0e6307166846a9847c17d07d108cf349720b338dcfeda8e0cef620c8e53",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "productive-proof-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/proof.rs",
+      "expect": {
+        "size_bytes": 125410,
+        "sha256": "e67e3c0549a74ce8ecc790e3b15888cb36757ce1aa141fc3d7a328d0e89a4ae3",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "installed-lay-daemon-1-0-33",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+      "expect": {
+        "size_bytes": 8342624,
+        "sha256": "f0821f3b1dbf87fb83db1119534d3e4a1aef489dd6d5588ca8a8f9b86a19194c",
+        "mode": "0755"
+      }
+    },
+    {
+      "id": "installed-lay-ime-1-0-33",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "expect": {
+        "size_bytes": 6423488,
+        "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a",
+        "mode": "0755"
+      }
+    }
+  ],
+  "source_checks": [
+    {
+      "id": "fingerprint-validation-remains-fail-closed",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/packaged_runtime.rs",
+      "sha256": "0898a0e6307166846a9847c17d07d108cf349720b338dcfeda8e0cef620c8e53",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "weaken_productive_fingerprint_validation",
+          "regex": "(?i)(?:fingerprint|sha256).{0,100}(?:ignore|skip|warn.only|allow.mismatch)"
+        },
+        {
+          "effect": "literal_surface_runtime_branch",
+          "regex": "(?:token|surface|partial)\\s*==\\s*\\\"(?:данорм|да норм)\\\""
+        }
+      ]
+    },
+    {
+      "id": "productive-build-remains-staging-only",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/orchestrator.rs",
+      "sha256": "bf4a87539a9e4541f0f33f3634fbdf6d013040c32d8a4548fa9732c67ca544a3",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "install_before_fixed_proof_pass",
+          "regex": "(?:local/share/lay|reload_productive|systemctl|ibus-daemon)"
+        },
+        {
+          "effect": "overwrite_frozen_v63_v90_workspace",
+          "regex": "(?:full-v1-v63-reinduce|LAY-L2-PRODUCTIVE-PARADIGM-V(?:6[3-9]|[7-9][0-9]))"
+        }
+      ]
+    },
+    {
+      "id": "release-installer-cannot-own-productive-staging",
+      "path": "../../../scripts/install-release-binaries.sh",
+      "sha256": "259850478a99bb32b1aaffa863ff72138f018b7ce1231611a05fad706d7ffd02",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "edit_remote_dirty_worktree",
+          "regex": "(?:ssh|rsync).{0,120}/home/e/projects/lay(?:[ /\\\"]|$)"
+        },
+        {
+          "effect": "install_partial_productive_pair",
+          "regex": "(?:PRODUCTIVE-PARADIGM|\\.p2[mr])"
+        }
+      ]
+    },
+    {
+      "id": "managed-runtime-controller-preserved",
+      "path": "../../../scripts/lay-runtime-control.sh",
+      "sha256": "746d077115277775acb275e077b57823ace9e416d2575eaf0bc53d3327d64e6d",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "restart_global_ibus_daemon",
+          "regex": "(?:restart|kill|pkill).{0,40}ibus-daemon"
+        }
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "sync-exact-source-and-active-l11-to-remote-stage", "kind": "remote_filesystem_stage"},
+      {"id": "copy-frozen-induction-to-new-work-root", "kind": "remote_filesystem_stage"},
+      {"id": "remote-release-build", "kind": "remote_release_build"},
+      {"id": "resume-frozen-productive-package", "kind": "remote_model_build"},
+      {"id": "run-fixed-read-only-proof", "kind": "remote_quality_proof"},
+      {"id": "snapshot-installed-productive-pair", "kind": "rollback_snapshot"},
+      {"id": "atomic-install-proven-productive-pair", "kind": "filesystem_install"},
+      {"id": "restart-managed-lay-components-only", "kind": "service_activation"}
+    ],
+    "forbidden": [
+      "weaken_productive_fingerprint_validation",
+      "literal_surface_runtime_branch",
+      "overwrite_frozen_v63_v90_workspace",
+      "install_before_fixed_proof_pass",
+      "install_partial_productive_pair",
+      "restart_global_ibus_daemon",
+      "edit_remote_dirty_worktree"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "installed-productive-v90-pair",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2m",
+      "policy": "snapshot_both_p2m_and_p2r_before_install",
+      "rollback_policy": "restore_both_exact_old_productive_files_and_reload_only_managed_lay_components",
+      "baseline_check_id": "installed-incompatible-productive-v90"
+    },
+    {
+      "id": "active-l11-v9-package",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.v9.bin",
+      "policy": "read_only_input",
+      "rollback_policy": "never_modify",
+      "baseline_check_id": "active-l11-v9"
+    },
+    {
+      "id": "active-canonical-l2-v13-package",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-RU-FULL-v13.bin",
+      "policy": "read_only_input",
+      "rollback_policy": "never_modify",
+      "baseline_check_id": "active-canonical-l2-v13"
+    },
+    {
+      "id": "installed-lay-runtime-1-0-33",
+      "path": "/home/ubu/.local/lib/lay/bin",
+      "policy": "no_binary_change_during_package_baseline_restore",
+      "rollback_policy": "keep_exact_1_0_33_binaries",
+      "baseline_check_id": "installed-lay-daemon-1-0-33"
+    }
+  ],
+  "state_machine": {
+    "initial_state": "ACTIVE_V9_V13_PRODUCTIVE_UNAVAILABLE_RUNTIME_1_0_33",
+    "terminal_states": [
+      "LIVE_COMPATIBLE_PRODUCTIVE_VERIFIED",
+      "REBUILD_FAILED_RUNTIME_UNCHANGED",
+      "PROOF_FAILED_RUNTIME_UNCHANGED",
+      "ROLLED_BACK_OLD_PRODUCTIVE"
+    ],
+    "steps": [
+      {
+        "id": "stage-exact-inputs-and-frozen-work",
+        "from": "ACTIVE_V9_V13_PRODUCTIVE_UNAVAILABLE_RUNTIME_1_0_33",
+        "to": "REMOTE_STAGE_READY_RUNTIME_UNCHANGED",
+        "mutates": true,
+        "failure_state": "REBUILD_FAILED_RUNTIME_UNCHANGED",
+        "cleanup": "remove only the newly named remote staging roots; retain frozen workspace and live local runtime",
+        "preserves": ["installed-productive-v90-pair", "active-l11-v9-package", "active-canonical-l2-v13-package", "installed-lay-runtime-1-0-33"],
+        "test_id": "remote-stage-failure-preserves-frozen-and-live"
+      },
+      {
+        "id": "build-compatible-productive-pair",
+        "from": "REMOTE_STAGE_READY_RUNTIME_UNCHANGED",
+        "to": "REMOTE_PRODUCTIVE_PAIR_BUILT_RUNTIME_UNCHANGED",
+        "mutates": true,
+        "failure_state": "REBUILD_FAILED_RUNTIME_UNCHANGED",
+        "cleanup": "retain build log and receipt; remove partial output pair; do not install",
+        "preserves": ["installed-productive-v90-pair", "active-l11-v9-package", "active-canonical-l2-v13-package", "installed-lay-runtime-1-0-33"],
+        "test_id": "remote-build-failure-preserves-live"
+      },
+      {
+        "id": "prove-compatible-productive-pair",
+        "from": "REMOTE_PRODUCTIVE_PAIR_BUILT_RUNTIME_UNCHANGED",
+        "to": "REMOTE_PRODUCTIVE_PAIR_PROVEN_RUNTIME_UNCHANGED",
+        "mutates": true,
+        "failure_state": "PROOF_FAILED_RUNTIME_UNCHANGED",
+        "cleanup": "retain failed proof receipt and package in remote staging; do not install",
+        "preserves": ["installed-productive-v90-pair", "active-l11-v9-package", "active-canonical-l2-v13-package", "installed-lay-runtime-1-0-33"],
+        "test_id": "proof-failure-preserves-live"
+      },
+      {
+        "id": "snapshot-and-install-proven-pair",
+        "from": "REMOTE_PRODUCTIVE_PAIR_PROVEN_RUNTIME_UNCHANGED",
+        "to": "COMPATIBLE_PRODUCTIVE_PAIR_INSTALLED_NOT_RELOADED",
+        "mutates": true,
+        "failure_state": "ROLLED_BACK_OLD_PRODUCTIVE",
+        "cleanup": "atomically restore both old productive files from the rollback snapshot",
+        "preserves": ["installed-productive-v90-pair", "active-l11-v9-package", "active-canonical-l2-v13-package", "installed-lay-runtime-1-0-33"],
+        "test_id": "partial-install-restores-complete-pair"
+      },
+      {
+        "id": "reload-managed-components-and-verify",
+        "from": "COMPATIBLE_PRODUCTIVE_PAIR_INSTALLED_NOT_RELOADED",
+        "to": "LIVE_COMPATIBLE_PRODUCTIVE_VERIFIED",
+        "mutates": true,
+        "failure_state": "ROLLED_BACK_OLD_PRODUCTIVE",
+        "cleanup": "restore old pair and restart only managed Lay components; never restart global ibus-daemon",
+        "preserves": ["installed-productive-v90-pair", "active-l11-v9-package", "active-canonical-l2-v13-package", "installed-lay-runtime-1-0-33"],
+        "test_id": "activation-failure-restores-pair-and-ibus"
+      }
+    ]
+  },
+  "tests": [
+    {"id": "remote-stage-failure-preserves-frozen-and-live", "kind": "fault_injection", "expected": "an interrupted source/input/work copy removes only the new stage and leaves frozen V63-V90 data plus local runtime byte-identical"},
+    {"id": "remote-build-failure-preserves-live", "kind": "fault_injection", "expected": "a failed release or resume build writes no local package and leaves runtime status unchanged"},
+    {"id": "proof-failure-preserves-live", "kind": "fault_injection", "expected": "any fixed-proof failure retains evidence remotely and cannot install or reload the package"},
+    {"id": "partial-install-restores-complete-pair", "kind": "fault_injection", "expected": "a failure between p2m and p2r installation restores both old files by their exact SHA-256"},
+    {"id": "activation-failure-restores-pair-and-ibus", "kind": "fault_injection", "expected": "failed managed reload restores the old package pair and global ibus-daemon PID 3702 remains alive"},
+    {"id": "remote-source-parity", "kind": "parity", "expected": "remote staged compiler, runtime, proof and CLI source files equal the local worktree by SHA-256"},
+    {"id": "active-input-parity", "kind": "parity", "expected": "remote staged L1.1 V9 and canonical L2 V13 equal active local package bytes by SHA-256"},
+    {"id": "fixed-productive-proof", "kind": "integration", "expected": "the existing 13 x 100 x 2 Productive proof preserves the frozen quality and safety fields; false singleton and integrity errors remain zero; all timing and memory dimensions are reported"},
+    {"id": "installed-package-parity", "kind": "parity", "expected": "installed p2m and p2r equal the remotely proven package pair by SHA-256"},
+    {"id": "productive-live-admission", "kind": "integration", "expected": "productive status is ready_live_owner and reports the exact active L1.1 V9 and canonical L2 V13 fingerprints"},
+    {"id": "runtime-continuity", "kind": "integration", "expected": "global ibus-daemon PID remains 3702; one managed Lay engine and daemon are active after package reload"}
+  ],
+  "invariants": [
+    {"id": "fingerprints-bind-authority", "statement": "Productive authority is available only when package header fingerprints exactly match active L1.1 and canonical L2 bytes", "test_id": "productive-live-admission"},
+    {"id": "proof-precedes-install", "statement": "no rebuilt Productive artifact is installed before the fixed quality and safety proof completes", "test_id": "fixed-productive-proof"},
+    {"id": "frozen-induction-is-immutable", "statement": "the V63-V90 frozen induction and proof spool are read-only donors; all generated files use a new stage root", "test_id": "remote-stage-failure-preserves-frozen-and-live"},
+    {"id": "productive-pair-is-atomic", "statement": "p2m and p2r are installed and rolled back as one generation", "test_id": "partial-install-restores-complete-pair"},
+    {"id": "global-ibus-survives", "statement": "package reload never restarts or terminates the global ibus-daemon", "test_id": "runtime-continuity"}
+  ],
+  "identity_contracts": [
+    {"id": "local-source-to-remote-build", "producer": "local dirty worktree source snapshot", "consumer": "isolated remote release source", "comparison": "per-file SHA-256 for compiler, runtime, proof and CLI plus Cargo manifests", "test_id": "remote-source-parity"},
+    {"id": "active-models-to-package-header", "producer": "active local L1.1 V9 and canonical L2 V13 bytes", "consumer": "rebuilt Productive p2m header and runtime loader", "comparison": "exact SHA-256 fingerprints", "test_id": "active-input-parity"},
+    {"id": "remote-proof-to-local-install", "producer": "remote fixed-proof package pair", "consumer": "local installed Productive p2m and p2r", "comparison": "per-file SHA-256 byte identity", "test_id": "installed-package-parity"}
+  ],
+  "runtime_comparisons": [
+    {
+      "id": "managed-runtime-package-reload",
+      "source": "productive status plus pgrep and managed Lay runtime status before and after reload",
+      "comparison": "exact_stable_projection",
+      "stable_fields": ["global_ibus_pid", "active_l11_sha256", "active_canonical_l2_sha256", "managed_engine_present", "daemon_present"],
+      "expected_to_change_fields": ["productive_status", "productive_package_sha256", "lay_daemon_pid", "managed_lay_ibus_engine_pid"],
+      "observed_not_compared_fields": ["process_start_time", "process_rss", "online_l3_generation"],
+      "reason": "prove only the Productive package generation and managed Lay processes changed while active base models and global IBus remained stable",
+      "test_id": "runtime-continuity"
+    }
+  ]
+}

@@ -33,10 +33,10 @@ impl LayIbusFactory {
             .object_server()
             .at(
                 path.as_str(),
-                LayIbusEngine::new(
+                LayIbusEngine::new_from_component(
                     path.clone(),
                     Arc::clone(&self.shared),
-                    name == "lay-ime-ru",
+                    &name,
                     self.managed_input,
                     LayConfig::load(),
                 ),

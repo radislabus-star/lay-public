@@ -1,0 +1,89 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_RELEASE_1_0_34_REMOTE_BUILD_V1_2026-08-22",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {"id": "cargo-version", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/Cargo.toml", "expect": {"mode": "0664", "size_bytes": 2399, "sha256": "91a3c72265db548d6190f16a0059bcd27174a80b3403302ce1b7ee9b7cb9cc8c"}},
+    {"id": "cargo-lock-version", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/Cargo.lock", "expect": {"mode": "0664", "size_bytes": 70770, "sha256": "34cbaa577bdfed3f352a59e443573372f7a2635011d147d23379e022c369d6d9"}},
+    {"id": "versioning-doc", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/VERSIONING.md", "expect": {"mode": "0664", "size_bytes": 1921, "sha256": "56792955a2a7dfb0bac92a20add1e1022de8a495bfae2d6370dafad1e9a54eb1"}},
+    {"id": "extension-metadata-version", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/extension/lay@radislabus-star.github.io/metadata.json", "expect": {"mode": "0664", "size_bytes": 420, "sha256": "ca27bebadcd451dfaf4c38326912c6a1ed16a0fafb57cb450b3f53748034158f"}},
+    {"id": "tray-version", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/extension/lay@radislabus-star.github.io/tray_support.js", "expect": {"mode": "0664", "size_bytes": 8489, "sha256": "d98e989117f13c9a89f2521b17719c6653becd596f30b672919fd3cec613b5e5"}},
+    {"id": "release-installer", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/install-release-binaries.sh", "expect": {"mode": "0775", "size_bytes": 2333, "sha256": "259850478a99bb32b1aaffa863ff72138f018b7ce1231611a05fad706d7ffd02"}},
+    {"id": "installed-lay", "kind": "file", "path": "/home/ubu/.local/lib/lay/bin/lay", "expect": {"mode": "0755", "size_bytes": 6230136, "sha256": "0a00e2343ab55922eae7f8955c53f4d9c77999c6b99e8136b12c95a871816680"}},
+    {"id": "installed-daemon", "kind": "file", "path": "/home/ubu/.local/lib/lay/bin/lay-daemon", "expect": {"mode": "0755", "size_bytes": 8342624, "sha256": "f0821f3b1dbf87fb83db1119534d3e4a1aef489dd6d5588ca8a8f9b86a19194c"}},
+    {"id": "installed-engine", "kind": "file", "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine", "expect": {"mode": "0755", "size_bytes": 6423488, "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a"}}
+  ],
+  "source_checks": [
+    {
+      "id": "pinned-release-installer",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/install-release-binaries.sh",
+      "sha256": "259850478a99bb32b1aaffa863ff72138f018b7ce1231611a05fad706d7ffd02",
+      "forbidden_effect_patterns": [
+        {"effect": "build_phase_installed_runtime_mutation", "regex": "installDuringRemoteBuild|replaceLiveBinaryBeforeProof"},
+        {"effect": "global_ibus_restart", "regex": "systemctl.*restart.*ibus|pkill.*ibus-daemon"},
+        {"effect": "model_package_rebuild", "regex": "rebuildModelForVersionBump|recrystallizeForReleaseNumber"}
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "bump-five-version-surfaces", "kind": "source_edit"},
+      {"id": "sync-complete-build-inputs-to-remote", "kind": "remote_filesystem_write"},
+      {"id": "remote-guarded-release-build-all-bins", "kind": "ephemeral_process_start"},
+      {"id": "write-remote-release-manifest", "kind": "remote_filesystem_write"},
+      {"id": "download-release-stage", "kind": "filesystem_write"}
+    ],
+    "forbidden": [
+      "local_build",
+      "build_phase_installed_runtime_mutation",
+      "service_restart_before_final_proof",
+      "global_ibus_restart",
+      "model_package_rebuild",
+      "historical_receipt_rewrite"
+    ]
+  },
+  "state_machine": {
+    "initial_state": "V27_STAGED_PHYSICAL_AND_FIXED_ROUTE_PASS",
+    "steps": [
+      {"id": "bump-source-version", "from": "V27_STAGED_PHYSICAL_AND_FIXED_ROUTE_PASS", "to": "SOURCE_1_0_34", "mutates": true, "failure_state": "VERSION_BUMP_FAILED", "cleanup": "restore only the five pinned version surfaces", "preserves": ["installed-lay-preserved", "installed-daemon-preserved", "installed-engine-preserved"], "test_id": "version-bump-fault"},
+      {"id": "sync-remote-source", "from": "SOURCE_1_0_34", "to": "REMOTE_SOURCE_PARITY", "mutates": true, "failure_state": "REMOTE_SOURCE_PARITY_FAILED", "cleanup": "leave the content-addressed partial remote source unselected", "preserves": ["installed-lay-preserved", "installed-daemon-preserved", "installed-engine-preserved"], "test_id": "remote-source-sync-fault"},
+      {"id": "build-all-release-binaries", "from": "REMOTE_SOURCE_PARITY", "to": "REMOTE_RELEASE_BUILT", "mutates": true, "failure_state": "REMOTE_BUILD_FAILED", "cleanup": "retain Cargo cache but do not create an admitted release manifest", "preserves": ["installed-lay-preserved", "installed-daemon-preserved", "installed-engine-preserved"], "test_id": "remote-build-fault"},
+      {"id": "download-verified-release", "from": "REMOTE_RELEASE_BUILT", "to": "LOCAL_RELEASE_STAGED", "mutates": true, "failure_state": "RELEASE_DOWNLOAD_FAILED", "cleanup": "remove only the incomplete local staging directory", "preserves": ["installed-lay-preserved", "installed-daemon-preserved", "installed-engine-preserved"], "test_id": "release-download-fault"}
+    ],
+    "terminal_states": ["LOCAL_RELEASE_STAGED", "VERSION_BUMP_FAILED", "REMOTE_SOURCE_PARITY_FAILED", "REMOTE_BUILD_FAILED", "RELEASE_DOWNLOAD_FAILED"]
+  },
+  "preserved_artifacts": [
+    {"id": "installed-lay-preserved", "path": "/home/ubu/.local/lib/lay/bin/lay", "policy": "immutable_until_final_binary_proof_pass", "cursor_policy": "none", "rollback_policy": "preserve_exact_bytes", "baseline_check_id": "installed-lay"},
+    {"id": "installed-daemon-preserved", "path": "/home/ubu/.local/lib/lay/bin/lay-daemon", "policy": "immutable_until_final_binary_proof_pass", "cursor_policy": "none", "rollback_policy": "preserve_exact_bytes", "baseline_check_id": "installed-daemon"},
+    {"id": "installed-engine-preserved", "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine", "policy": "immutable_until_final_binary_proof_pass", "cursor_policy": "none", "rollback_policy": "preserve_exact_bytes", "baseline_check_id": "installed-engine"}
+  ],
+  "identity_contracts": [
+    {"id": "version-surface-parity", "producer": "Cargo package version 1.0.34", "consumer": "Cargo.lock GNOME metadata tray and VERSIONING", "comparison": "all five surfaces encode exactly 1.0.34 and metadata integer 1000034", "test_id": "version-surface-parity"},
+    {"id": "local-remote-source-parity", "producer": "local Cargo build input aggregate", "consumer": "remote content-addressed source tree", "comparison": "exact aggregate SHA-256 before Cargo", "test_id": "remote-source-parity"},
+    {"id": "remote-local-artifact-parity", "producer": "remote release SHA256SUMS", "consumer": "downloaded local release staging", "comparison": "sha256sum -c for every installer-required binary", "test_id": "release-artifact-parity"}
+  ],
+  "runtime_comparisons": [],
+  "invariants": [
+    {"id": "mechanical-version-only", "statement": "version changes from 1.0.33 to 1.0.34 without another production behavior edit", "test_id": "version-diff-scope"},
+    {"id": "remote-only-cargo", "statement": "all Cargo build and test work runs on e@192.168.3.94 through cargo-guard with 20 jobs", "test_id": "remote-build-command-shape"},
+    {"id": "complete-installer-set", "statement": "the staged release contains all ten binary names required by install-release-binaries.sh", "test_id": "release-binary-set"},
+    {"id": "versioned-binaries", "statement": "lay lay-daemon and lay-ibus-engine report 1.0.34 from staged bytes", "test_id": "staged-version-output"},
+    {"id": "runtime-untouched", "statement": "installed binaries and live process identities remain unchanged during build staging", "test_id": "installed-runtime-parity"}
+  ],
+  "tests": [
+    {"id": "version-bump-fault", "kind": "fault_injection", "expected": "a partial version edit changes no installed bytes or runtime process"},
+    {"id": "remote-source-sync-fault", "kind": "fault_injection", "expected": "source hash mismatch stops before Cargo"},
+    {"id": "remote-build-fault", "kind": "fault_injection", "expected": "failed Cargo leaves no admitted release manifest and no installed mutation"},
+    {"id": "release-download-fault", "kind": "fault_injection", "expected": "partial local staging is rejected by SHA256SUMS"},
+    {"id": "version-surface-parity", "kind": "parity", "expected": "Cargo Cargo.lock metadata tray and VERSIONING all encode 1.0.34"},
+    {"id": "remote-source-parity", "kind": "parity", "expected": "local and remote complete build input aggregates match"},
+    {"id": "release-artifact-parity", "kind": "parity", "expected": "downloaded binary hashes match the remote manifest"},
+    {"id": "version-diff-scope", "kind": "parity", "expected": "the bump changes only version literals and release date"},
+    {"id": "remote-build-command-shape", "kind": "parity", "expected": "no local Cargo process is invoked and remote build uses cargo-guard with CARGO_BUILD_JOBS=20"},
+    {"id": "release-binary-set", "kind": "integration", "expected": "all ten installer-required executable files exist"},
+    {"id": "staged-version-output", "kind": "integration", "expected": "three public runtime binaries report version 1.0.34"},
+    {"id": "installed-runtime-parity", "kind": "parity", "expected": "installed lay daemon and engine keep their baseline SHA and live PIDs through build staging"}
+  ]
+}

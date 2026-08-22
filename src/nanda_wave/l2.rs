@@ -91,22 +91,7 @@ pub enum L2ImeWordCandidateSource {
     BoundaryPhase,
 }
 
-/// Evidence that binds a live replacement candidate to the observed token.
-///
-/// A lexical or morphology center may enter the internal lattice without this
-/// evidence. Only an operator that actually reconstructed this target may
-/// later grant full-token display authority.
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord)]
-pub(crate) enum L2ImeTargetEvidence {
-    #[default]
-    None,
-    LexicalReconstruction,
-    ContextBoundEdit,
-    CanonicalWinner,
-    LayoutRepair,
-    ExactLayout,
-    Boundary,
-}
+pub(crate) use crate::typing_transition::target_evidence::L2ImeTargetEvidence;
 
 impl L2ImeWordCandidateSource {
     pub(crate) const fn is_lexically_grounded(self) -> bool {
@@ -134,6 +119,14 @@ pub struct L2ImeWordCandidate {
     pub accepted_count: u32,
     pub(crate) target_evidence: L2ImeTargetEvidence,
     pub(crate) morphology_slots: Vec<crate::correction_core::MorphologySlotIdentity>,
+}
+
+impl L2ImeWordCandidate {
+    pub(crate) fn common_target_evidence(
+        &self,
+    ) -> crate::typing_transition::target_evidence::TargetEvidenceSetV1 {
+        self.target_evidence.to_common()
+    }
 }
 
 pub fn ime_l2_word_candidates(
@@ -280,19 +273,6 @@ pub(crate) fn hot_layout_candidate_with_noisy_projection(
         &[],
         allow_noisy_projection,
     )
-}
-
-pub(crate) fn hot_short_layout_candidates(original: &str) -> Vec<WordCandidate> {
-    let tail = original.trim_end();
-    if tail.is_empty() {
-        return Vec::new();
-    }
-    let (prefix, token) = split_last_ws_token(tail).unwrap_or(("", tail));
-    if token.trim().is_empty() {
-        return Vec::new();
-    }
-    let context = TailContext::from_text(tail);
-    layout_adapter::short_token_candidates(prefix, token, &context, &[])
 }
 
 pub fn run_l2_refined_with_feedback(
@@ -532,6 +512,44 @@ fn candidate_support(l1: &[WavePacket], context: &TailContext) -> Vec<String> {
     let mut support = top_support(l1);
     support.push(format!("ctx:{}", context.phrase_signature()));
     support
+}
+
+#[cfg(test)]
+mod target_evidence_adapter_tests {
+    use super::*;
+
+    #[test]
+    fn l2_candidate_projects_the_exact_legacy_evidence_value() {
+        for target_evidence in [
+            L2ImeTargetEvidence::None,
+            L2ImeTargetEvidence::LexicalReconstruction,
+            L2ImeTargetEvidence::ContextBoundEdit,
+            L2ImeTargetEvidence::CanonicalWinner,
+            L2ImeTargetEvidence::LayoutRepair,
+            L2ImeTargetEvidence::ExactLayout,
+            L2ImeTargetEvidence::Boundary,
+        ] {
+            let candidate = L2ImeWordCandidate {
+                surface: "candidate".to_string(),
+                kind: L2ImeWordCandidateKind::Replacement,
+                source: L2ImeWordCandidateSource::CanonicalField,
+                score: 1,
+                l1_overlap: 1,
+                l2_overlap: 1,
+                motif_overlap: 0,
+                usage_prior: 0.0,
+                context_prior: 0.0,
+                accepted_count: 0,
+                target_evidence,
+                morphology_slots: Vec::new(),
+            };
+
+            assert_eq!(
+                candidate.common_target_evidence(),
+                target_evidence.to_common()
+            );
+        }
+    }
 }
 
 #[cfg(test)]

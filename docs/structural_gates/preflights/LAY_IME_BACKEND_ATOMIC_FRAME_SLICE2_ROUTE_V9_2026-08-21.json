@@ -1,0 +1,244 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "fake_client_event", "role": "interface"},
+    {"id": "frozen_request", "role": "producer"},
+    {"id": "input_context_atomic_rpc", "role": "orchestrator"},
+    {"id": "daemon_receipt_gate", "role": "orchestrator"},
+    {"id": "daemon_capability_gate", "role": "orchestrator"},
+    {"id": "daemon_snapshot_gate", "role": "orchestrator"},
+    {"id": "engine_proxy_atomic_rpc", "role": "orchestrator"},
+    {"id": "fake_engine_proposal", "role": "producer"},
+    {"id": "daemon_proposal_validator", "role": "evidence_owner"},
+    {"id": "daemon_reply_admission", "role": "authorization_owner"},
+    {"id": "daemon_reply_emitter", "role": "mutation_owner"},
+    {"id": "atomic_reply", "role": "observer"},
+    {"id": "native_unhandled", "role": "observer"},
+    {"id": "lineage_terminated", "role": "observer"},
+    {"id": "private_dbus_fault_matrix", "role": "proof_owner"}
+  ],
+  "edges": [
+    {
+      "id": "exec-event-freeze",
+      "from": "fake_client_event",
+      "relation": "delegates",
+      "to": "frozen_request",
+      "events": ["proposal_returned", "receipt_refused", "capability_refused", "snapshot_refused", "proposal_refused", "lineage_changed"]
+    },
+    {
+      "id": "exec-freeze-input-context",
+      "from": "frozen_request",
+      "relation": "delegates",
+      "to": "input_context_atomic_rpc",
+      "events": ["proposal_returned", "receipt_refused", "capability_refused", "snapshot_refused", "proposal_refused", "lineage_changed"]
+    },
+    {
+      "id": "exec-input-context-receipt",
+      "from": "input_context_atomic_rpc",
+      "relation": "delegates",
+      "to": "daemon_receipt_gate",
+      "events": ["proposal_returned", "receipt_refused", "capability_refused", "snapshot_refused", "proposal_refused", "lineage_changed"]
+    },
+    {
+      "id": "exec-receipt-capability",
+      "from": "daemon_receipt_gate",
+      "relation": "delegates",
+      "to": "daemon_capability_gate",
+      "events": ["proposal_returned", "capability_refused", "snapshot_refused", "proposal_refused", "lineage_changed"]
+    },
+    {
+      "id": "exec-receipt-native",
+      "from": "daemon_receipt_gate",
+      "relation": "delegates",
+      "to": "native_unhandled",
+      "events": ["receipt_refused"]
+    },
+    {
+      "id": "exec-capability-snapshot",
+      "from": "daemon_capability_gate",
+      "relation": "delegates",
+      "to": "daemon_snapshot_gate",
+      "events": ["proposal_returned", "snapshot_refused", "proposal_refused", "lineage_changed"]
+    },
+    {
+      "id": "exec-capability-native",
+      "from": "daemon_capability_gate",
+      "relation": "delegates",
+      "to": "native_unhandled",
+      "events": ["capability_refused"]
+    },
+    {
+      "id": "exec-snapshot-engine-proxy",
+      "from": "daemon_snapshot_gate",
+      "relation": "delegates",
+      "to": "engine_proxy_atomic_rpc",
+      "events": ["proposal_returned", "proposal_refused", "lineage_changed"]
+    },
+    {
+      "id": "exec-snapshot-native",
+      "from": "daemon_snapshot_gate",
+      "relation": "delegates",
+      "to": "native_unhandled",
+      "events": ["snapshot_refused"]
+    },
+    {
+      "id": "exec-engine-proxy-fake-engine",
+      "from": "engine_proxy_atomic_rpc",
+      "relation": "delegates",
+      "to": "fake_engine_proposal",
+      "events": ["proposal_returned", "proposal_refused", "lineage_changed"]
+    },
+    {
+      "id": "exec-fake-engine-validator",
+      "from": "fake_engine_proposal",
+      "relation": "delegates",
+      "to": "daemon_proposal_validator",
+      "events": ["proposal_returned", "proposal_refused", "lineage_changed"]
+    },
+    {
+      "id": "exec-validator-admission",
+      "from": "daemon_proposal_validator",
+      "relation": "delegates",
+      "to": "daemon_reply_admission",
+      "events": ["proposal_returned"]
+    },
+    {
+      "id": "exec-admission-emitter",
+      "from": "daemon_reply_admission",
+      "relation": "delegates",
+      "to": "daemon_reply_emitter",
+      "events": ["proposal_returned"]
+    },
+    {
+      "id": "exec-emitter-reply",
+      "from": "daemon_reply_emitter",
+      "relation": "delegates",
+      "to": "atomic_reply",
+      "events": ["proposal_returned"]
+    },
+    {
+      "id": "exec-validator-native",
+      "from": "daemon_proposal_validator",
+      "relation": "delegates",
+      "to": "native_unhandled",
+      "events": ["proposal_refused"]
+    },
+    {
+      "id": "exec-validator-lineage",
+      "from": "daemon_proposal_validator",
+      "relation": "delegates",
+      "to": "lineage_terminated",
+      "events": ["lineage_changed"]
+    },
+    {
+      "id": "authority-request-proposal",
+      "from": "frozen_request",
+      "relation": "produces_for",
+      "to": "fake_engine_proposal",
+      "events": ["proposal_returned"]
+    },
+    {
+      "id": "authority-proposal-validator",
+      "from": "fake_engine_proposal",
+      "relation": "passes_to",
+      "to": "daemon_proposal_validator",
+      "events": ["proposal_returned"]
+    },
+    {
+      "id": "authority-validator-admission",
+      "from": "daemon_proposal_validator",
+      "relation": "passes_to",
+      "to": "daemon_reply_admission",
+      "events": ["proposal_returned"]
+    },
+    {
+      "id": "authority-admission-emitter",
+      "from": "daemon_reply_admission",
+      "relation": "authorizes",
+      "to": "daemon_reply_emitter",
+      "events": ["proposal_returned"]
+    },
+    {
+      "id": "proof-validator-faults",
+      "from": "daemon_proposal_validator",
+      "relation": "proves",
+      "to": "private_dbus_fault_matrix",
+      "events": ["proposal_refused"]
+    }
+  ],
+  "routes": [
+    {
+      "id": "proposal-returned-execution",
+      "event": "proposal_returned",
+      "kind": "execution",
+      "entry": "fake_client_event",
+      "terminal": "atomic_reply",
+      "required_roles": ["interface", "producer", "orchestrator", "evidence_owner", "authorization_owner", "mutation_owner", "observer"],
+      "path_cardinality": [{"from": "fake_client_event", "to": "atomic_reply", "min": 1, "max": 1}]
+    },
+    {
+      "id": "proposal-returned-authority",
+      "event": "proposal_returned",
+      "kind": "authority",
+      "entry": "frozen_request",
+      "terminal": "daemon_reply_emitter",
+      "required_roles": ["producer", "evidence_owner", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "frozen_request", "to": "daemon_reply_emitter", "min": 1, "max": 1}]
+    },
+    {
+      "id": "receipt-refusal-execution",
+      "event": "receipt_refused",
+      "kind": "execution",
+      "entry": "fake_client_event",
+      "terminal": "native_unhandled",
+      "required_roles": ["interface", "producer", "orchestrator", "observer"],
+      "path_cardinality": [{"from": "fake_client_event", "to": "native_unhandled", "min": 1, "max": 1}]
+    },
+    {
+      "id": "capability-refusal-execution",
+      "event": "capability_refused",
+      "kind": "execution",
+      "entry": "fake_client_event",
+      "terminal": "native_unhandled",
+      "required_roles": ["interface", "producer", "orchestrator", "observer"],
+      "path_cardinality": [{"from": "fake_client_event", "to": "native_unhandled", "min": 1, "max": 1}]
+    },
+    {
+      "id": "snapshot-refusal-execution",
+      "event": "snapshot_refused",
+      "kind": "execution",
+      "entry": "fake_client_event",
+      "terminal": "native_unhandled",
+      "required_roles": ["interface", "producer", "orchestrator", "observer"],
+      "path_cardinality": [{"from": "fake_client_event", "to": "native_unhandled", "min": 1, "max": 1}]
+    },
+    {
+      "id": "proposal-refusal-execution",
+      "event": "proposal_refused",
+      "kind": "execution",
+      "entry": "fake_client_event",
+      "terminal": "native_unhandled",
+      "required_roles": ["interface", "producer", "orchestrator", "evidence_owner", "observer"],
+      "path_cardinality": [{"from": "fake_client_event", "to": "native_unhandled", "min": 1, "max": 1}]
+    },
+    {
+      "id": "lineage-change-execution",
+      "event": "lineage_changed",
+      "kind": "execution",
+      "entry": "fake_client_event",
+      "terminal": "lineage_terminated",
+      "required_roles": ["interface", "producer", "orchestrator", "evidence_owner", "observer"],
+      "path_cardinality": [{"from": "fake_client_event", "to": "lineage_terminated", "min": 1, "max": 1}]
+    },
+    {
+      "id": "proposal-fault-proof",
+      "event": "proposal_refused",
+      "kind": "proof",
+      "entry": "daemon_proposal_validator",
+      "terminal": "private_dbus_fault_matrix",
+      "required_roles": ["evidence_owner", "proof_owner"],
+      "path_cardinality": [{"from": "daemon_proposal_validator", "to": "private_dbus_fault_matrix", "min": 1, "max": 1}]
+    }
+  ]
+}

@@ -1,0 +1,449 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_ATOMIC_HOT_MEASUREMENT_QUIESCENCE_V23_V2_2026-08-21",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "full-route-shell-fixture",
+      "kind": "file",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/shell/atomicInputMethodRoute.js",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 7784,
+        "sha256": "3ef07b32404c9e76da6e6df28eae64e1ec4c48f273ea878a1f9ba359f854c05f"
+      }
+    },
+    {
+      "id": "shell-atomic-runtime",
+      "kind": "file",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/js/misc/inputMethodAtomic.js",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 15841,
+        "sha256": "d40801329973da6c3e96f35edc2f478ad82c7752f4e245cb01f69904a24e19c0"
+      }
+    },
+    {
+      "id": "shell-input-method-runtime",
+      "kind": "file",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/js/misc/inputMethod.js",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 15192,
+        "sha256": "7e84931650ccee7920428d22287da6e99763db7f08783a48fdda55fd459e3b37"
+      }
+    },
+    {
+      "id": "full-route-proof-driver",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 10143,
+        "sha256": "f86b82106f1e55100a253a20eeb5cfd861b0127827670ad6d534d81732eee83f"
+      }
+    },
+    {
+      "id": "proof-ime-config",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/trace-enabled-config.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 56,
+        "sha256": "7136f37498d522d634fbb8e4a240cba71885e095a8bd2b428f0e73b60026e45e"
+      }
+    },
+    {
+      "id": "installed-mutter",
+      "kind": "file",
+      "path": "/usr/lib/x86_64-linux-gnu/libmutter-18.so.0.0.0",
+      "expect": {
+        "mode": "0644",
+        "size_bytes": 2755048,
+        "sha256": "fec9023139ac8eff93fcc1af90413613cdb526e7f02389dc9d8fe90f7abc81e5"
+      }
+    },
+    {
+      "id": "installed-shell",
+      "kind": "file",
+      "path": "/usr/lib/gnome-shell/libshell-18.so",
+      "expect": {
+        "mode": "0644",
+        "size_bytes": 3107408,
+        "sha256": "94e81e3ff3820b3f8454d596c3a9ee7fa437b770b899098db85f15640a7abb73"
+      }
+    },
+    {
+      "id": "installed-ibus",
+      "kind": "file",
+      "path": "/usr/lib/x86_64-linux-gnu/libibus-1.0.so.5.0.534",
+      "expect": {
+        "mode": "0644",
+        "size_bytes": 542936,
+        "sha256": "e1977b9d3d84ee94b63f6c04056134c10aa51d4e0621f7abee1115da12259ec1"
+      }
+    },
+    {
+      "id": "installed-lay-engine",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 6423488,
+        "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a"
+      }
+    }
+  ],
+  "source_checks": [
+    {
+      "id": "pinned-shell-fixture",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/shell/atomicInputMethodRoute.js",
+      "sha256": "3ef07b32404c9e76da6e6df28eae64e1ec4c48f273ea878a1f9ba359f854c05f",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "latency_gate_relaxation",
+          "regex": "p99 > (?:[6-9][0-9]{3}|[1-9][0-9]{4,})|max >= (?:[9-9][0-9]{3}|[1-9][0-9]{4,})"
+        },
+        {
+          "effect": "adaptive_sample_discard",
+          "regex": "discardSlow|retryUntilFast|filter\\(.*latency"
+        },
+        {
+          "effect": "hot_denominator_reduction",
+          "regex": "HOT_SAMPLES = (?:[0-9]{1,2}|[1-4][0-9]{2}|50[0-9]|51[01]);"
+        },
+        {
+          "effect": "admitted_event_count_change",
+          "regex": "HOT_SAMPLES = (?:513|514|[6-9][0-9]{2,})"
+        },
+        {
+          "effect": "second_mutation_owner",
+          "regex": "secondNativeMutationOwner|legacySameEventFallback"
+        }
+      ]
+    },
+    {
+      "id": "pinned-shell-runtime",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/js/misc/inputMethodAtomic.js",
+      "sha256": "d40801329973da6c3e96f35edc2f478ad82c7752f4e245cb01f69904a24e19c0",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "runtime_route_edit",
+          "regex": "proofOnlyRuntimeRoute|benchmarkQuiescenceInProduction"
+        },
+        {
+          "effect": "release_profile_suppression",
+          "regex": "ignoreMissingReleaseProfile|suppressReleaseProfileFailure"
+        },
+        {
+          "effect": "snapshot_equality_bypass",
+          "regex": "skipSnapshotEquality|trustLeaseSnapshotWithoutReplay"
+        }
+      ]
+    },
+    {
+      "id": "pinned-full-route-driver",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh",
+      "sha256": "f86b82106f1e55100a253a20eeb5cfd861b0127827670ad6d534d81732eee83f",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "local_build",
+          "regex": "(?:cargo|meson|ninja|make)\\s"
+        },
+        {
+          "effect": "runtime_deployment",
+          "regex": "(?:systemctl|dpkg|apt-get)\\s"
+        },
+        {
+          "effect": "installed_file_write",
+          "regex": "(?:/usr/lib|/home/ubu/[.]local/lib/lay)"
+        },
+        {
+          "effect": "live_session_restart",
+          "regex": "(?:kill|signal|restart).{0,80}(?:gnome-shell|ibus)"
+        },
+        {
+          "effect": "live_keyboard_signal",
+          "regex": "(?:ydotool|xdotool|wtype|/dev/(?:input|uinput))"
+        },
+        {
+          "effect": "orphaned_test_process",
+          "regex": "(?:setsid|spawnDetachedProof|daemonizeProofProcess)"
+        },
+        {
+          "effect": "historical_receipt_rewrite",
+          "regex": "rewriteHistoricalReceipt|truncateHistoricalEvidence"
+        }
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {
+        "id": "edit-shell-proof-fixture",
+        "kind": "test_source_edit"
+      },
+      {
+        "id": "sync-shell-proof-fixture",
+        "kind": "remote_filesystem_write"
+      },
+      {
+        "id": "run-isolated-full-route",
+        "kind": "ephemeral_process_start"
+      },
+      {
+        "id": "write-quiescence-evidence",
+        "kind": "filesystem_write"
+      }
+    ],
+    "forbidden": [
+      "latency_gate_relaxation",
+      "adaptive_sample_discard",
+      "hot_denominator_reduction",
+      "admitted_event_count_change",
+      "runtime_route_edit",
+      "release_profile_suppression",
+      "snapshot_equality_bypass",
+      "second_mutation_owner",
+      "local_build",
+      "runtime_deployment",
+      "installed_file_write",
+      "live_session_restart",
+      "live_keyboard_signal",
+      "orphaned_test_process",
+      "historical_receipt_rewrite"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "shell-atomic-runtime-bytes",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/js/misc/inputMethodAtomic.js",
+      "baseline_check_id": "shell-atomic-runtime",
+      "policy": "immutable",
+      "cursor_policy": "none",
+      "rollback_policy": "preserve_exact_bytes"
+    },
+    {
+      "id": "shell-input-method-runtime-bytes",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/js/misc/inputMethod.js",
+      "baseline_check_id": "shell-input-method-runtime",
+      "policy": "immutable",
+      "cursor_policy": "none",
+      "rollback_policy": "preserve_exact_bytes"
+    },
+    {
+      "id": "proof-driver-bytes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh",
+      "baseline_check_id": "full-route-proof-driver",
+      "policy": "immutable",
+      "cursor_policy": "none",
+      "rollback_policy": "preserve_exact_bytes"
+    },
+    {
+      "id": "proof-config-bytes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/trace-enabled-config.json",
+      "baseline_check_id": "proof-ime-config",
+      "policy": "immutable",
+      "cursor_policy": "none",
+      "rollback_policy": "preserve_exact_bytes"
+    },
+    {
+      "id": "installed-mutter-preserved",
+      "path": "/usr/lib/x86_64-linux-gnu/libmutter-18.so.0.0.0",
+      "baseline_check_id": "installed-mutter",
+      "policy": "immutable_during_proof",
+      "cursor_policy": "none",
+      "rollback_policy": "preserve_exact_bytes"
+    },
+    {
+      "id": "installed-shell-preserved",
+      "path": "/usr/lib/gnome-shell/libshell-18.so",
+      "baseline_check_id": "installed-shell",
+      "policy": "immutable_during_proof",
+      "cursor_policy": "none",
+      "rollback_policy": "preserve_exact_bytes"
+    },
+    {
+      "id": "installed-ibus-preserved",
+      "path": "/usr/lib/x86_64-linux-gnu/libibus-1.0.so.5.0.534",
+      "baseline_check_id": "installed-ibus",
+      "policy": "immutable_during_proof",
+      "cursor_policy": "none",
+      "rollback_policy": "preserve_exact_bytes"
+    },
+    {
+      "id": "installed-lay-preserved",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "baseline_check_id": "installed-lay-engine",
+      "policy": "immutable_during_proof",
+      "cursor_policy": "none",
+      "rollback_policy": "preserve_exact_bytes"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "local-remote-fixture-parity",
+      "producer": "local approved atomicInputMethodRoute.js bytes",
+      "consumer": "remote isolated Shell source fixture",
+      "comparison": "exact SHA-256 equality before execution",
+      "test_id": "remote-fixture-parity"
+    },
+    {
+      "id": "fixed-hot-denominator",
+      "producer": "two fixed correctness events followed by one fixed quiescence barrier and 512 hot events",
+      "consumer": "integrated cardinality and latency readout",
+      "comparison": "exact 514 committed characters, 512 measured latencies and unchanged thresholds",
+      "test_id": "denominator-parity"
+    }
+  ],
+  "runtime_comparisons": [],
+  "invariants": [
+    {
+      "id": "fixed-not-adaptive-quiescence",
+      "statement": "quiescence occurs once after the two preregistered correctness events and never inspects or discards a hot latency",
+      "test_id": "quiescence-topology"
+    },
+    {
+      "id": "strict-latency-gate-preserved",
+      "statement": "all 512 post-quiescence samples remain subject to p99 at most 5 ms and maximum below 8 ms",
+      "test_id": "latency-threshold-parity"
+    },
+    {
+      "id": "runtime-source-preserved",
+      "statement": "Shell runtime adapter, input method, proof driver, proof config and installed artifacts remain byte-identical",
+      "test_id": "scope-byte-parity"
+    },
+    {
+      "id": "full-route-cardinality",
+      "statement": "514 printable events produce exactly 514 committed characters with zero duplicate and legacy mutations",
+      "test_id": "integrated-cardinality"
+    },
+    {
+      "id": "proof-cleanup",
+      "statement": "the isolated proof leaves zero task-owned processes after cleanup",
+      "test_id": "proof-leftover-gate"
+    }
+  ],
+  "state_machine": {
+    "initial_state": "PAPER_APPROVED",
+    "steps": [
+      {
+        "id": "edit-shell-proof-fixture",
+        "from": "PAPER_APPROVED",
+        "to": "FIXTURE_EDITED",
+        "mutates": true,
+        "failure_state": "FIXTURE_EDIT_FAILED",
+        "cleanup": "restore the pinned 7,784-byte fixture",
+        "preserves": [
+          "shell-atomic-runtime-bytes",
+          "shell-input-method-runtime-bytes",
+          "proof-driver-bytes",
+          "proof-config-bytes",
+          "installed-mutter-preserved",
+          "installed-shell-preserved",
+          "installed-ibus-preserved",
+          "installed-lay-preserved"
+        ],
+        "test_id": "fixture-edit-fault"
+      },
+      {
+        "id": "sync-shell-proof-fixture",
+        "from": "FIXTURE_EDITED",
+        "to": "REMOTE_FIXTURE_SYNCED",
+        "mutates": true,
+        "failure_state": "REMOTE_FIXTURE_SYNC_FAILED",
+        "cleanup": "reject partial or hash-mismatched remote fixture bytes before execution",
+        "preserves": [
+          "shell-atomic-runtime-bytes",
+          "shell-input-method-runtime-bytes",
+          "proof-driver-bytes",
+          "proof-config-bytes",
+          "installed-mutter-preserved",
+          "installed-shell-preserved",
+          "installed-ibus-preserved",
+          "installed-lay-preserved"
+        ],
+        "test_id": "remote-fixture-sync-fault"
+      },
+      {
+        "id": "run-quiesced-full-route",
+        "from": "REMOTE_FIXTURE_SYNCED",
+        "to": "V23_HOT_ROUTE_PROVEN",
+        "mutates": true,
+        "failure_state": "FULL_ROUTE_FAILED",
+        "cleanup": "terminate proof-owned processes, remove the proof socket and retain all failed evidence",
+        "preserves": [
+          "shell-atomic-runtime-bytes",
+          "shell-input-method-runtime-bytes",
+          "proof-driver-bytes",
+          "proof-config-bytes",
+          "installed-mutter-preserved",
+          "installed-shell-preserved",
+          "installed-ibus-preserved",
+          "installed-lay-preserved"
+        ],
+        "test_id": "full-route-fault"
+      }
+    ],
+    "terminal_states": [
+      "V23_HOT_ROUTE_PROVEN",
+      "FIXTURE_EDIT_FAILED",
+      "REMOTE_FIXTURE_SYNC_FAILED",
+      "FULL_ROUTE_FAILED"
+    ]
+  },
+  "tests": [
+    {
+      "id": "fixture-edit-fault",
+      "kind": "fault_injection",
+      "expected": "failed local fixture edit restores its pinned bytes and changes no runtime source"
+    },
+    {
+      "id": "remote-fixture-sync-fault",
+      "kind": "fault_injection",
+      "expected": "partial or mismatched remote fixture is refused before execution"
+    },
+    {
+      "id": "full-route-fault",
+      "kind": "fault_injection",
+      "expected": "failed denominator retains logs, cleans the socket and leaves zero task-owned processes"
+    },
+    {
+      "id": "remote-fixture-parity",
+      "kind": "parity",
+      "expected": "local and remote fixture SHA-256 values match before execution"
+    },
+    {
+      "id": "denominator-parity",
+      "kind": "parity",
+      "expected": "two fixed correctness events plus 512 hot events yield 514 exact committed characters"
+    },
+    {
+      "id": "quiescence-topology",
+      "kind": "model",
+      "expected": "one fixed barrier precedes the hot array and no branch reads latency before deciding sample admission"
+    },
+    {
+      "id": "latency-threshold-parity",
+      "kind": "parity",
+      "expected": "source retains p99 greater-than 5000 failure and max greater-than-or-equal 8000 failure"
+    },
+    {
+      "id": "scope-byte-parity",
+      "kind": "parity",
+      "expected": "runtime sources, proof driver, proof config and installed artifact hashes remain pinned"
+    },
+    {
+      "id": "integrated-cardinality",
+      "kind": "integration",
+      "expected": "514 committed characters, 514 printable managed commits, zero duplicate mutations and zero legacy calls"
+    },
+    {
+      "id": "proof-leftover-gate",
+      "kind": "integration",
+      "expected": "task-owned leftovers after cleanup equals zero"
+    }
+  ]
+}

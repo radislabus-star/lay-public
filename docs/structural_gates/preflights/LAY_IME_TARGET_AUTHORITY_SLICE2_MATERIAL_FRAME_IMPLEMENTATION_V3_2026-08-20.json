@@ -1,0 +1,649 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-ime-target-authority-slice2-material-frame-implementation-v3-2026-08-20",
+  "authority_bearing": true,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "authority-paper-after-work-budget-freeze",
+      "kind": "file",
+      "path": "../../ime-canonical-target-authority-paper-2026-08-17.md",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 168067,
+        "sha256": "50df4c77a3664d5fadae028b01bd497a536c26f6b8c0548b8156d77333b40373"
+      }
+    },
+    {
+      "id": "canonical-architecture-after-work-budget-freeze",
+      "kind": "file",
+      "path": "../../l2-l11-canonical-architecture.md",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 317411,
+        "sha256": "afac1baffa602867688de4e26c3f1c8e143733e12d22e9997e96d0d9e5f65494"
+      }
+    },
+    {
+      "id": "work-budget-final-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE2_WORK_MEASUREMENT_2026-08-20/final-receipt.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 5237,
+        "sha256": "7ac5658d39b75b36fb1e4a5b6143ea53566588d5e0820c333505b60662d077c8"
+      }
+    },
+    {
+      "id": "material-frame-route-contract-v6",
+      "kind": "file",
+      "path": "LAY_IME_TARGET_MATERIAL_FRAME_ROUTE_V6_2026-08-17.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 11625,
+        "sha256": "a66dcb293858c4f22ec50685bec49c8a451e35d96a8448687aa0709ba10c214f"
+      }
+    },
+    {
+      "id": "material-frame-route-pass-v6",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_MATERIAL_FRAME_ROUTE_DESIGN_PASS_V6_2026-08-17.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 11845,
+        "sha256": "e09b8382f1c2a0502b1ada5a2d7430e790d31f889e5040a92bac89097996b928"
+      }
+    },
+    {
+      "id": "target-evidence-source-before-slice2",
+      "kind": "file",
+      "path": "../../../src/typing_transition/target_evidence.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 45744,
+        "sha256": "c01a7fb8ebfa140e114632fa4d4ed35acfc587422b692866d3e7cc921f1e50ed"
+      }
+    },
+    {
+      "id": "productive-mod-source-before-slice2",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/mod.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 2036,
+        "sha256": "419ea070ea5bb7e8b262e3f6c683a0d082d0a59003be388b302b07c12f05c207"
+      }
+    },
+    {
+      "id": "productive-live-source-before-slice2",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/live.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 43416,
+        "sha256": "f302e0177b87c95f2d3be56163680501c20526b51d1dbf95dff72f681fea9596"
+      }
+    },
+    {
+      "id": "productive-runtime-source-before-slice2",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/packaged_runtime.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 178896,
+        "sha256": "dc60941402ba36a7ea3aeb4a3e8d65d2f818d10b8a08b9b5b63e60af48a6b8a7"
+      }
+    },
+    {
+      "id": "productive-proof-source-before-slice2",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/proof.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 143119,
+        "sha256": "754adc0f15ead6f8e78cf87b4ab8bd7f04a2c571e525bed4634b6912d27376ce"
+      }
+    },
+    {
+      "id": "live-cache-source-preserved",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/cache.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 23664,
+        "sha256": "9da969bfff12dba0217954647b1ba8e21302365770abaa82178953fcf63fec07"
+      }
+    },
+    {
+      "id": "live-bridge-source-preserved",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/bridge.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 109138,
+        "sha256": "bf47a5a7b4ae33541efc15a8de91fa406abd69044653f89aff0a6bfd4f143708"
+      }
+    },
+    {
+      "id": "decision-owner-source-preserved",
+      "kind": "file",
+      "path": "../../../src/typing_transition/decision.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 27803,
+        "sha256": "f4ba3c3554650b19e178458818a11b165586a3ab86ff54fd106cd2d1d7054f1e"
+      }
+    },
+    {
+      "id": "verifier-source-preserved",
+      "kind": "file",
+      "path": "../../../src/text_edit/structural_verifier.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 7730,
+        "sha256": "19201157bc09df5cca617132d67a242474aaa331ca58dc18acb0152818b7b826"
+      }
+    },
+    {
+      "id": "installed-engine-preserved",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 6423488,
+        "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a"
+      }
+    },
+    {
+      "id": "installed-productive-v90-preserved",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2m",
+      "expect": {
+        "mode": "0644",
+        "size_bytes": 17309944,
+        "sha256": "40fb6a9f0d92c3c7502e47f9c70230d9b86020f622b08a5c799342f13e09ce44",
+        "prefix_hex": "4c41595032563100"
+      }
+    }
+  ],
+  "source_checks": [
+    {
+      "id": "target-evidence-remains-authority-neutral",
+      "path": "../../../src/typing_transition/target_evidence.rs",
+      "sha256": "c01a7fb8ebfa140e114632fa4d4ed35acfc587422b692866d3e7cc921f1e50ed",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "runtime_deployment",
+          "regex": "(?i)(?:systemctl|daemon-reload|lay-runtime-control)"
+        },
+        {
+          "effect": "restart_lay_daemon",
+          "regex": "(?i)(?:restart|stop|kill|pkill).{0,80}lay-daemon"
+        },
+        {
+          "effect": "restart_global_ibus_daemon",
+          "regex": "(?i)(?:restart|stop|kill|pkill).{0,80}ibus-daemon"
+        },
+        {
+          "effect": "weaken_verifier_authority",
+          "regex": "(?i)(?:bypass|skip|disable).{0,100}(?:verifier|SafetyGate)"
+        },
+        {
+          "effect": "change_double_shift_contract",
+          "regex": "(?i)(?:double.?shift|auto.?undo).{0,120}(?:disable|remove|skip|ignore)"
+        },
+        {
+          "effect": "automatic_authority_in_material",
+          "regex": "(?s)PreparedTargetMaterialV1.{0,1200}(?:AuthorizedEdit|AuthorityCertificateV1|selected_winner)"
+        },
+        {
+          "effect": "literal_surface_runtime_branch",
+          "regex": "(?i)(?:observed|surface|target)\\s*==\\s*\""
+        }
+      ]
+    },
+    {
+      "id": "productive-live-has-no-second-worker-or-package-write",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/live.rs",
+      "sha256": "f302e0177b87c95f2d3be56163680501c20526b51d1dbf95dff72f681fea9596",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "second_hot_path_worker",
+          "regex": "(?i)(?:thread::spawn|tokio::spawn|mpsc::channel)"
+        },
+        {
+          "effect": "second_live_cache_owner",
+          "regex": "(?i)(?:slice2_material_cache|material_frame_live_cache).{0,160}(?:OnceLock|SingleFlightCache)"
+        },
+        {
+          "effect": "change_live_candidate_membership_rank_or_authority",
+          "regex": "(?i)(?:slice2|material_frame).{0,160}(?:live_authority|CandidateGateAction::Eligible|ranked_candidate_order)"
+        },
+        {
+          "effect": "rewrite_productive_package",
+          "regex": "(?s)(?:File::create|OpenOptions::new).{0,300}(?:p2m|PRODUCTIVE)"
+        },
+        {
+          "effect": "recrystallize_l11_or_l2_packages",
+          "regex": "(?i)(?:compile_lexical_grokking|compile_productive_paradigm_field_v1)"
+        },
+        {
+          "effect": "literal_surface_runtime_branch",
+          "regex": "(?i)(?:observed|surface|target)\\s*==\\s*\""
+        }
+      ]
+    },
+    {
+      "id": "productive-runtime-is-read-only-and-bounded",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/packaged_runtime.rs",
+      "sha256": "dc60941402ba36a7ea3aeb4a3e8d65d2f818d10b8a08b9b5b63e60af48a6b8a7",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "generated_traffic",
+          "regex": "(?i)(?:TcpStream|UdpSocket|reqwest|hyper::|https?://)"
+        },
+        {
+          "effect": "runtime_deployment",
+          "regex": "(?i)(?:systemctl|daemon-reload|lay-runtime-control)"
+        },
+        {
+          "effect": "rewrite_productive_package",
+          "regex": "(?s)(?:File::create|OpenOptions::new).{0,300}(?:p2m|PRODUCTIVE)"
+        },
+        {
+          "effect": "literal_surface_runtime_branch",
+          "regex": "(?i)(?:observed_surface|normalized_surface)\\s*==\\s*\""
+        }
+      ]
+    },
+    {
+      "id": "productive-proof-remains-proof-only",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/proof.rs",
+      "sha256": "754adc0f15ead6f8e78cf87b4ab8bd7f04a2c571e525bed4634b6912d27376ce",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "generated_traffic",
+          "regex": "(?i)(?:TcpStream|UdpSocket|reqwest|hyper::|https?://)"
+        },
+        {
+          "effect": "synthetic_fixture",
+          "regex": "(?i)(?:synthetic|fixture).{0,80}(?:write|create|generate)"
+        },
+        {
+          "effect": "runtime_deployment",
+          "regex": "(?i)(?:systemctl|daemon-reload|lay-runtime-control)"
+        }
+      ]
+    },
+    {
+      "id": "current-live-cache-remains-context-shaped-and-unchanged",
+      "path": "../../../src/nanda_wave/l2_field/cache.rs",
+      "sha256": "9da969bfff12dba0217954647b1ba8e21302365770abaa82178953fcf63fec07",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "cache_authority",
+          "regex": "(?:AuthorizedEdit|AuthorityCertificateV1|selected_winner)"
+        },
+        {
+          "effect": "unbounded_cache",
+          "regex": "SingleFlightCache::new\\(usize::MAX"
+        }
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {
+        "id": "create-material-frame-shadow-owner",
+        "kind": "source_file_create"
+      },
+      {
+        "id": "add-exact-frame-and-work-budget-vocabulary",
+        "kind": "source_edit"
+      },
+      {
+        "id": "expose-context-neutral-productive-enumeration",
+        "kind": "source_edit"
+      },
+      {
+        "id": "build-bounded-prepared-target-material",
+        "kind": "source_edit"
+      },
+      {
+        "id": "bind-and-replay-exact-frame-shadow",
+        "kind": "source_edit"
+      },
+      {
+        "id": "add-fixed-shadow-proof-denominators",
+        "kind": "source_edit"
+      },
+      {
+        "id": "run-remote-fixed-proof",
+        "kind": "remote_test"
+      },
+      {
+        "id": "update-architecture-receipts-and-graph",
+        "kind": "documentation_edit"
+      }
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "literal_surface_runtime_branch",
+      "automatic_authority_in_material",
+      "runtime_deployment",
+      "restart_lay_daemon",
+      "restart_global_ibus_daemon",
+      "rewrite_productive_package",
+      "recrystallize_l11_or_l2_packages",
+      "change_live_candidate_membership_rank_or_authority",
+      "second_hot_path_worker",
+      "second_live_cache_owner",
+      "unbounded_cache",
+      "cache_authority",
+      "weaken_verifier_authority",
+      "change_double_shift_contract"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "work-budget-freeze",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE2_WORK_MEASUREMENT_2026-08-20/final-receipt.json",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "retain the accepted numeric budgets and measurements unchanged",
+      "baseline_check_id": "work-budget-final-receipt"
+    },
+    {
+      "id": "material-frame-route-design",
+      "path": "../receipts/LAY_IME_TARGET_MATERIAL_FRAME_ROUTE_DESIGN_PASS_V6_2026-08-17.json",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "retain the selected preservation-first route contract",
+      "baseline_check_id": "material-frame-route-pass-v6"
+    },
+    {
+      "id": "current-live-cache",
+      "path": "../../../src/nanda_wave/l2_field/cache.rs",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "keep the current context-shaped cache live and byte-identical during shadow implementation",
+      "baseline_check_id": "live-cache-source-preserved"
+    },
+    {
+      "id": "installed-engine-runtime",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "no installation or restart in Slice 2",
+      "baseline_check_id": "installed-engine-preserved"
+    },
+    {
+      "id": "installed-productive-v90",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2m",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "never rebuild or replace the active package in Slice 2",
+      "baseline_check_id": "installed-productive-v90-preserved"
+    }
+  ],
+  "state_machine": {
+    "initial_state": "WORK_BUDGET_FROZEN_RUNTIME_1_0_33_UNCHANGED",
+    "terminal_states": [
+      "SLICE2_SHADOW_SOFTWARE_PASS_RUNTIME_1_0_33_UNCHANGED",
+      "SLICE2_IMPLEMENTATION_REJECTED_RUNTIME_1_0_33_UNCHANGED",
+      "SLICE2_REMOTE_PROOF_FAILED_RUNTIME_1_0_33_UNCHANGED"
+    ],
+    "steps": [
+      {
+        "id": "introduce-bounded-material-and-frame-contracts",
+        "from": "WORK_BUDGET_FROZEN_RUNTIME_1_0_33_UNCHANGED",
+        "to": "MATERIAL_FRAME_TYPES_READY_RUNTIME_UNCHANGED",
+        "mutates": true,
+        "failure_state": "SLICE2_IMPLEMENTATION_REJECTED_RUNTIME_1_0_33_UNCHANGED",
+        "cleanup": "retain the isolated failing diff and receipts; do not modify cache, bridge, DecisionCore, verifier or installed bytes",
+        "preserves": [
+          "work-budget-freeze",
+          "material-frame-route-design",
+          "current-live-cache",
+          "installed-engine-runtime",
+          "installed-productive-v90"
+        ],
+        "test_id": "material-frame-type-fault"
+      },
+      {
+        "id": "enumerate-context-neutral-material",
+        "from": "MATERIAL_FRAME_TYPES_READY_RUNTIME_UNCHANGED",
+        "to": "CONTEXT_NEUTRAL_MATERIAL_SHADOW_READY",
+        "mutates": true,
+        "failure_state": "SLICE2_IMPLEMENTATION_REJECTED_RUNTIME_1_0_33_UNCHANGED",
+        "cleanup": "retain old live route; report explicit incomplete material or reject the implementation without a fallback producer",
+        "preserves": [
+          "work-budget-freeze",
+          "current-live-cache",
+          "installed-engine-runtime",
+          "installed-productive-v90"
+        ],
+        "test_id": "context-neutral-enumeration-fault"
+      },
+      {
+        "id": "bind-exact-frame-shadow",
+        "from": "CONTEXT_NEUTRAL_MATERIAL_SHADOW_READY",
+        "to": "EXACT_FRAME_SHADOW_READY",
+        "mutates": true,
+        "failure_state": "SLICE2_IMPLEMENTATION_REJECTED_RUNTIME_1_0_33_UNCHANGED",
+        "cleanup": "discard stale frame settlement and its lease; preserve material and current live output unchanged",
+        "preserves": [
+          "work-budget-freeze",
+          "current-live-cache",
+          "installed-engine-runtime",
+          "installed-productive-v90"
+        ],
+        "test_id": "exact-frame-binding-fault"
+      },
+      {
+        "id": "run-fixed-shadow-proof",
+        "from": "EXACT_FRAME_SHADOW_READY",
+        "to": "SLICE2_SHADOW_SOFTWARE_PASS_RUNTIME_1_0_33_UNCHANGED",
+        "mutates": false,
+        "failure_state": "SLICE2_REMOTE_PROOF_FAILED_RUNTIME_1_0_33_UNCHANGED",
+        "cleanup": "retain failed proof receipts, reject Slice 2 exit and make no version, package, install or authority change",
+        "preserves": [
+          "work-budget-freeze",
+          "material-frame-route-design",
+          "current-live-cache",
+          "installed-engine-runtime",
+          "installed-productive-v90"
+        ],
+        "test_id": "fixed-material-frame-shadow-proof"
+      }
+    ]
+  },
+  "identity_contracts": [
+    {
+      "id": "material-is-context-neutral",
+      "producer": "one exact observed contour plus L1.1/canonical/Productive package tuple",
+      "consumer": "multiple exact input frames with different left context, focus, tail and overlay generations",
+      "comparison": "exact target bytes, witness roots, completeness and material integrity digest are identical",
+      "test_id": "context-neutral-material-parity"
+    },
+    {
+      "id": "field-local-target-ref-dereferences-exact-bytes",
+      "producer": "PreparedTargetMaterialV1 material target reference",
+      "consumer": "exact frame binder under a live PreparedMaterialLeaseV1",
+      "comparison": "table index and exact scalar/byte equality; accelerators and hashes alone are insufficient",
+      "test_id": "exact-target-table-reference"
+    },
+    {
+      "id": "frame-identity-is-exact",
+      "producer": "captured InputFrameIdentityV1 exact source, focus, caret, selection, preedit and generations",
+      "consumer": "frame projection and replay",
+      "comparison": "every identity dimension matches before a framed target is emitted",
+      "test_id": "stale-frame-matrix"
+    },
+    {
+      "id": "work-budget-identity",
+      "producer": "frozen V90/V9/V13 EnumerationWorkBudgetV1 receipt",
+      "consumer": "context-neutral Productive enumerator",
+      "comparison": "exact package identities and every per-producer plus aggregate counter ceiling",
+      "test_id": "work-budget-exhaustion"
+    },
+    {
+      "id": "old-live-route-parity",
+      "producer": "current context-shaped cache/live L2 route",
+      "consumer": "post-Slice2 current context-shaped cache/live L2 route",
+      "comparison": "exact candidates, order, verdict, gate, authority and semantic report with shadow disabled",
+      "test_id": "live-route-semantic-parity"
+    }
+  ],
+  "runtime_comparisons": [
+    {
+      "id": "live-route-remains-unchanged",
+      "source": "current context-shaped cache/live L2 route before and after the shadow-only Slice 2 source change",
+      "comparison": "exact_stable_projection",
+      "reason": "Slice 2 may add proof-only observations but cannot alter current live output or authority",
+      "stable_fields": [
+        "candidate surfaces",
+        "candidate order",
+        "candidate gates",
+        "L2 field verdict",
+        "authority",
+        "mutation count"
+      ],
+      "expected_to_change_fields": [
+        "proof-only material/frame report when explicitly enabled"
+      ],
+      "observed_not_compared_fields": [
+        "wall-clock latency under proof instrumentation",
+        "scheduler timing",
+        "allocator addresses"
+      ],
+      "test_id": "live-route-semantic-parity"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "new-shadow-owner-path-is-isolated",
+      "statement": "material_frame.rs is absent before this slice and may be reached only by explicit shadow/proof entrypoints",
+      "test_id": "shadow-owner-callsite-scan"
+    },
+    {
+      "id": "prepared-material-is-frame-free",
+      "statement": "PreparedTargetMaterialV1 contains no context, focus, tail epoch, replacement span, selected winner, authority certificate or mutation permission",
+      "test_id": "prepared-material-exhaustive-destructure"
+    },
+    {
+      "id": "work-exhaustion-is-incomplete",
+      "statement": "crossing any producer or aggregate work ceiling yields Overflow(WorkBudgetExceeded) and cannot yield Complete or authority",
+      "test_id": "work-budget-exhaustion"
+    },
+    {
+      "id": "storage-exhaustion-is-incomplete",
+      "statement": "more than 74 exact targets retains a deterministic prefix and yields Overflow(StorageCapacity)",
+      "test_id": "target-storage-overflow"
+    },
+    {
+      "id": "material-membership-is-context-neutral",
+      "statement": "different left contexts over identical contour and package bytes produce identical target, witness and completeness digests",
+      "test_id": "context-neutral-material-parity"
+    },
+    {
+      "id": "exact-frame-replay-precedes-target-emission",
+      "statement": "source scalar span and exact bytes are replayed before a FrameTargetIdentityV1 is emitted",
+      "test_id": "exact-frame-projection-replay"
+    },
+    {
+      "id": "stale-frame-is-terminal-shadow-rejection",
+      "statement": "focus, source, caret, selection, preedit, layout, config or generation mismatch discards settlement without fallback or material mutation",
+      "test_id": "stale-frame-matrix"
+    },
+    {
+      "id": "lease-is-bounded-and-generation-safe",
+      "statement": "at most 32 material fields and 8 consumers per field are representable; generation reuse or expiry invalidates field-local references",
+      "test_id": "lease-generation-and-expiry"
+    },
+    {
+      "id": "no-runtime-authority-change",
+      "statement": "Slice 2 remains offline/shadow-only and cannot display, authorize, mutate, teach, install or restart runtime",
+      "test_id": "live-route-semantic-parity"
+    },
+    {
+      "id": "no-case-specific-runtime-branch",
+      "statement": "no literal word, phrase, suffix, test id or source id becomes a runtime decision condition",
+      "test_id": "systemic-runtime-source-scan"
+    }
+  ],
+  "tests": [
+    {
+      "id": "material-frame-type-fault",
+      "kind": "fault_injection",
+      "expected": "invalid identity or impossible bounded type fails without changing preserved files or runtime"
+    },
+    {
+      "id": "context-neutral-enumeration-fault",
+      "kind": "fault_injection",
+      "expected": "producer failure or invalid package identity returns explicit failed/incomplete material with no fallback"
+    },
+    {
+      "id": "exact-frame-binding-fault",
+      "kind": "fault_injection",
+      "expected": "frame mismatch discards settlement and lease without changing material or live output"
+    },
+    {
+      "id": "fixed-material-frame-shadow-proof",
+      "kind": "integration",
+      "expected": "fixed 13 x 100 lemma-heldout proof reports 1300/1300 context-neutral material pairs, zero stale reuse, exact budgets and unchanged semantic baseline"
+    },
+    {
+      "id": "context-neutral-material-parity",
+      "kind": "parity",
+      "expected": "at least three different left contexts share exact material target/witness/completeness digest"
+    },
+    {
+      "id": "exact-target-table-reference",
+      "kind": "parity",
+      "expected": "same accelerator with different exact bytes is rejected; valid table reference dereferences exact bytes"
+    },
+    {
+      "id": "stale-frame-matrix",
+      "kind": "parity",
+      "expected": "each exact frame identity dimension independently invalidates settlement when changed"
+    },
+    {
+      "id": "work-budget-exhaustion",
+      "kind": "parity",
+      "expected": "each producer and aggregate counter boundary passes at ceiling and overflows at ceiling plus one"
+    },
+    {
+      "id": "target-storage-overflow",
+      "kind": "fault_injection",
+      "expected": "75th unique target yields deterministic 74-target prefix and StorageCapacity overflow"
+    },
+    {
+      "id": "prepared-material-exhaustive-destructure",
+      "kind": "unit",
+      "expected": "compile-time exhaustive destructuring proves no frame-bound or authority field entered prepared material"
+    },
+    {
+      "id": "exact-frame-projection-replay",
+      "kind": "integration",
+      "expected": "Unicode scalar span, exact source bytes, case and punctuation projection bind one exact framed target"
+    },
+    {
+      "id": "lease-generation-and-expiry",
+      "kind": "fault_injection",
+      "expected": "wrong allocation, owner, epoch, generation, consumer state or expired deadline rejects dereference"
+    },
+    {
+      "id": "live-route-semantic-parity",
+      "kind": "parity",
+      "expected": "shadow-disabled current route remains byte-for-byte equal in semantic outputs and authority"
+    },
+    {
+      "id": "shadow-owner-callsite-scan",
+      "kind": "integration",
+      "expected": "new material/frame API has no daemon, IBus, bridge, DecisionCore or verifier caller"
+    },
+    {
+      "id": "systemic-runtime-source-scan",
+      "kind": "integration",
+      "expected": "no literal case-specific branch, second worker, package writer or deployment call exists in changed source"
+    }
+  ]
+}

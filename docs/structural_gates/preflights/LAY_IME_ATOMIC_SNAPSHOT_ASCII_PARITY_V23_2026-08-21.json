@@ -1,0 +1,131 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_ATOMIC_SNAPSHOT_ASCII_PARITY_V23_2026-08-21",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "mutter-snapshot-owner",
+      "kind": "file",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-text-input.c",
+      "expect": {"mode": "0664", "size_bytes": 52566, "sha256": "5d50a3a9becc31374c52f238729d1874b1cb9c5bfe46e5b90d053cc0cf2d29ca"}
+    },
+    {
+      "id": "mutter-atomic-client-fixture",
+      "kind": "file",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/tests/wayland-test-clients/text-input-atomic-frame.c",
+      "expect": {"mode": "0664", "size_bytes": 14974, "sha256": "c81a9596db3063ec75367c18695c0bc257085168f549b1dacac0cd7c81f49f2a"}
+    },
+    {
+      "id": "mutter-owner-fixture",
+      "kind": "file",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/tests/wayland-text-input-atomic-frame-tests.c",
+      "expect": {"mode": "0664", "size_bytes": 20467, "sha256": "c9e07a86f62c7af98d60db1d60066239bdcfb3bde6971f5c0159ea88e07645db"}
+    },
+    {
+      "id": "installed-mutter",
+      "kind": "file",
+      "path": "/usr/lib/x86_64-linux-gnu/libmutter-18.so.0.0.0",
+      "expect": {"mode": "0644", "size_bytes": 2755048, "sha256": "fec9023139ac8eff93fcc1af90413613cdb526e7f02389dc9d8fe90f7abc81e5"}
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "add-ascii-client-vector", "kind": "test_source_edit"},
+      {"id": "add-ascii-owner-assertion", "kind": "test_source_edit"},
+      {"id": "sync-test-fixtures", "kind": "remote_filesystem_write"},
+      {"id": "run-bounded-mutter-proof", "kind": "remote_build"},
+      {"id": "write-parity-evidence", "kind": "filesystem_write"}
+    ],
+    "forbidden": [
+      "snapshot_owner_edit",
+      "snapshot_grammar_edit",
+      "profile_digest_edit",
+      "runtime_deployment",
+      "installed_file_write",
+      "live_session_restart",
+      "live_keyboard_signal",
+      "local_build",
+      "unbounded_remote_build",
+      "historical_receipt_rewrite"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "pinned-mutter-owner",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-text-input.c",
+      "sha256": "5d50a3a9becc31374c52f238729d1874b1cb9c5bfe46e5b90d053cc0cf2d29ca",
+      "forbidden_effect_patterns": [
+        {"effect": "snapshot_owner_edit", "regex": "secondarySnapshotOwner|mintReplacementSnapshot"},
+        {"effect": "snapshot_grammar_edit", "regex": "IBusBackendAtomicSurroundingSnapshotV1|\\(suu\\)"},
+        {"effect": "profile_digest_edit", "regex": "1475b580ff9600ccfa84e43eb9bd50a61fa0bca88b11d33a104877e36b39adac"}
+      ]
+    },
+    {
+      "id": "pinned-client-fixture",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/tests/wayland-test-clients/text-input-atomic-frame.c",
+      "sha256": "c81a9596db3063ec75367c18695c0bc257085168f549b1dacac0cd7c81f49f2a",
+      "forbidden_effect_patterns": [
+        {"effect": "runtime_deployment", "regex": "systemctl|/usr/lib/|dpkg"},
+        {"effect": "installed_file_write", "regex": "installRuntimeArtifact|writeInstalledMutter"},
+        {"effect": "live_session_restart", "regex": "restartLiveSession|killGnomeShell"},
+        {"effect": "live_keyboard_signal", "regex": "ydotool|xdotool|/dev/uinput"},
+        {"effect": "local_build", "regex": "runLocalBuild|cargoLocalBuild"},
+        {"effect": "unbounded_remote_build", "regex": "unboundedRemoteBuild|--jobs[ =]+0|-j[ ]*0"},
+        {"effect": "historical_receipt_rewrite", "regex": "rewriteHistoricalReceipt|truncateHistoricalEvidence"}
+      ]
+    }
+  ],
+  "preserved_artifacts": [
+    {
+      "id": "mutter-owner-preserved",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/src/wayland/meta-wayland-text-input.c",
+      "baseline_check_id": "mutter-snapshot-owner",
+      "policy": "immutable",
+      "cursor_policy": "none",
+      "rollback_policy": "preserve_exact_bytes"
+    },
+    {
+      "id": "installed-mutter-preserved",
+      "path": "/usr/lib/x86_64-linux-gnu/libmutter-18.so.0.0.0",
+      "baseline_check_id": "installed-mutter",
+      "policy": "immutable",
+      "cursor_policy": "none",
+      "rollback_policy": "preserve_exact_bytes"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "ascii-snapshot-byte-parity",
+      "producer": "Wayland test client text bytes with cursor and anchor byte offsets",
+      "consumer": "Mutter frozen lease snapshot digest",
+      "comparison": "text with byte length 4 and offsets 4,4 equals SHA-256 80129ad9644736276c1d128fc16c34d956928563472f5c5c4f5ff6d4d304186c",
+      "test_id": "ascii-owner-parity"
+    }
+  ],
+  "invariants": [
+    {"id": "production-owner-unchanged", "statement": "Mutter snapshot owner source remains byte-identical", "test_id": "owner-source-parity"},
+    {"id": "installed-runtime-unchanged", "statement": "installed Mutter remains byte-identical", "test_id": "installed-runtime-parity"},
+    {"id": "bounded-test-only-change", "statement": "only the two declared test fixtures change", "test_id": "fixture-scope-parity"}
+  ],
+  "runtime_comparisons": [],
+  "state_machine": {
+    "initial_state": "PAPER_APPROVED",
+    "steps": [
+      {"id": "edit-fixtures", "from": "PAPER_APPROVED", "to": "FIXTURES_EDITED", "mutates": true, "failure_state": "EDIT_FAILED", "cleanup": "restore both fixture files from pinned baseline bytes", "preserves": ["mutter-owner-preserved", "installed-mutter-preserved"], "test_id": "edit-fault"},
+      {"id": "sync-fixtures", "from": "FIXTURES_EDITED", "to": "REMOTE_SYNCED", "mutates": true, "failure_state": "SYNC_FAILED", "cleanup": "restore remote fixture copies from their V23 baseline bytes", "preserves": ["mutter-owner-preserved", "installed-mutter-preserved"], "test_id": "sync-fault"},
+      {"id": "build-and-test", "from": "REMOTE_SYNCED", "to": "ASCII_PARITY_PROVEN", "mutates": true, "failure_state": "PROOF_FAILED", "cleanup": "discard partial build outputs and terminate test-owned processes", "preserves": ["mutter-owner-preserved", "installed-mutter-preserved"], "test_id": "proof-fault"}
+    ],
+    "terminal_states": ["ASCII_PARITY_PROVEN", "EDIT_FAILED", "SYNC_FAILED", "PROOF_FAILED"]
+  },
+  "tests": [
+    {"id": "edit-fault", "kind": "fault_injection", "expected": "both fixture baselines remain recoverable and production owner is unchanged"},
+    {"id": "sync-fault", "kind": "fault_injection", "expected": "partial remote fixture sync grants no parity authority"},
+    {"id": "proof-fault", "kind": "fault_injection", "expected": "failed build or test grants no parity authority and leaves no test process"},
+    {"id": "ascii-owner-parity", "kind": "parity", "expected": "actual Mutter lease digest equals 80129ad9644736276c1d128fc16c34d956928563472f5c5c4f5ff6d4d304186c"},
+    {"id": "owner-source-parity", "kind": "parity", "expected": "Mutter owner source remains SHA-256 5d50a3a9becc31374c52f238729d1874b1cb9c5bfe46e5b90d053cc0cf2d29ca"},
+    {"id": "installed-runtime-parity", "kind": "parity", "expected": "installed Mutter remains SHA-256 fec9023139ac8eff93fcc1af90413613cdb526e7f02389dc9d8fe90f7abc81e5"},
+    {"id": "fixture-scope-parity", "kind": "parity", "expected": "production source hashes remain unchanged and only declared test fixture hashes differ"}
+  ]
+}

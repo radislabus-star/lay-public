@@ -1,0 +1,358 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "lexical-phase-runtime",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/nanda_wave/lexical_phase/runtime.rs",
+      "sha256": "d67008a65a4e878f754774bb4a4f8ca57532f4cffe97024d9189eedfaead98cf",
+      "size_bytes": 75523
+    },
+    {
+      "exists": true,
+      "id": "ascii-layout-candidate",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/layout_autoswitch/ascii/candidate.rs",
+      "sha256": "fab983c7412b5ec831afa4fdb89f95d0dd332114396b3d12c1184ebb6a67663f",
+      "size_bytes": 5117
+    },
+    {
+      "exists": true,
+      "id": "ascii-layout-word",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/layout_autoswitch/ascii/word.rs",
+      "sha256": "5ebbabd22d148202570a435d383ab5e3e91cfd15904fa21181f9d586eaa70d37",
+      "size_bytes": 5036
+    },
+    {
+      "exists": true,
+      "id": "layout-autoswitch-root",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/layout_autoswitch.rs",
+      "sha256": "ad724c920b2913e3a67b3fe6ff399eea21ef2559ebd6efa84cd5d479ee36b36c",
+      "size_bytes": 8155
+    },
+    {
+      "exists": true,
+      "id": "correction-core",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/correction_core.rs",
+      "sha256": "b26df818637c7ff4a139add18c7e9e527705582828157363faac7817d67a4629",
+      "size_bytes": 43215
+    },
+    {
+      "exists": true,
+      "id": "candidate-sources",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/correction_core/candidate_sources.rs",
+      "sha256": "c2972cd97ebbeff1089528a3647bb77e0bf64f29205d209c7eb670fd7e3f2a7b",
+      "size_bytes": 54854
+    },
+    {
+      "exists": true,
+      "id": "ime-correction",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/ime_correction.rs",
+      "sha256": "b7e9e47bb5275c14fd64ad65904c371082e5b75439d68da29a4907d18bd79e78",
+      "size_bytes": 32354
+    },
+    {
+      "exists": true,
+      "id": "space-prefetch",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
+      "sha256": "baf4c570b8f14a53d74b59f66031ca36aff43c17c5f12799de54e1e54fb466f2",
+      "size_bytes": 24869
+    },
+    {
+      "exists": true,
+      "id": "committed-tail",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/committed_tail.rs",
+      "sha256": "2b233dece8ce78a2f2c356681d2c02d2828476d1a245e43e297384a63134c8a1",
+      "size_bytes": 25068
+    },
+    {
+      "exists": true,
+      "id": "remote-stage-driver",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/stage-atomic-proof-engine-remote.sh",
+      "sha256": "eba9abefcde44e6657de8ffe4eac89f7bdc9de9477b6b2268f1e21800df1adbc",
+      "size_bytes": 4615
+    },
+    {
+      "exists": true,
+      "id": "full-route-driver",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh",
+      "sha256": "cb89bcdd3f16b53a9bf97d68113743484ea23fa7ee9b93159dbfe845497f9168",
+      "size_bytes": 13954
+    },
+    {
+      "exists": true,
+      "id": "installed-engine",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a",
+      "size_bytes": 6423488
+    },
+    {
+      "exists": true,
+      "id": "shell-atomic-adapter",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/js/misc/inputMethodAtomic.js",
+      "sha256": "aa070fd5cff62ae2794b082d7dcfb042f1c714e411cec8328e3d5f19cf44bb07",
+      "size_bytes": 17418
+    }
+  ],
+  "blockers": [
+    {
+      "code": "source_veto_effect_unbound",
+      "field": "source_checks[0].forbidden_effect_patterns[0].effect",
+      "message": "effect is not forbidden: runtime_word_exception"
+    },
+    {
+      "code": "source_veto_effect_unbound",
+      "field": "source_checks[0].forbidden_effect_patterns[1].effect",
+      "message": "effect is not forbidden: mutable_exact_terminal_owner"
+    },
+    {
+      "code": "source_veto_effect_unbound",
+      "field": "source_checks[1].forbidden_effect_patterns[1].effect",
+      "message": "effect is not forbidden: direct_exact_mutation"
+    },
+    {
+      "code": "source_veto_effect_unbound",
+      "field": "source_checks[2].forbidden_effect_patterns[1].effect",
+      "message": "effect is not forbidden: unbounded_wait"
+    },
+    {
+      "code": "source_veto_effect_unbound",
+      "field": "source_checks[2].forbidden_effect_patterns[2].effect",
+      "message": "effect is not forbidden: runtime_word_exception"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: cold_package_load_on_printable_or_space"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: edge_symbol_fast_authority"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: generated_form_as_exact_authority"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: layout_typo_fast_authority"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: ngram_coherence_as_exact_authority"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: ru_to_en_fast_authority"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: second_candidate_rank_owner"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: second_verifier"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: synchronous_exact_computation_on_space"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: unbound_identity_material"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: verifier_bypass"
+    },
+    {
+      "code": "test_contract_incomplete",
+      "field": "tests[7]",
+      "message": "valid kind and non-empty expected result are required"
+    },
+    {
+      "code": "test_contract_incomplete",
+      "field": "tests[8]",
+      "message": "valid kind and non-empty expected result are required"
+    },
+    {
+      "code": "test_contract_incomplete",
+      "field": "tests[9]",
+      "message": "valid kind and non-empty expected result are required"
+    },
+    {
+      "code": "test_contract_incomplete",
+      "field": "tests[11]",
+      "message": "valid kind and non-empty expected result are required"
+    },
+    {
+      "code": "test_contract_incomplete",
+      "field": "tests[12]",
+      "message": "valid kind and non-empty expected result are required"
+    },
+    {
+      "code": "test_contract_incomplete",
+      "field": "tests[14]",
+      "message": "valid kind and non-empty expected result are required"
+    },
+    {
+      "code": "test_contract_incomplete",
+      "field": "tests[15]",
+      "message": "valid kind and non-empty expected result are required"
+    },
+    {
+      "code": "test_contract_incomplete",
+      "field": "tests[16]",
+      "message": "valid kind and non-empty expected result are required"
+    },
+    {
+      "code": "runtime_comparison_policy_invalid",
+      "field": "runtime_comparisons[0].comparison",
+      "message": "only exact_stable_projection is accepted in V1"
+    },
+    {
+      "code": "runtime_comparison_policy_invalid",
+      "field": "runtime_comparisons[1].comparison",
+      "message": "only exact_stable_projection is accepted in V1"
+    },
+    {
+      "code": "runtime_comparison_test_missing",
+      "field": "runtime_comparisons[1].test_id",
+      "message": "runtime comparison requires unit, integration, or parity test"
+    },
+    {
+      "code": "identity_parity_missing",
+      "field": "identity_contracts[1].test_id",
+      "message": "identity contract requires a parity test"
+    },
+    {
+      "code": "identity_parity_missing",
+      "field": "identity_contracts[2].test_id",
+      "message": "identity contract requires a parity test"
+    },
+    {
+      "code": "identity_parity_missing",
+      "field": "identity_contracts[3].test_id",
+      "message": "identity contract requires a parity test"
+    }
+  ],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 13,
+    "forbidden_side_effect_kinds": [
+      "cold_package_load_on_printable_or_space",
+      "edge_symbol_fast_authority",
+      "generated_form_as_exact_authority",
+      "layout_typo_fast_authority",
+      "local_heavy_build",
+      "ngram_coherence_as_exact_authority",
+      "rpc_timeout_increase",
+      "ru_to_en_fast_authority",
+      "runtime_deployment_before_full_proof",
+      "second_candidate_rank_owner",
+      "second_mutation_owner",
+      "second_verifier",
+      "synchronous_exact_computation_on_space",
+      "unbound_identity_material",
+      "verifier_bypass",
+      "word_specific_runtime_branch"
+    ],
+    "identity_contracts": 4,
+    "invariants": 9,
+    "planned_side_effect_kinds": [
+      "filesystem_write",
+      "remote_build",
+      "source_edit"
+    ],
+    "preserved_artifacts": 2,
+    "runtime_comparisons": 2,
+    "source_checks": 5,
+    "tests": 20
+  },
+  "manifest_sha256": "b2e542cc139f533303ba52c7271a55d095f7a7b95d7cf4d0d56c9ba650ee1a18",
+  "safe_to_implement": false,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-lexical-phase-runtime",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/nanda_wave/lexical_phase/runtime.rs",
+      "sha256": "d67008a65a4e878f754774bb4a4f8ca57532f4cffe97024d9189eedfaead98cf",
+      "size_bytes": 75523
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-layout-candidate",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/layout_autoswitch/ascii/candidate.rs",
+      "sha256": "fab983c7412b5ec831afa4fdb89f95d0dd332114396b3d12c1184ebb6a67663f",
+      "size_bytes": 5117
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-space-prefetch",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
+      "sha256": "baf4c570b8f14a53d74b59f66031ca36aff43c17c5f12799de54e1e54fb466f2",
+      "size_bytes": 24869
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-full-route-driver",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh",
+      "sha256": "cb89bcdd3f16b53a9bf97d68113743484ea23fa7ee9b93159dbfe845497f9168",
+      "size_bytes": 13954
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-shell-timeout",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/js/misc/inputMethodAtomic.js",
+      "sha256": "aa070fd5cff62ae2794b082d7dcfb042f1c714e411cec8328e3d5f19cf44bb07",
+      "size_bytes": 17418
+    }
+  ],
+  "task_id": "LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_IMPLEMENTATION_V27_2026-08-22",
+  "verdict": "BLOCKED_BEFORE_CODE"
+}

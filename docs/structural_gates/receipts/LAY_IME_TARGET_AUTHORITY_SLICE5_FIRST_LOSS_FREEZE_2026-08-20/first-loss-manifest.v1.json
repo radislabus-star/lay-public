@@ -1,0 +1,342 @@
+{
+  "case_count": 36,
+  "cases": [
+    {
+      "baseline_status": "PASS",
+      "enumerated_candidate_occurrences_before_classification": 0,
+      "first_failed_target": null,
+      "first_loss": "AlreadySatisfied",
+      "id": "ime36-active_composition_autocorrect_uses_the_nanda_owner",
+      "log_sha256": "5efe3fa4ea5c352e45e76acf3c4933b0dcaed7a8f07fc41c1dd8cc5db50e1625",
+      "target_observed_in_candidate_lattice": null
+    },
+    {
+      "baseline_status": "FAIL",
+      "enumerated_candidate_occurrences_before_classification": 23,
+      "first_failed_target": "проходил",
+      "first_loss": "LexicalAuthority",
+      "id": "ime36-active_composition_autocorrect_uses_unified_input_gate",
+      "log_sha256": "3bf57a45b9008b480595966671c0afce52b737c058e72aa369a593e9ced14b4f",
+      "target_observed_in_candidate_lattice": true
+    },
+    {
+      "baseline_status": "FAIL",
+      "enumerated_candidate_occurrences_before_classification": 22,
+      "first_failed_target": "эффективная",
+      "first_loss": "ContextSettlement",
+      "id": "ime36-active_composition_context_replacement_keeps_previous_words_out_of_commit",
+      "log_sha256": "a283b117fe6741d29670f80b9845aefa95ff95a5d74bef1f3ac46e42629401a3",
+      "target_observed_in_candidate_lattice": true
+    },
+    {
+      "baseline_status": "FAIL",
+      "enumerated_candidate_occurrences_before_classification": 23,
+      "first_failed_target": "проходил",
+      "first_loss": "LexicalAuthority",
+      "id": "ime36-active_composition_decision_returns_only_live_text_replacement",
+      "log_sha256": "84470c3fc9341904e4e954955ad62f0c98f9aa58197b7711b582c785f4b300ce",
+      "target_observed_in_candidate_lattice": true
+    },
+    {
+      "baseline_status": "PASS",
+      "enumerated_candidate_occurrences_before_classification": 0,
+      "first_failed_target": null,
+      "first_loss": "AlreadySatisfied",
+      "id": "ime36-active_composition_gate_text_preserves_committed_prefix_for_decision_only",
+      "log_sha256": "6a39c7090d2d6a39cd60e7242c49a02f6460a254bb8049a20ef288560e5c878e",
+      "target_observed_in_candidate_lattice": null
+    },
+    {
+      "baseline_status": "PASS",
+      "enumerated_candidate_occurrences_before_classification": 0,
+      "first_failed_target": null,
+      "first_loss": "AlreadySatisfied",
+      "id": "ime36-active_english_layout_does_not_protect_internal_layout_letter_symbol",
+      "log_sha256": "0d7aeccef42162b9957d0d8004427c436854a297468ad747d2405edc18bed46a",
+      "target_observed_in_candidate_lattice": null
+    },
+    {
+      "baseline_status": "PASS",
+      "enumerated_candidate_occurrences_before_classification": 0,
+      "first_failed_target": null,
+      "first_loss": "AlreadySatisfied",
+      "id": "ime36-active_english_layout_preserves_known_ascii_token_from_layout_projection",
+      "log_sha256": "63e5a3b44f1ed4671e438f3886b0fdd475705ca7dffae0b16a76834646e200a0",
+      "target_observed_in_candidate_lattice": null
+    },
+    {
+      "baseline_status": "FAIL",
+      "enumerated_candidate_occurrences_before_classification": 23,
+      "first_failed_target": "проходил",
+      "first_loss": "LexicalAuthority",
+      "id": "ime36-active_layout_guard_does_not_block_non_layout_typo_repair",
+      "log_sha256": "80b38a4e65286b71d69d6372a178925f0f6815dc92fba46e92e72ec3d9b021ee",
+      "target_observed_in_candidate_lattice": true
+    },
+    {
+      "baseline_status": "FAIL",
+      "enumerated_candidate_occurrences_before_classification": 0,
+      "first_failed_target": "pdf",
+      "first_loss": "BirthOrRetention",
+      "id": "ime36-active_russian_layout_allows_unknown_cyrillic_projection_to_known_ascii",
+      "log_sha256": "77adb5fbe26d0c13f0f43b52baad905b5298d5c360de71166785f5458de3485d",
+      "target_observed_in_candidate_lattice": false
+    },
+    {
+      "baseline_status": "FAIL",
+      "enumerated_candidate_occurrences_before_classification": 45,
+      "first_failed_target": "то есть",
+      "first_loss": "NonSemanticLegacyProducerAssertion",
+      "id": "ime36-boundary_split_survives_live_l2_phase_apply",
+      "log_sha256": "7df924f39be00501e543c9d76c4f9e06803ff03417fae96679a7ad580b9302ac",
+      "target_observed_in_candidate_lattice": true
+    },
+    {
+      "baseline_status": "PASS",
+      "enumerated_candidate_occurrences_before_classification": 0,
+      "first_failed_target": null,
+      "first_loss": "AlreadySatisfied",
+      "id": "ime36-committed_tail_autocorrect_can_use_tail_context_for_nanda",
+      "log_sha256": "67095833846c7c5ac7a5f4bf58ffc157beae9fc189bc6f14d8b134e0e1285a94",
+      "target_observed_in_candidate_lattice": null
+    },
+    {
+      "baseline_status": "PASS",
+      "enumerated_candidate_occurrences_before_classification": 0,
+      "first_failed_target": null,
+      "first_loss": "AlreadySatisfied",
+      "id": "ime36-committed_tail_autocorrect_handles_ascii_tail_after_russian_context",
+      "log_sha256": "0d9bd80caa2703720c0f0bc0dc1cd38cdeabd685a5ae144889696fe158ea7515",
+      "target_observed_in_candidate_lattice": null
+    },
+    {
+      "baseline_status": "PASS",
+      "enumerated_candidate_occurrences_before_classification": 0,
+      "first_failed_target": null,
+      "first_loss": "AlreadySatisfied",
+      "id": "ime36-committed_tail_autocorrect_handles_autozamena_layout_word",
+      "log_sha256": "2c35107aebb0ad495ffbc6c0d982dc4b18184de29b6a12d03cae2671f0944b0a",
+      "target_observed_in_candidate_lattice": null
+    },
+    {
+      "baseline_status": "PASS",
+      "enumerated_candidate_occurrences_before_classification": 0,
+      "first_failed_target": null,
+      "first_loss": "AlreadySatisfied",
+      "id": "ime36-committed_tail_autocorrect_handles_plain_en_to_ru_layout_words",
+      "log_sha256": "a6fb8c347d67f213d475f444c1237b62dcc235e1b9252a2e9b7c373f21310612",
+      "target_observed_in_candidate_lattice": null
+    },
+    {
+      "baseline_status": "PASS",
+      "enumerated_candidate_occurrences_before_classification": 0,
+      "first_failed_target": null,
+      "first_loss": "AlreadySatisfied",
+      "id": "ime36-committed_tail_autocorrect_keeps_ascii_layout_punctuation_in_token",
+      "log_sha256": "2c96b72d196b17f2725dc21edf1af1e0dd5d46cbf109f4d9ae52b3f0ec96a0ae",
+      "target_observed_in_candidate_lattice": null
+    },
+    {
+      "baseline_status": "PASS",
+      "enumerated_candidate_occurrences_before_classification": 0,
+      "first_failed_target": null,
+      "first_loss": "AlreadySatisfied",
+      "id": "ime36-committed_tail_autocorrect_repairs_autozamena_mixed_prefix",
+      "log_sha256": "4d434271a9d5847355fa3668a4c82d88c045c660a8da57910555fda5431b1795",
+      "target_observed_in_candidate_lattice": null
+    },
+    {
+      "baseline_status": "FAIL",
+      "enumerated_candidate_occurrences_before_classification": 0,
+      "first_failed_target": "автозамена",
+      "first_loss": "BirthOrRetention",
+      "id": "ime36-committed_tail_autocorrect_repairs_duplicate_latin_prefix_before_russian_word",
+      "log_sha256": "0d2f8ba0a62f28727ca796cb14994ed7d2367f420d286d3cbc8022978e70d260",
+      "target_observed_in_candidate_lattice": false
+    },
+    {
+      "baseline_status": "FAIL",
+      "enumerated_candidate_occurrences_before_classification": 0,
+      "first_failed_target": "автозамена",
+      "first_loss": "BirthOrRetention",
+      "id": "ime36-committed_tail_autocorrect_repairs_layout_word_with_missing_initial_letter",
+      "log_sha256": "b0967a2db1238ac3a82f48777f29e23509d837b7ac7570000777a4baaba8e502",
+      "target_observed_in_candidate_lattice": false
+    },
+    {
+      "baseline_status": "PASS",
+      "enumerated_candidate_occurrences_before_classification": 0,
+      "first_failed_target": null,
+      "first_loss": "AlreadySatisfied",
+      "id": "ime36-committed_tail_boundary_keeps_valid_current_layout_word",
+      "log_sha256": "38165934effceca1bf4ac2e8f74547b96130bab9e960389d84d3359fb1568876",
+      "target_observed_in_candidate_lattice": null
+    },
+    {
+      "baseline_status": "FAIL",
+      "enumerated_candidate_occurrences_before_classification": 45,
+      "first_failed_target": "то есть",
+      "first_loss": "NonSemanticLegacyProducerAssertion",
+      "id": "ime36-committed_tail_boundary_split_is_authorized_for_space_autocorrect",
+      "log_sha256": "a6208945c539612cddff6be2b838ea78c3f6b2b6f4fd8fa3f379f1aba65a3637",
+      "target_observed_in_candidate_lattice": true
+    },
+    {
+      "baseline_status": "FAIL",
+      "enumerated_candidate_occurrences_before_classification": 1,
+      "first_failed_target": "download",
+      "first_loss": "BirthOrRetention",
+      "id": "ime36-committed_tail_boundary_uses_same_dual_layout_decision_as_cli",
+      "log_sha256": "b2f6f2ac0850d3b0e1e413200797fd10e01fa6a06c3e58fe0f5946d356ef63a3",
+      "target_observed_in_candidate_lattice": false
+    },
+    {
+      "baseline_status": "PASS",
+      "enumerated_candidate_occurrences_before_classification": 0,
+      "first_failed_target": null,
+      "first_loss": "AlreadySatisfied",
+      "id": "ime36-committed_tail_boundary_winner_survives_the_structural_adapter",
+      "log_sha256": "f0b8d2dbb4f8a74c23a036224826f46c53ec045a45067483cf5eb3181376d9e5",
+      "target_observed_in_candidate_lattice": null
+    },
+    {
+      "baseline_status": "PASS",
+      "enumerated_candidate_occurrences_before_classification": 0,
+      "first_failed_target": null,
+      "first_loss": "AlreadySatisfied",
+      "id": "ime36-committed_tail_context_recurrence_restores_unique_one_edit_word",
+      "log_sha256": "5c8086526aa572ab70406d239ad5994ba73a70026a0c09bf926f189df0555b22",
+      "target_observed_in_candidate_lattice": null
+    },
+    {
+      "baseline_status": "FAIL",
+      "enumerated_candidate_occurrences_before_classification": 12,
+      "first_failed_target": "читай",
+      "first_loss": "BirthOrRetention",
+      "id": "ime36-committed_tail_repairs_accidental_final_consonant_after_imperative",
+      "log_sha256": "c2c51164fa6d428a06ac74d21c5d5d01211ead9c95e14615248cc94ac3642dc0",
+      "target_observed_in_candidate_lattice": false
+    },
+    {
+      "baseline_status": "FAIL",
+      "enumerated_candidate_occurrences_before_classification": 0,
+      "first_failed_target": "автозамена",
+      "first_loss": "BirthOrRetention",
+      "id": "ime36-committed_tail_space_action_matches_physical_token_without_pending_space",
+      "log_sha256": "f10a166285b9dc483e35f97fc85f49f837207578d0bc1cc2967137df75a857c0",
+      "target_observed_in_candidate_lattice": false
+    },
+    {
+      "baseline_status": "FAIL",
+      "enumerated_candidate_occurrences_before_classification": 32,
+      "first_failed_target": "время",
+      "first_loss": "LexicalAuthority",
+      "id": "ime36-committed_tail_space_route_defaults_to_canonical_l2_owner_for_l11_seeded_restore",
+      "log_sha256": "54f8c56a5488d3654a78b8657bd59a13885691061cfc5e24b57bec46f7b53c09",
+      "target_observed_in_candidate_lattice": true
+    },
+    {
+      "baseline_status": "PASS",
+      "enumerated_candidate_occurrences_before_classification": 0,
+      "first_failed_target": null,
+      "first_loss": "AlreadySatisfied",
+      "id": "ime36-committed_tail_space_route_does_not_extend_known_imperative_to_infinitive",
+      "log_sha256": "424ba202f19f75b1bf31d6263aac155dec628bb07421ddf115a1411a62abeb8d",
+      "target_observed_in_candidate_lattice": null
+    },
+    {
+      "baseline_status": "PASS",
+      "enumerated_candidate_occurrences_before_classification": 0,
+      "first_failed_target": null,
+      "first_loss": "AlreadySatisfied",
+      "id": "ime36-committed_tail_space_route_keeps_short_ambiguous_signal_unapplied",
+      "log_sha256": "2480a6343124f5713a3b0e813ab37900e1b9f3e56a07ab2cf60d78c612e520f1",
+      "target_observed_in_candidate_lattice": null
+    },
+    {
+      "baseline_status": "FAIL",
+      "enumerated_candidate_occurrences_before_classification": 28,
+      "first_failed_target": "перехвачу",
+      "first_loss": "LexicalAuthority",
+      "id": "ime36-committed_tail_space_route_keeps_verified_inverse_length_member_of_l2_tie",
+      "log_sha256": "e166ffb779db2ea790f12fd385cf4588fc6ffcfb90a3049b40081d67f9aa455e",
+      "target_observed_in_candidate_lattice": true
+    },
+    {
+      "baseline_status": "PASS",
+      "enumerated_candidate_occurrences_before_classification": 0,
+      "first_failed_target": null,
+      "first_loss": "AlreadySatisfied",
+      "id": "ime36-committed_tail_space_route_restores_trailing_function_boundaries",
+      "log_sha256": "40e1f70d76102b39d675a35fbfdcb2220c0a93c5212383b570817f2f41e2f7a8",
+      "target_observed_in_candidate_lattice": null
+    },
+    {
+      "baseline_status": "FAIL",
+      "enumerated_candidate_occurrences_before_classification": 73,
+      "first_failed_target": "видишь",
+      "first_loss": "LexicalAuthority",
+      "id": "ime36-committed_tail_space_route_uses_shared_decision_core_for_dirty_tokens",
+      "log_sha256": "e76714a1299588519ffb3fa6f7a50e1af744a71d677fccac5095e8e1859b8114",
+      "target_observed_in_candidate_lattice": true
+    },
+    {
+      "baseline_status": "PASS",
+      "enumerated_candidate_occurrences_before_classification": 0,
+      "first_failed_target": null,
+      "first_loss": "AlreadySatisfied",
+      "id": "ime36-isolated_short_one_edit_word_remains_ambiguous",
+      "log_sha256": "533e5e8710e460c7b66a79ef0b541f4b5e2de627ceec0199c0d2b8ce73e2a6a9",
+      "target_observed_in_candidate_lattice": null
+    },
+    {
+      "baseline_status": "FAIL",
+      "enumerated_candidate_occurrences_before_classification": 0,
+      "first_failed_target": "не",
+      "first_loss": "BirthOrRetention",
+      "id": "ime36-live_l2_space_route_keeps_short_wrong_layout_function_word_authority",
+      "log_sha256": "ea72ea2c4b2a883ffcfda60bd6565671c5c79f6f0c5ecd02534a4b1eb1add0d3",
+      "target_observed_in_candidate_lattice": false
+    },
+    {
+      "baseline_status": "FAIL",
+      "enumerated_candidate_occurrences_before_classification": 45,
+      "first_failed_target": "то есть",
+      "first_loss": "NonSemanticLegacyProducerAssertion",
+      "id": "ime36-repeated_boundary_token_live_route_changes_only_current_token",
+      "log_sha256": "fb0f6672b3a2f80dac361b65365f729afb31999e32efb596c838904563aee527",
+      "target_observed_in_candidate_lattice": true
+    },
+    {
+      "baseline_status": "PASS",
+      "enumerated_candidate_occurrences_before_classification": 0,
+      "first_failed_target": null,
+      "first_loss": "AlreadySatisfied",
+      "id": "ime36-repeated_boundary_token_remains_authorized_at_the_next_space",
+      "log_sha256": "0a3721f860205970ecddab17659d43fdb812cd247e7775250ca11d0cbdd92c0e",
+      "target_observed_in_candidate_lattice": null
+    },
+    {
+      "baseline_status": "FAIL",
+      "enumerated_candidate_occurrences_before_classification": 19,
+      "first_failed_target": "не",
+      "first_loss": "BirthOrRetention",
+      "id": "ime36-sequential_layout_words_keep_the_same_boundary_authority",
+      "log_sha256": "75c049d865235ac410524b4eea0a265af9f9d3787dfd4e23f9509da95301b72e",
+      "target_observed_in_candidate_lattice": false
+    }
+  ],
+  "classifier_sha256": "25cfde473399a869459a7dc49797d341efb0480ebe2cdf973828ad1435abc55d",
+  "counts": {
+    "AlreadySatisfied": 18,
+    "BirthOrRetention": 8,
+    "ContextSettlement": 1,
+    "LexicalAuthority": 6,
+    "NonSemanticLegacyProducerAssertion": 3
+  },
+  "input_sha256": "42fb5adb7f861d76ac6941b423d20240a12c751bb9a888521795dbd73bde178d",
+  "run_summary_sha256": "d4893be63c3d61e6a1b03da040a2a06fa8f871bd4f04fae3bde2a3435be44e3f",
+  "schema": "lay.ime-target-authority-first-loss-manifest.v1",
+  "source_sha256": "477d0b74c0560ca8438b32aa9458215727fcdb2e561d8e23f302f7fc6b61579c",
+  "verdict": "PASS_FROZEN_FIRST_LOSS_DENOMINATOR"
+}

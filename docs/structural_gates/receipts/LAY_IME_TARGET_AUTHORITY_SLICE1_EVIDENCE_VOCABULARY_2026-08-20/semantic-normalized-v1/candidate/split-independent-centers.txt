@@ -1,0 +1,7 @@
+test nanda_wave::l2::tests::boundary_cell_births_two_independent_content_centers ... layout-center token="Еленапросит" raw="Tktyfghjcbn" blocked=false
+english-center token="tktyfghjcbn" candidates=[]
+l2_boundary_light_trace elapsed_us=162 found=false
+glued_multiword_trace total_us=2702 complete_paths=0 merged_rejects=0 confidence_rejects=0 scored=0 guard_us=0 score_us=0
+l2_boundary_phrase_trace elapsed_us=129186 found=false
+ok
+

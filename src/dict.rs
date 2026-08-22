@@ -70,6 +70,9 @@ const SHIFT_PAIRS: &[(char, char)] = &[
     ('~', 'Ё'),
 ];
 
+static US_TO_RU: OnceLock<HashMap<char, char>> = OnceLock::new();
+static RU_TO_US: OnceLock<HashMap<char, char>> = OnceLock::new();
+
 fn build_us_to_ru() -> HashMap<char, char> {
     let mut m = HashMap::with_capacity(PAIRS.len() * 2);
     for &(u, r) in PAIRS {
@@ -109,13 +112,40 @@ fn build_ru_to_us() -> HashMap<char, char> {
 }
 
 fn us_to_ru() -> &'static HashMap<char, char> {
-    static T: OnceLock<HashMap<char, char>> = OnceLock::new();
-    T.get_or_init(build_us_to_ru)
+    US_TO_RU.get_or_init(build_us_to_ru)
 }
 
 fn ru_to_us() -> &'static HashMap<char, char> {
-    static T: OnceLock<HashMap<char, char>> = OnceLock::new();
-    T.get_or_init(build_ru_to_us)
+    RU_TO_US.get_or_init(build_ru_to_us)
+}
+
+pub(crate) fn warm_up_us_to_ru() -> u64 {
+    let _ = us_to_ru().len();
+    us_to_ru_fingerprint()
+}
+
+pub(crate) fn convert_us_to_ru_if_warm(text: &str) -> Option<String> {
+    let table = US_TO_RU.get()?;
+    Some(
+        text.chars()
+            .map(|character| table.get(&character).copied().unwrap_or(character))
+            .collect(),
+    )
+}
+
+pub(crate) fn us_to_ru_fingerprint() -> u64 {
+    let mut digest = 0xcbf2_9ce4_8422_2325_u64;
+    for (source, target) in PAIRS.iter().chain(SHIFT_PAIRS) {
+        for byte in (*source as u32)
+            .to_le_bytes()
+            .into_iter()
+            .chain((*target as u32).to_le_bytes())
+        {
+            digest ^= u64::from(byte);
+            digest = digest.wrapping_mul(0x100_0000_01b3);
+        }
+    }
+    digest
 }
 
 fn is_latin(c: char) -> bool {

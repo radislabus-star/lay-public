@@ -1,0 +1,174 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-ime-unified-token-field-implementation-2026-08-16",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {"id":"productive-live-source","kind":"file","path":"../../../src/nanda_wave/l2_field/productive_v1/live.rs","expect":{"size_bytes":23542,"sha256":"64829d7f64cda13ae63a7691ae4b51bc2e09bb41a72c29374108fb089943bee8","mode":"0664"}},
+    {"id":"productive-runtime-source","kind":"file","path":"../../../src/nanda_wave/l2_field/productive_v1/packaged_runtime.rs","expect":{"size_bytes":175860,"sha256":"0898a0e6307166846a9847c17d07d108cf349720b338dcfeda8e0cef620c8e53","mode":"0664"}},
+    {"id":"l2-bridge-source","kind":"file","path":"../../../src/nanda_wave/l2_field/bridge.rs","expect":{"size_bytes":77431,"sha256":"ee12ed48419b6f664277c6a88c1b2e3f1ca81dce0f68bfd11ee9c0062c3d79da","mode":"0664"}},
+    {"id":"l2-cache-source","kind":"file","path":"../../../src/nanda_wave/l2_field/cache.rs","expect":{"size_bytes":1934,"sha256":"58220f784a83b9d5168d4cb95e0311692ce89abd030409f34bc14b5c285ac97d","mode":"0664"}},
+    {"id":"l2-module-source","kind":"file","path":"../../../src/nanda_wave/l2_field/mod.rs","expect":{"size_bytes":51505,"sha256":"28057e156a5658baa7938d15bbea91da77e56e92d6180275780f7f57a9546c00","mode":"0664"}},
+    {"id":"candidate-gate-source","kind":"file","path":"../../../src/nanda_wave/candidate_gate.rs","expect":{"size_bytes":85302,"sha256":"234a50a15d10cbe854924c3a194ef0592de2852d448479e536838766a834f124","mode":"0664"}},
+    {"id":"train-cli-source","kind":"file","path":"../../../src/bin/lay_nanda_wave_train.rs","expect":{"size_bytes":95544,"sha256":"66fdc46ad769325de5d328c03c16d6c03d1c7fa00ffd060e06ce1fc0ffafcf7a","mode":"0664"}},
+    {"id":"precognition-worker-source","kind":"file","path":"../../../src/bin/lay_ibus_engine/precognition_worker.rs","expect":{"size_bytes":6839,"sha256":"12739971318aba51b3094b0a4dcf57a467ab6abf8880e220c6942c5437ee2fbb","mode":"0664"}},
+    {"id":"space-prefetch-source","kind":"file","path":"../../../src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs","expect":{"size_bytes":8111,"sha256":"76b4c6bc13dbadd20ad11e4df0c49106bd66e03b6a311250b81d878f288c2b18","mode":"0664"}},
+    {"id":"preedit-source","kind":"file","path":"../../../src/bin/lay_ibus_engine/preedit.rs","expect":{"size_bytes":28706,"sha256":"c3b31fad0bb1beb4ffbdc16981052e219f4ebe2ff271ab27d2ff03c26d460444","mode":"0664"}},
+    {"id":"composition-source","kind":"file","path":"../../../src/bin/lay_ibus_engine/composition_commit.rs","expect":{"size_bytes":13276,"sha256":"8e8b524ec89f1f1b770f4515e9a80aedf6d9760000bd8fbcf8737ad7dcbb0483","mode":"0664"}},
+    {"id":"managed-source","kind":"file","path":"../../../src/bin/lay_ibus_engine/managed.rs","expect":{"size_bytes":9866,"sha256":"783b2ebf78ee44fe51316acee1d92dc759c2be57afa6f251e85452c2350ce60b","mode":"0664"}},
+    {"id":"state-source","kind":"file","path":"../../../src/bin/lay_ibus_engine/state.rs","expect":{"size_bytes":40807,"sha256":"65dd211de4b2016c8b6b7f889d93b62d6b59194b0dcc0e3b16a07bd6edc6b0cd","mode":"0664"}},
+    {"id":"trace-source","kind":"file","path":"../../../src/bin/lay_ibus_engine/trace.rs","expect":{"size_bytes":10494,"sha256":"21e3350a0a54c2157731666e42637cdcfbd70d9fb9361ceed88d54c49b2da2f2","mode":"0664"}},
+    {"id":"architecture-plan","kind":"file","path":"../../ime-unified-token-field-implementation-plan-2026-08-16.md","expect":{"size_bytes":25110,"sha256":"ebf834c9c30acf0792cc19eb3caf5552f7d3691b7c0c2180ba768147b983e1f7","mode":"0664"}},
+    {"id":"live-deploy-receipt","kind":"file","path":"../receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_LIVE_DEPLOY_2026-08-16.json","expect":{"size_bytes":4968,"sha256":"2f87f5a8dcabd6c3366eb4942fe82860e7e79f1131ec75726526027d85d877a3","mode":"0664"}},
+    {"id":"installed-productive-v90","kind":"file","path":"/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2m","expect":{"size_bytes":17309944,"sha256":"40fb6a9f0d92c3c7502e47f9c70230d9b86020f622b08a5c799342f13e09ce44","mode":"0644","prefix_hex":"4c41595032563100"}},
+    {"id":"installed-productive-recovery","kind":"file","path":"/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2r","expect":{"size_bytes":2123112,"sha256":"de7972c80448dc792759d70de99cda6ec48c3d6af337763856601db563ab167e","mode":"0644"}},
+    {"id":"structural-verifier","kind":"file","path":"../../../src/text_edit/structural_verifier.rs","expect":{"size_bytes":7730,"sha256":"19201157bc09df5cca617132d67a242474aaa331ca58dc18acb0152818b7b826","mode":"0664"}},
+    {"id":"runtime-control","kind":"file","path":"../../../scripts/lay-runtime-control.sh","expect":{"size_bytes":5032,"sha256":"746d077115277775acb275e077b57823ace9e416d2575eaf0bc53d3327d64e6d","mode":"0775"}}
+  ],
+  "source_checks": [
+    {
+      "id":"no-literal-runtime-case",
+      "path":"../../../src/nanda_wave/l2_field/bridge.rs",
+      "sha256":"ee12ed48419b6f664277c6a88c1b2e3f1ca81dce0f68bfd11ee9c0062c3d79da",
+      "forbidden_effect_patterns":[
+        {"effect":"literal_surface_runtime_branch","regex":"(?i)if.{0,100}(?:данорм|морфология|работают|проверка).{0,100}(?:==|contains|starts_with|ends_with)"},
+        {"effect":"change_productive_package_bytes","regex":"(?i)(?:write|rename|copy).{0,100}(?:\\.p2m|\\.p2r)"}
+      ]
+    },
+    {
+      "id":"field-cache-stays-domain-only-and-bounded",
+      "path":"../../../src/nanda_wave/l2_field/cache.rs",
+      "sha256":"58220f784a83b9d5168d4cb95e0311692ce89abd030409f34bc14b5c285ac97d",
+      "forbidden_effect_patterns":[
+        {"effect":"cache_request_time_authority","regex":"(?i)(AuthorizedEdit|DisplayProjection|PreparedCorrectionLease|L3Context|L4Goal)"},
+        {"effect":"unbounded_single_flight_cache","regex":"(?i)static.{0,100}(?:HashMap|BTreeMap).{0,100}(?:Prepared|Field)"}
+      ]
+    },
+    {
+      "id":"ibus-thread-never-computes-field",
+      "path":"../../../src/bin/lay_ibus_engine/composition_commit.rs",
+      "sha256":"8e8b524ec89f1f1b770f4515e9a80aedf6d9760000bd8fbcf8737ad7dcbb0483",
+      "forbidden_effect_patterns":[
+        {"effect":"blocking_field_on_ibus_thread","regex":"(canonical_text_readout|canonical_ime_candidates|live_productive_v1_readout|prepare_canonical_token_field)\\s*\\("},
+        {"effect":"second_mutation_authority","regex":"(?i)(?:spawn|thread).{0,120}(?:replace_committed_tail|commit_text|delete_surrounding_text)"}
+      ]
+    },
+    {
+      "id":"productive-fingerprint-admission-remains-exact",
+      "path":"../../../src/nanda_wave/l2_field/productive_v1/packaged_runtime.rs",
+      "sha256":"0898a0e6307166846a9847c17d07d108cf349720b338dcfeda8e0cef620c8e53",
+      "forbidden_effect_patterns":[
+        {"effect":"weaken_productive_fingerprint_validation","regex":"(?i)(?:fingerprint|sha256).{0,100}(?:ignore|skip|warn.only|allow.mismatch)"}
+      ]
+    },
+    {
+      "id":"verifier-remains-fail-closed",
+      "path":"../../../src/text_edit/structural_verifier.rs",
+      "sha256":"19201157bc09df5cca617132d67a242474aaa331ca58dc18acb0152818b7b826",
+      "forbidden_effect_patterns":[
+        {"effect":"weaken_verifier_authority","regex":"(?i)(allow|eligible|authorized).{0,100}(without|bypass|skip).{0,100}(proof|plan|verif)"}
+      ]
+    },
+    {
+      "id":"managed-runtime-controller-preserved",
+      "path":"../../../scripts/lay-runtime-control.sh",
+      "sha256":"746d077115277775acb275e077b57823ace9e416d2575eaf0bc53d3327d64e6d",
+      "forbidden_effect_patterns":[
+        {"effect":"restart_global_ibus_daemon","regex":"(?:restart|kill|pkill).{0,40}ibus-daemon"}
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id":"add-route-bound-benchmark","kind":"source_edit"},
+      {"id":"extract-immutable-productive-field","kind":"source_edit"},
+      {"id":"add-bounded-single-flight","kind":"source_edit"},
+      {"id":"unify-gui-input-identity","kind":"source_edit"},
+      {"id":"add-field-and-lease-telemetry","kind":"source_edit"},
+      {"id":"remote-focused-tests","kind":"remote_test"},
+      {"id":"remote-release-build","kind":"remote_release_build"},
+      {"id":"local-managed-runtime-deploy","kind":"service_activation"}
+    ],
+    "forbidden": [
+      "literal_surface_runtime_branch",
+      "cache_request_time_authority",
+      "unbounded_single_flight_cache",
+      "blocking_field_on_ibus_thread",
+      "second_mutation_authority",
+      "change_productive_package_bytes",
+      "weaken_productive_fingerprint_validation",
+      "weaken_verifier_authority",
+      "restart_global_ibus_daemon"
+    ]
+  },
+  "preserved_artifacts": [
+    {"id":"productive-v90-pair","path":"/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2m","policy":"read_only_runtime_input","rollback_policy":"never modify in unified field refactor","baseline_check_id":"installed-productive-v90"},
+    {"id":"productive-v90-recovery","path":"/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2r","policy":"read_only_runtime_input","rollback_policy":"never modify in unified field refactor","baseline_check_id":"installed-productive-recovery"},
+    {"id":"structural-verifier-authority","path":"../../../src/text_edit/structural_verifier.rs","policy":"read_only_authority_boundary","rollback_policy":"never edit to compensate for field defects","baseline_check_id":"structural-verifier"},
+    {"id":"managed-runtime-control","path":"../../../scripts/lay-runtime-control.sh","policy":"reuse unchanged","rollback_policy":"global IBus remains untouched","baseline_check_id":"runtime-control"},
+    {"id":"slice0-live-receipt","path":"../receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_LIVE_DEPLOY_2026-08-16.json","policy":"append new receipts; do not rewrite measured Slice 0 evidence","rollback_policy":"preserve as immutable baseline","baseline_check_id":"live-deploy-receipt"}
+  ],
+  "state_machine": {
+    "initial_state":"SLICE0_READY_LIVE_OWNER_SOURCE_UNCHANGED",
+    "terminal_states":["UNIFIED_FIELD_SOFTWARE_PASS","BLOCKED_BEFORE_DEPLOY_RUNTIME_UNCHANGED","ROLLED_BACK_TO_1_0_33"],
+    "steps":[
+      {"id":"route-bound-baseline","from":"SLICE0_READY_LIVE_OWNER_SOURCE_UNCHANGED","to":"LIVE_OWNER_BASELINE_MEASURED","mutates":true,"failure_state":"BLOCKED_BEFORE_DEPLOY_RUNTIME_UNCHANGED","cleanup":"remove only the new benchmark implementation and retain its failed receipt","preserves":["productive-v90-pair","productive-v90-recovery","structural-verifier-authority","managed-runtime-control","slice0-live-receipt"],"test_id":"benchmark-failure-preserves-runtime"},
+      {"id":"slice1-field-extraction","from":"LIVE_OWNER_BASELINE_MEASURED","to":"IMMUTABLE_FIELD_PARITY_PASS","mutates":true,"failure_state":"BLOCKED_BEFORE_DEPLOY_RUNTIME_UNCHANGED","cleanup":"revert only agent-owned Slice 1 edits; retain parity failure receipt","preserves":["productive-v90-pair","productive-v90-recovery","structural-verifier-authority","managed-runtime-control","slice0-live-receipt"],"test_id":"slice1-failure-preserves-runtime"},
+      {"id":"slice2-single-flight","from":"IMMUTABLE_FIELD_PARITY_PASS","to":"SINGLE_FLIGHT_CONCURRENCY_PASS","mutates":true,"failure_state":"BLOCKED_BEFORE_DEPLOY_RUNTIME_UNCHANGED","cleanup":"revert only agent-owned Slice 2 edits; retain concurrency failure receipt","preserves":["productive-v90-pair","productive-v90-recovery","structural-verifier-authority","managed-runtime-control","slice0-live-receipt"],"test_id":"slice2-failure-preserves-runtime"},
+      {"id":"slice3-shared-identity","from":"SINGLE_FLIGHT_CONCURRENCY_PASS","to":"GUI_IDENTITY_AND_ORDER_PASS","mutates":true,"failure_state":"BLOCKED_BEFORE_DEPLOY_RUNTIME_UNCHANGED","cleanup":"revert only agent-owned Slice 3 edits; retain event-order failure receipt","preserves":["productive-v90-pair","productive-v90-recovery","structural-verifier-authority","managed-runtime-control","slice0-live-receipt"],"test_id":"slice3-failure-preserves-runtime"},
+      {"id":"slice4-observability","from":"GUI_IDENTITY_AND_ORDER_PASS","to":"UNIFIED_FIELD_SOFTWARE_PASS","mutates":true,"failure_state":"BLOCKED_BEFORE_DEPLOY_RUNTIME_UNCHANGED","cleanup":"revert only agent-owned Slice 4 edits; retain trace failure receipt","preserves":["productive-v90-pair","productive-v90-recovery","structural-verifier-authority","managed-runtime-control","slice0-live-receipt"],"test_id":"slice4-failure-preserves-runtime"},
+      {"id":"deploy-managed-runtime","from":"UNIFIED_FIELD_SOFTWARE_PASS","to":"UNIFIED_FIELD_SOFTWARE_PASS","mutates":true,"failure_state":"ROLLED_BACK_TO_1_0_33","cleanup":"restore the complete 1.0.33 binary and extension snapshot, restart only managed Lay components, and verify global IBus continuity","preserves":["productive-v90-pair","productive-v90-recovery","structural-verifier-authority","managed-runtime-control","slice0-live-receipt"],"test_id":"deployment-failure-rolls-back"}
+    ]
+  },
+  "tests": [
+    {"id":"live-owner-benchmark-route-binding","kind":"parity","expected":"the benchmark calls the same Productive V90 field producer as canonical text and IME projections, reports cold separately, and repeats in one process"},
+    {"id":"field-materialization-parity","kind":"parity","expected":"old direct readout and immutable-field materialization have identical candidates, evidence, authority, availability and safety effects on the fixed corpus"},
+    {"id":"single-flight-one-producer","kind":"integration","expected":"two simultaneous typed projections for one CanonicalTokenKey execute Productive V90 exactly once and both receive the same immutable field"},
+    {"id":"single-flight-transient-failure","kind":"fault_injection","expected":"a transient L1/package/readout failure wakes all waiters, is not cached as lexical truth and leaves no stranded Computing entry"},
+    {"id":"package-generation-supersession","kind":"fault_injection","expected":"reload invalidates ready entries and an old in-flight generation cannot publish into the new generation"},
+    {"id":"gui-identity-and-event-order","kind":"integration","expected":"one InputFrameIdentity feeds both typed projections, correction is scheduled before display, and display cancellation cannot invalidate a matching correction lease"},
+    {"id":"space-lease-single-consumer","kind":"integration","expected":"Space takes one exact matching lease before display boundary close; stale or absent leases commit one literal Space and never apply late"},
+    {"id":"trace-cardinality-and-route-proof","kind":"integration","expected":"trace reports one field producer per key plus typed projection and lease outcomes; observed route gate has one mutation and verifier owner"},
+    {"id":"candidate-quality-and-authority-parity","kind":"parity","expected":"fixed correction and IME suites preserve surfaces, verdicts, false applies, unsafe edits and double-Shift rollback contract"},
+    {"id":"remote-source-parity","kind":"parity","expected":"isolated remote source snapshot equals local planned source bytes and all Cargo work uses scripts/cargo-guard.sh"},
+    {"id":"managed-runtime-deployment-continuity","kind":"integration","expected":"new managed binaries start with Productive ready_live_owner, package SHA unchanged, global ibus-daemon PID unchanged and rollback restores 1.0.33"},
+    {"id":"field-projection-identity-parity","kind":"parity","expected":"display and correction consumers receive the exact same field generation and CanonicalTokenKey"},
+    {"id":"gui-frame-identity-parity","kind":"parity","expected":"display work and correction work carry byte-equal structural InputFrameIdentity values captured from one event"},
+    {"id":"remote-install-binary-parity","kind":"parity","expected":"every installed managed binary equals the remote release artifact by SHA-256"},
+    {"id":"benchmark-failure-preserves-runtime","kind":"fault_injection","expected":"a benchmark build or execution failure leaves installed binaries, model packages and managed processes unchanged"},
+    {"id":"slice1-failure-preserves-runtime","kind":"fault_injection","expected":"a field extraction or parity failure changes no installed runtime and preserves the Slice 0 receipt"},
+    {"id":"slice2-failure-preserves-runtime","kind":"fault_injection","expected":"a single-flight concurrency or cleanup failure changes no installed runtime, strands no Computing entry and preserves the Slice 0 receipt"},
+    {"id":"slice3-failure-preserves-runtime","kind":"fault_injection","expected":"an identity or event-order failure changes no installed runtime and leaves no new persistent state"},
+    {"id":"slice4-failure-preserves-runtime","kind":"fault_injection","expected":"an observability or route-proof failure changes no installed runtime and retains its failed receipt"},
+    {"id":"deployment-failure-rolls-back","kind":"fault_injection","expected":"any install, startup or continuity failure restores the full 1.0.33 snapshot while global IBus and Productive package bytes remain unchanged"}
+  ],
+  "invariants": [
+    {"id":"one-expensive-field-owner","statement":"display and correction projections share one immutable Productive V90 computation for the same CanonicalTokenKey","test_id":"single-flight-one-producer"},
+    {"id":"projection-does-not-own-mutation","statement":"the cached field contains L1.1 and L2 evidence only; L3, L4, AuthorizedEdit, display feedback and mutation state remain request-time","test_id":"field-materialization-parity"},
+    {"id":"failures-are-not-lexical-truth","statement":"transient field failures are removed after waking waiters and are never retained as candidate evidence","test_id":"single-flight-transient-failure"},
+    {"id":"generation-isolation","statement":"package reload clears ready entries and supersedes old in-flight publications","test_id":"package-generation-supersession"},
+    {"id":"ibus-thread-is-nonblocking","statement":"printable and Space IBus handlers schedule or consume bounded products and never construct Productive V90 synchronously","test_id":"gui-identity-and-event-order"},
+    {"id":"space-is-one-shot","statement":"a correction lease is exact-identity single-consumer and no late correction follows literal-Space fallback","test_id":"space-lease-single-consumer"},
+    {"id":"verifier-monopoly-preserved","statement":"TransitionDecisionCore and the structural verifier remain the only final ranking and edit authorization path","test_id":"trace-cardinality-and-route-proof"},
+    {"id":"packages-remain-byte-identical","statement":"the unified field refactor changes no L1.1, canonical L2, Productive p2m or recovery p2r bytes","test_id":"managed-runtime-deployment-continuity"}
+  ],
+  "identity_contracts": [
+    {"id":"live-producer-to-benchmark","producer":"canonical Productive V90 field producer","consumer":"same-process route-bound benchmark","comparison":"same typed function and package-generation receipt","test_id":"live-owner-benchmark-route-binding"},
+    {"id":"field-to-two-projections","producer":"Arc immutable PreparedCanonicalTokenField","consumer":"display and correction projections","comparison":"same CanonicalTokenKey, generation and field receipt","test_id":"field-projection-identity-parity"},
+    {"id":"gui-frame-to-products","producer":"one InputFrameIdentity","consumer":"DisplayProjection and PreparedCorrectionLease","comparison":"exact path, focus, tail_epoch, tail, context, token, layout and config projection","test_id":"gui-frame-identity-parity"},
+    {"id":"remote-build-to-local-install","producer":"remote release artifacts","consumer":"installed managed Lay binaries","comparison":"per-file SHA-256","test_id":"remote-install-binary-parity"}
+  ],
+  "runtime_comparisons": [
+    {
+      "id":"before-after-unified-field",
+      "source":"route-bound same-process benchmark plus installed IBus traces",
+      "comparison":"exact_stable_projection",
+      "stable_fields":["productive_package_sha256","l11_package_sha256","canonical_l2_package_sha256","candidate_surfaces","candidate_evidence","l2_authority","verifier_effects","global_ibus_pid"],
+      "expected_to_change_fields":["field_producer_count","field_cache_disposition","display_material_us","correction_material_us","space_lease_outcome","managed_process_pids"],
+      "observed_not_compared_fields":["wall_clock_timestamp","process_start_time","online_learning_generation"],
+      "reason":"prove reuse and scheduling changed without changing model semantics, ranking or mutation authority",
+      "test_id":"candidate-quality-and-authority-parity"
+    }
+  ]
+}

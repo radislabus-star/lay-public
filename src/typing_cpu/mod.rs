@@ -16,6 +16,7 @@ pub use candidate::{
     ImeCandidateSource,
 };
 pub use runtime::{
-    L11ServiceEnsureReport, LiveCompletionCandidate, LiveCompletionRequest,
-    ObservedSystemTransition, PhraseForecastCandidate, TypingCpu, TypingCpuOptions,
+    L11ServiceEnsureReport, LiveCompletionCandidate, LiveCompletionReadout, LiveCompletionRequest,
+    LiveCompletionTiming, ObservedSystemTransition, PhraseForecastCandidate, TypingCpu,
+    TypingCpuOptions,
 };

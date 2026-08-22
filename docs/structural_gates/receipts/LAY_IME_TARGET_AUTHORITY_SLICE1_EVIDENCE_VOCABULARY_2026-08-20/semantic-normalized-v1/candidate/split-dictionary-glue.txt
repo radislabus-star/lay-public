@@ -1,0 +1,6 @@
+test nanda_wave::l2::tests::boundary_cell_splits_dictionary_glue ... layout-center token="онаесть" raw="jyftcnm" blocked=false
+english-center token="jyftcnm" candidates=[]
+l2_boundary_fuzzy_trace elapsed_us=77529 candidates=32
+l2_boundary_light_trace elapsed_us=77714 found=true
+ok
+

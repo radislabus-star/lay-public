@@ -1,0 +1,37 @@
+{
+  "schema": "lay.ime-immediate-space-deterministic-profile.v1",
+  "measured_at": "2026-08-16",
+  "host": "e@192.168.3.94",
+  "profile": "release",
+  "command": "LAY_DETERMINISTIC_CANDIDATE_TIMING=1 scripts/cargo-guard.sh test --release --lib correction_core::tests::live_canonical_l2_field_applies_verified -- --nocapture --test-threads=1",
+  "cases": [
+    {
+      "test": "live_canonical_l2_field_applies_verified_short_left_boundary",
+      "deterministic_candidates": 0,
+      "deterministic_total_us": 131946,
+      "typing_rules_us": 121839,
+      "composite_us": 10091,
+      "slowest_rule": "experimental_layout_ru_to_en",
+      "slowest_rule_us": 99724
+    },
+    {
+      "test": "live_canonical_l2_field_applies_verified_two_content_boundary",
+      "deterministic_candidates": 0,
+      "deterministic_total_us": 43296,
+      "typing_rules_us": 36185,
+      "composite_us": 7102,
+      "slowest_rule": "glued_phrase",
+      "slowest_rule_us": 13005
+    }
+  ],
+  "test_result": {
+    "passed": 2,
+    "failed": 0,
+    "filtered_out": 1511
+  },
+  "claim_boundary": {
+    "proves": "the legacy deterministic lane contributes zero candidates to these two canonical boundary decisions while owning their cold latency",
+    "does_not_prove": "global quality parity, false-authority safety, cold GTK delivery, or deployment readiness",
+    "runtime_authority_changed": false
+  }
+}

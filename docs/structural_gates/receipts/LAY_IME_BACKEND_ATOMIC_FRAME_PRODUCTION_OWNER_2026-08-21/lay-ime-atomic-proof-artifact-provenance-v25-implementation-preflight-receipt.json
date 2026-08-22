@@ -1,0 +1,114 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "full-route-driver",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh",
+      "sha256": "8139ab8b5620551c08bcee2fcee55b3200b0c65b902efa076db0446912991361",
+      "size_bytes": 12197
+    },
+    {
+      "exists": true,
+      "id": "atomic-engine-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic.rs",
+      "sha256": "456762f0185b598605950f4954ec5bb5267f8e1049ed6eb05d33e718fa04f3f2",
+      "size_bytes": 19621
+    },
+    {
+      "exists": true,
+      "id": "installed-lay-engine",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a",
+      "size_bytes": 6423488
+    }
+  ],
+  "blockers": [
+    {
+      "code": "forbidden_effect_in_reused_source",
+      "field": "source_checks[0].forbidden_effect_patterns[0]",
+      "message": "mutable_target_engine matched at line 54"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: historical_receipt_rewrite"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: local_heavy_build"
+    },
+    {
+      "code": "test_contract_incomplete",
+      "field": "tests[8]",
+      "message": "valid kind and non-empty expected result are required"
+    }
+  ],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 3,
+    "forbidden_side_effect_kinds": [
+      "focus_lineage_weakening",
+      "historical_receipt_rewrite",
+      "installed_runtime_mutation",
+      "local_heavy_build",
+      "mutable_target_engine",
+      "profile_digest_wildcard",
+      "proof_without_atomic_method",
+      "proof_without_engine_hash",
+      "request_validation_weakening"
+    ],
+    "identity_contracts": 3,
+    "invariants": 4,
+    "planned_side_effect_kinds": [
+      "ephemeral_process_start",
+      "filesystem_write",
+      "remote_build",
+      "remote_filesystem_write",
+      "source_edit"
+    ],
+    "preserved_artifacts": 2,
+    "runtime_comparisons": 0,
+    "source_checks": 2,
+    "tests": 12
+  },
+  "manifest_sha256": "0415f7391d996163dcef48a8f1bd42293008ad05f774cdb83e2146a093f82de4",
+  "safe_to_implement": false,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [
+        {
+          "effect": "mutable_target_engine",
+          "line": 54
+        }
+      ],
+      "id": "pinned-full-route-driver",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh",
+      "sha256": "8139ab8b5620551c08bcee2fcee55b3200b0c65b902efa076db0446912991361",
+      "size_bytes": 12197
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-atomic-engine-owner",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic.rs",
+      "sha256": "456762f0185b598605950f4954ec5bb5267f8e1049ed6eb05d33e718fa04f3f2",
+      "size_bytes": 19621
+    }
+  ],
+  "task_id": "LAY_IME_ATOMIC_PROOF_ARTIFACT_PROVENANCE_IMPLEMENTATION_V25_2026-08-22",
+  "verdict": "BLOCKED_BEFORE_CODE"
+}

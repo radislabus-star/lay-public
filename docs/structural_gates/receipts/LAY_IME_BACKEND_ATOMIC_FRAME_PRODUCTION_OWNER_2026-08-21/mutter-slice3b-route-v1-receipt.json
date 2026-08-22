@@ -1,0 +1,488 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "VETO",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": false,
+  "contract": "docs/structural_gates/preflights/LAY_IME_BACKEND_ATOMIC_FRAME_MUTTER_SLICE3B_ROUTE_V1_2026-08-21.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "Mutter Slice 3B real text-input-v3 atomic frame owner, legacy separation, replay and protocol proof",
+  "source_root": null,
+  "node_count": 15,
+  "edge_count": 14,
+  "routes": [
+    {
+      "id": "atomic-frame-execution",
+      "event": "atomic_frame_submitted",
+      "kind": "execution",
+      "entry": "clutter_atomic_lease",
+      "via": [],
+      "terminal": "done_submission_receipt",
+      "path_count": 0,
+      "paths": [],
+      "role_owners": {},
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "clutter_atomic_lease",
+          "to": "done_submission_receipt",
+          "via": [],
+          "graph": "execution",
+          "count": 0,
+          "minimum_count": 0,
+          "min": 1,
+          "max": 1,
+          "paths": []
+        }
+      ]
+    },
+    {
+      "id": "atomic-frame-authority",
+      "event": "atomic_frame_submitted",
+      "kind": "authority",
+      "entry": "meta_profile_gate",
+      "via": [],
+      "terminal": "meta_atomic_emitter",
+      "path_count": 1,
+      "paths": [
+        [
+          "meta_profile_gate",
+          "meta_atomic_prevalidation",
+          "meta_atomic_emitter"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "meta_atomic_emitter"
+        ],
+        "evidence_owner": [
+          "meta_atomic_prevalidation"
+        ],
+        "authorization_owner": [
+          "meta_profile_gate"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "meta_profile_gate",
+          "to": "meta_atomic_emitter",
+          "via": [],
+          "graph": "authority",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "meta_profile_gate",
+              "meta_atomic_prevalidation",
+              "meta_atomic_emitter"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "atomic-refusal-execution",
+      "event": "atomic_frame_refused",
+      "kind": "execution",
+      "entry": "clutter_atomic_lease",
+      "via": [],
+      "terminal": "done_submission_receipt",
+      "path_count": 0,
+      "paths": [],
+      "role_owners": {},
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "clutter_atomic_lease",
+          "to": "done_submission_receipt",
+          "via": [],
+          "graph": "execution",
+          "count": 0,
+          "minimum_count": 0,
+          "min": 1,
+          "max": 1,
+          "paths": []
+        }
+      ]
+    },
+    {
+      "id": "atomic-submission-observation",
+      "event": "atomic_frame_submitted",
+      "kind": "observation",
+      "entry": "done_submission_receipt",
+      "via": [],
+      "terminal": "surrounding_postcondition",
+      "path_count": 1,
+      "paths": [
+        [
+          "done_submission_receipt",
+          "surrounding_postcondition"
+        ]
+      ],
+      "role_owners": {
+        "observer": [
+          "done_submission_receipt",
+          "surrounding_postcondition"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "done_submission_receipt",
+          "to": "surrounding_postcondition",
+          "via": [],
+          "graph": "observation",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "done_submission_receipt",
+              "surrounding_postcondition"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "atomic-submission-proof",
+      "event": "atomic_frame_submitted",
+      "kind": "proof",
+      "entry": "surrounding_postcondition",
+      "via": [],
+      "terminal": "slice3b_protocol_proof",
+      "path_count": 1,
+      "paths": [
+        [
+          "surrounding_postcondition",
+          "slice3b_protocol_proof"
+        ]
+      ],
+      "role_owners": {
+        "proof_owner": [
+          "slice3b_protocol_proof"
+        ],
+        "observer": [
+          "surrounding_postcondition"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "surrounding_postcondition",
+          "to": "slice3b_protocol_proof",
+          "via": [],
+          "graph": "proof",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "surrounding_postcondition",
+              "slice3b_protocol_proof"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "native-replay-execution",
+      "event": "native_key_replayed",
+      "kind": "execution",
+      "entry": "marked_replay_copy",
+      "via": [],
+      "terminal": "replay_receipt",
+      "path_count": 0,
+      "paths": [],
+      "role_owners": {},
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "marked_replay_copy",
+          "to": "replay_receipt",
+          "via": [],
+          "graph": "execution",
+          "count": 0,
+          "minimum_count": 0,
+          "min": 1,
+          "max": 1,
+          "paths": []
+        }
+      ]
+    },
+    {
+      "id": "native-replay-authority",
+      "event": "native_key_replayed",
+      "kind": "authority",
+      "entry": "meta_replay_gate",
+      "via": [],
+      "terminal": "wayland_keyboard_dispatch",
+      "path_count": 1,
+      "paths": [
+        [
+          "meta_replay_gate",
+          "wayland_keyboard_dispatch"
+        ]
+      ],
+      "role_owners": {
+        "authorization_owner": [
+          "meta_replay_gate"
+        ],
+        "mutation_owner": [
+          "wayland_keyboard_dispatch"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "meta_replay_gate",
+          "to": "wayland_keyboard_dispatch",
+          "via": [],
+          "graph": "authority",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "meta_replay_gate",
+              "wayland_keyboard_dispatch"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "legacy-im-execution",
+      "event": "legacy_im_mutation",
+      "kind": "execution",
+      "entry": "legacy_im_event",
+      "via": [],
+      "terminal": "legacy_done_receipt",
+      "path_count": 0,
+      "paths": [],
+      "role_owners": {},
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "legacy_im_event",
+          "to": "legacy_done_receipt",
+          "via": [],
+          "graph": "execution",
+          "count": 0,
+          "minimum_count": 0,
+          "min": 1,
+          "max": 1,
+          "paths": []
+        }
+      ]
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {
+    "atomic_frame_submitted": {
+      "evidence_owner": [
+        "meta_atomic_prevalidation"
+      ],
+      "candidate_rank_owner": [],
+      "authorization_owner": [
+        "meta_profile_gate"
+      ],
+      "display_rank_owner": [],
+      "mutation_owner": [
+        "meta_atomic_emitter"
+      ],
+      "render_owner": []
+    },
+    "native_key_replayed": {
+      "evidence_owner": [],
+      "candidate_rank_owner": [],
+      "authorization_owner": [
+        "meta_replay_gate"
+      ],
+      "display_rank_owner": [],
+      "mutation_owner": [
+        "wayland_keyboard_dispatch"
+      ],
+      "render_owner": []
+    }
+  },
+  "source_evidence": {
+    "expected": 0,
+    "verified": 0,
+    "complete": true
+  },
+  "issues": [
+    {
+      "code": "scope_invalid",
+      "message": "scope must be design or observed_source",
+      "actual": "Mutter Slice 3B real text-input-v3 atomic frame owner, legacy separation, replay and protocol proof"
+    },
+    {
+      "code": "authority_stage_reversal",
+      "message": "logical authority flow moves backward; control calls must use calls/delegates",
+      "edge": "atomic-profile-prevalidation",
+      "source": "meta_profile_gate",
+      "target": "meta_atomic_prevalidation",
+      "source_role": "authorization_owner",
+      "target_role": "evidence_owner"
+    },
+    {
+      "code": "authorization_relation_role_mismatch",
+      "message": "authorizes must connect authorization_owner to mutation_owner",
+      "edge": "atomic-profile-prevalidation",
+      "source_role": "authorization_owner",
+      "target_role": "evidence_owner"
+    },
+    {
+      "code": "authorization_relation_role_mismatch",
+      "message": "authorizes must connect authorization_owner to mutation_owner",
+      "edge": "atomic-prevalidation-emitter",
+      "source_role": "evidence_owner",
+      "target_role": "mutation_owner"
+    },
+    {
+      "code": "producer_relation_role_mismatch",
+      "message": "produces_for must originate at a producer",
+      "edge": "atomic-emitter-receipt",
+      "source": "meta_atomic_emitter",
+      "source_role": "mutation_owner"
+    },
+    {
+      "code": "producer_relation_role_mismatch",
+      "message": "produces_for must originate at a producer",
+      "edge": "atomic-refusal-receipt",
+      "source": "meta_profile_gate",
+      "source_role": "authorization_owner"
+    },
+    {
+      "code": "edge_event_unknown",
+      "message": "edge references an event that no route declares",
+      "edge": "replay-copy-gate",
+      "events": [
+        "native_replay_refused"
+      ]
+    },
+    {
+      "code": "producer_relation_role_mismatch",
+      "message": "produces_for must originate at a producer",
+      "edge": "replay-keyboard-receipt",
+      "source": "wayland_keyboard_dispatch",
+      "source_role": "mutation_owner"
+    },
+    {
+      "code": "edge_event_unknown",
+      "message": "edge references an event that no route declares",
+      "edge": "replay-refusal-receipt",
+      "events": [
+        "native_replay_refused"
+      ]
+    },
+    {
+      "code": "edge_event_unknown",
+      "message": "edge references an event that no route declares",
+      "edge": "replay-proof",
+      "events": [
+        "native_replay_refused"
+      ]
+    },
+    {
+      "code": "producer_relation_role_mismatch",
+      "message": "produces_for must originate at a producer",
+      "edge": "legacy-emitter-done",
+      "source": "legacy_wayland_emitter",
+      "source_role": "mutation_owner"
+    },
+    {
+      "code": "route_disconnected",
+      "message": "no path of the declared kind connects entry, ordered via nodes, and terminal",
+      "route": "atomic-frame-execution",
+      "kind": "execution"
+    },
+    {
+      "code": "path_cardinality_violation",
+      "message": "event reaches the endpoint through the wrong number of same-kind paths",
+      "route": "atomic-frame-execution",
+      "event": "atomic_frame_submitted",
+      "graph": "execution",
+      "source": "clutter_atomic_lease",
+      "target": "done_submission_receipt",
+      "count": 0,
+      "minimum": 1,
+      "maximum": 1,
+      "paths": []
+    },
+    {
+      "code": "route_disconnected",
+      "message": "no path of the declared kind connects entry, ordered via nodes, and terminal",
+      "route": "atomic-refusal-execution",
+      "kind": "execution"
+    },
+    {
+      "code": "path_cardinality_violation",
+      "message": "event reaches the endpoint through the wrong number of same-kind paths",
+      "route": "atomic-refusal-execution",
+      "event": "atomic_frame_refused",
+      "graph": "execution",
+      "source": "clutter_atomic_lease",
+      "target": "done_submission_receipt",
+      "count": 0,
+      "minimum": 1,
+      "maximum": 1,
+      "paths": []
+    },
+    {
+      "code": "route_disconnected",
+      "message": "no path of the declared kind connects entry, ordered via nodes, and terminal",
+      "route": "native-replay-execution",
+      "kind": "execution"
+    },
+    {
+      "code": "path_cardinality_violation",
+      "message": "event reaches the endpoint through the wrong number of same-kind paths",
+      "route": "native-replay-execution",
+      "event": "native_key_replayed",
+      "graph": "execution",
+      "source": "marked_replay_copy",
+      "target": "replay_receipt",
+      "count": 0,
+      "minimum": 1,
+      "maximum": 1,
+      "paths": []
+    },
+    {
+      "code": "route_disconnected",
+      "message": "no path of the declared kind connects entry, ordered via nodes, and terminal",
+      "route": "legacy-im-execution",
+      "kind": "execution"
+    },
+    {
+      "code": "path_cardinality_violation",
+      "message": "event reaches the endpoint through the wrong number of same-kind paths",
+      "route": "legacy-im-execution",
+      "event": "legacy_im_mutation",
+      "graph": "execution",
+      "source": "legacy_im_event",
+      "target": "legacy_done_receipt",
+      "count": 0,
+      "minimum": 1,
+      "maximum": 1,
+      "paths": []
+    }
+  ],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": false,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

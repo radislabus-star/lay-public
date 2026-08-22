@@ -1,0 +1,268 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "correction-core-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/correction_core.rs",
+      "sha256": "3e98c1af69b76583544964b7c92e238e10835a425ff2b7023d4434457feab21e",
+      "size_bytes": 39822
+    },
+    {
+      "exists": true,
+      "id": "candidate-sources-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/correction_core/candidate_sources.rs",
+      "sha256": "3986c339723c26c5e6694f3a0787917a8a890aab1e7b8d85d08a9eafb945ef5b",
+      "size_bytes": 53593
+    },
+    {
+      "exists": true,
+      "id": "ime-correction-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/ime_correction.rs",
+      "sha256": "d3fee31b56611fd381f4f28329b5de8d406061b36b2abe3e0616b1615e03bf80",
+      "size_bytes": 30233
+    },
+    {
+      "exists": true,
+      "id": "candidate-lattice-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/typing_transition/candidate.rs",
+      "sha256": "4d053d57328eb79be127ab2649be83c4e3d47b8fb6c9e54e5a942cd096547319",
+      "size_bytes": 2906
+    },
+    {
+      "exists": true,
+      "id": "space-worker-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
+      "sha256": "aadf3825838230627b3f050c9308a8c2f957801ac67e4168011531e7b55aac1a",
+      "size_bytes": 19054
+    },
+    {
+      "exists": true,
+      "id": "structural-verifier-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/text_edit/structural_verifier.rs",
+      "sha256": "19201157bc09df5cca617132d67a242474aaa331ca58dc18acb0152818b7b826",
+      "size_bytes": 7730
+    },
+    {
+      "exists": true,
+      "id": "route-design-contract",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_CANONICAL_FIRST_CORRECTION_ROUTE_2026-08-16.json",
+      "sha256": "4d344f478cf623f42298965da1414be6d2cdddf5a1bc9a727fc2b90609cb50ce",
+      "size_bytes": 8032
+    },
+    {
+      "exists": true,
+      "id": "route-design-pass",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_CANONICAL_FIRST_CORRECTION_ROUTE_DESIGN_V3_COVERAGE_2026-08-16.json",
+      "sha256": "d1dd1d6cdd757b02c7839113a81c6673c0234e333648383c00695085438a7cae",
+      "size_bytes": 12364
+    },
+    {
+      "exists": true,
+      "id": "attempt3-runtime-trace",
+      "kind": "file",
+      "mode": "0600",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice5/immediate-space-full-authority-attempt3.jsonl",
+      "sha256": "4cd6ba4aac94dff60009004a0e0e6e1ce840323aa18eed62b3b0b43be74fe95c",
+      "size_bytes": 498962
+    },
+    {
+      "exists": true,
+      "id": "attempt3-harness",
+      "kind": "file",
+      "mode": "0600",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice5/immediate-space-full-authority-attempt3.harness.json",
+      "sha256": "dbd5282ceb91712552230bdc0366a0817750c975f76ed564fe9e45677c8cde51",
+      "size_bytes": 1209
+    },
+    {
+      "exists": true,
+      "id": "attempt3-analyzer-receipt",
+      "kind": "file",
+      "mode": "0600",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice5/immediate-space-full-authority-attempt3.receipt.json",
+      "sha256": "f2994dc13cc1a04fb230012de060b184f48e201c189d936574e1ed8198a4edab",
+      "size_bytes": 9728
+    },
+    {
+      "exists": true,
+      "id": "release-deterministic-profile",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice5/immediate-space-release-deterministic-profile-attempt3.json",
+      "sha256": "0c6dc959f8c4480a2cecec1f0d89eccd69008ce68c1e5cfca5d89bb735b02c85",
+      "size_bytes": 1386
+    },
+    {
+      "exists": true,
+      "id": "installed-engine",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a",
+      "size_bytes": 6423488
+    },
+    {
+      "exists": true,
+      "id": "installed-productive-v90",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2m",
+      "sha256": "40fb6a9f0d92c3c7502e47f9c70230d9b86020f622b08a5c799342f13e09ce44",
+      "size_bytes": 17309944
+    }
+  ],
+  "blockers": [
+    {
+      "code": "forbidden_effect_in_reused_source",
+      "field": "source_checks[0].forbidden_effect_patterns[0]",
+      "message": "literal_surface_runtime_branch matched at line 836"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: change_model_package_bytes"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: deploy_before_all_gates"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: post_decision_fallback"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: restart_global_ibus_daemon"
+    },
+    {
+      "code": "test_contract_incomplete",
+      "field": "tests[5]",
+      "message": "valid kind and non-empty expected result are required"
+    },
+    {
+      "code": "test_contract_incomplete",
+      "field": "tests[6]",
+      "message": "valid kind and non-empty expected result are required"
+    },
+    {
+      "code": "test_contract_incomplete",
+      "field": "tests[7]",
+      "message": "valid kind and non-empty expected result are required"
+    },
+    {
+      "code": "fault_injection_missing",
+      "field": "state_machine.steps[1].test_id",
+      "message": "mutating failure requires a fault_injection test"
+    },
+    {
+      "code": "identity_parity_missing",
+      "field": "identity_contracts[1].test_id",
+      "message": "identity contract requires a parity test"
+    },
+    {
+      "code": "identity_parity_missing",
+      "field": "identity_contracts[2].test_id",
+      "message": "identity contract requires a parity test"
+    }
+  ],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 14,
+    "forbidden_side_effect_kinds": [
+      "boundary_only_authority_bypass",
+      "change_double_shift_contract",
+      "change_model_package_bytes",
+      "deploy_before_all_gates",
+      "increase_space_wait_budget",
+      "late_edit_after_fallback",
+      "literal_surface_runtime_branch",
+      "nanda_unavailable_skips_fallback",
+      "post_decision_fallback",
+      "restart_global_ibus_daemon",
+      "skip_common_decision_core",
+      "source_id_only_authority",
+      "unbounded_worker_per_printable",
+      "weaken_verifier_authority"
+    ],
+    "identity_contracts": 3,
+    "invariants": 7,
+    "planned_side_effect_kinds": [
+      "proof_artifact",
+      "remote_test",
+      "source_edit",
+      "temporary_service_activation"
+    ],
+    "preserved_artifacts": 4,
+    "runtime_comparisons": 2,
+    "source_checks": 4,
+    "tests": 13
+  },
+  "manifest_sha256": "991e8ed305621e85043a10d4ea635a3509a1088c7bbf396ff9e6589d7c83c799",
+  "safe_to_implement": false,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [
+        {
+          "effect": "literal_surface_runtime_branch",
+          "line": 836
+        }
+      ],
+      "id": "candidate-route-has-no-case-shortcut",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/correction_core/candidate_sources.rs",
+      "sha256": "3986c339723c26c5e6694f3a0787917a8a890aab1e7b8d85d08a9eafb945ef5b",
+      "size_bytes": 53593
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "ime-mode-fails-closed",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/ime_correction.rs",
+      "sha256": "d3fee31b56611fd381f4f28329b5de8d406061b36b2abe3e0616b1615e03bf80",
+      "size_bytes": 30233
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "space-worker-budget-preserved",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
+      "sha256": "aadf3825838230627b3f050c9308a8c2f957801ac67e4168011531e7b55aac1a",
+      "size_bytes": 19054
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "verifier-remains-fail-closed",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/text_edit/structural_verifier.rs",
+      "sha256": "19201157bc09df5cca617132d67a242474aaa331ca58dc18acb0152818b7b826",
+      "size_bytes": 7730
+    }
+  ],
+  "task_id": "lay-ime-canonical-first-correction-v2-2026-08-16",
+  "verdict": "BLOCKED_BEFORE_CODE"
+}

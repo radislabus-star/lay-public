@@ -1,0 +1,452 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-ime-immediate-space-replay-2026-08-16",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "typing-scenario-source",
+      "kind": "file",
+      "path": "../../../src/bin/lay_test_input/scenarios/typing.rs",
+      "expect": {
+        "size_bytes": 3221,
+        "sha256": "d4dac3fbf264207cc11f9a4b4ba781300d28f536e7b0b2384c6c92f65012ad03",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "script-scenario-source",
+      "kind": "file",
+      "path": "../../../src/bin/lay_test_input/scenarios/script.rs",
+      "expect": {
+        "size_bytes": 3600,
+        "sha256": "6e6266fc0e9dd287494c8f852a7f33dd97a894d72b15dc4b5aae12856cb9df00",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "ime-case-registry",
+      "kind": "file",
+      "path": "../../../scripts/runtime_smoke/ime_cases.py",
+      "expect": {
+        "size_bytes": 3377,
+        "sha256": "52c5d584d14d2b2cb18b3049dcefe29b2e1e95648ae0900d8d60d19ee19f7742",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "managed-smoke-lifecycle",
+      "kind": "file",
+      "path": "../../../scripts/runtime_smoke/ime.py",
+      "expect": {
+        "size_bytes": 4922,
+        "sha256": "f5e58d4ec2dab02f9bf58737220a4cc09eea4fc5775c102424f6eb01d7878969",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "builtin-script-index",
+      "kind": "file",
+      "path": "../../../data/test_input/builtin_scripts.tsv",
+      "expect": {
+        "size_bytes": 2758,
+        "sha256": "b6fe398a49327e05daa18cb9de8d3f11d1b304800950929f7d85fa00cf4fcf07",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "space-worker-source",
+      "kind": "file",
+      "path": "../../../src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
+      "expect": {
+        "size_bytes": 13740,
+        "sha256": "18af5baf478e9c8cdb647a77300b8dc2a74335b447aec51da1d2da0a42f73e55",
+        "mode": "0664"
+      }
+    },
+    {
+      "id": "runtime-control",
+      "kind": "file",
+      "path": "../../../scripts/lay-runtime-control.sh",
+      "expect": {
+        "size_bytes": 5032,
+        "sha256": "746d077115277775acb275e077b57823ace9e416d2575eaf0bc53d3327d64e6d",
+        "mode": "0775"
+      }
+    },
+    {
+      "id": "installed-ibus-engine",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "expect": {
+        "size_bytes": 6423488,
+        "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a",
+        "mode": "0755"
+      }
+    },
+    {
+      "id": "slice4-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice4-observability-and-duplicate-removal.json",
+      "expect": {
+        "size_bytes": 5638,
+        "sha256": "ea685158f90ea426f3d981cacc722b09596ed32944b2df9e23524fc83c17cd66",
+        "mode": "0664"
+      }
+    }
+  ],
+  "source_checks": [
+    {
+      "id": "managed-smoke-never-restarts-global-ibus",
+      "path": "../../../scripts/runtime_smoke/ime.py",
+      "sha256": "f5e58d4ec2dab02f9bf58737220a4cc09eea4fc5775c102424f6eb01d7878969",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "restart_global_ibus_daemon",
+          "regex": "(?:restart|kill|pkill).{0,40}ibus-daemon"
+        },
+        {
+          "effect": "installed_binary_write_before_promotion",
+          "regex": "(?:copy|install|write_bytes).{0,120}lay-ibus-engine"
+        },
+        {
+          "effect": "model_package_write",
+          "regex": "(?:write|open).{0,120}(?:\\.p2m|\\.p2r|nanda_wave/l2)"
+        }
+      ]
+    },
+    {
+      "id": "space-worker-deadline-and-authority-preserved",
+      "path": "../../../src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
+      "sha256": "18af5baf478e9c8cdb647a77300b8dc2a74335b447aec51da1d2da0a42f73e55",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "blocking_space_wait_expansion",
+          "regex": "SPACE_PREFETCH_WAIT_BUDGET[^;]{0,100}from_millis\\((?:[2-9][0-9]|[1-9][0-9]{2,})\\)"
+        },
+        {
+          "effect": "delayed_worker_mutation_authority",
+          "regex": "(?:replace_committed_tail|commit_text|AuthorizedEdit)\\("
+        },
+        {
+          "effect": "literal_surface_runtime_branch",
+          "regex": "(?:token|surface|replacement)\\s*==\\s*\"[^\"]+\""
+        },
+        {
+          "effect": "runtime_authority_change",
+          "regex": "(?:allow_apply|authorize_backend_edit|replace_committed_tail)\\("
+        },
+        {
+          "effect": "runtime_candidate_or_ranking_change",
+          "regex": "(?:candidate|decision).{0,80}(?:sort_by|rank|weight|score)"
+        },
+        {
+          "effect": "test_fixture_as_runtime_authority",
+          "regex": "(?:data/test_input|fixture|case_id)"
+        }
+      ]
+    },
+    {
+      "id": "existing-script-runner-does-not-hide-proof-input",
+      "path": "../../../src/bin/lay_test_input/scenarios/script.rs",
+      "sha256": "6e6266fc0e9dd287494c8f852a7f33dd97a894d72b15dc4b5aae12856cb9df00",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "hide_warmup_events_in_eligible_denominator",
+          "regex": "(?:skip|drop|exclude).{0,80}warmup"
+        },
+        {
+          "effect": "ignore_invalid_trace_rows",
+          "regex": "(?:ignore|continue).{0,80}(?:invalid|malformed|json)"
+        },
+        {
+          "effect": "unbounded_trace_ingestion",
+          "regex": "(?:read_to_string|read_text).{0,80}(?:trace|jsonl)"
+        }
+      ]
+    },
+    {
+      "id": "runtime-controller-never-restarts-global-ibus",
+      "path": "../../../scripts/lay-runtime-control.sh",
+      "sha256": "746d077115277775acb275e077b57823ace9e416d2575eaf0bc53d3327d64e6d",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "restart_global_ibus_daemon",
+          "regex": "(?:restart|kill|pkill).{0,40}ibus-daemon"
+        }
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {
+        "id": "add-immediate-boundary-proof-operation",
+        "kind": "test_source_edit"
+      },
+      {
+        "id": "add-fixed-replay-denominator",
+        "kind": "test_fixture_edit"
+      },
+      {
+        "id": "add-fail-closed-trace-analyzer",
+        "kind": "proof_source_edit"
+      },
+      {
+        "id": "remote-focused-build-and-tests",
+        "kind": "remote_test"
+      },
+      {
+        "id": "temporary-managed-runtime-proof",
+        "kind": "service_activation"
+      },
+      {
+        "id": "write-append-only-proof-receipt",
+        "kind": "filesystem_write"
+      }
+    ],
+    "forbidden": [
+      "runtime_candidate_or_ranking_change",
+      "runtime_authority_change",
+      "blocking_space_wait_expansion",
+      "delayed_worker_mutation_authority",
+      "literal_surface_runtime_branch",
+      "test_fixture_as_runtime_authority",
+      "installed_binary_write_before_promotion",
+      "model_package_write",
+      "restart_global_ibus_daemon",
+      "unbounded_trace_ingestion",
+      "ignore_invalid_trace_rows",
+      "hide_warmup_events_in_eligible_denominator"
+    ]
+  },
+  "state_machine": {
+    "initial_state": "SLICE4_SCOPED_PASS_RUNTIME_1_0_33",
+    "terminal_states": [
+      "IMMEDIATE_SPACE_REPLAY_PASS_RUNTIME_RESTORED",
+      "REPLAY_GATE_FAILED_RUNTIME_RESTORED",
+      "BLOCKED_BEFORE_RUNTIME_RUNTIME_UNCHANGED"
+    ],
+    "steps": [
+      {
+        "id": "implement-proof-route",
+        "from": "SLICE4_SCOPED_PASS_RUNTIME_1_0_33",
+        "to": "PROOF_ROUTE_IMPLEMENTED",
+        "mutates": true,
+        "failure_state": "BLOCKED_BEFORE_RUNTIME_RUNTIME_UNCHANGED",
+        "cleanup": "retain the failed receipt and revert only agent-owned proof-route edits",
+        "preserves": [
+          "installed-engine-1-0-33",
+          "space-worker-runtime",
+          "runtime-control-contract",
+          "slice4-evidence"
+        ],
+        "test_id": "proof-route-failure-preserves-runtime"
+      },
+      {
+        "id": "remote-build-and-static-proof",
+        "from": "PROOF_ROUTE_IMPLEMENTED",
+        "to": "STAGED_BINARIES_PROVEN",
+        "mutates": true,
+        "failure_state": "BLOCKED_BEFORE_RUNTIME_RUNTIME_UNCHANGED",
+        "cleanup": "remove only staged build artifacts; retain source and failed logs",
+        "preserves": [
+          "installed-engine-1-0-33",
+          "space-worker-runtime",
+          "runtime-control-contract",
+          "slice4-evidence"
+        ],
+        "test_id": "remote-proof-failure-preserves-runtime"
+      },
+      {
+        "id": "temporary-managed-replay",
+        "from": "STAGED_BINARIES_PROVEN",
+        "to": "IMMEDIATE_SPACE_REPLAY_PASS_RUNTIME_RESTORED",
+        "mutates": true,
+        "failure_state": "REPLAY_GATE_FAILED_RUNTIME_RESTORED",
+        "cleanup": "terminate only the staged managed engine, reactivate the original IBus engine, restart the prior lay-daemon state, and verify global ibus-daemon PID and installed binary hash",
+        "preserves": [
+          "installed-engine-1-0-33",
+          "space-worker-runtime",
+          "runtime-control-contract",
+          "slice4-evidence"
+        ],
+        "test_id": "managed-replay-failure-restoration"
+      }
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "installed-engine-1-0-33",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "policy": "read_only_installed_runtime",
+      "rollback_policy": "never overwrite during replay; verify SHA-256 after restoration",
+      "baseline_check_id": "installed-ibus-engine"
+    },
+    {
+      "id": "space-worker-runtime",
+      "path": "../../../src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
+      "policy": "read_only_runtime_owner",
+      "rollback_policy": "proof harness must not change worker scheduling, deadline or authority",
+      "baseline_check_id": "space-worker-source"
+    },
+    {
+      "id": "runtime-control-contract",
+      "path": "../../../scripts/lay-runtime-control.sh",
+      "policy": "reuse_unchanged",
+      "rollback_policy": "global IBus remains untouched and only managed Lay components may change PID",
+      "baseline_check_id": "runtime-control"
+    },
+    {
+      "id": "slice4-evidence",
+      "path": "../receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice4-observability-and-duplicate-removal.json",
+      "policy": "immutable_baseline_receipt",
+      "rollback_policy": "append new replay evidence without rewriting Slice 4",
+      "baseline_check_id": "slice4-receipt"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "runtime-trace-to-analyzer",
+      "producer": "lay-ibus-engine typed JSONL trace",
+      "consumer": "immediate-Space trace analyzer",
+      "comparison": "kind plus exact engine_path and tail_epoch frame identity with closed projection and lease vocabularies",
+      "test_id": "trace-schema-and-frame-parity"
+    },
+    {
+      "id": "fixed-fixture-to-runtime-output",
+      "producer": "versioned immediate-Space replay fixture",
+      "consumer": "GTK capture and replay receipt",
+      "comparison": "exact captured UTF-8 output and exact eligible Space-event count",
+      "test_id": "fixed-denominator-output-parity"
+    },
+    {
+      "id": "remote-binary-to-staged-binary",
+      "producer": "remote guarded release build",
+      "consumer": "local temporary managed replay binary",
+      "comparison": "SHA-256 byte identity",
+      "test_id": "remote-staging-byte-parity"
+    }
+  ],
+  "runtime_comparisons": [
+    {
+      "id": "managed-replay-before-after",
+      "source": "process snapshot plus fixed JSONL replay receipt",
+      "comparison": "exact_stable_projection",
+      "stable_fields": [
+        "global_ibus_pid",
+        "installed_ibus_engine_sha256",
+        "installed_version",
+        "model_package_sha256",
+        "fixed_expected_text"
+      ],
+      "expected_to_change_fields": [
+        "managed_ibus_engine_pid",
+        "lay_daemon_pid",
+        "temporary_engine_path",
+        "trace_timing_values"
+      ],
+      "observed_not_compared_fields": [
+        "wall_clock_timestamp",
+        "scheduler_jitter",
+        "online_learning_generation"
+      ],
+      "reason": "the proof temporarily owns only the managed engine while preserving installed bytes, global IBus and semantic expectations",
+      "test_id": "managed-replay-restoration"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "immediate-boundary-is-real",
+      "statement": "the replay keeps the declared inter-key delay but emits Space without a trailing post-letter sleep",
+      "test_id": "immediate-boundary-operation"
+    },
+    {
+      "id": "eligible-denominator-is-explicit",
+      "statement": "warmup and eligible events are counted separately and exactly one engine path owns the fixed eligible denominator",
+      "test_id": "fixed-denominator-output-parity"
+    },
+    {
+      "id": "one-projection-per-role",
+      "statement": "every eligible Space frame has exactly one display and one correction projection with summed field_producer_count at most one",
+      "test_id": "trace-cardinality-gate"
+    },
+    {
+      "id": "eligible-not-ready-is-zero",
+      "statement": "no eligible immediate-Space frame ends with a not_ready lease outcome",
+      "test_id": "eligible-not-ready-gate"
+    },
+    {
+      "id": "literal-fallback-never-mutates-late",
+      "statement": "a literal-Space fallback invalidates its generation and no worker has delayed edit authority",
+      "test_id": "late-edit-after-fallback-gate"
+    },
+    {
+      "id": "proof-run-restores-input-runtime",
+      "statement": "the temporary replay never restarts global ibus-daemon and always restores the installed 1.0.33 managed route",
+      "test_id": "managed-replay-restoration"
+    }
+  ],
+  "tests": [
+    {
+      "id": "immediate-boundary-operation",
+      "kind": "unit",
+      "expected": "test input emits all token key taps with only inter-key sleeps and emits Space immediately after the final release"
+    },
+    {
+      "id": "trace-schema-and-frame-parity",
+      "kind": "parity",
+      "expected": "valid typed trace rows are grouped only by exact engine_path and tail_epoch; malformed, missing or duplicate fields fail closed"
+    },
+    {
+      "id": "fixed-denominator-output-parity",
+      "kind": "parity",
+      "expected": "warmup and eligible cases produce their exact expected text and the selected path contains exactly the declared eligible Space events"
+    },
+    {
+      "id": "trace-cardinality-gate",
+      "kind": "integration",
+      "expected": "every eligible lease frame has display=1, correction=1 and summed field_producer_count<=1"
+    },
+    {
+      "id": "eligible-not-ready-gate",
+      "kind": "integration",
+      "expected": "eligible not_ready count is zero and lease outcome counts are reported without merging warmup"
+    },
+    {
+      "id": "late-edit-after-fallback-gate",
+      "kind": "fault_injection",
+      "expected": "the invalidation test and observed trace contain zero delayed committed-tail edits after literal fallback"
+    },
+    {
+      "id": "trace-latency-summary",
+      "kind": "integration",
+      "expected": "Space and printable p50, p90, p99 and maximum are emitted in microseconds with denominator counts"
+    },
+    {
+      "id": "remote-staging-byte-parity",
+      "kind": "parity",
+      "expected": "remote guarded release binaries and local staged binaries have identical SHA-256"
+    },
+    {
+      "id": "managed-replay-restoration",
+      "kind": "integration",
+      "expected": "success, test failure, analyzer failure and timeout all restore the original engine selection and daemon state while global IBus PID and installed SHA remain unchanged"
+    },
+    {
+      "id": "managed-replay-failure-restoration",
+      "kind": "fault_injection",
+      "expected": "an injected smoke failure still restores the original engine selection and daemon state while global IBus PID and installed SHA remain unchanged"
+    },
+    {
+      "id": "proof-route-failure-preserves-runtime",
+      "kind": "fault_injection",
+      "expected": "proof implementation or analyzer tests fail before runtime and leave installed processes and bytes unchanged"
+    },
+    {
+      "id": "remote-proof-failure-preserves-runtime",
+      "kind": "fault_injection",
+      "expected": "remote build or test failure writes no installed files and starts no local runtime"
+    }
+  ]
+}

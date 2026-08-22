@@ -1,0 +1,2 @@
+test double_shift_exact_auto_undo_is_a_protected_first_priority_contract ... ok
+

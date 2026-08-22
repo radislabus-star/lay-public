@@ -1,0 +1,11 @@
+test nanda_wave::l2::tests::ime_boundary_authority_is_bound_to_the_selected_split_target ... 
+thread 'nanda_wave::l2::tests::ime_boundary_authority_is_bound_to_the_selected_split_target' (PID) panicked at src/nanda_wave/l2/tests.rs:507:9:
+missing target-specific boundary evidence: "данорм" -> "да норм"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+FAILED
+
+failures:
+
+failures:
+    nanda_wave::l2::tests::ime_boundary_authority_is_bound_to_the_selected_split_target
+

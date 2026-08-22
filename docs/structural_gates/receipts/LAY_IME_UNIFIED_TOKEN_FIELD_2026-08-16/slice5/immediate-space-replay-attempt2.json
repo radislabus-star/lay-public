@@ -1,0 +1,312 @@
+{
+  "denominators": {
+    "eligible_space_events": 20,
+    "observed_managed_space_timings": 24,
+    "observed_printable_timings_session": 202,
+    "observed_space_leases": 24,
+    "warmup_space_events": 4
+  },
+  "gates": {
+    "eligible_not_ready_zero": false,
+    "field_generation_parity": true,
+    "field_producer_budget": true,
+    "no_delayed_edit_after_literal_fallback": true,
+    "printable_latency": true,
+    "projection_cardinality": false,
+    "space_latency": true
+  },
+  "issues": [
+    "projection cardinality failed for 16 eligible frames",
+    "eligible not_ready outcomes: 20"
+  ],
+  "latency": {
+    "printable_session": {
+      "count": 202,
+      "max_us": 244,
+      "p50_us": 105,
+      "p90_us": 160,
+      "p99_us": 194
+    },
+    "space_eligible": {
+      "count": 20,
+      "max_us": 8245,
+      "p50_us": 8182,
+      "p90_us": 8226,
+      "p99_us": 8245
+    }
+  },
+  "lease_outcomes": {
+    "eligible": {
+      "not_ready": 20
+    },
+    "warmup": {
+      "not_ready": 3,
+      "ready": 1
+    }
+  },
+  "literal_fallback": {
+    "late_edit_rows": [],
+    "not_ready_frames_observed": 23,
+    "physical_fault_path_exercised": true
+  },
+  "manifest": {
+    "eligible_case": "ime_immediate_space_replay",
+    "path": "/home/ubu/projects/lay-l1-exact-peak-search/data/test_input/ime_immediate_space_replay_manifest.json",
+    "sha256": "c27f3bef70369745b74b09964576d843ca363aac7f59625af70870661c775529",
+    "warmup_case": "ime_immediate_space_warmup"
+  },
+  "projection_receipt": {
+    "failed_frames": 16,
+    "frames": [
+      {
+        "engine_path": "/io/github/radislabus_star/LayIme/engine/lay_ime_ru/9",
+        "field_generations": [
+          0
+        ],
+        "field_producer_count": 0,
+        "projection_counts": {
+          "display": 1
+        },
+        "tail_epoch": 66
+      },
+      {
+        "engine_path": "/io/github/radislabus_star/LayIme/engine/lay_ime_ru/9",
+        "field_generations": [
+          0
+        ],
+        "field_producer_count": 0,
+        "projection_counts": {
+          "display": 1
+        },
+        "tail_epoch": 73
+      },
+      {
+        "engine_path": "/io/github/radislabus_star/LayIme/engine/lay_ime_ru/9",
+        "field_generations": [
+          0
+        ],
+        "field_producer_count": 0,
+        "projection_counts": {
+          "display": 1
+        },
+        "tail_epoch": 80
+      },
+      {
+        "engine_path": "/io/github/radislabus_star/LayIme/engine/lay_ime_ru/9",
+        "field_generations": [
+          0
+        ],
+        "field_producer_count": 0,
+        "projection_counts": {
+          "display": 1
+        },
+        "tail_epoch": 87
+      },
+      {
+        "engine_path": "/io/github/radislabus_star/LayIme/engine/lay_ime_ru/9",
+        "field_generations": [
+          0
+        ],
+        "field_producer_count": 0,
+        "projection_counts": {
+          "display": 1
+        },
+        "tail_epoch": 94
+      },
+      {
+        "engine_path": "/io/github/radislabus_star/LayIme/engine/lay_ime_ru/9",
+        "field_generations": [
+          0
+        ],
+        "field_producer_count": 0,
+        "projection_counts": {
+          "correction": 1,
+          "display": 1
+        },
+        "tail_epoch": 101
+      },
+      {
+        "engine_path": "/io/github/radislabus_star/LayIme/engine/lay_ime_ru/9",
+        "field_generations": [
+          0
+        ],
+        "field_producer_count": 0,
+        "projection_counts": {
+          "display": 1
+        },
+        "tail_epoch": 108
+      },
+      {
+        "engine_path": "/io/github/radislabus_star/LayIme/engine/lay_ime_ru/9",
+        "field_generations": [
+          0
+        ],
+        "field_producer_count": 0,
+        "projection_counts": {
+          "display": 1
+        },
+        "tail_epoch": 115
+      },
+      {
+        "engine_path": "/io/github/radislabus_star/LayIme/engine/lay_ime_ru/9",
+        "field_generations": [
+          0
+        ],
+        "field_producer_count": 0,
+        "projection_counts": {
+          "correction": 1,
+          "display": 1
+        },
+        "tail_epoch": 122
+      },
+      {
+        "engine_path": "/io/github/radislabus_star/LayIme/engine/lay_ime_ru/9",
+        "field_generations": [
+          0
+        ],
+        "field_producer_count": 0,
+        "projection_counts": {
+          "correction": 1,
+          "display": 1
+        },
+        "tail_epoch": 129
+      },
+      {
+        "engine_path": "/io/github/radislabus_star/LayIme/engine/lay_ime_ru/9",
+        "field_generations": [
+          0
+        ],
+        "field_producer_count": 0,
+        "projection_counts": {
+          "display": 1
+        },
+        "tail_epoch": 141
+      },
+      {
+        "engine_path": "/io/github/radislabus_star/LayIme/engine/lay_ime_ru/9",
+        "field_generations": [
+          0
+        ],
+        "field_producer_count": 0,
+        "projection_counts": {
+          "display": 1
+        },
+        "tail_epoch": 153
+      },
+      {
+        "engine_path": "/io/github/radislabus_star/LayIme/engine/lay_ime_ru/9",
+        "field_generations": [
+          0
+        ],
+        "field_producer_count": 0,
+        "projection_counts": {
+          "display": 1
+        },
+        "tail_epoch": 165
+      },
+      {
+        "engine_path": "/io/github/radislabus_star/LayIme/engine/lay_ime_ru/9",
+        "field_generations": [
+          0
+        ],
+        "field_producer_count": 0,
+        "projection_counts": {
+          "display": 1
+        },
+        "tail_epoch": 177
+      },
+      {
+        "engine_path": "/io/github/radislabus_star/LayIme/engine/lay_ime_ru/9",
+        "field_generations": [
+          0
+        ],
+        "field_producer_count": 0,
+        "projection_counts": {
+          "display": 1
+        },
+        "tail_epoch": 189
+      },
+      {
+        "engine_path": "/io/github/radislabus_star/LayIme/engine/lay_ime_ru/9",
+        "field_generations": [
+          0
+        ],
+        "field_producer_count": 0,
+        "projection_counts": {
+          "correction": 1,
+          "display": 1
+        },
+        "tail_epoch": 201
+      },
+      {
+        "engine_path": "/io/github/radislabus_star/LayIme/engine/lay_ime_ru/9",
+        "field_generations": [
+          0
+        ],
+        "field_producer_count": 0,
+        "projection_counts": {
+          "display": 1
+        },
+        "tail_epoch": 213
+      },
+      {
+        "engine_path": "/io/github/radislabus_star/LayIme/engine/lay_ime_ru/9",
+        "field_generations": [
+          0
+        ],
+        "field_producer_count": 0,
+        "projection_counts": {
+          "display": 1
+        },
+        "tail_epoch": 225
+      },
+      {
+        "engine_path": "/io/github/radislabus_star/LayIme/engine/lay_ime_ru/9",
+        "field_generations": [
+          0
+        ],
+        "field_producer_count": 0,
+        "projection_counts": {
+          "display": 1
+        },
+        "tail_epoch": 237
+      },
+      {
+        "engine_path": "/io/github/radislabus_star/LayIme/engine/lay_ime_ru/9",
+        "field_generations": [
+          0
+        ],
+        "field_producer_count": 0,
+        "projection_counts": {
+          "display": 1
+        },
+        "tail_epoch": 249
+      }
+    ],
+    "generation_mismatch_frames": 0,
+    "producer_budget_failed_frames": 0
+  },
+  "runtime_authority_changed": false,
+  "schema": "lay.ime-immediate-space-replay-receipt.v1",
+  "scope": {
+    "not_tested": [
+      "aggregate restoration quality",
+      "WeChat Telegram and browser input",
+      "installed runtime authority"
+    ],
+    "tested": [
+      "fixed managed GUI replay trace",
+      "eligible Space lease delivery",
+      "per-frame projection cardinality",
+      "single-flight producer count",
+      "Space and printable latency"
+    ]
+  },
+  "trace": {
+    "bytes": 450918,
+    "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice5/immediate-space-runtime-attempt2.jsonl",
+    "sha256": "00e05f60a683a75ad0e3143ba824b7ca72b16641d2e15c072a4b363141022197",
+    "typed_rows": 2408
+  },
+  "verdict": "FAIL"
+}

@@ -1,0 +1,41 @@
+{
+  "schema": "lay.ime-target-authority-contour-work-budget.v1",
+  "status": "FROZEN_BEFORE_SLICE5_BEHAVIOR_CODE",
+  "created_at": "2026-08-20T15:25:00Z",
+  "scope": "context-neutral shadow birth over exact canonical form identity",
+  "limits": {
+    "maximum_input_scalars": 32,
+    "maximum_base_contours": 3,
+    "maximum_exact_canonical_lookups": 16384,
+    "maximum_operator_steps": 16384,
+    "maximum_retained_targets": 74,
+    "compound_edit_radius": 4
+  },
+  "operator_partitions": [
+    "exact_layout_projection",
+    "identity_single_edit",
+    "layout_single_edit",
+    "identity_local_deletion_substitution",
+    "layout_local_deletion_substitution"
+  ],
+  "settlement": {
+    "enumeration_order": "operator partition then exact geometry then normalized UTF-8 bytes then canonical form ref",
+    "deduplication": "normalized UTF-8 target identity with semantic witness-root union",
+    "early_form_ref_top_k": false,
+    "lookup_limit_result": "Overflow WorkBudgetExceeded",
+    "storage_limit_result": "Overflow StorageCapacity",
+    "overflow_authority": "forbidden",
+    "canonical_vocabulary_membership": "Born only; never Grounded without independent evidence"
+  },
+  "proof_requirements": {
+    "frozen_birth_or_retention_cases": 8,
+    "required_birth_and_retention": "8/8",
+    "fixed_productive_denominator": "13x100",
+    "false_singletons": 0,
+    "lost_grounded_targets": 0,
+    "clean_preservation_regression": 0,
+    "latency_claim": "measured and reported separately; no promotion while above 5 ms"
+  },
+  "runtime_authority_changed": false,
+  "deployment_authorized": false
+}

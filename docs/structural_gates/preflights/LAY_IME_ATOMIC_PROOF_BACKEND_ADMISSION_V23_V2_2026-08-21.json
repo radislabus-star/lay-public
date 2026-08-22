@@ -1,0 +1,407 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_ATOMIC_PROOF_BACKEND_ADMISSION_V23_V2_2026-08-21",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "proof-config-before-v23-admission",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/trace-enabled-config.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 31,
+        "sha256": "c87e1630a4eb7c4cd4065c0b48cae182e4e286bbc32a932bf468cb50b0a7f014"
+      }
+    },
+    {
+      "id": "full-route-proof-driver",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 10143,
+        "sha256": "f86b82106f1e55100a253a20eeb5cfd861b0127827670ad6d534d81732eee83f"
+      }
+    },
+    {
+      "id": "composition-gate-owner",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/engine.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 13826,
+        "sha256": "34d6a194a47066bfffe8b5710ee64f4a8bc6328a718453c9ecdecb3dfc41cc0b"
+      }
+    },
+    {
+      "id": "production-config-defaults",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/config/defaults.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 2393,
+        "sha256": "69e863a84e44dcfb8e622388e8204834839464859b530bf0402fdcb222cdc07f"
+      }
+    },
+    {
+      "id": "installed-mutter",
+      "kind": "file",
+      "path": "/usr/lib/x86_64-linux-gnu/libmutter-18.so.0.0.0",
+      "expect": {
+        "mode": "0644",
+        "size_bytes": 2755048,
+        "sha256": "fec9023139ac8eff93fcc1af90413613cdb526e7f02389dc9d8fe90f7abc81e5"
+      }
+    },
+    {
+      "id": "installed-shell",
+      "kind": "file",
+      "path": "/usr/lib/gnome-shell/libshell-18.so",
+      "expect": {
+        "mode": "0644",
+        "size_bytes": 3107408,
+        "sha256": "94e81e3ff3820b3f8454d596c3a9ee7fa437b770b899098db85f15640a7abb73"
+      }
+    },
+    {
+      "id": "installed-ibus",
+      "kind": "file",
+      "path": "/usr/lib/x86_64-linux-gnu/libibus-1.0.so.5.0.534",
+      "expect": {
+        "mode": "0644",
+        "size_bytes": 542936,
+        "sha256": "e1977b9d3d84ee94b63f6c04056134c10aa51d4e0621f7abee1115da12259ec1"
+      }
+    },
+    {
+      "id": "installed-lay-engine",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 6423488,
+        "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a"
+      }
+    }
+  ],
+  "source_checks": [
+    {
+      "id": "pinned-full-route-driver",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh",
+      "sha256": "f86b82106f1e55100a253a20eeb5cfd861b0127827670ad6d534d81732eee83f",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "local_build",
+          "regex": "(?:cargo|meson|ninja|make)\\s"
+        },
+        {
+          "effect": "runtime_deployment",
+          "regex": "(?:systemctl|dpkg|apt-get)\\s"
+        },
+        {
+          "effect": "installed_file_write",
+          "regex": "(?:/usr/lib|/home/ubu/[.]local/lib/lay)"
+        },
+        {
+          "effect": "live_session_restart",
+          "regex": "(?:kill|signal|restart).{0,80}(?:gnome-shell|ibus)"
+        },
+        {
+          "effect": "live_keyboard_signal",
+          "regex": "(?:ydotool|xdotool|wtype|/dev/(?:input|uinput))"
+        },
+        {
+          "effect": "historical_receipt_rewrite",
+          "regex": "rewriteHistoricalReceipt|truncateHistoricalEvidence"
+        },
+        {
+          "effect": "orphaned_test_process",
+          "regex": "(?:setsid|spawnDetachedProof|daemonizeProofProcess)"
+        },
+        {
+          "effect": "runtime_source_edit",
+          "regex": "(?:sed|perl|apply_patch).{0,120}(?:src/|/usr/lib|[.]local/lib/lay)"
+        }
+      ]
+    },
+    {
+      "id": "pinned-composition-gate",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/engine.rs",
+      "sha256": "34d6a194a47066bfffe8b5710ee64f4a8bc6328a718453c9ecdecb3dfc41cc0b",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "composition_gate_bypass",
+          "regex": "proofBypassCompositionGate|alwaysEnableLiveComposition"
+        },
+        {
+          "effect": "second_mutation_owner",
+          "regex": "secondNativeMutationOwner|legacySameEventFallback"
+        },
+        {
+          "effect": "legacy_same_event_fallback",
+          "regex": "legacySameEventFallback|fallbackToLegacyForSameEvent"
+        },
+        {
+          "effect": "snapshot_equality_bypass",
+          "regex": "skipSnapshotEquality|trustLeaseSnapshotWithoutReplay"
+        }
+      ]
+    },
+    {
+      "id": "pinned-production-defaults",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/config/defaults.rs",
+      "sha256": "69e863a84e44dcfb8e622388e8204834839464859b530bf0402fdcb222cdc07f",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "production_default_change",
+          "regex": "proofOverrideProductionDefault|proofOnlyImeDefault"
+        }
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {
+        "id": "edit-proof-only-config",
+        "kind": "test_configuration_edit"
+      },
+      {
+        "id": "sync-proof-only-config",
+        "kind": "remote_filesystem_write"
+      },
+      {
+        "id": "run-isolated-full-route",
+        "kind": "ephemeral_process_start"
+      },
+      {
+        "id": "write-v23-proof-evidence",
+        "kind": "filesystem_write"
+      }
+    ],
+    "forbidden": [
+      "runtime_source_edit",
+      "production_default_change",
+      "composition_gate_bypass",
+      "snapshot_equality_bypass",
+      "second_mutation_owner",
+      "legacy_same_event_fallback",
+      "local_build",
+      "runtime_deployment",
+      "installed_file_write",
+      "live_session_restart",
+      "live_keyboard_signal",
+      "orphaned_test_process",
+      "historical_receipt_rewrite"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "composition-gate-bytes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/engine.rs",
+      "baseline_check_id": "composition-gate-owner",
+      "policy": "immutable",
+      "cursor_policy": "none",
+      "rollback_policy": "preserve_exact_bytes"
+    },
+    {
+      "id": "production-default-bytes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/config/defaults.rs",
+      "baseline_check_id": "production-config-defaults",
+      "policy": "immutable",
+      "cursor_policy": "none",
+      "rollback_policy": "preserve_exact_bytes"
+    },
+    {
+      "id": "installed-mutter-preserved",
+      "path": "/usr/lib/x86_64-linux-gnu/libmutter-18.so.0.0.0",
+      "baseline_check_id": "installed-mutter",
+      "policy": "immutable_during_proof",
+      "cursor_policy": "none",
+      "rollback_policy": "preserve_exact_bytes"
+    },
+    {
+      "id": "installed-shell-preserved",
+      "path": "/usr/lib/gnome-shell/libshell-18.so",
+      "baseline_check_id": "installed-shell",
+      "policy": "immutable_during_proof",
+      "cursor_policy": "none",
+      "rollback_policy": "preserve_exact_bytes"
+    },
+    {
+      "id": "installed-ibus-preserved",
+      "path": "/usr/lib/x86_64-linux-gnu/libibus-1.0.so.5.0.534",
+      "baseline_check_id": "installed-ibus",
+      "policy": "immutable_during_proof",
+      "cursor_policy": "none",
+      "rollback_policy": "preserve_exact_bytes"
+    },
+    {
+      "id": "installed-lay-preserved",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "baseline_check_id": "installed-lay-engine",
+      "policy": "immutable_during_proof",
+      "cursor_policy": "none",
+      "rollback_policy": "preserve_exact_bytes"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "proof-backend-projection",
+      "producer": "scripts/proof/trace-enabled-config.json text_backend field",
+      "consumer": "LayConfig::load active_text_backend used by LayIbusEngine::live_composition_enabled",
+      "comparison": "exact normalized backend identity equals ime",
+      "test_id": "proof-config-projection"
+    },
+    {
+      "id": "remote-proof-config-parity",
+      "producer": "local approved proof config bytes",
+      "consumer": "/proof-runtime/config/trace-enabled.json inside the isolated route",
+      "comparison": "exact SHA-256 equality before execution",
+      "test_id": "remote-config-parity"
+    }
+  ],
+  "runtime_comparisons": [],
+  "invariants": [
+    {
+      "id": "proof-only-scope",
+      "statement": "only the isolated proof configuration changes; runtime source, defaults and installed bytes remain unchanged",
+      "test_id": "scope-byte-parity"
+    },
+    {
+      "id": "composition-admission-not-bypass",
+      "statement": "the proof enables the existing IME backend predicate instead of weakening or bypassing live_composition_enabled",
+      "test_id": "composition-gate-parity"
+    },
+    {
+      "id": "full-route-cardinality",
+      "statement": "514 admitted events produce exactly 514 expected commits with zero duplicate and legacy mutations",
+      "test_id": "integrated-cardinality"
+    },
+    {
+      "id": "bounded-latency",
+      "statement": "512 hot samples have p99 at most 5 ms and maximum below 8 ms",
+      "test_id": "integrated-latency"
+    },
+    {
+      "id": "proof-cleanup",
+      "statement": "the isolated proof leaves zero task-owned processes after cleanup",
+      "test_id": "proof-leftover-gate"
+    }
+  ],
+  "state_machine": {
+    "initial_state": "PAPER_APPROVED",
+    "steps": [
+      {
+        "id": "edit-proof-config",
+        "from": "PAPER_APPROVED",
+        "to": "PROOF_CONFIG_EDITED",
+        "mutates": true,
+        "failure_state": "PROOF_CONFIG_EDIT_FAILED",
+        "cleanup": "restore the 31-byte pinned proof configuration",
+        "preserves": [
+          "composition-gate-bytes",
+          "production-default-bytes",
+          "installed-mutter-preserved",
+          "installed-shell-preserved",
+          "installed-ibus-preserved",
+          "installed-lay-preserved"
+        ],
+        "test_id": "proof-config-edit-fault"
+      },
+      {
+        "id": "sync-proof-config",
+        "from": "PROOF_CONFIG_EDITED",
+        "to": "REMOTE_CONFIG_SYNCED",
+        "mutates": true,
+        "failure_state": "REMOTE_CONFIG_SYNC_FAILED",
+        "cleanup": "reject a partial or hash-mismatched remote config before route execution",
+        "preserves": [
+          "composition-gate-bytes",
+          "production-default-bytes",
+          "installed-mutter-preserved",
+          "installed-shell-preserved",
+          "installed-ibus-preserved",
+          "installed-lay-preserved"
+        ],
+        "test_id": "remote-config-sync-fault"
+      },
+      {
+        "id": "run-full-route-proof",
+        "from": "REMOTE_CONFIG_SYNCED",
+        "to": "V23_FULL_ROUTE_PROVEN",
+        "mutates": true,
+        "failure_state": "FULL_ROUTE_FAILED",
+        "cleanup": "terminate proof-owned processes, remove the proof socket and retain failed evidence",
+        "preserves": [
+          "composition-gate-bytes",
+          "production-default-bytes",
+          "installed-mutter-preserved",
+          "installed-shell-preserved",
+          "installed-ibus-preserved",
+          "installed-lay-preserved"
+        ],
+        "test_id": "full-route-fault"
+      }
+    ],
+    "terminal_states": [
+      "V23_FULL_ROUTE_PROVEN",
+      "PROOF_CONFIG_EDIT_FAILED",
+      "REMOTE_CONFIG_SYNC_FAILED",
+      "FULL_ROUTE_FAILED"
+    ]
+  },
+  "tests": [
+    {
+      "id": "proof-config-edit-fault",
+      "kind": "fault_injection",
+      "expected": "failed local edit restores the pinned proof config and changes no runtime source or installed artifact"
+    },
+    {
+      "id": "remote-config-sync-fault",
+      "kind": "fault_injection",
+      "expected": "partial or mismatched remote config is refused before route execution"
+    },
+    {
+      "id": "full-route-fault",
+      "kind": "fault_injection",
+      "expected": "failed integrated denominator retains logs, cleans the socket and leaves zero task-owned processes"
+    },
+    {
+      "id": "proof-config-projection",
+      "kind": "parity",
+      "expected": "deserialized proof config resolves to TextBackendPreference::Ime"
+    },
+    {
+      "id": "remote-config-parity",
+      "kind": "parity",
+      "expected": "local and remote proof config SHA-256 values match before execution"
+    },
+    {
+      "id": "scope-byte-parity",
+      "kind": "parity",
+      "expected": "engine.rs, defaults.rs and four installed artifacts retain their pinned hashes"
+    },
+    {
+      "id": "composition-gate-parity",
+      "kind": "unit",
+      "expected": "managed IME enables composition while managed uinput still refuses it"
+    },
+    {
+      "id": "integrated-cardinality",
+      "kind": "integration",
+      "expected": "514 admitted events, 514 expected commits, zero duplicate mutations and zero legacy calls"
+    },
+    {
+      "id": "integrated-latency",
+      "kind": "integration",
+      "expected": "hot p99 at most 5 ms and maximum below 8 ms"
+    },
+    {
+      "id": "proof-leftover-gate",
+      "kind": "integration",
+      "expected": "task-owned leftovers after cleanup equals zero"
+    }
+  ]
+}

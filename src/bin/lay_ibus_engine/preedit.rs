@@ -1,6 +1,6 @@
+use super::output::EngineOutput;
 use std::time::Instant;
 use zbus::fdo;
-use zbus::object_server::SignalEmitter;
 
 use lay::typing_cpu::{
     is_command_like_long_tail, preedit_suffix_context_and_word, select_ime_candidate_proposals,
@@ -13,7 +13,8 @@ use lay::typing_cpu::push_unique_suffix;
 #[cfg(test)]
 use lay::typing_cpu::{is_allowed_visible_completion_suffix, phrase_candidate_suffix};
 
-use super::engine::LayIbusEngine;
+use super::engine::{InputFrameIdentity, LayIbusEngine};
+use super::precognition_worker::PrecognitionWork;
 use super::text::{make_ibus_text, make_preedit_ibus_text};
 use super::trace;
 
@@ -26,6 +27,17 @@ const PREEDIT_PROBE_SYMBOL: &str = "*";
 const PREEDIT_MODE_CLEAR: u32 = 0;
 
 include!("preedit_readout.rs");
+
+#[derive(Clone, Debug, PartialEq)]
+pub(crate) struct PrecognitionInput {
+    tail: String,
+    context_prefix: String,
+    partial: String,
+    max_suffix_chars: usize,
+    active_composition: bool,
+    correction_safety: lay::config::CorrectionSafety,
+    declined_target_surfaces: Vec<String>,
+}
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 struct ObservedPrediction {
@@ -84,7 +96,7 @@ fn observed_prediction_outcome(
     }
 }
 
-#[derive(Debug, Default)]
+#[derive(Clone, Debug, Default)]
 pub(crate) struct PreeditFastState {
     token: String,
     target_surface: Option<String>,
@@ -159,34 +171,17 @@ impl PreeditFastState {
             .map(|prediction| prediction.target_surface.as_str())
     }
 
-    fn proposal_repeats_declined_target(
-        &self,
-        partial: &str,
-        proposal: &ImeCandidateProposal,
-    ) -> bool {
-        self.declined_target_surfaces.iter().any(|target| {
-            proposal
-                .replacement
-                .as_deref()
-                .is_some_and(|replacement| replacement == target)
-                || proposal.replacement.is_none()
-                    && target
-                        .strip_prefix(partial)
-                        .is_some_and(|suffix| suffix == proposal.suffix)
-        })
-    }
-
     fn clear_target(&mut self) {
         self.target_surface = None;
     }
 
     fn ascii_layout_symbol_continues_token(&self, ch: char) -> bool {
-        !self.token.is_empty()
-            && lay::typing_cpu::is_ascii_layout_letter_symbol(ch)
-            && self.token.chars().all(|current| {
-                current.is_ascii_alphabetic()
-                    || lay::typing_cpu::is_ascii_layout_letter_symbol(current)
-            })
+        lay::typing_cpu::is_ascii_layout_letter_symbol(ch)
+            && (self.token.is_empty()
+                || self.token.chars().all(|current| {
+                    current.is_ascii_alphabetic()
+                        || lay::typing_cpu::is_ascii_layout_letter_symbol(current)
+                }))
     }
 
     fn is_ascii_live_candidate_token(&self) -> bool {
@@ -212,30 +207,38 @@ impl PreeditFastState {
 impl LayIbusEngine {
     pub(super) async fn refresh_precognition_after_visible_input(
         &mut self,
-        emitter: &SignalEmitter<'_>,
+        emitter: &mut EngineOutput<'_, '_>,
+        frame: Option<InputFrameIdentity>,
     ) -> fdo::Result<()> {
         if self.preedit_waits_for_cursor_ack() {
             self.preedit_dirty = true;
+            self.pending_display_frame = frame;
             return Ok(());
         }
         self.preedit_dirty = false;
-        self.update_precognition_preedit(emitter).await
+        self.pending_display_frame = None;
+        self.clear_preedit(emitter).await?;
+        self.schedule_background_precognition(emitter, frame);
+        Ok(())
     }
 
     pub(super) async fn flush_dirty_preedit(
         &mut self,
-        emitter: &SignalEmitter<'_>,
+        emitter: &mut EngineOutput<'_, '_>,
     ) -> fdo::Result<()> {
         if !self.preedit_dirty {
             return Ok(());
         }
         self.preedit_dirty = false;
-        self.update_precognition_preedit(emitter).await
+        let frame = self.pending_display_frame.take();
+        self.clear_preedit(emitter).await?;
+        self.schedule_background_precognition(emitter, frame);
+        Ok(())
     }
 
     pub(super) async fn update_precognition_preedit(
         &mut self,
-        emitter: &SignalEmitter<'_>,
+        emitter: &mut EngineOutput<'_, '_>,
     ) -> fdo::Result<()> {
         if !self.precognition_preedit_enabled() {
             return self.clear_preedit(emitter).await;
@@ -254,7 +257,10 @@ impl LayIbusEngine {
             .await
     }
 
-    pub(crate) async fn clear_preedit(&mut self, emitter: &SignalEmitter<'_>) -> fdo::Result<()> {
+    pub(crate) async fn clear_preedit(
+        &mut self,
+        emitter: &mut EngineOutput<'_, '_>,
+    ) -> fdo::Result<()> {
         if !self.preedit_clear_needed() {
             return Ok(());
         }
@@ -264,24 +270,32 @@ impl LayIbusEngine {
         self.preedit_replacement_targets.clear();
         self.preedit_candidate_index = 0;
         self.preedit_fast.clear_target();
-        Self::update_preedit_text(
-            emitter,
-            make_ibus_text(String::new()),
-            0,
-            false,
-            PREEDIT_MODE_CLEAR,
-        )
-        .await
-        .map_err(|e| fdo::Error::Failed(e.to_string()))?;
-        Self::hide_preedit_text(emitter)
+        emitter
+            .update_preedit_text(make_ibus_text(String::new()), 0, false, PREEDIT_MODE_CLEAR)
+            .await
+            .map_err(|e| fdo::Error::Failed(e.to_string()))?;
+        emitter
+            .hide_preedit_text()
             .await
             .map_err(|e| fdo::Error::Failed(e.to_string()))?;
         Ok(())
     }
 
     pub(super) fn close_precognition_word_boundary(&mut self) {
+        self.cancel_precognition_display_generation();
         self.clear_preedit_completion_state();
         self.preedit_fast.reset();
+    }
+
+    pub(super) fn cancel_precognition_display_generation(&mut self) {
+        super::precognition_worker::cancel();
+        self.preedit_dirty = false;
+        self.pending_display_frame = None;
+    }
+
+    pub(super) fn invalidate_input_frame_background_work(&mut self) {
+        self.cancel_precognition_display_generation();
+        self.invalidate_space_autocorrect_path();
     }
 
     fn preedit_clear_needed(&self) -> bool {
@@ -292,7 +306,7 @@ impl LayIbusEngine {
 
     pub(super) async fn update_composition_preedit(
         &mut self,
-        emitter: &SignalEmitter<'_>,
+        emitter: &mut EngineOutput<'_, '_>,
     ) -> fdo::Result<()> {
         if self.buffer.is_empty() {
             return self.clear_preedit(emitter).await;
@@ -303,24 +317,44 @@ impl LayIbusEngine {
             .await
     }
 
+    pub(super) async fn update_composition_preedit_after_visible_input(
+        &mut self,
+        emitter: &mut EngineOutput<'_, '_>,
+        frame: Option<InputFrameIdentity>,
+    ) -> fdo::Result<()> {
+        if !self.precognition_preedit_enabled() {
+            return self.clear_preedit(emitter).await;
+        }
+        if self.buffer.is_empty() {
+            return self.clear_preedit(emitter).await;
+        }
+
+        self.clear_visible_precognition_candidates();
+        let cursor_pos = self.composition_cursor.min(self.buffer.chars().count()) as u32;
+        self.publish_preedit_payload(emitter, self.buffer.clone(), cursor_pos)
+            .await?;
+        self.schedule_background_precognition(emitter, frame);
+        Ok(())
+    }
+
     async fn publish_preedit_payload(
         &self,
-        emitter: &SignalEmitter<'_>,
+        emitter: &mut EngineOutput<'_, '_>,
         text: String,
         cursor_pos: u32,
     ) -> fdo::Result<()> {
         // UpdatePreeditText owns the visible frame. Install the new payload
         // before ShowPreeditText so a client cannot expose an empty or stale
         // frame while a previous completion is being replaced.
-        Self::update_preedit_text(
-            emitter,
-            make_preedit_ibus_text(text.clone()),
-            cursor_pos,
-            true,
-            PREEDIT_MODE_CLEAR,
-        )
-        .await
-        .map_err(|e| fdo::Error::Failed(e.to_string()))?;
+        emitter
+            .update_preedit_text(
+                make_preedit_ibus_text(text.clone()),
+                cursor_pos,
+                true,
+                PREEDIT_MODE_CLEAR,
+            )
+            .await
+            .map_err(|e| fdo::Error::Failed(e.to_string()))?;
         trace::record_preedit(
             "update",
             true,
@@ -328,7 +362,8 @@ impl LayIbusEngine {
             cursor_pos,
             Some(&text),
         );
-        Self::show_preedit_text(emitter)
+        emitter
+            .show_preedit_text()
             .await
             .map_err(|e| fdo::Error::Failed(e.to_string()))?;
         trace::record_preedit("show", true, text.chars().count(), cursor_pos, Some(&text));
@@ -389,8 +424,12 @@ impl LayIbusEngine {
     }
 
     pub(super) fn refresh_precognition_candidates(&mut self) {
-        let partial = self.live_candidate_partial();
         let proposals = self.precognition_candidates();
+        self.install_precognition_candidates(proposals);
+    }
+
+    fn install_precognition_candidates(&mut self, proposals: Vec<ImeCandidateProposal>) {
+        let partial = self.live_candidate_partial();
         self.preedit_replacement_targets = proposals
             .iter()
             .map(|proposal| proposal.replacement.clone())
@@ -409,6 +448,151 @@ impl LayIbusEngine {
             &self.preedit_replacement_targets,
         );
         self.remember_selected_target(&partial);
+    }
+
+    fn clear_visible_precognition_candidates(&mut self) {
+        self.preedit_suffix.clear();
+        self.preedit_candidates.clear();
+        self.preedit_replacement_targets.clear();
+        self.preedit_candidate_index = 0;
+        self.preedit_fast.clear_target();
+    }
+
+    fn schedule_background_precognition(
+        &self,
+        emitter: &mut EngineOutput<'_, '_>,
+        identity: Option<InputFrameIdentity>,
+    ) {
+        let Some(identity) = identity else {
+            super::precognition_worker::cancel();
+            return;
+        };
+        if !self.input_frame_identity_matches(&identity) {
+            super::precognition_worker::cancel();
+            return;
+        }
+        let Some(input) = self.precognition_input() else {
+            super::precognition_worker::cancel();
+            return;
+        };
+        let Some(connection) = emitter.connection() else {
+            super::precognition_worker::cancel();
+            return;
+        };
+        super::precognition_worker::schedule(PrecognitionWork {
+            identity,
+            input,
+            connection: connection.clone(),
+        });
+    }
+
+    pub(crate) fn precognition_identity_matches(&self, expected: &InputFrameIdentity) -> bool {
+        self.input_frame_identity_matches(expected)
+    }
+
+    pub(super) fn capture_input_frame_identity(&self) -> Option<InputFrameIdentity> {
+        let committed_tail = self.tail_buffer.clone();
+        let trimmed_tail = committed_tail.trim_end();
+        if trimmed_tail.is_empty() {
+            return None;
+        }
+        let fallback_token = self.last_tail_token_text();
+        let (context_prefix, observed_token) =
+            self.live_word_readout_input(trimmed_tail).or_else(|| {
+                (!fallback_token.is_empty()).then(|| {
+                    let context = trimmed_tail
+                        .strip_suffix(fallback_token.as_str())
+                        .unwrap_or_default();
+                    (context, fallback_token.as_str())
+                })
+            })?;
+        let context_prefix = context_prefix.to_string();
+        let observed_token = observed_token.to_string();
+        Some(InputFrameIdentity::new_authoritative(
+            self.path.clone(),
+            self.focus_receipt.clone(),
+            self.tail_epoch,
+            committed_tail,
+            context_prefix,
+            observed_token,
+            self.live_completion_input_is_active(),
+            self.layout_is_ru,
+            self.factory_engine_profile,
+            self.output_capability_fingerprint(),
+            &self.config,
+        ))
+    }
+
+    pub(super) fn input_frame_authority_matches(&self, expected: &InputFrameIdentity) -> bool {
+        self.path == expected.path
+            && self.focus_receipt == expected.focus_receipt
+            && self.tail_epoch == expected.tail_epoch
+            && self.tail_buffer == expected.committed_tail
+            && self.layout_is_ru == expected.active_layout_is_ru
+            && self.factory_engine_profile == expected.factory_engine_profile
+            && self.output_capability_fingerprint() == expected.output_capability_fingerprint
+            && expected.config_matches(&self.config)
+            && self
+                .shared
+                .lock()
+                .is_ok_and(|state| state.active_path.as_deref() == Some(self.path.as_str()))
+    }
+
+    fn output_capability_fingerprint(&self) -> u64 {
+        let mut fingerprint = 0xcbf2_9ce4_8422_2325_u64;
+        for byte in self
+            .cursor_cell_width
+            .to_le_bytes()
+            .into_iter()
+            .chain([u8::from(self.surrounding_text_supported)])
+            .chain([u8::from(self.managed_input)])
+            .chain([u8::from(self.atomic_route_active)])
+        {
+            fingerprint ^= u64::from(byte);
+            fingerprint = fingerprint.wrapping_mul(0x100_0000_01b3);
+        }
+        fingerprint
+    }
+
+    pub(super) fn input_frame_identity_matches(&self, expected: &InputFrameIdentity) -> bool {
+        self.input_frame_authority_matches(expected)
+            && self
+                .capture_input_frame_identity()
+                .as_ref()
+                .is_some_and(|current| current == expected)
+    }
+
+    pub(crate) async fn apply_background_precognition(
+        &mut self,
+        emitter: &mut EngineOutput<'_, '_>,
+        proposals: Vec<ImeCandidateProposal>,
+    ) -> fdo::Result<()> {
+        self.install_precognition_candidates(proposals);
+        if self.buffer.is_empty() {
+            let Some(candidate) = self
+                .preedit_candidates
+                .get(self.preedit_candidate_index)
+                .cloned()
+            else {
+                return self.clear_preedit(emitter).await;
+            };
+            self.preedit_suffix = candidate;
+            let (preedit_text, cursor_pos) = self.inactive_preedit_payload();
+            return self
+                .publish_preedit_payload(emitter, preedit_text, cursor_pos)
+                .await;
+        }
+
+        if self.preedit_candidates.is_empty() {
+            self.preedit_suffix.clear();
+            let cursor_pos = self.composition_cursor.min(self.buffer.chars().count()) as u32;
+            return self
+                .publish_preedit_payload(emitter, self.buffer.clone(), cursor_pos)
+                .await;
+        }
+        let (text, cursor_pos) = self.composition_preedit_payload();
+        self.publish_preedit_payload(emitter, text, cursor_pos)
+            .await
     }
 
     pub(super) fn cycle_precognition_candidate(&mut self, step: isize) -> bool {
@@ -452,12 +636,11 @@ impl LayIbusEngine {
             .unwrap_or_default()
     }
 
-    fn precognition_candidates(&self) -> Vec<ImeCandidateProposal> {
-        if !self.precognition_preedit_enabled() {
-            return Vec::new();
-        }
-        if self.buffer.is_empty() && self.tail_buffer.ends_with(char::is_whitespace) {
-            return Vec::new();
+    fn precognition_input(&self) -> Option<PrecognitionInput> {
+        if !self.precognition_preedit_enabled()
+            || self.buffer.is_empty() && self.tail_buffer.ends_with(char::is_whitespace)
+        {
+            return None;
         }
         if self.buffer.is_empty()
             && self
@@ -468,56 +651,35 @@ impl LayIbusEngine {
                 .is_some_and(is_hard_precognition_boundary)
             && !self.preedit_fast.is_ascii_live_candidate_token()
         {
-            return Vec::new();
+            return None;
         }
-        let timing_enabled = trace::enabled();
-        let total_started = timing_enabled.then(Instant::now);
-        let tail = self.tail_buffer.as_str();
-        if is_command_like_long_tail(tail.trim_end()) {
-            return Vec::new();
+        let tail = self.tail_buffer.clone();
+        let (context_prefix, partial) = {
+            let trimmed = tail.trim_end();
+            if is_command_like_long_tail(trimmed) {
+                return None;
+            }
+            let (context_prefix, partial) = self.live_word_readout_input(trimmed)?;
+            (context_prefix.to_string(), partial.to_lowercase())
+        };
+        if partial.is_empty() {
+            return None;
         }
-        let semantic_started = timing_enabled.then(Instant::now);
-        let semantic_candidates = self.semantic_phrase_candidates();
-        let semantic_us = elapsed_us(semantic_started);
+        Some(PrecognitionInput {
+            tail,
+            context_prefix,
+            partial,
+            max_suffix_chars: self.precognition_max_suffix_chars(),
+            active_composition: self.live_completion_input_is_active(),
+            correction_safety: self.config.active_correction_safety(),
+            declined_target_surfaces: self.preedit_fast.declined_target_surfaces.clone(),
+        })
+    }
 
-        let word_started = timing_enabled.then(Instant::now);
-        lay::typing_cpu::TypingCpu::clear_last_live_completion_timing();
-        let word_candidates = self.word_candidate_proposals();
-        let word_us = elapsed_us(word_started);
-        let word_timing = lay::typing_cpu::TypingCpu::last_live_completion_timing();
-
-        let mut proposals = Vec::with_capacity(semantic_candidates.len() + word_candidates.len());
-        proposals.extend(semantic_candidates);
-        proposals.extend(word_candidates);
-        let partial = self.live_candidate_partial();
-        proposals.retain(|proposal| {
-            !self
-                .preedit_fast
-                .proposal_repeats_declined_target(&partial, proposal)
-        });
-        let candidate_limit = proposals.len();
-        let candidates = select_ime_candidate_proposals(ImeCandidateReadoutRequest {
-            proposals: &proposals,
-            limit: candidate_limit,
-        });
-
-        if let Some(started) = total_started {
-            let token = split_last_alphabetic_token(tail.trim_end()).map(|(_, token)| token);
-            trace::record_precognition_timing(
-                started.elapsed().as_micros() as u64,
-                0,
-                word_us,
-                semantic_us,
-                word_timing.cache_hit,
-                word_timing.l2_material_us,
-                word_timing.l3_context_us,
-                word_timing.decision_us,
-                candidates.len(),
-                token,
-                candidates.first().map(|candidate| candidate.display_text()),
-            );
-        }
-        candidates
+    fn precognition_candidates(&self) -> Vec<ImeCandidateProposal> {
+        self.precognition_input()
+            .map(|input| materialize_precognition_candidates(&input))
+            .unwrap_or_default()
     }
 
     fn precognition_suffix_candidates(&self) -> Vec<String> {
@@ -682,12 +844,6 @@ fn stable_candidate_index(
 ) -> usize {
     previous_target
         .and_then(|target| candidate_index_for_target(target, partial, candidates, replacements))
-        .unwrap_or(0)
-}
-
-fn elapsed_us(started: Option<Instant>) -> u64 {
-    started
-        .map(|started| started.elapsed().as_micros() as u64)
         .unwrap_or(0)
 }
 

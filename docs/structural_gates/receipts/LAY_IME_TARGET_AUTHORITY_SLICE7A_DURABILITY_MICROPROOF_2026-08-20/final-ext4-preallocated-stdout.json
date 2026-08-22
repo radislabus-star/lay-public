@@ -1,0 +1,118 @@
+{
+  "schema": "lay.output-transaction-durability-microproof.v1",
+  "generated_unix_ms": 1787249861248,
+  "verdict": "FAIL_ISOLATED_DURABILITY_STRATEGY",
+  "host": {
+    "hostname": "t480",
+    "filesystem_mount": "/",
+    "filesystem_type": "ext4",
+    "mount_options": "rw,relatime",
+    "device_id": 66306,
+    "journal_directory": "/home/ubu/.cache/lay/output-transaction-slice7a-20260820-final/journal",
+    "clock": "std::time::Instant(CLOCK_MONOTONIC)",
+    "worker_nice": 0
+  },
+  "record_bytes": 256,
+  "journal_capacity_bytes": 8388608,
+  "queue_capacity": 32,
+  "tail_flush_deadline_ms": 20,
+  "warmup_samples": 64,
+  "prepare": {
+    "cold_owner_startup_us": 8968,
+    "latency": {
+      "samples": 1000,
+      "p50_us": 345,
+      "p95_us": 818,
+      "p99_us": 1265,
+      "maximum_us": 325387
+    },
+    "journal": {
+      "appended_records": 2128,
+      "appended_bytes": 544768,
+      "sync_calls": 2128,
+      "sync_io_us": 1572568,
+      "foreground_waits": 1064,
+      "tail_flushes": 1064,
+      "co_commits": 0,
+      "owner_nice": 0
+    },
+    "records_verified": 2128
+  },
+  "co_commit": {
+    "cold_owner_startup_us": 898,
+    "latency": {
+      "samples": 1000,
+      "p50_us": 341,
+      "p95_us": 814,
+      "p99_us": 1164,
+      "maximum_us": 1677
+    },
+    "journal": {
+      "appended_records": 2130,
+      "appended_bytes": 545280,
+      "sync_calls": 1066,
+      "sync_io_us": 579619,
+      "foreground_waits": 1065,
+      "tail_flushes": 1,
+      "co_commits": 1064,
+      "owner_nice": 0
+    },
+    "records_verified": 2130
+  },
+  "tail_flush": {
+    "cold_owner_startup_us": 162778,
+    "latency": {
+      "samples": 1000,
+      "p50_us": 347,
+      "p95_us": 631,
+      "p99_us": 775,
+      "maximum_us": 865
+    },
+    "journal": {
+      "appended_records": 2128,
+      "appended_bytes": 544768,
+      "sync_calls": 2128,
+      "sync_io_us": 795620,
+      "foreground_waits": 1064,
+      "tail_flushes": 1064,
+      "co_commits": 0,
+      "owner_nice": 0
+    },
+    "records_verified": 2128
+  },
+  "next_native_wait": {
+    "cold_owner_startup_us": 1467,
+    "latency": {
+      "samples": 1000,
+      "p50_us": 324,
+      "p95_us": 601,
+      "p99_us": 748,
+      "maximum_us": 905
+    },
+    "journal": {
+      "appended_records": 2128,
+      "appended_bytes": 544768,
+      "sync_calls": 2128,
+      "sync_io_us": 779252,
+      "foreground_waits": 2128,
+      "tail_flushes": 1064,
+      "co_commits": 0,
+      "owner_nice": 0
+    },
+    "records_verified": 2128
+  },
+  "fault_matrix": {
+    "checksum_damage_rejected": true,
+    "saturation_refused": true,
+    "prepare_failure_refused_before_effect": true,
+    "terminal_failure_requires_recovery": true
+  },
+  "gates": {
+    "p99_at_most_us": 2000,
+    "maximum_strictly_below_us": 8000,
+    "prepare_pass": false,
+    "co_commit_pass": true
+  },
+  "runtime_authority_changed": false,
+  "installed_runtime_touched": false
+}

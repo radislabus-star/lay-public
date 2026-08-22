@@ -1,0 +1,121 @@
+{
+  "schema": "lay.ime-target-authority-first-loss-input.v1",
+  "immutable_evidence_root": "/home/ubu/projects/lay-immutable-evidence/ime-target-authority-slice0-20260820",
+  "run_summary": "output/run-summary.json",
+  "source_archive": "source.tar.zst",
+  "source_member": "source/src/ime_correction.rs",
+  "source_sha256": "477d0b74c0560ca8438b32aa9458215727fcdb2e561d8e23f302f7fc6b61579c",
+  "expected_case_count": 36,
+  "expected_pass_count": 18,
+  "expected_fail_count": 18,
+  "failed_case_observations": [
+    {
+      "id": "ime36-active_composition_autocorrect_uses_unified_input_gate",
+      "first_failed_target": "проходил",
+      "requires_independent_context": false,
+      "assertion_scope": "semantic"
+    },
+    {
+      "id": "ime36-active_composition_context_replacement_keeps_previous_words_out_of_commit",
+      "first_failed_target": "эффективная",
+      "requires_independent_context": true,
+      "assertion_scope": "semantic"
+    },
+    {
+      "id": "ime36-active_composition_decision_returns_only_live_text_replacement",
+      "first_failed_target": "проходил",
+      "requires_independent_context": false,
+      "assertion_scope": "semantic"
+    },
+    {
+      "id": "ime36-active_layout_guard_does_not_block_non_layout_typo_repair",
+      "first_failed_target": "проходил",
+      "requires_independent_context": false,
+      "assertion_scope": "semantic"
+    },
+    {
+      "id": "ime36-active_russian_layout_allows_unknown_cyrillic_projection_to_known_ascii",
+      "first_failed_target": "pdf",
+      "requires_independent_context": false,
+      "assertion_scope": "semantic"
+    },
+    {
+      "id": "ime36-boundary_split_survives_live_l2_phase_apply",
+      "first_failed_target": "то есть",
+      "requires_independent_context": false,
+      "assertion_scope": "legacy_producer_identity"
+    },
+    {
+      "id": "ime36-committed_tail_autocorrect_repairs_duplicate_latin_prefix_before_russian_word",
+      "first_failed_target": "автозамена",
+      "requires_independent_context": false,
+      "assertion_scope": "semantic"
+    },
+    {
+      "id": "ime36-committed_tail_autocorrect_repairs_layout_word_with_missing_initial_letter",
+      "first_failed_target": "автозамена",
+      "requires_independent_context": false,
+      "assertion_scope": "semantic"
+    },
+    {
+      "id": "ime36-committed_tail_boundary_split_is_authorized_for_space_autocorrect",
+      "first_failed_target": "то есть",
+      "requires_independent_context": false,
+      "assertion_scope": "legacy_producer_identity"
+    },
+    {
+      "id": "ime36-committed_tail_boundary_uses_same_dual_layout_decision_as_cli",
+      "first_failed_target": "download",
+      "requires_independent_context": false,
+      "assertion_scope": "semantic"
+    },
+    {
+      "id": "ime36-committed_tail_repairs_accidental_final_consonant_after_imperative",
+      "first_failed_target": "читай",
+      "requires_independent_context": false,
+      "assertion_scope": "semantic"
+    },
+    {
+      "id": "ime36-committed_tail_space_action_matches_physical_token_without_pending_space",
+      "first_failed_target": "автозамена",
+      "requires_independent_context": false,
+      "assertion_scope": "semantic"
+    },
+    {
+      "id": "ime36-committed_tail_space_route_defaults_to_canonical_l2_owner_for_l11_seeded_restore",
+      "first_failed_target": "время",
+      "requires_independent_context": false,
+      "assertion_scope": "semantic"
+    },
+    {
+      "id": "ime36-committed_tail_space_route_keeps_verified_inverse_length_member_of_l2_tie",
+      "first_failed_target": "перехвачу",
+      "requires_independent_context": false,
+      "assertion_scope": "semantic"
+    },
+    {
+      "id": "ime36-committed_tail_space_route_uses_shared_decision_core_for_dirty_tokens",
+      "first_failed_target": "видишь",
+      "requires_independent_context": false,
+      "assertion_scope": "semantic"
+    },
+    {
+      "id": "ime36-live_l2_space_route_keeps_short_wrong_layout_function_word_authority",
+      "first_failed_target": "не",
+      "requires_independent_context": false,
+      "assertion_scope": "semantic"
+    },
+    {
+      "id": "ime36-repeated_boundary_token_live_route_changes_only_current_token",
+      "first_failed_target": "то есть",
+      "requires_independent_context": false,
+      "assertion_scope": "legacy_producer_identity"
+    },
+    {
+      "id": "ime36-sequential_layout_words_keep_the_same_boundary_authority",
+      "first_failed_target": "не",
+      "requires_independent_context": false,
+      "assertion_scope": "semantic"
+    }
+  ]
+}

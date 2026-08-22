@@ -15,7 +15,7 @@ pub(super) fn try_manual_toggle(ime_enabled: bool) -> Result<Option<bool>, Strin
 #[cfg(test)]
 mod tests {
     #[test]
-    fn daemon_delegates_manual_toggle_planning_to_the_ime_owner() {
+    fn daemon_delegates_the_physical_trigger_to_the_focused_ime_owner() {
         let source = include_str!("ime_manual_toggle.rs");
         assert!(source.contains("ime_bridge::manual_toggle()"));
         assert!(source.contains("switch_to_target_layout(target_layout_is_ru)"));

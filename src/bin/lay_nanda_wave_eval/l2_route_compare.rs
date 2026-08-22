@@ -209,7 +209,7 @@ fn resolve_with_route(
         nanda_autocorrect: true,
         nanda_candidate_route: route,
         nanda_wave_options: cfg.active_nanda_wave_options(),
-        mode: CorrectionMode::DeterministicThenNanda,
+        mode: CorrectionMode::NandaOnly,
     })
 }
 

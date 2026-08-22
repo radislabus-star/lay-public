@@ -1,0 +1,134 @@
+{
+  "schema": "lay.ime-target-authority-slice1-final-receipt.v1",
+  "created_at": "2026-08-20T10:58:00Z",
+  "verdict": "PASS_SLICE1_EVIDENCE_VOCABULARY_ONLY",
+  "claim_scope": "common bounded target-evidence vocabulary and compatibility adapters only",
+  "preflight": {
+    "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE1_IMPLEMENTATION_PREFLIGHT_V8_2026-08-20.json",
+    "sha256": "c2e05f69adf10951ad234274dc7278b4d35845150beba848b52470e7ecc2dea2",
+    "verdict": "READY_TO_IMPLEMENT"
+  },
+  "immutable_baseline": {
+    "path": "/home/ubu/projects/lay-immutable-evidence/ime-target-authority-slice0-20260820/source-at-execution.sha256-manifest.json",
+    "sha256": "45389cef6c5843473799a5e2df0c066c12ac77e43b5b598d2c3d91158f5af511",
+    "target_evidence_rs_absent": true
+  },
+  "candidate": {
+    "remote_root": "/home/e/build/lay-ime-target-authority-slice1-20260820-v1/candidate",
+    "target_evidence_sha256": "c01a7fb8ebfa140e114632fa4d4ed35acfc587422b692866d3e7cc921f1e50ed",
+    "remote_proof": {
+      "path": "remote-proof-v4/summary.json",
+      "sha256": "571ad73bbf618fcffc63bdf32b119ff5aaaa9f1552fdd832b50c82f3416e88ff",
+      "builds": "4/4 PASS",
+      "focused_groups": "5/5 PASS",
+      "baseline_executions": "49/49 valid",
+      "baseline_status_differences": 0
+    },
+    "semantic_parity": {
+      "path": "semantic-output-parity-v4.json",
+      "sha256": "d3721e223a15f8204044d32795958ab93f8c78b3734a313a96eb118d3f52fcd3",
+      "exact_cases": "49/49"
+    },
+    "fault_injection": {
+      "path": "fault-injection-v3/summary.json",
+      "sha256": "b0875e79a4329ee3ca7a3b01a94588a73dd243b583126b53b2a2d85cc907f759",
+      "missing_adapter_rejected": true,
+      "lossy_adapter_rejected": true,
+      "candidate_restored": true
+    }
+  },
+  "measured_layout": {
+    "target_witness_bytes": 24,
+    "target_evidence_set_bytes": 128,
+    "prepared_material_lease_bytes": 112,
+    "evidence_payload_per_field_bytes": 9472,
+    "prepared_target_material_bytes": 11376,
+    "active_lease_metadata_bytes": 3584,
+    "retained_delta_160_fields_bytes": 1820160,
+    "rss_baseline_median_kib": 12640,
+    "rss_candidate_median_kib": 13920,
+    "rss_delta_kib": 1280,
+    "rss_delta_limit_kib": 5120
+  },
+  "contracts": [
+    {
+      "id": "partial-adapter-migration-fault",
+      "verdict": "PASS",
+      "evidence": "fault-injection-v3/summary.json"
+    },
+    {
+      "id": "slice1-new-owner-path-baseline",
+      "verdict": "PASS",
+      "evidence": "immutable baseline slice1_allowlisted_paths records target_evidence.rs exists=false"
+    },
+    {
+      "id": "target-evidence-layout-budget",
+      "verdict": "PASS",
+      "evidence": "remote-proof-v4/focused/common-target-evidence.log and remote-proof-v4/rss-delta.json"
+    },
+    {
+      "id": "witness-merge-permutation-parity",
+      "verdict": "PASS",
+      "evidence": "remote-proof-v4/focused/common-target-evidence.log"
+    },
+    {
+      "id": "package-generation-alias-not-independent",
+      "verdict": "PASS",
+      "evidence": "remote-proof-v4/focused/common-target-evidence.log"
+    },
+    {
+      "id": "legacy-evidence-roundtrip",
+      "verdict": "PASS",
+      "evidence": "remote-proof-v4/focused/common-target-evidence.log and remote-proof-v4/focused/live-candidate-adapter.log"
+    },
+    {
+      "id": "legacy-reverse-projection-fail-closed",
+      "verdict": "PASS",
+      "evidence": "remote-proof-v4/focused/common-target-evidence.log"
+    },
+    {
+      "id": "slice1-semantic-output-parity",
+      "verdict": "PASS",
+      "evidence": "semantic-output-parity-v4.json, 49/49 exact normalized logs"
+    },
+    {
+      "id": "slice1-route-parity",
+      "verdict": "PASS",
+      "evidence": "remote-proof-v4/source-allowlist.tsv and semantic-output-parity-v4.json"
+    },
+    {
+      "id": "slice1-touched-file-allowlist",
+      "verdict": "PASS",
+      "evidence": "remote-proof-v4/source-allowlist.tsv, changed=7 outside=0 missing=0"
+    },
+    {
+      "id": "prepared-material-identity-parity",
+      "verdict": "PASS",
+      "evidence": "remote-proof-v4/focused/productive-material.log and remote-proof-v4/focused/scene-profile.log"
+    },
+    {
+      "id": "frame-values-not-cacheable",
+      "verdict": "PASS",
+      "evidence": "prepared_material_schema_excludes_frame_bound_values compile-time exhaustive field test"
+    },
+    {
+      "id": "completeness-roundtrip",
+      "verdict": "PASS",
+      "evidence": "remote-proof-v4/focused/common-target-evidence.log and remote-proof-v4/focused/productive-completeness.log"
+    }
+  ],
+  "critical_review_resolutions": {
+    "malformed_accelerator": "canonicalized from exact semantic root before retention and covered by permutation test",
+    "memory_contract": "9472-byte witness payload is distinct from the 11376-byte complete prepared object; both preregistered ceilings pass",
+    "completeness_scope": "narrow scope requires a non-zero exhaustive partition proof reference; scope mismatch becomes deterministic whole-field integrity failure"
+  },
+  "baseline_assertion_status": {
+    "pass": 46,
+    "fail": 3,
+    "meaning": "the three frozen baseline failures predate Slice 1 and are unchanged; this receipt proves parity, not their repair"
+  },
+  "runtime_authority_changed": false,
+  "deployment_actions": 0,
+  "installed_version_changed": false,
+  "next_gate": "new Slice 2 implementation preflight for context-neutral prepared material and exact frame binding shadow"
+}

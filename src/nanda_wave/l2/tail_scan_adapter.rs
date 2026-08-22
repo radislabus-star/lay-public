@@ -1,7 +1,8 @@
 use super::super::context::TailContext;
 use super::super::signal::{WavePacket, WordCandidate};
 use super::surface::{
-    surface_motif_known_surface, surface_motif_strict_known_surface, surface_motif_typo_risk,
+    l2_surface_foundation_has_authority, surface_motif_known_surface,
+    surface_motif_strict_known_surface, surface_motif_typo_risk,
 };
 use super::{candidate_support, l1_energy, L2_SURFACE_MOTIF_CELL};
 use crate::candidate_contract::CandidateOrigin;
@@ -30,7 +31,10 @@ pub(super) fn boundary_split_has_structural_evidence(token: &str) -> bool {
             && stable_boundary_right_center(&right);
         let trailing_function =
             trailing_short_function_center(&right) && stable_boundary_left_center(&left);
-        leading_function || trailing_function || independent_content_boundary_centers(&left, &right)
+        leading_function
+            || trailing_function
+            || strong_short_left_field_boundary(&left, &right)
+            || independent_content_boundary_centers(&left, &right)
     })
 }
 
@@ -66,6 +70,14 @@ fn independent_boundary_center(word: &str) -> bool {
     is_common_ru_word(word)
         || crate::lexicon::is_l2_surface_hot_ru_word(word)
         || crate::russian_lexicon::is_reference_backed_russian_form(word)
+}
+
+pub(super) fn strong_short_left_field_boundary(left: &str, right: &str) -> bool {
+    (2..=3).contains(&left.chars().count())
+        && right.chars().count() >= 4
+        && !crate::lexicon::is_ru_short_preposition(left)
+        && l2_surface_foundation_has_authority(left)
+        && (surface_motif_known_surface(right) || independent_boundary_center(right))
 }
 
 pub(super) fn boundary_split_candidates(
@@ -114,7 +126,17 @@ pub(super) fn boundary_split_candidates(
                 risk: 0.04,
                 support: {
                     let mut support = candidate_support(l1, context);
-                    support.push("light-boundary-split".to_string());
+                    let field_short_left = replacement
+                        .split_once(' ')
+                        .is_some_and(|(left, right)| strong_short_left_field_boundary(left, right));
+                    support.push(
+                        if field_short_left {
+                            "strong-short-left-field-boundary"
+                        } else {
+                            "light-boundary-split"
+                        }
+                        .to_string(),
+                    );
                     support.push(format!("word={normalized:?} replacement={replacement:?}"));
                     support
                 },
@@ -353,14 +375,17 @@ fn light_boundary_replacement_with_fuzzy(
         let known_left_pronoun = crate::lexicon::is_ru_single_letter_pronoun(&left)
             || crate::lexicon::is_ru_short_pronoun(&left);
         let known_left_common = is_common_ru_word(&left);
+        let known_left_field = strong_short_left_field_boundary(&left, &right);
         let known_left = known_left_function
             || known_left_pronoun
             || known_left_common
+            || known_left_field
             || trailing_short_function;
         let known_right = surface_motif_known_surface(&right)
             || (known_left_pronoun
                 && right.chars().count() >= 4
                 && stable_boundary_right_center(&right))
+            || known_left_field
             || trailing_short_function;
         if known_left_function && !known_left_pronoun {
             let fuzzy =
@@ -380,7 +405,10 @@ fn light_boundary_replacement_with_fuzzy(
                 left.chars().count(),
                 right.chars().count(),
                 known_left_function,
-                known_left_pronoun || known_left_common || trailing_short_function,
+                known_left_pronoun
+                    || known_left_common
+                    || known_left_field
+                    || trailing_short_function,
                 is_common_ru_word(&right),
             );
             let replacement = format!("{left} {right}");

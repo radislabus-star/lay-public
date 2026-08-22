@@ -1,0 +1,116 @@
+{
+  "schema": "lay.ime.unified-token-field.slice2.v1",
+  "measured_at": "2026-08-16",
+  "verdict": "PASS_SCOPED_SINGLE_FLIGHT_REUSE_GENERAL_LATENCY_OPEN",
+  "implementation_preflight": {
+    "receipt": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_IMPLEMENTATION_V3_PREFLIGHT_2026-08-16.json",
+    "verdict": "READY_TO_IMPLEMENT",
+    "safe_to_implement": true
+  },
+  "release_binary": {
+    "path": "/tmp/lay-nanda-wave-train-unified-field",
+    "bytes": 11030088,
+    "sha256": "d405a120b687805467597a501ad542964f112bfd2743f9b8bf98a91a24458abf"
+  },
+  "implementation": {
+    "ready_entry_limit": 128,
+    "computing_entry_limit": 32,
+    "waiter_limit_per_key": 8,
+    "compute_outside_mutex": true,
+    "transient_failures_cached": false,
+    "package_reload_generation_guard": true,
+    "productive_package_sha256_computed_once_per_loaded_package": true,
+    "request_time_l3_l4_cached": false,
+    "final_verifier_cached": false
+  },
+  "mapped_tests": {
+    "productive_format": { "passed": 7, "failed": 0 },
+    "single_flight_cache": { "passed": 5, "failed": 0 },
+    "immutable_live_field": { "passed": 5, "failed": 0 },
+    "total": { "passed": 17, "failed": 0 }
+  },
+  "semantic_parity": {
+    "comparisons": 4,
+    "mismatches": 0,
+    "projection": [
+      "status",
+      "availability",
+      "authority",
+      "ordered candidates",
+      "source_id",
+      "error_class",
+      "gate action",
+      "gate reason"
+    ]
+  },
+  "hot_route_measurements": [
+    {
+      "case": "morphology",
+      "baseline_p99_us": 4643,
+      "slice2_p99_us": 4287,
+      "slice2_max_us": 5534,
+      "producer_computations": 1,
+      "ready_hits": 199,
+      "latency_gate_le_5000_us": true,
+      "receipt": "slice2-morphology.json"
+    },
+    {
+      "case": "glued",
+      "baseline_p99_us": 4046,
+      "slice2_p99_us": 3083,
+      "slice2_max_us": 3236,
+      "producer_computations": 1,
+      "ready_hits": 199,
+      "latency_gate_le_5000_us": true,
+      "receipt": "slice2-glued.json"
+    },
+    {
+      "case": "damaged-v2",
+      "baseline_p99_us": 8060,
+      "slice2_p99_us": 8187,
+      "slice2_max_us": 9243,
+      "producer_computations": 1,
+      "ready_hits": 199,
+      "latency_gate_le_5000_us": false,
+      "receipt": "slice2-damaged-v2.json"
+    },
+    {
+      "case": "empty-l11",
+      "baseline_availability": "EmptyL11Lattice",
+      "slice2_availability": "EmptyL11Lattice",
+      "producer_computations": 0,
+      "ready_hits": 0,
+      "receipt": "slice2-damaged.json"
+    }
+  ],
+  "rejected_intermediate": {
+    "observed_hot_p99_us": 160398,
+    "mechanism": "ProductivePackageViewV1::package_sha256 rehashed the complete 16.5 MiB mmap twice before every cache lookup",
+    "repair": "bind the exact digest once when the immutable package view is admitted",
+    "semantic_change": false
+  },
+  "rss_scope": {
+    "minimum_peak_rss_kib": 316004,
+    "maximum_peak_rss_kib": 319368,
+    "scope": "standalone benchmark process with installed L1.1, canonical L2 and Productive V90 packages"
+  },
+  "broader_module_test": {
+    "passed": 192,
+    "failed": 2,
+    "failures": [
+      "canonical_readout_retains_sparse_omission_candidate_below_general_frontier",
+      "reference_backed_short_participle_blocks_false_singleton"
+    ],
+    "scope_note": "The remote run had no L1.1 service. A local live probe retained the sparse omission target, while the installed L1.1 still returned EmptyL11Lattice for the short-participle fixture. These failures are not counted as Slice 2 cache PASS evidence."
+  },
+  "not_tested": [
+    "full fixed Productive quality proof",
+    "GUI event ordering and Space lease deadline",
+    "physical WeChat and Telegram input",
+    "installed daemon behavior",
+    "general latency acceptance for all fixed damage classes"
+  ],
+  "general_latency_gate_le_5000_us": false,
+  "runtime_authority_changed": false,
+  "deployment_authorized": false
+}

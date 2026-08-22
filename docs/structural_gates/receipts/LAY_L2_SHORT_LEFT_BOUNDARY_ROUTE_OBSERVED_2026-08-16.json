@@ -1,0 +1,349 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "PASS",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": true,
+  "contract": "docs/structural_gates/preflights/LAY_L2_SHORT_LEFT_BOUNDARY_OBSERVED_2026-08-16.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "observed_source",
+  "source_root": "/home/ubu/projects/lay-l1-exact-peak-search",
+  "node_count": 14,
+  "edge_count": 18,
+  "routes": [
+    {
+      "id": "boundary-generation-execution",
+      "event": "boundary_candidate_generation",
+      "kind": "execution",
+      "entry": "glued_token",
+      "via": [],
+      "terminal": "bounded_l2_boundary_lattice",
+      "path_count": 1,
+      "paths": [
+        [
+          "glued_token",
+          "boundary_enumerator",
+          "split_center_evidence",
+          "bounded_l2_boundary_lattice"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "boundary_enumerator",
+          "bounded_l2_boundary_lattice"
+        ],
+        "interface": [
+          "glued_token"
+        ],
+        "evidence_owner": [
+          "split_center_evidence"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "glued_token",
+          "to": "bounded_l2_boundary_lattice",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "glued_token",
+              "boundary_enumerator",
+              "split_center_evidence",
+              "bounded_l2_boundary_lattice"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "boundary-generation-authority",
+      "event": "boundary_candidate_generation",
+      "kind": "authority",
+      "entry": "boundary_enumerator",
+      "via": [],
+      "terminal": "split_center_evidence",
+      "path_count": 1,
+      "paths": [
+        [
+          "boundary_enumerator",
+          "split_center_evidence"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "boundary_enumerator"
+        ],
+        "evidence_owner": [
+          "split_center_evidence"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "background-decision-execution",
+      "event": "background_decision",
+      "kind": "execution",
+      "entry": "bounded_l2_boundary_lattice",
+      "via": [],
+      "terminal": "prefetch_snapshot",
+      "path_count": 1,
+      "paths": [
+        [
+          "bounded_l2_boundary_lattice",
+          "l3_context_field",
+          "decision_core",
+          "prefetch_snapshot"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "bounded_l2_boundary_lattice",
+          "l3_context_field",
+          "prefetch_snapshot"
+        ],
+        "candidate_rank_owner": [
+          "decision_core"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "bounded_l2_boundary_lattice",
+          "to": "prefetch_snapshot",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "bounded_l2_boundary_lattice",
+              "l3_context_field",
+              "decision_core",
+              "prefetch_snapshot"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "background-decision-authority",
+      "event": "background_decision",
+      "kind": "authority",
+      "entry": "bounded_l2_boundary_lattice",
+      "via": [],
+      "terminal": "decision_core",
+      "path_count": 1,
+      "paths": [
+        [
+          "bounded_l2_boundary_lattice",
+          "l3_context_field",
+          "decision_core"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "bounded_l2_boundary_lattice",
+          "l3_context_field"
+        ],
+        "candidate_rank_owner": [
+          "decision_core"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "space-apply-execution",
+      "event": "space_apply",
+      "kind": "execution",
+      "entry": "space_key",
+      "via": [],
+      "terminal": "committed_tail",
+      "path_count": 1,
+      "paths": [
+        [
+          "space_key",
+          "exact_prefetch_take",
+          "boundary_verifier",
+          "committed_tail"
+        ]
+      ],
+      "role_owners": {
+        "authorization_owner": [
+          "boundary_verifier"
+        ],
+        "mutation_owner": [
+          "committed_tail"
+        ],
+        "producer": [
+          "exact_prefetch_take"
+        ],
+        "interface": [
+          "space_key"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "space_key",
+          "to": "committed_tail",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "space_key",
+              "exact_prefetch_take",
+              "boundary_verifier",
+              "committed_tail"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "space-apply-authority",
+      "event": "space_apply",
+      "kind": "authority",
+      "entry": "prefetch_snapshot",
+      "via": [],
+      "terminal": "committed_tail",
+      "path_count": 1,
+      "paths": [
+        [
+          "prefetch_snapshot",
+          "exact_prefetch_take",
+          "boundary_verifier",
+          "committed_tail"
+        ]
+      ],
+      "role_owners": {
+        "authorization_owner": [
+          "boundary_verifier"
+        ],
+        "mutation_owner": [
+          "committed_tail"
+        ],
+        "producer": [
+          "exact_prefetch_take",
+          "prefetch_snapshot"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "space-observation",
+      "event": "space_apply",
+      "kind": "observation",
+      "entry": "route_outcome",
+      "via": [],
+      "terminal": "route_trace",
+      "path_count": 1,
+      "paths": [
+        [
+          "route_outcome",
+          "route_trace"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "route_outcome"
+        ],
+        "observer": [
+          "route_trace"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "boundary-proof",
+      "event": "software_proof",
+      "kind": "proof",
+      "entry": "split_center_evidence",
+      "via": [],
+      "terminal": "focused_contract_tests",
+      "path_count": 1,
+      "paths": [
+        [
+          "split_center_evidence",
+          "focused_contract_tests"
+        ]
+      ],
+      "role_owners": {
+        "proof_owner": [
+          "focused_contract_tests"
+        ],
+        "evidence_owner": [
+          "split_center_evidence"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {
+    "boundary_candidate_generation": {
+      "authorization_owner": [],
+      "display_rank_owner": [],
+      "candidate_rank_owner": [],
+      "evidence_owner": [
+        "split_center_evidence"
+      ],
+      "mutation_owner": [],
+      "render_owner": []
+    },
+    "background_decision": {
+      "authorization_owner": [],
+      "display_rank_owner": [],
+      "candidate_rank_owner": [
+        "decision_core"
+      ],
+      "evidence_owner": [],
+      "mutation_owner": [],
+      "render_owner": []
+    },
+    "space_apply": {
+      "authorization_owner": [
+        "boundary_verifier"
+      ],
+      "display_rank_owner": [],
+      "candidate_rank_owner": [],
+      "evidence_owner": [],
+      "mutation_owner": [
+        "committed_tail"
+      ],
+      "render_owner": []
+    }
+  },
+  "source_evidence": {
+    "expected": 31,
+    "verified": 31,
+    "complete": true
+  },
+  "issues": [],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": true,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

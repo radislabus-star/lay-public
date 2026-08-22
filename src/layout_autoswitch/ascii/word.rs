@@ -3,7 +3,9 @@ use crate::russian_lexicon::russian_tiny_dictionary;
 use crate::word_reader::split_word_punctuation;
 
 use super::super::english::is_known_english_layout_autoswitch_word;
-use super::candidate::ascii_to_russian_layout_candidate;
+use super::candidate::{
+    ascii_to_russian_layout_candidate, exact_ascii_to_russian_layout_candidate,
+};
 use super::punctuation::correct_word_preserving_trailing_punctuation;
 use super::symbols::{
     has_ascii_shift_letter_signal, is_blocked_ascii_layout_token, is_protected_ascii_layout_token,
@@ -93,6 +95,46 @@ pub(crate) fn correct_wrong_layout_ascii_word(token: &str) -> Option<String> {
     }
 }
 
+pub(crate) fn correct_exact_wrong_layout_ascii_word(token: &str) -> Option<String> {
+    if is_blocked_ascii_layout_token(token) {
+        return None;
+    }
+
+    let (_, original_word, _) = split_word_punctuation(token);
+    if original_word.is_empty()
+        || original_word
+            .chars()
+            .filter(|ch| ch.is_ascii_alphabetic())
+            .count()
+            < 2
+        || is_user_protected_ascii_word(original_word)
+    {
+        return None;
+    }
+
+    let candidate = exact_ascii_to_russian_layout_candidate(token)?;
+    let snapshot = crate::exact_layout_authority::exact_authority_snapshot_if_warm(
+        crate::exact_layout_authority::FactoryEngineProfile::UsQwerty,
+        crate::exact_layout_authority::ActiveDecoderLayout::Us,
+    )?;
+    if crate::nanda_wave::exact_layout_terminal_contains_if_warm(
+        &candidate.word.to_lowercase(),
+        snapshot.russian_terminal_fingerprint(),
+    )? != true
+    {
+        return None;
+    }
+    if is_protected_ascii_layout_token(token)
+        && is_known_english_layout_autoswitch_word(&original_word.to_ascii_lowercase())
+    {
+        return None;
+    }
+    if is_protected_ascii_layout_token(token) {
+        return None;
+    }
+    Some(candidate.replacement)
+}
+
 pub(crate) fn correct_wrong_layout_ascii_word_experimental(token: &str) -> Option<String> {
     correct_wrong_layout_ascii_word(token)
 }
@@ -118,4 +160,21 @@ fn allow_short_layout_word(original: &str, converted_lower: &str) -> bool {
         && (russian_tiny_dictionary().contains(converted_lower)
             || crate::hot_field::HotFieldSnapshot::current()
                 .layout_projection_has_phase_authority(converted_lower))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::correct_exact_wrong_layout_ascii_word;
+
+    #[test]
+    fn exact_scope_accepts_only_raw_known_layout_projection() {
+        crate::exact_layout_authority::warm_up_exact_layout_authority_for_ibus()
+            .expect("warm exact-layout authority");
+        assert_eq!(
+            correct_exact_wrong_layout_ascii_word("ghbdtn").as_deref(),
+            Some("привет")
+        );
+        assert_eq!(correct_exact_wrong_layout_ascii_word("pdf"), None);
+        assert_eq!(correct_exact_wrong_layout_ascii_word("dnjpfvtyf"), None);
+    }
 }

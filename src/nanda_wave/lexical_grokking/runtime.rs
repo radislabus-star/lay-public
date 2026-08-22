@@ -171,6 +171,22 @@ pub(super) struct LexicalGrokkingMemory {
     decoded_surface_pool: Option<DecodedSurfacePool>,
 }
 
+/// Read-only exact terminal identity for context-neutral contour proof.
+/// It does not execute restoration, ranking, or authority settlement.
+pub(crate) struct ExactL11SurfaceIndexV1 {
+    memory: LexicalGrokkingMemory,
+}
+
+impl ExactL11SurfaceIndexV1 {
+    pub(crate) fn load(path: &Path) -> Result<Self, String> {
+        LexicalGrokkingMemory::load(path).map(|memory| Self { memory })
+    }
+
+    pub(crate) fn terminal_for_surface(&self, surface: &str) -> Option<u32> {
+        self.memory.exact_terminal_for_surface(surface)
+    }
+}
+
 impl LexicalGrokkingMemory {
     pub(super) fn from_package(package: LexicalGrokkingPackage) -> Self {
         let (

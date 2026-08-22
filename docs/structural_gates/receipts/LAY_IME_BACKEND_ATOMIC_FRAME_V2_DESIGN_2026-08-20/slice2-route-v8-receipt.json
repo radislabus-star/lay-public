@@ -1,0 +1,674 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "VETO",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": false,
+  "contract": "docs/structural_gates/preflights/LAY_IME_BACKEND_ATOMIC_FRAME_SLICE2_ROUTE_V8_2026-08-21.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "source_root": null,
+  "node_count": 15,
+  "edge_count": 21,
+  "routes": [
+    {
+      "id": "proposal-returned-execution",
+      "event": "proposal_returned",
+      "kind": "execution",
+      "entry": "fake_client_event",
+      "via": [],
+      "terminal": "atomic_reply",
+      "path_count": 1,
+      "paths": [
+        [
+          "fake_client_event",
+          "frozen_request",
+          "input_context_atomic_rpc",
+          "daemon_receipt_gate",
+          "daemon_capability_gate",
+          "daemon_snapshot_gate",
+          "engine_proxy_atomic_rpc",
+          "fake_engine_proposal",
+          "daemon_proposal_validator",
+          "daemon_reply_admission",
+          "daemon_reply_emitter",
+          "atomic_reply"
+        ]
+      ],
+      "role_owners": {
+        "observer": [
+          "atomic_reply"
+        ],
+        "orchestrator": [
+          "daemon_capability_gate",
+          "daemon_receipt_gate",
+          "daemon_snapshot_gate",
+          "engine_proxy_atomic_rpc",
+          "input_context_atomic_rpc"
+        ],
+        "evidence_owner": [
+          "daemon_proposal_validator"
+        ],
+        "authorization_owner": [
+          "daemon_reply_admission"
+        ],
+        "mutation_owner": [
+          "daemon_reply_emitter"
+        ],
+        "interface": [
+          "fake_client_event"
+        ],
+        "producer": [
+          "fake_engine_proposal",
+          "frozen_request"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "fake_client_event",
+          "to": "atomic_reply",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "fake_client_event",
+              "frozen_request",
+              "input_context_atomic_rpc",
+              "daemon_receipt_gate",
+              "daemon_capability_gate",
+              "daemon_snapshot_gate",
+              "engine_proxy_atomic_rpc",
+              "fake_engine_proposal",
+              "daemon_proposal_validator",
+              "daemon_reply_admission",
+              "daemon_reply_emitter",
+              "atomic_reply"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "proposal-returned-authority",
+      "event": "proposal_returned",
+      "kind": "authority",
+      "entry": "frozen_request",
+      "via": [],
+      "terminal": "daemon_reply_emitter",
+      "path_count": 1,
+      "paths": [
+        [
+          "frozen_request",
+          "fake_engine_proposal",
+          "daemon_proposal_validator",
+          "daemon_reply_admission",
+          "daemon_reply_emitter"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "daemon_proposal_validator"
+        ],
+        "authorization_owner": [
+          "daemon_reply_admission"
+        ],
+        "mutation_owner": [
+          "daemon_reply_emitter"
+        ],
+        "producer": [
+          "fake_engine_proposal",
+          "frozen_request"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "frozen_request",
+          "to": "daemon_reply_emitter",
+          "via": [],
+          "graph": "authority",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "frozen_request",
+              "fake_engine_proposal",
+              "daemon_proposal_validator",
+              "daemon_reply_admission",
+              "daemon_reply_emitter"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "receipt-refusal-execution",
+      "event": "receipt_refused",
+      "kind": "execution",
+      "entry": "fake_client_event",
+      "via": [],
+      "terminal": "native_unhandled",
+      "path_count": 1,
+      "paths": [
+        [
+          "fake_client_event",
+          "frozen_request",
+          "input_context_atomic_rpc",
+          "daemon_receipt_gate",
+          "native_unhandled"
+        ]
+      ],
+      "role_owners": {
+        "orchestrator": [
+          "daemon_receipt_gate",
+          "input_context_atomic_rpc"
+        ],
+        "interface": [
+          "fake_client_event"
+        ],
+        "producer": [
+          "frozen_request"
+        ],
+        "observer": [
+          "native_unhandled"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "fake_client_event",
+          "to": "native_unhandled",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "fake_client_event",
+              "frozen_request",
+              "input_context_atomic_rpc",
+              "daemon_receipt_gate",
+              "native_unhandled"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "capability-refusal-execution",
+      "event": "capability_refused",
+      "kind": "execution",
+      "entry": "fake_client_event",
+      "via": [],
+      "terminal": "native_unhandled",
+      "path_count": 1,
+      "paths": [
+        [
+          "fake_client_event",
+          "frozen_request",
+          "input_context_atomic_rpc",
+          "daemon_receipt_gate",
+          "daemon_capability_gate",
+          "native_unhandled"
+        ]
+      ],
+      "role_owners": {
+        "orchestrator": [
+          "daemon_capability_gate",
+          "daemon_receipt_gate",
+          "input_context_atomic_rpc"
+        ],
+        "interface": [
+          "fake_client_event"
+        ],
+        "producer": [
+          "frozen_request"
+        ],
+        "observer": [
+          "native_unhandled"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "fake_client_event",
+          "to": "native_unhandled",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "fake_client_event",
+              "frozen_request",
+              "input_context_atomic_rpc",
+              "daemon_receipt_gate",
+              "daemon_capability_gate",
+              "native_unhandled"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "snapshot-refusal-execution",
+      "event": "snapshot_refused",
+      "kind": "execution",
+      "entry": "fake_client_event",
+      "via": [],
+      "terminal": "native_unhandled",
+      "path_count": 1,
+      "paths": [
+        [
+          "fake_client_event",
+          "frozen_request",
+          "input_context_atomic_rpc",
+          "daemon_receipt_gate",
+          "daemon_capability_gate",
+          "daemon_snapshot_gate",
+          "native_unhandled"
+        ]
+      ],
+      "role_owners": {
+        "orchestrator": [
+          "daemon_capability_gate",
+          "daemon_receipt_gate",
+          "daemon_snapshot_gate",
+          "input_context_atomic_rpc"
+        ],
+        "interface": [
+          "fake_client_event"
+        ],
+        "producer": [
+          "frozen_request"
+        ],
+        "observer": [
+          "native_unhandled"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "fake_client_event",
+          "to": "native_unhandled",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "fake_client_event",
+              "frozen_request",
+              "input_context_atomic_rpc",
+              "daemon_receipt_gate",
+              "daemon_capability_gate",
+              "daemon_snapshot_gate",
+              "native_unhandled"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "proposal-refusal-execution",
+      "event": "proposal_refused",
+      "kind": "execution",
+      "entry": "fake_client_event",
+      "via": [],
+      "terminal": "native_unhandled",
+      "path_count": 1,
+      "paths": [
+        [
+          "fake_client_event",
+          "frozen_request",
+          "input_context_atomic_rpc",
+          "daemon_receipt_gate",
+          "daemon_capability_gate",
+          "daemon_snapshot_gate",
+          "engine_proxy_atomic_rpc",
+          "fake_engine_proposal",
+          "daemon_proposal_validator",
+          "native_unhandled"
+        ]
+      ],
+      "role_owners": {
+        "orchestrator": [
+          "daemon_capability_gate",
+          "daemon_receipt_gate",
+          "daemon_snapshot_gate",
+          "engine_proxy_atomic_rpc",
+          "input_context_atomic_rpc"
+        ],
+        "evidence_owner": [
+          "daemon_proposal_validator"
+        ],
+        "interface": [
+          "fake_client_event"
+        ],
+        "producer": [
+          "fake_engine_proposal",
+          "frozen_request"
+        ],
+        "observer": [
+          "native_unhandled"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "fake_client_event",
+          "to": "native_unhandled",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "fake_client_event",
+              "frozen_request",
+              "input_context_atomic_rpc",
+              "daemon_receipt_gate",
+              "daemon_capability_gate",
+              "daemon_snapshot_gate",
+              "engine_proxy_atomic_rpc",
+              "fake_engine_proposal",
+              "daemon_proposal_validator",
+              "native_unhandled"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lineage-change-execution",
+      "event": "lineage_changed",
+      "kind": "execution",
+      "entry": "fake_client_event",
+      "via": [],
+      "terminal": "lineage_terminated",
+      "path_count": 1,
+      "paths": [
+        [
+          "fake_client_event",
+          "frozen_request",
+          "input_context_atomic_rpc",
+          "daemon_receipt_gate",
+          "daemon_capability_gate",
+          "daemon_snapshot_gate",
+          "engine_proxy_atomic_rpc",
+          "fake_engine_proposal",
+          "daemon_proposal_validator",
+          "lineage_terminated"
+        ]
+      ],
+      "role_owners": {
+        "orchestrator": [
+          "daemon_capability_gate",
+          "daemon_receipt_gate",
+          "daemon_snapshot_gate",
+          "engine_proxy_atomic_rpc",
+          "input_context_atomic_rpc"
+        ],
+        "evidence_owner": [
+          "daemon_proposal_validator"
+        ],
+        "interface": [
+          "fake_client_event"
+        ],
+        "producer": [
+          "fake_engine_proposal",
+          "frozen_request"
+        ],
+        "observer": [
+          "lineage_terminated"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "fake_client_event",
+          "to": "lineage_terminated",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "fake_client_event",
+              "frozen_request",
+              "input_context_atomic_rpc",
+              "daemon_receipt_gate",
+              "daemon_capability_gate",
+              "daemon_snapshot_gate",
+              "engine_proxy_atomic_rpc",
+              "fake_engine_proposal",
+              "daemon_proposal_validator",
+              "lineage_terminated"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "proposal-fault-proof",
+      "event": "proposal_refused",
+      "kind": "proof",
+      "entry": "daemon_proposal_validator",
+      "via": [],
+      "terminal": "private_dbus_fault_matrix",
+      "path_count": 1,
+      "paths": [
+        [
+          "daemon_proposal_validator",
+          "private_dbus_fault_matrix"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "daemon_proposal_validator"
+        ],
+        "proof_owner": [
+          "private_dbus_fault_matrix"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "daemon_proposal_validator",
+          "to": "private_dbus_fault_matrix",
+          "via": [],
+          "graph": "proof",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "daemon_proposal_validator",
+              "private_dbus_fault_matrix"
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {
+    "proposal_returned": {
+      "display_rank_owner": [],
+      "evidence_owner": [
+        "daemon_proposal_validator"
+      ],
+      "mutation_owner": [
+        "daemon_reply_emitter"
+      ],
+      "authorization_owner": [
+        "daemon_reply_admission"
+      ],
+      "render_owner": [],
+      "candidate_rank_owner": []
+    }
+  },
+  "source_evidence": {
+    "expected": 0,
+    "verified": 0,
+    "complete": true
+  },
+  "issues": [
+    {
+      "code": "required_role_missing_on_path",
+      "message": "a required role is absent from at least one route path; split mixed lanes",
+      "route": "receipt-refusal-execution",
+      "role": "evidence_owner",
+      "missing_path_count": 1,
+      "sample_paths": [
+        [
+          "fake_client_event",
+          "frozen_request",
+          "input_context_atomic_rpc",
+          "daemon_receipt_gate",
+          "native_unhandled"
+        ]
+      ]
+    },
+    {
+      "code": "required_role_missing_on_path",
+      "message": "a required role is absent from at least one route path; split mixed lanes",
+      "route": "capability-refusal-execution",
+      "role": "evidence_owner",
+      "missing_path_count": 1,
+      "sample_paths": [
+        [
+          "fake_client_event",
+          "frozen_request",
+          "input_context_atomic_rpc",
+          "daemon_receipt_gate",
+          "daemon_capability_gate",
+          "native_unhandled"
+        ]
+      ]
+    },
+    {
+      "code": "required_role_missing_on_path",
+      "message": "a required role is absent from at least one route path; split mixed lanes",
+      "route": "capability-refusal-execution",
+      "role": "authorization_owner",
+      "missing_path_count": 1,
+      "sample_paths": [
+        [
+          "fake_client_event",
+          "frozen_request",
+          "input_context_atomic_rpc",
+          "daemon_receipt_gate",
+          "daemon_capability_gate",
+          "native_unhandled"
+        ]
+      ]
+    },
+    {
+      "code": "required_role_missing_on_path",
+      "message": "a required role is absent from at least one route path; split mixed lanes",
+      "route": "snapshot-refusal-execution",
+      "role": "evidence_owner",
+      "missing_path_count": 1,
+      "sample_paths": [
+        [
+          "fake_client_event",
+          "frozen_request",
+          "input_context_atomic_rpc",
+          "daemon_receipt_gate",
+          "daemon_capability_gate",
+          "daemon_snapshot_gate",
+          "native_unhandled"
+        ]
+      ]
+    },
+    {
+      "code": "required_role_missing_on_path",
+      "message": "a required role is absent from at least one route path; split mixed lanes",
+      "route": "snapshot-refusal-execution",
+      "role": "authorization_owner",
+      "missing_path_count": 1,
+      "sample_paths": [
+        [
+          "fake_client_event",
+          "frozen_request",
+          "input_context_atomic_rpc",
+          "daemon_receipt_gate",
+          "daemon_capability_gate",
+          "daemon_snapshot_gate",
+          "native_unhandled"
+        ]
+      ]
+    },
+    {
+      "code": "required_role_missing_on_path",
+      "message": "a required role is absent from at least one route path; split mixed lanes",
+      "route": "proposal-refusal-execution",
+      "role": "authorization_owner",
+      "missing_path_count": 1,
+      "sample_paths": [
+        [
+          "fake_client_event",
+          "frozen_request",
+          "input_context_atomic_rpc",
+          "daemon_receipt_gate",
+          "daemon_capability_gate",
+          "daemon_snapshot_gate",
+          "engine_proxy_atomic_rpc",
+          "fake_engine_proposal",
+          "daemon_proposal_validator",
+          "native_unhandled"
+        ]
+      ]
+    },
+    {
+      "code": "required_role_missing_on_path",
+      "message": "a required role is absent from at least one route path; split mixed lanes",
+      "route": "lineage-change-execution",
+      "role": "authorization_owner",
+      "missing_path_count": 1,
+      "sample_paths": [
+        [
+          "fake_client_event",
+          "frozen_request",
+          "input_context_atomic_rpc",
+          "daemon_receipt_gate",
+          "daemon_capability_gate",
+          "daemon_snapshot_gate",
+          "engine_proxy_atomic_rpc",
+          "fake_engine_proposal",
+          "daemon_proposal_validator",
+          "lineage_terminated"
+        ]
+      ]
+    }
+  ],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": false,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

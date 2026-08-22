@@ -1,0 +1,27 @@
+{
+  "schema": "lay.runtime-owner-topology-proof.v1",
+  "captured_at": "2026-08-22T11:42:00+03:00",
+  "source_sha256": "22f6a4198d7c2aa388e58ff806dade001e7d0d0fa16d96b7810d1bee804894cf",
+  "host": "e@192.168.3.94",
+  "source_root": "/home/e/projects/lay-release-1.0.34-src-22f6a4198d7c2aa388e58ff806dade001e7d0d0fa16d96b7810d1bee804894cf",
+  "pre_test_host": {
+    "load_1m": 1.63,
+    "cpu_count": 20,
+    "available_memory_gib": 23
+  },
+  "command": "CARGO_TARGET_DIR=/home/e/projects/lay-v22-canonical-20260821/target CARGO_BUILD_JOBS=20 scripts/cargo-guard.sh test --bin lay-daemon warmup_plan_ -- --nocapture",
+  "result": {
+    "passed": 4,
+    "failed": 0,
+    "ignored": 0,
+    "filtered_out": 202,
+    "wall_seconds": 2.26
+  },
+  "contract": {
+    "ime_auto_daemon_sidecar_count": 0,
+    "ime_auto_daemon_typing_heap": false,
+    "uinput_daemon_sidecar_count": 1,
+    "ime_engine_warmup_owner": true
+  },
+  "verdict": "DIRECT_IME_OWNER_TOPOLOGY_PASS"
+}

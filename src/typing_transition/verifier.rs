@@ -176,11 +176,13 @@ fn layout_projection_is_verified(
         )
         && !original_words.is_empty()
         && original_words.len() == replacement_words.len()
-        && changed_tokens == original_words.len()
+        && changed_tokens > 0
         && original_words
             .iter()
             .zip(replacement_words)
-            .all(|(original, replacement)| verified_layout_token_projection(original, replacement))
+            .all(|(original, replacement)| {
+                original == replacement || verified_layout_token_projection(original, replacement)
+            })
 }
 
 fn verified_layout_token_projection(original: &str, replacement: &str) -> bool {
@@ -424,6 +426,34 @@ mod tests {
 
         assert_eq!(proof.operator, TransitionOperator::LayoutProjection);
         assert!(proof.verified);
+    }
+
+    #[test]
+    fn proves_layout_projection_of_current_token_with_unchanged_context() {
+        let proof = proof(
+            "проверь ghbdtn ",
+            "проверь привет ",
+            TypingErrorClass::WrongLayout,
+            CandidateOrigin::Layout,
+        );
+
+        assert_eq!(proof.operator, TransitionOperator::LayoutProjection);
+        assert!(proof.verified);
+        assert!(!proof.left_context_changed);
+        assert_eq!(proof.changed_tokens, 1);
+    }
+
+    #[test]
+    fn partial_layout_projection_cannot_change_an_unchanged_neighbor() {
+        let proof = proof(
+            "проверь ghbdtn ",
+            "проверка привет ",
+            TypingErrorClass::WrongLayout,
+            CandidateOrigin::Layout,
+        );
+
+        assert_eq!(proof.operator, TransitionOperator::Unknown);
+        assert!(!proof.verified);
     }
 
     #[test]

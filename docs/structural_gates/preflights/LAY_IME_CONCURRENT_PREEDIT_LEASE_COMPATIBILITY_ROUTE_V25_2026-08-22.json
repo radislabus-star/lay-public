@@ -1,0 +1,54 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "physical-key", "role": "interface"},
+    {"id": "shell-atomic-adapter", "role": "orchestrator"},
+    {"id": "mutter-frozen-profile", "role": "producer"},
+    {"id": "lay-atomic-proposal", "role": "evidence_owner"},
+    {"id": "shell-atomic-receipt", "role": "authorization_owner"},
+    {"id": "background-preedit", "role": "producer"},
+    {"id": "mutter-pending-preedit", "role": "evidence_owner"},
+    {"id": "mutter-atomic-submit", "role": "mutation_owner"},
+    {"id": "wayland-client", "role": "interface"}
+  ],
+  "edges": [
+    {"id": "key-shell", "from": "physical-key", "relation": "calls", "to": "shell-atomic-adapter", "events": ["atomic-key"]},
+    {"id": "shell-profile", "from": "shell-atomic-adapter", "relation": "delegates", "to": "mutter-frozen-profile", "events": ["atomic-key"]},
+    {"id": "profile-proposal", "from": "mutter-frozen-profile", "relation": "produces_for", "to": "lay-atomic-proposal", "events": ["atomic-key"]},
+    {"id": "proposal-receipt", "from": "lay-atomic-proposal", "relation": "passes_to", "to": "shell-atomic-receipt", "events": ["atomic-key"]},
+    {"id": "receipt-submit", "from": "shell-atomic-receipt", "relation": "authorizes", "to": "mutter-atomic-submit", "events": ["atomic-key"]},
+    {"id": "preedit-pending", "from": "background-preedit", "relation": "calls", "to": "mutter-pending-preedit", "events": ["legacy-preedit"]},
+    {"id": "pending-client", "from": "mutter-pending-preedit", "relation": "delegates", "to": "wayland-client", "events": ["legacy-preedit"]},
+    {"id": "submit-pending", "from": "mutter-atomic-submit", "relation": "calls", "to": "mutter-pending-preedit", "events": ["atomic-submit-flush"]},
+    {"id": "submit-client", "from": "mutter-pending-preedit", "relation": "delegates", "to": "wayland-client", "events": ["atomic-submit-flush"]}
+  ],
+  "routes": [
+    {
+      "id": "atomic-key-authority",
+      "event": "atomic-key",
+      "kind": "authority",
+      "entry": "mutter-frozen-profile",
+      "terminal": "mutter-atomic-submit",
+      "required_roles": ["producer", "evidence_owner", "authorization_owner", "mutation_owner"]
+    },
+    {
+      "id": "legacy-preedit-execution",
+      "event": "legacy-preedit",
+      "kind": "execution",
+      "entry": "background-preedit",
+      "terminal": "wayland-client",
+      "required_roles": ["producer", "evidence_owner", "interface"],
+      "path_cardinality": [{"from": "background-preedit", "to": "wayland-client", "min": 1, "max": 1}]
+    },
+    {
+      "id": "atomic-submit-flush-execution",
+      "event": "atomic-submit-flush",
+      "kind": "execution",
+      "entry": "mutter-atomic-submit",
+      "terminal": "wayland-client",
+      "required_roles": ["mutation_owner", "evidence_owner", "interface"],
+      "path_cardinality": [{"from": "mutter-atomic-submit", "to": "wayland-client", "min": 1, "max": 1}]
+    }
+  ]
+}

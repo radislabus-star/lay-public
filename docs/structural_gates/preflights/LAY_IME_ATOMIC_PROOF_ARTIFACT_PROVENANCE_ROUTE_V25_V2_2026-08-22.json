@@ -1,0 +1,77 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "current_lay_source", "role": "producer"},
+    {"id": "remote_source_parity", "role": "evidence_owner"},
+    {"id": "remote_build_admission", "role": "authorization_owner"},
+    {"id": "cargo_guard_builder", "role": "mutation_owner"},
+    {"id": "immutable_engine_artifact", "role": "producer"},
+    {"id": "engine_manifest_admission", "role": "authorization_owner"},
+    {"id": "readonly_bwrap_engine", "role": "mutation_owner"},
+    {"id": "engine_execution_receipt", "role": "observer"},
+    {"id": "composite_route_observer", "role": "observer"},
+    {"id": "composite_route_receipt", "role": "proof_owner"}
+  ],
+  "edges": [
+    {"id": "exec-source-parity", "from": "current_lay_source", "relation": "delegates", "to": "remote_source_parity", "events": ["proof_engine_build"]},
+    {"id": "exec-parity-builder", "from": "remote_source_parity", "relation": "delegates", "to": "cargo_guard_builder", "events": ["proof_engine_build"]},
+    {"id": "exec-builder-artifact", "from": "cargo_guard_builder", "relation": "delegates", "to": "immutable_engine_artifact", "events": ["proof_engine_build"]},
+    {"id": "authority-build-evidence", "from": "remote_source_parity", "relation": "passes_to", "to": "remote_build_admission", "events": ["proof_engine_build"]},
+    {"id": "authority-build-admission", "from": "remote_build_admission", "relation": "authorizes", "to": "cargo_guard_builder", "events": ["proof_engine_build"]},
+    {"id": "artifact-admission", "from": "immutable_engine_artifact", "relation": "passes_to", "to": "engine_manifest_admission", "events": ["atomic_composite_proof"]},
+    {"id": "admission-execution", "from": "engine_manifest_admission", "relation": "authorizes", "to": "readonly_bwrap_engine", "events": ["atomic_composite_proof"]},
+    {"id": "exec-artifact-admission", "from": "immutable_engine_artifact", "relation": "delegates", "to": "engine_manifest_admission", "events": ["atomic_composite_proof"]},
+    {"id": "exec-admission-engine", "from": "engine_manifest_admission", "relation": "delegates", "to": "readonly_bwrap_engine", "events": ["atomic_composite_proof"]},
+    {"id": "exec-engine-receipt", "from": "readonly_bwrap_engine", "relation": "delegates", "to": "engine_execution_receipt", "events": ["atomic_composite_proof"]},
+    {"id": "observe-execution", "from": "engine_execution_receipt", "relation": "observes", "to": "composite_route_observer", "events": ["atomic_composite_proof"]},
+    {"id": "observation-proof", "from": "composite_route_observer", "relation": "proves", "to": "composite_route_receipt", "events": ["atomic_composite_proof"]}
+  ],
+  "routes": [
+    {
+      "id": "proof-engine-build-execution",
+      "event": "proof_engine_build",
+      "kind": "execution",
+      "entry": "current_lay_source",
+      "terminal": "immutable_engine_artifact",
+      "required_roles": ["producer", "evidence_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "current_lay_source", "to": "immutable_engine_artifact", "min": 1, "max": 1}]
+    },
+    {
+      "id": "proof-engine-build-authority",
+      "event": "proof_engine_build",
+      "kind": "authority",
+      "entry": "remote_source_parity",
+      "terminal": "cargo_guard_builder",
+      "required_roles": ["evidence_owner", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "remote_source_parity", "to": "cargo_guard_builder", "min": 1, "max": 1}]
+    },
+    {
+      "id": "proof-engine-admission-authority",
+      "event": "atomic_composite_proof",
+      "kind": "authority",
+      "entry": "immutable_engine_artifact",
+      "terminal": "readonly_bwrap_engine",
+      "required_roles": ["producer", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "immutable_engine_artifact", "to": "readonly_bwrap_engine", "min": 1, "max": 1}]
+    },
+    {
+      "id": "composite-observation",
+      "event": "atomic_composite_proof",
+      "kind": "observation",
+      "entry": "engine_execution_receipt",
+      "terminal": "composite_route_observer",
+      "required_roles": ["observer"],
+      "path_cardinality": [{"from": "engine_execution_receipt", "to": "composite_route_observer", "min": 1, "max": 1}]
+    },
+    {
+      "id": "composite-proof",
+      "event": "atomic_composite_proof",
+      "kind": "proof",
+      "entry": "composite_route_observer",
+      "terminal": "composite_route_receipt",
+      "required_roles": ["observer", "proof_owner"],
+      "path_cardinality": [{"from": "composite_route_observer", "to": "composite_route_receipt", "min": 1, "max": 1}]
+    }
+  ]
+}

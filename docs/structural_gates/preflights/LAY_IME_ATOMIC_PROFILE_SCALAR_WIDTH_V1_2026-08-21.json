@@ -1,0 +1,155 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_ATOMIC_PROFILE_SCALAR_WIDTH_V1_2026-08-21",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "atomic-engine",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 16321,
+        "sha256": "19ced256a05e726e5a7f4365c2d5cd33130669c90d833d8d39807fef01535cd7"
+      }
+    },
+    {
+      "id": "architecture-paper",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/ime-backend-atomic-frame-v2-2026-08-20.md",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 122495,
+        "sha256": "102c218ac1610c93c19aeb4a118390d47220fa59e518fa6a4ede518c430c503e"
+      }
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "correct-profile-scalar-width", "kind": "source_edit"},
+      {"id": "remote-release-build", "kind": "remote_build"},
+      {"id": "real-engine-abi-proof", "kind": "isolated_test"},
+      {"id": "record-result", "kind": "filesystem_write"}
+    ],
+    "forbidden": [
+      "runtime_deployment",
+      "installed_file_write",
+      "keyboard_or_session_restart",
+      "same_event_legacy_fallback",
+      "second_native_mutation_owner",
+      "wire_translation_adapter",
+      "profile_width_widening",
+      "local_rust_build"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "atomic-engine-source",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic.rs",
+      "sha256": "19ced256a05e726e5a7f4365c2d5cd33130669c90d833d8d39807fef01535cd7",
+      "forbidden_effect_patterns": [
+        {"effect": "runtime_deployment", "regex": "(?:systemctl|dpkg|gnome-session|ibus restart)"},
+        {"effect": "installed_file_write", "regex": "std::fs::write.{0,120}/(?:usr|home)"},
+        {"effect": "keyboard_or_session_restart", "regex": "(?:kill|signal|restart).{0,100}(?:ibus|gnome|mutter|lay-daemon)"},
+        {"effect": "same_event_legacy_fallback", "regex": "process_atomic_key_event[\\s\\S]{0,1000}process_key_event\\("},
+        {"effect": "second_native_mutation_owner", "regex": "(?:uinput|ydotool|xdotool|wtype)"},
+        {"effect": "wire_translation_adapter", "regex": "translate_atomic_profile_width"},
+        {"effect": "profile_width_widening", "regex": "type AtomicProfile = \\(u32, u32, Vec<u8>, u32, u32, u32, u32\\)"},
+        {"effect": "local_rust_build", "regex": "Command::new\\(\"cargo\"\\)"}
+      ]
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "profile-wire-abi",
+      "producer": "IBus capability record ((uuayuuyu)(tttttbay))",
+      "consumer": "Lay AtomicProfile",
+      "comparison": "maximum_semantic_effect_count is byte y/u8 and every other scalar retains the frozen type",
+      "test_id": "real-engine-signature-parity"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "exact-wire-width",
+      "statement": "Lay accepts the frozen profile directly without translation or widened aliases",
+      "test_id": "real-engine-signature-parity"
+    },
+    {
+      "id": "bounded-effects",
+      "statement": "maximum effect count remains 1..3 after decoding as u8",
+      "test_id": "effect-count-bounds"
+    },
+    {
+      "id": "one-owner-route",
+      "statement": "ABI correction adds no fallback or mutation owner",
+      "test_id": "owner-route-static"
+    }
+  ],
+  "preserved_artifacts": [
+    {
+      "id": "architecture-contract",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/ime-backend-atomic-frame-v2-2026-08-20.md",
+      "policy": "read_only_during_code_then_append_measured_result",
+      "rollback_policy": "retain the signature-mismatch evidence and frozen ABI",
+      "baseline_check_id": "architecture-paper"
+    }
+  ],
+  "runtime_comparisons": [],
+  "state_machine": {
+    "initial_state": "PREFLIGHT_REQUIRED",
+    "terminal_states": ["RECORDED", "EDIT_FAILED_RETAINED", "BUILD_FAILED_RETAINED", "PROOF_FAILED_RETAINED", "EVIDENCE_FAILED_RETAINED"],
+    "steps": [
+      {
+        "id": "edit-profile-type",
+        "from": "PREFLIGHT_REQUIRED",
+        "to": "SOURCE_READY",
+        "mutates": true,
+        "failure_state": "EDIT_FAILED_RETAINED",
+        "cleanup": "retain scoped diff and change no installed runtime",
+        "preserves": ["architecture-contract"],
+        "test_id": "edit-fault"
+      },
+      {
+        "id": "remote-build",
+        "from": "SOURCE_READY",
+        "to": "BUILD_READY",
+        "mutates": true,
+        "failure_state": "BUILD_FAILED_RETAINED",
+        "cleanup": "terminate only task-owned remote jobs and retain logs",
+        "preserves": ["architecture-contract"],
+        "test_id": "build-fault"
+      },
+      {
+        "id": "real-engine-proof",
+        "from": "BUILD_READY",
+        "to": "PROOF_READY",
+        "mutates": true,
+        "failure_state": "PROOF_FAILED_RETAINED",
+        "cleanup": "stop isolated IBus and engine processes and block deployment",
+        "preserves": ["architecture-contract"],
+        "test_id": "proof-fault"
+      },
+      {
+        "id": "record-evidence",
+        "from": "PROOF_READY",
+        "to": "RECORDED",
+        "mutates": true,
+        "failure_state": "EVIDENCE_FAILED_RETAINED",
+        "cleanup": "retain raw logs and block deployment until evidence agrees",
+        "preserves": ["architecture-contract"],
+        "test_id": "evidence-fault"
+      }
+    ]
+  },
+  "tests": [
+    {"id": "real-engine-signature-parity", "kind": "integration", "expected": "real IBus request reaches the real Lay method with exact frozen signature"},
+    {"id": "effect-count-bounds", "kind": "fault_injection", "expected": "zero and values above three remain rejected"},
+    {"id": "owner-route-static", "kind": "parity", "expected": "no fallback, signal mutator or second native owner is introduced"},
+    {"id": "edit-fault", "kind": "fault_injection", "expected": "partial edit changes no installed runtime"},
+    {"id": "build-fault", "kind": "fault_injection", "expected": "failed remote build leaves no task process"},
+    {"id": "proof-fault", "kind": "fault_injection", "expected": "failed isolated proof tears down its processes and blocks deployment"},
+    {"id": "evidence-fault", "kind": "fault_injection", "expected": "missing result record blocks deployment"}
+  ]
+}

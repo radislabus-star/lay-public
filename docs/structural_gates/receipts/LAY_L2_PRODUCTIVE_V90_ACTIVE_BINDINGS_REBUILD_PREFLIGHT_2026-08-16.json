@@ -1,0 +1,185 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "active-l11-v9",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.v9.bin",
+      "sha256": "bf5a1619a89038466ef786305cf35eda5f4af5b9f12b9140f7d3cac407e2f2a7",
+      "size_bytes": 77962328
+    },
+    {
+      "exists": true,
+      "id": "active-canonical-l2-v13",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-RU-FULL-v13.bin",
+      "sha256": "cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b",
+      "size_bytes": 140556462
+    },
+    {
+      "exists": true,
+      "id": "installed-incompatible-productive-v90",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2m",
+      "sha256": "9fd8c950398fb8ba47a2c9f2236880239d9f4376b191a691b0d01c47ddd3e438",
+      "size_bytes": 17309944
+    },
+    {
+      "exists": true,
+      "id": "installed-incompatible-productive-recovery-v90",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2r",
+      "sha256": "44a20f7aaf7578a960477fbfb1d30c9828b9d71f037e3ad1b2d57bc7fa5568c4",
+      "size_bytes": 2123112
+    },
+    {
+      "exists": true,
+      "id": "productive-orchestrator-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/productive_v1/orchestrator.rs",
+      "sha256": "bf4a87539a9e4541f0f33f3634fbdf6d013040c32d8a4548fa9732c67ca544a3",
+      "size_bytes": 30736
+    },
+    {
+      "exists": true,
+      "id": "productive-compiler-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/productive_v1/compiler.rs",
+      "sha256": "9a446f682339437d26e7b06a6c7f0e4bb152820f7144ccc1a97311537e680bc8",
+      "size_bytes": 86311
+    },
+    {
+      "exists": true,
+      "id": "productive-runtime-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/productive_v1/packaged_runtime.rs",
+      "sha256": "0898a0e6307166846a9847c17d07d108cf349720b338dcfeda8e0cef620c8e53",
+      "size_bytes": 175860
+    },
+    {
+      "exists": true,
+      "id": "productive-proof-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/productive_v1/proof.rs",
+      "sha256": "e67e3c0549a74ce8ecc790e3b15888cb36757ce1aa141fc3d7a328d0e89a4ae3",
+      "size_bytes": 125410
+    },
+    {
+      "exists": true,
+      "id": "installed-lay-daemon-1-0-33",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+      "sha256": "f0821f3b1dbf87fb83db1119534d3e4a1aef489dd6d5588ca8a8f9b86a19194c",
+      "size_bytes": 8342624
+    },
+    {
+      "exists": true,
+      "id": "installed-lay-ime-1-0-33",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "sha256": "dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a",
+      "size_bytes": 6423488
+    }
+  ],
+  "blockers": [
+    {
+      "code": "source_veto_effect_unbound",
+      "field": "source_checks[1].forbidden_effect_patterns[0].effect",
+      "message": "effect is not forbidden: compiler_installs_live_package"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: edit_remote_dirty_worktree"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: install_before_fixed_proof_pass"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: install_partial_productive_pair"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: overwrite_frozen_v63_v90_workspace"
+    }
+  ],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 10,
+    "forbidden_side_effect_kinds": [
+      "edit_remote_dirty_worktree",
+      "install_before_fixed_proof_pass",
+      "install_partial_productive_pair",
+      "literal_surface_runtime_branch",
+      "overwrite_frozen_v63_v90_workspace",
+      "restart_global_ibus_daemon",
+      "weaken_productive_fingerprint_validation"
+    ],
+    "identity_contracts": 3,
+    "invariants": 5,
+    "planned_side_effect_kinds": [
+      "filesystem_install",
+      "remote_filesystem_stage",
+      "remote_model_build",
+      "remote_quality_proof",
+      "remote_release_build",
+      "rollback_snapshot",
+      "service_activation"
+    ],
+    "preserved_artifacts": 4,
+    "runtime_comparisons": 1,
+    "source_checks": 3,
+    "tests": 11
+  },
+  "manifest_sha256": "2b55d66eed1a8d79757d64219dae95b79d8f59e4f90aef3c25266e63272a663a",
+  "safe_to_implement": false,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "fingerprint-validation-remains-fail-closed",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/productive_v1/packaged_runtime.rs",
+      "sha256": "0898a0e6307166846a9847c17d07d108cf349720b338dcfeda8e0cef620c8e53",
+      "size_bytes": 175860
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "productive-build-remains-staging-only",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/productive_v1/orchestrator.rs",
+      "sha256": "bf4a87539a9e4541f0f33f3634fbdf6d013040c32d8a4548fa9732c67ca544a3",
+      "size_bytes": 30736
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "managed-runtime-controller-preserved",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../scripts/lay-runtime-control.sh",
+      "sha256": "746d077115277775acb275e077b57823ace9e416d2575eaf0bc53d3327d64e6d",
+      "size_bytes": 5032
+    }
+  ],
+  "task_id": "lay-l2-productive-v90-active-bindings-rebuild-2026-08-16",
+  "verdict": "BLOCKED_BEFORE_CODE"
+}

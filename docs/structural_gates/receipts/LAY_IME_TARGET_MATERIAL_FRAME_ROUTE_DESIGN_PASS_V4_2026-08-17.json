@@ -1,0 +1,444 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "PASS",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": true,
+  "contract": "docs/structural_gates/preflights/LAY_IME_TARGET_MATERIAL_FRAME_ROUTE_V4_2026-08-17.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "source_root": null,
+  "node_count": 23,
+  "edge_count": 43,
+  "routes": [
+    {
+      "id": "material-token-execution",
+      "event": "material_prepare_token",
+      "kind": "execution",
+      "entry": "observed_contour",
+      "via": [],
+      "terminal": "prepared_target_material",
+      "path_count": 3,
+      "paths": [
+        [
+          "observed_contour",
+          "prepared_field_builder",
+          "typed_contour_enumerator",
+          "semantic_evidence_merge",
+          "enumeration_completeness",
+          "prepared_target_material"
+        ],
+        [
+          "observed_contour",
+          "prepared_field_builder",
+          "l11_grounding_adapter",
+          "semantic_evidence_merge",
+          "enumeration_completeness",
+          "prepared_target_material"
+        ],
+        [
+          "observed_contour",
+          "prepared_field_builder",
+          "context_neutral_productive_enumerator",
+          "semantic_evidence_merge",
+          "enumeration_completeness",
+          "prepared_target_material"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "context_neutral_productive_enumerator",
+          "l11_grounding_adapter",
+          "typed_contour_enumerator"
+        ],
+        "evidence_owner": [
+          "enumeration_completeness",
+          "prepared_target_material",
+          "semantic_evidence_merge"
+        ],
+        "interface": [
+          "observed_contour"
+        ],
+        "orchestrator": [
+          "prepared_field_builder"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "material-boundary-execution",
+      "event": "material_prepare_boundary",
+      "kind": "execution",
+      "entry": "observed_contour",
+      "via": [],
+      "terminal": "prepared_target_material",
+      "path_count": 4,
+      "paths": [
+        [
+          "observed_contour",
+          "prepared_field_builder",
+          "typed_contour_enumerator",
+          "semantic_evidence_merge",
+          "enumeration_completeness",
+          "prepared_target_material"
+        ],
+        [
+          "observed_contour",
+          "prepared_field_builder",
+          "l11_grounding_adapter",
+          "semantic_evidence_merge",
+          "enumeration_completeness",
+          "prepared_target_material"
+        ],
+        [
+          "observed_contour",
+          "prepared_field_builder",
+          "context_neutral_productive_enumerator",
+          "semantic_evidence_merge",
+          "enumeration_completeness",
+          "prepared_target_material"
+        ],
+        [
+          "observed_contour",
+          "prepared_field_builder",
+          "composite_boundary_grounding",
+          "semantic_evidence_merge",
+          "enumeration_completeness",
+          "prepared_target_material"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "composite_boundary_grounding",
+          "context_neutral_productive_enumerator",
+          "l11_grounding_adapter",
+          "typed_contour_enumerator"
+        ],
+        "evidence_owner": [
+          "enumeration_completeness",
+          "prepared_target_material",
+          "semantic_evidence_merge"
+        ],
+        "interface": [
+          "observed_contour"
+        ],
+        "orchestrator": [
+          "prepared_field_builder"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "frame-l2-execution",
+      "event": "frame_l2_winner",
+      "kind": "execution",
+      "entry": "frame_event",
+      "via": [],
+      "terminal": "event_mutator",
+      "path_count": 1,
+      "paths": [
+        [
+          "frame_event",
+          "frame_target_binder",
+          "frame_target_validity",
+          "conflict_cohort_readout",
+          "decision_core",
+          "compound_edit_authorization",
+          "event_mutator"
+        ]
+      ],
+      "role_owners": {
+        "authorization_owner": [
+          "compound_edit_authorization"
+        ],
+        "evidence_owner": [
+          "conflict_cohort_readout",
+          "frame_target_binder",
+          "frame_target_validity"
+        ],
+        "candidate_rank_owner": [
+          "decision_core"
+        ],
+        "mutation_owner": [
+          "event_mutator"
+        ],
+        "interface": [
+          "frame_event"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "frame_event",
+          "to": "event_mutator",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "frame_event",
+              "frame_target_binder",
+              "frame_target_validity",
+              "conflict_cohort_readout",
+              "decision_core",
+              "compound_edit_authorization",
+              "event_mutator"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "frame-l2-authority",
+      "event": "frame_l2_winner",
+      "kind": "authority",
+      "entry": "conflict_cohort_readout",
+      "via": [],
+      "terminal": "event_mutator",
+      "path_count": 1,
+      "paths": [
+        [
+          "conflict_cohort_readout",
+          "decision_core",
+          "compound_edit_authorization",
+          "event_mutator"
+        ]
+      ],
+      "role_owners": {
+        "authorization_owner": [
+          "compound_edit_authorization"
+        ],
+        "evidence_owner": [
+          "conflict_cohort_readout"
+        ],
+        "candidate_rank_owner": [
+          "decision_core"
+        ],
+        "mutation_owner": [
+          "event_mutator"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "frame-context-shadow-execution",
+      "event": "frame_context_tie",
+      "kind": "execution",
+      "entry": "frame_event",
+      "via": [],
+      "terminal": "context_shadow_observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "frame_event",
+          "frame_target_binder",
+          "frame_target_validity",
+          "conflict_cohort_readout",
+          "context_frame_evidence",
+          "context_tie_selector",
+          "context_calibration_guard",
+          "context_shadow_observer"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "conflict_cohort_readout",
+          "context_frame_evidence",
+          "frame_target_binder",
+          "frame_target_validity"
+        ],
+        "authorization_owner": [
+          "context_calibration_guard"
+        ],
+        "observer": [
+          "context_shadow_observer"
+        ],
+        "candidate_rank_owner": [
+          "context_tie_selector"
+        ],
+        "interface": [
+          "frame_event"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "frame_event",
+          "to": "context_shadow_observer",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "frame_event",
+              "frame_target_binder",
+              "frame_target_validity",
+              "conflict_cohort_readout",
+              "context_frame_evidence",
+              "context_tie_selector",
+              "context_calibration_guard",
+              "context_shadow_observer"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "frame-preserve-execution",
+      "event": "frame_preserve",
+      "kind": "execution",
+      "entry": "frame_event",
+      "via": [],
+      "terminal": "abstain_observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "frame_event",
+          "frame_target_binder",
+          "frame_original_preservation",
+          "abstain_readout",
+          "abstain_observer"
+        ]
+      ],
+      "role_owners": {
+        "observer": [
+          "abstain_observer"
+        ],
+        "candidate_rank_owner": [
+          "abstain_readout"
+        ],
+        "interface": [
+          "frame_event"
+        ],
+        "evidence_owner": [
+          "frame_original_preservation",
+          "frame_target_binder"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "frame_event",
+          "to": "abstain_observer",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "frame_event",
+              "frame_target_binder",
+              "frame_original_preservation",
+              "abstain_readout",
+              "abstain_observer"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "frame-incomplete-execution",
+      "event": "frame_incomplete",
+      "kind": "execution",
+      "entry": "frame_event",
+      "via": [],
+      "terminal": "abstain_observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "frame_event",
+          "frame_target_binder",
+          "frame_target_validity",
+          "conflict_cohort_readout",
+          "abstain_readout",
+          "abstain_observer"
+        ]
+      ],
+      "role_owners": {
+        "observer": [
+          "abstain_observer"
+        ],
+        "candidate_rank_owner": [
+          "abstain_readout"
+        ],
+        "evidence_owner": [
+          "conflict_cohort_readout",
+          "frame_target_binder",
+          "frame_target_validity"
+        ],
+        "interface": [
+          "frame_event"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "frame_event",
+          "to": "abstain_observer",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "frame_event",
+              "frame_target_binder",
+              "frame_target_validity",
+              "conflict_cohort_readout",
+              "abstain_readout",
+              "abstain_observer"
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {
+    "frame_l2_winner": {
+      "candidate_rank_owner": [
+        "decision_core"
+      ],
+      "evidence_owner": [
+        "conflict_cohort_readout"
+      ],
+      "authorization_owner": [
+        "compound_edit_authorization"
+      ],
+      "render_owner": [],
+      "display_rank_owner": [],
+      "mutation_owner": [
+        "event_mutator"
+      ]
+    }
+  },
+  "source_evidence": {
+    "expected": 0,
+    "verified": 0,
+    "complete": true
+  },
+  "issues": [],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": false,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

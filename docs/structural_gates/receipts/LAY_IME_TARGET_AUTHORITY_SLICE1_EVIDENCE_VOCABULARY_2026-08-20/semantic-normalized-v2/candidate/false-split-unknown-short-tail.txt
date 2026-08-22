@@ -1,0 +1,2 @@
+test correction_core::tests::boundary_gate_rejects_short_function_split_with_unknown_tail ... ok
+

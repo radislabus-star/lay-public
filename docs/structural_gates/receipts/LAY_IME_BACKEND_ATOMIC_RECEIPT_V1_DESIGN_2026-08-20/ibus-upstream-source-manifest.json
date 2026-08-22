@@ -1,0 +1,49 @@
+{
+  "schema": "lay.ibus-upstream-source-manifest.v1",
+  "repository": "https://github.com/ibus/ibus.git",
+  "commit": "4d31a1346fc8ac2063b49a2f9d70853d17057be2",
+  "installed_package": {
+    "version": "1.5.34~rc2-1",
+    "source_archive": "https://archive.ubuntu.com/ubuntu/pool/main/i/ibus/",
+    "dsc_sha256": "3f0f2ef8bb9a50f74d9dbf9923a8aaff7df29bb9a1e20e53be89d5a5b5d88308",
+    "orig_sha256": "6b94af30b257cb8d54fcbb0e72d56d0f2b7a4a62f4632459ee88ba078d28793d",
+    "debian_patch_sha256": "ab8cc8440d227ef3a3b6907d7eca8a2374ff61a763739895b001f84c7f820b3f"
+  },
+  "installed_source_files": [
+    {
+      "path": "bus/inputcontext.c",
+      "sha256": "d6fbaf772962153900a1bd1230df63e90d1cd37ba6020f61f1dddc8c30ab332c"
+    },
+    {
+      "path": "src/ibusinputcontext.c",
+      "sha256": "470a92daa5cd587c7110a744db5c19f54625f54e5bd969f1cbc1ea47450364b4"
+    },
+    {
+      "path": "client/gtk2/ibusimcontext.c",
+      "sha256": "e01cf48ee1e197f0d76f6f836196e6b39ab1f18b584ca7737a064b8b19d1a1c8"
+    },
+    {
+      "path": "client/wayland/ibuswaylandim.c",
+      "sha256": "b9303726fa5d54ecf4883b9a8060c82a1785098b7b77b26831df2c6f5accb7eb"
+    }
+  ],
+  "upstream_main_files": [
+    {
+      "path": "bus/inputcontext.c",
+      "sha256": "cb4abf3e511dc114bc467588c4f8b047cb906282d20939be0c6a3e94af79b305"
+    },
+    {
+      "path": "src/ibusinputcontext.c",
+      "sha256": "0c5830c9d863b0cdb3fa80ae15b5804ab2f393fb0bae398990dc954ee514cae1"
+    },
+    {
+      "path": "client/gtk2/ibusimcontext.c",
+      "sha256": "e7e16353f4cc4dba1ef9dd6f395e172c3b590044b645f98513aa33143632d7f6"
+    },
+    {
+      "path": "client/wayland/ibuswaylandim.c",
+      "sha256": "ac17020ebd17cad1ef4b3781a122035f69df00f66a7de0decd1a9c2d8d9a0b99"
+    }
+  ],
+  "claim_scope": "installed and upstream source behavior evidence only; no runtime or atomicity PASS"
+}

@@ -2,13 +2,13 @@
   "checks": [
     {
       "evidence": [
-        "src/typing_transition/candidate.rs:L9:L2CandidateLattice",
+        "src/typing_transition/candidate.rs:L8:L2CandidateLattice",
         "src/typing_transition/decision.rs:L27:TransitionDecisionCore",
         "src/typing_transition/decision.rs:L51:.evaluate_candidates()",
         "src/typing_transition/decision/live_field.rs:L44:TransitionDecisionCore",
-        "src/typing_transition/live_candidate.rs:L143:.select_ime_readout()",
-        "src/typing_transition/live_candidate.rs:L56:TransitionDecisionCore",
-        "src/typing_transition/live_candidate.rs:L57:.select_live_completions()"
+        "src/typing_transition/live_candidate.rs:L176:.select_ime_readout()",
+        "src/typing_transition/live_candidate.rs:L80:TransitionDecisionCore",
+        "src/typing_transition/live_candidate.rs:L81:.select_live_completions()"
       ],
       "id": "decision-authority",
       "status": "WATCH",
@@ -20,9 +20,9 @@
     },
     {
       "evidence": [
-        "src/bin/lay_ibus_engine/state.rs:L151:.with_winner_action()",
-        "src/bin/lay_ibus_engine/state.rs:L314:.replace_committed_tail()",
-        "src/text_edit/structural_verifier.rs:L18:verify_visible_text_transition()",
+        "src/bin/lay_ibus_engine/state.rs:L190:.with_winner_action()",
+        "src/bin/lay_ibus_engine/state.rs:L361:.replace_committed_tail()",
+        "src/text_edit/structural_verifier.rs:L20:verify_visible_text_transition()",
         "src/text_edit/visible_tail.rs:L100:VisibleTailSnapshot",
         "src/text_edit/visible_tail.rs:L65:SnapshotIdentity"
       ],
@@ -54,22 +54,22 @@
     {
       "evidence": [
         "src/text_edit/executor.rs:L151",
-        "src/text_edit/gate.rs:L236",
-        "src/text_edit/gate.rs:L238",
-        "src/text_edit/gate.rs:L294",
-        "src/text_edit/structural_verifier.rs:L79"
+        "src/text_edit/gate.rs:L263",
+        "src/text_edit/gate.rs:L265",
+        "src/text_edit/gate.rs:L321",
+        "src/text_edit/structural_verifier.rs:L133"
       ],
       "id": "typed-transition-capability",
       "status": "WATCH",
       "violations": [
-        "visible_tail_receipt_constructor_sites:src/text_edit/gate.rs:L294,src/text_edit/structural_verifier.rs:L79"
+        "visible_tail_receipt_constructor_sites:src/text_edit/gate.rs:L321,src/text_edit/structural_verifier.rs:L133"
       ]
     },
     {
       "evidence": [
-        "src/bin/lay_ibus_engine/engine/types.rs:L40:PendingSystemOutcomeFeedback",
-        "src/bin/lay_ibus_engine/tail_memory.rs:L166:.arm_visible_postcondition_with_feedback()",
-        "src/bin/lay_ibus_engine/tail_memory.rs:L190:.observe_visible_postcondition()"
+        "src/bin/lay_ibus_engine/engine/types.rs:L207:PendingSystemOutcomeFeedback",
+        "src/bin/lay_ibus_engine/tail_memory.rs:L339:.arm_visible_postcondition_with_feedback()",
+        "src/bin/lay_ibus_engine/tail_memory.rs:L386:.observe_visible_postcondition()"
       ],
       "id": "observed-outcome-feedback",
       "status": "PASS",
@@ -78,7 +78,7 @@
     {
       "evidence": [
         "src/nanda_wave/lexical_phase/runtime.rs:L68:LexicalPhaseMemory",
-        "src/typing_transition/candidate.rs:L9:L2CandidateLattice"
+        "src/typing_transition/candidate.rs:L8:L2CandidateLattice"
       ],
       "id": "hot-field-memory",
       "status": "WATCH",
@@ -108,8 +108,8 @@
     {
       "evidence": [
         "src/nanda_wave/l4_signed_memory.rs:L4:L4SignedMemorySignal",
-        "src/nanda_wave/usage_prior.rs:L311:UsagePriorSnapshot",
-        "src/typing_memory.rs:L363:TypingMemoryEvent"
+        "src/nanda_wave/usage_prior.rs:L466:UsagePriorSnapshot",
+        "src/typing_memory.rs:L401:TypingMemoryEvent"
       ],
       "id": "l3-l4-learning",
       "status": "PASS",
@@ -117,8 +117,8 @@
     },
     {
       "evidence": [
-        "graph_links:31469",
-        "graph_nodes:12238"
+        "graph_links:44333",
+        "graph_nodes:16859"
       ],
       "id": "fast-verifiable",
       "status": "WATCH",
@@ -129,15 +129,15 @@
   ],
   "duplicate_symbols": {
     "normalize_surface()": [
-      "src/nanda_wave/l2_field/compositional.rs:L1751:normalize_surface()",
+      "src/nanda_wave/l2_field/compositional.rs:L1805:normalize_surface()",
       "src/nanda_wave/lexical_grokking/composite.rs:L442:normalize_surface()",
       "src/nanda_wave/lexical_phase/format.rs:L109:normalize_surface()"
     ]
   },
-  "graph_fingerprint": "3076e5b3045a2aec9120e785ded97573e6635e6f1fd72492edd4ee1a68c3b8c7",
-  "graph_links": 31469,
-  "graph_nodes": 12238,
+  "graph_fingerprint": "b8f641c416d57aa663ae0cac6035cffa42cd418184d75cd6f84558b1eae6fe54",
+  "graph_links": 44333,
+  "graph_nodes": 16859,
   "schema": "lay.architecture-graph-receipt.v1",
-  "source_fingerprint": "3e13161df42ebc7cbaf1fb82157bc68812bc18c11f87283b01bc53b272abfe29",
+  "source_fingerprint": "9c7427bcf3329db97c59457c6c6ab8588618ccf0aa2f5696b843259cb17c1870",
   "verdict": "WATCH"
 }

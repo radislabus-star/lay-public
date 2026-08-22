@@ -107,6 +107,10 @@ pub(crate) fn default_memory() -> Option<&'static LexicalPhaseMemory> {
         .as_ref()
 }
 
+pub(crate) fn default_memory_if_warm() -> Option<&'static LexicalPhaseMemory> {
+    DEFAULT_MEMORY.get().and_then(Option::as_ref)
+}
+
 #[cfg(test)]
 fn default_artifact_candidates() -> [PathBuf; 2] {
     [repository_artifact_path(), default_artifact_path()]
@@ -180,6 +184,10 @@ impl LexicalPhaseMemory {
             mmap_backed: self.bytes.is_mapped(),
             raw_word_table: false,
         }
+    }
+
+    pub(crate) fn corpus_fingerprint(&self) -> u64 {
+        self.header.corpus_hash
     }
 
     pub(crate) fn contains_surface(&self, surface: &str) -> bool {

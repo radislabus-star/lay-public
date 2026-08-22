@@ -1,0 +1,130 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "union-smoke",
+      "kind": "file",
+      "mode": "0600",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE5_CONTOUR_BIRTH_2026-08-20/slice5-smoke-exact-union-13x1.json",
+      "sha256": "ad632cd7869a9fe8702c4ae5e34b40fad326358fb7093252086a9a992e6e4104",
+      "size_bytes": 113797
+    },
+    {
+      "exists": true,
+      "id": "paper",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../ime-canonical-target-authority-paper-2026-08-17.md",
+      "sha256": "d2158ba4c31dd2dc99e04430bbb19d23de65fa6739322f0002d8cab8c8be0c37",
+      "size_bytes": 181617
+    },
+    {
+      "exists": true,
+      "id": "material-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/productive_v1/material_frame.rs",
+      "sha256": "a36d6d43307401b2ccb1453350ed67b43a71d1a0266b34fd8cc86cf187efa37e",
+      "size_bytes": 41480
+    },
+    {
+      "exists": true,
+      "id": "contour-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/productive_v1/contour_birth.rs",
+      "sha256": "abe38147457cdbed40caf19b26278dc96bac3e8c999ebfd9d428a32673f29e49",
+      "size_bytes": 20522
+    },
+    {
+      "exists": true,
+      "id": "proof-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/productive_v1/proof.rs",
+      "sha256": "0846cc440715124f2ed5fb8f75699141f5d1d2f4ddba077805e3378384166ee4",
+      "size_bytes": 184500
+    },
+    {
+      "exists": true,
+      "id": "evidence-vocabulary",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/typing_transition/target_evidence.rs",
+      "sha256": "af909f2a5a1abe5908f11ea87f2594d27663b8b19ec3a2faa8bb9402c30eb158",
+      "size_bytes": 51805
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 6,
+    "forbidden_side_effect_kinds": [
+      "change_live_rank_or_authority",
+      "generated_traffic",
+      "literal_case_runtime_branch",
+      "mint_grounding_from_storage",
+      "raise_contour_work_budget",
+      "raise_global_target_limit",
+      "restart_global_ibus_daemon",
+      "restart_lay_daemon",
+      "rewrite_any_package",
+      "runtime_deployment",
+      "synthetic_fixture"
+    ],
+    "identity_contracts": 2,
+    "invariants": 5,
+    "planned_side_effect_kinds": [
+      "remote_test",
+      "source_edit"
+    ],
+    "preserved_artifacts": 1,
+    "runtime_comparisons": 0,
+    "source_checks": 4,
+    "tests": 8
+  },
+  "manifest_sha256": "8eaf008f50501288763ff2a5013780d40c5e3d42ca0b2c26027f7d5882270a0d",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "material-owner-pinned",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/productive_v1/material_frame.rs",
+      "sha256": "a36d6d43307401b2ccb1453350ed67b43a71d1a0266b34fd8cc86cf187efa37e",
+      "size_bytes": 41480
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "contour-owner-pinned",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/productive_v1/contour_birth.rs",
+      "sha256": "abe38147457cdbed40caf19b26278dc96bac3e8c999ebfd9d428a32673f29e49",
+      "size_bytes": 20522
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "proof-owner-pinned",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/productive_v1/proof.rs",
+      "sha256": "0846cc440715124f2ed5fb8f75699141f5d1d2f4ddba077805e3378384166ee4",
+      "size_bytes": 184500
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "evidence-vocabulary-pinned",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/typing_transition/target_evidence.rs",
+      "sha256": "af909f2a5a1abe5908f11ea87f2594d27663b8b19ec3a2faa8bb9402c30eb158",
+      "size_bytes": 51805
+    }
+  ],
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE5_TYPED_CONTOUR_RESERVE_IMPLEMENTATION_V1_2026-08-20",
+  "verdict": "READY_TO_IMPLEMENT"
+}

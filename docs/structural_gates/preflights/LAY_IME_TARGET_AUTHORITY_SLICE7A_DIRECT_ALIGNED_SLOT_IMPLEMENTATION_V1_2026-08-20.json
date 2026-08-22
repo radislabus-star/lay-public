@@ -1,0 +1,310 @@
+{
+  "authority_bearing": false,
+  "baseline_checks": [
+    {
+      "id": "slice6-final-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE6_BOUNDARY_INTERNALIZATION_2026-08-20/final-receipt.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 2688,
+        "sha256": "434b550498875ce88d00727187143562a2a804f2f214a042c0fbb7c5bb7dc546"
+      }
+    },
+    {
+      "id": "buffered-ext4-failure-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE7A_DURABILITY_MICROPROOF_2026-08-20/final-ext4-preallocated-receipt.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 2916,
+        "sha256": "b8766d04b4a95233d4ef1e531b767d67124c784d6a658bee73833ea0224e732b"
+      }
+    },
+    {
+      "id": "authority-paper",
+      "kind": "file",
+      "path": "../../ime-canonical-target-authority-paper-2026-08-17.md",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 190901,
+        "sha256": "a61e0b57569c41d76b3ac6f053feec6fbd3fb75eda4b03a082afed500e909d72"
+      }
+    },
+    {
+      "id": "output-transaction-core",
+      "kind": "file",
+      "path": "../../../src/text_edit/output_transaction.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 31890,
+        "sha256": "c0f02958ee01f80fbf2d1577675cda974c79cf424d530bbfbbe1076752703e9c"
+      }
+    },
+    {
+      "id": "durability-microproof-source",
+      "kind": "file",
+      "path": "../../../src/bin/lay_output_transaction_microproof.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 14331,
+        "sha256": "394892b850368cd657aa8119176b2e392c0cf66cbfba2bdbc9bf1cef004dc517"
+      }
+    },
+    {
+      "id": "cargo-manifest",
+      "kind": "file",
+      "path": "../../../Cargo.toml",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 2399,
+        "sha256": "91a3c72265db548d6190f16a0059bcd27174a80b3403302ce1b7ee9b7cb9cc8c"
+      }
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "direct-slot-record-identity",
+      "producer": "one aligned durable slot containing one prepare or terminal N plus Prepared N+1",
+      "consumer": "direct-slot recovery scanner",
+      "comparison": "slot schema generation sequence logical record count event lineage digests and both slot and record checksums are byte-identical after decode",
+      "test_id": "direct-slot-roundtrip"
+    },
+    {
+      "id": "same-lineage-order",
+      "producer": "terminal N plus Prepared N+1 co-commit",
+      "consumer": "SameLineageStateBarrierV1",
+      "comparison": "N is publishable and N+1 is effect-eligible only after the same durability barrier succeeds",
+      "test_id": "co-commit-order"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "direct-only-hot-commit",
+      "statement": "every measured hot durability unit is one full aligned O_DIRECT and O_DSYNC write with no buffered fallback separate fdatasync or inode growth",
+      "test_id": "direct-io-contract"
+    },
+    {
+      "id": "torn-slot-is-not-durable",
+      "statement": "short unaligned checksum-damaged foreign-generation or ambiguous slots never publish prepare or terminal durability",
+      "test_id": "direct-slot-fault-matrix"
+    },
+    {
+      "id": "ring-wrap-preserves-latest-chain",
+      "statement": "after capacity wrap recovery selects only the highest complete contiguous checksum chain and never joins old and new generations",
+      "test_id": "ring-wrap-recovery"
+    },
+    {
+      "id": "prepare-before-effect",
+      "statement": "an event can become effect-eligible only after its Prepared record is durably synced",
+      "test_id": "prepare-failure"
+    },
+    {
+      "id": "one-foreground-wait",
+      "statement": "a steady-state event performs at most one independent foreground durability wait",
+      "test_id": "barrier-count"
+    },
+    {
+      "id": "terminal-before-publish",
+      "statement": "success no-effect and recovery outcomes are not publishable before terminal durability",
+      "test_id": "tail-flush-order"
+    },
+    {
+      "id": "failure-is-not-success",
+      "statement": "append sync checksum queue and owner failures produce refusal before effect or recovery after effect, never success or native replay",
+      "test_id": "fault-matrix"
+    },
+    {
+      "id": "isolated-only",
+      "statement": "Slice 7A writes only a caller-selected temporary journal and cannot mutate text layout keys runtime state packages or installed services",
+      "test_id": "side-effect-scan"
+    },
+    {
+      "id": "fixed-performance-gate",
+      "statement": "prepare and co-commit p99 must be at most 2 ms and maximum below 8 ms without changing the frozen thresholds",
+      "test_id": "local-durability-microproof"
+    }
+  ],
+  "preserved_artifacts": [
+    {
+      "id": "slice6-receipt",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE6_BOUNDARY_INTERNALIZATION_2026-08-20/final-receipt.json",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "retain Slice 6 scoped PASS and global latency blocker",
+      "baseline_check_id": "slice6-final-receipt"
+    },
+    {
+      "id": "buffered-ext4-failure",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE7A_DURABILITY_MICROPROOF_2026-08-20/final-ext4-preallocated-receipt.json",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "retain rejected buffered strategy evidence and unchanged numeric gates",
+      "baseline_check_id": "buffered-ext4-failure-receipt"
+    }
+  ],
+  "reuses_existing_implementation": true,
+  "runtime_comparisons": [],
+  "schema": "nanda.implementation-preflight.v1",
+  "scientific_future_sensitive": true,
+  "source_checks": [
+    {
+      "id": "text-edit-owner-pinned",
+      "path": "../../../src/text_edit.rs",
+      "sha256": "69717ea3a5c2120f4e5a92653ddd3258ebb0deb49faee8dd2a14b078c5fe1cfb",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "weaken_authorized_edit",
+          "regex": "(?s)AuthorizedEdit.{0,500}(?:pub fn new|pub fields|unsafe)"
+        },
+        {
+          "effect": "bypass_verifier",
+          "regex": "(?s)(?:commit_text|replace_committed_tail).{0,300}(?:without|bypass).{0,100}(?:verify|AuthorizedEdit)"
+        },
+        {
+          "effect": "automatic_authority_change",
+          "regex": "(?:CandidateGateAction::Eligible|AuthorityCertificateV1|selected_winner)"
+        },
+        {
+          "effect": "generated_traffic",
+          "regex": "(?:TcpStream|UdpSocket|reqwest|ureq::|https?://)"
+        },
+        {
+          "effect": "layout_mutation",
+          "regex": "(?:set_layout|activate_layout|layout_controller)"
+        },
+        {
+          "effect": "restart_global_ibus_daemon",
+          "regex": "(?:restart|stop|kill|pkill).{0,80}ibus-daemon"
+        },
+        {
+          "effect": "restart_lay_daemon",
+          "regex": "(?:restart|stop|kill|pkill).{0,80}lay-daemon"
+        },
+        {
+          "effect": "rewrite_any_package",
+          "regex": "(?:File::create|OpenOptions::new).{0,300}(?:p2m|L2-RU|canonical|lexical)"
+        },
+        {
+          "effect": "runtime_deployment",
+          "regex": "(?:systemctl|daemon-reload|lay-runtime-control)"
+        },
+        {
+          "effect": "synthetic_key_output",
+          "regex": "(?:uinput|emit_key|write_key|KEY_[A-Z])"
+        },
+        {
+          "effect": "text_mutation",
+          "regex": "(?:commit_text|replace_committed_tail|delete_surrounding_text)"
+        },
+        {
+          "effect": "threshold_relaxation",
+          "regex": "(?s)(?:P99|MAX).{0,120}(?:2001|8000|8001|16000)"
+        },
+        {
+          "effect": "two_foreground_sync_waits",
+          "regex": "(?s)sync_(?:all|data).{0,600}sync_(?:all|data)"
+        },
+        {
+          "effect": "synthetic_fixture",
+          "regex": "(?:write|create|generate)_synthetic_fixture"
+        }
+      ]
+    },
+    {
+      "id": "microproof-source-pinned",
+      "path": "../../../src/bin/lay_output_transaction_microproof.rs",
+      "sha256": "394892b850368cd657aa8119176b2e392c0cf66cbfba2bdbc9bf1cef004dc517",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "generated_traffic",
+          "regex": "(?:TcpStream|UdpSocket|reqwest|ureq::|https?://)"
+        },
+        {
+          "effect": "runtime_deployment",
+          "regex": "(?:systemctl|daemon-reload|lay-runtime-control)"
+        },
+        {
+          "effect": "text_mutation",
+          "regex": "(?:commit_text|replace_committed_tail|delete_surrounding_text)"
+        },
+        {
+          "effect": "synthetic_key_output",
+          "regex": "(?:uinput|emit_key|write_key|KEY_[A-Z])"
+        },
+        {
+          "effect": "threshold_relaxation",
+          "regex": "(?s)(?:P99|MAX).{0,120}(?:2001|8000|8001|16000)"
+        }
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "replace-buffered-file-io-with-direct-aligned-slot-io", "kind": "source_edit"},
+      {"id": "extend-isolated-microproof-for-direct-slot-recovery", "kind": "source_edit"},
+      {"id": "build-release-remotely", "kind": "remote_build"},
+      {"id": "write-local-temporary-journal", "kind": "filesystem_write"},
+      {"id": "write-proof-receipt", "kind": "filesystem_write"}
+    ],
+    "forbidden": [
+      "runtime_deployment",
+      "restart_lay_daemon",
+      "restart_global_ibus_daemon",
+      "text_mutation",
+      "layout_mutation",
+      "synthetic_key_output",
+      "rewrite_any_package",
+      "generated_traffic",
+      "automatic_authority_change",
+      "buffered_io_fallback",
+      "two_foreground_sync_waits",
+      "threshold_relaxation"
+      ,"synthetic_fixture"
+      ,"weaken_authorized_edit"
+      ,"bypass_verifier"
+    ]
+  },
+  "state_machine": {
+    "initial_state": "SLICE7A_BUFFERED_STRATEGY_REJECTED_RUNTIME_UNCHANGED",
+    "steps": [
+      {
+        "id": "implement-direct-aligned-slot-core",
+        "from": "SLICE7A_BUFFERED_STRATEGY_REJECTED_RUNTIME_UNCHANGED",
+        "to": "SLICE7A_DIRECT_MICROPROOF_READY_RUNTIME_UNCHANGED",
+        "mutates": true,
+        "failure_state": "SLICE7A_DIRECT_IMPLEMENTATION_REJECTED_RUNTIME_UNCHANGED",
+        "cleanup": "retain direct implementation and proof evidence; never fall back to the rejected buffered primitive",
+        "preserves": ["slice6-receipt", "buffered-ext4-failure"],
+        "test_id": "direct-slot-fault-matrix"
+      },
+      {
+        "id": "run-one-local-direct-durability-microproof",
+        "from": "SLICE7A_DIRECT_MICROPROOF_READY_RUNTIME_UNCHANGED",
+        "to": "SLICE7A_DIRECT_MICROPROOF_PASS_RUNTIME_UNCHANGED",
+        "mutates": true,
+        "failure_state": "SLICE7A_LOCAL_SYNCHRONOUS_STORAGE_REJECTED_RUNTIME_UNCHANGED",
+        "cleanup": "close the direct file and retain journal receipt and failure bytes; do not run a third storage strategy",
+        "preserves": ["slice6-receipt", "buffered-ext4-failure"],
+        "test_id": "local-durability-microproof"
+      }
+    ],
+    "terminal_states": [
+      "SLICE7A_DIRECT_MICROPROOF_PASS_RUNTIME_UNCHANGED",
+      "SLICE7A_DIRECT_IMPLEMENTATION_REJECTED_RUNTIME_UNCHANGED",
+      "SLICE7A_LOCAL_SYNCHRONOUS_STORAGE_REJECTED_RUNTIME_UNCHANGED"
+    ]
+  },
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE7A_DIRECT_ALIGNED_SLOT_IMPLEMENTATION_V1_2026-08-20",
+  "tests": [
+    {"id": "direct-slot-roundtrip", "kind": "parity", "expected": "every aligned-slot and logical-record identity field plus both checksum layers round-trip exactly"},
+    {"id": "direct-io-contract", "kind": "integration", "expected": "hot commits use fixed aligned O_DIRECT and O_DSYNC writes without buffered fallback fdatasync or file growth"},
+    {"id": "direct-slot-fault-matrix", "kind": "fault_injection", "expected": "short write alignment unsupported-direct checksum generation and durability failures are fail-closed"},
+    {"id": "ring-wrap-recovery", "kind": "parity", "expected": "capacity wrap recovers only the latest complete contiguous slot and logical-record chain"},
+    {"id": "prepare-failure", "kind": "fault_injection", "expected": "prepare append or sync failure returns pre-effect refusal and no effect eligibility"},
+    {"id": "co-commit-order", "kind": "parity", "expected": "one barrier durably commits terminal N and Prepared N+1 before either dependent state is released"},
+    {"id": "barrier-count", "kind": "integration", "expected": "each steady-state event reports no more than one independent foreground durability wait"},
+    {"id": "tail-flush-order", "kind": "integration", "expected": "idle terminal becomes publishable only after bounded tail flush durability"},
+    {"id": "fault-matrix", "kind": "fault_injection", "expected": "append sync checksum saturation disconnect and owner-stop failures are fail-closed"},
+    {"id": "side-effect-scan", "kind": "integration", "expected": "microproof contains no text layout key service package or network mutation"},
+    {"id": "local-durability-microproof", "kind": "fault_injection", "expected": "one local ext4 NVMe direct-slot proof has prepare and co-commit p99 <=2 ms max <8 ms with prepare co-commit tail native-wait wrap saturation and persistence-failure strata reported"}
+  ]
+}

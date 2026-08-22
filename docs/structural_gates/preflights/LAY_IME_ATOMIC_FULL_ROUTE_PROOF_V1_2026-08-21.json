@@ -1,0 +1,253 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_ATOMIC_FULL_ROUTE_PROOF_V1_2026-08-21",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "shell-live-adapter",
+      "kind": "file",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/js/misc/inputMethod.js",
+      "expect": {"mode": "0664", "size_bytes": 15192, "sha256": "7e84931650ccee7920428d22287da6e99763db7f08783a48fdda55fd459e3b37"}
+    },
+    {
+      "id": "shell-single-flight",
+      "kind": "file",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/js/misc/inputMethodAtomic.js",
+      "expect": {"mode": "0664", "size_bytes": 15841, "sha256": "d40801329973da6c3e96f35edc2f478ad82c7752f4e245cb01f69904a24e19c0"}
+    },
+    {
+      "id": "shell-perf-helper",
+      "kind": "file",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/src/shell-perf-helper.c",
+      "expect": {"mode": "0664", "size_bytes": 13371, "sha256": "7ecafb832ab2a3c0f27eae8138c4918ced9dc7f6f7c716d2edf12af927c51a80"}
+    },
+    {
+      "id": "shell-scripting-helper",
+      "kind": "file",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/js/ui/scripting.js",
+      "expect": {"mode": "0664", "size_bytes": 12508, "sha256": "e1ad3489382cdd487c1a9dc40f3ea671c6f9f3eabcd962d4ab782c4b2ae0d3f7"}
+    },
+    {
+      "id": "shell-test-manifest",
+      "kind": "file",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/meson.build",
+      "expect": {"mode": "0664", "size_bytes": 3565, "sha256": "43be8b6f09b18dc810b942bc518c9ddb2c0019851ccc4a3bb00620be4735090a"}
+    },
+    {
+      "id": "mutter-atomic-owner-api",
+      "kind": "file",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/clutter/clutter/clutter-input-atomic-frame.h",
+      "expect": {"mode": "0664", "size_bytes": 4694, "sha256": "7c468f83e00ccea86d031d37c3d59478213e7c7dbf39b11cdd901788c4cfcce8"}
+    },
+    {
+      "id": "ibus-real-process-proof",
+      "kind": "file",
+      "path": "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/ibus-atomic-process.c",
+      "expect": {"mode": "0664", "size_bytes": 61865, "sha256": "4d6f8fe3c6525e4ef4bbd99b2e2e701b3bc362d98d03e93ca0df470ab703e38b"}
+    },
+    {
+      "id": "lay-atomic-engine",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic.rs",
+      "expect": {"mode": "0664", "size_bytes": 16640, "sha256": "45b06512eb69f04a967ae40ac7f30438f523d197d8d3e46a23df586016340319"}
+    },
+    {
+      "id": "real-engine-receipt",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/real-lay-engine-process-proof-v1.json",
+      "expect": {"mode": "0664", "size_bytes": 3262, "sha256": "876ce1b56ec4201bf2c06692e491d27997bf766bce65d8d03fd7b98a415ebd14"}
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "add-perf-helper-text-observer", "kind": "test_source_edit"},
+      {"id": "add-headless-route-proof", "kind": "test_source_edit"},
+      {"id": "remote-scoped-build", "kind": "remote_build"},
+      {"id": "isolated-process-tree", "kind": "ephemeral_process_start"},
+      {"id": "write-proof-logs", "kind": "filesystem_write"},
+      {"id": "record-receipt", "kind": "filesystem_write"}
+    ],
+    "forbidden": [
+      "production_route_edit",
+      "local_build",
+      "runtime_deployment",
+      "installed_file_write",
+      "live_session_restart",
+      "live_keyboard_signal",
+      "physical_user_text_mutation",
+      "same_event_legacy_fallback",
+      "second_native_mutation_owner",
+      "cross_focus_replay",
+      "unbounded_event_queue",
+      "orphaned_test_process"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "pinned-shell-single-flight",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/js/misc/inputMethodAtomic.js",
+      "sha256": "d40801329973da6c3e96f35edc2f478ad82c7752f4e245cb01f69904a24e19c0",
+      "forbidden_effect_patterns": [
+        {"effect": "same_event_legacy_fallback", "regex": "ProcessKeyEvent(?!AtomicV1)"},
+        {"effect": "second_native_mutation_owner", "regex": "(?:uinput|ydotool|xdotool|wtype|delete_surrounding_text|commit_text)"},
+        {"effect": "unbounded_event_queue", "regex": "QUEUE_LIMIT\\s*=\\s*(?:0|Infinity|Number[.]MAX_SAFE_INTEGER)"}
+      ]
+    },
+    {
+      "id": "pinned-mutter-owner",
+      "path": "/home/ubu/projects/mutter-lay-atomic-proof/clutter/clutter/clutter-input-atomic-frame.h",
+      "sha256": "7c468f83e00ccea86d031d37c3d59478213e7c7dbf39b11cdd901788c4cfcce8",
+      "forbidden_effect_patterns": [
+        {"effect": "unbounded_event_queue", "regex": "CLUTTER_INPUT_ATOMIC_MAX_EFFECTS\\s+(?:0|UINT_MAX)"},
+        {"effect": "runtime_deployment", "regex": "(?:systemctl|dpkg|apt-get)"}
+      ]
+    },
+    {
+      "id": "pinned-lay-producer",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic.rs",
+      "sha256": "45b06512eb69f04a967ae40ac7f30438f523d197d8d3e46a23df586016340319",
+      "forbidden_effect_patterns": [
+        {"effect": "runtime_deployment", "regex": "(?:systemctl|dpkg|apt-get)"},
+        {"effect": "second_native_mutation_owner", "regex": "(?:uinput|ydotool|xdotool|wtype|/dev/input)"}
+      ]
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "profile-byte-parity",
+      "producer": "Mutter frozen ClutterInputAtomicProfile",
+      "consumer": "Shell encoder and IBus admission",
+      "comparison": "exact ((uuayuuyu)(tttttbay)) normal-form bytes and digest 1475b580ff9600ccfa84e43eb9bd50a61fa0bca88b11d33a104877e36b39adac",
+      "test_id": "integrated-profile-parity"
+    },
+    {
+      "id": "engine-request-parity",
+      "producer": "IBus daemon ProcessKeyEventAtomicV1",
+      "consumer": "real Lay engine",
+      "comparison": "exact event, context, daemon focus, engine, capability and prior receipt identities",
+      "test_id": "integrated-process-hop"
+    },
+    {
+      "id": "effect-owner-parity",
+      "producer": "real Lay canonical effect vector",
+      "consumer": "Mutter text-input-v3 submit owner",
+      "comparison": "exact transaction identity and SHA-256 effect digest",
+      "test_id": "integrated-text-result"
+    }
+  ],
+  "runtime_comparisons": [
+    {
+      "id": "live-runtime-unchanged",
+      "before": "local installed Lay, IBus, GNOME Shell and Mutter process identities and file hashes",
+      "after": "same local installed process identities and file hashes",
+      "stable_fields": ["installed_paths", "sha256", "local_process_pid"],
+      "expected_to_change_fields": [],
+      "observed_not_compared_fields": ["cpu_time", "rss", "log_cursor"],
+      "test_id": "installed-runtime-parity"
+    },
+    {
+      "id": "isolated-process-cleanup",
+      "before": "zero task-owned remote process descendants",
+      "after": "zero task-owned remote process descendants",
+      "stable_fields": ["leftover_process_count"],
+      "expected_to_change_fields": ["ephemeral_pid", "temporary_bus_address"],
+      "observed_not_compared_fields": ["system_load", "page_cache"],
+      "test_id": "process-cleanup"
+    }
+  ],
+  "state_machine": {
+    "initial_state": "BASELINE_PINNED",
+    "steps": [
+      {
+        "id": "author-proof-only-code",
+        "from": "BASELINE_PINNED",
+        "to": "HARNESS_READY",
+        "mutates": true,
+        "failure_state": "HARNESS_FAILED",
+        "cleanup": "retain failed proof code and diagnostics; do not touch production or installed files",
+        "preserves": ["production-sources", "installed-runtime"],
+        "test_id": "proof-scope-parity"
+      },
+      {
+        "id": "remote-scoped-build",
+        "from": "HARNESS_READY",
+        "to": "REMOTE_BUILT",
+        "mutates": true,
+        "failure_state": "BUILD_FAILED",
+        "cleanup": "stop compiler process group and retain bounded build log",
+        "preserves": ["production-sources", "installed-runtime"],
+        "test_id": "remote-build"
+      },
+      {
+        "id": "start-isolated-route",
+        "from": "REMOTE_BUILT",
+        "to": "ROUTE_READY",
+        "mutates": true,
+        "failure_state": "START_FAILED",
+        "cleanup": "terminate isolated D-Bus, IBus, Lay, Shell, Mutter and helper descendants",
+        "preserves": ["installed-runtime"],
+        "test_id": "startup-fault-cleanup"
+      },
+      {
+        "id": "drive-bounded-events",
+        "from": "ROUTE_READY",
+        "to": "MEASURED",
+        "mutates": true,
+        "failure_state": "ROUTE_FAILED",
+        "cleanup": "terminate exact isolated lineage and retain first-failure trace",
+        "preserves": ["installed-runtime"],
+        "test_id": "integrated-text-result"
+      },
+      {
+        "id": "teardown-and-record",
+        "from": "MEASURED",
+        "to": "PASS",
+        "mutates": true,
+        "failure_state": "TEARDOWN_FAILED",
+        "cleanup": "kill only task-owned descendants and refuse PASS while any remain",
+        "preserves": ["production-sources", "installed-runtime"],
+        "test_id": "process-cleanup"
+      }
+    ],
+    "terminal_states": ["PASS", "HARNESS_FAILED", "BUILD_FAILED", "START_FAILED", "ROUTE_FAILED", "TEARDOWN_FAILED"]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "production-sources",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic.rs",
+      "baseline_check_id": "lay-atomic-engine",
+      "policy": "byte_exact",
+      "cursor_policy": "not_applicable",
+      "rollback_policy": "no edit permitted"
+    },
+    {
+      "id": "installed-runtime",
+      "path": "/home/ubu/.local/bin/lay-ibus-engine",
+      "baseline_check_id": "lay-atomic-engine",
+      "policy": "observed_only_no_write",
+      "cursor_policy": "not_applicable",
+      "rollback_policy": "installation is forbidden in this scope"
+    }
+  ],
+  "invariants": [
+    {"id": "one-native-owner", "statement": "only Mutter mutates the text-input-v3 client", "test_id": "integrated-text-result"},
+    {"id": "one-atomic-call-per-event", "statement": "an admitted event has one atomic request and no same-event legacy fallback", "test_id": "integrated-process-hop"},
+    {"id": "bounded-latency", "statement": "integrated p99 is at most 5 ms and maximum is below 8 ms", "test_id": "integrated-latency"},
+    {"id": "no-duplicate-text", "statement": "514 admitted key presses produce exactly 514 expected Unicode commits", "test_id": "integrated-text-result"},
+    {"id": "no-live-change", "statement": "local installed runtime and keyboard session remain unchanged", "test_id": "installed-runtime-parity"},
+    {"id": "no-leftovers", "statement": "all isolated task-owned processes terminate", "test_id": "process-cleanup"}
+  ],
+  "tests": [
+    {"id": "proof-scope-parity", "kind": "static", "expected": "only proof helper, test script and test registration files change"},
+    {"id": "remote-build", "kind": "build", "expected": "scoped Shell helper and test targets build on the 20-CPU remote host"},
+    {"id": "startup-fault-cleanup", "kind": "fault_injection", "expected": "failed component startup leaves zero task-owned processes"},
+    {"id": "integrated-profile-parity", "kind": "parity", "expected": "one exact production profile crosses Mutter, Shell and IBus"},
+    {"id": "integrated-process-hop", "kind": "integration", "expected": "real Lay receives one atomic request per admitted key and zero legacy fallback"},
+    {"id": "integrated-text-result", "kind": "integration", "expected": "GtkEntry receives exactly ф, ы and 512 ф commits with no duplicate mutation"},
+    {"id": "integrated-latency", "kind": "performance", "expected": "512 hot key-to-GtkEntry samples satisfy p99 <= 5 ms and max < 8 ms"},
+    {"id": "installed-runtime-parity", "kind": "parity", "expected": "local installed file hashes and process PIDs remain unchanged"},
+    {"id": "process-cleanup", "kind": "fault_injection", "expected": "normal and failed runs leave zero task-owned remote descendants"}
+  ]
+}

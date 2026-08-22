@@ -1,0 +1,9 @@
+{
+  "id": "live-candidate-adapter",
+  "filter": "live_candidate_projects_the_exact_replacement_evidence_value",
+  "exit_code": 0,
+  "log": {
+    "size_bytes": 33997,
+    "sha256": "0b1a6245418bc0c4b598553ed377635d18a1910871b2d7d42629d162c05c1efa"
+  }
+}

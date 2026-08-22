@@ -1,0 +1,171 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "cargo-manifest",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../Cargo.toml",
+      "sha256": "6c8956ad608e0da63d54a7577c27a9066475f8c889648a498ee8cb0a1baeb5ae",
+      "size_bytes": 2399
+    },
+    {
+      "exists": true,
+      "id": "ibus-engine-root",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine.rs",
+      "sha256": "d2a8af0d3cf4506c721474e38bc5faa7773e5e09764f6af07222f20403b8ae44",
+      "size_bytes": 2037
+    },
+    {
+      "exists": true,
+      "id": "ibus-factory",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/factory.rs",
+      "sha256": "a1c3e68f03ed2ca164482a691bf83da1b3f23d7d7577891be658b8a75058d653",
+      "size_bytes": 1728
+    },
+    {
+      "exists": true,
+      "id": "ibus-engine-state",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/engine.rs",
+      "sha256": "cb9f116ea8d165d3387f9634028d5c9ac2a01dceddbd885049423fcd98918133",
+      "size_bytes": 12881
+    },
+    {
+      "exists": true,
+      "id": "preedit",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/preedit.rs",
+      "sha256": "da4df5608fd55faf896cf15aaf69b0bd600db1c97a95a57d3c8ddc5c019d80ed",
+      "size_bytes": 26058
+    },
+    {
+      "exists": true,
+      "id": "preedit-readout",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/preedit_readout.rs",
+      "sha256": "17c20467dd8fee3f6be7a06249c5fc0dbd5a4c7b8ea3faddb6321ab4f4a343e2",
+      "size_bytes": 6884
+    },
+    {
+      "exists": true,
+      "id": "composition-commit",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/composition_commit.rs",
+      "sha256": "15d324ed3e717ac93653412b85a5bdce455d3a09c355f49d04c89574a6b81908",
+      "size_bytes": 13118
+    },
+    {
+      "exists": true,
+      "id": "space-prefetch",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
+      "sha256": "76b4c6bc13dbadd20ad11e4df0c49106bd66e03b6a311250b81d878f288c2b18",
+      "size_bytes": 8111
+    },
+    {
+      "exists": true,
+      "id": "candidate-gate",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/candidate_gate.rs",
+      "sha256": "5813ca5e979619d27e19bb19d32af7b49a6ff6e05300cb7478697a28d69c47db",
+      "size_bytes": 84226
+    },
+    {
+      "exists": true,
+      "id": "productive-live",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/productive_v1/live.rs",
+      "sha256": "d80b5037cb2e4c2d1925cac4b6c96d0736ab5de48fc97fb61f7ee42cab3380aa",
+      "size_bytes": 22284
+    },
+    {
+      "exists": true,
+      "id": "productive-runtime",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/productive_v1/packaged_runtime.rs",
+      "sha256": "0898a0e6307166846a9847c17d07d108cf349720b338dcfeda8e0cef620c8e53",
+      "size_bytes": 175860
+    },
+    {
+      "exists": true,
+      "id": "installed-ime-1-0-31",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "sha256": "b754481efdf333bba8cb8ae1bbf252cf2d7f2bd3cdd7f00dc49924c0c49a52ec",
+      "size_bytes": 6398136
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 12,
+    "forbidden_side_effect_kinds": [
+      "blocking_space_wait_expansion",
+      "disable_productive_v90_for_latency",
+      "global_ibus_restart",
+      "literal_surface_runtime_branch",
+      "synchronous_v90_on_printable_key"
+    ],
+    "identity_contracts": 3,
+    "invariants": 4,
+    "planned_side_effect_kinds": [
+      "cargo_test",
+      "filesystem_edit",
+      "service_activation"
+    ],
+    "preserved_artifacts": 1,
+    "runtime_comparisons": 0,
+    "source_checks": 3,
+    "tests": 8
+  },
+  "manifest_sha256": "2d9e537170b012ae4c5f55102dc2005a7a5f23744d3bf3eb7991ff213fe13350",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "no-heavy-field-in-printable-handler",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/composition_commit.rs",
+      "sha256": "15d324ed3e717ac93653412b85a5bdce455d3a09c355f49d04c89574a6b81908",
+      "size_bytes": 13118
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "no-candidate-source-removal",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/candidate_gate.rs",
+      "sha256": "5813ca5e979619d27e19bb19d32af7b49a6ff6e05300cb7478697a28d69c47db",
+      "size_bytes": 84226
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "no-space-wait-expansion",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
+      "sha256": "76b4c6bc13dbadd20ad11e4df0c49106bd66e03b6a311250b81d878f288c2b18",
+      "size_bytes": 8111
+    }
+  ],
+  "task_id": "lay-ime-nonblocking-precognition-2026-08-16",
+  "verdict": "READY_TO_IMPLEMENT"
+}

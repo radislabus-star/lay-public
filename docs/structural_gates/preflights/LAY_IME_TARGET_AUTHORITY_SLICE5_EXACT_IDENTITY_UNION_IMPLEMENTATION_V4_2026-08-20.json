@@ -1,0 +1,78 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-ime-target-authority-slice5-exact-identity-union-v4-2026-08-20",
+  "authority_bearing": true,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {"id":"failed-smoke","kind":"file","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE5_CONTOUR_BIRTH_2026-08-20/slice5-smoke-13x1.json","expect":{"mode":"0600","size_bytes":113763,"sha256":"99a8f74a98b95350d4469b828bc436e23546b1adb498efb56ad41c79519b7ee1"}},
+    {"id":"frozen-first-loss","kind":"file","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE5_FIRST_LOSS_FREEZE_2026-08-20/first-loss-manifest.v1.json","expect":{"mode":"0664","size_bytes":15825,"sha256":"c31380541f21a1c870e941008df8272ddbd4f98c9c1df3c5e54c1226ebd55c2b"}},
+    {"id":"frozen-budget","kind":"file","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE5_FIRST_LOSS_FREEZE_2026-08-20/contour-work-budget.v1.json","expect":{"mode":"0664","size_bytes":1605,"sha256":"e42e7e41c921c27bdb92705d13a88e8ddd827f7e76008c41ed8fcfad16777f57"}},
+    {"id":"contour-source","kind":"file","path":"../../../src/nanda_wave/l2_field/productive_v1/contour_birth.rs","expect":{"mode":"0664","size_bytes":18331,"sha256":"44c88a68d1b8438fb043f82fd1ed392d3a6c8b730a05cea9c060e6619ebee9fc"}},
+    {"id":"material-source","kind":"file","path":"../../../src/nanda_wave/l2_field/productive_v1/material_frame.rs","expect":{"mode":"0664","size_bytes":41754,"sha256":"a89473ba5278397dc3bb1363d0edfad80ddb62184a53da328669cd50bace44e4"}},
+    {"id":"proof-source","kind":"file","path":"../../../src/nanda_wave/l2_field/productive_v1/proof.rs","expect":{"mode":"0664","size_bytes":183634,"sha256":"97e27e4957b402cddae9f2535ffc7efde22fe737211b5756954b94b56c63a0a3"}},
+    {"id":"l11-runtime-source","kind":"file","path":"../../../src/nanda_wave/lexical_grokking/runtime.rs","expect":{"mode":"0664","size_bytes":30211,"sha256":"09837afd93553a35c7432d48fb5ce17855785372286e1ffdcf866c302a3db62e"}},
+    {"id":"l11-legacy-source","kind":"file","path":"../../../src/nanda_wave/lexical_grokking/runtime/legacy.rs","expect":{"mode":"0664","size_bytes":32273,"sha256":"d1cbf8834050aa29051c7c49f254b1c56b537d509c8b15f6ee7ff668b9d9b2c3"}},
+    {"id":"l11-module-source","kind":"file","path":"../../../src/nanda_wave/lexical_grokking/mod.rs","expect":{"mode":"0664","size_bytes":3478,"sha256":"bc4f8412a1b2368a34f931b658628c1b9d712180ee2961159ca6c4626d8248f1"}},
+    {"id":"evidence-vocabulary","kind":"file","path":"../../../src/typing_transition/target_evidence.rs","expect":{"mode":"0664","size_bytes":51779,"sha256":"28c62b4ff746ab34506906102620d5f9ad57de1b5946a30aa6f9894fe456b7da"}},
+    {"id":"live-bridge","kind":"file","path":"../../../src/nanda_wave/l2_field/bridge.rs","expect":{"mode":"0664","size_bytes":109138,"sha256":"bf47a5a7b4ae33541efc15a8de91fa406abd69044653f89aff0a6bfd4f143708"}},
+    {"id":"live-cache","kind":"file","path":"../../../src/nanda_wave/l2_field/cache.rs","expect":{"mode":"0664","size_bytes":23664,"sha256":"9da969bfff12dba0217954647b1ba8e21302365770abaa82178953fcf63fec07"}},
+    {"id":"decision-owner","kind":"file","path":"../../../src/typing_transition/decision.rs","expect":{"mode":"0664","size_bytes":27803,"sha256":"f4ba3c3554650b19e178458818a11b165586a3ab86ff54fd106cd2d1d7054f1e"}},
+    {"id":"installed-engine","kind":"file","path":"/home/ubu/.local/lib/lay/bin/lay-ibus-engine","expect":{"mode":"0755","size_bytes":6423488,"sha256":"dabd0bd89fdcd481d4493afb0c3d4f272ae1af56bf1d290bf320325790958c8a"}}
+  ],
+  "identity_contracts": [
+    {"id":"typed-provider-union","producer":"canonical L2 exact form index L1.1 exact terminal index and embedded immutable reference snapshot","consumer":"typed contour birth","comparison":"all exact identities for the same UTF-8 surface are collected with distinct namespaces before deduplication","test_id":"provider-union-parity"},
+    {"id":"born-only-provider-membership","producer":"typed exact provider identity","consumer":"prepared material candidate state and conflict cohort","comparison":"provider membership yields Born only and never Grounded Winner or mutation authority","test_id":"provider-born-only-parity"},
+    {"id":"package-generation-binding","producer":"L1.1 canonical L2 and embedded reference generations","consumer":"prepared material key and witness roots","comparison":"identity references are dereferenced only against their exact generation","test_id":"generation-parity"}
+  ],
+  "invariants": [
+    {"id":"no-literal-case-fix","statement":"no fixture surface test ID suffix or source-specific exception enters runtime conditions or lexical data","test_id":"systemic-source-scan"},
+    {"id":"no-host-dictionary-dependency","statement":"Slice 5 proof identity uses pinned packages and embedded versioned data only","test_id":"host-dictionary-independence"},
+    {"id":"bounded-union","statement":"every provider lookup and operator step remains inside the frozen Slice 5 work ceiling and overflow is explicit","test_id":"provider-work-overflow"},
+    {"id":"live-route-unchanged","statement":"bridge cache decision verifier installed engine daemon IBus and live authority remain unchanged","test_id":"live-byte-parity"}
+  ],
+  "preserved_artifacts": [
+    {"id":"failed-smoke-evidence","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE5_CONTOUR_BIRTH_2026-08-20/slice5-smoke-13x1.json","policy":"read_only_exact_bytes","rollback_policy":"retain canonical-only failure evidence","baseline_check_id":"failed-smoke"},
+    {"id":"frozen-denominator","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE5_FIRST_LOSS_FREEZE_2026-08-20/first-loss-manifest.v1.json","policy":"read_only_exact_bytes","rollback_policy":"never reclassify after observing results","baseline_check_id":"frozen-first-loss"},
+    {"id":"live-route","path":"../../../src/nanda_wave/l2_field/bridge.rs","policy":"read_only_exact_bytes","rollback_policy":"no Slice 5 live route change","baseline_check_id":"live-bridge"},
+    {"id":"installed-runtime","path":"/home/ubu/.local/lib/lay/bin/lay-ibus-engine","policy":"read_only_exact_bytes","rollback_policy":"no install or restart","baseline_check_id":"installed-engine"}
+  ],
+  "runtime_comparisons": [
+    {"id":"shadow-only-delta","source":"source and installed runtime before and after V4","comparison":"exact_stable_projection","reason":"identity union is proof-only in Slice 5","stable_fields":["bridge","cache","decision","installed engine","runtime authority"],"expected_to_change_fields":["proof identity provider rows and material witnesses"],"observed_not_compared_fields":["live latency"],"test_id":"live-byte-parity"}
+  ],
+  "source_checks": [
+    {"id":"contour-owner-pinned","path":"../../../src/nanda_wave/l2_field/productive_v1/contour_birth.rs","sha256":"44c88a68d1b8438fb043f82fd1ed392d3a6c8b730a05cea9c060e6619ebee9fc","forbidden_effect_patterns":[{"effect":"literal_case_runtime_branch","regex":"(?i)(?:observed|candidate|surface)\\s*==\\s*\""},{"effect":"mint_grounding_from_membership","regex":"VerdictMembershipV1::Grounded"},{"effect":"host_dictionary_authority","regex":"/usr/share/(?:hunspell|dict)"},{"effect":"raise_frozen_work_budget","regex":"MAX_CONTOUR_(?:EXACT_LOOKUPS|OPERATOR_STEPS)\\s*[:=].*(?:32768|65536)"}]},
+    {"id":"l11-runtime-pinned","path":"../../../src/nanda_wave/lexical_grokking/runtime.rs","sha256":"09837afd93553a35c7432d48fb5ce17855785372286e1ffdcf866c302a3db62e","forbidden_effect_patterns":[{"effect":"rewrite_any_package","regex":"(?:File::create|OpenOptions::new)"},{"effect":"change_live_rank_or_authority","regex":"(?:score|rank|winner)\\s*[+*]?="}]},
+    {"id":"evidence-vocabulary-pinned","path":"../../../src/typing_transition/target_evidence.rs","sha256":"28c62b4ff746ab34506906102620d5f9ad57de1b5946a30aa6f9894fe456b7da","forbidden_effect_patterns":[{"effect":"mint_grounding_from_membership","regex":"default.*(?:Grounded|Winner)"},{"effect":"raise_frozen_work_budget","regex":"Overflow.{0,120}Winner"}]},
+    {"id":"live-bridge-pinned","path":"../../../src/nanda_wave/l2_field/bridge.rs","sha256":"bf47a5a7b4ae33541efc15a8de91fa406abd69044653f89aff0a6bfd4f143708","forbidden_effect_patterns":[{"effect":"runtime_deployment","regex":"(?:enumerate_typed_contour_births|ExactL11SurfaceIndexV1)"}]},
+    {"id":"proof-side-effects-pinned","path":"../../../src/nanda_wave/l2_field/productive_v1/proof.rs","sha256":"97e27e4957b402cddae9f2535ffc7efde22fe737211b5756954b94b56c63a0a3","forbidden_effect_patterns":[{"effect":"generated_traffic","regex":"(?:TcpStream|UdpSocket|reqwest|hyper::|https?://)"},{"effect":"synthetic_fixture","regex":"(?:write|create|generate)_synthetic_fixture"},{"effect":"runtime_deployment","regex":"(?:systemctl|daemon-reload|lay-runtime-control)"},{"effect":"restart_lay_daemon","regex":"(?:restart|stop|kill|pkill).{0,80}lay-daemon"},{"effect":"restart_global_ibus_daemon","regex":"(?:restart|stop|kill|pkill).{0,80}ibus-daemon"},{"effect":"rewrite_any_package","regex":"(?:File::create|OpenOptions::new).{0,300}(?:p2m|L2-RU|canonical|lexical)"}]}
+  ],
+  "side_effects": {
+    "planned": [
+      {"id":"expose-read-only-l11-exact-index","kind":"source_edit"},
+      {"id":"add-reference-surface-namespace","kind":"source_edit"},
+      {"id":"join-typed-provider-identities","kind":"source_edit"},
+      {"id":"run-remote-proof","kind":"remote_test"}
+    ],
+    "forbidden": ["generated_traffic","synthetic_fixture","runtime_deployment","restart_lay_daemon","restart_global_ibus_daemon","rewrite_any_package","host_dictionary_authority","literal_case_runtime_branch","mint_grounding_from_membership","raise_frozen_work_budget","change_live_rank_or_authority"]
+  },
+  "state_machine": {
+    "initial_state":"CANONICAL_ONLY_SMOKE_FAILED_RUNTIME_UNCHANGED",
+    "terminal_states":["IDENTITY_UNION_SHADOW_PASS_RUNTIME_UNCHANGED","IDENTITY_UNION_REJECTED_RUNTIME_UNCHANGED","IDENTITY_UNION_PROOF_FAILED_RUNTIME_UNCHANGED"],
+    "steps":[
+      {"id":"build-versioned-exact-provider-union","from":"CANONICAL_ONLY_SMOKE_FAILED_RUNTIME_UNCHANGED","to":"EXACT_PROVIDER_UNION_READY","mutates":true,"failure_state":"IDENTITY_UNION_REJECTED_RUNTIME_UNCHANGED","cleanup":"retain failed diff and receipt without fallback or deployment","preserves":["failed-smoke-evidence","frozen-denominator","live-route","installed-runtime"],"test_id":"provider-union-fault"},
+      {"id":"run-fixed-and-systemic-proof","from":"EXACT_PROVIDER_UNION_READY","to":"IDENTITY_UNION_SHADOW_PASS_RUNTIME_UNCHANGED","mutates":false,"failure_state":"IDENTITY_UNION_PROOF_FAILED_RUNTIME_UNCHANGED","cleanup":"retain proof and stop before authority or deployment","preserves":["failed-smoke-evidence","frozen-denominator","live-route","installed-runtime"],"test_id":"fixed-proof"}
+    ]
+  },
+  "tests": [
+    {"id":"provider-union-parity","kind":"parity","expected":"provider ordering and internal numeric IDs do not change born surfaces or semantic roots"},
+    {"id":"provider-union-fault","kind":"fault_injection","expected":"missing corrupt or mismatched provider fails closed without fallback authority"},
+    {"id":"provider-born-only-parity","kind":"parity","expected":"canonical L1.1 and reference memberships remain Born through material and cohort"},
+    {"id":"generation-parity","kind":"parity","expected":"mismatched package or reference generation rejects identity reuse"},
+    {"id":"host-dictionary-independence","kind":"parity","expected":"missing host Hunspell files do not change the fixed result"},
+    {"id":"provider-work-overflow","kind":"fault_injection","expected":"exhausting any frozen counter yields explicit Overflow and no Winner"},
+    {"id":"systemic-source-scan","kind":"integration","expected":"no fixture literal or case-specific branch exists outside proof fixtures"},
+    {"id":"live-byte-parity","kind":"parity","expected":"live bridge cache decision verifier installed runtime and packages remain byte-identical"},
+    {"id":"fixed-proof","kind":"integration","expected":"fixed birth subset is 8/8 and full 13x100 has zero false singleton target loss preservation bypass or hidden overflow"}
+  ]
+}

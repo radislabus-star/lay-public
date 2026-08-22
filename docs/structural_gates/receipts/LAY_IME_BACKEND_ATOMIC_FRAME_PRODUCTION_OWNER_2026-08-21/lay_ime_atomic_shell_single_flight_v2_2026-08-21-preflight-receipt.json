@@ -1,0 +1,113 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "shell-input-method-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/js/misc/inputMethod.js",
+      "sha256": "f835a1eae1d1ff7340d7a9017ca18e76a5437e921d32fe9b3c94904c020c2fb0",
+      "size_bytes": 14169
+    },
+    {
+      "exists": true,
+      "id": "shell-tests-meson",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/meson.build",
+      "sha256": "4040130da0dd0db3c03b60675773fcbe942c7ff79e3ce249dca7a01dab08e2eb",
+      "size_bytes": 3538
+    },
+    {
+      "exists": true,
+      "id": "architecture-paper",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../ime-backend-atomic-frame-v2-2026-08-20.md",
+      "sha256": "ab149aa35c3b846b85921dcde1e4a6924db809e39b7b1cadbec57327f238ae5b",
+      "size_bytes": 117062
+    },
+    {
+      "exists": true,
+      "id": "mutter-owner-proof",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/mutter-slice3b-implementation-proof-v1.json",
+      "sha256": "7a935e8fc62577b0a22cb44d307675ec3a199244fa6baa5fce010ae2f2863716",
+      "size_bytes": 7273
+    },
+    {
+      "exists": true,
+      "id": "ibus-production-profile-proof",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/ibus-production-profile-admission-proof-v1.json",
+      "sha256": "e38b65ec7c0ff7d3495eec3e0a98947f6d603c9a0c024055fb56fce45641fafd",
+      "size_bytes": 4708
+    }
+  ],
+  "blockers": [
+    {
+      "code": "identity_parity_missing",
+      "field": "identity_contracts[4].test_id",
+      "message": "identity contract requires a parity test"
+    }
+  ],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 5,
+    "forbidden_side_effect_kinds": [
+      "cross_focus_replay",
+      "installed_file_write",
+      "local_build",
+      "physical_input_or_text_mutation",
+      "restart_gnome_shell",
+      "restart_or_signal_ibus",
+      "runtime_deployment",
+      "same_event_legacy_fallback",
+      "second_mutation_owner",
+      "second_replay_owner",
+      "unbounded_queue"
+    ],
+    "identity_contracts": 5,
+    "invariants": 7,
+    "planned_side_effect_kinds": [
+      "filesystem_write",
+      "remote_build",
+      "remote_filesystem_write",
+      "source_edit"
+    ],
+    "preserved_artifacts": 3,
+    "runtime_comparisons": 0,
+    "source_checks": 2,
+    "tests": 17
+  },
+  "manifest_sha256": "0e6799c954e9b242f0bfe73a5ad2481c01124455923ff3a08af62eba38236077",
+  "safe_to_implement": false,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-shell-input-method",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/js/misc/inputMethod.js",
+      "sha256": "f835a1eae1d1ff7340d7a9017ca18e76a5437e921d32fe9b3c94904c020c2fb0",
+      "size_bytes": 14169
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-shell-tests-meson",
+      "path": "/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/meson.build",
+      "sha256": "4040130da0dd0db3c03b60675773fcbe942c7ff79e3ce249dca7a01dab08e2eb",
+      "size_bytes": 3538
+    }
+  ],
+  "task_id": "LAY_IME_ATOMIC_SHELL_SINGLE_FLIGHT_V1_2026-08-21",
+  "verdict": "BLOCKED_BEFORE_CODE"
+}

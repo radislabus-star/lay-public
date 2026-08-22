@@ -1,0 +1,161 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "tail-scan-adapter",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2/tail_scan_adapter.rs",
+      "sha256": "76821f4adbacbb2930fdaeedb7c0dad0749b67638d5cc8e8d591ac3dbc0b93a0",
+      "size_bytes": 26970
+    },
+    {
+      "exists": true,
+      "id": "l2-route",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2.rs",
+      "sha256": "c22763240e32766637fc2c00e4fb13fa82abdb7b7f33d4b3bc399c8c90a5753d",
+      "size_bytes": 18826
+    },
+    {
+      "exists": true,
+      "id": "l2-tests",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2/tests.rs",
+      "sha256": "9fc52c9adf6d0d3fa76e99f6ceec0588537adaf42cdca3345e75486d3367a4b4",
+      "size_bytes": 45282
+    },
+    {
+      "exists": true,
+      "id": "canonical-bridge",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/bridge.rs",
+      "sha256": "242246fcad84452911c735b0e0133860aae201176a37d3b996c00cae30eeec62",
+      "size_bytes": 76781
+    },
+    {
+      "exists": true,
+      "id": "correction-tests",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/correction_core/tests.rs",
+      "sha256": "a130373eccdcb69653d46b1217247f051c3d3fc22d651e38ecee8ba5432fb4f1",
+      "size_bytes": 93410
+    },
+    {
+      "exists": true,
+      "id": "edit-safety",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/text_edit/safety.rs",
+      "sha256": "2eb243ee5f9f12947b8e35e1ce080ff42550bff3d62f2720688547ac16c80e4d",
+      "size_bytes": 12107
+    },
+    {
+      "exists": true,
+      "id": "proposal-admission",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/typing_transition/proposal_admission.rs",
+      "sha256": "dd4a37a8c0430c9ff145f9ae9cbbbc735164ece833a143a19af644ac7ad835ca",
+      "size_bytes": 70639
+    },
+    {
+      "exists": true,
+      "id": "architecture-document",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../docs/l2-l11-canonical-architecture.md",
+      "sha256": "1a2a8817bd276f4bf06e1ff16d117b64f7aaf1f2e4fa55dd608278b339d07ee3",
+      "size_bytes": 262839
+    },
+    {
+      "exists": true,
+      "id": "managed-engine-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/managed.rs",
+      "sha256": "783b2ebf78ee44fe51316acee1d92dc759c2be57afa6f251e85452c2350ce60b",
+      "size_bytes": 9866
+    },
+    {
+      "exists": true,
+      "id": "installed-ime-1-0-32",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "sha256": "abe005b65fb586cc0e0dada94d15e726372ca6fa712e566e9254dee2367f5dd0",
+      "size_bytes": 6421312
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 10,
+    "forbidden_side_effect_kinds": [
+      "boundary_frontier_expansion",
+      "broad_two_content_threshold_weakening",
+      "global_ibus_restart",
+      "literal_surface_runtime_branch",
+      "safety_gate_weakening"
+    ],
+    "identity_contracts": 2,
+    "invariants": 5,
+    "planned_side_effect_kinds": [
+      "cargo_test",
+      "filesystem_edit",
+      "service_activation"
+    ],
+    "preserved_artifacts": 1,
+    "runtime_comparisons": 0,
+    "source_checks": 4,
+    "tests": 8
+  },
+  "manifest_sha256": "13850b7fa8c70ca5603bb4f324bb8a2149e8bffef7b20b28e391be4577423472",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "no-case-specific-or-broad-boundary-patch",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2/tail_scan_adapter.rs",
+      "sha256": "76821f4adbacbb2930fdaeedb7c0dad0749b67638d5cc8e8d591ac3dbc0b93a0",
+      "size_bytes": 26970
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "no-boundary-reserve-expansion",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/bridge.rs",
+      "sha256": "242246fcad84452911c735b0e0133860aae201176a37d3b996c00cae30eeec62",
+      "size_bytes": 76781
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "no-safety-or-admission-weakening",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/text_edit/safety.rs",
+      "sha256": "2eb243ee5f9f12947b8e35e1ce080ff42550bff3d62f2720688547ac16c80e4d",
+      "size_bytes": 12107
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "no-global-ibus-restart",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/managed.rs",
+      "sha256": "783b2ebf78ee44fe51316acee1d92dc759c2be57afa6f251e85452c2350ce60b",
+      "size_bytes": 9866
+    }
+  ],
+  "task_id": "lay-l2-short-left-boundary-2026-08-16",
+  "verdict": "READY_TO_IMPLEMENT"
+}

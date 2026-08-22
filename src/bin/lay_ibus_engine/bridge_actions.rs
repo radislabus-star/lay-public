@@ -2,6 +2,7 @@ use zbus::fdo;
 
 use super::bridge::LayImeBridge;
 use super::engine::{LayIbusEngine, ManualToggleAuthority};
+use super::output::EngineOutput;
 use super::state::CommittedTailReplaceRequest;
 use lay::manual_toggle::ImeManualToggleOutcome;
 use lay::text_edit::{VisibleTailSnapshot, VisibleTailSource};
@@ -141,6 +142,9 @@ impl LayImeBridge {
             .map_err(|error| fdo::Error::Failed(error.to_string()))?;
         let emitter = iface_ref.signal_emitter();
         let mut engine = iface_ref.get_mut().await;
+        if engine.atomic_route_active {
+            return Ok(false);
+        }
         let expected_tail = expected_original_tail.map(|expected| {
             let (epoch, focus) = expected_revision
                 .clone()
@@ -157,7 +161,8 @@ impl LayImeBridge {
         if let Some(expected_tail) = expected_tail {
             request = request.with_expected_tail(expected_tail);
         }
-        engine.replace_committed_tail(emitter, request).await
+        let mut output = EngineOutput::legacy(emitter);
+        engine.replace_committed_tail(&mut output, request).await
     }
 
     pub(super) async fn manual_toggle_inner(&self) -> fdo::Result<bool> {
@@ -180,9 +185,13 @@ impl LayImeBridge {
             .map_err(|error| fdo::Error::Failed(error.to_string()))?;
         let emitter = iface_ref.signal_emitter();
         let mut engine = iface_ref.get_mut().await;
+        if engine.atomic_route_active {
+            return Ok(ImeManualToggleOutcome::NotHandled);
+        }
         engine.refresh_empty_tail_from_handoff();
+        let mut output = EngineOutput::legacy(emitter);
         Ok(
-            match engine.manual_toggle_active_text_target(emitter).await? {
+            match engine.manual_toggle_active_text_target(&mut output).await? {
                 Some(target_layout_is_ru) => ImeManualToggleOutcome::handled(target_layout_is_ru),
                 None => ImeManualToggleOutcome::NotHandled,
             },

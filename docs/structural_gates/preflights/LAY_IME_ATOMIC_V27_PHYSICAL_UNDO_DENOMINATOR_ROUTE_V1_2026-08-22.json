@@ -1,0 +1,75 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "physical-undo-input", "role": "interface"},
+    {"id": "composite-undo-observation", "role": "observer"},
+    {"id": "accepted-v24-release-denominator", "role": "evidence_owner"},
+    {"id": "javascript-composite-pass-marker", "role": "producer"},
+    {"id": "shell-proof-verdict", "role": "proof_owner"}
+  ],
+  "edges": [
+    {
+      "id": "observe-physical-composite",
+      "from": "physical-undo-input",
+      "relation": "observes",
+      "to": "composite-undo-observation",
+      "events": ["physical-undo-observation"]
+    },
+    {
+      "id": "prove-observation-denominator",
+      "from": "composite-undo-observation",
+      "relation": "proves",
+      "to": "accepted-v24-release-denominator",
+      "events": ["physical-undo-proof"]
+    },
+    {
+      "id": "prove-denominator-marker",
+      "from": "accepted-v24-release-denominator",
+      "relation": "proves",
+      "to": "javascript-composite-pass-marker",
+      "events": ["physical-undo-proof"]
+    },
+    {
+      "id": "prove-marker-shell-verdict",
+      "from": "javascript-composite-pass-marker",
+      "relation": "proves",
+      "to": "shell-proof-verdict",
+      "events": ["physical-undo-proof"]
+    }
+  ],
+  "routes": [
+    {
+      "id": "physical-undo-observation",
+      "event": "physical-undo-observation",
+      "kind": "observation",
+      "entry": "physical-undo-input",
+      "terminal": "composite-undo-observation",
+      "required_roles": ["interface", "observer"],
+      "path_cardinality": [
+        {
+          "from": "physical-undo-input",
+          "to": "composite-undo-observation",
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "physical-undo-proof",
+      "event": "physical-undo-proof",
+      "kind": "proof",
+      "entry": "composite-undo-observation",
+      "terminal": "shell-proof-verdict",
+      "required_roles": ["observer", "evidence_owner", "producer", "proof_owner"],
+      "path_cardinality": [
+        {
+          "from": "composite-undo-observation",
+          "to": "shell-proof-verdict",
+          "min": 1,
+          "max": 1
+        }
+      ]
+    }
+  ]
+}

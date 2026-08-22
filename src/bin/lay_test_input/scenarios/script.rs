@@ -1,6 +1,6 @@
 use super::super::desktop_probe::activate_layout;
 use super::super::input_device::{double_alt, double_shift, double_shift_enter, hold_tap, tap};
-use super::typing::type_physical;
+use super::typing::{type_physical, type_physical_before_boundary};
 use evdev::{uinput::VirtualDevice, KeyCode};
 use std::fs;
 use std::path::Path;
@@ -43,6 +43,18 @@ pub(super) fn run_script_text(
                 &decode_script_text(physical_text),
                 parse_u64(pause_ms, source_name, idx)?,
             )?,
+            ["type_space", physical_text] => {
+                type_physical_before_boundary(dev, &decode_script_text(physical_text), 35)?;
+                tap(dev, KeyCode::KEY_SPACE.code())?;
+            }
+            ["type_space", physical_text, pause_ms] => {
+                type_physical_before_boundary(
+                    dev,
+                    &decode_script_text(physical_text),
+                    parse_u64(pause_ms, source_name, idx)?,
+                )?;
+                tap(dev, KeyCode::KEY_SPACE.code())?;
+            }
             ["space"] => tap(dev, KeyCode::KEY_SPACE.code())?,
             ["enter"] => tap(dev, KeyCode::KEY_ENTER.code())?,
             ["left"] => tap(dev, KeyCode::KEY_LEFT.code())?,

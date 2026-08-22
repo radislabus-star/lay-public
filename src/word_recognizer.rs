@@ -23,8 +23,22 @@ pub use technical::{
     is_cli_option_token, is_protected_ascii_token, is_upper_ascii_acronym,
 };
 
+pub(crate) use lexicon::ExactWordGuardReceipt;
+
 pub fn warm_up() {
     lexicon::warm_up();
+}
+
+pub(crate) fn warm_up_exact_layout_guard() -> ExactWordGuardReceipt {
+    lexicon::warm_up_exact_layout_guard()
+}
+
+pub(crate) fn exact_english_word_if_warm(core: &str) -> Option<bool> {
+    lexicon::known_english_word_if_warm(core)
+}
+
+pub(crate) fn exact_ascii_protected_if_warm(core: &str) -> Option<bool> {
+    technical::is_protected_ascii_token_if_warm(core)
 }
 
 #[cfg(test)]

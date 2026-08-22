@@ -11,9 +11,16 @@ use super::guards::{
     looks_like_plausible_russian_past_tense, looks_like_prefix_plus_known_russian_word,
     looks_like_present_or_reflexive_verb,
 };
+use super::memo::{memoized_text, WordMaterialKind};
 use super::thresholds::NGRAM_DICT_MISSING_LETTER_MARGIN;
 
 pub fn correct_missing_letter(word: &str) -> Option<String> {
+    memoized_text(WordMaterialKind::MissingLetter, word, || {
+        correct_missing_letter_uncached(word)
+    })
+}
+
+fn correct_missing_letter_uncached(word: &str) -> Option<String> {
     if word.contains('-') || word.chars().count() < 4 || !crate::word_reader::is_cyrillic_word(word)
     {
         return None;

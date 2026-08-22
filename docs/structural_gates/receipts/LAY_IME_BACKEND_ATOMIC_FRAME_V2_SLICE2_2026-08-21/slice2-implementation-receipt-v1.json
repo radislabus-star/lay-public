@@ -1,0 +1,499 @@
+{
+  "schema": "lay.ime.backend-atomic-frame.slice2-implementation-receipt.v1",
+  "task_id": "LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_CAPABILITY_HOPS_V4_2026-08-21",
+  "generated_at": "2026-08-21T04:28:22+03:00",
+  "verdict": "PASS",
+  "claim_scope": "isolated Slice 2 codec, daemon capability hops, state machine and private D-Bus proof",
+  "runtime_authority_changed": false,
+  "deployment_performed": false,
+  "production_profile_admitted": false,
+  "preflight": {
+    "manifest": "docs/structural_gates/preflights/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_CAPABILITY_HOPS_V4_2026-08-21.json",
+    "receipt": "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/implementation-preflight-receipt-v4.json",
+    "verdict": "READY_TO_IMPLEMENT",
+    "safe_to_implement": true,
+    "blockers": 0
+  },
+  "observed_route": {
+    "contract": "docs/structural_gates/preflights/LAY_IME_BACKEND_ATOMIC_FRAME_SLICE2_OBSERVED_V10_2026-08-21.json",
+    "receipt": "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/slice2-observed-v10-receipt.json",
+    "verdict": "PASS",
+    "source_evidence": "36/36",
+    "issues": 0,
+    "warnings": 0
+  },
+  "remote_environment": {
+    "host": "e@192.168.3.94",
+    "hostname": "e-MEGA-MINI-M1-13th",
+    "sandbox": "/home/e/projects/ibus-lay-atomic-v2-slice2-20260821",
+    "logical_cpus": 20,
+    "final_load_1_5_15": [
+      1.59,
+      1.62,
+      1.66
+    ],
+    "final_mem_available_kib": 24681712,
+    "unrelated_l1_metrics_service": {
+      "name": "lay-l11-canonical-layout-metrics-proof-20260816.service",
+      "active": true,
+      "main_pid": 342773
+    },
+    "leftover_task_processes": 0
+  },
+  "builds": {
+    "normal": {
+      "result": "PASS",
+      "warnings_as_errors": true,
+      "elapsed_seconds": 0.16,
+      "max_rss_kib": 4000,
+      "evidence": "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/final-build-20260821/normal-targets.log"
+    },
+    "private": {
+      "result": "PASS",
+      "warnings_as_errors": true,
+      "elapsed_seconds": 0.57,
+      "max_rss_kib": 54820,
+      "evidence": "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/final-build-20260821/private-targets.log"
+    },
+    "retained_out_of_scope_failure": {
+      "result": "NOT_PART_OF_PINNED_TARGET_SET",
+      "evidence": "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/final-build-20260821/normal.log",
+      "note": "Root all-recursive reached disabled portal code lacking gio-unix headers; pinned Slice 2 targets passed and no dependency was installed."
+    }
+  },
+  "final_proofs": {
+    "normal_codec": {
+      "result": "PASS",
+      "passed": 18,
+      "total": 18,
+      "evidence": "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/proof-final-normal-20260821/codec.log"
+    },
+    "normal_real_hop": {
+      "result": "PASS",
+      "passed": 1,
+      "total": 1,
+      "evidence": "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/proof-final-normal-20260821/test.log"
+    },
+    "private_codec": {
+      "result": "PASS",
+      "passed": 18,
+      "total": 18,
+      "evidence": "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/proof-final-private-20260821/codec.log"
+    },
+    "private_real_hop": {
+      "result": "PASS",
+      "passed": 1,
+      "total": 1,
+      "evidence": "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/proof-final-private-20260821/test.log"
+    }
+  },
+  "source_hash_parity": [
+    {
+      "path": "src/ibusatomicframeprivate.h",
+      "local_sha256": "33d6a5f09c75302381d7ac415b07cedbc5e2c75c83d6167d18cfc173bea6c90d",
+      "remote_sha256": "33d6a5f09c75302381d7ac415b07cedbc5e2c75c83d6167d18cfc173bea6c90d",
+      "match": true
+    },
+    {
+      "path": "src/ibusatomicframe.c",
+      "local_sha256": "c489cbbf189b67642877d7eca9ab05b1936fb38acad85d06c9e36d49e7e15b05",
+      "remote_sha256": "c489cbbf189b67642877d7eca9ab05b1936fb38acad85d06c9e36d49e7e15b05",
+      "match": true
+    },
+    {
+      "path": "src/tests/ibus-atomic-frame.c",
+      "local_sha256": "8c3ffcd9e72012d6196ef1cf524c5102efad585cddb74406ce78b6deb5e25f14",
+      "remote_sha256": "8c3ffcd9e72012d6196ef1cf524c5102efad585cddb74406ce78b6deb5e25f14",
+      "match": true
+    },
+    {
+      "path": "src/tests/ibus-atomic-process.c",
+      "local_sha256": "9e7342f18af12b55e4b309ad4dc3514f2b690c66de4d5ab8714055ed09168f33",
+      "remote_sha256": "9e7342f18af12b55e4b309ad4dc3514f2b690c66de4d5ab8714055ed09168f33",
+      "match": true
+    },
+    {
+      "path": "src/tests/Makefile.am",
+      "local_sha256": "f97d9dcce037cc2666635e4db2ca04b2091c23c362a096cfe2b82d705666db61",
+      "remote_sha256": "f97d9dcce037cc2666635e4db2ca04b2091c23c362a096cfe2b82d705666db61",
+      "match": true
+    },
+    {
+      "path": "bus/engineproxy.c",
+      "local_sha256": "92069f7442f4a1d81c2307cf704b362333fac3ce8973d06a21b38f1dd53a8ef8",
+      "remote_sha256": "92069f7442f4a1d81c2307cf704b362333fac3ce8973d06a21b38f1dd53a8ef8",
+      "match": true
+    },
+    {
+      "path": "bus/engineproxy.h",
+      "local_sha256": "6a2f65642800e55f33e90cf0c04c65de7c96f55b7b4853c4a4420ce8cee4738d",
+      "remote_sha256": "6a2f65642800e55f33e90cf0c04c65de7c96f55b7b4853c4a4420ce8cee4738d",
+      "match": true
+    },
+    {
+      "path": "bus/inputcontext.c",
+      "local_sha256": "fe51c9f7746cf11c29a4157a163b0fb38e73c47566ab39a13d92338459818bec",
+      "remote_sha256": "fe51c9f7746cf11c29a4157a163b0fb38e73c47566ab39a13d92338459818bec",
+      "match": true
+    }
+  ],
+  "installed_runtime": [
+    {
+      "path": "/usr/bin/ibus-daemon",
+      "expected_sha256": "24338c0e7cfb749d2ac9b9254d7d54029e71b5ac9342aa1b8d78b1d55f5ac1b6",
+      "observed_sha256": "24338c0e7cfb749d2ac9b9254d7d54029e71b5ac9342aa1b8d78b1d55f5ac1b6",
+      "match": true
+    },
+    {
+      "path": "/usr/lib/x86_64-linux-gnu/libibus-1.0.so.5.0.534",
+      "expected_sha256": "e1977b9d3d84ee94b63f6c04056134c10aa51d4e0621f7abee1115da12259ec1",
+      "observed_sha256": "e1977b9d3d84ee94b63f6c04056134c10aa51d4e0621f7abee1115da12259ec1",
+      "match": true
+    },
+    {
+      "path": "/usr/lib/x86_64-linux-gnu/gtk-3.0/3.0.0/immodules/im-ibus.so",
+      "expected_sha256": "644cedf86a7b6e18d2be31afeb75007c85e6bdb0ed8a6b5c53c54621310aa3e2",
+      "observed_sha256": "644cedf86a7b6e18d2be31afeb75007c85e6bdb0ed8a6b5c53c54621310aa3e2",
+      "match": true
+    },
+    {
+      "path": "/usr/lib/x86_64-linux-gnu/gtk-4.0/4.0.0/immodules/libim-ibus.so",
+      "expected_sha256": "4e5b450fa00d51a45fbcc160e26358d81da793b39b6e04a27c749b905b3cba60",
+      "observed_sha256": "4e5b450fa00d51a45fbcc160e26358d81da793b39b6e04a27c749b905b3cba60",
+      "match": true
+    },
+    {
+      "path": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+      "expected_sha256": "f0821f3b1dbf87fb83db1119534d3e4a1aef489dd6d5588ca8a8f9b86a19194c",
+      "observed_sha256": "f0821f3b1dbf87fb83db1119534d3e4a1aef489dd6d5588ca8a8f9b86a19194c",
+      "match": true
+    }
+  ],
+  "test_matrix": [
+    {
+      "id": "source-edit-fault-policy",
+      "expected": "an interrupted edit leaves only isolated source changes and cannot start a build deployment or live D-Bus call",
+      "result": "PASS",
+      "evidence": [
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/slice2-observed-v10-receipt.json",
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/final-build-20260821/normal.log"
+      ],
+      "note": "All edits stayed in isolated source and architecture worktrees; no install or runtime command occurred."
+    },
+    {
+      "id": "remote-capacity-gate",
+      "expected": "host reports 20 logical CPUs, no prior task process, recorded load and no competing process that blocks a 20-way build",
+      "result": "PASS",
+      "evidence": [
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/implementation-receipt-v1.json"
+      ],
+      "note": "Remote host e-MEGA-MINI-M1-13th reported 20 logical CPUs; final load 1.59/1.62/1.66 and 24681712 KiB available memory."
+    },
+    {
+      "id": "remote-sync-fault-policy",
+      "expected": "partial sync affects only the named remote sandbox and cannot alter installed or unrelated files",
+      "result": "PASS",
+      "evidence": [
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/slice2-observed-v10-receipt.json"
+      ],
+      "note": "Sync target was only the named remote sandbox; 8/8 final source hashes match."
+    },
+    {
+      "id": "remote-build-fault-policy",
+      "expected": "compile failure retains exact logs and never falls back to a local build host install or threshold weakening",
+      "result": "PASS",
+      "evidence": [
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/final-build-20260821/normal.log",
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/final-build-20260821/normal-targets.log",
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/final-build-20260821/private-targets.log"
+      ],
+      "note": "An out-of-scope portal target failed and was retained; no local build, install, dependency expansion or threshold weakening followed."
+    },
+    {
+      "id": "isolated-proof-fault-policy",
+      "expected": "a failed private D-Bus proof terminates only task-owned processes and records the first failing transition",
+      "result": "PASS",
+      "evidence": [
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/failed-experiments/proof-private-v1/test.log",
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/proof-final-private-20260821/test.log"
+      ],
+      "note": "The retained failed private proof affected only task-owned processes; final leftover test-process count was zero."
+    },
+    {
+      "id": "evidence-write-fault-policy",
+      "expected": "missing paper receipt or graph update prevents a PASS claim while raw proof remains retained",
+      "result": "PASS",
+      "evidence": [
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/slice2-observed-v10-receipt.json",
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/proof-final-private-20260821/test.log"
+      ],
+      "note": "Raw logs were retained before this receipt; missing receipt would keep the claim incomplete."
+    },
+    {
+      "id": "schema-constant-parity",
+      "expected": "C constants exactly match every V3 type string numeric disposition proposal receipt effect preedit guarantee mask digest domain and absent-value encoding",
+      "result": "PASS",
+      "evidence": [
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/proof-final-normal-20260821/codec.log",
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/proof-final-private-20260821/codec.log",
+        "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/ibus-atomic-frame.c"
+      ]
+    },
+    {
+      "id": "private-proof-profile-digest",
+      "expected": "the exact 133-byte descriptor yields a463a8dc3a1a7676009e30e3b5f70c1cef2334fd28285ace1ef663f09e154260 and only the compile-time proof table admits it",
+      "result": "PASS",
+      "evidence": [
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/proof-final-normal-20260821/codec.log",
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/proof-final-private-20260821/codec.log",
+        "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/ibus-atomic-frame.c"
+      ]
+    },
+    {
+      "id": "normal-build-empty-admission",
+      "expected": "the same source built without IBUS_ATOMIC_PRIVATE_PROOF_PROFILE admits zero profiles and returns native-unhandled before any engine call",
+      "result": "PASS",
+      "evidence": [
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/proof-final-normal-20260821/test.log",
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/proof-final-normal-20260821/codec.log",
+        "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/ibus-atomic-process.c"
+      ]
+    },
+    {
+      "id": "capability-record-roundtrip",
+      "expected": "the exact normal-form profile and lease encode decode and re-encode byte-identically",
+      "result": "PASS",
+      "evidence": [
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/proof-final-normal-20260821/codec.log",
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/proof-final-private-20260821/codec.log",
+        "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/ibus-atomic-frame.c"
+      ]
+    },
+    {
+      "id": "capability-record-malformed-matrix",
+      "expected": "wrong tuple types digest lengths zero identities unknown flags masks counts noncanonical absence and inconsistent snapshot presence all fail closed",
+      "result": "PASS",
+      "evidence": [
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/proof-final-normal-20260821/codec.log",
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/proof-final-private-20260821/codec.log",
+        "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/ibus-atomic-frame.c"
+      ]
+    },
+    {
+      "id": "client-daemon-capability-parity",
+      "expected": "the daemon observes exactly the fake client's record bytes and independently recomputes the same aggregate digest",
+      "result": "PASS",
+      "evidence": [
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/proof-final-private-20260821/test.log",
+        "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/ibus-atomic-process.c",
+        "/home/ubu/projects/ibus-lay-atomic-proof/bus/inputcontext.c"
+      ]
+    },
+    {
+      "id": "daemon-engine-capability-parity",
+      "expected": "the fake engine observes exactly the admitted record plus daemon transaction event context focus engine and capability envelope",
+      "result": "PASS",
+      "evidence": [
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/proof-final-private-20260821/test.log",
+        "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/ibus-atomic-process.c",
+        "/home/ubu/projects/ibus-lay-atomic-proof/bus/inputcontext.c"
+      ]
+    },
+    {
+      "id": "surrounding-snapshot-parity",
+      "expected": "the exact domain type and (suu) bytes match daemon cache before and after the engine call while one-byte text cursor anchor absent or stale changes issue zero effects",
+      "result": "PASS",
+      "evidence": [
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/proof-final-normal-20260821/codec.log",
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/proof-final-private-20260821/codec.log",
+        "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/ibus-atomic-frame.c"
+      ]
+    },
+    {
+      "id": "lease-counter-frontier-parity",
+      "expected": "the fake client counter values arrive byte-exact and are compared as unsigned 64-bit values against the matching daemon event capability and native-transaction frontiers without field swaps remapping narrowing or truncation",
+      "result": "PASS",
+      "evidence": [
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/proof-final-private-20260821/test.log",
+        "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/ibus-atomic-process.c",
+        "/home/ubu/projects/ibus-lay-atomic-proof/bus/inputcontext.c"
+      ]
+    },
+    {
+      "id": "identity-monotonicity-matrix",
+      "expected": "zero equal lower reordered and duplicate event capability and native transaction identities all stop before the engine; strictly greater values advance once",
+      "result": "PASS",
+      "evidence": [
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/proof-final-private-20260821/test.log",
+        "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/ibus-atomic-process.c",
+        "/home/ubu/projects/ibus-lay-atomic-proof/bus/inputcontext.c"
+      ]
+    },
+    {
+      "id": "engine-proposal-disposition-matrix",
+      "expected": "proposal bytes 0 1 2 accept only their exact empty or canonical vector grammar and bytes 3 through 255 fail closed",
+      "result": "PASS",
+      "evidence": [
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/proof-final-normal-20260821/codec.log",
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/proof-final-private-20260821/codec.log",
+        "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/ibus-atomic-frame.c"
+      ]
+    },
+    {
+      "id": "engine-proposal-frame-parity",
+      "expected": "the daemon seals only the direct engine proposal and preserves exact ordered effect bytes and digest",
+      "result": "PASS",
+      "evidence": [
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/proof-final-normal-20260821/codec.log",
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/proof-final-private-20260821/codec.log",
+        "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/ibus-atomic-frame.c"
+      ]
+    },
+    {
+      "id": "prior-receipt-parity",
+      "expected": "None and numeric results 1 through 5 validate exact disposition compatibility transaction and digest once; result 6 through 255 mismatch duplicate and stale receipt fail closed",
+      "result": "PASS",
+      "evidence": [
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/proof-final-normal-20260821/codec.log",
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/proof-final-private-20260821/codec.log",
+        "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/ibus-atomic-frame.c"
+      ]
+    },
+    {
+      "id": "receipt-poison-reset-matrix",
+      "expected": "missing mismatched or incompatible settlement while pending discards metadata poisons only atomic calls and a real focus out plus focus in clears the poison",
+      "result": "PASS",
+      "evidence": [
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/proof-final-private-20260821/test.log",
+        "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/ibus-atomic-process.c",
+        "/home/ubu/projects/ibus-lay-atomic-proof/bus/inputcontext.c"
+      ]
+    },
+    {
+      "id": "early-refusal-engine-cardinality",
+      "expected": "receipt capability and snapshot refusal cases each record zero ProcessKeyEventAtomicV1 calls and zero legacy ProcessKeyEvent calls",
+      "result": "PASS",
+      "evidence": [
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/proof-final-private-20260821/test.log",
+        "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/ibus-atomic-process.c",
+        "/home/ubu/projects/ibus-lay-atomic-proof/bus/inputcontext.c"
+      ]
+    },
+    {
+      "id": "unknown-profile-refusal",
+      "expected": "unknown or enlarged profile returns native-unhandled with zero fake-engine calls and zero retained effects",
+      "result": "PASS",
+      "evidence": [
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/proof-final-private-20260821/test.log",
+        "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/ibus-atomic-process.c",
+        "/home/ubu/projects/ibus-lay-atomic-proof/bus/inputcontext.c"
+      ]
+    },
+    {
+      "id": "zero-engine-mutation-signals",
+      "expected": "commit delete forward update show or hide signal during an atomic call is suppressed aborts the proposal and poisons only the atomic lineage",
+      "result": "PASS",
+      "evidence": [
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/proof-final-private-20260821/test.log",
+        "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/ibus-atomic-process.c",
+        "/home/ubu/projects/ibus-lay-atomic-proof/bus/inputcontext.c"
+      ]
+    },
+    {
+      "id": "single-flight-fault-matrix",
+      "expected": "overlapping call missing prior receipt engine cancellation disconnect and timeout leave at most one cleared pending identity",
+      "result": "PASS",
+      "evidence": [
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/proof-final-private-20260821/test.log",
+        "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/ibus-atomic-process.c",
+        "/home/ubu/projects/ibus-lay-atomic-proof/bus/inputcontext.c"
+      ]
+    },
+    {
+      "id": "no-frame-retention",
+      "expected": "no second method property or retry can retrieve an earlier effect vector; only bounded prior identity metadata exists",
+      "result": "PASS",
+      "evidence": [
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/proof-final-normal-20260821/codec.log",
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/proof-final-private-20260821/codec.log",
+        "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/ibus-atomic-frame.c"
+      ]
+    },
+    {
+      "id": "stale-lineage-matrix",
+      "expected": "context focus engine capability native epoch and snapshot changes at every call boundary all produce zero-effect terminal outcomes",
+      "result": "PASS",
+      "evidence": [
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/proof-final-private-20260821/test.log",
+        "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/ibus-atomic-process.c",
+        "/home/ubu/projects/ibus-lay-atomic-proof/bus/inputcontext.c"
+      ]
+    },
+    {
+      "id": "no-legacy-fallback",
+      "expected": "every atomic refusal leaves the legacy engine method call counter at zero for that event",
+      "result": "PASS",
+      "evidence": [
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/proof-final-private-20260821/test.log",
+        "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/ibus-atomic-process.c",
+        "/home/ubu/projects/ibus-lay-atomic-proof/bus/inputcontext.c"
+      ]
+    },
+    {
+      "id": "legacy-process-key-event-parity",
+      "expected": "fixed legacy scenarios preserve exact boolean replies signal order and engine call count",
+      "result": "PASS",
+      "evidence": [
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/proof-final-private-20260821/test.log",
+        "/home/ubu/projects/ibus-lay-atomic-proof/src/tests/ibus-atomic-process.c",
+        "/home/ubu/projects/ibus-lay-atomic-proof/bus/inputcontext.c"
+      ]
+    },
+    {
+      "id": "remote-source-hash-parity",
+      "expected": "local and remote SHA-256 values match for every compiler and test input",
+      "result": "PASS",
+      "evidence": [
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/slice2-observed-v10-receipt.json"
+      ],
+      "note": "The receipt embeds matching local and remote SHA-256 values for all eight changed inputs."
+    },
+    {
+      "id": "remote-isolated-build",
+      "expected": "the checked remote host builds warnings-as-errors normal-empty-admission and private-proof codec daemon proxy and fake-hop targets using 20 jobs",
+      "result": "PASS",
+      "evidence": [
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/final-build-20260821/normal-targets.log",
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/final-build-20260821/private-targets.log"
+      ],
+      "note": "Pinned libibus, ibus-daemon and atomic test targets built with -Werror; normal 0.16 s, private 0.57 s."
+    },
+    {
+      "id": "remote-private-dbus-proof",
+      "expected": "all registered cases pass under a private dbus-run-session with no desktop bus address and zero skipped cases",
+      "result": "PASS",
+      "evidence": [
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/proof-final-normal-20260821/test.log",
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/proof-final-private-20260821/test.log"
+      ],
+      "note": "Both private dbus-run-session matrices passed with zero skipped tests."
+    },
+    {
+      "id": "installed-runtime-parity",
+      "expected": "installed IBus daemon libibus GTK modules and Lay daemon hashes remain exact and their process identities are untouched",
+      "result": "PASS",
+      "evidence": [
+        "docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE2_2026-08-21/implementation-preflight-receipt-v4.json"
+      ],
+      "note": "5/5 installed hashes equal V4. The sole Lay and IBus processes started on 2026-08-19, before the V4 manifest mtime 2026-08-21 02:47:27 +0300, and remain alive as PID 1971272 and 2076194."
+    }
+  ],
+  "not_tested": [
+    "production Wayland, GTK, Qt, terminal or Electron adapter",
+    "Lay client capability propagation and speculative-state poison binding",
+    "physical keyboard input and application behavior",
+    "serialization and end-to-end production latency",
+    "installation, service restart, live session-bus integration and deployment"
+  ],
+  "promotion_boundary": "Slice 2 source proof is complete only in the isolated sandbox. A production adapter/profile and deployment require a new preflight and physical proof."
+}

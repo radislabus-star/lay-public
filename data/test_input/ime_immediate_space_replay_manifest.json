@@ -1,0 +1,18 @@
+{
+  "schema": "lay.ime-immediate-space-replay.v2",
+  "warmup_case": "ime_immediate_space_warmup",
+  "warmup_space_events": 4,
+  "eligible_case": "ime_immediate_space_replay",
+  "eligible_space_events": 20,
+  "eligible_applied_space_events": 20,
+  "expected_text_sha256": {
+    "ime_immediate_space_warmup": "27bd1a0cafbaac1f48531cce6583af22017779c792f4ebf86a5a0af241a8c73a",
+    "ime_immediate_space_replay": "01d7082e70b5c090b3fce3ab84854d9fc046a1da15d9c6bde6e2c5c224ea3c61"
+  },
+  "required_projections": ["display", "correction"],
+  "maximum_field_producers_per_frame": 1,
+  "space_p99_us_max": 10000,
+  "space_max_us_max": 20000,
+  "printable_p99_us_max": 5000,
+  "printable_max_us_max": 20000
+}

@@ -1,0 +1,474 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "PASS",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": true,
+  "contract": "docs/structural_gates/preflights/LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_ROUTE_V27_V2_2026-08-22.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "source_root": null,
+  "node_count": 15,
+  "edge_count": 25,
+  "routes": [
+    {
+      "id": "full-terminal-preparation-execution",
+      "event": "full-terminal-preparation",
+      "kind": "execution",
+      "entry": "printable-input",
+      "via": [],
+      "terminal": "prepared-decision-store",
+      "path_count": 1,
+      "paths": [
+        [
+          "printable-input",
+          "canonical-frame-builder",
+          "full-candidate-producer",
+          "canonical-field-evidence",
+          "transition-decision-core",
+          "transition-verifier",
+          "prepared-decision-store"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "canonical-field-evidence"
+        ],
+        "orchestrator": [
+          "canonical-frame-builder",
+          "prepared-decision-store"
+        ],
+        "producer": [
+          "full-candidate-producer"
+        ],
+        "interface": [
+          "printable-input"
+        ],
+        "candidate_rank_owner": [
+          "transition-decision-core"
+        ],
+        "authorization_owner": [
+          "transition-verifier"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "printable-input",
+          "to": "prepared-decision-store",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "printable-input",
+              "canonical-frame-builder",
+              "full-candidate-producer",
+              "canonical-field-evidence",
+              "transition-decision-core",
+              "transition-verifier",
+              "prepared-decision-store"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "exact-lease-preparation-execution",
+      "event": "exact-lease-preparation",
+      "kind": "execution",
+      "entry": "printable-input",
+      "via": [],
+      "terminal": "prepared-decision-store",
+      "path_count": 1,
+      "paths": [
+        [
+          "printable-input",
+          "canonical-frame-builder",
+          "exact-layout-producer",
+          "exact-closed-contour-evidence",
+          "transition-decision-core",
+          "transition-verifier",
+          "prepared-decision-store"
+        ]
+      ],
+      "role_owners": {
+        "orchestrator": [
+          "canonical-frame-builder",
+          "prepared-decision-store"
+        ],
+        "evidence_owner": [
+          "exact-closed-contour-evidence"
+        ],
+        "producer": [
+          "exact-layout-producer"
+        ],
+        "interface": [
+          "printable-input"
+        ],
+        "candidate_rank_owner": [
+          "transition-decision-core"
+        ],
+        "authorization_owner": [
+          "transition-verifier"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "printable-input",
+          "to": "prepared-decision-store",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "printable-input",
+              "canonical-frame-builder",
+              "exact-layout-producer",
+              "exact-closed-contour-evidence",
+              "transition-decision-core",
+              "transition-verifier",
+              "prepared-decision-store"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "full-lease-authority",
+      "event": "full-lease-lifecycle",
+      "kind": "authority",
+      "entry": "full-candidate-producer",
+      "via": [],
+      "terminal": "atomic-engine-output",
+      "path_count": 1,
+      "paths": [
+        [
+          "full-candidate-producer",
+          "canonical-field-evidence",
+          "transition-decision-core",
+          "transition-verifier",
+          "atomic-engine-output"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "atomic-engine-output"
+        ],
+        "evidence_owner": [
+          "canonical-field-evidence"
+        ],
+        "producer": [
+          "full-candidate-producer"
+        ],
+        "candidate_rank_owner": [
+          "transition-decision-core"
+        ],
+        "authorization_owner": [
+          "transition-verifier"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "full-candidate-producer",
+          "to": "atomic-engine-output",
+          "via": [],
+          "graph": "authority",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "full-candidate-producer",
+              "canonical-field-evidence",
+              "transition-decision-core",
+              "transition-verifier",
+              "atomic-engine-output"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "exact-lease-authority",
+      "event": "exact-lease-lifecycle",
+      "kind": "authority",
+      "entry": "exact-layout-producer",
+      "via": [],
+      "terminal": "atomic-engine-output",
+      "path_count": 1,
+      "paths": [
+        [
+          "exact-layout-producer",
+          "exact-closed-contour-evidence",
+          "transition-decision-core",
+          "transition-verifier",
+          "atomic-engine-output"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "atomic-engine-output"
+        ],
+        "evidence_owner": [
+          "exact-closed-contour-evidence"
+        ],
+        "producer": [
+          "exact-layout-producer"
+        ],
+        "candidate_rank_owner": [
+          "transition-decision-core"
+        ],
+        "authorization_owner": [
+          "transition-verifier"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "exact-layout-producer",
+          "to": "atomic-engine-output",
+          "via": [],
+          "graph": "authority",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "exact-layout-producer",
+              "exact-closed-contour-evidence",
+              "transition-decision-core",
+              "transition-verifier",
+              "atomic-engine-output"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "space-consume-full-execution",
+      "event": "space-consume-full",
+      "kind": "execution",
+      "entry": "space-input",
+      "via": [],
+      "terminal": "atomic-engine-output",
+      "path_count": 1,
+      "paths": [
+        [
+          "space-input",
+          "space-lease-arbiter",
+          "atomic-engine-output"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "atomic-engine-output"
+        ],
+        "interface": [
+          "space-input"
+        ],
+        "orchestrator": [
+          "space-lease-arbiter"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "space-input",
+          "to": "atomic-engine-output",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "space-input",
+              "space-lease-arbiter",
+              "atomic-engine-output"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "space-consume-exact-execution",
+      "event": "space-consume-exact",
+      "kind": "execution",
+      "entry": "space-input",
+      "via": [],
+      "terminal": "atomic-engine-output",
+      "path_count": 1,
+      "paths": [
+        [
+          "space-input",
+          "space-lease-arbiter",
+          "atomic-engine-output"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "atomic-engine-output"
+        ],
+        "interface": [
+          "space-input"
+        ],
+        "orchestrator": [
+          "space-lease-arbiter"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "space-input",
+          "to": "atomic-engine-output",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "space-input",
+              "space-lease-arbiter",
+              "atomic-engine-output"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "space-no-correction-execution",
+      "event": "space-no-correction",
+      "kind": "execution",
+      "entry": "space-input",
+      "via": [],
+      "terminal": "no-correction-result",
+      "path_count": 1,
+      "paths": [
+        [
+          "space-input",
+          "space-lease-arbiter",
+          "no-correction-result"
+        ]
+      ],
+      "role_owners": {
+        "orchestrator": [
+          "no-correction-result",
+          "space-lease-arbiter"
+        ],
+        "interface": [
+          "space-input"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "space-input",
+          "to": "no-correction-result",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "space-input",
+              "space-lease-arbiter",
+              "no-correction-result"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "v27-proof-route",
+      "event": "v27-proof",
+      "kind": "proof",
+      "entry": "route-observer",
+      "via": [],
+      "terminal": "route-receipt",
+      "path_count": 1,
+      "paths": [
+        [
+          "route-observer",
+          "route-receipt"
+        ]
+      ],
+      "role_owners": {
+        "observer": [
+          "route-observer"
+        ],
+        "proof_owner": [
+          "route-receipt"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {
+    "full-lease-lifecycle": {
+      "mutation_owner": [
+        "atomic-engine-output"
+      ],
+      "candidate_rank_owner": [
+        "transition-decision-core"
+      ],
+      "display_rank_owner": [],
+      "render_owner": [],
+      "authorization_owner": [
+        "transition-verifier"
+      ],
+      "evidence_owner": [
+        "canonical-field-evidence"
+      ]
+    },
+    "exact-lease-lifecycle": {
+      "mutation_owner": [
+        "atomic-engine-output"
+      ],
+      "candidate_rank_owner": [
+        "transition-decision-core"
+      ],
+      "display_rank_owner": [],
+      "render_owner": [],
+      "authorization_owner": [
+        "transition-verifier"
+      ],
+      "evidence_owner": [
+        "exact-closed-contour-evidence"
+      ]
+    }
+  },
+  "source_evidence": {
+    "expected": 0,
+    "verified": 0,
+    "complete": true
+  },
+  "issues": [],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": false,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "printable-input", "role": "interface"},
+    {"id": "space-input", "role": "interface"},
+    {"id": "full-prefetch-producer", "role": "producer"},
+    {"id": "exact-layout-producer", "role": "producer"},
+    {"id": "exact-surface-authority", "role": "evidence_owner"},
+    {"id": "canonical-field-evidence", "role": "evidence_owner"},
+    {"id": "transition-decision-core", "role": "candidate_rank_owner"},
+    {"id": "transition-verifier", "role": "authorization_owner"},
+    {"id": "space-lease-arbiter", "role": "orchestrator"},
+    {"id": "atomic-engine-output", "role": "mutation_owner"},
+    {"id": "route-observer", "role": "observer"},
+    {"id": "route-receipt", "role": "proof_owner"}
+  ],
+  "edges": [
+    {"id": "prefetch-input-producer", "from": "printable-input", "relation": "calls", "to": "full-prefetch-producer", "events": ["full-prefetch"]},
+    {"id": "prefetch-exec-producer-field", "from": "full-prefetch-producer", "relation": "delegates", "to": "canonical-field-evidence", "events": ["full-prefetch"]},
+    {"id": "prefetch-exec-field-rank", "from": "canonical-field-evidence", "relation": "delegates", "to": "transition-decision-core", "events": ["full-prefetch"]},
+    {"id": "prefetch-exec-rank-verifier", "from": "transition-decision-core", "relation": "delegates", "to": "transition-verifier", "events": ["full-prefetch"]},
+    {"id": "prefetch-exec-verifier-lease", "from": "transition-verifier", "relation": "delegates", "to": "space-lease-arbiter", "events": ["full-prefetch"]},
+    {"id": "prefetch-exec-lease-output", "from": "space-lease-arbiter", "relation": "delegates", "to": "atomic-engine-output", "events": ["full-prefetch"]},
+    {"id": "prefetch-producer-field", "from": "full-prefetch-producer", "relation": "produces_for", "to": "canonical-field-evidence", "events": ["full-prefetch"]},
+    {"id": "prefetch-field-rank", "from": "canonical-field-evidence", "relation": "passes_to", "to": "transition-decision-core", "events": ["full-prefetch"]},
+    {"id": "prefetch-rank-verifier", "from": "transition-decision-core", "relation": "passes_to", "to": "transition-verifier", "events": ["full-prefetch"]},
+    {"id": "prefetch-verifier-output", "from": "transition-verifier", "relation": "authorizes", "to": "atomic-engine-output", "events": ["full-prefetch"]},
+    {"id": "exact-space-producer", "from": "space-input", "relation": "calls", "to": "exact-layout-producer", "events": ["exact-layout-space"]},
+    {"id": "exact-exec-producer-evidence", "from": "exact-layout-producer", "relation": "delegates", "to": "exact-surface-authority", "events": ["exact-layout-space"]},
+    {"id": "exact-exec-evidence-rank", "from": "exact-surface-authority", "relation": "delegates", "to": "transition-decision-core", "events": ["exact-layout-space"]},
+    {"id": "exact-exec-rank-verifier", "from": "transition-decision-core", "relation": "delegates", "to": "transition-verifier", "events": ["exact-layout-space"]},
+    {"id": "exact-exec-verifier-lease", "from": "transition-verifier", "relation": "delegates", "to": "space-lease-arbiter", "events": ["exact-layout-space"]},
+    {"id": "exact-exec-lease-output", "from": "space-lease-arbiter", "relation": "delegates", "to": "atomic-engine-output", "events": ["exact-layout-space"]},
+    {"id": "exact-producer-evidence", "from": "exact-layout-producer", "relation": "produces_for", "to": "exact-surface-authority", "events": ["exact-layout-space"]},
+    {"id": "exact-evidence-rank", "from": "exact-surface-authority", "relation": "passes_to", "to": "transition-decision-core", "events": ["exact-layout-space"]},
+    {"id": "exact-rank-verifier", "from": "transition-decision-core", "relation": "passes_to", "to": "transition-verifier", "events": ["exact-layout-space"]},
+    {"id": "exact-verifier-output", "from": "transition-verifier", "relation": "authorizes", "to": "atomic-engine-output", "events": ["exact-layout-space"]},
+    {"id": "observer-proof", "from": "route-observer", "relation": "proves", "to": "route-receipt", "events": ["exact-layout-space"]}
+  ],
+  "routes": [
+    {
+      "id": "full-prefetch-execution",
+      "event": "full-prefetch",
+      "kind": "execution",
+      "entry": "printable-input",
+      "terminal": "atomic-engine-output",
+      "required_roles": ["interface", "producer", "evidence_owner", "candidate_rank_owner", "authorization_owner", "orchestrator", "mutation_owner"],
+      "path_cardinality": [{"from": "printable-input", "to": "atomic-engine-output", "min": 1, "max": 1}]
+    },
+    {
+      "id": "exact-layout-space-authority",
+      "event": "exact-layout-space",
+      "kind": "authority",
+      "entry": "exact-layout-producer",
+      "terminal": "atomic-engine-output",
+      "required_roles": ["producer", "evidence_owner", "candidate_rank_owner", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "exact-layout-producer", "to": "atomic-engine-output", "min": 1, "max": 1}]
+    },
+    {
+      "id": "exact-layout-space-proof",
+      "event": "exact-layout-space",
+      "kind": "proof",
+      "entry": "route-observer",
+      "terminal": "route-receipt",
+      "required_roles": ["observer", "proof_owner"]
+    }
+  ]
+}

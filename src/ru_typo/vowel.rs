@@ -6,6 +6,7 @@ use crate::word_reader::is_cyrillic_word;
 use super::guards::{
     looks_like_plausible_russian_past_tense, rewrites_protected_pattern_term_stem,
 };
+use super::memo::{memoized_text, WordMaterialKind};
 use super::thresholds::NGRAM_VOWEL_CONFUSION_MARGIN;
 
 #[path = "vowel/past_tense.rs"]
@@ -13,11 +14,15 @@ mod past_tense;
 use past_tense::has_same_simple_past_tense_tail;
 
 pub(crate) fn correct_vowel_confusion(word: &str) -> Option<String> {
-    correct_vowel_confusion_impl(word, false)
+    memoized_text(WordMaterialKind::VowelConfusion, word, || {
+        correct_vowel_confusion_impl(word, false)
+    })
 }
 
 pub(crate) fn correct_contextual_past_tense_vowel_confusion(word: &str) -> Option<String> {
-    correct_vowel_confusion_impl(word, true)
+    memoized_text(WordMaterialKind::ContextualVowelConfusion, word, || {
+        correct_vowel_confusion_impl(word, true)
+    })
 }
 
 fn correct_vowel_confusion_impl(word: &str, allow_safe_past_tense: bool) -> Option<String> {
