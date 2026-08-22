@@ -1,0 +1,88 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "uninstaller-baseline",
+      "kind": "file",
+      "mode": "0775",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/uninstall.sh",
+      "sha256": "b2ebf8357372f321172391317440414f9d0cf26d3ab07583f68031ea8484b2d8",
+      "size_bytes": 6322
+    },
+    {
+      "exists": true,
+      "id": "installer-owner-baseline",
+      "kind": "file",
+      "mode": "0775",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/install-release-binaries.sh",
+      "sha256": "259850478a99bb32b1aaffa863ff72138f018b7ce1231611a05fad706d7ffd02",
+      "size_bytes": 2333
+    },
+    {
+      "exists": true,
+      "id": "public-regression-baseline",
+      "kind": "file",
+      "mode": "0775",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/test-public-issues.sh",
+      "sha256": "02ce4c111494806907584281d60c4427393c46741b6e536fb7d31a20f7a1bc08",
+      "size_bytes": 3464
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 3,
+    "forbidden_side_effect_kinds": [
+      "delete_complete_user_bin",
+      "delete_complete_user_lib",
+      "name_prefix_owns_unrelated_commands",
+      "run_uninstaller_against_active_home",
+      "unmanaged_release_destination"
+    ],
+    "identity_contracts": 1,
+    "invariants": 3,
+    "planned_side_effect_kinds": [
+      "filesystem_delete"
+    ],
+    "preserved_artifacts": 1,
+    "runtime_comparisons": 0,
+    "source_checks": 3,
+    "tests": 8
+  },
+  "manifest_sha256": "56bbf5c6031894706fce769f3aec49305dccf6afa8cd268e094718227a96aa84",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-uninstaller-owner",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/uninstall.sh",
+      "sha256": "b2ebf8357372f321172391317440414f9d0cf26d3ab07583f68031ea8484b2d8",
+      "size_bytes": 6322
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-managed-installer-owner",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/install-release-binaries.sh",
+      "sha256": "259850478a99bb32b1aaffa863ff72138f018b7ce1231611a05fad706d7ffd02",
+      "size_bytes": 2333
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-sandbox-regression-owner",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/test-public-issues.sh",
+      "sha256": "02ce4c111494806907584281d60c4427393c46741b6e536fb7d31a20f7a1bc08",
+      "size_bytes": 3464
+    }
+  ],
+  "task_id": "LAY_PUBLIC_ISSUE_41_COMPLETE_UNINSTALL_2026-08-22",
+  "verdict": "READY_TO_IMPLEMENT"
+}

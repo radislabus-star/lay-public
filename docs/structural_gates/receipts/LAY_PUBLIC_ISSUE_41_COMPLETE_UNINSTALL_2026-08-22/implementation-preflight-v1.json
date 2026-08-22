@@ -1,0 +1,88 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "uninstaller-baseline",
+      "kind": "file",
+      "mode": "0775",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/uninstall.sh",
+      "sha256": "b2ebf8357372f321172391317440414f9d0cf26d3ab07583f68031ea8484b2d8",
+      "size_bytes": 6322
+    },
+    {
+      "exists": true,
+      "id": "installer-owner-baseline",
+      "kind": "file",
+      "mode": "0775",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/install-release-binaries.sh",
+      "sha256": "259850478a99bb32b1aaffa863ff72138f018b7ce1231611a05fad706d7ffd02",
+      "size_bytes": 2333
+    },
+    {
+      "exists": true,
+      "id": "public-regression-baseline",
+      "kind": "file",
+      "mode": "0775",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/test-public-issues.sh",
+      "sha256": "02ce4c111494806907584281d60c4427393c46741b6e536fb7d31a20f7a1bc08",
+      "size_bytes": 3464
+    }
+  ],
+  "blockers": [
+    {
+      "code": "reused_source_checks_missing",
+      "field": "source_checks",
+      "message": "reused implementation requires pinned source checks"
+    },
+    {
+      "code": "test_contract_incomplete",
+      "field": "tests[1]",
+      "message": "valid kind and non-empty expected result are required"
+    },
+    {
+      "code": "fault_injection_missing",
+      "field": "state_machine.steps[1].test_id",
+      "message": "mutating failure requires a fault_injection test"
+    },
+    {
+      "code": "fault_injection_missing",
+      "field": "state_machine.steps[2].test_id",
+      "message": "mutating failure requires a fault_injection test"
+    },
+    {
+      "code": "identity_parity_missing",
+      "field": "identity_contracts[0].test_id",
+      "message": "identity contract requires a parity test"
+    }
+  ],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 3,
+    "forbidden_side_effect_kinds": [
+      "delete dirty or foreign source checkout",
+      "delete rollback during normal uninstall",
+      "delete unrelated user bin entry",
+      "run regression against active HOME"
+    ],
+    "identity_contracts": 1,
+    "invariants": 3,
+    "planned_side_effect_kinds": [
+      "filesystem_delete"
+    ],
+    "preserved_artifacts": 1,
+    "runtime_comparisons": 0,
+    "source_checks": 0,
+    "tests": 5
+  },
+  "manifest_sha256": "cebd0fa5b2ffcd5dd6e81ee4590ca9f81ca53a4b805ccf6ec5213ef442dc0f9c",
+  "safe_to_implement": false,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [],
+  "task_id": "LAY_PUBLIC_ISSUE_41_COMPLETE_UNINSTALL_2026-08-22",
+  "verdict": "BLOCKED_BEFORE_CODE"
+}

@@ -1,0 +1,230 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_PUBLIC_ISSUE_41_COMPLETE_UNINSTALL_2026-08-22",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "uninstaller-baseline",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/uninstall.sh",
+      "expect": {
+        "mode": "0775",
+        "size_bytes": 6322,
+        "sha256": "b2ebf8357372f321172391317440414f9d0cf26d3ab07583f68031ea8484b2d8"
+      }
+    },
+    {
+      "id": "installer-owner-baseline",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/install-release-binaries.sh",
+      "expect": {
+        "mode": "0775",
+        "size_bytes": 2333,
+        "sha256": "259850478a99bb32b1aaffa863ff72138f018b7ce1231611a05fad706d7ffd02"
+      }
+    },
+    {
+      "id": "public-regression-baseline",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/test-public-issues.sh",
+      "expect": {
+        "mode": "0775",
+        "size_bytes": 3464,
+        "sha256": "02ce4c111494806907584281d60c4427393c46741b6e536fb7d31a20f7a1bc08"
+      }
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "managed-runtime-owner",
+      "producer": "scripts/install-release-binaries.sh managed destination",
+      "consumer": "uninstall.sh managed runtime cleanup",
+      "comparison": "same configurable canonical directory",
+      "test_id": "managed-owner-parity"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "unrelated-link-preserved",
+      "statement": "uninstall never removes a user bin symlink outside the Lay managed runtime",
+      "test_id": "unrelated-link-preservation"
+    },
+    {
+      "id": "rollback-preserved-without-purge",
+      "statement": "normal uninstall removes active runtime but preserves rollback material",
+      "test_id": "normal-uninstall-boundary"
+    },
+    {
+      "id": "purge-removes-managed-tree",
+      "statement": "purge removes active runtime, rollback and staging under the Lay managed tree",
+      "test_id": "purge-boundary"
+    }
+  ],
+  "preserved_artifacts": [
+    {
+      "id": "normal-uninstall-rollback",
+      "path": "$HOME/.local/lib/lay/rollback",
+      "policy": "preserve_without_purge",
+      "rollback_policy": "not_applicable",
+      "cursor_policy": "not_applicable",
+      "baseline_check_id": "uninstaller-baseline"
+    }
+  ],
+  "source_checks": [
+    {
+      "id": "pinned-uninstaller-owner",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/uninstall.sh",
+      "sha256": "b2ebf8357372f321172391317440414f9d0cf26d3ab07583f68031ea8484b2d8",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "delete_complete_user_bin",
+          "regex": "rm[[:space:]]+-rf[[:space:]]+.*[.]local/bin(?:[ /\\\"]|$)"
+        },
+        {
+          "effect": "delete_complete_user_lib",
+          "regex": "rm[[:space:]]+-rf[[:space:]]+.*[.]local/lib(?:[ /\\\"]|$)"
+        },
+        {
+          "effect": "name_prefix_owns_unrelated_commands",
+          "regex": "rm[[:space:]]+-[^\\n]*[.]local/bin/lay[-*]"
+        }
+      ]
+    },
+    {
+      "id": "pinned-managed-installer-owner",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/install-release-binaries.sh",
+      "sha256": "259850478a99bb32b1aaffa863ff72138f018b7ce1231611a05fad706d7ffd02",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "unmanaged_release_destination",
+          "regex": "INSTALL_DIR=.*(?:/usr|/opt)"
+        }
+      ]
+    },
+    {
+      "id": "pinned-sandbox-regression-owner",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/test-public-issues.sh",
+      "sha256": "02ce4c111494806907584281d60c4427393c46741b6e536fb7d31a20f7a1bc08",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "run_uninstaller_against_active_home",
+          "regex": "HOME=\\\"/home/ubu\\\"[^\\n]*uninstall[.]sh"
+        }
+      ]
+    }
+  ],
+  "runtime_comparisons": [],
+  "side_effects": {
+    "planned": [
+      {
+        "id": "remove-owned-links",
+        "kind": "filesystem_delete"
+      },
+      {
+        "id": "remove-managed-bin",
+        "kind": "filesystem_delete"
+      },
+      {
+        "id": "purge-managed-tree",
+        "kind": "filesystem_delete"
+      }
+    ],
+    "forbidden": [
+      "delete_complete_user_bin",
+      "delete_complete_user_lib",
+      "name_prefix_owns_unrelated_commands",
+      "unmanaged_release_destination",
+      "run_uninstaller_against_active_home"
+    ]
+  },
+  "state_machine": {
+    "initial_state": "INSTALLED",
+    "steps": [
+      {
+        "id": "stop-runtime",
+        "from": "INSTALLED",
+        "to": "QUIESCED",
+        "failure_state": "QUIESCED_PARTIAL",
+        "mutates": true,
+        "preserves": [
+          "normal-uninstall-rollback"
+        ],
+        "cleanup": "all stop operations are idempotent and continue on absent owners",
+        "test_id": "idempotent-sandbox"
+      },
+      {
+        "id": "remove-active-runtime",
+        "from": "QUIESCED",
+        "to": "RUNTIME_REMOVED",
+        "failure_state": "RUNTIME_PARTIAL",
+        "mutates": true,
+        "preserves": [
+          "normal-uninstall-rollback"
+        ],
+        "cleanup": "rerun the idempotent uninstaller",
+        "test_id": "active-runtime-removal-fault"
+      },
+      {
+        "id": "purge-owned-state",
+        "from": "RUNTIME_REMOVED",
+        "to": "PURGED",
+        "failure_state": "PURGE_PARTIAL",
+        "mutates": true,
+        "preserves": [],
+        "cleanup": "rerun with --purge",
+        "test_id": "purge-removal-fault"
+      }
+    ],
+    "terminal_states": [
+      "RUNTIME_REMOVED",
+      "PURGED",
+      "QUIESCED_PARTIAL",
+      "RUNTIME_PARTIAL",
+      "PURGE_PARTIAL"
+    ]
+  },
+  "tests": [
+    {
+      "id": "managed-runtime-removal",
+      "kind": "integration",
+      "expected": "all installed release links and the managed bin directory are absent"
+    },
+    {
+      "id": "unrelated-link-preservation",
+      "kind": "integration",
+      "expected": "a symlink outside the managed directory remains byte-identical"
+    },
+    {
+      "id": "normal-uninstall-boundary",
+      "kind": "integration",
+      "expected": "rollback survives normal uninstall"
+    },
+    {
+      "id": "purge-boundary",
+      "kind": "integration",
+      "expected": "the complete Lay managed tree is absent after purge"
+    },
+    {
+      "id": "idempotent-sandbox",
+      "kind": "fault_injection",
+      "expected": "repeated cleanup of absent paths exits successfully"
+    },
+    {
+      "id": "active-runtime-removal-fault",
+      "kind": "fault_injection",
+      "expected": "an interrupted active-runtime cleanup is idempotently completed on rerun without deleting rollback or unrelated links"
+    },
+    {
+      "id": "purge-removal-fault",
+      "kind": "fault_injection",
+      "expected": "an interrupted purge is idempotently completed on rerun without crossing the exact Lay managed tree boundary"
+    },
+    {
+      "id": "managed-owner-parity",
+      "kind": "parity",
+      "expected": "installer and uninstaller resolve the same configured managed runtime directory"
+    }
+  ]
+}

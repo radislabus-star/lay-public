@@ -3160,13 +3160,13 @@
     "semantic_hash": ""
   },
   "scripts/test-public-issues.sh": {
-    "mtime": 1786642120.3983352,
-    "ast_hash": "1a33e3ec53a6e57ea4b4748273c0c380",
+    "mtime": 1787391379.7104058,
+    "ast_hash": "1d4b7d82bd83087e7807757d96921beb",
     "semantic_hash": ""
   },
   "uninstall.sh": {
-    "mtime": 1786642120.4839246,
-    "ast_hash": "bceb300303531810f361c932cbe5072f",
+    "mtime": 1787391339.6880329,
+    "ast_hash": "295f93943e2d3a3617d5e18ea3f396be",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/typing_assist_worker.rs": {
@@ -9665,8 +9665,8 @@
     "semantic_hash": ""
   },
   "docs/ime-canonical-target-authority-paper-2026-08-17.md": {
-    "mtime": 1787252387.1196632,
-    "ast_hash": "c35cfe089d57958b4458758a49866db2",
+    "mtime": 1787390260.1427708,
+    "ast_hash": "059085bfe9de873e6f8d4d02d4165b71",
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice5/release-sha256.txt": {
@@ -13340,13 +13340,13 @@
     "semantic_hash": ""
   },
   "docs/ime-backend-atomic-frame-v2-2026-08-20.md": {
-    "mtime": 1787367030.384279,
-    "ast_hash": "29f4c9b247969c8d3164f98e130fa806",
+    "mtime": 1787390260.1217706,
+    "ast_hash": "a91f14badc575ee5d310ca6a0393c425",
     "semantic_hash": ""
   },
   "docs/ime-backend-atomic-receipt-v1-2026-08-20.md": {
-    "mtime": 1787258955.4897869,
-    "ast_hash": "a2f4d83d8d426a50efe2b88b915ffa85",
+    "mtime": 1787390260.1397707,
+    "ast_hash": "af843903de5c11864fa65f6660103692",
     "semantic_hash": ""
   },
   "docs/structural_gates/preflights/LAY_IME_BACKEND_ATOMIC_FRAME_V2_SLICE1_DEPENDENCY_TRANSFER_PREFLIGHT_V1_2026-08-21.json": {
@@ -14430,8 +14430,8 @@
     "semantic_hash": ""
   },
   "docs/ime-atomic-exact-layout-lease-v27-paper-contract-2026-08-22.md": {
-    "mtime": 1787390073.7050483,
-    "ast_hash": "938e3caabece62e242e4949d4debac43",
+    "mtime": 1787390260.1167705,
+    "ast_hash": "5a5c531740cb77b2a8efbde90cc3f4e0",
     "semantic_hash": ""
   },
   "docs/structural_gates/preflights/LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_OBSERVED_ROUTE_V27_2026-08-22.json": {
@@ -14797,6 +14797,36 @@
   "src/exact_layout_authority/proof.rs": {
     "mtime": 1787377161.286805,
     "ast_hash": "fce73368d556a743fdecc7044cdf3c06",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/preflights/LAY_PUBLIC_ISSUE_41_COMPLETE_UNINSTALL_2026-08-22.json": {
+    "mtime": 1787391278.7124674,
+    "ast_hash": "fc82bc98286da550ad775cd69c3f1364",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_PUBLIC_ISSUE_41_COMPLETE_UNINSTALL_2026-08-22/final-sandbox-proof-v1.json": {
+    "mtime": 1787391423.5318158,
+    "ast_hash": "a1ad7537f47bd73c669af201e77133b8",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_PUBLIC_ISSUE_41_COMPLETE_UNINSTALL_2026-08-22/implementation-preflight-v1.json": {
+    "mtime": 1787391203.5057065,
+    "ast_hash": "87303b1a28a0baffdbce63bc076c94fa",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_PUBLIC_ISSUE_41_COMPLETE_UNINSTALL_2026-08-22/implementation-preflight-v2.json": {
+    "mtime": 1787391261.5969617,
+    "ast_hash": "d1130450e0c6104e7ece5d71dfb398f3",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_PUBLIC_ISSUE_41_COMPLETE_UNINSTALL_2026-08-22/implementation-preflight-v3.json": {
+    "mtime": 1787391285.2090297,
+    "ast_hash": "d094100ccecafc663ff03f486e2fcef2",
+    "semantic_hash": ""
+  },
+  "docs/issue-41-complete-uninstall-ownership-2026-08-22.md": {
+    "mtime": 1787391423.5318158,
+    "ast_hash": "98ea59235c46f503d03de1d1cca36358",
     "semantic_hash": ""
   }
 }

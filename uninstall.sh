@@ -6,6 +6,7 @@ PURGE=0
 KEEP_SOURCE=0
 TEST_MODE="${LAY_UNINSTALL_TEST_MODE:-0}"
 SYSTEM_ROOT="${LAY_UNINSTALL_SYSTEM_ROOT:-}"
+MANAGED_RUNTIME_DIR="${LAY_INSTALL_LIBEXEC_DIR:-$HOME/.local/lib/lay/bin}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" 2>/dev/null && pwd || true)"
 SOURCE_DIR="${LAY_INSTALL_DIR:-$SCRIPT_DIR}"
 if [ ! -f "$SOURCE_DIR/Cargo.toml" ]; then
@@ -87,6 +88,27 @@ remove_system_file() {
     fi
 }
 
+remove_managed_runtime() {
+    local link raw_target canonical_target canonical_managed_dir
+    canonical_managed_dir="$(readlink -f -- "$MANAGED_RUNTIME_DIR" 2>/dev/null || printf '%s' "$MANAGED_RUNTIME_DIR")"
+
+    if [ -d "$HOME/.local/bin" ]; then
+        while IFS= read -r -d '' link; do
+            raw_target="$(readlink -- "$link" 2>/dev/null || true)"
+            canonical_target="$(readlink -f -- "$link" 2>/dev/null || true)"
+            case "$raw_target" in
+                "$MANAGED_RUNTIME_DIR"/*) rm -f -- "$link"; continue ;;
+            esac
+            case "$canonical_target" in
+                "$canonical_managed_dir"/*) rm -f -- "$link" ;;
+            esac
+        done < <(find "$HOME/.local/bin" -maxdepth 1 -type l -print0)
+    fi
+
+    rm -rf -- "$MANAGED_RUNTIME_DIR"
+    rmdir -- "$HOME/.local/lib/lay" 2>/dev/null || true
+}
+
 echo "=== остановка lay ==="
 run_runtime_cleanup
 
@@ -95,16 +117,20 @@ rm -f \
     "$HOME/.local/bin/lay" \
     "$HOME/.local/bin/lay-daemon" \
     "$HOME/.local/bin/lay-nanda-wave-eval" \
+    "$HOME/.local/bin/lay-nanda-wave-train" \
     "$HOME/.local/bin/lay-test-input" \
     "$HOME/.local/bin/lay-ngram-corpus" \
     "$HOME/.local/bin/lay-ibus-engine" \
     "$HOME/.local/bin/lay-memory-report" \
+    "$HOME/.local/bin/lay-l1.1-restore" \
+    "$HOME/.local/bin/lay-l1.1-serve" \
     "$HOME/.local/bin/lay-runtime-control" \
     "$HOME/.local/bin/lay-kde-tray" \
     "$HOME/.local/bin/lay-host-vm-guard" \
     "$HOME/.local/bin/lay-nanda-train" \
     "$HOME/.local/bin/lay-nanda-eval" \
     "$HOME/.local/bin/lay-nanda-loop"
+remove_managed_runtime
 rm -f \
     "$HOME/.config/systemd/user/lay-daemon.service" \
     "$HOME/.config/systemd/user/lay-l3-online.service" \
@@ -137,6 +163,7 @@ if [ "$PURGE" = "1" ]; then
     echo "=== удаление настроек, памяти и логов ==="
     rm -rf \
         "$HOME/.config/lay" \
+        "$HOME/.local/lib/lay" \
         "$HOME/.local/share/lay" \
         "$HOME/.local/state/lay"
 fi
