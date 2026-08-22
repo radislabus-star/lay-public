@@ -3160,13 +3160,13 @@
     "semantic_hash": ""
   },
   "scripts/test-public-issues.sh": {
-    "mtime": 1787391379.7104058,
-    "ast_hash": "1d4b7d82bd83087e7807757d96921beb",
+    "mtime": 1787392000.9573166,
+    "ast_hash": "8f116282fb606a2ffa18001c71bb7ec8",
     "semantic_hash": ""
   },
   "uninstall.sh": {
-    "mtime": 1787391339.6880329,
-    "ast_hash": "295f93943e2d3a3617d5e18ea3f396be",
+    "mtime": 1787392000.9563167,
+    "ast_hash": "dc4a3b861633a86d0871b6fb75944cf5",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/typing_assist_worker.rs": {
@@ -14805,8 +14805,8 @@
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/LAY_PUBLIC_ISSUE_41_COMPLETE_UNINSTALL_2026-08-22/final-sandbox-proof-v1.json": {
-    "mtime": 1787391423.5318158,
-    "ast_hash": "a1ad7537f47bd73c669af201e77133b8",
+    "mtime": 1787392301.7562237,
+    "ast_hash": "2b4631ae82848b9ccb746c99b834ca59",
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/LAY_PUBLIC_ISSUE_41_COMPLETE_UNINSTALL_2026-08-22/implementation-preflight-v1.json": {
@@ -14825,8 +14825,8 @@
     "semantic_hash": ""
   },
   "docs/issue-41-complete-uninstall-ownership-2026-08-22.md": {
-    "mtime": 1787391423.5318158,
-    "ast_hash": "98ea59235c46f503d03de1d1cca36358",
+    "mtime": 1787392301.7562237,
+    "ast_hash": "16811d1f4f7b399ca3104a62453d4b6c",
     "semantic_hash": ""
   }
 }

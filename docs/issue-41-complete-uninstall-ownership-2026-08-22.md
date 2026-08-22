@@ -1,8 +1,9 @@
 # Issue 41: Complete Uninstall Ownership
 
 Date: 2026-08-22
-Status: implemented and sandbox-proved; public publication pending
+Status: implemented, sandbox-proved, published, and closed
 Issue: https://github.com/radislabus-star/lay-public/issues/41
+Public commit: 47c7b7e05418ffbe7bd3101eb1b25f52f61574a6
 
 ## Observed Defect
 
@@ -58,6 +59,8 @@ normal uninstall
 - The operation is idempotent when files or directories are already absent.
 - The regression proof runs only in a temporary HOME and SYSTEM_ROOT. It must
   never run the uninstaller against the active desktop installation.
+- Test mode without an explicit SYSTEM_ROOT must suppress every privileged
+  system-file mutation; a fake-sudo negative control proves this boundary.
 - Existing service, GNOME, IBus, udev, settings and clean-source cleanup remains
   unchanged.
 
@@ -91,6 +94,7 @@ complete managed tree removed by --purge                 1/1 PASS
 existing systemd/IBus/udev/settings cleanup              PASS
 Bazzite and dirty-checkout regressions                    PASS
 bash -n / ShellCheck                                     PASS
+TEST_MODE privileged-write negative control              PASS
 ```
 
 Not tested: destructive execution against the active local Lay installation,

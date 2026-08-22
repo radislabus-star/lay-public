@@ -4,8 +4,8 @@
   "issue": "https://github.com/radislabus-star/lay-public/issues/41",
   "tested": {
     "scope": "managed runtime ownership and complete purge in isolated HOME and SYSTEM_ROOT sandboxes",
-    "uninstaller_sha256": "fccc483b13b28a803fb49b5ea275230ff6614cc797d5614daf0239fa0f1076a0",
-    "regression_suite_sha256": "9d7f982735f586f39a439be0c4236724a96989180794c525b0c8d8e31787cff1",
+    "uninstaller_sha256": "4e1244fecf1ddd6fc7ec772c69aa0d20f66c60a7b675725b3aa70805c404f7ac",
+    "regression_suite_sha256": "0d6a4825f521022365ec05b0056807e39227e1010fde202869b0a0ebeff17abe",
     "preflight_manifest_sha256": "56bbf5c6031894706fce769f3aec49305dccf6afa8cd268e094718227a96aa84"
   },
   "measured": {
@@ -30,7 +30,8 @@
     "managed_tree_absent_after_purge": true,
     "existing_public_issue_regressions": "PASS",
     "bash_syntax": "PASS",
-    "shellcheck": "PASS"
+    "shellcheck": "PASS",
+    "test_mode_privileged_write_negative_control": "PASS"
   },
   "not_tested": [
     "destructive uninstall of the active local Lay 1.0.34 runtime",
@@ -39,6 +40,8 @@
   ],
   "verdict": "ISSUE_41_SYSTEMIC_UNINSTALL_FIX_SANDBOX_PASS",
   "runtime_authority_changed": false,
-  "public_fix_published": false,
-  "issue_closed": false
+  "public_fix_published": true,
+  "public_commit": "47c7b7e05418ffbe7bd3101eb1b25f52f61574a6",
+  "published_raw_uninstaller_sha256": "4e1244fecf1ddd6fc7ec772c69aa0d20f66c60a7b675725b3aa70805c404f7ac",
+  "issue_closed": true
 }
