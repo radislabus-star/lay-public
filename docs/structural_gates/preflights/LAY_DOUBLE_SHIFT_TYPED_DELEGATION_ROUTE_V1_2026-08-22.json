@@ -1,0 +1,90 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "observed_source",
+  "source_root": "../../..",
+  "nodes": [
+    {"id": "physical-double-shift", "role": "interface", "evidence": {"path": "src/bin/lay_daemon/manual_trigger_runtime/event.rs", "line": 166, "contains": "fn handle_confirmed_double_shift"}},
+    {"id": "daemon-dispatch", "role": "orchestrator", "evidence": {"path": "src/bin/lay_daemon/manual_trigger_runtime/fire.rs", "line": 8, "contains": "fn fire_configured_manual_trigger"}},
+    {"id": "ime-v3-outcome", "role": "producer", "evidence": {"path": "src/manual_toggle.rs", "line": 50, "contains": "enum ImeManualToggleOutcome"}},
+    {"id": "ime-manual-planner", "role": "authorization_owner", "evidence": {"path": "src/bin/lay_ibus_engine/shift.rs", "line": 14, "contains": "manual_toggle_active_text_target"}},
+    {"id": "daemon-word-buffer-planner", "role": "authorization_owner", "evidence": {"path": "src/bin/lay_daemon/trigger_dispatch.rs", "line": 33, "contains": "run_configured_manual_correction"}},
+    {"id": "ime-output", "role": "mutation_owner", "evidence": {"path": "src/bin/lay_ibus_engine/state.rs", "line": 587, "contains": "clear_preedit(emitter)"}},
+    {"id": "fail-closed-terminal", "role": "observer", "evidence": {"path": "src/bin/lay_daemon/manual_trigger_runtime/ime.rs", "line": 39, "contains": "fn dispatch_from_result"}},
+    {"id": "route-proof", "role": "proof_owner", "evidence": {"path": "src/bin/lay_daemon/manual_trigger_runtime/ime.rs", "line": 70, "contains": "ime_dispatch_shape_delegates_only_the_explicit_daemon_outcome"}}
+  ],
+  "edges": [
+    {"id": "ime-exec-gesture-dispatch", "from": "physical-double-shift", "relation": "calls", "to": "daemon-dispatch", "events": ["ime-handled"], "evidence": {"path": "src/bin/lay_daemon/manual_trigger_runtime/event.rs", "line": 180, "contains": "fire_configured_manual_trigger(ctx.fire_context())"}},
+    {"id": "ime-exec-dispatch-outcome", "from": "daemon-dispatch", "relation": "delegates", "to": "ime-v3-outcome", "events": ["ime-handled"], "evidence": {"path": "src/bin/lay_daemon/manual_trigger_runtime/ime.rs", "line": 19, "contains": "try_ime_manual_toggle()"}},
+    {"id": "ime-exec-outcome-planner", "from": "ime-v3-outcome", "relation": "delegates", "to": "ime-manual-planner", "events": ["ime-handled"], "evidence": {"path": "src/bin/lay_ibus_engine/bridge_actions.rs", "line": 206, "contains": "manual_toggle_active_text_target"}},
+    {"id": "ime-exec-planner-output", "from": "ime-manual-planner", "relation": "delegates", "to": "ime-output", "events": ["ime-handled"], "evidence": {"path": "src/bin/lay_ibus_engine/shift.rs", "line": 78, "contains": "commit_verified_active_composition"}},
+    {"id": "ime-authority-outcome-planner", "from": "ime-v3-outcome", "relation": "passes_to", "to": "ime-manual-planner", "events": ["ime-handled"], "evidence": {"path": "src/bin/lay_ibus_engine/bridge_actions.rs", "line": 203, "contains": "manual_toggle_outcome_for_authority"}},
+    {"id": "ime-authority-planner-output", "from": "ime-manual-planner", "relation": "authorizes", "to": "ime-output", "events": ["ime-handled"], "evidence": {"path": "src/bin/lay_ibus_engine/shift.rs", "line": 73, "contains": "authorize_backend_edit"}},
+
+    {"id": "daemon-exec-gesture-dispatch", "from": "physical-double-shift", "relation": "calls", "to": "daemon-dispatch", "events": ["daemon-delegated"], "evidence": {"path": "src/bin/lay_daemon/manual_trigger_runtime/event.rs", "line": 179, "contains": "log_manual_trigger_cross_check"}},
+    {"id": "daemon-exec-dispatch-outcome", "from": "daemon-dispatch", "relation": "delegates", "to": "ime-v3-outcome", "events": ["daemon-delegated"], "evidence": {"path": "src/bin/lay_daemon/manual_trigger_runtime/fire.rs", "line": 9, "contains": "dispatch_ime_manual_toggle"}},
+    {"id": "daemon-exec-outcome-planner", "from": "ime-v3-outcome", "relation": "delegates", "to": "daemon-word-buffer-planner", "events": ["daemon-delegated"], "evidence": {"path": "src/bin/lay_daemon/manual_trigger_runtime/fire.rs", "line": 16, "contains": "run_configured_manual_correction"}},
+    {"id": "daemon-exec-planner-output", "from": "daemon-word-buffer-planner", "relation": "delegates", "to": "ime-output", "events": ["daemon-delegated"], "evidence": {"path": "src/bin/lay_daemon/correction_runtime.rs", "line": 146, "contains": "apply_manual_correction_output"}},
+    {"id": "daemon-authority-outcome-planner", "from": "ime-v3-outcome", "relation": "passes_to", "to": "daemon-word-buffer-planner", "events": ["daemon-delegated"], "evidence": {"path": "src/bin/lay_daemon/manual_trigger_runtime/ime.rs", "line": 48, "contains": "ImeManualToggleDispatch::DelegateDaemon"}},
+    {"id": "daemon-authority-planner-output", "from": "daemon-word-buffer-planner", "relation": "authorizes", "to": "ime-output", "events": ["daemon-delegated"], "evidence": {"path": "src/bin/lay_daemon/correction_runtime/output/native.rs", "line": 39, "contains": "authorize_native_text_edit"}},
+
+    {"id": "blocked-exec-gesture-dispatch", "from": "physical-double-shift", "relation": "calls", "to": "daemon-dispatch", "events": ["atomic-or-error-blocked"], "evidence": {"path": "src/bin/lay_daemon/manual_trigger_runtime/event.rs", "line": 181, "contains": "FSM: DOUBLE"}},
+    {"id": "blocked-exec-dispatch-outcome", "from": "daemon-dispatch", "relation": "delegates", "to": "ime-v3-outcome", "events": ["atomic-or-error-blocked"], "evidence": {"path": "src/bin/lay_daemon/layout_controller/ime_bridge.rs", "line": 82, "contains": "ManualToggleV3"}},
+    {"id": "blocked-observation", "from": "ime-v3-outcome", "relation": "observes", "to": "fail-closed-terminal", "events": ["atomic-or-error-blocked"], "evidence": {"path": "src/bin/lay_daemon/manual_trigger_runtime/ime.rs", "line": 42, "contains": "Err(_) => ImeManualToggleDispatch::Complete(None)"}},
+    {"id": "proof-blocked-route", "from": "fail-closed-terminal", "relation": "proves", "to": "route-proof", "events": ["typed-delegation-proof"], "evidence": {"path": "src/bin/lay_daemon/manual_trigger_runtime/ime.rs", "line": 84, "contains": "malformed ManualToggleV3 reply"}}
+  ],
+  "routes": [
+    {
+      "id": "ime-handled-execution",
+      "event": "ime-handled",
+      "kind": "execution",
+      "entry": "physical-double-shift",
+      "terminal": "ime-output",
+      "required_roles": ["interface", "orchestrator", "producer", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "physical-double-shift", "to": "ime-output", "min": 1, "max": 1}]
+    },
+    {
+      "id": "ime-handled-authority",
+      "event": "ime-handled",
+      "kind": "authority",
+      "entry": "ime-v3-outcome",
+      "terminal": "ime-output",
+      "required_roles": ["producer", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "ime-v3-outcome", "to": "ime-output", "min": 1, "max": 1}]
+    },
+    {
+      "id": "daemon-delegated-execution",
+      "event": "daemon-delegated",
+      "kind": "execution",
+      "entry": "physical-double-shift",
+      "terminal": "ime-output",
+      "required_roles": ["interface", "orchestrator", "producer", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "physical-double-shift", "to": "ime-output", "min": 1, "max": 1}]
+    },
+    {
+      "id": "daemon-delegated-authority",
+      "event": "daemon-delegated",
+      "kind": "authority",
+      "entry": "ime-v3-outcome",
+      "terminal": "ime-output",
+      "required_roles": ["producer", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "ime-v3-outcome", "to": "ime-output", "min": 1, "max": 1}]
+    },
+    {
+      "id": "atomic-or-error-blocked-execution",
+      "event": "atomic-or-error-blocked",
+      "kind": "execution",
+      "entry": "physical-double-shift",
+      "terminal": "ime-v3-outcome",
+      "required_roles": ["interface", "orchestrator", "producer"],
+      "path_cardinality": [{"from": "physical-double-shift", "to": "ime-v3-outcome", "min": 1, "max": 1}]
+    },
+    {
+      "id": "typed-delegation-proof",
+      "event": "typed-delegation-proof",
+      "kind": "proof",
+      "entry": "fail-closed-terminal",
+      "terminal": "route-proof",
+      "required_roles": ["observer", "proof_owner"]
+    }
+  ]
+}

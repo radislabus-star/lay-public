@@ -270,7 +270,8 @@ pub(super) fn suppress_next_ime_autocorrect() {
     }
 }
 
-pub(super) fn try_ime_manual_toggle() -> Result<Option<bool>, String> {
+pub(super) fn try_ime_manual_toggle() -> Result<lay::manual_toggle::ImeManualToggleOutcome, String>
+{
     ime_manual_toggle::try_manual_toggle(active_text_backend().should_try_ime())
 }
 

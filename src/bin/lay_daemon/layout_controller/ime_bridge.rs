@@ -1,3 +1,4 @@
+use lay::manual_toggle::ImeManualToggleOutcome;
 use lay::text_backend::ImeReplaceRequest;
 use lay::text_edit::tail_chars;
 use serde::de::DeserializeOwned;
@@ -77,8 +78,9 @@ pub(super) fn input_state() -> Result<String, String> {
     call_ime_noarg("InputState")
 }
 
-pub(super) fn manual_toggle() -> Result<(bool, bool), String> {
-    call_ime_noarg("ManualToggleV2")
+pub(super) fn manual_toggle() -> Result<ImeManualToggleOutcome, String> {
+    let (status, target_layout_is_ru): (u8, bool) = call_ime_noarg("ManualToggleV3")?;
+    ImeManualToggleOutcome::from_v3(status, target_layout_is_ru).map_err(ToString::to_string)
 }
 
 pub(super) fn can_replace_committed_tail(backspaces: u32) -> Result<bool, String> {

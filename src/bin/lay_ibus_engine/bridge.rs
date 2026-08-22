@@ -69,6 +69,11 @@ impl LayImeBridge {
         self.manual_toggle_v2_inner().await
     }
 
+    #[zbus(name = "ManualToggleV3")]
+    async fn manual_toggle_v3(&self) -> fdo::Result<(u8, bool)> {
+        self.manual_toggle_v3_inner().await
+    }
+
     #[zbus(name = "ReplaceTail")]
     async fn replace_tail(&self, backspaces: u32, text: String) -> fdo::Result<bool> {
         self.replace_tail_inner(backspaces, text, false, None, None)

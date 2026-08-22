@@ -3,12 +3,15 @@ use super::super::trigger_dispatch::{
     ManualTriggerCompletion, ScopedManualCorrectionContext,
 };
 use super::context::ManualTriggerFireContext;
-use super::ime::dispatch_ime_manual_toggle;
+use super::ime::{dispatch_ime_manual_toggle, ImeManualToggleDispatch};
 
 pub(crate) fn fire_configured_manual_trigger(ctx: ManualTriggerFireContext<'_>) {
-    if let Some(result) = dispatch_ime_manual_toggle(ctx.buffer) {
-        complete_manual_trigger_with_result(result, ctx);
-        return;
+    match dispatch_ime_manual_toggle(ctx.buffer) {
+        ImeManualToggleDispatch::Complete(result) => {
+            complete_manual_trigger_with_result(result, ctx);
+            return;
+        }
+        ImeManualToggleDispatch::DelegateDaemon => {}
     }
     let correction_result = run_configured_manual_correction(
         ctx.buffer,
@@ -26,9 +29,12 @@ pub(crate) fn fire_scoped_manual_trigger(
     events_since_word_start: u32,
     reason: &str,
 ) {
-    if let Some(result) = dispatch_ime_manual_toggle(ctx.buffer) {
-        complete_manual_trigger_with_result(result, ctx);
-        return;
+    match dispatch_ime_manual_toggle(ctx.buffer) {
+        ImeManualToggleDispatch::Complete(result) => {
+            complete_manual_trigger_with_result(result, ctx);
+            return;
+        }
+        ImeManualToggleDispatch::DelegateDaemon => {}
     }
     let correction_result = run_scoped_manual_correction(
         ScopedManualCorrectionContext {

@@ -1,0 +1,127 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "manual-outcome-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/manual_toggle.rs",
+      "sha256": "55fd48be35d181173c7ef866db730754e42f34ee98b06bf011f683e08c711fe3",
+      "size_bytes": 9154
+    },
+    {
+      "exists": true,
+      "id": "engine-bridge-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/bridge_actions.rs",
+      "sha256": "0a0ee33063084260387fc51a28c30c8a824e32b281ae3a5e64db935a8508afa1",
+      "size_bytes": 7775
+    },
+    {
+      "exists": true,
+      "id": "daemon-dispatch-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/manual_trigger_runtime/ime.rs",
+      "sha256": "c991f73588a21cfc93877fa3f5ed496492fd9d1ad090841b789f09ffe57b3dd2",
+      "size_bytes": 1567
+    },
+    {
+      "exists": true,
+      "id": "daemon-fire-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/manual_trigger_runtime/fire.rs",
+      "sha256": "65e6a8eea3bfd1c01a3f564d263ca82f549747d0a52659f97f821e77e35edd6d",
+      "size_bytes": 2354
+    },
+    {
+      "exists": true,
+      "id": "route-design",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_DOUBLE_SHIFT_TYPED_DELEGATION_ROUTE_V1_2026-08-22.json",
+      "sha256": "8d10d9372db8ccf164021be5b0026baf133bc89b2d23241b32052e05420de974",
+      "size_bytes": 5143
+    },
+    {
+      "exists": true,
+      "id": "installed-daemon",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+      "sha256": "d5289fb490b9e18af9844987f60b963a817ef9753854e3e230f2c82bc9cfd356",
+      "size_bytes": 8507984
+    },
+    {
+      "exists": true,
+      "id": "installed-engine",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "sha256": "3bb009025f3bd12c676416aff637b439ccd4f4c0c2d69d4c7c34b0f49b904691",
+      "size_bytes": 6733816
+    }
+  ],
+  "blockers": [
+    {
+      "code": "runtime_comparison_test_missing",
+      "field": "runtime_comparisons[0].test_id",
+      "message": "runtime comparison requires unit, integration, or parity test"
+    }
+  ],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 7,
+    "forbidden_side_effect_kinds": [
+      "atomic_legacy_fallback",
+      "dbus_error_second_mutation",
+      "fixture_surface_in_runtime",
+      "global_ibus_restart",
+      "historical_receipt_rewrite",
+      "local_cargo_build",
+      "verifier_or_safety_weakening"
+    ],
+    "identity_contracts": 3,
+    "invariants": 4,
+    "planned_side_effect_kinds": [
+      "filesystem_write",
+      "installed_runtime_mutation",
+      "remote_process_start",
+      "source_edit"
+    ],
+    "preserved_artifacts": 2,
+    "runtime_comparisons": 1,
+    "source_checks": 2,
+    "tests": 9
+  },
+  "manifest_sha256": "686b2bfeab24d552c136fc996bb4d35bf8a0353437434b6197c1d63cc78fc44b",
+  "safe_to_implement": false,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-daemon-dispatch",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/manual_trigger_runtime/ime.rs",
+      "sha256": "c991f73588a21cfc93877fa3f5ed496492fd9d1ad090841b789f09ffe57b3dd2",
+      "size_bytes": 1567
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-engine-bridge",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/bridge_actions.rs",
+      "sha256": "0a0ee33063084260387fc51a28c30c8a824e32b281ae3a5e64db935a8508afa1",
+      "size_bytes": 7775
+    }
+  ],
+  "task_id": "LAY_DOUBLE_SHIFT_TYPED_DELEGATION_IMPLEMENTATION_V1_2026-08-22",
+  "verdict": "BLOCKED_BEFORE_CODE"
+}

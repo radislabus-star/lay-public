@@ -1,0 +1,98 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_DOUBLE_SHIFT_TYPED_DELEGATION_IMPLEMENTATION_V1_2026-08-22",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {"id":"manual-outcome-source","kind":"file","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/manual_toggle.rs","expect":{"mode":"0664","size_bytes":9154,"sha256":"55fd48be35d181173c7ef866db730754e42f34ee98b06bf011f683e08c711fe3"}},
+    {"id":"engine-bridge-source","kind":"file","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/bridge_actions.rs","expect":{"mode":"0664","size_bytes":7775,"sha256":"0a0ee33063084260387fc51a28c30c8a824e32b281ae3a5e64db935a8508afa1"}},
+    {"id":"daemon-dispatch-source","kind":"file","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/manual_trigger_runtime/ime.rs","expect":{"mode":"0664","size_bytes":1567,"sha256":"c991f73588a21cfc93877fa3f5ed496492fd9d1ad090841b789f09ffe57b3dd2"}},
+    {"id":"daemon-fire-source","kind":"file","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/manual_trigger_runtime/fire.rs","expect":{"mode":"0664","size_bytes":2354,"sha256":"65e6a8eea3bfd1c01a3f564d263ca82f549747d0a52659f97f821e77e35edd6d"}},
+    {"id":"route-design","kind":"file","path":"/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_DOUBLE_SHIFT_TYPED_DELEGATION_ROUTE_V1_2026-08-22.json","expect":{"mode":"0664"}},
+    {"id":"installed-daemon","kind":"file","path":"/home/ubu/.local/lib/lay/bin/lay-daemon","expect":{"mode":"0755","size_bytes":8507984,"sha256":"d5289fb490b9e18af9844987f60b963a817ef9753854e3e230f2c82bc9cfd356"}},
+    {"id":"installed-engine","kind":"file","path":"/home/ubu/.local/lib/lay/bin/lay-ibus-engine","expect":{"mode":"0755","size_bytes":6733816,"sha256":"3bb009025f3bd12c676416aff637b439ccd4f4c0c2d69d4c7c34b0f49b904691"}}
+  ],
+  "side_effects": {
+    "planned": [
+      {"id":"add-typed-v3-outcome","kind":"source_edit"},
+      {"id":"route-explicit-daemon-delegation","kind":"source_edit"},
+      {"id":"add-systemic-route-tests","kind":"source_edit"},
+      {"id":"update-route-document","kind":"filesystem_write"},
+      {"id":"remote-focused-build-and-tests","kind":"remote_process_start"},
+      {"id":"rollback-protected-release-install","kind":"installed_runtime_mutation"}
+    ],
+    "forbidden": [
+      "atomic_legacy_fallback",
+      "dbus_error_second_mutation",
+      "fixture_surface_in_runtime",
+      "verifier_or_safety_weakening",
+      "local_cargo_build",
+      "global_ibus_restart",
+      "historical_receipt_rewrite"
+    ]
+  },
+  "source_checks": [
+    {
+      "id":"pinned-daemon-dispatch",
+      "path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/manual_trigger_runtime/ime.rs",
+      "sha256":"c991f73588a21cfc93877fa3f5ed496492fd9d1ad090841b789f09ffe57b3dd2",
+      "forbidden_effect_patterns":[
+        {"effect":"dbus_error_second_mutation","regex":"Err\\([^)]*\\).*DelegateDaemon"},
+        {"effect":"fixture_surface_in_runtime","regex":"(ghbdtn|привет|собака)"},
+        {"effect":"local_cargo_build","regex":"cargo (build|test|check)"}
+      ]
+    },
+    {
+      "id":"pinned-engine-bridge",
+      "path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/bridge_actions.rs",
+      "sha256":"0a0ee33063084260387fc51a28c30c8a824e32b281ae3a5e64db935a8508afa1",
+      "forbidden_effect_patterns":[
+        {"effect":"atomic_legacy_fallback","regex":"atomic_route_active.{0,240}DelegateDaemon"},
+        {"effect":"verifier_or_safety_weakening","regex":"bypass_(verifier|safety)|disable_(verifier|safety)"},
+        {"effect":"global_ibus_restart","regex":"(kill|restart).*ibus-daemon"},
+        {"effect":"historical_receipt_rewrite","regex":"rewrite_historical_receipt|truncate_historical_evidence"}
+      ]
+    }
+  ],
+  "state_machine": {
+    "initial_state":"BASELINE_1_0_34_REGRESSION_MEASURED",
+    "steps":[
+      {"id":"implement-typed-outcome","from":"BASELINE_1_0_34_REGRESSION_MEASURED","to":"TYPED_OUTCOME_IMPLEMENTED","mutates":true,"failure_state":"TYPED_OUTCOME_FAILED","cleanup":"retain scoped source diff; installed runtime remains byte-identical","preserves":["installed-daemon","installed-engine"],"test_id":"typed-outcome-fault"},
+      {"id":"wire-exclusive-delegation","from":"TYPED_OUTCOME_IMPLEMENTED","to":"EXCLUSIVE_DELEGATION_WIRED","mutates":true,"failure_state":"DELEGATION_WIRING_FAILED","cleanup":"retain failing diff and block release build","preserves":["installed-daemon","installed-engine"],"test_id":"delegation-wiring-fault"},
+      {"id":"remote-build-and-test","from":"EXCLUSIVE_DELEGATION_WIRED","to":"REMOTE_GATES_PASS","mutates":true,"failure_state":"REMOTE_GATES_FAILED","cleanup":"stop proof-owned processes and preserve installed 1.0.34","preserves":["installed-daemon","installed-engine"],"test_id":"remote-gate-fault"},
+      {"id":"install-release-1-0-35","from":"REMOTE_GATES_PASS","to":"LIVE_1_0_35_INSTALLED","mutates":true,"failure_state":"INSTALL_ROLLED_BACK","cleanup":"restore exact 1.0.34 binaries and restart only Lay-owned processes; never restart global IBus","preserves":["installed-daemon","installed-engine"],"test_id":"install-fault"}
+    ],
+    "terminal_states":["LIVE_1_0_35_INSTALLED","TYPED_OUTCOME_FAILED","DELEGATION_WIRING_FAILED","REMOTE_GATES_FAILED","INSTALL_ROLLED_BACK"]
+  },
+  "preserved_artifacts": [
+    {"id":"installed-daemon","path":"/home/ubu/.local/lib/lay/bin/lay-daemon","policy":"immutable_until_remote_gates_pass","cursor_policy":"none","rollback_policy":"restore_exact_bytes","baseline_check_id":"installed-daemon"},
+    {"id":"installed-engine","path":"/home/ubu/.local/lib/lay/bin/lay-ibus-engine","policy":"immutable_until_remote_gates_pass","cursor_policy":"none","rollback_policy":"restore_exact_bytes","baseline_check_id":"installed-engine"}
+  ],
+  "identity_contracts": [
+    {"id":"v3-wire-parity","producer":"Lay IBus ManualToggleV3 status and target tuple","consumer":"lay-daemon typed manual toggle dispatcher","comparison":"Handled DelegateDaemon and NotHandled values decode identically; malformed status is an error","test_id":"v3-wire-parity"},
+    {"id":"delegation-owner-parity","producer":"IME manual_toggle_outcome_inner before any output","consumer":"daemon fire route","comparison":"only explicit DelegateDaemon reaches WordBuffer; Handled and NotHandled complete the event","test_id":"delegation-owner-parity"},
+    {"id":"atomic-exclusion-parity","producer":"atomic_route_active guard","consumer":"ManualToggleV3 outcome","comparison":"atomic focus always yields NotHandled and cannot mint DelegateDaemon","test_id":"atomic-exclusion-parity"}
+  ],
+  "runtime_comparisons": [
+    {"id":"live-process-continuity","source":"systemd user service properties, pgrep process identities, active IBus engine and installed binary SHA before and after installation","comparison":"exact_stable_projection","reason":"the release may replace only Lay-owned processes and bytes while preserving the global IBus process and selected engine","stable_fields":["global_ibus_pid","active_engine","service_count"],"expected_to_change_fields":["lay_daemon_pid","lay_ibus_engine_pid","binary_sha256","version"],"observed_not_compared_fields":["cpu_time","rss"],"test_id":"live-process-continuity"}
+  ],
+  "invariants": [
+    {"id":"single-mutation-owner","statement":"each physical double Shift event reaches at most one mutation owner","test_id":"delegation-owner-parity"},
+    {"id":"atomic-remains-zero-legacy","statement":"atomic focus NotHandled never falls through to daemon WordBuffer","test_id":"atomic-exclusion-parity"},
+    {"id":"non-atomic-tail-restored","statement":"non-atomic daemon-owned tail explicitly delegates and is converted by the existing shared planner","test_id":"daemon-delegation-integration"},
+    {"id":"uncertain-failure-is-closed","statement":"D-Bus error cannot start a second output route","test_id":"dbus-error-fail-closed"}
+  ],
+  "tests": [
+    {"id":"typed-outcome-fault","kind":"fault_injection","expected":"unknown V3 status decodes as error and performs no mutation"},
+    {"id":"delegation-wiring-fault","kind":"fault_injection","expected":"NotHandled and D-Bus error complete with no daemon fallback"},
+    {"id":"remote-gate-fault","kind":"fault_injection","expected":"failed remote build or test leaves installed 1.0.34 unchanged"},
+    {"id":"install-fault","kind":"fault_injection","expected":"failed install restores exact 1.0.34 bytes without restarting global IBus"},
+    {"id":"v3-wire-parity","kind":"parity","expected":"all three statuses round trip exactly and legacy V2 remains compatible"},
+    {"id":"delegation-owner-parity","kind":"parity","expected":"only DelegateDaemon selects the WordBuffer route"},
+    {"id":"atomic-exclusion-parity","kind":"parity","expected":"atomic active maps only to NotHandled"},
+    {"id":"daemon-delegation-integration","kind":"integration","expected":"daemon-word-buffer input reaches the existing manual correction and IME output route once"},
+    {"id":"dbus-error-fail-closed","kind":"unit","expected":"D-Bus failure completes with no fallback mutation"},
+    {"id":"live-process-continuity","kind":"parity","expected":"global IBus PID, active engine and service cardinality remain stable across install or rollback"}
+  ]
+}

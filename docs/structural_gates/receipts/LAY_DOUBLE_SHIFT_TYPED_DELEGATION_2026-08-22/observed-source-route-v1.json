@@ -1,0 +1,338 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "PASS",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": true,
+  "contract": "docs/structural_gates/preflights/LAY_DOUBLE_SHIFT_TYPED_DELEGATION_ROUTE_V1_2026-08-22.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "observed_source",
+  "source_root": "/home/ubu/projects/lay-l1-exact-peak-search",
+  "node_count": 8,
+  "edge_count": 16,
+  "routes": [
+    {
+      "id": "ime-handled-execution",
+      "event": "ime-handled",
+      "kind": "execution",
+      "entry": "physical-double-shift",
+      "via": [],
+      "terminal": "ime-output",
+      "path_count": 1,
+      "paths": [
+        [
+          "physical-double-shift",
+          "daemon-dispatch",
+          "ime-v3-outcome",
+          "ime-manual-planner",
+          "ime-output"
+        ]
+      ],
+      "role_owners": {
+        "orchestrator": [
+          "daemon-dispatch"
+        ],
+        "authorization_owner": [
+          "ime-manual-planner"
+        ],
+        "mutation_owner": [
+          "ime-output"
+        ],
+        "producer": [
+          "ime-v3-outcome"
+        ],
+        "interface": [
+          "physical-double-shift"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "physical-double-shift",
+          "to": "ime-output",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "physical-double-shift",
+              "daemon-dispatch",
+              "ime-v3-outcome",
+              "ime-manual-planner",
+              "ime-output"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ime-handled-authority",
+      "event": "ime-handled",
+      "kind": "authority",
+      "entry": "ime-v3-outcome",
+      "via": [],
+      "terminal": "ime-output",
+      "path_count": 1,
+      "paths": [
+        [
+          "ime-v3-outcome",
+          "ime-manual-planner",
+          "ime-output"
+        ]
+      ],
+      "role_owners": {
+        "authorization_owner": [
+          "ime-manual-planner"
+        ],
+        "mutation_owner": [
+          "ime-output"
+        ],
+        "producer": [
+          "ime-v3-outcome"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "ime-v3-outcome",
+          "to": "ime-output",
+          "via": [],
+          "graph": "authority",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "ime-v3-outcome",
+              "ime-manual-planner",
+              "ime-output"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "daemon-delegated-execution",
+      "event": "daemon-delegated",
+      "kind": "execution",
+      "entry": "physical-double-shift",
+      "via": [],
+      "terminal": "ime-output",
+      "path_count": 1,
+      "paths": [
+        [
+          "physical-double-shift",
+          "daemon-dispatch",
+          "ime-v3-outcome",
+          "daemon-word-buffer-planner",
+          "ime-output"
+        ]
+      ],
+      "role_owners": {
+        "orchestrator": [
+          "daemon-dispatch"
+        ],
+        "authorization_owner": [
+          "daemon-word-buffer-planner"
+        ],
+        "mutation_owner": [
+          "ime-output"
+        ],
+        "producer": [
+          "ime-v3-outcome"
+        ],
+        "interface": [
+          "physical-double-shift"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "physical-double-shift",
+          "to": "ime-output",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "physical-double-shift",
+              "daemon-dispatch",
+              "ime-v3-outcome",
+              "daemon-word-buffer-planner",
+              "ime-output"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "daemon-delegated-authority",
+      "event": "daemon-delegated",
+      "kind": "authority",
+      "entry": "ime-v3-outcome",
+      "via": [],
+      "terminal": "ime-output",
+      "path_count": 1,
+      "paths": [
+        [
+          "ime-v3-outcome",
+          "daemon-word-buffer-planner",
+          "ime-output"
+        ]
+      ],
+      "role_owners": {
+        "authorization_owner": [
+          "daemon-word-buffer-planner"
+        ],
+        "mutation_owner": [
+          "ime-output"
+        ],
+        "producer": [
+          "ime-v3-outcome"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "ime-v3-outcome",
+          "to": "ime-output",
+          "via": [],
+          "graph": "authority",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "ime-v3-outcome",
+              "daemon-word-buffer-planner",
+              "ime-output"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "atomic-or-error-blocked-execution",
+      "event": "atomic-or-error-blocked",
+      "kind": "execution",
+      "entry": "physical-double-shift",
+      "via": [],
+      "terminal": "ime-v3-outcome",
+      "path_count": 1,
+      "paths": [
+        [
+          "physical-double-shift",
+          "daemon-dispatch",
+          "ime-v3-outcome"
+        ]
+      ],
+      "role_owners": {
+        "orchestrator": [
+          "daemon-dispatch"
+        ],
+        "producer": [
+          "ime-v3-outcome"
+        ],
+        "interface": [
+          "physical-double-shift"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "physical-double-shift",
+          "to": "ime-v3-outcome",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "physical-double-shift",
+              "daemon-dispatch",
+              "ime-v3-outcome"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "typed-delegation-proof",
+      "event": "typed-delegation-proof",
+      "kind": "proof",
+      "entry": "fail-closed-terminal",
+      "via": [],
+      "terminal": "route-proof",
+      "path_count": 1,
+      "paths": [
+        [
+          "fail-closed-terminal",
+          "route-proof"
+        ]
+      ],
+      "role_owners": {
+        "observer": [
+          "fail-closed-terminal"
+        ],
+        "proof_owner": [
+          "route-proof"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {
+    "ime-handled": {
+      "display_rank_owner": [],
+      "evidence_owner": [],
+      "mutation_owner": [
+        "ime-output"
+      ],
+      "render_owner": [],
+      "authorization_owner": [
+        "ime-manual-planner"
+      ],
+      "candidate_rank_owner": []
+    },
+    "daemon-delegated": {
+      "display_rank_owner": [],
+      "evidence_owner": [],
+      "mutation_owner": [
+        "ime-output"
+      ],
+      "render_owner": [],
+      "authorization_owner": [
+        "daemon-word-buffer-planner"
+      ],
+      "candidate_rank_owner": []
+    }
+  },
+  "source_evidence": {
+    "expected": 23,
+    "verified": 23,
+    "complete": true
+  },
+  "issues": [],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": true,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

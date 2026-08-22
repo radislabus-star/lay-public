@@ -388,3 +388,119 @@ ghbdtn -> привет
 djn -> вот
 ```
 
+## 1.0.34 Double-Shift Delegation Regression
+
+Date measured: 2026-08-22.
+
+The 1.0.34 cutover replaced the former IME-first branch with this nested
+result:
+
+```text
+None          IME route was not selected
+Some(Some)    IME handled the toggle
+Some(None)    IME was selected but returned NotHandled
+```
+
+`fire.rs` returned for every `Some` value. Consequently a non-atomic IME with
+no owned composition or committed tail could explicitly defer to the daemon
+WordBuffer, but `Some(None)` consumed the physical gesture before the existing
+daemon planner ran. Live evidence after the 1.0.34 install showed:
+
+```text
+configured trigger                         double-lshift
+focused IME state                          passive:daemon-word-buffer
+manual-toggle actions after install        0
+global ibus-daemon PID                      unchanged
+```
+
+Restoring the old unconditional fallback is forbidden. An atomic owner also
+returns no legacy result, and a D-Bus error has uncertain execution status;
+either case falling through could create a second mutation owner.
+
+The corrected protocol therefore has three explicit outcomes:
+
+```text
+Handled(target layout)  complete through the IME owner
+DelegateDaemon          run the existing WordBuffer planner once
+NotHandled              complete fail-closed with no second route
+```
+
+Only a non-atomic `DaemonWordBuffer` authority may produce
+`DelegateDaemon`. Atomic focus always produces `NotHandled`. A malformed V3
+wire value or D-Bus failure is an error and remains fail-closed. Legacy
+`ManualToggleV2` stays available for compatibility but cannot represent or
+authorize delegation.
+
+Measured after implementation:
+
+- observed-source route gate: `PASS`, all `23/23` source markers verified;
+- shared V3 wire tests: `2/2 PASS`;
+- daemon dispatch and D-Bus failure mapping: `1/1 PASS`;
+- IBus manual-toggle authority, atomic exclusion, suppression and handoff:
+  `11/11 PASS`;
+- remote Cargo cache after focused tests: `888,401,920 B`, below the
+  `12 GiB` guard budget.
+
+These results prove the compiled typed delegation and fail-closed mappings in
+the dedicated remote snapshot. They do not yet prove the release build,
+installed 1.0.35 process continuity, or physical double-Shift behavior.
+
+Evidence:
+
+- `docs/structural_gates/preflights/LAY_DOUBLE_SHIFT_TYPED_DELEGATION_ROUTE_V1_2026-08-22.json`
+- `docs/structural_gates/preflights/LAY_DOUBLE_SHIFT_TYPED_DELEGATION_IMPLEMENTATION_V1_2026-08-22.json`
+- `docs/structural_gates/receipts/LAY_DOUBLE_SHIFT_TYPED_DELEGATION_2026-08-22/implementation-preflight-v3.json`
+- `docs/structural_gates/receipts/LAY_DOUBLE_SHIFT_TYPED_DELEGATION_2026-08-22/observed-source-route-v1.json`
+
+## 1.0.35 Release And Runtime Installation
+
+Date measured: 2026-08-22.
+
+The guarded remote release build completed in `3m 54s`. The ten staged
+binaries were copied atomically into `/home/ubu/.local/lib/lay/bin`; byte-for-
+byte comparison against the staging directory passed for all ten files. The
+two staging names `lay-l11-restore` and `lay-l11-serve` map to the installed
+public names `lay-l1.1-restore` and `lay-l1.1-serve`.
+
+```text
+binary                  bytes       sha256
+lay                     6,387,624   7f7ccaf138593e44b7b8dd932a5cdda6bb4004b5e36b3c624fe5cc48a5280593
+lay-daemon              8,510,288   30d7912bdd492ebff1e031a9839f0e3825545c99f638bd243ddc81bd21653884
+lay-ibus-engine         6,741,752   ba2da60a7fe686b029f479507d808b2511bffe7aa05160809ff5876acbac1c87
+lay-l1.1-restore        1,954,008   7299d5be68efe71a6b1a44c61aa2f6ab13321dbc25aaa182cad4ddf6945f569a
+lay-l1.1-serve          2,165,824   ca83f0dc71cbbddd44a462563993916c94cda2e77c0725aa5fad60803d20e9b4
+lay-memory-report         643,128   85115d2ed1150a1f22185b4bfa8d85cd89bba7dbc17ced70eb166575d89f08fa
+lay-nanda-wave-eval     6,831,440   d95408f520994395c478b0fb5baeae8b0783f873147d5b4d4135a989ff2961bc
+lay-nanda-wave-train   11,500,672   4243bfbf6cf594d03a08464624962582fd286be1f183e8aff3ce681d256c6dc2
+lay-ngram-corpus          787,360   40eb70b32f03ea2c46e79e0ae9dad5ffd279f73c9fe321b4f937032b50b0c70b
+lay-test-input          1,839,632   eccf6fcb6f124a7ead1ffd50be690e831e82103fe231ee3bce09fc91023ea9d3
+```
+
+Rollback snapshot:
+
+```text
+/home/ubu/.local/lib/lay/rollback/1.0.34-20260822-133654
+```
+
+After synchronizing and reloading the GNOME extension, only the Lay processes
+were restarted. The global `ibus-daemon` was not restarted.
+
+```text
+CLI version                 1.0.35
+loaded extension version    1.0.35
+lay-daemon PID              937186, exactly one
+lay-ibus-engine PID         937223, exactly one
+GNOME layout                lay-ime-ru
+IBus engine                 lay-ime-ru
+global ibus-daemon PID      2076194, unchanged
+startup errors              none observed
+```
+
+Runtime authority is now Lay 1.0.35. This is a technical installation verdict,
+not a physical input-quality verdict. The following user-visible checks remain
+`NOT TESTED` after installation:
+
+```text
+ghbdtn + double left Shift -> привет
+cj,frf + Space/autocorrect + immediate double Shift -> cj,frf
+```

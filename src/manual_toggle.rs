@@ -49,6 +49,7 @@ pub struct ManualTogglePlan {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ImeManualToggleOutcome {
     NotHandled,
+    DelegateDaemon,
     Handled { target_layout_is_ru: bool },
 }
 
@@ -61,7 +62,7 @@ impl ImeManualToggleOutcome {
 
     pub fn target_layout_is_ru(self) -> Option<bool> {
         match self {
-            Self::NotHandled => None,
+            Self::NotHandled | Self::DelegateDaemon => None,
             Self::Handled {
                 target_layout_is_ru,
             } => Some(target_layout_is_ru),
@@ -70,10 +71,29 @@ impl ImeManualToggleOutcome {
 
     pub fn as_legacy_v2(self) -> (bool, bool) {
         match self {
-            Self::NotHandled => (false, false),
+            Self::NotHandled | Self::DelegateDaemon => (false, false),
             Self::Handled {
                 target_layout_is_ru,
             } => (true, target_layout_is_ru),
+        }
+    }
+
+    pub fn as_v3(self) -> (u8, bool) {
+        match self {
+            Self::NotHandled => (0, false),
+            Self::Handled {
+                target_layout_is_ru,
+            } => (1, target_layout_is_ru),
+            Self::DelegateDaemon => (2, false),
+        }
+    }
+
+    pub fn from_v3(status: u8, target_layout_is_ru: bool) -> Result<Self, &'static str> {
+        match (status, target_layout_is_ru) {
+            (0, false) => Ok(Self::NotHandled),
+            (1, target_layout_is_ru) => Ok(Self::handled(target_layout_is_ru)),
+            (2, false) => Ok(Self::DelegateDaemon),
+            _ => Err("invalid ManualToggleV3 outcome"),
         }
     }
 }
@@ -270,9 +290,30 @@ mod tests {
             ImeManualToggleOutcome::NotHandled.as_legacy_v2(),
             (false, false)
         );
+        assert_eq!(
+            ImeManualToggleOutcome::DelegateDaemon.as_legacy_v2(),
+            (false, false)
+        );
 
         let handled = ImeManualToggleOutcome::handled(true);
         assert_eq!(handled.target_layout_is_ru(), Some(true));
         assert_eq!(handled.as_legacy_v2(), (true, true));
+    }
+
+    #[test]
+    fn ime_manual_toggle_v3_keeps_delegation_distinct_and_rejects_malformed_status() {
+        for outcome in [
+            ImeManualToggleOutcome::NotHandled,
+            ImeManualToggleOutcome::DelegateDaemon,
+            ImeManualToggleOutcome::handled(false),
+            ImeManualToggleOutcome::handled(true),
+        ] {
+            let wire = outcome.as_v3();
+            assert_eq!(ImeManualToggleOutcome::from_v3(wire.0, wire.1), Ok(outcome));
+        }
+
+        assert!(ImeManualToggleOutcome::from_v3(0, true).is_err());
+        assert!(ImeManualToggleOutcome::from_v3(2, true).is_err());
+        assert!(ImeManualToggleOutcome::from_v3(3, false).is_err());
     }
 }

@@ -173,6 +173,10 @@ impl LayImeBridge {
         Ok(self.manual_toggle_outcome_inner().await?.as_legacy_v2())
     }
 
+    pub(super) async fn manual_toggle_v3_inner(&self) -> fdo::Result<(u8, bool)> {
+        Ok(self.manual_toggle_outcome_inner().await?.as_v3())
+    }
+
     async fn manual_toggle_outcome_inner(&self) -> fdo::Result<ImeManualToggleOutcome> {
         let Some(path) = self.active_path() else {
             return Ok(ImeManualToggleOutcome::NotHandled);
@@ -185,17 +189,39 @@ impl LayImeBridge {
             .map_err(|error| fdo::Error::Failed(error.to_string()))?;
         let emitter = iface_ref.signal_emitter();
         let mut engine = iface_ref.get_mut().await;
-        if engine.atomic_route_active {
-            return Ok(ImeManualToggleOutcome::NotHandled);
+        let atomic_route_active = engine.atomic_route_active;
+        if atomic_route_active {
+            return Ok(manual_toggle_outcome_for_authority(
+                atomic_route_active,
+                engine.manual_toggle_authority(),
+                None,
+            ));
         }
         engine.refresh_empty_tail_from_handoff();
+        let authority = engine.manual_toggle_authority();
         let mut output = EngineOutput::legacy(emitter);
-        Ok(
-            match engine.manual_toggle_active_text_target(&mut output).await? {
-                Some(target_layout_is_ru) => ImeManualToggleOutcome::handled(target_layout_is_ru),
-                None => ImeManualToggleOutcome::NotHandled,
-            },
-        )
+        Ok(manual_toggle_outcome_for_authority(
+            atomic_route_active,
+            authority,
+            engine.manual_toggle_active_text_target(&mut output).await?,
+        ))
+    }
+}
+
+fn manual_toggle_outcome_for_authority(
+    atomic_route_active: bool,
+    authority: ManualToggleAuthority,
+    target_layout_is_ru: Option<bool>,
+) -> ImeManualToggleOutcome {
+    if atomic_route_active {
+        return ImeManualToggleOutcome::NotHandled;
+    }
+    match target_layout_is_ru {
+        Some(target_layout_is_ru) => ImeManualToggleOutcome::handled(target_layout_is_ru),
+        None if authority == ManualToggleAuthority::DaemonWordBuffer => {
+            ImeManualToggleOutcome::DelegateDaemon
+        }
+        None => ImeManualToggleOutcome::NotHandled,
     }
 }
 
@@ -204,5 +230,40 @@ fn tail_source_for_authority(authority: ManualToggleAuthority) -> VisibleTailSou
         ManualToggleAuthority::ImeActiveComposition => VisibleTailSource::ImeActiveComposition,
         ManualToggleAuthority::ImeCommittedTail => VisibleTailSource::ImeCommittedTail,
         ManualToggleAuthority::DaemonWordBuffer => VisibleTailSource::DaemonWordBuffer,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn manual_toggle_delegates_only_non_atomic_daemon_authority() {
+        assert_eq!(
+            manual_toggle_outcome_for_authority(
+                false,
+                ManualToggleAuthority::DaemonWordBuffer,
+                None,
+            ),
+            ImeManualToggleOutcome::DelegateDaemon
+        );
+        for authority in [
+            ManualToggleAuthority::DaemonWordBuffer,
+            ManualToggleAuthority::ImeActiveComposition,
+            ManualToggleAuthority::ImeCommittedTail,
+        ] {
+            assert_eq!(
+                manual_toggle_outcome_for_authority(true, authority, None),
+                ImeManualToggleOutcome::NotHandled
+            );
+        }
+        assert_eq!(
+            manual_toggle_outcome_for_authority(
+                false,
+                ManualToggleAuthority::ImeActiveComposition,
+                None,
+            ),
+            ImeManualToggleOutcome::NotHandled
+        );
     }
 }
