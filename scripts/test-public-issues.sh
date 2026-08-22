@@ -43,6 +43,16 @@ git -C "$TMP/client" stash list | grep -q 'lay-auto-update-'
 git -C "$TMP/client" stash show -p | grep -q 'local user change'
 
 echo "== issue 41 managed runtime ownership =="
+FAKE_BIN="$TMP/fake-bin"
+SUDO_MARKER="$TMP/test-mode-called-sudo"
+mkdir -p "$FAKE_BIN"
+cat > "$FAKE_BIN/sudo" <<'EOF'
+#!/usr/bin/env bash
+touch "$LAY_TEST_SUDO_MARKER"
+exit 97
+EOF
+chmod +x "$FAKE_BIN/sudo"
+
 release_names=(
     lay
     lay-daemon
@@ -77,6 +87,8 @@ ln -s \
     "$NORMAL_HOME/.local/bin/lay-future-release-tool"
 
 HOME="$NORMAL_HOME" \
+PATH="$FAKE_BIN:$PATH" \
+LAY_TEST_SUDO_MARKER="$SUDO_MARKER" \
 LAY_UNINSTALL_TEST_MODE=1 \
 bash "$ROOT/uninstall.sh" --keep-source >/dev/null
 for name in "${release_names[@]}"; do
@@ -89,9 +101,12 @@ test ! -e "$NORMAL_MANAGED"
 test -e "$NORMAL_HOME/.local/lib/lay/rollback/keep-me"
 test -L "$NORMAL_HOME/.local/bin/lay-unrelated"
 test "$(readlink "$NORMAL_HOME/.local/bin/lay-unrelated")" = "$NORMAL_HOME/unrelated/lay-helper"
+test ! -e "$SUDO_MARKER"
 
 # A repeated uninstall must stay inside the same ownership boundary.
 HOME="$NORMAL_HOME" \
+PATH="$FAKE_BIN:$PATH" \
+LAY_TEST_SUDO_MARKER="$SUDO_MARKER" \
 LAY_UNINSTALL_TEST_MODE=1 \
 bash "$ROOT/uninstall.sh" --keep-source >/dev/null
 test -e "$NORMAL_HOME/.local/lib/lay/rollback/keep-me"
@@ -103,12 +118,15 @@ mkdir -p "$CUSTOM_HOME/.local/bin" "$CUSTOM_MANAGED"
 touch "$CUSTOM_MANAGED/lay-custom-owner"
 ln -s "$CUSTOM_MANAGED/lay-custom-owner" "$CUSTOM_HOME/.local/bin/lay-custom-owner"
 HOME="$CUSTOM_HOME" \
+PATH="$FAKE_BIN:$PATH" \
 LAY_INSTALL_LIBEXEC_DIR="$CUSTOM_MANAGED" \
+LAY_TEST_SUDO_MARKER="$SUDO_MARKER" \
 LAY_UNINSTALL_TEST_MODE=1 \
 bash "$ROOT/uninstall.sh" --keep-source >/dev/null
 test ! -e "$CUSTOM_MANAGED"
 test ! -e "$CUSTOM_HOME/.local/bin/lay-custom-owner"
 test ! -L "$CUSTOM_HOME/.local/bin/lay-custom-owner"
+test ! -e "$SUDO_MARKER"
 
 echo "== complete purge sandbox =="
 HOME_DIR="$TMP/home-uninstall"

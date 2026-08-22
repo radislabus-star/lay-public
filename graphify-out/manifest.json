@@ -3170,13 +3170,13 @@
     "semantic_hash": ""
   },
   "scripts/test-public-issues.sh": {
-    "mtime": 1787391548.24999,
-    "ast_hash": "1d4b7d82bd83087e7807757d96921beb",
+    "mtime": 1787392203.7592747,
+    "ast_hash": "8f116282fb606a2ffa18001c71bb7ec8",
     "semantic_hash": ""
   },
   "uninstall.sh": {
-    "mtime": 1787391548.25099,
-    "ast_hash": "295f93943e2d3a3617d5e18ea3f396be",
+    "mtime": 1787392203.7582748,
+    "ast_hash": "dc4a3b861633a86d0871b6fb75944cf5",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/typing_assist_worker.rs": {
@@ -7535,8 +7535,8 @@
     "semantic_hash": ""
   },
   "docs/issue-41-complete-uninstall-ownership-2026-08-22.md": {
-    "mtime": 1787391548.24999,
-    "ast_hash": "98ea59235c46f503d03de1d1cca36358",
+    "mtime": 1787392203.7592747,
+    "ast_hash": "34beb8bb36c4a83bf03bc83a0b2e2546",
     "semantic_hash": ""
   }
 }

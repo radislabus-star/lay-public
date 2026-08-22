@@ -83,6 +83,8 @@ remove_system_file() {
     path="$1"
     if [ -n "$SYSTEM_ROOT" ]; then
         rm -f "$SYSTEM_ROOT$path"
+    elif [ "$TEST_MODE" = "1" ]; then
+        return
     elif command -v sudo >/dev/null 2>&1; then
         sudo rm -f "$path"
     fi
