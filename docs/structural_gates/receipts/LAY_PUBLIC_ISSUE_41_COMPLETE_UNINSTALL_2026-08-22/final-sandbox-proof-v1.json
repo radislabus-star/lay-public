@@ -1,0 +1,44 @@
+{
+  "schema": "lay.public-issue-fix-receipt.v1",
+  "id": "LAY_PUBLIC_ISSUE_41_COMPLETE_UNINSTALL_FINAL_SANDBOX_PROOF_V1_2026-08-22",
+  "issue": "https://github.com/radislabus-star/lay-public/issues/41",
+  "tested": {
+    "scope": "managed runtime ownership and complete purge in isolated HOME and SYSTEM_ROOT sandboxes",
+    "uninstaller_sha256": "fccc483b13b28a803fb49b5ea275230ff6614cc797d5614daf0239fa0f1076a0",
+    "regression_suite_sha256": "9d7f982735f586f39a439be0c4236724a96989180794c525b0c8d8e31787cff1",
+    "preflight_manifest_sha256": "56bbf5c6031894706fce769f3aec49305dccf6afa8cd268e094718227a96aa84"
+  },
+  "measured": {
+    "current_release_links_removed": {
+      "passed": 10,
+      "total": 10
+    },
+    "future_managed_links_removed": {
+      "passed": 1,
+      "total": 1
+    },
+    "custom_libexec_routes_removed": {
+      "passed": 1,
+      "total": 1
+    },
+    "unrelated_links_preserved": {
+      "passed": 1,
+      "total": 1
+    },
+    "rollback_preserved_without_purge": true,
+    "normal_uninstall_idempotent": true,
+    "managed_tree_absent_after_purge": true,
+    "existing_public_issue_regressions": "PASS",
+    "bash_syntax": "PASS",
+    "shellcheck": "PASS"
+  },
+  "not_tested": [
+    "destructive uninstall of the active local Lay 1.0.34 runtime",
+    "execution on the reporter's Orange Pi 5 host",
+    "ARM64-specific filesystem or desktop integration behavior"
+  ],
+  "verdict": "ISSUE_41_SYSTEMIC_UNINSTALL_FIX_SANDBOX_PASS",
+  "runtime_authority_changed": false,
+  "public_fix_published": false,
+  "issue_closed": false
+}
