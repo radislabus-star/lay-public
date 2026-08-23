@@ -1,5 +1,4 @@
-use crate::dict::{convert, detect_direction};
-use crate::keyboard::preferred_layout_for_text;
+use crate::dict::{convert, Direction};
 pub use crate::text_edit::{VisibleTail, VisibleTailSource};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -108,7 +107,7 @@ pub fn plan_manual_toggle(request: ManualToggleRequest<'_>) -> Option<ManualTogg
     };
 
     let mut backspaces = token.chars().count() as u32;
-    let mut replacement = double_shift_replacement(token);
+    let mut replacement = project_to_opposite_layout(token, request.current_layout_is_ru);
 
     if replacement == token {
         return None;
@@ -118,7 +117,7 @@ pub fn plan_manual_toggle(request: ManualToggleRequest<'_>) -> Option<ManualTogg
         replacement.push(' ');
     }
     backspaces = backspaces.saturating_add(trailing_ws as u32);
-    let target_layout_is_ru = preferred_layout_for_text(&replacement, request.current_layout_is_ru);
+    let target_layout_is_ru = !request.current_layout_is_ru;
 
     Some(ManualTogglePlan {
         route: request.visible_tail.source.route(),
@@ -137,9 +136,13 @@ pub fn plan_manual_toggle(request: ManualToggleRequest<'_>) -> Option<ManualTogg
     })
 }
 
-pub fn double_shift_replacement(text: &str) -> String {
-    crate::mixed_script_repair::repair_mixed_script(text)
-        .unwrap_or_else(|| convert(text, detect_direction(text)))
+pub fn project_to_opposite_layout(text: &str, current_layout_is_ru: bool) -> String {
+    let direction = if current_layout_is_ru {
+        Direction::Ru2Us
+    } else {
+        Direction::Us2Ru
+    };
+    convert(text, direction)
 }
 
 fn last_tail_token(tail: &str) -> Option<&str> {
@@ -162,17 +165,17 @@ mod tests {
         VisibleTail, VisibleTailSource,
     };
 
-    fn request(tail: &str) -> ManualToggleRequest<'_> {
+    fn request(tail: &str, current_layout_is_ru: bool) -> ManualToggleRequest<'_> {
         ManualToggleRequest {
             visible_tail: VisibleTail::ime_committed_tail(tail),
-            current_layout_is_ru: false,
+            current_layout_is_ru,
             preserve_trailing_whitespace: true,
         }
     }
 
     #[test]
     fn committed_tail_plan_preserves_separator() {
-        let plan = plan_manual_toggle(request("работает ")).expect("toggle");
+        let plan = plan_manual_toggle(request("работает ", true)).expect("toggle");
 
         assert_eq!(plan.backspaces, 9);
         assert_eq!(plan.replacement, "hf,jnftn ");
@@ -188,7 +191,7 @@ mod tests {
 
     #[test]
     fn committed_tail_plan_is_exact_layout_projection() {
-        let plan = plan_manual_toggle(request("hbdtn")).expect("toggle");
+        let plan = plan_manual_toggle(request("hbdtn", false)).expect("toggle");
 
         assert_eq!(plan.backspaces, 5);
         assert_eq!(plan.replacement, "ривет");
@@ -197,7 +200,7 @@ mod tests {
 
     #[test]
     fn committed_tail_plan_keeps_internal_layout_symbol_in_the_token() {
-        let plan = plan_manual_toggle(request("ye;ty")).expect("toggle");
+        let plan = plan_manual_toggle(request("ye;ty", false)).expect("toggle");
 
         assert_eq!(plan.edit.original_token, "ye;ty");
         assert_eq!(plan.backspaces, 5);
@@ -207,7 +210,7 @@ mod tests {
 
     #[test]
     fn committed_tail_plan_does_not_invent_missing_initial_letter() {
-        let plan = plan_manual_toggle(request("flyj ")).expect("toggle");
+        let plan = plan_manual_toggle(request("flyj ", false)).expect("toggle");
 
         assert_eq!(plan.backspaces, 5);
         assert_eq!(plan.replacement, "адно ");
@@ -216,7 +219,7 @@ mod tests {
 
     #[test]
     fn exact_projection_does_not_delete_separator_before_current_token() {
-        let plan = plan_manual_toggle(request("push ltkfq")).expect("toggle");
+        let plan = plan_manual_toggle(request("push ltkfq", false)).expect("toggle");
 
         assert_eq!(plan.edit.original_token, "ltkfq");
         assert_eq!(plan.backspaces, 5);

@@ -1,4 +1,4 @@
-use super::{LayIbusEngine, ManualToggleAuthority, WordInputMode};
+use super::{LayIbusEngine, ManualToggleAuthority, WordInputMode, IBUS_CAP_SURROUNDING_TEXT};
 use lay::config::LayConfig;
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
@@ -264,6 +264,7 @@ fn layout_switch_path_preserves_fresh_committed_tail_handoff() {
         true,
         LayConfig::default(),
     );
+    second.set_client_capabilities(IBUS_CAP_SURROUNDING_TEXT);
 
     assert!(second.bind_focus_path());
     assert_eq!(second.tail_buffer, "вот ");

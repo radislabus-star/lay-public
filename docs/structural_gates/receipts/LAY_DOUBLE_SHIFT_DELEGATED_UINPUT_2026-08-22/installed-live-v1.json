@@ -1,0 +1,48 @@
+{
+  "schema": "lay.installed-live-route-receipt.v1",
+  "release": "1.0.37",
+  "installed_at": "2026-08-22T15:10:58+03:00",
+  "observed_through": "2026-08-23T22:16:25+03:00",
+  "build": {
+    "host": "e@192.168.3.94",
+    "cargo_jobs": 20,
+    "elapsed_seconds": 209,
+    "staging": "/tmp/lay-1.0.37-release-20260822-150913"
+  },
+  "installed": {
+    "source_version": "1.0.37",
+    "cli_version": "1.0.37",
+    "lay_daemon_sha256": "52cedadda952c1485fbc3763f69c2c612a274f4cc4afca749b57333b051868b1",
+    "lay_ibus_engine_sha256": "096d554931ede3d30bc14b6325cb86305a365bd03912dc17e6a4823360add209",
+    "lay_daemon_pid": 1037229,
+    "lay_ibus_engine_pid": 1037269,
+    "global_ibus_daemon_pid": 2076194,
+    "global_ibus_restarted": false,
+    "rollback": "/home/ubu/.local/lib/lay/rollback/1.0.36-20260822-151058"
+  },
+  "ordinary_live_events": {
+    "count": 5,
+    "latency_ms": [34, 15, 15, 15, 19],
+    "all_delegated_to_word_buffer": true,
+    "all_selected_daemon_uinput": true,
+    "all_completed_authorized_replay": true,
+    "ime_replace_tail_reentry_count": 0,
+    "duplicate_mutation_count": 0
+  },
+  "separate_observations": [
+    {
+      "class": "mixed_digit_token",
+      "latency_ms": 123,
+      "verdict": "OBSERVED_NOT_GATED"
+    }
+  ],
+  "verdicts": {
+    "installed_byte_parity": "PASS",
+    "process_continuity": "PASS",
+    "typed_single_mutation_route": "PASS",
+    "ordinary_live_completion_telemetry": "FAILED_VISIBLE_POSTCONDITION",
+    "all_client_visual_correctness": "FAILED_RU_EN_CHARACTER_LOSS",
+    "physical_autocorrect_undo": "NOT_TESTED"
+  },
+  "runtime_authority_changed": true
+}

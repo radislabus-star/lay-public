@@ -504,3 +504,289 @@ not a physical input-quality verdict. The following user-visible checks remain
 ghbdtn + double left Shift -> привет
 cj,frf + Space/autocorrect + immediate double Shift -> cj,frf
 ```
+
+## 1.0.35 Physical False-Handled Finding
+
+Date measured: 2026-08-22.
+
+The physical gate failed after the 1.0.35 installation. Debug evidence proved
+that the gesture and V3 wire were not the failing layers:
+
+```text
+physical double Shift FSM          fired
+daemon WordBuffer cross-check      4/4 exact
+ManualToggleV3                     returned Handled
+selected IME output route          terminal_erase_commit
+visible client mutation            absent
+```
+
+The first loss was the committed-tail output capability selector. It treated
+`cursor_cell_width > 0` as proof of a terminal client and emitted
+`DEL x N + replacement` through `CommitText`. Cursor geometry is not a typed
+delete capability: ordinary input clients also publish a positive cursor
+width. The IME then advanced its private tail and returned `Handled` even when
+the visible client did not delete or replace text.
+
+The 1.0.36 authority contract is:
+
+```text
+active composition                 -> IME owner
+committed tail + SurroundingText   -> IME owner
+committed tail without proven delete backend
+                                   -> explicit DelegateDaemon
+atomic route                       -> NotHandled, fail-closed
+D-Bus error or unknown V3 status   -> fail-closed
+```
+
+The correction is scoped to physical manual toggle authority. It does not edit
+the shared committed-tail output implementation, autocorrect selection,
+candidate acceptance, verifier, or SafetyGate. Delegation occurs before the
+pending committed-tail auto-undo lane, so the unproven terminal route cannot
+mint another false `Handled` for the same gesture.
+
+Measured after implementation:
+
+- design route gate: `PASS` after rejecting two earlier malformed route
+  drafts;
+- implementation preflight: `READY_TO_IMPLEMENT` after closing all blockers;
+- observed-source route gate: `PASS`, `25/25` evidence markers;
+- remote IBus manual-toggle tests: `11/11 PASS`;
+- remote daemon typed-delegation test: `1/1 PASS`;
+- `state.rs`, autocorrect/candidate output routes and daemon dispatch bytes:
+  unchanged.
+
+Evidence:
+
+- `docs/structural_gates/preflights/LAY_DOUBLE_SHIFT_PROVEN_OUTPUT_AUTHORITY_ROUTE_V1_2026-08-22.json`
+- `docs/structural_gates/preflights/LAY_DOUBLE_SHIFT_PROVEN_OUTPUT_AUTHORITY_OBSERVED_V1_2026-08-22.json`
+- `docs/structural_gates/preflights/LAY_DOUBLE_SHIFT_PROVEN_OUTPUT_AUTHORITY_IMPLEMENTATION_V1_2026-08-22.json`
+- `docs/structural_gates/receipts/LAY_DOUBLE_SHIFT_PROVEN_OUTPUT_AUTHORITY_2026-08-22/`
+
+These gates prove the scoped source route. The 1.0.36 release build,
+rollback-protected installation and repeated physical client test remain
+separate gates.
+
+## 1.0.36 Delegated Output Re-entry Finding
+
+Date measured: 2026-08-22.
+
+The physical `1.0.36` check was still reported as failed. Source tracing found
+that `DelegateDaemon` changed the correction owner but did not bind the output
+owner. The WordBuffer planner entered the common manual output pipeline, whose
+first stage was still `try_ime_replace_output`. The delegated event could
+therefore re-enter IME `ReplaceTail`, select the same unproven committed-tail
+backend and finish without a visible client mutation.
+
+The corrected `1.0.37` route contract is:
+
+```text
+ManualToggleV3 Handled
+-> IME mutation owner
+
+ManualToggleV3 DelegateDaemon
+-> WordBuffer planner
+-> ManualCorrectionOutputRoute::DaemonUinput
+-> skip all IME/GNOME native output stages
+-> existing authorized uinput replacement/replay
+
+pending autocorrect undo
+-> ConfiguredBackend
+-> existing auto-undo runtime, unchanged
+
+ManualToggleV3 NotHandled/error
+-> terminal fail-closed
+```
+
+The output route is typed request data, not a new runtime owner. No global
+state, lexical fixture, candidate rule, verifier change or SafetyGate change
+was added.
+
+Measured facts before release:
+
+- design route gate: `PASS` after two `VETO` revisions corrected an invalid
+  owner ordering;
+- implementation preflight: `READY_TO_IMPLEMENT`;
+- observed-source route gate: `PASS`, `31/31` source markers;
+- remote V3 dispatch and pending-undo parity tests: `2/2 PASS`;
+- remote output-route exclusion test: `1/1 PASS`;
+- remote complete `lay-daemon` suite: `201 PASS`, `6 FAIL`;
+- the same six typing-assist tests also fail against the exact pre-change
+  daemon sources, so they are measured baseline debt and not a regression from
+  the delegated-output change.
+
+Not tested at this point:
+
+- physical `ghbdtn + double left Shift -> привет` with installed `1.0.37`;
+- physical `cj,frf + Space/autocorrect + double Shift -> cj,frf` with installed
+  `1.0.37`;
+- runtime authority is still installed `1.0.36` until the release transaction
+  completes.
+
+Evidence:
+
+- `docs/structural_gates/preflights/LAY_DOUBLE_SHIFT_DELEGATED_UINPUT_ROUTE_V2_2026-08-22.json`
+- `docs/structural_gates/preflights/LAY_DOUBLE_SHIFT_DELEGATED_UINPUT_OBSERVED_V2_2026-08-22.json`
+- `docs/structural_gates/preflights/LAY_DOUBLE_SHIFT_DELEGATED_UINPUT_IMPLEMENTATION_V2_2026-08-22.json`
+- `docs/structural_gates/receipts/LAY_DOUBLE_SHIFT_DELEGATED_UINPUT_2026-08-22/`
+
+## 1.0.37 Installed Live Verdict
+
+Installed on 2026-08-22 and observed through 2026-08-23.
+
+The complete release was built remotely with `20` Cargo jobs in `3m 29s`.
+All ten installed binaries matched the remote staging SHA-256 values. The
+installation preserved the global IBus process and reloaded only Lay-owned
+runtime components.
+
+```text
+source / installed version         1.0.37 / 1.0.37
+installed lay-daemon SHA-256       52cedadda952c1485fbc3763f69c2c612a274f4cc4afca749b57333b051868b1
+installed lay-ibus-engine SHA-256  096d554931ede3d30bc14b6325cb86305a365bd03912dc17e6a4823360add209
+lay-daemon PID                     1037229
+lay-ibus-engine PID                1037269
+global ibus-daemon PID             2076194, unchanged
+rollback                           /home/ubu/.local/lib/lay/rollback/1.0.36-20260822-151058
+```
+
+The live journal later observed five ordinary manual conversions with the
+required route markers in the same event:
+
+```text
+physical manual trigger delegated to daemon WordBuffer
+-> explicit IME delegation selected daemon uinput output
+-> authorized uinput replay completed
+```
+
+Measured total event latency was `15, 15, 15, 19, 34 ms`. A separate mixed
+digit sample took `123 ms`; it is not included in the ordinary-word latency
+claim and remains a performance observation rather than a PASS criterion.
+Every observed event reached exactly one daemon mutation route. No event
+returned to IME `ReplaceTail`, and no duplicate mutation marker appeared.
+
+Verdict scope:
+
+- installed version/hash/process continuity: `PASS`;
+- typed runtime route and single mutation owner: `PASS`;
+- live ordinary-event completion telemetry: `FAILED_VISIBLE_POSTCONDITION`;
+- visual correctness in every supported client: not implied by journal-only
+  evidence and remains part of the multi-client product gate;
+- autocorrect-undo physical round trip: still requires a separate observed
+  event.
+
+Installed/live receipt:
+
+`docs/structural_gates/receipts/LAY_DOUBLE_SHIFT_DELEGATED_UINPUT_2026-08-22/installed-live-v1.json`
+
+## 1.0.38 Deterministic Double Shift Repair
+
+The 1.0.37 daemon journal proved only that the requested Backspace and replay
+frames were emitted. Physical RU to EN testing then showed missing visible
+letters. Therefore 1.0.37 is not a physical quality PASS.
+
+The first shared mechanism was:
+
+```text
+physical Double Shift
+-> shared smart manual-correction policy
+-> asynchronous GNOME/IBus switch
+-> zero-paced Backspace burst
+-> zero-paced replay burst
+-> emission logged as done without a visible postcondition
+```
+
+The 1.0.38 source candidate changes that route to:
+
+```text
+pending autocorrect undo -> unchanged exact undo route
+
+ordinary Double Shift
+-> exact captured physical keycodes
+-> forced Replay policy, auto-replace disabled
+-> target GNOME + IBus readiness before mutation
+-> paced Backspace frames
+-> paced replay frames
+-> replay bookkeeping only, no correction-learning sample
+```
+
+Measured source gates on the remote 20-core build host:
+
+```text
+lay-daemon check                         PASS
+deterministic runtime policy             1/1 PASS
+manual-toggle focused tests             10/10 PASS
+key-frame focused tests                   2/2 PASS
+layout-controller focused tests           6/6 PASS
+complete lay-daemon suite             202/208 PASS
+new failures                                 0
+baseline typing-assist failures              6
+```
+
+The six complete-suite failures are the same named baseline failures measured
+before this repair. The rollback-protected 1.0.38 release transaction then
+installed all ten remotely built binaries. The loaded daemon matches the
+installed release byte-for-byte; client-visible RU to EN / EN to RU
+postconditions remain untested, so the installed verdict is
+`INSTALLED_AWAITING_VISIBLE_TEST`, not PASS.
+
+```text
+remote release build                 3m 51s, 20 jobs
+remote Cargo target                  1,512,579,072 B / 12 GiB budget
+release staging                      46 MiB, 10/10 SHA parity
+installed lay-daemon SHA-256         79ebece266db8a4fc16993dc72c447e4f655586189db936fb0d3df1fd9d7d238
+installed lay-ibus-engine SHA-256    b54d58f4ecbced7e0c698cfc9711912b03bb2b66ba54e04e9f6889245dd21737
+loaded lay-daemon PID                2721049, exact installed-byte parity
+global ibus-daemon PID               2076194, unchanged
+loaded lay-ibus-engine PID           1037269, deliberately not restarted
+rollback                             /home/ubu/.local/lib/lay/rollback/1.0.37-pre-1.0.38-double-shift-20260823-2242
+```
+
+## 1.0.39 Ordered Double Shift Authority
+
+Release `1.0.39` removes the remaining route ambiguity:
+
+```text
+Double Shift
+├── pending autocorrect undo
+│   └── exact source restoration before any authority selection
+└── ordinary toggle
+    ├── current RU -> exact Ru2Us projection
+    └── current US -> exact Us2Ru projection
+```
+
+Ordinary IME and daemon routes no longer invoke script detection, mixed-script
+repair, candidate ranking, morphology, context, or correction learning. An
+atomic Space receipt is retained as independent proof for the immediate undo,
+so the atomic route can create one delete-plus-commit frame without a legacy
+D-Bus signal emitter.
+
+The full engine suite exposed a separate multi-client race in the one global
+Space prefetch slot. It is now a bounded pool of at most eight path-isolated
+lanes. A newer frame can supersede only an older frame from the same IBus path;
+cross-path lease consumption is impossible.
+
+Measured gate:
+
+```text
+parallel atomic proof               5 PASS / 0 FAIL
+full lay-ibus-engine                236 PASS / 0 FAIL
+full lay-daemon                     202 PASS / 6 baseline FAIL
+global ibus-daemon PID              2076194 -> 2076194
+installed version                   1.0.39
+loaded extension Version()          1.0.39
+physical application typing         NOT_TESTED
+```
+
+The daemon result is not a full PASS: the same six pre-existing typing-assist
+expectation failures remain. They did not increase. Runtime authority changed
+to `1.0.39`, but the physical Double Shift verdict remains open until the three
+cases in `installed-live-v3.json` are typed in a real application.
+
+Receipt:
+`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_DOUBLE_SHIFT_DELEGATED_UINPUT_2026-08-22/installed-live-v3.json`.
+
+Contract and preflight:
+
+- `docs/double-shift-physical-layout-contract.md`
+- `docs/structural_gates/preflights/LAY_DOUBLE_SHIFT_DETERMINISTIC_VISIBLE_REPLAY_V1_2026-08-23.json`
+- `docs/structural_gates/receipts/LAY_DOUBLE_SHIFT_DELEGATED_UINPUT_2026-08-22/deterministic-visible-replay-preflight-v2.json`
+- `docs/structural_gates/receipts/LAY_DOUBLE_SHIFT_DELEGATED_UINPUT_2026-08-22/installed-live-v2.json`

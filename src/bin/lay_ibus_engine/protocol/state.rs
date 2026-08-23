@@ -8,6 +8,7 @@ pub(crate) struct PendingImeAutoUndo {
     pub(crate) visible_tail: String,
     pub(crate) transition: lay::typing_cpu::ObservedSystemTransition,
     pub(crate) recorded_at: Instant,
+    pub(crate) atomic_submission_proven: bool,
 }
 
 #[derive(Debug, Clone, Copy)]

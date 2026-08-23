@@ -1,0 +1,128 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_DOUBLE_SHIFT_DELEGATED_UINPUT_IMPLEMENTATION_V2_2026-08-22",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {"id": "ime-dispatch", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/manual_trigger_runtime/ime.rs", "expect": {"mode": "0664", "size_bytes": 3278, "sha256": "256c1a0b9835ba892517f37bc2eba061cd52cf38ee7c2493b433f5703e344bbe"}},
+    {"id": "manual-fire", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/manual_trigger_runtime/fire.rs", "expect": {"mode": "0664", "size_bytes": 2603, "sha256": "6687b144c59968d0f77f4f90e8c45e78151c03014a224ac25e2f1a23cc61312b"}},
+    {"id": "trigger-dispatch", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/trigger_dispatch.rs", "expect": {"mode": "0664", "size_bytes": 4831, "sha256": "d6d17ed6b2992b0b275b1cd3c49ddf83240130bfce336b711cc1555f5e55ac30"}},
+    {"id": "correction-request", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/correction_runtime/request.rs", "expect": {"mode": "0664", "size_bytes": 881, "sha256": "2676dd960b7010aa81da1f9119eb398a20723d795a12b3d4d446c2fb8c1ab2c5"}},
+    {"id": "correction-runtime", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/correction_runtime.rs", "expect": {"mode": "0664", "size_bytes": 6114, "sha256": "38b09499e0707e0b417945a4c57389afb2dfc3166110a026107bba0a8aeeddcf"}},
+    {"id": "output-context", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/correction_runtime/output/context.rs", "expect": {"mode": "0664", "size_bytes": 1647, "sha256": "801c6f51cbfae480d8d9a5d3a4d264e7ac5606364ab192b648ad2108af8435eb"}},
+    {"id": "output-owner", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/correction_runtime/output.rs", "expect": {"mode": "0664", "size_bytes": 2307, "sha256": "2353db4992b5fd74a3cc37cda2fa23c2b15a6d6d9c79520cbd2ff5ba2fd2ebb6"}},
+    {"id": "route-design", "kind": "file", "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_DOUBLE_SHIFT_DELEGATED_UINPUT_ROUTE_V2_2026-08-22.json", "expect": {"mode": "0664"}},
+    {"id": "installed-daemon-1-0-36", "kind": "file", "path": "/home/ubu/.local/lib/lay/bin/lay-daemon", "expect": {"mode": "0755", "size_bytes": 8510288, "sha256": "4088668ee601b5ded1cd9048d30c8c7329300243d2aebbb3e4ce9366f489de85"}},
+    {"id": "installed-engine-1-0-36", "kind": "file", "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine", "expect": {"mode": "0755", "size_bytes": 6743288, "sha256": "677ee952b128953c553f2138cf7707772281708161282a611c1d4963be1ee187"}}
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "type-delegated-output-route", "kind": "source_edit"},
+      {"id": "add-route-parity-tests", "kind": "source_edit"},
+      {"id": "update-runtime-route-document", "kind": "filesystem_write"},
+      {"id": "remote-focused-build-and-tests", "kind": "remote_process_start"},
+      {"id": "rollback-protected-release-install", "kind": "installed_runtime_mutation"}
+    ],
+    "forbidden": [
+      "change_pending_autocorrect_undo_route",
+      "change_ime_handled_route",
+      "atomic_legacy_fallback",
+      "dbus_error_second_mutation",
+      "fixture_surface_in_runtime",
+      "verifier_or_safety_weakening",
+      "local_cargo_build",
+      "global_ibus_restart",
+      "historical_receipt_rewrite"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "pinned-ime-dispatch",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/manual_trigger_runtime/ime.rs",
+      "sha256": "256c1a0b9835ba892517f37bc2eba061cd52cf38ee7c2493b433f5703e344bbe",
+      "forbidden_effect_patterns": [
+        {"effect": "fixture_surface_in_runtime", "regex": "(ghbdtn|привет|собака)"},
+        {"effect": "atomic_legacy_fallback", "regex": "NotHandled.{0,160}DelegateDaemon"},
+        {"effect": "dbus_error_second_mutation", "regex": "Err\\([^)]*\\).{0,160}DelegateDaemon"}
+      ]
+    },
+    {
+      "id": "pinned-output-owner",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/correction_runtime/output.rs",
+      "sha256": "2353db4992b5fd74a3cc37cda2fa23c2b15a6d6d9c79520cbd2ff5ba2fd2ebb6",
+      "forbidden_effect_patterns": [
+        {"effect": "change_pending_autocorrect_undo_route", "regex": "pending_auto_undo"},
+        {"effect": "change_ime_handled_route", "regex": "ImeManualToggleOutcome::Handled"},
+        {"effect": "verifier_or_safety_weakening", "regex": "bypass_(verifier|safety)|disable_(verifier|safety)"},
+        {"effect": "local_cargo_build", "regex": "cargo (build|test|check)"},
+        {"effect": "global_ibus_restart", "regex": "(kill|restart).*ibus-daemon"},
+        {"effect": "historical_receipt_rewrite", "regex": "rewrite_historical_receipt|truncate_historical_evidence"}
+      ]
+    }
+  ],
+  "state_machine": {
+    "initial_state": "LIVE_DELEGATED_OUTPUT_AMBIGUOUS",
+    "steps": [
+      {
+        "id": "implement-typed-output-route",
+        "from": "LIVE_DELEGATED_OUTPUT_AMBIGUOUS",
+        "to": "TYPED_OUTPUT_ROUTE_IMPLEMENTED",
+        "mutates": true,
+        "failure_state": "SOURCE_EDIT_FAILED",
+        "cleanup": "retain scoped source diff; installed runtime remains exact 1.0.36",
+        "preserves": ["installed-daemon-1-0-36", "installed-engine-1-0-36"],
+        "test_id": "typed-route-fault"
+      },
+      {
+        "id": "remote-build-and-test",
+        "from": "TYPED_OUTPUT_ROUTE_IMPLEMENTED",
+        "to": "REMOTE_GATES_PASS",
+        "mutates": true,
+        "failure_state": "REMOTE_GATES_FAILED",
+        "cleanup": "stop proof-owned processes and preserve installed 1.0.36",
+        "preserves": ["installed-daemon-1-0-36", "installed-engine-1-0-36"],
+        "test_id": "remote-gate-fault"
+      },
+      {
+        "id": "install-release",
+        "from": "REMOTE_GATES_PASS",
+        "to": "LIVE_TYPED_ROUTE_INSTALLED",
+        "mutates": true,
+        "failure_state": "INSTALL_ROLLED_BACK",
+        "cleanup": "restore exact 1.0.36 bytes and restart only Lay-owned processes",
+        "preserves": ["installed-daemon-1-0-36", "installed-engine-1-0-36"],
+        "test_id": "install-fault"
+      }
+    ],
+    "terminal_states": ["LIVE_TYPED_ROUTE_INSTALLED", "SOURCE_EDIT_FAILED", "REMOTE_GATES_FAILED", "INSTALL_ROLLED_BACK"]
+  },
+  "preserved_artifacts": [
+    {"id": "installed-daemon-1-0-36", "path": "/home/ubu/.local/lib/lay/bin/lay-daemon", "policy": "immutable_until_remote_gates_pass", "cursor_policy": "none", "rollback_policy": "restore_exact_bytes", "baseline_check_id": "installed-daemon-1-0-36"},
+    {"id": "installed-engine-1-0-36", "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine", "policy": "immutable_until_remote_gates_pass", "cursor_policy": "none", "rollback_policy": "restore_exact_bytes", "baseline_check_id": "installed-engine-1-0-36"}
+  ],
+  "identity_contracts": [
+    {"id": "delegation-route-parity", "producer": "ManualToggleV3 explicit DelegateDaemon", "consumer": "daemon manual correction output selector", "comparison": "explicit delegation carries DaemonUinput and cannot select any IME or GNOME native stage", "test_id": "delegation-route-parity"},
+    {"id": "pending-undo-parity", "producer": "WordBuffer pending auto undo readiness", "consumer": "existing auto undo runtime", "comparison": "pending undo bypasses ManualToggleV3 and keeps ConfiguredBackend", "test_id": "pending-undo-parity"},
+    {"id": "blocked-parity", "producer": "ManualToggleV3 NotHandled or error", "consumer": "daemon trigger completion", "comparison": "blocked outcomes never reach daemon correction output", "test_id": "blocked-parity"}
+  ],
+  "runtime_comparisons": [
+    {"id": "live-process-continuity", "source": "systemd properties, process identities, selected engine and installed SHA before and after install", "comparison": "exact_stable_projection", "reason": "only Lay processes and binaries may change", "stable_fields": ["global_ibus_pid", "active_engine", "service_count"], "expected_to_change_fields": ["lay_daemon_pid", "lay_ibus_engine_pid", "binary_sha256", "version"], "observed_not_compared_fields": ["cpu_time", "rss"], "test_id": "live-process-continuity"}
+  ],
+  "invariants": [
+    {"id": "delegated-output-single-owner", "statement": "explicit V3 delegation reaches daemon uinput output exactly once and cannot re-enter IME ReplaceTail", "test_id": "delegation-route-parity"},
+    {"id": "pending-undo-unchanged", "statement": "pending autocorrect undo remains on its existing route", "test_id": "pending-undo-parity"},
+    {"id": "blocked-remains-fail-closed", "statement": "NotHandled and errors remain terminal", "test_id": "blocked-parity"},
+    {"id": "other-ime-edits-unchanged", "statement": "IME autocorrect, candidate acceptance, verifier and SafetyGate are unchanged", "test_id": "non-manual-route-parity"}
+  ],
+  "tests": [
+    {"id": "typed-route-fault", "kind": "fault_injection", "expected": "missing typed route cannot silently select IME output"},
+    {"id": "remote-gate-fault", "kind": "fault_injection", "expected": "failed remote gate leaves installed 1.0.36 unchanged"},
+    {"id": "install-fault", "kind": "fault_injection", "expected": "failed install restores exact 1.0.36 without restarting global IBus"},
+    {"id": "delegation-route-parity", "kind": "parity", "expected": "explicit DelegateDaemon maps only to DaemonUinput and skips native output stage"},
+    {"id": "pending-undo-parity", "kind": "parity", "expected": "pending auto undo maps to ConfiguredBackend"},
+    {"id": "blocked-parity", "kind": "parity", "expected": "NotHandled and malformed V3 return Complete(None)"},
+    {"id": "non-manual-route-parity", "kind": "parity", "expected": "IME engine sources and shared safety sources are byte-identical"},
+    {"id": "live-process-continuity", "kind": "parity", "expected": "global IBus PID and selected engine remain stable"}
+  ]
+}

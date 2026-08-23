@@ -6,19 +6,20 @@ use super::context::ManualTriggerFireContext;
 use super::ime::{dispatch_ime_manual_toggle, ImeManualToggleDispatch};
 
 pub(crate) fn fire_configured_manual_trigger(ctx: ManualTriggerFireContext<'_>) {
-    match dispatch_ime_manual_toggle(ctx.buffer) {
+    let output_route = match dispatch_ime_manual_toggle(ctx.buffer) {
         ImeManualToggleDispatch::Complete(result) => {
             complete_manual_trigger_with_result(result, ctx);
             return;
         }
-        ImeManualToggleDispatch::DelegateDaemon => {}
-    }
+        ImeManualToggleDispatch::DelegateDaemon(output_route) => output_route,
+    };
     let correction_result = run_configured_manual_correction(
         ctx.buffer,
         ctx.device,
         ctx.virtual_kbd,
         ctx.executing,
         ctx.text_observation.clone(),
+        output_route,
     );
     complete_manual_trigger_with_result(correction_result, ctx);
 }
@@ -29,13 +30,13 @@ pub(crate) fn fire_scoped_manual_trigger(
     events_since_word_start: u32,
     reason: &str,
 ) {
-    match dispatch_ime_manual_toggle(ctx.buffer) {
+    let output_route = match dispatch_ime_manual_toggle(ctx.buffer) {
         ImeManualToggleDispatch::Complete(result) => {
             complete_manual_trigger_with_result(result, ctx);
             return;
         }
-        ImeManualToggleDispatch::DelegateDaemon => {}
-    }
+        ImeManualToggleDispatch::DelegateDaemon(output_route) => output_route,
+    };
     let correction_result = run_scoped_manual_correction(
         ScopedManualCorrectionContext {
             buffer: ctx.buffer,
@@ -47,6 +48,7 @@ pub(crate) fn fire_scoped_manual_trigger(
         replace_words,
         events_since_word_start,
         reason,
+        output_route,
     );
     complete_manual_trigger_with_result(correction_result, ctx);
 }

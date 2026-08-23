@@ -1,0 +1,123 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "correction-runtime",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/correction_runtime.rs",
+      "sha256": "2ac02182c63bd2bc827f9b15568c85d8677f0563ec39b3c5aa9c54766cbcc0fb",
+      "size_bytes": 6245
+    },
+    {
+      "exists": true,
+      "id": "manual-replay",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/correction_runtime/output/replay.rs",
+      "sha256": "acf1c12e4a632c534d99e98cba4b631dea802b97ffd30a4b894a2407668a704f",
+      "size_bytes": 3606
+    },
+    {
+      "exists": true,
+      "id": "replay-memory",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/correction_runtime/memory.rs",
+      "sha256": "1a04b8b5af7c0b1a252f5e9377ba794d9d98dd69d793d4911bc7c1c2e061d39a",
+      "size_bytes": 2324
+    },
+    {
+      "exists": true,
+      "id": "key-emitter",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/text_output/key_emit.rs",
+      "sha256": "5c15148f8664f6259f6926ef231d6f77376dd1929a913b68a93fa83effecb4b2",
+      "size_bytes": 8585
+    },
+    {
+      "exists": true,
+      "id": "layout-controller",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/layout_controller.rs",
+      "sha256": "022e06e0d4af36e49e82627f32349e3b818c7b90b1c43786f6b253f09b99d375",
+      "size_bytes": 9764
+    },
+    {
+      "exists": true,
+      "id": "layout-verify",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/layout_controller/verify.rs",
+      "sha256": "8ad461911f097a4afc499b7395eab35970f15642d31b1ff7eb1eeb1ff985c8f5",
+      "size_bytes": 1244
+    },
+    {
+      "exists": true,
+      "id": "installed-daemon-1-0-37",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+      "sha256": "52cedadda952c1485fbc3763f69c2c612a274f4cc4afca749b57333b051868b1",
+      "size_bytes": 8511184
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 7,
+    "forbidden_side_effect_kinds": [
+      "change_pending_autocorrect_undo_route",
+      "correction_learning_on_double_shift",
+      "delete_before_layout_ready",
+      "fallback_second_mutation",
+      "fixture_surface_in_runtime",
+      "global_ibus_restart",
+      "local_cargo_build",
+      "model_or_candidate_selection_on_double_shift",
+      "remove_rollback",
+      "verifier_or_safety_weakening"
+    ],
+    "identity_contracts": 3,
+    "invariants": 4,
+    "planned_side_effect_kinds": [
+      "installed_runtime_mutation",
+      "remote_process_start",
+      "source_edit"
+    ],
+    "preserved_artifacts": 1,
+    "runtime_comparisons": 1,
+    "source_checks": 2,
+    "tests": 9
+  },
+  "manifest_sha256": "bf682ca62b645c9482e6b2bc2f1b7a4c57c063d5fd432597225c46185d7484cf",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-correction-runtime",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/correction_runtime.rs",
+      "sha256": "2ac02182c63bd2bc827f9b15568c85d8677f0563ec39b3c5aa9c54766cbcc0fb",
+      "size_bytes": 6245
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-manual-replay",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/correction_runtime/output/replay.rs",
+      "sha256": "acf1c12e4a632c534d99e98cba4b631dea802b97ffd30a4b894a2407668a704f",
+      "size_bytes": 3606
+    }
+  ],
+  "task_id": "LAY_DOUBLE_SHIFT_DETERMINISTIC_VISIBLE_REPLAY_V1_2026-08-23",
+  "verdict": "READY_TO_IMPLEMENT"
+}

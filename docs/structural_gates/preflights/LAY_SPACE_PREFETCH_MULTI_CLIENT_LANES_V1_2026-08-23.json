@@ -1,0 +1,61 @@
+{
+  "schema":"nanda.implementation-preflight.v1",
+  "task_id":"LAY_SPACE_PREFETCH_MULTI_CLIENT_LANES_V1_2026-08-23",
+  "authority_bearing":true,
+  "scientific_future_sensitive":false,
+  "reuses_existing_implementation":true,
+  "baseline_checks":[
+    {"id":"prefetch-runtime","kind":"file","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs","expect":{"mode":"0664","size_bytes":32375,"sha256":"d9459e914c9decb84355ba2c2ba32f5a64794b1e157beae262a01e1bf651baa9"}},
+    {"id":"prefetch-proof","kind":"file","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/space_autocorrect_prefetch/proof.rs","expect":{"mode":"0664","size_bytes":17399,"sha256":"fc918e095a202ac207814924e79c65cedb988297263b0978d3e3d61a61910e48"}},
+    {"id":"installed-engine-1-0-38","kind":"file","path":"/home/ubu/.local/lib/lay/bin/lay-ibus-engine","expect":{"mode":"0755","size_bytes":6743288,"sha256":"b54d58f4ecbced7e0c698cfc9711912b03bb2b66ba54e04e9f6889245dd21737"}}
+  ],
+  "side_effects":{"planned":[
+    {"id":"bounded-per-path-worker-pool","kind":"source_edit"},
+    {"id":"parallel-multi-client-proof","kind":"remote_process_start"}
+  ],"forbidden":[
+    "cross_path_lease_consumption","unbounded_worker_growth","evicted_worker_thread_leak",
+    "serialize_tests_to_hide_race","shared_identity_weakening","local_cargo_build",
+    "global_ibus_restart","installed_runtime_mutation"
+  ]},
+  "source_checks":[
+    {"id":"pinned-prefetch-runtime","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs","sha256":"d9459e914c9decb84355ba2c2ba32f5a64794b1e157beae262a01e1bf651baa9","forbidden_effect_patterns":[
+      {"effect":"cross_path_lease_consumption","regex":"take_any_path_lease"},
+      {"effect":"unbounded_worker_growth","regex":"HashMap.*Worker.*without_bound"},
+      {"effect":"evicted_worker_thread_leak","regex":"evict_without_stop"},
+      {"effect":"shared_identity_weakening","regex":"identity_matches_without_path"},
+      {"effect":"local_cargo_build","regex":"cargo (build|test|check)"},
+      {"effect":"global_ibus_restart","regex":"(kill|restart).*ibus-daemon"},
+      {"effect":"installed_runtime_mutation","regex":"/home/ubu/.local/lib/lay/bin"}
+    ]},
+    {"id":"pinned-prefetch-proof","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/space_autocorrect_prefetch/proof.rs","sha256":"fc918e095a202ac207814924e79c65cedb988297263b0978d3e3d61a61910e48","forbidden_effect_patterns":[
+      {"effect":"serialize_tests_to_hide_race","regex":"serial(_test)?|test_threads.*1"}
+    ]}
+  ],
+  "state_machine":{"initial_state":"CROSS_PATH_SUPERSESSION_REPRODUCED","steps":[
+    {"id":"implement-bounded-lanes","from":"CROSS_PATH_SUPERSESSION_REPRODUCED","to":"LANES_IMPLEMENTED","mutates":true,"failure_state":"SOURCE_EDIT_FAILED","cleanup":"retain scoped diff; installed 1.0.38 unchanged","preserves":["installed-engine-1-0-38"],"test_id":"source-edit-fault"},
+    {"id":"parallel-proof","from":"LANES_IMPLEMENTED","to":"PARALLEL_PROOF_PASS","mutates":true,"failure_state":"PARALLEL_PROOF_FAILED","cleanup":"stop proof-owned processes; installed 1.0.38 unchanged","preserves":["installed-engine-1-0-38"],"test_id":"parallel-proof-fault"}
+  ],"terminal_states":["PARALLEL_PROOF_PASS","SOURCE_EDIT_FAILED","PARALLEL_PROOF_FAILED"]},
+  "preserved_artifacts":[
+    {"id":"installed-engine-1-0-38","path":"/home/ubu/.local/lib/lay/bin/lay-ibus-engine","policy":"immutable_during_source_proof","cursor_policy":"none","rollback_policy":"no_runtime_mutation","baseline_check_id":"installed-engine-1-0-38"}
+  ],
+  "identity_contracts":[
+    {"id":"path-lane-parity","producer":"InputFrameIdentity.path","consumer":"prefetch worker pool","comparison":"one bounded lane per exact path","test_id":"path-lane-parity"},
+    {"id":"full-identity-parity","producer":"PreparedCorrectionLease.identity","consumer":"take request","comparison":"exact full identity equality inside selected path lane","test_id":"full-identity-parity"},
+    {"id":"eviction-parity","producer":"least-recently-used lane","consumer":"bounded pool eviction","comparison":"eviction stops lane and returns no foreign lease","test_id":"eviction-parity"}
+  ],
+  "runtime_comparisons":[],
+  "invariants":[
+    {"id":"cross-path-isolation","statement":"a request on path B cannot supersede or consume path A","test_id":"path-lane-parity"},
+    {"id":"latest-frame-within-path","statement":"latest frame wins only within one path lane","test_id":"full-identity-parity"},
+    {"id":"bounded-live-workers","statement":"worker count is bounded and evicted workers terminate","test_id":"eviction-parity"},
+    {"id":"parallel-suite-required","statement":"atomic proof passes with default parallel test execution","test_id":"parallel-engine-proof"}
+  ],
+  "tests":[
+    {"id":"source-edit-fault","kind":"fault_injection","expected":"failed edit cannot mutate installed runtime"},
+    {"id":"parallel-proof-fault","kind":"fault_injection","expected":"failed proof leaves installed runtime unchanged"},
+    {"id":"path-lane-parity","kind":"parity","expected":"two paths retain independent prepared leases"},
+    {"id":"full-identity-parity","kind":"parity","expected":"same-path stale focus cannot consume current lease"},
+    {"id":"eviction-parity","kind":"parity","expected":"pool never exceeds bound and evicted worker exits"},
+    {"id":"parallel-engine-proof","kind":"parity","expected":"combined atomic proof has no cross-test or cross-path failure"}
+  ]
+}

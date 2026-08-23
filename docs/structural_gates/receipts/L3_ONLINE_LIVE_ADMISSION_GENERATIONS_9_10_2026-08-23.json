@@ -1,0 +1,70 @@
+{
+  "schema": "lay.l3-online-live-admission-audit.v1",
+  "created_at": "2026-08-23T22:48:00+03:00",
+  "source": {
+    "state": "/home/ubu/.local/share/lay/nanda_wave/l3-online/state.json",
+    "manifest": "/home/ubu/.local/share/lay/nanda_wave/l3_context_phase.runtime.json",
+    "active_base": "/home/ubu/.local/share/lay/nanda_wave/l3-online/compact-base-b.nwpc"
+  },
+  "measured_state": {
+    "generation": 10,
+    "admitted_deltas": 7,
+    "pending_relations": 86,
+    "feedback_records": 10,
+    "proof_pipeline_revision": 1,
+    "manifest_deltas": 0,
+    "active_base_bytes": 30805256
+  },
+  "admissions": [
+    {
+      "generation": 9,
+      "independent_episodes": 2,
+      "independent_scenes": 2,
+      "delta_bytes": 3796,
+      "targeted_proof": "/home/ubu/.local/share/lay/nanda_wave/l3-online/delta-00000009-1787253756.targeted-proof.json",
+      "targeted_proof_sha256": "e70ac1c6d14d5a07c61c00777b0faea01cccfda2096632c0884f51e96800b669",
+      "full_proof": "/home/ubu/.local/share/lay/nanda_wave/l3-online/delta-00000009-1787253756.full-proof.json",
+      "full_proof_sha256": "2616565940385a84e80cf552550286e39a84f2caa42b3c6d72b9b1117dbc421e",
+      "targeted_verdict": "PASS",
+      "full_differential_verdict": "PASS"
+    },
+    {
+      "generation": 10,
+      "independent_episodes": 2,
+      "independent_scenes": 2,
+      "delta_bytes": 3424,
+      "targeted_proof": "/home/ubu/.local/share/lay/nanda_wave/l3-online/delta-00000010-1787328663.targeted-proof.json",
+      "targeted_proof_sha256": "d3e669d0c49641c7dfd97837411b32c960391ea884f83e2020a8f4afb4ddee87",
+      "full_proof": "/home/ubu/.local/share/lay/nanda_wave/l3-online/delta-00000010-1787328663.full-proof.json",
+      "full_proof_sha256": "596d3160754524e82f15e919549303e41de0db3d69bcfbf8ef9432814731fd0a",
+      "targeted_verdict": "PASS",
+      "full_differential_verdict": "PASS"
+    }
+  ],
+  "aggregate_proof": {
+    "targeted_improvement": "2/2 for each admission",
+    "targeted_safety": "5/5 for each admission",
+    "targeted_false_supports": 0,
+    "compared_transitions": 41064,
+    "lost_supports": 0,
+    "lost_target_profiles": 0,
+    "lost_top1": 0,
+    "new_false_supports": 0,
+    "new_false_top1": 0,
+    "atomic_compaction_and_manifest_publish": "PASS"
+  },
+  "tested": [
+    "two independent causal episodes and scenes before each selected relation",
+    "targeted improvement and ambiguity safety",
+    "full frozen differential proof",
+    "small delta admission followed by compact-base publication",
+    "delta-free runtime manifest after compaction"
+  ],
+  "not_tested": [
+    "semantic correctness outside the admitted relation and fixed proof corpora",
+    "independent L3 text-mutation authority",
+    "physical client behavior caused specifically by generations 9 and 10"
+  ],
+  "runtime_authority_changed": false,
+  "verdict": "PASS_LIVE_PROOF_GATED_ONLINE_ADMISSION"
+}

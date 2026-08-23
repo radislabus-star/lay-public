@@ -1,0 +1,84 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "prefetch-runtime",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
+      "sha256": "d9459e914c9decb84355ba2c2ba32f5a64794b1e157beae262a01e1bf651baa9",
+      "size_bytes": 32375
+    },
+    {
+      "exists": true,
+      "id": "prefetch-proof",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/space_autocorrect_prefetch/proof.rs",
+      "sha256": "fc918e095a202ac207814924e79c65cedb988297263b0978d3e3d61a61910e48",
+      "size_bytes": 17399
+    },
+    {
+      "exists": true,
+      "id": "installed-engine-1-0-38",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "sha256": "b54d58f4ecbced7e0c698cfc9711912b03bb2b66ba54e04e9f6889245dd21737",
+      "size_bytes": 6743288
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 3,
+    "forbidden_side_effect_kinds": [
+      "cross_path_lease_consumption",
+      "evicted_worker_thread_leak",
+      "global_ibus_restart",
+      "installed_runtime_mutation",
+      "local_cargo_build",
+      "serialize_tests_to_hide_race",
+      "shared_identity_weakening",
+      "unbounded_worker_growth"
+    ],
+    "identity_contracts": 3,
+    "invariants": 4,
+    "planned_side_effect_kinds": [
+      "remote_process_start",
+      "source_edit"
+    ],
+    "preserved_artifacts": 1,
+    "runtime_comparisons": 0,
+    "source_checks": 2,
+    "tests": 6
+  },
+  "manifest_sha256": "36b02138c0bfe3ab6da4f96d8e48074120af1ccf27089a08be5b8b3428e73cfe",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-prefetch-runtime",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
+      "sha256": "d9459e914c9decb84355ba2c2ba32f5a64794b1e157beae262a01e1bf651baa9",
+      "size_bytes": 32375
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-prefetch-proof",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/space_autocorrect_prefetch/proof.rs",
+      "sha256": "fc918e095a202ac207814924e79c65cedb988297263b0978d3e3d61a61910e48",
+      "size_bytes": 17399
+    }
+  ],
+  "task_id": "LAY_SPACE_PREFETCH_MULTI_CLIENT_LANES_V1_2026-08-23",
+  "verdict": "READY_TO_IMPLEMENT"
+}

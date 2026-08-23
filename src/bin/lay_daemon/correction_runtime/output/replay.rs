@@ -8,8 +8,7 @@ mod action;
 mod preflight;
 
 use super::super::super::{
-    emit_backspaces, emit_backspaces_fast, log, replay_keycodes,
-    replay_keycodes_fast_after_modifier_cleanup, suppress_next_ime_autocorrect, target_layout,
+    emit_backspaces, log, replay_keycodes, suppress_next_ime_autocorrect, target_layout,
 };
 use super::super::memory::{remember_layout_replay_success, LayoutReplayMemory};
 use super::context::ManualOutputCommon;
@@ -43,11 +42,7 @@ pub(crate) fn apply_layout_replay(
     let (layout_id, ibus_engine) = target_layout(ctx.target_is_ru);
 
     let backspace_started = Instant::now();
-    let backspace_result = if ctx.input_isolated {
-        emit_backspaces_fast(kbd, ctx.n_backspaces)
-    } else {
-        emit_backspaces(kbd, ctx.n_backspaces)
-    };
+    let backspace_result = emit_backspaces(kbd, ctx.n_backspaces);
     if let Err(e) = backspace_result {
         log(&format!("⚠ Этап 2 backspaces failed: {e}"));
         return None;
@@ -56,11 +51,7 @@ pub(crate) fn apply_layout_replay(
     log(&format!("  1. layout → {layout_id}"));
     log(&format!("  2. uinput Backspace × {}", ctx.n_backspaces));
     let replay_started = Instant::now();
-    let replay_result = if ctx.input_isolated {
-        replay_keycodes_fast_after_modifier_cleanup(kbd, ctx.events)
-    } else {
-        replay_keycodes(kbd, ctx.events)
-    };
+    let replay_result = replay_keycodes(kbd, ctx.events);
     if let Err(e) = replay_result {
         log(&format!("⚠ Этап 3 replay failed: {e}"));
         return Some(ctx.target_is_ru);

@@ -1,0 +1,91 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "physical-double-shift", "role": "interface"},
+    {"id": "daemon-dispatch", "role": "orchestrator"},
+    {"id": "ime-v3-outcome", "role": "producer"},
+    {"id": "manual-authority-selector", "role": "authorization_owner"},
+    {"id": "ime-proven-output", "role": "mutation_owner"},
+    {"id": "daemon-word-buffer-planner", "role": "authorization_owner"},
+    {"id": "daemon-output", "role": "mutation_owner"},
+    {"id": "fail-closed-terminal", "role": "observer"},
+    {"id": "route-proof", "role": "proof_owner"}
+  ],
+  "edges": [
+    {"id": "handled-entry", "from": "physical-double-shift", "relation": "calls", "to": "daemon-dispatch", "events": ["ime-proven-handled"]},
+    {"id": "handled-v3", "from": "daemon-dispatch", "relation": "delegates", "to": "ime-v3-outcome", "events": ["ime-proven-handled"]},
+    {"id": "handled-selector-execution", "from": "ime-v3-outcome", "relation": "delegates", "to": "manual-authority-selector", "events": ["ime-proven-handled"]},
+    {"id": "handled-output-execution", "from": "manual-authority-selector", "relation": "delegates", "to": "ime-proven-output", "events": ["ime-proven-handled"]},
+    {"id": "handled-authority", "from": "ime-v3-outcome", "relation": "passes_to", "to": "manual-authority-selector", "events": ["ime-proven-handled"]},
+    {"id": "handled-output", "from": "manual-authority-selector", "relation": "authorizes", "to": "ime-proven-output", "events": ["ime-proven-handled"]},
+
+    {"id": "delegated-entry", "from": "physical-double-shift", "relation": "calls", "to": "daemon-dispatch", "events": ["committed-unproven-delegated"]},
+    {"id": "delegated-v3", "from": "daemon-dispatch", "relation": "delegates", "to": "ime-v3-outcome", "events": ["committed-unproven-delegated"]},
+    {"id": "delegated-selector-execution", "from": "ime-v3-outcome", "relation": "delegates", "to": "manual-authority-selector", "events": ["committed-unproven-delegated"]},
+    {"id": "delegated-output-execution", "from": "daemon-word-buffer-planner", "relation": "delegates", "to": "daemon-output", "events": ["committed-unproven-delegated"]},
+    {"id": "delegated-authority", "from": "ime-v3-outcome", "relation": "passes_to", "to": "daemon-word-buffer-planner", "events": ["committed-unproven-delegated"]},
+    {"id": "delegated-planner", "from": "manual-authority-selector", "relation": "delegates", "to": "daemon-word-buffer-planner", "events": ["committed-unproven-delegated"]},
+    {"id": "delegated-output", "from": "daemon-word-buffer-planner", "relation": "authorizes", "to": "daemon-output", "events": ["committed-unproven-delegated"]},
+
+    {"id": "blocked-entry", "from": "physical-double-shift", "relation": "calls", "to": "daemon-dispatch", "events": ["atomic-or-error-blocked"]},
+    {"id": "blocked-v3", "from": "daemon-dispatch", "relation": "delegates", "to": "ime-v3-outcome", "events": ["atomic-or-error-blocked"]},
+    {"id": "blocked-terminal", "from": "ime-v3-outcome", "relation": "observes", "to": "fail-closed-terminal", "events": ["atomic-or-error-blocked"]},
+    {"id": "proof-route", "from": "fail-closed-terminal", "relation": "proves", "to": "route-proof", "events": ["authority-route-proof"]}
+  ],
+  "routes": [
+    {
+      "id": "ime-proven-execution",
+      "event": "ime-proven-handled",
+      "kind": "execution",
+      "entry": "physical-double-shift",
+      "terminal": "ime-proven-output",
+      "required_roles": ["interface", "orchestrator", "producer", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "physical-double-shift", "to": "ime-proven-output", "min": 1, "max": 1}]
+    },
+    {
+      "id": "ime-proven-authority",
+      "event": "ime-proven-handled",
+      "kind": "authority",
+      "entry": "ime-v3-outcome",
+      "terminal": "ime-proven-output",
+      "required_roles": ["producer", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "ime-v3-outcome", "to": "ime-proven-output", "min": 1, "max": 1}]
+    },
+    {
+      "id": "committed-unproven-execution",
+      "event": "committed-unproven-delegated",
+      "kind": "execution",
+      "entry": "physical-double-shift",
+      "terminal": "daemon-output",
+      "required_roles": ["interface", "orchestrator", "producer", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "physical-double-shift", "to": "daemon-output", "min": 1, "max": 1}]
+    },
+    {
+      "id": "committed-unproven-authority",
+      "event": "committed-unproven-delegated",
+      "kind": "authority",
+      "entry": "ime-v3-outcome",
+      "terminal": "daemon-output",
+      "required_roles": ["producer", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "ime-v3-outcome", "to": "daemon-output", "min": 1, "max": 1}]
+    },
+    {
+      "id": "atomic-error-blocked",
+      "event": "atomic-or-error-blocked",
+      "kind": "execution",
+      "entry": "physical-double-shift",
+      "terminal": "ime-v3-outcome",
+      "required_roles": ["interface", "orchestrator", "producer"],
+      "path_cardinality": [{"from": "physical-double-shift", "to": "ime-v3-outcome", "min": 1, "max": 1}]
+    },
+    {
+      "id": "authority-route-proof",
+      "event": "authority-route-proof",
+      "kind": "proof",
+      "entry": "fail-closed-terminal",
+      "terminal": "route-proof",
+      "required_roles": ["observer", "proof_owner"]
+    }
+  ]
+}

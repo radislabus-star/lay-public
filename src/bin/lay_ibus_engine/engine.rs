@@ -163,7 +163,10 @@ impl LayIbusEngine {
         if !self.buffer.is_empty() {
             return ManualToggleAuthority::ImeActiveComposition;
         }
-        if !self.last_tail_token_text().is_empty() {
+        // Cursor geometry is not proof that CommitText control characters can
+        // delete client text. A committed tail stays IME-owned only when the
+        // client advertises the typed SurroundingText deletion protocol.
+        if !self.last_tail_token_text().is_empty() && self.surrounding_text_supported {
             return ManualToggleAuthority::ImeCommittedTail;
         }
         ManualToggleAuthority::DaemonWordBuffer
@@ -338,17 +341,34 @@ mod tests {
     }
 
     #[test]
-    fn manual_toggle_uses_ime_authority_for_known_committed_tail() {
+    fn manual_toggle_uses_ime_authority_for_proven_committed_tail() {
         let mut engine = engine(LayConfig {
             text_backend: "ime".to_string(),
             nanda_precognition: true,
             ..LayConfig::default()
         });
         engine.tail_buffer.push_str("вот ");
+        engine.set_client_capabilities(1 << 5);
 
         assert_eq!(
             engine.manual_toggle_authority(),
             ManualToggleAuthority::ImeCommittedTail
+        );
+    }
+
+    #[test]
+    fn manual_toggle_delegates_unproven_committed_tail_despite_cursor_geometry() {
+        let mut engine = engine(LayConfig {
+            text_backend: "ime".to_string(),
+            nanda_precognition: true,
+            ..LayConfig::default()
+        });
+        engine.tail_buffer.push_str("typed ");
+        engine.cursor_cell_width = 9;
+
+        assert_eq!(
+            engine.manual_toggle_authority(),
+            ManualToggleAuthority::DaemonWordBuffer
         );
     }
 

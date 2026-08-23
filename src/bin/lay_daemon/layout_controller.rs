@@ -21,6 +21,7 @@ mod reconcile;
 mod verify;
 
 const LAYOUT_SWITCH_SETTLE_MS: u64 = 12;
+const MANUAL_REPLAY_READY_SETTLE_MS: u64 = 8;
 const TRIGGER_RELEASE_SETTLE_MS: u64 = 80;
 
 pub(super) use verify::verify_current_layout;
@@ -128,6 +129,25 @@ pub(super) fn switch_to_target_layout(target_is_ru: bool) -> Result<&'static str
         settle_after_layout_switch();
         layout_id
     })
+}
+
+pub(super) fn verify_target_layout_ready_for_replay(target_is_ru: bool) -> Result<(), String> {
+    if active_layout_backend() == LayoutBackend::Gnome {
+        let (_, ibus_engine) = target_layout(target_is_ru);
+        if active_text_backend().should_try_ime() {
+            ibus_bridge::ensure_engine(ibus_engine, target_is_ru)
+                .map_err(|error| format!("target IBus engine is not ready: {error}"))?;
+        }
+        if !verify::verify_gnome_layout_stack(target_is_ru) {
+            return Err("target GNOME and IBus layout stack is not ready".to_string());
+        }
+    } else if !verify::verify_current_layout(target_is_ru) {
+        return Err("target layout is not ready".to_string());
+    }
+
+    // Engine identity can be visible before the focused context consumes it.
+    std::thread::sleep(Duration::from_millis(MANUAL_REPLAY_READY_SETTLE_MS));
+    Ok(())
 }
 
 pub(super) fn sync_ime_engine_to_current_layout(current_is_ru: bool) {

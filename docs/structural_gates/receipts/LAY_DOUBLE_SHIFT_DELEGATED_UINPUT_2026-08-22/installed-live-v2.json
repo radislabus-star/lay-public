@@ -1,0 +1,51 @@
+{
+  "schema": "lay.installed-live-route-receipt.v1",
+  "release": "1.0.38",
+  "installed_at": "2026-08-23T22:36:53+03:00",
+  "build": {
+    "host": "e@192.168.3.94",
+    "cargo_jobs": 20,
+    "elapsed_seconds": 232,
+    "cargo_target_bytes": 1512579072,
+    "cargo_target_budget_bytes": 12884901888,
+    "staging": "/tmp/lay-1.0.38-release-20260823-2238",
+    "staging_size_mib": 46,
+    "binary_sha_parity": "10/10 PASS"
+  },
+  "installed": {
+    "source_version": "1.0.38",
+    "cli_version": "1.0.38",
+    "lay_daemon_sha256": "79ebece266db8a4fc16993dc72c447e4f655586189db936fb0d3df1fd9d7d238",
+    "lay_ibus_engine_sha256": "b54d58f4ecbced7e0c698cfc9711912b03bb2b66ba54e04e9f6889245dd21737",
+    "loaded_lay_daemon_sha256": "79ebece266db8a4fc16993dc72c447e4f655586189db936fb0d3df1fd9d7d238",
+    "lay_daemon_pid": 2721049,
+    "loaded_lay_ibus_engine_sha256": "b54d58f4ecbced7e0c698cfc9711912b03bb2b66ba54e04e9f6889245dd21737",
+    "lay_ibus_engine_pid": 2732892,
+    "global_ibus_daemon_pid": 2076194,
+    "global_ibus_restarted": false,
+    "lay_ibus_engine_restarted": true,
+    "lay_ibus_engine_restarted_at": "2026-08-23T22:44:41+03:00",
+    "active_engine_after_restart": "lay-ime-ru",
+    "rollback": "/home/ubu/.local/lib/lay/rollback/1.0.37-pre-1.0.38-double-shift-20260823-2242"
+  },
+  "proof": {
+    "deterministic_runtime_policy": "1/1 PASS",
+    "manual_toggle_focused": "10/10 PASS",
+    "key_frame_focused": "2/2 PASS",
+    "layout_controller_focused": "6/6 PASS",
+    "complete_daemon_suite": "202 PASS, 6 baseline FAIL",
+    "new_test_failures": 0
+  },
+  "verdicts": {
+    "remote_release_byte_parity": "PASS",
+    "loaded_daemon_byte_parity": "PASS",
+    "global_ibus_continuity": "PASS",
+    "ordinary_double_shift_model_calls": "REMOVED_BY_CONTRACT",
+    "ordinary_double_shift_learning": "REMOVED_BY_CONTRACT",
+    "ru_to_en_visible_preservation": "NOT_TESTED_AFTER_INSTALL",
+    "en_to_ru_visible_preservation": "NOT_TESTED_AFTER_INSTALL",
+    "physical_autocorrect_undo": "NOT_RETESTED_AFTER_INSTALL",
+    "overall": "INSTALLED_AWAITING_VISIBLE_TEST"
+  },
+  "runtime_authority_changed": true
+}

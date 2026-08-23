@@ -1,0 +1,78 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_DOUBLE_SHIFT_DETERMINISTIC_VISIBLE_REPLAY_V1_2026-08-23",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {"id":"correction-runtime","kind":"file","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/correction_runtime.rs","expect":{"mode":"0664","size_bytes":6245,"sha256":"2ac02182c63bd2bc827f9b15568c85d8677f0563ec39b3c5aa9c54766cbcc0fb"}},
+    {"id":"manual-replay","kind":"file","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/correction_runtime/output/replay.rs","expect":{"mode":"0664","size_bytes":3606,"sha256":"acf1c12e4a632c534d99e98cba4b631dea802b97ffd30a4b894a2407668a704f"}},
+    {"id":"replay-memory","kind":"file","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/correction_runtime/memory.rs","expect":{"mode":"0664","size_bytes":2324,"sha256":"1a04b8b5af7c0b1a252f5e9377ba794d9d98dd69d793d4911bc7c1c2e061d39a"}},
+    {"id":"key-emitter","kind":"file","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/text_output/key_emit.rs","expect":{"mode":"0664","size_bytes":8585,"sha256":"5c15148f8664f6259f6926ef231d6f77376dd1929a913b68a93fa83effecb4b2"}},
+    {"id":"layout-controller","kind":"file","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/layout_controller.rs","expect":{"mode":"0664","size_bytes":9764,"sha256":"022e06e0d4af36e49e82627f32349e3b818c7b90b1c43786f6b253f09b99d375"}},
+    {"id":"layout-verify","kind":"file","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/layout_controller/verify.rs","expect":{"mode":"0664","size_bytes":1244,"sha256":"8ad461911f097a4afc499b7395eab35970f15642d31b1ff7eb1eeb1ff985c8f5"}},
+    {"id":"installed-daemon-1-0-37","kind":"file","path":"/home/ubu/.local/lib/lay/bin/lay-daemon","expect":{"mode":"0755","size_bytes":8511184,"sha256":"52cedadda952c1485fbc3763f69c2c612a274f4cc4afca749b57333b051868b1"}}
+  ],
+  "side_effects": {
+    "planned": [
+      {"id":"deterministic-manual-policy","kind":"source_edit"},
+      {"id":"layout-readiness-before-delete","kind":"source_edit"},
+      {"id":"paced-isolated-output","kind":"source_edit"},
+      {"id":"remote-focused-tests","kind":"remote_process_start"},
+      {"id":"rollback-protected-install","kind":"installed_runtime_mutation"}
+    ],
+    "forbidden": [
+      "change_pending_autocorrect_undo_route",
+      "model_or_candidate_selection_on_double_shift",
+      "correction_learning_on_double_shift",
+      "delete_before_layout_ready",
+      "fallback_second_mutation",
+      "fixture_surface_in_runtime",
+      "verifier_or_safety_weakening",
+      "local_cargo_build",
+      "global_ibus_restart",
+      "remove_rollback"
+    ]
+  },
+  "source_checks": [
+    {"id":"pinned-correction-runtime","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/correction_runtime.rs","sha256":"2ac02182c63bd2bc827f9b15568c85d8677f0563ec39b3c5aa9c54766cbcc0fb","forbidden_effect_patterns":[{"effect":"fixture_surface_in_runtime","regex":"(ghbdtn|привет|собака)"},{"effect":"change_pending_autocorrect_undo_route","regex":"pending_auto_undo.*(disable|skip|drop)"},{"effect":"model_or_candidate_selection_on_double_shift","regex":"DoubleShift.{0,160}(candidate|rank|model)"},{"effect":"verifier_or_safety_weakening","regex":"(bypass|disable)_(verifier|safety)"},{"effect":"local_cargo_build","regex":"cargo (build|test|check)"}]},
+    {"id":"pinned-manual-replay","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/correction_runtime/output/replay.rs","sha256":"acf1c12e4a632c534d99e98cba4b631dea802b97ffd30a4b894a2407668a704f","forbidden_effect_patterns":[{"effect":"fallback_second_mutation","regex":"fallback.*(replace|replay|emit)"},{"effect":"global_ibus_restart","regex":"(kill|restart).*ibus-daemon"},{"effect":"correction_learning_on_double_shift","regex":"append_(learning|user_correction)_log"},{"effect":"delete_before_layout_ready","regex":"emit_backspaces.{0,240}switch_to_target_layout"},{"effect":"remove_rollback","regex":"(remove|delete|unlink).*rollback"}]}
+  ],
+  "state_machine": {
+    "initial_state":"VISIBLE_LOSS_REPRODUCED",
+    "steps":[
+      {"id":"edit-deterministic-route","from":"VISIBLE_LOSS_REPRODUCED","to":"DETERMINISTIC_ROUTE_IMPLEMENTED","mutates":true,"failure_state":"SOURCE_EDIT_FAILED","cleanup":"retain scoped source diff; installed 1.0.37 remains active","preserves":["installed-daemon-1-0-37"],"test_id":"source-edit-fault"},
+      {"id":"remote-build-and-test","from":"DETERMINISTIC_ROUTE_IMPLEMENTED","to":"REMOTE_GATES_PASS","mutates":true,"failure_state":"REMOTE_GATES_FAILED","cleanup":"stop proof-owned processes; installed 1.0.37 remains active","preserves":["installed-daemon-1-0-37"],"test_id":"remote-gate-fault"},
+      {"id":"install-and-observe","from":"REMOTE_GATES_PASS","to":"LIVE_CANDIDATE_INSTALLED","mutates":true,"failure_state":"INSTALL_ROLLED_BACK","cleanup":"restore exact 1.0.37 bytes and restart only Lay-owned processes","preserves":["installed-daemon-1-0-37"],"test_id":"install-fault"}
+    ],
+    "terminal_states":["LIVE_CANDIDATE_INSTALLED","SOURCE_EDIT_FAILED","REMOTE_GATES_FAILED","INSTALL_ROLLED_BACK"]
+  },
+  "preserved_artifacts": [
+    {"id":"installed-daemon-1-0-37","path":"/home/ubu/.local/lib/lay/bin/lay-daemon","policy":"immutable_until_remote_gates_pass","cursor_policy":"none","rollback_policy":"restore_exact_bytes","baseline_check_id":"installed-daemon-1-0-37"}
+  ],
+  "identity_contracts": [
+    {"id":"physical-key-parity","producer":"WordBuffer captured KeyEvent sequence","consumer":"uinput replay emitter","comparison":"same ordered keycodes and shift bits","test_id":"physical-key-parity"},
+    {"id":"layout-readiness-parity","producer":"target layout decision","consumer":"GNOME plus IBus readiness verifier","comparison":"both report target before first Backspace","test_id":"layout-readiness-parity"},
+    {"id":"pending-undo-parity","producer":"pending autocorrect undo","consumer":"existing undo runtime","comparison":"ordinary replay changes do not alter undo route","test_id":"pending-undo-parity"}
+  ],
+  "runtime_comparisons": [
+    {"id":"live-process-continuity","source":"systemd and installed hashes","comparison":"exact_stable_projection","reason":"only Lay daemon bytes and PID may change","stable_fields":["global_ibus_pid","active_engine","service_count"],"expected_to_change_fields":["lay_daemon_pid","daemon_sha256","version"],"observed_not_compared_fields":["cpu_time","rss"],"test_id":"live-process-continuity"}
+  ],
+  "invariants": [
+    {"id":"ordinary-toggle-is-deterministic","statement":"ordinary Double Shift never calls model ranking or learning","test_id":"deterministic-policy"},
+    {"id":"no-delete-before-ready","statement":"layout readiness failure occurs before any Backspace","test_id":"layout-readiness-parity"},
+    {"id":"closed-paced-frames","statement":"isolated manual replay uses closed paced Backspace and key frames","test_id":"paced-frame-parity"},
+    {"id":"undo-preserved","statement":"pending autocorrect undo route is byte and behavior preserved","test_id":"pending-undo-parity"}
+  ],
+  "tests": [
+    {"id":"source-edit-fault","kind":"fault_injection","expected":"failed edit cannot mutate installed runtime"},
+    {"id":"remote-gate-fault","kind":"fault_injection","expected":"failed remote gate leaves installed 1.0.37 unchanged"},
+    {"id":"install-fault","kind":"fault_injection","expected":"failed install restores exact 1.0.37 without global IBus restart"},
+    {"id":"physical-key-parity","kind":"parity","expected":"ordered input and replay keycodes are identical"},
+    {"id":"layout-readiness-parity","kind":"parity","expected":"target GNOME and IBus state precedes destructive output"},
+    {"id":"pending-undo-parity","kind":"parity","expected":"pending autocorrect undo remains on existing route"},
+    {"id":"deterministic-policy","kind":"parity","expected":"ordinary Double Shift forces replay and writes no correction-learning sample"},
+    {"id":"paced-frame-parity","kind":"parity","expected":"isolated manual output cannot select zero-paced emitters"},
+    {"id":"live-process-continuity","kind":"parity","expected":"global IBus PID and active engine remain stable across install"}
+  ]
+}

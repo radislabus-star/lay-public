@@ -13,6 +13,7 @@ const IME_AUTO_UNDO_RETRY_MAX_AGE: Duration = Duration::from_secs(5);
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum SurroundingSnapshotMatch {
     Exact,
+    AtomicSubmission,
     TrailingBoundaryElided,
     CausalPrecondition,
     Missing,
@@ -39,6 +40,7 @@ impl LayIbusEngine {
             visible_tail: self.tail_buffer.clone(),
             transition,
             recorded_at: Instant::now(),
+            atomic_submission_proven: false,
         });
         record_pending_ime_auto_undo_lifecycle(
             self,
@@ -130,7 +132,10 @@ impl LayIbusEngine {
         }
         let snapshot_match =
             pending_ime_auto_undo_snapshot_match(self.surrounding_text_snapshot.as_ref(), pending);
-        if snapshot_match == SurroundingSnapshotMatch::Exact {
+        if matches!(
+            snapshot_match,
+            SurroundingSnapshotMatch::Exact | SurroundingSnapshotMatch::AtomicSubmission
+        ) {
             state.pending_auto_undo_retry = None;
             record_pending_ime_auto_undo_lifecycle(self, &state, "defer", "exact_snapshot_ready");
             return false;
@@ -170,7 +175,7 @@ impl LayIbusEngine {
                 );
                 true
             }
-            SurroundingSnapshotMatch::Exact => false,
+            SurroundingSnapshotMatch::Exact | SurroundingSnapshotMatch::AtomicSubmission => false,
         }
     }
 
@@ -209,7 +214,7 @@ impl LayIbusEngine {
         }
         match pending_ime_auto_undo_snapshot_match(self.surrounding_text_snapshot.as_ref(), pending)
         {
-            SurroundingSnapshotMatch::Exact => "ready",
+            SurroundingSnapshotMatch::Exact | SurroundingSnapshotMatch::AtomicSubmission => "ready",
             SurroundingSnapshotMatch::TrailingBoundaryElided => "ready_boundary_elided",
             SurroundingSnapshotMatch::CausalPrecondition => "ready_causal_precondition",
             SurroundingSnapshotMatch::Missing => "waiting_exact_snapshot",
@@ -742,6 +747,9 @@ fn pending_ime_auto_undo_snapshot_match(
     snapshot: Option<&super::engine::SurroundingTextSnapshot>,
     pending: &PendingImeAutoUndo,
 ) -> SurroundingSnapshotMatch {
+    if pending.atomic_submission_proven {
+        return SurroundingSnapshotMatch::AtomicSubmission;
+    }
     let replacement = surrounding_snapshot_match(snapshot, &pending.replacement);
     if replacement != SurroundingSnapshotMatch::Missing {
         return replacement;

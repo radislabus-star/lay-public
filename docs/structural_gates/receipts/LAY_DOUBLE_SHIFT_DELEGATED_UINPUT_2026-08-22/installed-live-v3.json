@@ -1,0 +1,55 @@
+{
+  "schema": "lay.installed-live-receipt.v1",
+  "release": "1.0.39",
+  "installed_at": "2026-08-23T23:27:00+03:00",
+  "verdict": "INSTALLED_NOT_PHYSICALLY_VERIFIED",
+  "contract": {
+    "pending_autocorrect_undo": "precedes output authority and restores exact recorded source",
+    "ordinary_double_shift": "current-layout-driven opposite projection without model, ranking, mixed-script repair, or learning",
+    "atomic_output": "one delete-plus-commit frame committed only after matching submitted receipt",
+    "multi_client_prefetch": "bounded per-path lanes; maximum 8; latest-frame-wins only within a path"
+  },
+  "remote_build": {
+    "host": "e@192.168.3.94",
+    "checkout": "/home/e/build/lay-final-1.0.38-check-v3",
+    "cpu_count": 20,
+    "build_time": "3m51s",
+    "cargo_target_bytes_after": 1881784320,
+    "cargo_target_budget_bytes": 12884901888,
+    "staging": "/tmp/lay-1.0.39-release-20260823-232707"
+  },
+  "proof": {
+    "manual_toggle_focused": "PASS",
+    "atomic_parallel": {"passed": 5, "failed": 0},
+    "engine_full": {"passed": 236, "failed": 0, "elapsed_seconds": 8.70},
+    "daemon_full": {
+      "passed": 202,
+      "failed": 6,
+      "verdict": "BASELINE_UNCHANGED_NOT_PASS",
+      "note": "the same six pre-existing typing-assist expectation failures remain; no new daemon failure"
+    },
+    "physical_application_typing": "NOT_TESTED"
+  },
+  "installed_binaries": {
+    "lay": {"bytes": 6387624, "sha256": "dbdf33e52de5c3a09f63ec09e632056f78043b05a4ae36c4de774a050c4d53fd"},
+    "lay-daemon": {"bytes": 8478928, "sha256": "3a91d4cfd2ad80a96fa479ee7eb2069551686ac5af8c74aeb6dcd3ded6a04e30"},
+    "lay-ibus-engine": {"bytes": 6745720, "sha256": "a52e7a2e2bede2b58369a3242858c49b7316379964566e3c8f1a15965dd7ffc2"}
+  },
+  "runtime": {
+    "global_ibus": {"pid_before": 2076194, "pid_after": 2076194, "restarted": false},
+    "lay_daemon": {"pid_before": 2741627, "pid_after": 2796685, "rss_kib": 8676},
+    "lay_ibus_engine": {"pid_before": 2741655, "pid_after": 2796713, "rss_kib": 374480},
+    "lay_l3_online": {"active": true, "pid": 2796780},
+    "active_engine": "lay-ime-us",
+    "loaded_extension_version": "1.0.39",
+    "services_active": true,
+    "recent_fatal_errors": 0
+  },
+  "rollback": "/home/ubu/.local/lib/lay/rollback/1.0.38-pre-1.0.39-double-shift-20260823-232707",
+  "required_physical_cases": [
+    "руддщ then Double Shift -> hello",
+    "hello then Double Shift -> руддщ",
+    "autocorrect then immediate Double Shift -> exact original source"
+  ],
+  "runtime_authority_changed": true
+}

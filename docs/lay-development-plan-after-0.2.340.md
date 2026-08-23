@@ -54,17 +54,22 @@ Receipt:
 
 ## 2. Довести Онлайн-Обучение L3
 
-**Статус: в работе, causal-episode V3 реализован; live promotion ожидает
-реальные `2` независимых эпизода в `2` разных сценах.** Автоматическое
-применение больше не считается пользовательским подтверждением. Один action
-получает общий `episode_id`, selector проверяет ровно одну минимальную связь,
-а manifest защищён `flock + fsync + atomic rename`. На текущем реальном
-журнале `9` отношений имеют по одной сцене, поэтому delta намеренно не создан.
-Release `0.2.343` собран на удалённой машине, установлен; реальный state
-мигрирован V2 -> V3 без изменения manifest SHA. Глобальный IBus не
-перезапускался.
+**Статус: выполнено; proof-gated live admission подтверждён поколениями `9` и
+`10` 2026-08-21.** Автоматическое применение не считается пользовательским
+подтверждением. Один action получает общий `episode_id`, selector проверяет
+ровно одну минимальную связь, а manifest защищён
+`flock + fsync + atomic rename`. Для каждого из двух последних принятых
+отношений наблюдались `2` независимых эпизода в `2` независимых сценах.
+Targeted proof и полный differential proof дали `PASS`; `false_supports`,
+`lost_supports`, `lost_top1`, `new_false_supports` и `new_false_top1` равны
+нулю. Текущий live state: generation `10`, admitted deltas `7`, pending
+relations `86`, proof pipeline revision `1`. После каждого admission один
+малый delta был безопасно свёрнут в compact base, а runtime manifest остался
+delta-free. Базовые L1.1/L2 пакеты не перекристаллизовывались.
 Receipt:
 `/home/ubu/projects/lay/docs/structural_gates/receipts/L3_ONLINE_CAUSAL_EPISODES_V3_2026-08-01.json`.
+Current live-state audit:
+`/home/ubu/projects/lay/docs/structural_gates/receipts/L3_ONLINE_LIVE_ADMISSION_GENERATIONS_9_10_2026-08-23.json`.
 
 1. Разделять журнал на независимые причинные эпизоды.
 2. Не считать показанную подсказку правильным ответом.
@@ -85,7 +90,9 @@ new false top-1              0
 atomic runtime reload        PASS
 ```
 
-Результат этапа: первый реальный пользовательский delta автоматически принят и загружен без перекомпиляции базовой модели.
+Результат этапа: реальные пользовательские deltas автоматически принимаются и
+загружаются без перекомпиляции базовой модели; поколение `10` является
+последним подтверждённым admission на момент этого аудита.
 
 ## 3. Расширить L3 до контекста предложения
 
@@ -149,25 +156,28 @@ state snapshot
 
 ## 5. Обучаемый Cross-Scene L4
 
-**Статус: выполнено как `PASS_SHADOW` 2026-08-01, release `0.2.346`.**
-Реализованы candidate-relative encoder на `64` фазовых ячейки, причинный join,
+**Статус: выполнено как typed cross-scene V2 `PASS_SHADOW`; organic package
+установлен с release `1.0.30` и продолжает использоваться в `1.0.39`.**
+Реализованы typed language/layout/script/keyboard-geometry identities,
+candidate-relative encoder, причинный join, transactional episode inbox,
 latest-state consolidation, positive/anti/hard-negative/ambiguity banks,
-направленные pair profiles, bounded binary V1 и read-only hot reload. Поле
-подключено к `TransitionDecisionCore` только как диагностика
-`SuggestOnly | Keep`: оно не меняет birth, rank, admission или verifier.
-Полный heldout содержит `436` случаев; все `8/8` классов направления,
-знака и масштаба дали `100%`, false automatic projection `0`. Без anti-centers
-появились `218/218` false supports, с anti-centers осталось `0/218`.
-Package roundtrip, candidate readout order и runtime/evaluator parity прошли;
-пакет занимает `3 652` байта. Fixed dirty replay `2 466` случаев сохранил
-полный нормализованный JSON и `negative_false_apply = 0`.
+направленные pair profiles, bounded binary V2 и read-only hot reload. Поле
+подключено к общему `TransitionDecisionCore` только как
+`SuggestOnly | Keep`: оно может дать контекстное evidence, но не рождает слова,
+не владеет вторым ranking, не обходит verifier и не применяет исправление
+самостоятельно.
 
-Органический live package не продвинут: из `2 437` строк текущего журнала
-только `9` образуют complete causal positives, negative/reverted evidence нет.
-Синтетический proof-пакет также не устанавливается. Runtime authority не
-менялась. Пять release-бинарников `0.2.346` установлены атомарно; global IBus,
-managed engine и daemon не перезапускались. Receipt:
-`/home/ubu/projects/lay/docs/structural_gates/receipts/L4_CROSS_SCENE_V1_SHADOW_2026-08-01.json`.
+Фиксированный RU/EN heldout содержит `640` случаев; все `10/10` классов дали
+`100%`, false supports `0`, automatic apply `0`. Ablation без anti-centers
+даёт `204` false supports, с anti-centers остаётся `0`; положительные
+`218/218` сохранены. Hot readout p50/p99/max равен
+`3.023 / 4.061 / 7.572 us`. Установленный organic V2 package содержит `26`
+profiles, `67` pair profiles и `5` typed symbols, занимает `21,445 B`, имеет
+SHA-256 `1a1e926c4b4c972add54ce3235b1f1527276365abe74952abb538a3132c97e3e`
+и проходит runtime reader. Полного отрицательного органического evidence пока
+нет, поэтому самостоятельная live authority намеренно не выдавалась.
+Deployment receipt:
+`/home/ubu/projects/lay/docs/structural_gates/receipts/L4_MULTILINGUAL_SCENE_FIELD_V2_DEPLOYMENT_2026-08-15.json`.
 
 1. Реализовать candidate-relative scene encoder.
 2. Обучать positive, anti и ambiguity centers только по причинным receipts.

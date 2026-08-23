@@ -152,11 +152,11 @@ impl LayIbusEngine {
                         .handled_press_keycodes
                         .remove(&pending.event_keycode);
                 }
-                self.commit_atomic_speculation(pending.speculative);
+                self.commit_atomic_speculation(pending.speculative, true);
                 true
             }
             RECEIPT_CONSUMED_NO_EFFECT => {
-                self.commit_atomic_speculation(pending.speculative);
+                self.commit_atomic_speculation(pending.speculative, false);
                 true
             }
             RECEIPT_REFUSED_ZERO_EFFECT
@@ -175,7 +175,11 @@ impl LayIbusEngine {
         self.alt_used_as_modifier = speculative.alt_used_as_modifier;
     }
 
-    fn commit_atomic_speculation(&mut self, mut speculative: LayIbusEngine) {
+    fn commit_atomic_speculation(
+        &mut self,
+        mut speculative: LayIbusEngine,
+        submitted_atomic_frame: bool,
+    ) {
         let newer_live_surrounding = (self.surrounding_observation_revision
             > speculative.surrounding_observation_revision)
             .then(|| {
@@ -195,6 +199,13 @@ impl LayIbusEngine {
         speculative.atomic_speculation = false;
         *live_shared.lock().expect("lay ime state poisoned") = speculative_shared;
         *self = speculative;
+        if submitted_atomic_frame {
+            if let Ok(mut shared) = self.shared.lock() {
+                if let Some(pending) = shared.pending_auto_undo.as_mut() {
+                    pending.atomic_submission_proven = true;
+                }
+            }
+        }
         if let Some((supported, snapshot, revision)) = newer_live_surrounding {
             self.surrounding_text_supported = supported;
             self.surrounding_text_snapshot = snapshot;
@@ -203,18 +214,6 @@ impl LayIbusEngine {
         }
         self.apply_deferred_layout_actions();
         self.apply_deferred_learning_actions();
-    }
-
-    pub(super) fn record_accepted_layout_projection(&mut self, original: &str, replacement: &str) {
-        if self.atomic_speculation {
-            self.deferred_learning_actions
-                .push(DeferredLearningAction::AcceptedLayoutProjection {
-                    original: original.to_string(),
-                    replacement: replacement.to_string(),
-                });
-        } else {
-            lay::typing_cpu::TypingCpu::record_accepted_layout_projection(original, replacement);
-        }
     }
 
     pub(super) fn record_reverted_system_apply(
@@ -240,13 +239,6 @@ impl LayIbusEngine {
     fn apply_deferred_learning_actions(&mut self) {
         for action in std::mem::take(&mut self.deferred_learning_actions) {
             match action {
-                DeferredLearningAction::AcceptedLayoutProjection {
-                    original,
-                    replacement,
-                } => lay::typing_cpu::TypingCpu::record_accepted_layout_projection(
-                    &original,
-                    &replacement,
-                ),
                 DeferredLearningAction::RevertedSystemApply {
                     original,
                     rejected,
@@ -535,6 +527,7 @@ mod tests {
     #[test]
     fn double_shift_produces_one_speculative_atomic_frame() {
         let mut live = engine();
+        live.layout_is_ru = false;
         live.buffer = "ghbdtn".to_string();
         live.composition_cursor = live.buffer.chars().count();
         let key = super::super::protocol::KEY_LEFT_SHIFT;
