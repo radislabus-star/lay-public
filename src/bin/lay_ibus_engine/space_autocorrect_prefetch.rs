@@ -1,4 +1,5 @@
-use std::sync::atomic::{AtomicU64, Ordering};
+use std::collections::HashMap;
+use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::{Arc, Condvar, Mutex, OnceLock, TryLockError};
 use std::time::{Duration, Instant};
 
@@ -16,6 +17,7 @@ use super::trace;
 
 // Leave room inside the 4 ms product deadline for lock and wake-up overhead.
 const SPACE_FULL_WAIT_BUDGET: Duration = Duration::from_micros(3_500);
+const MAX_PREFETCH_PATH_LANES: usize = 8;
 
 pub(crate) struct SpaceAutocorrectWork {
     pub(crate) identity: InputFrameIdentity,
@@ -102,9 +104,21 @@ struct WorkerState {
 struct Worker {
     state: Arc<(Mutex<WorkerState>, Condvar)>,
     latest_request_generation: Arc<AtomicU64>,
+    stop: Arc<AtomicBool>,
 }
 
-static WORKER: OnceLock<Worker> = OnceLock::new();
+struct WorkerLane {
+    worker: Arc<Worker>,
+    last_used: u64,
+}
+
+#[derive(Default)]
+struct WorkerPool {
+    lanes: HashMap<String, WorkerLane>,
+    clock: u64,
+}
+
+static WORKERS: OnceLock<Mutex<WorkerPool>> = OnceLock::new();
 
 impl Worker {
     fn start() -> Self {
@@ -112,13 +126,16 @@ impl Worker {
         let worker_state = Arc::clone(&state);
         let latest_request_generation = Arc::new(AtomicU64::new(0));
         let worker_latest_request_generation = Arc::clone(&latest_request_generation);
+        let stop = Arc::new(AtomicBool::new(false));
+        let worker_stop = Arc::clone(&stop);
         std::thread::Builder::new()
             .name("lay-space-prefetch".to_string())
-            .spawn(move || run_worker(worker_state, worker_latest_request_generation))
+            .spawn(move || run_worker(worker_state, worker_latest_request_generation, worker_stop))
             .expect("failed to start Space autocorrect prefetch worker");
         Self {
             state,
             latest_request_generation,
+            stop,
         }
     }
 
@@ -347,6 +364,68 @@ impl Worker {
     }
 }
 
+impl Drop for Worker {
+    fn drop(&mut self) {
+        self.stop.store(true, Ordering::Release);
+        self.state.1.notify_all();
+    }
+}
+
+impl WorkerPool {
+    fn lane(&mut self, path: &str) -> Arc<Worker> {
+        self.clock = next_generation(self.clock);
+        if let Some(lane) = self.lanes.get_mut(path) {
+            lane.last_used = self.clock;
+            return Arc::clone(&lane.worker);
+        }
+        if self.lanes.len() >= MAX_PREFETCH_PATH_LANES {
+            if let Some(evicted) = self
+                .lanes
+                .iter()
+                .min_by_key(|(_, lane)| lane.last_used)
+                .map(|(path, _)| path.clone())
+            {
+                self.lanes.remove(&evicted);
+            }
+        }
+        let worker = Arc::new(Worker::start());
+        self.lanes.insert(
+            path.to_string(),
+            WorkerLane {
+                worker: Arc::clone(&worker),
+                last_used: self.clock,
+            },
+        );
+        worker
+    }
+
+    fn existing_lane(&mut self, path: &str) -> Option<Arc<Worker>> {
+        self.clock = next_generation(self.clock);
+        let lane = self.lanes.get_mut(path)?;
+        lane.last_used = self.clock;
+        Some(Arc::clone(&lane.worker))
+    }
+
+    fn remove_lane(&mut self, path: &str) -> Option<Arc<Worker>> {
+        self.lanes.remove(path).map(|lane| lane.worker)
+    }
+}
+
+fn worker_pool() -> &'static Mutex<WorkerPool> {
+    WORKERS.get_or_init(|| Mutex::new(WorkerPool::default()))
+}
+
+fn worker_for_schedule(path: &str) -> Option<Arc<Worker>> {
+    worker_pool().lock().ok().map(|mut pool| pool.lane(path))
+}
+
+fn existing_worker(path: &str) -> Option<Arc<Worker>> {
+    worker_pool()
+        .lock()
+        .ok()
+        .and_then(|mut pool| pool.existing_lane(path))
+}
+
 fn prepare_inline_exact(
     work: &SpaceAutocorrectWork,
 ) -> Option<lay::ime_correction::PreparedExactLayoutAutocorrect> {
@@ -370,6 +449,7 @@ fn prepare_inline_exact(
 fn run_worker(
     shared: Arc<(Mutex<WorkerState>, Condvar)>,
     latest_request_generation: Arc<AtomicU64>,
+    stop: Arc<AtomicBool>,
 ) {
     loop {
         let desired = {
@@ -377,11 +457,14 @@ fn run_worker(
             let Ok(mut state) = lock.lock() else {
                 return;
             };
-            while state.desired.is_none() {
+            while state.desired.is_none() && !stop.load(Ordering::Acquire) {
                 let Ok(next) = wake.wait(state) else {
                     return;
                 };
                 state = next;
+            }
+            if stop.load(Ordering::Acquire) {
+                return;
             }
             state.desired.take().expect("desired work checked above")
         };
@@ -539,18 +622,18 @@ fn no_apply_stage_name(stage: PreparedNoApplyStage) -> &'static str {
 }
 
 pub(crate) fn initialize() {
-    let _ = WORKER.get_or_init(Worker::start);
+    let _ = worker_pool();
 }
 
 pub(crate) fn schedule(work: SpaceAutocorrectWork) {
-    let Some(worker) = WORKER.get() else {
+    let Some(worker) = worker_for_schedule(&work.identity.path) else {
         return;
     };
     worker.schedule(work);
 }
 
 pub(crate) fn take(identity: &InputFrameIdentity) -> SpaceAutocorrectLookupReceipt {
-    let Some(worker) = WORKER.get() else {
+    let Some(worker) = existing_worker(&identity.path) else {
         return SpaceAutocorrectLookupReceipt {
             lookup: SpaceAutocorrectLookup::NotReady,
             wait_us: 0,
@@ -561,14 +644,16 @@ pub(crate) fn take(identity: &InputFrameIdentity) -> SpaceAutocorrectLookupRecei
 }
 
 pub(crate) fn invalidate(identity: &InputFrameIdentity) {
-    if let Some(worker) = WORKER.get() {
+    if let Some(worker) = existing_worker(&identity.path) {
         worker.invalidate(identity);
     }
 }
 
 pub(crate) fn invalidate_path(path: &str) {
-    if let Some(worker) = WORKER.get() {
-        worker.invalidate_path(path);
+    if let Ok(mut pool) = worker_pool().lock() {
+        if let Some(worker) = pool.remove_lane(path) {
+            worker.invalidate_path(path);
+        }
     }
 }
 
@@ -636,6 +721,7 @@ mod tests {
         Worker {
             state: Arc::new((Mutex::new(state), Condvar::new())),
             latest_request_generation: Arc::new(AtomicU64::new(generation)),
+            stop: Arc::new(AtomicBool::new(false)),
         }
     }
 
@@ -933,6 +1019,24 @@ mod tests {
         assert!(!take_body.contains("prepare_exact_layout"));
         assert!(!take_body.contains("evaluate_full"));
         assert!(!take_body.contains("decide_active_composition"));
+    }
+
+    #[test]
+    fn worker_pool_isolates_paths_and_evicts_to_the_fixed_bound() {
+        let mut pool = WorkerPool::default();
+        let first = pool.lane("/engine/0");
+        let second = pool.lane("/engine/1");
+        assert!(!Arc::ptr_eq(&first, &second));
+        drop(first);
+        let evicted = Arc::downgrade(&pool.lanes["/engine/0"].worker);
+
+        for index in 2..=MAX_PREFETCH_PATH_LANES {
+            pool.lane(&format!("/engine/{index}"));
+        }
+
+        assert_eq!(pool.lanes.len(), MAX_PREFETCH_PATH_LANES);
+        assert!(!pool.lanes.contains_key("/engine/0"));
+        assert!(evicted.upgrade().is_none());
     }
 }
 

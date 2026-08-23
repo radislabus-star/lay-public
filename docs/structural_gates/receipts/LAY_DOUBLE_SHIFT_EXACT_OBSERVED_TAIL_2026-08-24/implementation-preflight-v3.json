@@ -1,0 +1,158 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "route-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_DOUBLE_SHIFT_EXACT_OBSERVED_TAIL_2026-08-24/design-route-v2.json",
+      "sha256": "13beddec9277f59e2910df14b3766a1d42f97b88b48c8b29c4e76ff370e9dbe9",
+      "size_bytes": 10104
+    },
+    {
+      "exists": true,
+      "id": "ime-bridge-actions",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/bridge_actions.rs",
+      "sha256": "9d515bb6c02704f09b23166e8c0e1fd000cdc6a41c772cebd673b27fbb2aca4c",
+      "size_bytes": 10342
+    },
+    {
+      "exists": true,
+      "id": "daemon-ime-bridge",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/layout_controller/ime_bridge.rs",
+      "sha256": "40b443154a3cbbe31f517a48a37b77f89a3e38213f4f61e9c01c055d87aa5cf5",
+      "size_bytes": 9135
+    },
+    {
+      "exists": true,
+      "id": "correction-runtime",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/correction_runtime.rs",
+      "sha256": "925a4ac20a19187c604f6a88676efbfe929e97a5599cc6a9beae502d6824cb92",
+      "size_bytes": 7601
+    },
+    {
+      "exists": true,
+      "id": "correction-request",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/correction_runtime/request.rs",
+      "sha256": "989fe4911a9230440498e615aa0e51bfc0225009f466caa63f0119d5e017ffea",
+      "size_bytes": 1443
+    },
+    {
+      "exists": true,
+      "id": "output-context",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/correction_runtime/output/context.rs",
+      "sha256": "d919175c6887756b7c39d8f6e54c543238e8e1b9b3bc77342a0110c64b076290",
+      "size_bytes": 1994
+    },
+    {
+      "exists": true,
+      "id": "replay-preflight",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/correction_runtime/output/replay/preflight.rs",
+      "sha256": "4dc31fff25798959f02a33b5b7f29a71cad475427faf6b067b23829328ed951a",
+      "size_bytes": 1228
+    },
+    {
+      "exists": true,
+      "id": "text-replace",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/correction_runtime/output/text_replace.rs",
+      "sha256": "ee50cfd03df66de903d35e010176eedc6a154c422900fcfcea2fa8865309c246",
+      "size_bytes": 6548
+    },
+    {
+      "exists": true,
+      "id": "installed-daemon-1-0-39",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+      "sha256": "3a91d4cfd2ad80a96fa479ee7eb2069551686ac5af8c74aeb6dcd3ded6a04e30",
+      "size_bytes": 8478928
+    },
+    {
+      "exists": true,
+      "id": "installed-engine-1-0-39",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "sha256": "a52e7a2e2bede2b58369a3242858c49b7316379964566e3c8f1a15965dd7ffc2",
+      "size_bytes": 6745720
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 10,
+    "forbidden_side_effect_kinds": [
+      "atomic_legacy_fallback",
+      "change_pending_autocorrect_undo_priority",
+      "dbus_error_daemon_mutation",
+      "fixture_surface_in_runtime",
+      "global_ibus_restart",
+      "local_cargo_build",
+      "remove_rollback",
+      "second_mutation_fallback",
+      "unverified_backspace_count",
+      "verifier_or_safety_weakening"
+    ],
+    "identity_contracts": 3,
+    "invariants": 4,
+    "planned_side_effect_kinds": [
+      "installed_runtime_mutation",
+      "remote_process_start",
+      "source_edit"
+    ],
+    "preserved_artifacts": 2,
+    "runtime_comparisons": 1,
+    "source_checks": 3,
+    "tests": 9
+  },
+  "manifest_sha256": "3292f884c146817c123db755915c1a9e1261eaefa8eaee2cec944f52aba2bcf0",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-ime-bridge-actions",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/bridge_actions.rs",
+      "sha256": "9d515bb6c02704f09b23166e8c0e1fd000cdc6a41c772cebd673b27fbb2aca4c",
+      "size_bytes": 10342
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-daemon-ime-bridge",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/layout_controller/ime_bridge.rs",
+      "sha256": "40b443154a3cbbe31f517a48a37b77f89a3e38213f4f61e9c01c055d87aa5cf5",
+      "size_bytes": 9135
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-correction-runtime",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/correction_runtime.rs",
+      "sha256": "925a4ac20a19187c604f6a88676efbfe929e97a5599cc6a9beae502d6824cb92",
+      "size_bytes": 7601
+    }
+  ],
+  "task_id": "LAY_DOUBLE_SHIFT_EXACT_OBSERVED_TAIL_IMPLEMENTATION_V2_2026-08-24",
+  "verdict": "READY_TO_IMPLEMENT"
+}

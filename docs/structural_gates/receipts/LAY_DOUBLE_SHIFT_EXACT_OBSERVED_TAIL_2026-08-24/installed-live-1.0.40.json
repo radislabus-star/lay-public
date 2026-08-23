@@ -1,0 +1,97 @@
+{
+  "schema": "lay.installed-live-receipt.v2",
+  "release": "1.0.40",
+  "installed_at": "2026-08-24T02:18:32+03:00",
+  "verdict": "PASS_SCOPED_DOUBLE_SHIFT_EXACT_TAIL",
+  "source": {
+    "installed_1_0_39_snapshot": "/home/e/build/lay-final-1.0.38-check-v3",
+    "installed_1_0_39_head": "6f8e337d7796bb8b0892984edba89d9b023df7b3",
+    "isolated_local_tree": "/home/ubu/projects/lay-double-shift-1.0.40",
+    "isolated_remote_tree": "/home/e/build/lay-double-shift-1.0.40",
+    "runtime_patch_bytes": 14206,
+    "runtime_patch_sha256": "d52b8768e383f7271b26f708937541728108ba892ac8aa4ad106804e683feb4e",
+    "slice_8b_included": false
+  },
+  "contract": {
+    "pending_autocorrect_undo": "precedes ordinary layout projection",
+    "delegated_daemon_replay": "requires exact typed IME source/focus/epoch/suffix/character-count lease",
+    "controlled_layout_handoff": "may change engine path only",
+    "mismatch_effect": "zero Backspace and zero fallback mutation",
+    "global_ibus_restart": "forbidden"
+  },
+  "remote_proof": {
+    "host": "e@192.168.3.94",
+    "cpu_count": 20,
+    "focused_daemon_tail_lease": {"passed": 4, "failed": 0},
+    "focused_ime_typed_tail": {"passed": 1, "failed": 0},
+    "focused_autocorrect_undo": {"passed": 8, "failed": 0},
+    "engine_full": {"passed": 237, "failed": 0, "elapsed_seconds": 8.96},
+    "daemon_full": {
+      "passed": 206,
+      "failed": 6,
+      "baseline_1_0_39_passed": 202,
+      "baseline_1_0_39_failed": 6,
+      "failure_set_equal": true,
+      "verdict": "BASELINE_UNCHANGED_NOT_PASS"
+    },
+    "all_targets": {
+      "verdict": "BASELINE_FLAKY_NOT_PASS",
+      "baseline_unique_failure_names": 120,
+      "candidate_unique_failure_names": 121,
+      "candidate_only_failure": "exact_layout_authority::proof::v27_exact_en_guard_controlled_resource_budget",
+      "candidate_isolated_repeats": "0/3 PASS",
+      "baseline_isolated_repeats": "1/3 PASS",
+      "classification": "pre-existing RSS-budget flake; not changed by Shift runtime files"
+    },
+    "check_lib_bins": "PASS",
+    "architecture": {
+      "verdict": "WATCH",
+      "baseline_stale_gate": true,
+      "new_shift_violation": false
+    },
+    "release_build": {
+      "verdict": "PASS",
+      "elapsed_seconds": 230.91,
+      "max_rss_kib": 2626380,
+      "cargo_target_bytes": 2154524672,
+      "cargo_target_budget_bytes": 12884901888
+    }
+  },
+  "physical_proof": {
+    "harness": "scripts/run_runtime_smoke.py with real GTK entry and uinput physical key events",
+    "receipt": "/tmp/lay-1.0.40-physical-shift-accepted.json",
+    "passed": 3,
+    "failed": 0,
+    "cases": [
+      {"input": "file ghjdthrf", "operation": "Double Shift", "output": "file проверка", "verdict": "PASS"},
+      {"input": "file ghjdthrf", "operation": "Double Shift twice", "output": "file ghjdthrf", "verdict": "PASS"},
+      {"input": "djn file", "operation": "autocorrect to вот then Double Shift", "output": "djn file", "verdict": "PASS"}
+    ],
+    "non_evidence": {
+      "case": "ime_autocorrect_typo_double_shift_undo_enter",
+      "classification": "NOT_APPLICABLE_NO_AUTOCORRECT_EVENT",
+      "observed": "ordinary layout projection доллора to ljkkjhf",
+      "reason": "the model did not create pending autocorrect undo, so the case did not exercise undo"
+    }
+  },
+  "binaries": {
+    "lay": {"bytes": 6387624, "sha256": "9a02c35e328b8482346eeac13780774259054fce2101b432a66bb3c61232b1aa"},
+    "lay-daemon": {"bytes": 8486480, "sha256": "5520cdf8690d83fbb715f93bf31c12094ec681ba5d3c0a5ac87b024934ee2df7"},
+    "lay-ibus-engine": {"bytes": 6745720, "sha256": "64774f841b1e2bfdb149e0d8d9118a548f1100d20641a3d1a7197069ee69205a"}
+  },
+  "runtime": {
+    "lay_daemon_pid": 3080423,
+    "lay_daemon_rss_kib": 4920,
+    "lay_ibus_engine_pid": 3080453,
+    "lay_ibus_engine_rss_kib": 392736,
+    "lay_l3_online_pid": 3080427,
+    "lay_l3_online_rss_kib": 3608,
+    "global_ibus_pid": 2076194,
+    "global_ibus_unchanged": true,
+    "installed_loaded_sha_parity": true,
+    "recent_fatal_errors": 0,
+    "orphan_test_processes": 0,
+    "runtime_authority_changed": true
+  },
+  "rollback": "/home/ubu/.local/lib/lay/rollback/1.0.39-pre-1.0.40-double-shift-20260824-021832"
+}

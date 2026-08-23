@@ -76,18 +76,6 @@ pub(crate) fn replay_keycodes(dev: &mut VirtualDevice, events: &[KeyEvent]) -> s
     replay_keycodes_with_pace(dev, events, KEY_PACE_MS, 0, true)
 }
 
-pub(crate) fn replay_keycodes_fast_after_modifier_cleanup(
-    dev: &mut VirtualDevice,
-    events: &[KeyEvent],
-) -> std::io::Result<()> {
-    let key_pace_ms = if events.len() <= ISOLATED_ZERO_PACE_MAX_EVENTS {
-        0
-    } else {
-        KEY_PACE_MS
-    };
-    replay_keycodes_with_pace(dev, events, key_pace_ms, 0, false)
-}
-
 pub(super) fn replay_text_insert_keycodes(
     dev: &mut VirtualDevice,
     events: &[KeyEvent],
@@ -183,17 +171,6 @@ pub(crate) fn emit_backspaces(dev: &mut VirtualDevice, n: u32) -> std::io::Resul
         std::thread::sleep(Duration::from_millis(BACKSPACE_PACE_MS));
     }
     std::thread::sleep(Duration::from_millis(BACKSPACE_SETTLE_MS));
-    Ok(())
-}
-
-pub(crate) fn emit_backspaces_fast(dev: &mut VirtualDevice, n: u32) -> std::io::Result<()> {
-    if n as usize > ISOLATED_ZERO_PACE_MAX_EVENTS {
-        return emit_backspaces(dev, n);
-    }
-    let bs = KeyCode::KEY_BACKSPACE.code();
-    for _ in 0..n {
-        emit_closed_frame(dev, &key_tap_frame(bs))?;
-    }
     Ok(())
 }
 

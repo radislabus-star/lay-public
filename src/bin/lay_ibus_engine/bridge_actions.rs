@@ -58,11 +58,7 @@ impl LayImeBridge {
         let mut engine = iface_ref.get_mut().await;
         engine.refresh_empty_tail_from_handoff();
         let source = tail_source_for_authority(engine.manual_toggle_authority());
-        let text = match source {
-            VisibleTailSource::ImeActiveComposition => engine.buffer.clone(),
-            VisibleTailSource::ImeCommittedTail => engine.tail_buffer.clone(),
-            VisibleTailSource::DaemonWordBuffer => String::new(),
-        };
+        let text = visible_text_for_source(source, &engine.buffer, &engine.tail_buffer);
         Ok((
             source.bridge_state().to_string(),
             text,
@@ -233,6 +229,19 @@ fn tail_source_for_authority(authority: ManualToggleAuthority) -> VisibleTailSou
     }
 }
 
+fn visible_text_for_source(
+    source: VisibleTailSource,
+    active_composition: &str,
+    committed_tail: &str,
+) -> String {
+    match source {
+        VisibleTailSource::ImeActiveComposition => active_composition.to_string(),
+        VisibleTailSource::ImeCommittedTail | VisibleTailSource::DaemonWordBuffer => {
+            committed_tail.to_string()
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -264,6 +273,22 @@ mod tests {
                 None,
             ),
             ImeManualToggleOutcome::NotHandled
+        );
+    }
+
+    #[test]
+    fn daemon_authority_exposes_its_typed_ime_observation_without_claiming_ime_ownership() {
+        assert_eq!(
+            visible_text_for_source(
+                VisibleTailSource::DaemonWordBuffer,
+                "ignored-composition",
+                "prefix ytn",
+            ),
+            "prefix ytn"
+        );
+        assert_eq!(
+            VisibleTailSource::DaemonWordBuffer.bridge_state(),
+            "passive:daemon-word-buffer"
         );
     }
 }

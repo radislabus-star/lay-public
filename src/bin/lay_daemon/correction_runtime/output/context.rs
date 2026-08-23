@@ -6,6 +6,8 @@ use std::time::Instant;
 
 use super::super::super::physical_input_grab::PhysicalInputGrab;
 use super::super::super::DaemonTextObservation;
+use super::super::super::ImeDelegatedTailLease;
+use super::super::ManualCorrectionOutputRoute;
 
 pub(crate) struct ManualCorrectionOutputContext<'a, 'grab> {
     pub(crate) buf: &'a mut WordBuffer,
@@ -23,6 +25,8 @@ pub(crate) struct ManualCorrectionOutputContext<'a, 'grab> {
     pub(crate) physical_grab: Option<&'a mut PhysicalInputGrab<'grab>>,
     pub(crate) input_isolated: bool,
     pub(crate) text_observation: DaemonTextObservation<'a>,
+    pub(crate) output_route: ManualCorrectionOutputRoute,
+    pub(crate) delegated_tail_lease: Option<ImeDelegatedTailLease>,
 }
 
 pub(crate) struct ManualOutputCommon<'a> {
@@ -39,6 +43,8 @@ pub(crate) struct ManualOutputCommon<'a> {
     pub(crate) decision: &'a ManualCorrectionDecision,
     pub(crate) input_isolated: bool,
     pub(crate) text_observation: DaemonTextObservation<'a>,
+    pub(crate) output_route: ManualCorrectionOutputRoute,
+    pub(crate) delegated_tail_lease: Option<ImeDelegatedTailLease>,
 }
 
 pub(crate) enum OutputFlow {

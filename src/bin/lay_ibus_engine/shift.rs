@@ -20,19 +20,20 @@ impl LayIbusEngine {
         // Keep this first; typing_transition_authority_contract enforces order.
         if self.defer_pending_ime_auto_undo_until_visible() {
             trace::record_auto_undo_retry("requested_exact_snapshot");
-            let Some(connection) = emitter.connection() else {
-                return Ok(None);
-            };
-            connection
-                .emit_signal(
-                    None::<&str>,
-                    self.path.as_str(),
-                    "org.freedesktop.IBus.Engine",
-                    "RequireSurroundingText",
-                    &(),
-                )
-                .await
-                .map_err(|error| fdo::Error::Failed(error.to_string()))?;
+            if let Some(connection) = emitter.connection() {
+                connection
+                    .emit_signal(
+                        None::<&str>,
+                        self.path.as_str(),
+                        "org.freedesktop.IBus.Engine",
+                        "RequireSurroundingText",
+                        &(),
+                    )
+                    .await
+                    .map_err(|error| fdo::Error::Failed(error.to_string()))?;
+            } else {
+                trace::record_auto_undo_retry("atomic_waiting_exact_snapshot");
+            }
             // The IME owns the pending rollback. Keep the daemon from replaying
             // a second route while SetSurroundingText confirms the exact tail.
             return Ok(Some(self.layout_is_ru));
@@ -40,7 +41,8 @@ impl LayIbusEngine {
         if let Some(target_layout_is_ru) = self.undo_last_ime_autocorrect(emitter).await? {
             return Ok(Some(target_layout_is_ru));
         }
-        match self.manual_toggle_authority() {
+        let authority = self.manual_toggle_authority();
+        match authority {
             ManualToggleAuthority::DaemonWordBuffer => {
                 self.defer_committed_tail_manual_toggle_to_daemon();
                 self.trace_key("double_shift_defer_to_daemon", 0, 0, false, None);
@@ -77,7 +79,6 @@ impl LayIbusEngine {
         };
         self.commit_verified_active_composition(emitter, authorized_edit)
             .await?;
-        lay::typing_cpu::TypingCpu::record_accepted_layout_projection(&original, &plan.replacement);
         self.suppress_next_committed_tail_autocorrect = plan.suppress_next_autocorrect;
         self.sync_layout_after_manual_toggle(&plan.replacement);
         self.trace_key("double_shift_commit", 0, 0, true, None);
@@ -108,6 +109,20 @@ mod tests {
         engine.defer_committed_tail_manual_toggle_to_daemon();
 
         assert!(engine.suppress_next_committed_tail_autocorrect);
+    }
+
+    #[test]
+    fn pending_undo_precedes_unproven_committed_tail_delegation() {
+        let source = include_str!("shift.rs");
+        let production = source.split("#[cfg(test)]").next().unwrap();
+        let delegation = production
+            .find("ManualToggleAuthority::DaemonWordBuffer =>")
+            .expect("proven-output delegation");
+        let pending_undo = production
+            .find("defer_pending_ime_auto_undo_until_visible")
+            .expect("pending undo route");
+
+        assert!(pending_undo < delegation);
     }
 
     #[test]

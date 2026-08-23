@@ -1,0 +1,97 @@
+{
+  "schema":"nanda.implementation-preflight.v1",
+  "task_id":"LAY_DOUBLE_SHIFT_EXACT_OBSERVED_TAIL_IMPLEMENTATION_V2_2026-08-24",
+  "authority_bearing":true,
+  "scientific_future_sensitive":false,
+  "reuses_existing_implementation":true,
+  "baseline_checks":[
+    {"id":"route-receipt","kind":"file","path":"/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_DOUBLE_SHIFT_EXACT_OBSERVED_TAIL_2026-08-24/design-route-v2.json","expect":{"mode":"0664","size_bytes":10104,"sha256":"13beddec9277f59e2910df14b3766a1d42f97b88b48c8b29c4e76ff370e9dbe9"}},
+    {"id":"ime-bridge-actions","kind":"file","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/bridge_actions.rs","expect":{"mode":"0664","size_bytes":10342,"sha256":"9d515bb6c02704f09b23166e8c0e1fd000cdc6a41c772cebd673b27fbb2aca4c"}},
+    {"id":"daemon-ime-bridge","kind":"file","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/layout_controller/ime_bridge.rs","expect":{"mode":"0664","size_bytes":9135,"sha256":"40b443154a3cbbe31f517a48a37b77f89a3e38213f4f61e9c01c055d87aa5cf5"}},
+    {"id":"correction-runtime","kind":"file","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/correction_runtime.rs","expect":{"mode":"0664","size_bytes":7601,"sha256":"925a4ac20a19187c604f6a88676efbfe929e97a5599cc6a9beae502d6824cb92"}},
+    {"id":"correction-request","kind":"file","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/correction_runtime/request.rs","expect":{"mode":"0664","size_bytes":1443,"sha256":"989fe4911a9230440498e615aa0e51bfc0225009f466caa63f0119d5e017ffea"}},
+    {"id":"output-context","kind":"file","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/correction_runtime/output/context.rs","expect":{"mode":"0664","size_bytes":1994,"sha256":"d919175c6887756b7c39d8f6e54c543238e8e1b9b3bc77342a0110c64b076290"}},
+    {"id":"replay-preflight","kind":"file","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/correction_runtime/output/replay/preflight.rs","expect":{"mode":"0664","size_bytes":1228,"sha256":"4dc31fff25798959f02a33b5b7f29a71cad475427faf6b067b23829328ed951a"}},
+    {"id":"text-replace","kind":"file","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/correction_runtime/output/text_replace.rs","expect":{"mode":"0664","size_bytes":6548,"sha256":"ee50cfd03df66de903d35e010176eedc6a154c422900fcfcea2fa8865309c246"}},
+    {"id":"installed-daemon-1-0-39","kind":"file","path":"/home/ubu/.local/lib/lay/bin/lay-daemon","expect":{"mode":"0755","size_bytes":8478928,"sha256":"3a91d4cfd2ad80a96fa479ee7eb2069551686ac5af8c74aeb6dcd3ded6a04e30"}},
+    {"id":"installed-engine-1-0-39","kind":"file","path":"/home/ubu/.local/lib/lay/bin/lay-ibus-engine","expect":{"mode":"0755","size_bytes":6745720,"sha256":"a52e7a2e2bede2b58369a3242858c49b7316379964566e3c8f1a15965dd7ffc2"}}
+  ],
+  "side_effects":{
+    "planned":[
+      {"id":"expose-typed-daemon-tail-observation","kind":"source_edit"},
+      {"id":"add-delegated-tail-lease","kind":"source_edit"},
+      {"id":"add-fail-closed-parity-tests","kind":"source_edit"},
+      {"id":"remote-focused-build-and-tests","kind":"remote_process_start"},
+      {"id":"rollback-protected-release-install","kind":"installed_runtime_mutation"}
+    ],
+    "forbidden":[
+      "change_pending_autocorrect_undo_priority",
+      "second_mutation_fallback",
+      "unverified_backspace_count",
+      "atomic_legacy_fallback",
+      "dbus_error_daemon_mutation",
+      "fixture_surface_in_runtime",
+      "verifier_or_safety_weakening",
+      "local_cargo_build",
+      "global_ibus_restart",
+      "remove_rollback"
+    ]
+  },
+  "source_checks":[
+    {"id":"pinned-ime-bridge-actions","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/bridge_actions.rs","sha256":"9d515bb6c02704f09b23166e8c0e1fd000cdc6a41c772cebd673b27fbb2aca4c","forbidden_effect_patterns":[
+      {"effect":"atomic_legacy_fallback","regex":"atomic_route_active.{0,240}DelegateDaemon"},
+      {"effect":"fixture_surface_in_runtime","regex":"if .{0,80}(ghbdtn|привет|собака)"},
+      {"effect":"global_ibus_restart","regex":"(kill|restart).*ibus-daemon"}
+    ]},
+    {"id":"pinned-daemon-ime-bridge","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/layout_controller/ime_bridge.rs","sha256":"40b443154a3cbbe31f517a48a37b77f89a3e38213f4f61e9c01c055d87aa5cf5","forbidden_effect_patterns":[
+      {"effect":"dbus_error_daemon_mutation","regex":"Err.{0,160}(emit_backspaces|DelegateDaemon|apply_layout_replay)"},
+      {"effect":"second_mutation_fallback","regex":"failed.{0,120}fallback.{0,120}(replace|replay|backspace)"},
+      {"effect":"unverified_backspace_count","regex":"saturating_(add|sub).*backspaces"}
+    ]},
+    {"id":"pinned-correction-runtime","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/correction_runtime.rs","sha256":"925a4ac20a19187c604f6a88676efbfe929e97a5599cc6a9beae502d6824cb92","forbidden_effect_patterns":[
+      {"effect":"change_pending_autocorrect_undo_priority","regex":"what_to_replay.{0,300}take_pending_auto_undo"},
+      {"effect":"fixture_surface_in_runtime","regex":"if .{0,80}(ghbdtn|привет|собака)"},
+      {"effect":"verifier_or_safety_weakening","regex":"(bypass|disable)_(verifier|safety)"},
+      {"effect":"local_cargo_build","regex":"cargo (build|test|check)"},
+      {"effect":"remove_rollback","regex":"(remove|unlink).*rollback"}
+    ]}
+  ],
+  "state_machine":{
+    "initial_state":"EXACT_LEASE_PARTIAL_UNBUILT",
+    "steps":[
+      {"id":"implement-exact-tail-lease","from":"EXACT_LEASE_PARTIAL_UNBUILT","to":"EXACT_TAIL_LEASE_IMPLEMENTED","mutates":true,"failure_state":"SOURCE_EDIT_FAILED","cleanup":"retain scoped source diff; installed 1.0.39 remains active","preserves":["installed-daemon-1-0-39","installed-engine-1-0-39"],"test_id":"source-edit-fault"},
+      {"id":"remote-focused-gates","from":"EXACT_TAIL_LEASE_IMPLEMENTED","to":"REMOTE_GATES_PASS","mutates":true,"failure_state":"REMOTE_GATES_FAILED","cleanup":"stop proof-owned processes; installed 1.0.39 remains active","preserves":["installed-daemon-1-0-39","installed-engine-1-0-39"],"test_id":"remote-gate-fault"},
+      {"id":"install-and-observe","from":"REMOTE_GATES_PASS","to":"LIVE_EXACT_TAIL_INSTALLED","mutates":true,"failure_state":"INSTALL_ROLLED_BACK","cleanup":"restore exact 1.0.39 binaries and restart only Lay-owned processes","preserves":["installed-daemon-1-0-39","installed-engine-1-0-39"],"test_id":"install-fault"}
+    ],
+    "terminal_states":["LIVE_EXACT_TAIL_INSTALLED","SOURCE_EDIT_FAILED","REMOTE_GATES_FAILED","INSTALL_ROLLED_BACK"]
+  },
+  "preserved_artifacts":[
+    {"id":"installed-daemon-1-0-39","path":"/home/ubu/.local/lib/lay/bin/lay-daemon","policy":"immutable_until_remote_gates_pass","cursor_policy":"none","rollback_policy":"restore_exact_bytes","baseline_check_id":"installed-daemon-1-0-39"},
+    {"id":"installed-engine-1-0-39","path":"/home/ubu/.local/lib/lay/bin/lay-ibus-engine","policy":"immutable_until_remote_gates_pass","cursor_policy":"none","rollback_policy":"restore_exact_bytes","baseline_check_id":"installed-engine-1-0-39"}
+  ],
+  "identity_contracts":[
+    {"id":"delegated-tail-source-parity","producer":"VisibleTailV2 typed DaemonWordBuffer snapshot","consumer":"daemon delegated-tail lease","comparison":"capture binds source, focus, epoch and exact suffix; controlled RU/EN engine handoff may change only engine path while source, epoch and exact suffix remain identical","test_id":"delegated-tail-source-parity"},
+    {"id":"backspace-count-parity","producer":"mapped original physical events","consumer":"authorized replay plan","comparison":"mapped original character count equals observed suffix character count and Backspace count","test_id":"backspace-count-parity"},
+    {"id":"undo-priority-parity","producer":"pending autocorrect undo readiness","consumer":"Double Shift dispatcher","comparison":"exact undo is selected before ManualToggleV3 and does not require delegated-tail lease","test_id":"undo-priority-parity"}
+  ],
+  "runtime_comparisons":[
+    {"id":"live-process-continuity","source":"process table, selected IBus engine and installed hashes","comparison":"exact_stable_projection","reason":"only Lay-owned processes and binaries may change","stable_fields":["global_ibus_pid","selected_engine","service_count"],"expected_to_change_fields":["lay_daemon_pid","lay_engine_pid","binary_sha256","version"],"observed_not_compared_fields":["cpu_time","rss"],"test_id":"live-process-continuity"}
+  ],
+  "invariants":[
+    {"id":"exact-range-only","statement":"delegated replay may emit Backspace only for an exact suffix observed by both IME and daemon under the same isolated input interval; a controlled engine handoff preserves epoch and suffix","test_id":"delegated-tail-source-parity"},
+    {"id":"mismatch-zero-mutation","statement":"empty, stale, wrong-source, wrong-focus, wrong-epoch or wrong-length receipt emits zero text mutations","test_id":"mismatch-zero-mutation"},
+    {"id":"one-mutation-owner","statement":"one physical double Shift reaches at most one mutation owner and no failure starts a fallback mutation","test_id":"one-mutation-owner"},
+    {"id":"undo-first","statement":"pending exact autocorrect undo remains first priority","test_id":"undo-priority-parity"}
+  ],
+  "tests":[
+    {"id":"source-edit-fault","kind":"fault_injection","expected":"failed edit cannot mutate installed runtime"},
+    {"id":"remote-gate-fault","kind":"fault_injection","expected":"failed remote gate leaves installed 1.0.39 unchanged"},
+    {"id":"install-fault","kind":"fault_injection","expected":"failed install restores exact 1.0.39 without global IBus restart"},
+    {"id":"delegated-tail-source-parity","kind":"parity","expected":"capture and consume match source, epoch and exact suffix; only controlled layout handoff may change engine path"},
+    {"id":"backspace-count-parity","kind":"parity","expected":"Backspace count equals exact mapped original character count"},
+    {"id":"mismatch-zero-mutation","kind":"fault_injection","expected":"all incomplete or stale receipts block before text mutation"},
+    {"id":"one-mutation-owner","kind":"parity","expected":"delegated daemon route has one uinput mutation and no fallback"},
+    {"id":"undo-priority-parity","kind":"parity","expected":"pending exact undo bypasses delegated receipt and remains first"},
+    {"id":"live-process-continuity","kind":"parity","expected":"global IBus PID and selected engine stay stable across install"}
+  ]
+}

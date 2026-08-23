@@ -1,4 +1,6 @@
-use super::super::super::super::LayoutCapabilityPreflight;
+use super::super::super::super::{
+    verify_target_layout_ready_for_replay, LayoutCapabilityPreflight,
+};
 use super::super::context::ManualOutputCommon;
 
 pub(super) fn preflight_manual_replay(ctx: &ManualOutputCommon<'_>) -> Result<(), String> {
@@ -10,6 +12,16 @@ pub(super) fn preflight_manual_replay(ctx: &ManualOutputCommon<'_>) -> Result<()
     mutation_preflight.validate_current()?;
     let layout_preflight =
         LayoutCapabilityPreflight::run(None, std::iter::once(ctx.target_is_ru), "manual replay")?;
+    if let Err(error) = verify_target_layout_ready_for_replay(ctx.target_is_ru) {
+        layout_preflight.restore_initial_best_effort("manual replay readiness failure");
+        return Err(error);
+    }
+    if let Some(lease) = &ctx.delegated_tail_lease {
+        if let Err(error) = lease.validate_after_controlled_layout_handoff(ctx.n_backspaces) {
+            layout_preflight.restore_initial_best_effort("manual replay tail lease failure");
+            return Err(error);
+        }
+    }
     if let Err(error) = mutation_preflight.consume() {
         layout_preflight.restore_initial_best_effort("manual replay");
         return Err(error);

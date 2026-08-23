@@ -24,10 +24,6 @@ pub(crate) enum DeferredLayoutAction {
 
 #[derive(Debug, Clone)]
 pub(crate) enum DeferredLearningAction {
-    AcceptedLayoutProjection {
-        original: String,
-        replacement: String,
-    },
     RevertedSystemApply {
         original: String,
         rejected: String,

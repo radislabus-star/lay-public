@@ -7,8 +7,8 @@ use crate::pending_typing_assist::PendingTypingAssist;
 
 use super::physical_input_grab::PhysicalInputGrab;
 use super::{
-    active_auto_replace, active_correction_engine, active_replace_words, handle_double_shift,
-    lock_virtual_keyboard, run_manual_correction_with_scope, ManualCorrectionRequest,
+    active_replace_words, handle_double_shift, lock_virtual_keyboard,
+    run_manual_correction_with_scope, ManualCorrectionOutputRoute, ManualCorrectionRequest,
     ScopedManualCorrectionRequest,
 };
 use super::{DShiftState, DaemonTextObservation, MultiTapPending, ShiftState};
@@ -36,6 +36,7 @@ pub(super) fn run_configured_manual_correction(
     virtual_kbd: &Arc<Mutex<Option<VirtualDevice>>>,
     executing: &mut bool,
     text_observation: DaemonTextObservation<'_>,
+    output_route: ManualCorrectionOutputRoute,
 ) -> Option<bool> {
     let mut physical_grab = PhysicalInputGrab::new(Some(device));
     let input_isolated = physical_grab.is_active();
@@ -43,13 +44,12 @@ pub(super) fn run_configured_manual_correction(
     handle_double_shift(ManualCorrectionRequest {
         buf: buffer,
         replace_words: active_replace_words(),
-        engine: active_correction_engine(),
-        auto_replace: active_auto_replace(),
         virtual_kbd: g.as_mut(),
         executing,
         input_isolated,
         text_observation,
         physical_grab: Some(&mut physical_grab),
+        output_route,
     })
 }
 
@@ -58,6 +58,7 @@ pub(super) fn run_scoped_manual_correction(
     replace_words: usize,
     events_since_word_start: u32,
     reason: &str,
+    output_route: ManualCorrectionOutputRoute,
 ) -> Option<bool> {
     let mut physical_grab = PhysicalInputGrab::new(Some(ctx.device));
     let input_isolated = physical_grab.is_active();
@@ -66,13 +67,12 @@ pub(super) fn run_scoped_manual_correction(
         manual: ManualCorrectionRequest {
             buf: ctx.buffer,
             replace_words,
-            engine: active_correction_engine(),
-            auto_replace: active_auto_replace(),
             virtual_kbd: g.as_mut(),
             executing: ctx.executing,
             input_isolated,
             text_observation: ctx.text_observation,
             physical_grab: Some(&mut physical_grab),
+            output_route,
         },
         events_since_word_start,
         label: reason,

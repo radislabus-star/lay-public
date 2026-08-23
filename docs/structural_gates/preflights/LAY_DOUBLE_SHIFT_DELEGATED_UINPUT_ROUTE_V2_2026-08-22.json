@@ -1,0 +1,116 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "physical-double-shift", "role": "interface"},
+    {"id": "daemon-trigger-dispatch", "role": "orchestrator"},
+    {"id": "ime-v3-outcome", "role": "producer"},
+    {"id": "ime-proven-authority", "role": "authorization_owner"},
+    {"id": "ime-proven-output", "role": "mutation_owner"},
+    {"id": "daemon-word-buffer-planner", "role": "authorization_owner"},
+    {"id": "daemon-uinput-output", "role": "mutation_owner"},
+    {"id": "pending-undo-planner", "role": "authorization_owner"},
+    {"id": "configured-undo-output", "role": "mutation_owner"},
+    {"id": "fail-closed-terminal", "role": "observer"},
+    {"id": "route-proof", "role": "proof_owner"}
+  ],
+  "edges": [
+    {"id": "handled-entry", "from": "physical-double-shift", "relation": "calls", "to": "daemon-trigger-dispatch", "events": ["ime-proven-handled"]},
+    {"id": "handled-v3", "from": "daemon-trigger-dispatch", "relation": "delegates", "to": "ime-v3-outcome", "events": ["ime-proven-handled"]},
+    {"id": "handled-exec-authority", "from": "ime-v3-outcome", "relation": "delegates", "to": "ime-proven-authority", "events": ["ime-proven-handled"]},
+    {"id": "handled-exec-output", "from": "ime-proven-authority", "relation": "delegates", "to": "ime-proven-output", "events": ["ime-proven-handled"]},
+    {"id": "handled-authority", "from": "ime-v3-outcome", "relation": "passes_to", "to": "ime-proven-authority", "events": ["ime-proven-handled"]},
+    {"id": "handled-output", "from": "ime-proven-authority", "relation": "authorizes", "to": "ime-proven-output", "events": ["ime-proven-handled"]},
+
+    {"id": "delegated-entry", "from": "physical-double-shift", "relation": "calls", "to": "daemon-trigger-dispatch", "events": ["committed-unproven-delegated"]},
+    {"id": "delegated-v3", "from": "daemon-trigger-dispatch", "relation": "delegates", "to": "ime-v3-outcome", "events": ["committed-unproven-delegated"]},
+    {"id": "delegated-planner-exec-daemon-uinput", "from": "ime-v3-outcome", "relation": "delegates", "to": "daemon-word-buffer-planner", "events": ["committed-unproven-delegated"]},
+    {"id": "delegated-uinput-exec", "from": "daemon-word-buffer-planner", "relation": "delegates", "to": "daemon-uinput-output", "events": ["committed-unproven-delegated"]},
+    {"id": "delegated-planner-authority-daemon-uinput", "from": "ime-v3-outcome", "relation": "passes_to", "to": "daemon-word-buffer-planner", "events": ["committed-unproven-delegated"]},
+    {"id": "delegated-uinput-authority", "from": "daemon-word-buffer-planner", "relation": "authorizes", "to": "daemon-uinput-output", "events": ["committed-unproven-delegated"]},
+
+    {"id": "undo-entry", "from": "physical-double-shift", "relation": "calls", "to": "daemon-trigger-dispatch", "events": ["pending-autocorrect-undo"]},
+    {"id": "undo-planner-exec", "from": "daemon-trigger-dispatch", "relation": "delegates", "to": "pending-undo-planner", "events": ["pending-autocorrect-undo"]},
+    {"id": "undo-output-exec", "from": "pending-undo-planner", "relation": "delegates", "to": "configured-undo-output", "events": ["pending-autocorrect-undo"]},
+    {"id": "undo-authority", "from": "daemon-trigger-dispatch", "relation": "passes_to", "to": "pending-undo-planner", "events": ["pending-autocorrect-undo"]},
+    {"id": "undo-output", "from": "pending-undo-planner", "relation": "authorizes", "to": "configured-undo-output", "events": ["pending-autocorrect-undo"]},
+
+    {"id": "blocked-entry", "from": "physical-double-shift", "relation": "calls", "to": "daemon-trigger-dispatch", "events": ["atomic-or-error-blocked"]},
+    {"id": "blocked-v3", "from": "daemon-trigger-dispatch", "relation": "delegates", "to": "ime-v3-outcome", "events": ["atomic-or-error-blocked"]},
+    {"id": "blocked-observation", "from": "ime-v3-outcome", "relation": "observes", "to": "fail-closed-terminal", "events": ["atomic-or-error-blocked"]},
+    {"id": "proof-route", "from": "fail-closed-terminal", "relation": "proves", "to": "route-proof", "events": ["authority-route-proof"]}
+  ],
+  "routes": [
+    {
+      "id": "ime-proven-execution",
+      "event": "ime-proven-handled",
+      "kind": "execution",
+      "entry": "physical-double-shift",
+      "terminal": "ime-proven-output",
+      "required_roles": ["interface", "orchestrator", "producer", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "physical-double-shift", "to": "ime-proven-output", "min": 1, "max": 1}]
+    },
+    {
+      "id": "ime-proven-authority-route",
+      "event": "ime-proven-handled",
+      "kind": "authority",
+      "entry": "ime-v3-outcome",
+      "terminal": "ime-proven-output",
+      "required_roles": ["producer", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "ime-v3-outcome", "to": "ime-proven-output", "min": 1, "max": 1}]
+    },
+    {
+      "id": "delegated-uinput-execution",
+      "event": "committed-unproven-delegated",
+      "kind": "execution",
+      "entry": "physical-double-shift",
+      "terminal": "daemon-uinput-output",
+      "required_roles": ["interface", "orchestrator", "producer", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "physical-double-shift", "to": "daemon-uinput-output", "min": 1, "max": 1}]
+    },
+    {
+      "id": "delegated-uinput-authority-route",
+      "event": "committed-unproven-delegated",
+      "kind": "authority",
+      "entry": "ime-v3-outcome",
+      "terminal": "daemon-uinput-output",
+      "required_roles": ["producer", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "ime-v3-outcome", "to": "daemon-uinput-output", "min": 1, "max": 1}]
+    },
+    {
+      "id": "pending-undo-execution",
+      "event": "pending-autocorrect-undo",
+      "kind": "execution",
+      "entry": "physical-double-shift",
+      "terminal": "configured-undo-output",
+      "required_roles": ["interface", "orchestrator", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "physical-double-shift", "to": "configured-undo-output", "min": 1, "max": 1}]
+    },
+    {
+      "id": "pending-undo-authority-route",
+      "event": "pending-autocorrect-undo",
+      "kind": "authority",
+      "entry": "daemon-trigger-dispatch",
+      "terminal": "configured-undo-output",
+      "required_roles": ["orchestrator", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "daemon-trigger-dispatch", "to": "configured-undo-output", "min": 1, "max": 1}]
+    },
+    {
+      "id": "atomic-error-blocked",
+      "event": "atomic-or-error-blocked",
+      "kind": "execution",
+      "entry": "physical-double-shift",
+      "terminal": "ime-v3-outcome",
+      "required_roles": ["interface", "orchestrator", "producer"],
+      "path_cardinality": [{"from": "physical-double-shift", "to": "ime-v3-outcome", "min": 1, "max": 1}]
+    },
+    {
+      "id": "authority-route-proof",
+      "event": "authority-route-proof",
+      "kind": "proof",
+      "entry": "fail-closed-terminal",
+      "terminal": "route-proof",
+      "required_roles": ["observer", "proof_owner"]
+    }
+  ]
+}

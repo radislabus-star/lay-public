@@ -62,6 +62,14 @@ pub(crate) fn try_manual_text_replacement(
         ));
         return OutputFlow::ContinueReplay;
     };
+    if let Some(lease) = &ctx.delegated_tail_lease {
+        if let Err(error) = lease.validate_current(ctx.n_backspaces) {
+            log(&format!(
+                "⚠ {kind} blocked by delegated tail lease: {error}"
+            ));
+            return OutputFlow::Return(None);
+        }
+    }
     let preflight = ctx.text_observation.explicit_manual_preflight(
         ctx.buf,
         ctx.mapped_orig.to_string(),

@@ -1,0 +1,122 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "engine-authority-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/engine.rs",
+      "sha256": "747019ac8f38fb497697f8abbbf45af34c2daf4fc2176018096f5b54ae536cc4",
+      "size_bytes": 14847
+    },
+    {
+      "exists": true,
+      "id": "engine-bridge-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/bridge_actions.rs",
+      "sha256": "d1bff584c8b24447a9525bf26e9b1dd458c1f1eb91bc3840f7e8113a576c8d5b",
+      "size_bytes": 9667
+    },
+    {
+      "exists": true,
+      "id": "committed-output-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/state.rs",
+      "sha256": "b31753790706d433be76c2d5645e197bc91e2678da316f4650f1034f734381a5",
+      "size_bytes": 42493
+    },
+    {
+      "exists": true,
+      "id": "daemon-dispatch-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/manual_trigger_runtime/ime.rs",
+      "sha256": "256c1a0b9835ba892517f37bc2eba061cd52cf38ee7c2493b433f5703e344bbe",
+      "size_bytes": 3278
+    },
+    {
+      "exists": true,
+      "id": "route-design",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_DOUBLE_SHIFT_PROVEN_OUTPUT_AUTHORITY_ROUTE_V1_2026-08-22.json",
+      "sha256": "1e9809e33960d29eb98462b48e1905aa0ecfb964b260626071df42eb2a0ec673",
+      "size_bytes": 5460
+    },
+    {
+      "exists": true,
+      "id": "installed-daemon-1-0-35",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+      "sha256": "30d7912bdd492ebff1e031a9839f0e3825545c99f638bd243ddc81bd21653884",
+      "size_bytes": 8510288
+    },
+    {
+      "exists": true,
+      "id": "installed-engine-1-0-35",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "sha256": "ba2da60a7fe686b029f479507d808b2511bffe7aa05160809ff5876acbac1c87",
+      "size_bytes": 6741752
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 7,
+    "forbidden_side_effect_kinds": [
+      "atomic_legacy_fallback",
+      "change_autocorrect_or_candidate_output_routes",
+      "dbus_error_second_mutation",
+      "fixture_surface_in_runtime",
+      "global_ibus_restart",
+      "historical_receipt_rewrite",
+      "local_cargo_build",
+      "verifier_or_safety_weakening"
+    ],
+    "identity_contracts": 3,
+    "invariants": 4,
+    "planned_side_effect_kinds": [
+      "filesystem_write",
+      "installed_runtime_mutation",
+      "remote_process_start",
+      "source_edit"
+    ],
+    "preserved_artifacts": 2,
+    "runtime_comparisons": 1,
+    "source_checks": 2,
+    "tests": 8
+  },
+  "manifest_sha256": "66efd6cd81813aa26501f5c6d044faf761ac847d4b15380e6c3e790bd22e8196",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-authority-selector",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/engine.rs",
+      "sha256": "747019ac8f38fb497697f8abbbf45af34c2daf4fc2176018096f5b54ae536cc4",
+      "size_bytes": 14847
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-engine-bridge",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/bridge_actions.rs",
+      "sha256": "d1bff584c8b24447a9525bf26e9b1dd458c1f1eb91bc3840f7e8113a576c8d5b",
+      "size_bytes": 9667
+    }
+  ],
+  "task_id": "LAY_DOUBLE_SHIFT_PROVEN_OUTPUT_AUTHORITY_IMPLEMENTATION_V1_2026-08-22",
+  "verdict": "READY_TO_IMPLEMENT"
+}

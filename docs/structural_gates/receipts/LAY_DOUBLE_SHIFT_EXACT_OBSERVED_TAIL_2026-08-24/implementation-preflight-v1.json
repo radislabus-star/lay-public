@@ -1,0 +1,12 @@
+{
+  "blockers": [
+    {
+      "code": "manifest_error",
+      "field": "manifest",
+      "message": "Invalid \\escape: line 47 column 58 (char 4526)"
+    }
+  ],
+  "safe_to_implement": false,
+  "schema": "nanda.implementation-preflight.v1",
+  "verdict": "ERROR"
+}

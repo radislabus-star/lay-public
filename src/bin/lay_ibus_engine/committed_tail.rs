@@ -418,7 +418,6 @@ impl LayIbusEngine {
             )
             .await?;
         if handled {
-            self.record_accepted_layout_projection(&plan.edit.original_token, &plan.replacement);
             self.sync_layout_after_manual_toggle(&plan.replacement);
             self.trace_key("double_shift_committed_tail", 0, 0, true, None);
         }

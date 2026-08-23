@@ -25,8 +25,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1787393891.395671,
-    "ast_hash": "776d88848a0f62780935b11048f52799",
+    "mtime": 1787525791.5159879,
+    "ast_hash": "f7a5c9a08e7646482db56e63755e5c5f",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
@@ -45,8 +45,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1787393891.395671,
-    "ast_hash": "26200f6ef6f1f043d628fb7cac427aaa",
+    "mtime": 1787525791.5169878,
+    "ast_hash": "ec14564938cad4d2b2e1c52b559cd312",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -235,8 +235,8 @@
     "semantic_hash": "1470f588bfc938d9547f6f52160e876a"
   },
   "src/bin/lay_daemon/config_runtime.rs": {
-    "mtime": 1787317529.5454426,
-    "ast_hash": "5e8a6ab1bd8a2a57de42a4d0e4db4f19",
+    "mtime": 1787513239.000778,
+    "ast_hash": "488c39484da773c4e82abc2dace1944a",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/config_runtime/nanda.rs": {
@@ -250,8 +250,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/correction_runtime.rs": {
-    "mtime": 1786642120.3997393,
-    "ast_hash": "659ef836be681cbe07e344caa4dec650",
+    "mtime": 1787525747.8736413,
+    "ast_hash": "4d78592a52d5c9d27dac73183c7332c4",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/correction_runtime/force_layout.rs": {
@@ -260,18 +260,18 @@
     "semantic_hash": "fd99722dd33e588b67be39534d3e0deb"
   },
   "src/bin/lay_daemon/correction_runtime/memory.rs": {
-    "mtime": 1786642120.400292,
-    "ast_hash": "a0e3d47306d4d4802af0c668a768e3a1",
+    "mtime": 1787515790.7557714,
+    "ast_hash": "7426de270d3af540d5f2c5394777c803",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/correction_runtime/output.rs": {
-    "mtime": 1786642120.400292,
-    "ast_hash": "d7ca980b7fa957c943b43ec27c822106",
+    "mtime": 1787525742.0005949,
+    "ast_hash": "6d1aea875dd522e11b34ae2287df5b04",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/correction_runtime/output/context.rs": {
-    "mtime": 1786642120.400292,
-    "ast_hash": "3fa9649cff7280569dae6629c9fc5f35",
+    "mtime": 1787525742.0025947,
+    "ast_hash": "3bb9cf1d67c6a8852cd7286f3ef3fd6f",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/correction_runtime/output/native.rs": {
@@ -285,18 +285,18 @@
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/correction_runtime/output/replay.rs": {
-    "mtime": 1786642120.4005225,
-    "ast_hash": "e2fbe75e73caf7bc86f8702736e9c8a7",
+    "mtime": 1787513096.025021,
+    "ast_hash": "b5d8583f64d383584b6f5c04aa46271e",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/correction_runtime/output/text_replace.rs": {
-    "mtime": 1786642120.4007523,
-    "ast_hash": "dc5f456ace8af2c2e4f1f39eaca51bf0",
+    "mtime": 1787525742.006595,
+    "ast_hash": "8e589bd267dcc780d5570e7c8da9e0bc",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/correction_runtime/request.rs": {
-    "mtime": 1786642120.4007523,
-    "ast_hash": "3303feba5877273072bb8326e043962d",
+    "mtime": 1787513207.8560054,
+    "ast_hash": "382a64cea52425be835c3a86d5988e1a",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/daemon_runtime.rs": {
@@ -335,8 +335,8 @@
     "semantic_hash": "0e703c269f8df4655d15c0150cebd6fd"
   },
   "src/bin/lay_daemon/layout_controller.rs": {
-    "mtime": 1787393154.7074492,
-    "ast_hash": "749f4ee7c9eedb5f853c7b0c558e13a6",
+    "mtime": 1787525741.9955947,
+    "ast_hash": "946aa70af3b69b06db42fad405567647",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/layout_controller/backend_hint.rs": {
@@ -360,8 +360,8 @@
     "semantic_hash": "89c4a70463b964b6ad7334d6902fe245"
   },
   "src/bin/lay_daemon/layout_controller/ime_bridge.rs": {
-    "mtime": 1787393154.705449,
-    "ast_hash": "3bc130ddf84b7349e2b8c7a9022e703f",
+    "mtime": 1787525741.9935946,
+    "ast_hash": "dc341bd2495ad7481b2bc340d5ec2022",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/layout_controller/tests.rs": {
@@ -430,8 +430,8 @@
     "semantic_hash": "0c66f94af9c7863f3e2121f4bf1f58ed"
   },
   "src/bin/lay_daemon/manual_trigger_runtime/fire.rs": {
-    "mtime": 1787393090.6118946,
-    "ast_hash": "234ba65ba24fa52a21c230d52079de6b",
+    "mtime": 1787399782.3699765,
+    "ast_hash": "90f66134c6ada364ada24b7ae9f3ef26",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/manual_trigger_runtime/timeout.rs": {
@@ -705,8 +705,8 @@
     "semantic_hash": "5999ee2db28cd7cb009ea6e748ace5cd"
   },
   "src/bin/lay_daemon/text_output.rs": {
-    "mtime": 1786642120.4055812,
-    "ast_hash": "c457b52c26d3976acb8353823d28a8d7",
+    "mtime": 1787513207.8560054,
+    "ast_hash": "39a1751ab42792dcf6621405a80c1dac",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/text_output/device.rs": {
@@ -715,8 +715,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/text_output/key_emit.rs": {
-    "mtime": 1786642120.406205,
-    "ast_hash": "32eb5d94a99a06b09e3798bba77af70b",
+    "mtime": 1787513207.8560054,
+    "ast_hash": "6b06e80ccd7e7c43d7fabc7e228afd67",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/text_output/modifiers.rs": {
@@ -735,8 +735,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/trigger_dispatch.rs": {
-    "mtime": 1786642120.406205,
-    "ast_hash": "e8d892eecfe65f2e5d8a325834ddfd74",
+    "mtime": 1787513207.8560054,
+    "ast_hash": "d49683df835dc10e839aae453f18857c",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/trigger_fsm.rs": {
@@ -855,8 +855,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/bridge_actions.rs": {
-    "mtime": 1787393620.9000475,
-    "ast_hash": "0e4466caf4b1c05c7d01650e8e4ba28b",
+    "mtime": 1787525741.9915948,
+    "ast_hash": "dbb6c6ac9e8eca1d08ccb6f2a54c4143",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/bridge_policy.rs": {
@@ -865,8 +865,8 @@
     "semantic_hash": "562af74b70d3d9a2ef9b8fe78fb73ccf"
   },
   "src/bin/lay_ibus_engine/committed_tail.rs": {
-    "mtime": 1787370575.1210551,
-    "ast_hash": "c24603d85cc9c122ebb6da4155944312",
+    "mtime": 1787515790.7537713,
+    "ast_hash": "79fbea35ab697a0cbc9a098ddfaa3cce",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/composition_commit.rs": {
@@ -880,13 +880,13 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/engine.rs": {
-    "mtime": 1787383623.4511054,
-    "ast_hash": "7531d45263b91e67052a1075d2bf736a",
+    "mtime": 1787398684.0638433,
+    "ast_hash": "1e283c775fb2b1ba200f0a02dc73481c",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/engine/profile_tests.rs": {
-    "mtime": 1787383741.891814,
-    "ast_hash": "85d7e0ea12f6863869160e704d20470a",
+    "mtime": 1787515730.052366,
+    "ast_hash": "32446cf6b8aeb07aeb4744f1b785fb1c",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/factory.rs": {
@@ -900,9 +900,9 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/key_decode.rs": {
-    "mtime": 1786642120.4095829,
-    "ast_hash": "12b35e48efab3a4ff3418a687d925596",
-    "semantic_hash": "12b35e48efab3a4ff3418a687d925596"
+    "mtime": 1787515730.037366,
+    "ast_hash": "e76754e4e545e232de1d1d226b0e7430",
+    "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/key_trace.rs": {
     "mtime": 1786642120.4095829,
@@ -940,8 +940,8 @@
     "semantic_hash": "6cb0ccb27d824964bdbc826c780bad84"
   },
   "src/bin/lay_ibus_engine/protocol/state.rs": {
-    "mtime": 1787383623.4481053,
-    "ast_hash": "715d831cd03a4d92489579c7ce4f88bf",
+    "mtime": 1787515730.053366,
+    "ast_hash": "1dda1454b9227275a59601ac1b434c28",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/server.rs": {
@@ -950,8 +950,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/shift.rs": {
-    "mtime": 1787315591.2657275,
-    "ast_hash": "cf58f0b52ec750e433b11a257c9155a7",
+    "mtime": 1787515790.6657708,
+    "ast_hash": "2a8b6ccf5df07fcc2336049b260a5464",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/state.rs": {
@@ -960,8 +960,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/tail_memory.rs": {
-    "mtime": 1787383741.891814,
-    "ast_hash": "0fc593078dbe570eab171fa6c94fb5a3",
+    "mtime": 1787515730.0543659,
+    "ast_hash": "a690c96c97447f5dd2a470ab7c3148c9",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/text.rs": {
@@ -1465,8 +1465,8 @@
     "semantic_hash": ""
   },
   "src/manual_toggle.rs": {
-    "mtime": 1787393090.5938945,
-    "ast_hash": "2ad3b132a8a1546ff4bd85c02738a11a",
+    "mtime": 1787515730.037366,
+    "ast_hash": "c9abfc3b14f1e2d7d2c17a9bb804eb91",
     "semantic_hash": ""
   },
   "src/mixed_script_repair.rs": {
@@ -2505,8 +2505,8 @@
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1787393891.393671,
-    "ast_hash": "b38c229a7aa3a0757e4559e2f419d7c8",
+    "mtime": 1787525791.5159879,
+    "ast_hash": "4a3687725ea203e306a1fd86307407a4",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -2675,8 +2675,8 @@
     "semantic_hash": ""
   },
   "docs/ime-daemon-route-map-2026-06-20.md": {
-    "mtime": 1787395542.9159713,
-    "ast_hash": "58346e295a7caaf42ef073bbc30c68f7",
+    "mtime": 1787513963.9038498,
+    "ast_hash": "582d26fe37d6f570f7fef6a6c8996c6a",
     "semantic_hash": ""
   },
   "docs/l1-l4-intelligence-route.md": {
@@ -3280,8 +3280,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/preedit/tests.rs": {
-    "mtime": 1787371578.022315,
-    "ast_hash": "77e3c951f77649e02d24257f7550cd3a",
+    "mtime": 1787516313.7751167,
+    "ast_hash": "848cc2ba9fe56dac58247d09813fb157",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2/grammar_adapter.rs": {
@@ -3360,8 +3360,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/engine/types.rs": {
-    "mtime": 1787370683.305092,
-    "ast_hash": "b0ce1470aa24c7c27f427c8ce7dcf38a",
+    "mtime": 1787515790.7547715,
+    "ast_hash": "6eff360c47e8b00b9a0bc91cf66b5c5a",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/correction_runtime/output/replay/action.rs": {
@@ -3370,8 +3370,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/correction_runtime/output/replay/preflight.rs": {
-    "mtime": 1786642120.4007523,
-    "ast_hash": "e116cedfe7ad8f3e9f816ed16c3c3271",
+    "mtime": 1787525742.0045948,
+    "ast_hash": "17724dc582dcfcd39eb9fea54e90ea73",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/correction_runtime/output/uinput_prepare.rs": {
@@ -4745,8 +4745,8 @@
     "semantic_hash": ""
   },
   "docs/lay-development-plan-after-0.2.340.md": {
-    "mtime": 1787252387.1176631,
-    "ast_hash": "47e0bb3277e86b382f1e08922879172f",
+    "mtime": 1787514479.8462882,
+    "ast_hash": "539bd19372228d12087db6f5ceaf8441",
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/PUBLIC_INSTALL_CANONICAL_L2_V13_2026-08-01.json": {
@@ -4985,8 +4985,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs": {
-    "mtime": 1787376684.9198906,
-    "ast_hash": "cced834097b2e0b4736a98823a8f137f",
+    "mtime": 1787516158.6670477,
+    "ast_hash": "1a467e7bfd4435d445e46128e9f4975a",
     "semantic_hash": ""
   },
   "docs/structural_gates/receipts/IBUS_AUTOCORRECT_LAYOUT_HANDOFF_NONBLOCKING_2026-08-06.json": {
@@ -13975,8 +13975,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/atomic.rs": {
-    "mtime": 1787383623.4511054,
-    "ast_hash": "fce15bb81f4922cb6fbc082e160317a3",
+    "mtime": 1787516256.4091454,
+    "ast_hash": "53027f1a214d04d114294ab9b670d277",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/output.rs": {
@@ -14425,8 +14425,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/manual_trigger_runtime/ime.rs": {
-    "mtime": 1787393628.1750865,
-    "ast_hash": "87e2fdc78dec3f14c09fb68f11909efb",
+    "mtime": 1787399822.5940957,
+    "ast_hash": "2f19187d7ebec3cc34899e3a591d0e8b",
     "semantic_hash": ""
   },
   "docs/ime-atomic-exact-layout-lease-v27-paper-contract-2026-08-22.md": {
@@ -14780,13 +14780,13 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/atomic/proof.rs": {
-    "mtime": 1787383741.892814,
-    "ast_hash": "35628eaa6b6e733faa366fcea9de71e7",
+    "mtime": 1787513123.3553638,
+    "ast_hash": "8762e766b0d4af50d929018f1f453b71",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/space_autocorrect_prefetch/proof.rs": {
-    "mtime": 1787376316.3193545,
-    "ast_hash": "22dd6379ab074c3de4687b5df689f9f4",
+    "mtime": 1787516114.5595694,
+    "ast_hash": "dfb85712b89fd4a84646e25fa7f51f91",
     "semantic_hash": ""
   },
   "src/exact_layout_authority.rs": {
@@ -14857,6 +14857,181 @@
   "docs/structural_gates/receipts/LAY_DOUBLE_SHIFT_TYPED_DELEGATION_2026-08-22/observed-source-route-v1.json": {
     "mtime": 1787393906.9817736,
     "ast_hash": "a515591caa6d3685a75102cb9289f569",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/preflights/LAY_DOUBLE_SHIFT_DELEGATED_UINPUT_IMPLEMENTATION_V2_2026-08-22.json": {
+    "mtime": 1787399654.4677284,
+    "ast_hash": "3c52b979f700c4d36a9d11ac1f8d030c",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/preflights/LAY_DOUBLE_SHIFT_DELEGATED_UINPUT_OBSERVED_V2_2026-08-22.json": {
+    "mtime": 1787400205.8269343,
+    "ast_hash": "03ca0885e052152a058018e709ac4ecf",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/preflights/LAY_DOUBLE_SHIFT_DELEGATED_UINPUT_ROUTE_V2_2026-08-22.json": {
+    "mtime": 1787399716.0988212,
+    "ast_hash": "b243390ad766f589fcfbc94f713f6d8f",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/preflights/LAY_DOUBLE_SHIFT_DETERMINISTIC_VISIBLE_REPLAY_V1_2026-08-23.json": {
+    "mtime": 1787513006.0858672,
+    "ast_hash": "d9bd5bc85a6acc77617ab50dee1f6566",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/preflights/LAY_DOUBLE_SHIFT_EXACT_OBSERVED_TAIL_IMPLEMENTATION_V1_2026-08-24.json": {
+    "mtime": 1787525841.000382,
+    "ast_hash": "ddf96595e789411033ca4336015efdd1",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/preflights/LAY_DOUBLE_SHIFT_EXACT_OBSERVED_TAIL_ROUTE_V1_2026-08-24.json": {
+    "mtime": 1787525841.003382,
+    "ast_hash": "1388a495ece0d80ed9dcc32dfaa7bc11",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/preflights/LAY_DOUBLE_SHIFT_ORDERED_AUTHORITY_V2_2026-08-23.json": {
+    "mtime": 1787515603.721541,
+    "ast_hash": "960fa818232edf78241a1076dc8cd636",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/preflights/LAY_DOUBLE_SHIFT_PROVEN_OUTPUT_AUTHORITY_IMPLEMENTATION_V1_2026-08-22.json": {
+    "mtime": 1787398640.1753352,
+    "ast_hash": "c860fc77557122f214684411e4d59975",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/preflights/LAY_DOUBLE_SHIFT_PROVEN_OUTPUT_AUTHORITY_OBSERVED_V1_2026-08-22.json": {
+    "mtime": 1787398864.886901,
+    "ast_hash": "7ac14a66b533dbf4f76f4cd9ad930db1",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/preflights/LAY_DOUBLE_SHIFT_PROVEN_OUTPUT_AUTHORITY_ROUTE_V1_2026-08-22.json": {
+    "mtime": 1787398474.193374,
+    "ast_hash": "efd17333f9a6242349fdf3892a8be72c",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/preflights/LAY_SPACE_PREFETCH_MULTI_CLIENT_LANES_V1_2026-08-23.json": {
+    "mtime": 1787516040.644767,
+    "ast_hash": "052c24e4417bd82e0c19ccc33ff48221",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/L3_ONLINE_LIVE_ADMISSION_GENERATIONS_9_10_2026-08-23.json": {
+    "mtime": 1787514479.8462882,
+    "ast_hash": "d8fc02bd9fb41f651bbaa425a61ba651",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_DOUBLE_SHIFT_DELEGATED_UINPUT_2026-08-22/design-route-v2.json": {
+    "mtime": 1787399695.3427842,
+    "ast_hash": "f635e9418919b17d8d50a07b44a70615",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_DOUBLE_SHIFT_DELEGATED_UINPUT_2026-08-22/design-route-v3.json": {
+    "mtime": 1787399723.8538365,
+    "ast_hash": "fcf00d428c353416cbb94e2e6d124429",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_DOUBLE_SHIFT_DELEGATED_UINPUT_2026-08-22/deterministic-visible-replay-preflight-v1.json": {
+    "mtime": 1787512983.0898879,
+    "ast_hash": "ae4bf2857340473eaf2778777ea800fe",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_DOUBLE_SHIFT_DELEGATED_UINPUT_2026-08-22/deterministic-visible-replay-preflight-v2.json": {
+    "mtime": 1787513014.5847569,
+    "ast_hash": "588f7c819e611e095b2e1b00a5aa0eb1",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_DOUBLE_SHIFT_DELEGATED_UINPUT_2026-08-22/implementation-preflight-v1.json": {
+    "mtime": 1787399666.4442046,
+    "ast_hash": "b40501e0bf9a6174f8094712ac69fc05",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_DOUBLE_SHIFT_DELEGATED_UINPUT_2026-08-22/implementation-preflight-v2.json": {
+    "mtime": 1787399731.4324818,
+    "ast_hash": "a96c38a5ac9a77f32e682f3d275df886",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_DOUBLE_SHIFT_DELEGATED_UINPUT_2026-08-22/installed-live-v1.json": {
+    "mtime": 1787512975.3724627,
+    "ast_hash": "d48279697c127ec68e3172848388c9f3",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_DOUBLE_SHIFT_DELEGATED_UINPUT_2026-08-22/installed-live-v2.json": {
+    "mtime": 1787514479.8462882,
+    "ast_hash": "c65d0aaa48bebc6033a4493eb5fc8f08",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_DOUBLE_SHIFT_DELEGATED_UINPUT_2026-08-22/observed-source-route-v1.json": {
+    "mtime": 1787400215.657994,
+    "ast_hash": "b21fd87ad000dfb0365017cb45edae41",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_DOUBLE_SHIFT_DELEGATED_UINPUT_2026-08-22/ordered-authority-v2-preflight.json": {
+    "mtime": 1787515613.7217853,
+    "ast_hash": "e88f16dc690ff78e108ec494b75ae9da",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_DOUBLE_SHIFT_DELEGATED_UINPUT_2026-08-22/space-prefetch-multi-client-lanes-v1-preflight.json": {
+    "mtime": 1787516048.4043186,
+    "ast_hash": "411fdce541187f567b299ff4339a0695",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_DOUBLE_SHIFT_EXACT_OBSERVED_TAIL_2026-08-24/design-route-v1.json": {
+    "mtime": 1787524349.6980517,
+    "ast_hash": "3f61b9bfcac245c01bf356fa815ceef8",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_DOUBLE_SHIFT_EXACT_OBSERVED_TAIL_2026-08-24/design-route-v2.json": {
+    "mtime": 1787524410.8283288,
+    "ast_hash": "a2b6e4df67c10eae592f47c397f776ab",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_DOUBLE_SHIFT_EXACT_OBSERVED_TAIL_2026-08-24/implementation-preflight-v1.json": {
+    "mtime": 1787524537.0859845,
+    "ast_hash": "9b7cc565b175ad73f5c6b09c5708cb75",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_DOUBLE_SHIFT_EXACT_OBSERVED_TAIL_2026-08-24/implementation-preflight-v2.json": {
+    "mtime": 1787524560.892013,
+    "ast_hash": "ef9e3c51e5f729e292f216c2147d5d80",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_DOUBLE_SHIFT_EXACT_OBSERVED_TAIL_2026-08-24/implementation-preflight-v3.json": {
+    "mtime": 1787524902.2339928,
+    "ast_hash": "b4ee22482e5283840bc22aaa8b368386",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_DOUBLE_SHIFT_PROVEN_OUTPUT_AUTHORITY_2026-08-22/design-route-v1.json": {
+    "mtime": 1787398454.9821422,
+    "ast_hash": "094f16c4dd6f0891fe379b5152a78919",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_DOUBLE_SHIFT_PROVEN_OUTPUT_AUTHORITY_2026-08-22/design-route-v2.json": {
+    "mtime": 1787398482.17447,
+    "ast_hash": "9b312b4379cf97551c0aa97c72861b5d",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_DOUBLE_SHIFT_PROVEN_OUTPUT_AUTHORITY_2026-08-22/implementation-preflight-v1.json": {
+    "mtime": 1787398560.5173078,
+    "ast_hash": "8f39faa3cf75619d595529f9be83c2be",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_DOUBLE_SHIFT_PROVEN_OUTPUT_AUTHORITY_2026-08-22/implementation-preflight-v2.json": {
+    "mtime": 1787398587.7507646,
+    "ast_hash": "deee3db416b775f72942cdcd2b17e0a0",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_DOUBLE_SHIFT_PROVEN_OUTPUT_AUTHORITY_2026-08-22/implementation-preflight-v3.json": {
+    "mtime": 1787398647.6844225,
+    "ast_hash": "e6bf83e53e411665a268f1853d90f41b",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_DOUBLE_SHIFT_PROVEN_OUTPUT_AUTHORITY_2026-08-22/observed-source-route-v1.json": {
+    "mtime": 1787398876.287029,
+    "ast_hash": "2f65ba6d1e73f93010b13260a93803f8",
+    "semantic_hash": ""
+  },
+  "docs/double-shift-physical-layout-contract.md": {
+    "mtime": 1787526735.3940382,
+    "ast_hash": "5c46ef6825bb762cf18f7169ddf11bdc",
     "semantic_hash": ""
   }
 }

@@ -380,10 +380,10 @@ fn preedit_publisher_installs_payload_before_showing_it() {
         .nth(1)
         .expect("single preedit publisher");
     let update = publisher
-        .find("Self::update_preedit_text")
+        .find(".update_preedit_text(")
         .expect("payload update");
     let show = publisher
-        .find("Self::show_preedit_text")
+        .find(".show_preedit_text(")
         .expect("visibility signal");
 
     assert!(

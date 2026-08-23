@@ -1,4 +1,4 @@
-use lay::config::{CorrectionEngine, LayConfig};
+use lay::config::LayConfig;
 use lay::desktop::LayoutBackend;
 use lay::text_backend::TextBackendPreference;
 use std::sync::OnceLock;
@@ -85,10 +85,6 @@ pub(super) fn active_replace_words() -> usize {
 
 pub(super) fn active_typing_assist_words() -> usize {
     current_config().active_typing_assist_words()
-}
-
-pub(super) fn active_correction_engine() -> CorrectionEngine {
-    current_config().active_correction_engine()
 }
 
 pub(super) fn active_layout_backend() -> LayoutBackend {

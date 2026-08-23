@@ -2,9 +2,9 @@
   "checks": [
     {
       "evidence": [
-        "src/typing_transition/candidate.rs:L8:L2CandidateLattice",
+        "src/typing_transition/candidate.rs:L11:L2CandidateLattice",
         "src/typing_transition/decision.rs:L27:TransitionDecisionCore",
-        "src/typing_transition/decision.rs:L51:.evaluate_candidates()",
+        "src/typing_transition/decision.rs:L58:.evaluate_candidates()",
         "src/typing_transition/decision/live_field.rs:L44:TransitionDecisionCore",
         "src/typing_transition/live_candidate.rs:L176:.select_ime_readout()",
         "src/typing_transition/live_candidate.rs:L80:TransitionDecisionCore",
@@ -21,7 +21,7 @@
     {
       "evidence": [
         "src/bin/lay_ibus_engine/state.rs:L190:.with_winner_action()",
-        "src/bin/lay_ibus_engine/state.rs:L361:.replace_committed_tail()",
+        "src/bin/lay_ibus_engine/state.rs:L404:.replace_committed_tail()",
         "src/text_edit/structural_verifier.rs:L20:verify_visible_text_transition()",
         "src/text_edit/visible_tail.rs:L100:VisibleTailSnapshot",
         "src/text_edit/visible_tail.rs:L65:SnapshotIdentity"
@@ -41,8 +41,8 @@
     },
     {
       "evidence": [
-        "src/bin/lay_daemon/layout_controller.rs:L175:call_replace_text()",
-        "src/bin/lay_daemon/layout_controller.rs:L205:try_ime_replace_tail()",
+        "src/bin/lay_daemon/layout_controller.rs:L203:call_replace_text()",
+        "src/bin/lay_daemon/layout_controller.rs:L233:try_ime_replace_tail()",
         "src/bin/lay_daemon/text_output/replacement.rs:L77:apply_text_replacement_pipeline()",
         "src/text_edit/executor.rs:L108:AuthorizedEdit",
         "src/text_edit/executor.rs:L139:authorize_backend_edit()"
@@ -67,9 +67,9 @@
     },
     {
       "evidence": [
-        "src/bin/lay_ibus_engine/engine/types.rs:L207:PendingSystemOutcomeFeedback",
-        "src/bin/lay_ibus_engine/tail_memory.rs:L339:.arm_visible_postcondition_with_feedback()",
-        "src/bin/lay_ibus_engine/tail_memory.rs:L386:.observe_visible_postcondition()"
+        "src/bin/lay_ibus_engine/engine/types.rs:L370:PendingSystemOutcomeFeedback",
+        "src/bin/lay_ibus_engine/tail_memory.rs:L354:.arm_visible_postcondition_with_feedback()",
+        "src/bin/lay_ibus_engine/tail_memory.rs:L401:.observe_visible_postcondition()"
       ],
       "id": "observed-outcome-feedback",
       "status": "PASS",
@@ -78,7 +78,7 @@
     {
       "evidence": [
         "src/nanda_wave/lexical_phase/runtime.rs:L68:LexicalPhaseMemory",
-        "src/typing_transition/candidate.rs:L8:L2CandidateLattice"
+        "src/typing_transition/candidate.rs:L11:L2CandidateLattice"
       ],
       "id": "hot-field-memory",
       "status": "WATCH",
@@ -117,8 +117,8 @@
     },
     {
       "evidence": [
-        "graph_links:44333",
-        "graph_nodes:16859"
+        "graph_links:48426",
+        "graph_nodes:18246"
       ],
       "id": "fast-verifiable",
       "status": "WATCH",
@@ -134,10 +134,10 @@
       "src/nanda_wave/lexical_phase/format.rs:L109:normalize_surface()"
     ]
   },
-  "graph_fingerprint": "b8f641c416d57aa663ae0cac6035cffa42cd418184d75cd6f84558b1eae6fe54",
-  "graph_links": 44333,
-  "graph_nodes": 16859,
+  "graph_fingerprint": "5b64ac07a61121b97bb5da9ecf5df6a7bf3f644583d94e980c368d68a5b8bdfe",
+  "graph_links": 48426,
+  "graph_nodes": 18246,
   "schema": "lay.architecture-graph-receipt.v1",
-  "source_fingerprint": "9c7427bcf3329db97c59457c6c6ab8588618ccf0aa2f5696b843259cb17c1870",
+  "source_fingerprint": "fa0c171f0144bd8edec8ae0293d26fbba319a73ec96c7d6018616fb10b56c0df",
   "verdict": "WATCH"
 }

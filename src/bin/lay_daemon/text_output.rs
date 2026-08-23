@@ -13,8 +13,8 @@ mod replacement;
 
 pub(super) use device::make_virtual_keyboard;
 pub(super) use key_emit::{
-    emit_backspaces, emit_backspaces_fast, emit_key_taps_fast, emit_shifted_key_tap_fast,
-    release_all_virtual_keys, replay_keycodes, replay_keycodes_fast_after_modifier_cleanup,
+    emit_backspaces, emit_key_taps_fast, emit_shifted_key_tap_fast, release_all_virtual_keys,
+    replay_keycodes,
 };
 pub(super) use layout_preflight::LayoutCapabilityPreflight;
 pub(super) use modifiers::{release_possible_modifiers, release_possible_modifiers_fast};

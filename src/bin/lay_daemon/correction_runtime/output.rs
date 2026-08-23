@@ -42,6 +42,8 @@ pub(super) fn apply_manual_correction_output(
         physical_grab,
         input_isolated,
         text_observation,
+        output_route,
+        delegated_tail_lease,
     } = ctx;
     let mut common = ManualOutputCommon {
         buf,
@@ -57,18 +59,24 @@ pub(super) fn apply_manual_correction_output(
         decision,
         input_isolated,
         text_observation,
+        output_route,
+        delegated_tail_lease,
     };
 
     let mut virtual_kbd = virtual_kbd;
     let mut physical_grab = physical_grab;
 
-    if let Some(result) = try_native_output_stage(
-        &mut common,
-        &mut virtual_kbd,
-        &mut physical_grab,
-        input_gate.clone(),
-    ) {
-        return result;
+    if common.output_route.allows_native_stage() {
+        if let Some(result) = try_native_output_stage(
+            &mut common,
+            &mut virtual_kbd,
+            &mut physical_grab,
+            input_gate.clone(),
+        ) {
+            return result;
+        }
+    } else {
+        log("· explicit IME delegation selected daemon uinput output");
     }
 
     let kbd = match virtual_kbd {

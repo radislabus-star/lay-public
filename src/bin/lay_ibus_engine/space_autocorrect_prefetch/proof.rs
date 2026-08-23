@@ -59,6 +59,7 @@ fn worker_with_terminal(identity: InputFrameIdentity, generation: u64) -> Worker
             Condvar::new(),
         )),
         latest_request_generation: Arc::new(AtomicU64::new(generation)),
+        stop: Arc::new(AtomicBool::new(false)),
     }
 }
 
@@ -321,6 +322,7 @@ fn pending_worker(identity: InputFrameIdentity, generation: u64) -> Worker {
             Condvar::new(),
         )),
         latest_request_generation: Arc::new(AtomicU64::new(generation)),
+        stop: Arc::new(AtomicBool::new(false)),
     }
 }
 
@@ -362,6 +364,7 @@ fn v27_component_latency_denominators() {
     let schedule_worker = Worker {
         state: Arc::new((Mutex::new(WorkerState::default()), Condvar::new())),
         latest_request_generation: Arc::new(AtomicU64::new(0)),
+        stop: Arc::new(AtomicBool::new(false)),
     };
     for frame in [&miss, &hit] {
         for _ in 0..64 {
@@ -394,6 +397,7 @@ fn v27_component_latency_denominators() {
     let lookup_worker = Worker {
         state: Arc::new((Mutex::new(WorkerState::default()), Condvar::new())),
         latest_request_generation: Arc::new(AtomicU64::new(0)),
+        stop: Arc::new(AtomicBool::new(false)),
     };
     for _ in 0..samples {
         lookup_worker.schedule(SpaceAutocorrectWork {
@@ -471,7 +475,7 @@ fn v27_component_latency_denominators() {
 
 pub(crate) fn install_exact_lease(identity: &InputFrameIdentity, config: &LayConfig) {
     initialize();
-    let worker = WORKER.get().expect("global prefetch worker");
+    let worker = worker_for_schedule(&identity.path).expect("path prefetch worker");
     let generation = reserve_generation(&worker.latest_request_generation);
     let material_generation = lay::nanda_wave::candidate_material_generation();
     let lease = exact_lease(identity, config, generation);

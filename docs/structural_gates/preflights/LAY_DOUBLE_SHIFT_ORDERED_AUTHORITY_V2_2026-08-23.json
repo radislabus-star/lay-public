@@ -1,0 +1,89 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_DOUBLE_SHIFT_ORDERED_AUTHORITY_V2_2026-08-23",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {"id":"manual-toggle","kind":"file","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/manual_toggle.rs","expect":{"mode":"0664","size_bytes":10699,"sha256":"212847d24c6b83a82f0e46606ca617601334f276a3de366f01c3fdcaef6efd39"}},
+    {"id":"ime-shift","kind":"file","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/shift.rs","expect":{"mode":"0664","size_bytes":6376,"sha256":"ed942190b6db85c4b7413b49dbe1c7c0cd0a3ee3f5424f947b72aff2e47f554c"}},
+    {"id":"atomic-runtime","kind":"file","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic.rs","expect":{"mode":"0664","size_bytes":20431,"sha256":"141ea5108ad72c8b72bdea85678042bd224eaad5546cecbbec1ee4d77bc7b6aa"}},
+    {"id":"atomic-output","kind":"file","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/output.rs","expect":{"mode":"0664","size_bytes":9869,"sha256":"7ef339f78503de6d779c882c879021c22ef9f65b1d07cc09fb7b0d765131e1bc"}},
+    {"id":"engine-authority","kind":"file","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/engine.rs","expect":{"mode":"0664","size_bytes":15653,"sha256":"c277b0c4664b2953b2ca443b929980b908dc46212e29302608df30c0f2a3a827"}},
+    {"id":"profile-tests","kind":"file","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/engine/profile_tests.rs","expect":{"mode":"0664","size_bytes":15196,"sha256":"a414818d687eb5e7f45cd80450d336c584e929acee6602a8099380da9310bf99"}},
+    {"id":"installed-daemon-1-0-38","kind":"file","path":"/home/ubu/.local/lib/lay/bin/lay-daemon","expect":{"mode":"0755","size_bytes":8478928,"sha256":"79ebece266db8a4fc16993dc72c447e4f655586189db936fb0d3df1fd9d7d238"}},
+    {"id":"installed-engine-1-0-38","kind":"file","path":"/home/ubu/.local/lib/lay/bin/lay-ibus-engine","expect":{"mode":"0755","size_bytes":6743288,"sha256":"b54d58f4ecbced7e0c698cfc9711912b03bb2b66ba54e04e9f6889245dd21737"}}
+  ],
+  "side_effects": {
+    "planned": [
+      {"id":"ordered-undo-authority","kind":"source_edit"},
+      {"id":"current-layout-projection","kind":"source_edit"},
+      {"id":"atomic-output-parity","kind":"source_edit"},
+      {"id":"remote-focused-and-full-tests","kind":"remote_process_start"},
+      {"id":"rollback-protected-install","kind":"installed_runtime_mutation"}
+    ],
+    "forbidden": [
+      "delegate_before_pending_undo",
+      "script_or_candidate_inference_on_ordinary_toggle",
+      "discard_pending_undo_without_exact_apply",
+      "cursor_geometry_as_committed_tail_authority",
+      "legacy_signal_dependency_in_atomic_output",
+      "delete_without_matching_commit",
+      "second_mutation_fallback",
+      "correction_learning_on_ordinary_toggle",
+      "fixture_surface_in_runtime",
+      "verifier_or_safety_weakening",
+      "local_cargo_build",
+      "global_ibus_restart",
+      "remove_rollback"
+    ]
+  },
+  "source_checks": [
+    {"id":"pinned-manual-toggle","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/manual_toggle.rs","sha256":"212847d24c6b83a82f0e46606ca617601334f276a3de366f01c3fdcaef6efd39","forbidden_effect_patterns":[{"effect":"fixture_surface_in_runtime","regex":"if .*\\\"(ghbdtn|руддщ|собака)"},{"effect":"script_or_candidate_inference_on_ordinary_toggle","regex":"(candidate|rank|model).*plan_manual_toggle"},{"effect":"verifier_or_safety_weakening","regex":"(bypass|disable)_(verifier|safety)"}]},
+    {"id":"pinned-ime-shift","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/shift.rs","sha256":"ed942190b6db85c4b7413b49dbe1c7c0cd0a3ee3f5424f947b72aff2e47f554c","forbidden_effect_patterns":[{"effect":"discard_pending_undo_without_exact_apply","regex":"clear_pending_ime_auto_undo"},{"effect":"delegate_before_pending_undo","regex":"delegation_precedes_pending_undo"},{"effect":"legacy_signal_dependency_in_atomic_output","regex":"EngineOutput::Atomic.*emit_signal"},{"effect":"correction_learning_on_ordinary_toggle","regex":"record_(accepted|reverted).*(candidate|correction)"},{"effect":"global_ibus_restart","regex":"(kill|restart).*ibus-daemon"}]},
+    {"id":"pinned-atomic-runtime","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/atomic.rs","sha256":"141ea5108ad72c8b72bdea85678042bd224eaad5546cecbbec1ee4d77bc7b6aa","forbidden_effect_patterns":[{"effect":"second_mutation_fallback","regex":"fallback.*(replace|commit|replay)"},{"effect":"delete_without_matching_commit","regex":"delete_only_atomic_frame"},{"effect":"local_cargo_build","regex":"cargo (build|test|check)"},{"effect":"remove_rollback","regex":"(remove|unlink).*rollback"},{"effect":"global_ibus_restart","regex":"(kill|restart).*ibus-daemon"}]},
+    {"id":"pinned-engine-authority","path":"/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/engine.rs","sha256":"c277b0c4664b2953b2ca443b929980b908dc46212e29302608df30c0f2a3a827","forbidden_effect_patterns":[{"effect":"cursor_geometry_as_committed_tail_authority","regex":"cursor_cell_width.*ImeCommittedTail"}]}
+  ],
+  "state_machine": {
+    "initial_state":"ORDERING_AND_ATOMIC_DEFECT_PROVEN",
+    "steps":[
+      {"id":"edit-contract-owner","from":"ORDERING_AND_ATOMIC_DEFECT_PROVEN","to":"ORDERED_AUTHORITY_IMPLEMENTED","mutates":true,"failure_state":"SOURCE_EDIT_FAILED","cleanup":"retain scoped source diff; installed 1.0.38 remains active","preserves":["installed-daemon-1-0-38","installed-engine-1-0-38"],"test_id":"source-edit-fault"},
+      {"id":"remote-focused-tests","from":"ORDERED_AUTHORITY_IMPLEMENTED","to":"FOCUSED_GATES_PASS","mutates":true,"failure_state":"FOCUSED_GATES_FAILED","cleanup":"stop proof-owned processes; installed 1.0.38 remains active","preserves":["installed-daemon-1-0-38","installed-engine-1-0-38"],"test_id":"focused-gate-fault"},
+      {"id":"remote-full-tests","from":"FOCUSED_GATES_PASS","to":"FULL_GATES_PASS","mutates":true,"failure_state":"FULL_GATES_FAILED","cleanup":"retain focused evidence; installed 1.0.38 remains active","preserves":["installed-daemon-1-0-38","installed-engine-1-0-38"],"test_id":"full-gate-fault"},
+      {"id":"install-and-observe","from":"FULL_GATES_PASS","to":"LIVE_CANDIDATE_INSTALLED","mutates":true,"failure_state":"INSTALL_ROLLED_BACK","cleanup":"restore exact 1.0.38 bytes and restart only Lay-owned processes","preserves":["installed-daemon-1-0-38","installed-engine-1-0-38"],"test_id":"install-fault"}
+    ],
+    "terminal_states":["LIVE_CANDIDATE_INSTALLED","SOURCE_EDIT_FAILED","FOCUSED_GATES_FAILED","FULL_GATES_FAILED","INSTALL_ROLLED_BACK"]
+  },
+  "preserved_artifacts": [
+    {"id":"installed-daemon-1-0-38","path":"/home/ubu/.local/lib/lay/bin/lay-daemon","policy":"immutable_until_remote_full_gates_pass","cursor_policy":"none","rollback_policy":"restore_exact_bytes","baseline_check_id":"installed-daemon-1-0-38"},
+    {"id":"installed-engine-1-0-38","path":"/home/ubu/.local/lib/lay/bin/lay-ibus-engine","policy":"immutable_until_remote_full_gates_pass","cursor_policy":"none","rollback_policy":"restore_exact_bytes","baseline_check_id":"installed-engine-1-0-38"}
+  ],
+  "identity_contracts": [
+    {"id":"undo-priority-parity","producer":"shared pending autocorrect undo","consumer":"Double Shift decision tree","comparison":"pending undo is examined before output authority","test_id":"undo-priority-parity"},
+    {"id":"projection-parity","producer":"current layout plus visible token","consumer":"manual toggle edit plan","comparison":"RU maps Ru2Us and US maps Us2Ru with opposite target","test_id":"projection-parity"},
+    {"id":"atomic-frame-parity","producer":"authorized exact undo or toggle plan","consumer":"AtomicEffectBuilder","comparison":"one delete-plus-commit frame and speculative commit only after matching receipt","test_id":"atomic-frame-parity"},
+    {"id":"committed-tail-authority-parity","producer":"IBUS_CAP_SURROUNDING_TEXT","consumer":"manual_toggle_authority","comparison":"IME committed-tail authority exists only with capability","test_id":"committed-tail-authority-parity"}
+  ],
+  "runtime_comparisons": [
+    {"id":"live-process-continuity","source":"process table and installed hashes","comparison":"exact_stable_projection","reason":"restart only Lay-managed binaries","stable_fields":["global_ibus_pid","active_engine","service_count"],"expected_to_change_fields":["lay_daemon_pid","lay_engine_pid","binary_sha256","version"],"observed_not_compared_fields":["cpu_time","rss"],"test_id":"live-process-continuity"}
+  ],
+  "invariants": [
+    {"id":"undo-first","statement":"valid pending autocorrect undo precedes all ordinary authority decisions","test_id":"undo-priority-parity"},
+    {"id":"ordinary-toggle-is-deterministic","statement":"ordinary toggle depends only on current layout and mapping table","test_id":"projection-parity"},
+    {"id":"committed-tail-needs-capability","statement":"cursor geometry never authorizes committed-tail deletion","test_id":"committed-tail-authority-parity"},
+    {"id":"atomic-is-one-frame","statement":"atomic mutation is a single delete-plus-commit proposal committed only by matching receipt","test_id":"atomic-frame-parity"},
+    {"id":"full-suite-is-required","statement":"isolated targeted PASS cannot promote a change that fails the combined engine suite","test_id":"full-engine-suite"}
+  ],
+  "tests": [
+    {"id":"source-edit-fault","kind":"fault_injection","expected":"failed edit cannot mutate installed runtime"},
+    {"id":"focused-gate-fault","kind":"fault_injection","expected":"failed focused gate leaves installed 1.0.38 unchanged"},
+    {"id":"full-gate-fault","kind":"fault_injection","expected":"failed full gate leaves installed 1.0.38 unchanged"},
+    {"id":"install-fault","kind":"fault_injection","expected":"failed install restores exact 1.0.38 without global IBus restart"},
+    {"id":"undo-priority-parity","kind":"parity","expected":"pending undo wins over daemon, committed-tail, and active-composition projection"},
+    {"id":"projection-parity","kind":"parity","expected":"both layout directions are exact and contain no inference"},
+    {"id":"atomic-frame-parity","kind":"parity","expected":"atomic exact undo and ordinary projection each produce one valid frame"},
+    {"id":"committed-tail-authority-parity","kind":"parity","expected":"capability enables IME ownership; its absence delegates safely"},
+    {"id":"full-engine-suite","kind":"parity","expected":"combined lay-ibus-engine suite has no Double Shift or atomic failure"},
+    {"id":"live-process-continuity","kind":"parity","expected":"global IBus PID and active engine remain stable across install"}
+  ]
+}

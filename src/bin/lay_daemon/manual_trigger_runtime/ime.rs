@@ -1,16 +1,18 @@
-use super::super::{active_text_backend, log, try_ime_manual_toggle};
+use super::super::{active_text_backend, log, try_ime_manual_toggle, ManualCorrectionOutputRoute};
 use lay::manual_toggle::ImeManualToggleOutcome;
 use lay::word_buffer::WordBuffer;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum ImeManualToggleDispatch {
-    DelegateDaemon,
+    DelegateDaemon(ManualCorrectionOutputRoute),
     Complete(Option<bool>),
 }
 
 pub(crate) fn dispatch_ime_manual_toggle(buffer: &mut WordBuffer) -> ImeManualToggleDispatch {
     if buffer.pending_auto_undo_ready() || !active_text_backend().should_try_ime() {
-        return ImeManualToggleDispatch::DelegateDaemon;
+        return ImeManualToggleDispatch::DelegateDaemon(
+            ManualCorrectionOutputRoute::ConfiguredBackend,
+        );
     }
     run_ime_manual_toggle()
 }
@@ -45,7 +47,9 @@ fn dispatch_from_result(result: Result<ImeManualToggleOutcome, String>) -> ImeMa
 
 fn dispatch_from_outcome(outcome: ImeManualToggleOutcome) -> ImeManualToggleDispatch {
     match outcome {
-        ImeManualToggleOutcome::DelegateDaemon => ImeManualToggleDispatch::DelegateDaemon,
+        ImeManualToggleOutcome::DelegateDaemon => {
+            ImeManualToggleDispatch::DelegateDaemon(ManualCorrectionOutputRoute::DaemonUinput)
+        }
         ImeManualToggleOutcome::NotHandled => ImeManualToggleDispatch::Complete(None),
         ImeManualToggleOutcome::Handled {
             target_layout_is_ru,
@@ -63,6 +67,10 @@ mod tests {
         buffer.remember_pending_auto_undo("typing-assist", "посмотри", "посмотреть", 1, 1);
 
         assert!(buffer.pending_auto_undo_ready());
+        assert_eq!(
+            dispatch_ime_manual_toggle(&mut buffer),
+            ImeManualToggleDispatch::DelegateDaemon(ManualCorrectionOutputRoute::ConfiguredBackend)
+        );
         assert!(buffer.take_pending_auto_undo().is_some());
     }
 
@@ -70,7 +78,7 @@ mod tests {
     fn ime_dispatch_shape_delegates_only_the_explicit_daemon_outcome() {
         assert_eq!(
             dispatch_from_outcome(ImeManualToggleOutcome::DelegateDaemon),
-            ImeManualToggleDispatch::DelegateDaemon
+            ImeManualToggleDispatch::DelegateDaemon(ManualCorrectionOutputRoute::DaemonUinput)
         );
         assert_eq!(
             dispatch_from_outcome(ImeManualToggleOutcome::NotHandled),

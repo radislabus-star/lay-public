@@ -128,13 +128,13 @@ mod tests {
     }
 
     #[test]
-    fn double_shift_replacement_repairs_mixed_script_token() {
+    fn double_shift_projection_uses_current_layout_without_script_repair() {
         assert_eq!(
-            lay::manual_toggle::double_shift_replacement("ghjdtрrb"),
-            "проверки"
+            lay::manual_toggle::project_to_opposite_layout("ghjdtрrb", true),
+            "ghjdthrb"
         );
         assert_eq!(
-            lay::manual_toggle::double_shift_replacement("ghjdthrf"),
+            lay::manual_toggle::project_to_opposite_layout("ghjdthrf", false),
             "проверка"
         );
     }

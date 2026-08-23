@@ -118,10 +118,9 @@ fn v27_cross_engine_shift_gesture_restores_exact_source() {
     .expect("cross-engine exact undo");
     assert_eq!(undo.0, PROPOSAL_FRAME_READY);
     assert_eq!(committed_texts(&undo), ["ghbdtn "]);
-    assert!(target.settle_atomic_pending(
-        41,
-        &(RECEIPT_SUBMITTED_ATOMIC, 505, vec![10; DIGEST_BYTES]),
-    ));
+    assert!(
+        target.settle_atomic_pending(41, &(RECEIPT_SUBMITTED_ATOMIC, 505, vec![10; DIGEST_BYTES]),)
+    );
     assert_eq!(target.tail_buffer, "ghbdtn ");
     assert!(target
         .shared

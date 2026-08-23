@@ -1,0 +1,423 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "VETO",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": false,
+  "contract": "docs/structural_gates/preflights/LAY_DOUBLE_SHIFT_PROVEN_OUTPUT_AUTHORITY_ROUTE_V1_2026-08-22.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "source_root": "/home/ubu/projects/lay-l1-exact-peak-search",
+  "node_count": 9,
+  "edge_count": 19,
+  "routes": [
+    {
+      "id": "ime-proven-execution",
+      "event": "ime-proven-handled",
+      "kind": "execution",
+      "entry": "physical-double-shift",
+      "via": [],
+      "terminal": "ime-proven-output",
+      "path_count": 1,
+      "paths": [
+        [
+          "physical-double-shift",
+          "daemon-dispatch",
+          "ime-v3-outcome",
+          "manual-authority-selector",
+          "ime-proven-output"
+        ]
+      ],
+      "role_owners": {
+        "orchestrator": [
+          "daemon-dispatch"
+        ],
+        "mutation_owner": [
+          "ime-proven-output"
+        ],
+        "producer": [
+          "ime-v3-outcome"
+        ],
+        "authorization_owner": [
+          "manual-authority-selector"
+        ],
+        "interface": [
+          "physical-double-shift"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "physical-double-shift",
+          "to": "ime-proven-output",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "physical-double-shift",
+              "daemon-dispatch",
+              "ime-v3-outcome",
+              "manual-authority-selector",
+              "ime-proven-output"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ime-proven-authority",
+      "event": "ime-proven-handled",
+      "kind": "authority",
+      "entry": "ime-v3-outcome",
+      "via": [],
+      "terminal": "ime-proven-output",
+      "path_count": 1,
+      "paths": [
+        [
+          "ime-v3-outcome",
+          "manual-authority-selector",
+          "ime-proven-output"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "ime-proven-output"
+        ],
+        "producer": [
+          "ime-v3-outcome"
+        ],
+        "authorization_owner": [
+          "manual-authority-selector"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "ime-v3-outcome",
+          "to": "ime-proven-output",
+          "via": [],
+          "graph": "authority",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "ime-v3-outcome",
+              "manual-authority-selector",
+              "ime-proven-output"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "committed-unproven-execution",
+      "event": "committed-unproven-delegated",
+      "kind": "execution",
+      "entry": "physical-double-shift",
+      "via": [],
+      "terminal": "daemon-output",
+      "path_count": 2,
+      "paths": [
+        [
+          "physical-double-shift",
+          "daemon-dispatch",
+          "ime-v3-outcome",
+          "manual-authority-selector",
+          "daemon-word-buffer-planner",
+          "daemon-output"
+        ],
+        [
+          "physical-double-shift",
+          "daemon-dispatch",
+          "ime-v3-outcome",
+          "manual-authority-selector",
+          "daemon-word-buffer-planner",
+          "daemon-output"
+        ]
+      ],
+      "role_owners": {
+        "orchestrator": [
+          "daemon-dispatch"
+        ],
+        "mutation_owner": [
+          "daemon-output"
+        ],
+        "authorization_owner": [
+          "daemon-word-buffer-planner",
+          "manual-authority-selector"
+        ],
+        "producer": [
+          "ime-v3-outcome"
+        ],
+        "interface": [
+          "physical-double-shift"
+        ]
+      },
+      "parallel_edge_groups": [
+        {
+          "from": "manual-authority-selector",
+          "to": "daemon-word-buffer-planner",
+          "graph": "execution",
+          "edge_ids": [
+            "delegated-planner",
+            "delegated-planner-execution"
+          ],
+          "count": 2
+        }
+      ],
+      "path_cardinality": [
+        {
+          "from": "physical-double-shift",
+          "to": "daemon-output",
+          "via": [],
+          "graph": "execution",
+          "count": 2,
+          "minimum_count": 2,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "physical-double-shift",
+              "daemon-dispatch",
+              "ime-v3-outcome",
+              "manual-authority-selector",
+              "daemon-word-buffer-planner",
+              "daemon-output"
+            ],
+            [
+              "physical-double-shift",
+              "daemon-dispatch",
+              "ime-v3-outcome",
+              "manual-authority-selector",
+              "daemon-word-buffer-planner",
+              "daemon-output"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "committed-unproven-authority",
+      "event": "committed-unproven-delegated",
+      "kind": "authority",
+      "entry": "ime-v3-outcome",
+      "via": [],
+      "terminal": "daemon-output",
+      "path_count": 1,
+      "paths": [
+        [
+          "ime-v3-outcome",
+          "manual-authority-selector",
+          "daemon-word-buffer-planner",
+          "daemon-output"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "daemon-output"
+        ],
+        "authorization_owner": [
+          "daemon-word-buffer-planner",
+          "manual-authority-selector"
+        ],
+        "producer": [
+          "ime-v3-outcome"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "ime-v3-outcome",
+          "to": "daemon-output",
+          "via": [],
+          "graph": "authority",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "ime-v3-outcome",
+              "manual-authority-selector",
+              "daemon-word-buffer-planner",
+              "daemon-output"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "atomic-error-blocked",
+      "event": "atomic-or-error-blocked",
+      "kind": "execution",
+      "entry": "physical-double-shift",
+      "via": [],
+      "terminal": "ime-v3-outcome",
+      "path_count": 1,
+      "paths": [
+        [
+          "physical-double-shift",
+          "daemon-dispatch",
+          "ime-v3-outcome"
+        ]
+      ],
+      "role_owners": {
+        "orchestrator": [
+          "daemon-dispatch"
+        ],
+        "producer": [
+          "ime-v3-outcome"
+        ],
+        "interface": [
+          "physical-double-shift"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "physical-double-shift",
+          "to": "ime-v3-outcome",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "physical-double-shift",
+              "daemon-dispatch",
+              "ime-v3-outcome"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "authority-route-proof",
+      "event": "authority-route-proof",
+      "kind": "proof",
+      "entry": "fail-closed-terminal",
+      "via": [],
+      "terminal": "route-proof",
+      "path_count": 1,
+      "paths": [
+        [
+          "fail-closed-terminal",
+          "route-proof"
+        ]
+      ],
+      "role_owners": {
+        "observer": [
+          "fail-closed-terminal"
+        ],
+        "proof_owner": [
+          "route-proof"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {
+    "ime-proven-handled": {
+      "evidence_owner": [],
+      "mutation_owner": [
+        "ime-proven-output"
+      ],
+      "display_rank_owner": [],
+      "candidate_rank_owner": [],
+      "authorization_owner": [
+        "manual-authority-selector"
+      ],
+      "render_owner": []
+    },
+    "committed-unproven-delegated": {
+      "evidence_owner": [],
+      "mutation_owner": [
+        "daemon-output"
+      ],
+      "display_rank_owner": [],
+      "candidate_rank_owner": [],
+      "authorization_owner": [
+        "daemon-word-buffer-planner",
+        "manual-authority-selector"
+      ],
+      "render_owner": []
+    }
+  },
+  "source_evidence": {
+    "expected": 0,
+    "verified": 0,
+    "complete": true
+  },
+  "issues": [
+    {
+      "code": "path_cardinality_violation",
+      "message": "event reaches the endpoint through the wrong number of same-kind paths",
+      "route": "committed-unproven-execution",
+      "event": "committed-unproven-delegated",
+      "graph": "execution",
+      "source": "physical-double-shift",
+      "target": "daemon-output",
+      "count": 2,
+      "minimum": 1,
+      "maximum": 1,
+      "paths": [
+        [
+          "physical-double-shift",
+          "daemon-dispatch",
+          "ime-v3-outcome",
+          "manual-authority-selector",
+          "daemon-word-buffer-planner",
+          "daemon-output"
+        ],
+        [
+          "physical-double-shift",
+          "daemon-dispatch",
+          "ime-v3-outcome",
+          "manual-authority-selector",
+          "daemon-word-buffer-planner",
+          "daemon-output"
+        ]
+      ]
+    },
+    {
+      "code": "multiple_authority_owners",
+      "message": "route has more than one owner for a singleton authority role",
+      "route": "committed-unproven-authority",
+      "role": "authorization_owner",
+      "owners": [
+        "daemon-word-buffer-planner",
+        "manual-authority-selector"
+      ]
+    },
+    {
+      "code": "multiple_event_authority_owners",
+      "message": "authority lanes in one event disagree on a singleton owner",
+      "event": "committed-unproven-delegated",
+      "role": "authorization_owner",
+      "owners": [
+        "daemon-word-buffer-planner",
+        "manual-authority-selector"
+      ]
+    }
+  ],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": false,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

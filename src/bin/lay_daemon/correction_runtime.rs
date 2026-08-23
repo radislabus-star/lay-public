@@ -5,15 +5,14 @@ use lay::engine::{decide_manual_correction, ManualCorrectionInput, ManualCorrect
 use lay::input_gate::{decide_input_gate, InputGateRequest, InputGateTrigger};
 use lay::keyboard::{
     map_events_to_layout, map_original_events, mark_single_current_word_layout_if_stale,
-    replay_layout_decision,
+    replay_layout_decision, KeyEvent,
 };
-use lay::typing_assist::{effective_replace_words, should_force_replay_for_short_fragment};
 use std::time::Instant;
 
 use super::auto_undo_runtime::handle_pending_auto_undo;
 use super::{
-    active_auto_switch_layout, log, log_manual_trigger_cross_check, read_current_layout_is_ru,
-    ExecutingGuard,
+    active_auto_switch_layout, capture_ime_delegated_tail_lease, log,
+    log_manual_trigger_cross_check, read_current_layout_is_ru, ExecutingGuard,
 };
 
 #[path = "correction_runtime/force_layout.rs"]
@@ -27,7 +26,9 @@ use output::{apply_manual_correction_output, ManualCorrectionOutputContext};
 mod request;
 
 pub(super) use force_layout::handle_force_layout_hotkey;
-pub(super) use request::{ManualCorrectionRequest, ScopedManualCorrectionRequest};
+pub(super) use request::{
+    ManualCorrectionOutputRoute, ManualCorrectionRequest, ScopedManualCorrectionRequest,
+};
 
 pub(super) fn run_manual_correction_with_scope(
     req: ScopedManualCorrectionRequest<'_, '_>,
@@ -37,6 +38,7 @@ pub(super) fn run_manual_correction_with_scope(
     log_manual_trigger_cross_check(req.manual.buf, req.events_since_word_start);
     let result = handle_double_shift(ManualCorrectionRequest {
         replace_words,
+        output_route: req.manual.output_route,
         ..req.manual
     });
     log(&format!("· {label} fired with scope={replace_words}"));
@@ -47,13 +49,12 @@ pub(super) fn handle_double_shift(req: ManualCorrectionRequest<'_, '_>) -> Optio
     let ManualCorrectionRequest {
         buf,
         replace_words,
-        engine,
-        auto_replace,
         virtual_kbd,
         executing,
         input_isolated,
         text_observation,
         physical_grab,
+        output_route,
     } = req;
     let started_at = Instant::now();
     if let Some(undo) = buf.take_pending_auto_undo() {
@@ -68,7 +69,6 @@ pub(super) fn handle_double_shift(req: ManualCorrectionRequest<'_, '_>) -> Optio
         );
     }
 
-    let replace_words = effective_replace_words(buf, replace_words, engine, auto_replace);
     let Some((mut events, n_backspaces)) = buf.what_to_replay(replace_words) else {
         log("👆 двойной Shift, но буфер пуст");
         return None;
@@ -90,11 +90,28 @@ pub(super) fn handle_double_shift(req: ManualCorrectionRequest<'_, '_>) -> Optio
     let mixed_layouts = layout_decision.mixed_layouts;
 
     let mapped_orig = map_original_events(&events);
+    let delegated_tail_lease = if output_route == ManualCorrectionOutputRoute::DaemonUinput {
+        if !input_isolated {
+            log("⚠ delegated manual replay blocked: physical input is not isolated");
+            return None;
+        }
+        match capture_ime_delegated_tail_lease(&mapped_orig, n_backspaces) {
+            Ok(lease) => Some(lease),
+            Err(error) => {
+                log(&format!(
+                    "⚠ delegated manual replay blocked before mutation: {error}"
+                ));
+                return None;
+            }
+        }
+    } else {
+        None
+    };
     let empty_pipeline: &[TypingAssistRuleConfig] = &[];
     let input_gate = decide_input_gate(InputGateRequest {
         trigger: InputGateTrigger::DoubleShift,
         text_tail: &mapped_orig,
-        auto_replace,
+        auto_replace: false,
         typing_assist: false,
         auto_switch_layout: active_auto_switch_layout(),
         correction_safety: CorrectionSafety::Normal,
@@ -125,24 +142,10 @@ pub(super) fn handle_double_shift(req: ManualCorrectionRequest<'_, '_>) -> Optio
     }
     // ═══ АЛГОРИТМ: decision layer → backspace → replay/text insert ═══
 
-    let force_short_replay = should_force_replay_for_short_fragment(&mapped_orig);
-    let force_replay_toggle =
-        engine == CorrectionEngine::Smart && (buf.replay_toggle_ready() || force_short_replay);
-    if force_replay_toggle {
-        log("  smart: replay без модели");
-    }
-    let correction_result = decide_manual_correction(
-        ManualCorrectionInput {
-            events: &events,
-            original: &mapped_orig,
-            converted: &mapped_target,
-        },
-        ManualCorrectionPolicy {
-            engine,
-            force_replay: force_replay_toggle,
-            auto_replace,
-        },
-    );
+    // Ordinary Double Shift is a physical layout projection, not correction.
+    let force_replay_toggle = true;
+    log("  deterministic: physical key replay without model or learning");
+    let correction_result = decide_physical_layout_replay(&events, &mapped_orig, &mapped_target);
     apply_manual_correction_output(
         ManualCorrectionOutputContext {
             buf,
@@ -160,7 +163,48 @@ pub(super) fn handle_double_shift(req: ManualCorrectionRequest<'_, '_>) -> Optio
             physical_grab,
             input_isolated,
             text_observation,
+            output_route,
+            delegated_tail_lease,
         },
         input_gate,
     )
+}
+
+fn decide_physical_layout_replay(
+    events: &[KeyEvent],
+    original: &str,
+    converted: &str,
+) -> lay::engine::ManualCorrectionDecision {
+    decide_manual_correction(
+        ManualCorrectionInput {
+            events,
+            original,
+            converted,
+        },
+        ManualCorrectionPolicy {
+            engine: CorrectionEngine::Replay,
+            force_replay: true,
+            auto_replace: false,
+        },
+    )
+}
+
+#[cfg(test)]
+mod tests {
+    use super::decide_physical_layout_replay;
+    use lay::decoder::DecoderAction;
+    use lay::keyboard::{map_events_to_layout, map_original_events, text_to_key_events};
+
+    #[test]
+    fn ordinary_double_shift_is_exact_replay_without_smart_replacement() {
+        let events = text_to_key_events("абвгд", true).expect("physical key events");
+        let original = map_original_events(&events);
+        let converted = map_events_to_layout(&events, false);
+
+        let decision = decide_physical_layout_replay(&events, &original, &converted);
+
+        assert_eq!(decision.action, DecoderAction::ReplayAll);
+        assert_eq!(decision.output_text, converted);
+        assert!(!decision.output_target_is_ru);
+    }
 }
