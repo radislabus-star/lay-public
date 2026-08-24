@@ -61,6 +61,7 @@ impl LayIbusEngine {
             return Ok(None);
         };
         trace::record_manual_toggle_plan(&plan);
+        let source_layout_is_ru = self.layout_is_ru;
         let original = self.buffer.clone();
         let Some(replacement_plan) = plan_text_replacement(&original, &plan.replacement) else {
             return Ok(None);
@@ -81,6 +82,7 @@ impl LayIbusEngine {
             .await?;
         self.suppress_next_committed_tail_autocorrect = plan.suppress_next_autocorrect;
         self.sync_layout_after_manual_toggle(&plan.replacement);
+        let _ = self.arm_cyclic_layout_handoff(source_layout_is_ru, plan.target_layout_is_ru);
         self.trace_key("double_shift_commit", 0, 0, true, None);
         Ok(Some(plan.target_layout_is_ru))
     }

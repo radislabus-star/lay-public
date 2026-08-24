@@ -403,6 +403,7 @@ impl LayIbusEngine {
         &mut self,
         emitter: &mut EngineOutput<'_, '_>,
     ) -> fdo::Result<Option<bool>> {
+        let source_layout_is_ru = self.layout_is_ru;
         let Some(plan) = self.committed_tail_toggle_plan() else {
             return Ok(None);
         };
@@ -419,6 +420,7 @@ impl LayIbusEngine {
             .await?;
         if handled {
             self.sync_layout_after_manual_toggle(&plan.replacement);
+            let _ = self.arm_cyclic_layout_handoff(source_layout_is_ru, plan.target_layout_is_ru);
             self.trace_key("double_shift_committed_tail", 0, 0, true, None);
         }
         Ok(handled.then_some(plan.target_layout_is_ru))
@@ -428,6 +430,7 @@ impl LayIbusEngine {
         &mut self,
         emitter: &mut EngineOutput<'_, '_>,
     ) -> fdo::Result<Option<bool>> {
+        let source_layout_is_ru = self.layout_is_ru;
         let boundary_elided_snapshot = self.pending_ime_auto_undo_uses_boundary_elided_snapshot();
         let causal_precondition_snapshot =
             self.pending_ime_auto_undo_uses_causal_precondition_snapshot();
@@ -467,6 +470,7 @@ impl LayIbusEngine {
                 pending.transition,
             );
             trace::record(r#"{"kind":"ibus_auto_undo","status":"restored_exact_original"}"#);
+            let _ = self.arm_cyclic_layout_handoff(source_layout_is_ru, target_layout_is_ru);
             self.trace_key("double_shift_auto_undo", 0, 0, true, None);
             return Ok(Some(target_layout_is_ru));
         }

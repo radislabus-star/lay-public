@@ -2,14 +2,15 @@ use super::engine::{
     LayIbusEngine, PendingImeCompletionLearning, PendingSystemOutcomeFeedback, SystemOutcomeKind,
 };
 use super::protocol::{
-    DaemonDelegatedLayoutHandoff, PendingImeAutoUndo, PendingImeAutoUndoRetry, SharedState,
-    ShiftGestureHandoff,
+    CyclicLayoutHandoff, DaemonDelegatedLayoutHandoff, PendingImeAutoUndo, PendingImeAutoUndoRetry,
+    SharedState, ShiftGestureHandoff, ShiftGestureHandoffAuthority,
 };
 use lay::text_edit::{VisibleTailSnapshot, VisibleTailSource};
 use std::time::{Duration, Instant};
 
 const IME_AUTO_UNDO_MAX_AGE: Duration = Duration::from_secs(30);
 const IME_AUTO_UNDO_RETRY_MAX_AGE: Duration = Duration::from_secs(5);
+const CYCLIC_LAYOUT_HANDOFF_MAX_AGE: Duration = Duration::from_millis(700);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum SurroundingSnapshotMatch {
@@ -30,6 +31,7 @@ impl LayIbusEngine {
         let Ok(mut state) = self.shared.lock() else {
             return;
         };
+        state.cyclic_layout_handoff = None;
         state.shift_gesture_handoff = None;
         state.pending_auto_undo_retry = None;
         state.pending_auto_undo = (original != replacement
@@ -84,6 +86,7 @@ impl LayIbusEngine {
         let Ok(mut state) = self.shared.lock() else {
             return;
         };
+        state.cyclic_layout_handoff = None;
         state.shift_gesture_handoff = None;
         state.pending_auto_undo_retry = None;
         state.pending_auto_undo = Some(pending);
@@ -95,6 +98,7 @@ impl LayIbusEngine {
             return;
         };
         record_pending_ime_auto_undo_lifecycle(self, &state, "clear", reason);
+        state.cyclic_layout_handoff = None;
         state.shift_gesture_handoff = None;
         state.pending_auto_undo = None;
         state.pending_auto_undo_retry = None;
@@ -518,10 +522,31 @@ impl LayIbusEngine {
     }
 
     pub(super) fn publish_tail_handoff(&mut self) {
+        let previous_epoch = self.tail_epoch;
         self.tail_epoch = self.tail_epoch.wrapping_add(1);
         let Ok(mut state) = self.shared.lock() else {
             return;
         };
+        let now = Instant::now();
+        let refresh_cyclic_identity = state.cyclic_layout_handoff.as_ref().is_some_and(|handoff| {
+            now <= handoff.expires_at
+                && handoff.source_path == self.path
+                && state.active_path.as_deref() == Some(self.path.as_str())
+                && handoff.exact_tail == self.tail_buffer
+                && handoff.tail_epoch == previous_epoch
+                && handoff.target_layout_is_ru == self.layout_is_ru
+        });
+        if refresh_cyclic_identity {
+            if let Some(handoff) = state.cyclic_layout_handoff.as_mut() {
+                handoff.tail_epoch = self.tail_epoch;
+            }
+        } else {
+            state.cyclic_layout_handoff = None;
+        }
+        // A tail publication is a new causal frame. A partially transferred
+        // gesture can never cross that frame, even when an exact cyclic
+        // capability itself remains valid for the unchanged tail.
+        state.shift_gesture_handoff = None;
         state.daemon_delegated_layout_handoff = None;
         state.handoff_tail_buffer = self.tail_buffer.clone();
         state.handoff_tail_epoch = self.tail_epoch;
@@ -551,6 +576,7 @@ impl LayIbusEngine {
         state.daemon_delegated_layout_handoff = None;
         state.pending_auto_undo = None;
         state.pending_auto_undo_retry = None;
+        state.cyclic_layout_handoff = None;
         state.shift_gesture_handoff = None;
     }
 
@@ -581,6 +607,7 @@ impl LayIbusEngine {
             state.daemon_delegated_layout_handoff = None;
             state.pending_auto_undo = None;
             state.pending_auto_undo_retry = None;
+            state.cyclic_layout_handoff = None;
             state.shift_gesture_handoff = None;
         };
     }
@@ -656,6 +683,52 @@ impl LayIbusEngine {
         true
     }
 
+    pub(super) fn arm_cyclic_layout_handoff(
+        &self,
+        source_layout_is_ru: bool,
+        target_layout_is_ru: bool,
+    ) -> bool {
+        let Ok(mut state) = self.shared.lock() else {
+            return false;
+        };
+        state.shift_gesture_handoff = None;
+        if source_layout_is_ru == target_layout_is_ru
+            || self.tail_buffer.is_empty()
+            || state.active_path.as_deref() != Some(self.path.as_str())
+            || state.handoff_tail_buffer != self.tail_buffer
+            || state.handoff_tail_epoch != self.tail_epoch
+        {
+            state.cyclic_layout_handoff = None;
+            return false;
+        }
+
+        let expires_at = Instant::now() + CYCLIC_LAYOUT_HANDOFF_MAX_AGE;
+        if state
+            .preserve_active_path_until
+            .is_none_or(|until| until < expires_at)
+        {
+            state.preserve_active_path_until = Some(expires_at);
+        }
+        state.cyclic_layout_handoff = Some(CyclicLayoutHandoff {
+            source_path: self.path.clone(),
+            target_path: None,
+            exact_tail: self.tail_buffer.clone(),
+            tail_epoch: self.tail_epoch,
+            source_layout_is_ru,
+            target_layout_is_ru,
+            expires_at,
+        });
+        super::trace::record(format!(
+            r#"{{"kind":"ibus_cyclic_layout_handoff","stage":"arm","source":"{}","tail_epoch":{},"source_layout_is_ru":{},"target_layout_is_ru":{},"expires_ms":{}}}"#,
+            self.path,
+            self.tail_epoch,
+            source_layout_is_ru,
+            target_layout_is_ru,
+            CYCLIC_LAYOUT_HANDOFF_MAX_AGE.as_millis(),
+        ));
+        true
+    }
+
     pub(super) fn publish_tail_handoff_after_soft_reset(&mut self) {
         let preserve_epoch = {
             let Ok(mut state) = self.shared.lock() else {
@@ -701,6 +774,7 @@ impl LayIbusEngine {
         }
         state.preserve_active_path_until = None;
         state.daemon_delegated_layout_handoff = None;
+        state.cyclic_layout_handoff = None;
         state.shift_gesture_handoff = None;
         false
     }
@@ -710,26 +784,58 @@ impl LayIbusEngine {
             return;
         };
         let now = Instant::now();
-        let lease_is_live = state
-            .preserve_active_path_until
-            .is_some_and(|until| now <= until);
-        if !lease_is_live || state.pending_auto_undo.is_none() {
-            state.shift_gesture_handoff = None;
-            return;
-        }
         if state.active_path.as_deref() != Some(self.path.as_str()) {
             return;
         }
+        let pending_undo_expiry = state
+            .preserve_active_path_until
+            .filter(|until| now <= *until && state.pending_auto_undo.is_some());
+        let live_cycle = state
+            .cyclic_layout_handoff
+            .as_ref()
+            .filter(|handoff| {
+                now <= handoff.expires_at
+                    && handoff.source_path == self.path
+                    && handoff.source_layout_is_ru != handoff.target_layout_is_ru
+                    && handoff.exact_tail == self.tail_buffer
+                    && handoff.tail_epoch == self.tail_epoch
+                    && state.handoff_tail_buffer == handoff.exact_tail
+                    && state.handoff_tail_epoch == handoff.tail_epoch
+            })
+            .map(|handoff| (handoff.target_layout_is_ru, handoff.expires_at));
+        let (authority, target_layout_is_ru, expires_at) =
+            if let Some(expires_at) = pending_undo_expiry {
+                (
+                    ShiftGestureHandoffAuthority::PendingAutoUndo,
+                    None,
+                    expires_at,
+                )
+            } else if let Some((target_layout_is_ru, expires_at)) = live_cycle {
+                (
+                    ShiftGestureHandoffAuthority::CyclicLayout,
+                    Some(target_layout_is_ru),
+                    expires_at,
+                )
+            } else {
+                state.cyclic_layout_handoff = None;
+                state.shift_gesture_handoff = None;
+                return;
+            };
         state.shift_gesture_handoff = Some(ShiftGestureHandoff {
+            authority,
             source_path: self.path.clone(),
+            exact_tail: self.tail_buffer.clone(),
+            tail_epoch: self.tail_epoch,
+            target_layout_is_ru,
+            expires_at,
             shift_active: self.shift_active,
             shift_pressed_at: self.shift_pressed_at,
             shift_used_as_modifier: self.shift_used_as_modifier,
             last_shift_release_at: self.last_shift_release_at,
         });
         super::trace::record(format!(
-            r#"{{"kind":"ibus_shift_gesture_handoff","stage":"publish","source":"{}","shift_active":{},"used_as_modifier":{}}}"#,
-            self.path, self.shift_active, self.shift_used_as_modifier,
+            r#"{{"kind":"ibus_shift_gesture_handoff","stage":"publish","authority":"{authority:?}","source":"{}","tail_epoch":{},"shift_active":{},"used_as_modifier":{}}}"#,
+            self.path, self.tail_epoch, self.shift_active, self.shift_used_as_modifier,
         ));
     }
 
@@ -739,23 +845,56 @@ impl LayIbusEngine {
                 return;
             };
             let now = Instant::now();
-            let lease_is_live = state
-                .preserve_active_path_until
-                .is_some_and(|until| now <= until);
-            if !lease_is_live || state.pending_auto_undo.is_none() {
-                state.shift_gesture_handoff = None;
-                return;
-            }
             if state.active_path.as_deref() != Some(self.path.as_str()) {
                 return;
             }
-            let Some(gesture) = state.shift_gesture_handoff.as_ref() else {
+            let Some(gesture) = state.shift_gesture_handoff.take() else {
                 return;
             };
             if gesture.source_path == self.path {
+                state.shift_gesture_handoff = Some(gesture);
                 return;
             }
-            state.shift_gesture_handoff.take()
+            if now > gesture.expires_at {
+                return;
+            }
+            let exact_tail = gesture.exact_tail == self.tail_buffer
+                && gesture.tail_epoch == self.tail_epoch
+                && state.handoff_tail_buffer == gesture.exact_tail
+                && state.handoff_tail_epoch == gesture.tail_epoch;
+            let authorized = match gesture.authority {
+                ShiftGestureHandoffAuthority::PendingAutoUndo => {
+                    exact_tail
+                        && gesture.target_layout_is_ru.is_none()
+                        && state.pending_auto_undo.is_some()
+                        && state
+                            .preserve_active_path_until
+                            .is_some_and(|until| now <= until)
+                }
+                ShiftGestureHandoffAuthority::CyclicLayout => {
+                    state.cyclic_layout_handoff.as_ref().is_some_and(|handoff| {
+                        exact_tail
+                            && now <= handoff.expires_at
+                            && handoff.source_path == gesture.source_path
+                            && handoff.target_path.as_deref() == Some(self.path.as_str())
+                            && handoff.exact_tail == gesture.exact_tail
+                            && handoff.tail_epoch == gesture.tail_epoch
+                            && handoff.source_layout_is_ru != handoff.target_layout_is_ru
+                            && gesture.target_layout_is_ru == Some(handoff.target_layout_is_ru)
+                            && self.layout_is_ru == handoff.target_layout_is_ru
+                    })
+                }
+            };
+            if !authorized {
+                if gesture.authority == ShiftGestureHandoffAuthority::CyclicLayout {
+                    state.cyclic_layout_handoff = None;
+                }
+                return;
+            }
+            if gesture.authority == ShiftGestureHandoffAuthority::CyclicLayout {
+                state.cyclic_layout_handoff = None;
+            }
+            Some(gesture)
         };
         let Some(handoff) = handoff else {
             return;
@@ -766,8 +905,13 @@ impl LayIbusEngine {
         self.shift_used_as_modifier = handoff.shift_used_as_modifier;
         self.last_shift_release_at = handoff.last_shift_release_at;
         super::trace::record(format!(
-            r#"{{"kind":"ibus_shift_gesture_handoff","stage":"consume","source":"{}","target":"{}","shift_active":{},"used_as_modifier":{}}}"#,
-            source_path, self.path, self.shift_active, self.shift_used_as_modifier,
+            r#"{{"kind":"ibus_shift_gesture_handoff","stage":"consume","authority":"{:?}","source":"{}","target":"{}","tail_epoch":{},"shift_active":{},"used_as_modifier":{}}}"#,
+            handoff.authority,
+            source_path,
+            self.path,
+            handoff.tail_epoch,
+            self.shift_active,
+            self.shift_used_as_modifier,
         ));
     }
 }

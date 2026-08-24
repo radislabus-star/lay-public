@@ -112,6 +112,14 @@ impl LayIbusEngine {
                 {
                     state.daemon_delegated_layout_handoff = None;
                 }
+                if state
+                    .cyclic_layout_handoff
+                    .as_ref()
+                    .is_some_and(|handoff| now > handoff.expires_at)
+                {
+                    state.cyclic_layout_handoff = None;
+                    state.shift_gesture_handoff = None;
+                }
                 let delegated_target =
                     state
                         .daemon_delegated_layout_handoff
@@ -141,12 +149,40 @@ impl LayIbusEngine {
                 } else if delegated_path_attempt {
                     state.daemon_delegated_layout_handoff = None;
                 }
-                let preserve_handoff = state
-                    .preserve_active_path_until
-                    .is_some_and(|until| now <= until);
+                let cyclic_target = state.cyclic_layout_handoff.as_ref().is_some_and(|handoff| {
+                    now <= handoff.expires_at
+                        && state.active_path.as_deref() == Some(handoff.source_path.as_str())
+                        && self.path != handoff.source_path
+                        && self.layout_is_ru == handoff.target_layout_is_ru
+                        && handoff
+                            .target_path
+                            .as_deref()
+                            .map_or(true, |path| path == self.path)
+                        && state.handoff_tail_buffer == handoff.exact_tail
+                        && state.handoff_tail_epoch == handoff.tail_epoch
+                });
+                let cyclic_path_attempt =
+                    state.cyclic_layout_handoff.as_ref().is_some_and(|handoff| {
+                        state.active_path.as_deref() == Some(handoff.source_path.as_str())
+                            && self.path != handoff.source_path
+                    });
+                if cyclic_target {
+                    if let Some(handoff) = state.cyclic_layout_handoff.as_mut() {
+                        handoff.target_path = Some(self.path.clone());
+                    }
+                } else if cyclic_path_attempt {
+                    state.cyclic_layout_handoff = None;
+                    state.shift_gesture_handoff = None;
+                }
+                let preserve_handoff = cyclic_target
+                    || state
+                        .preserve_active_path_until
+                        .is_some_and(|until| now <= until);
                 if !preserve_handoff {
                     state.preserve_active_path_until = None;
                     state.daemon_delegated_layout_handoff = None;
+                    state.cyclic_layout_handoff = None;
+                    state.shift_gesture_handoff = None;
                 }
                 state.active_path = Some(self.path.clone());
                 let handoff = preserve_handoff.then(|| {
@@ -163,6 +199,7 @@ impl LayIbusEngine {
                     state.suppress_next_committed_tail_autocorrect = false;
                     state.pending_auto_undo = None;
                     state.pending_auto_undo_retry = None;
+                    state.cyclic_layout_handoff = None;
                     state.shift_gesture_handoff = None;
                     state.daemon_delegated_layout_handoff = None;
                 }

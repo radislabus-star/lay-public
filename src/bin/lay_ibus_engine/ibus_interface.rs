@@ -11,6 +11,18 @@ use super::output::{AtomicProposal, EngineOutput};
 use super::protocol::{is_accept_completion_with_space_key, is_key_press, is_shift_key};
 use super::trace;
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) enum PhysicalShiftGestureOwner {
+    Daemon,
+    AtomicIme,
+}
+
+impl PhysicalShiftGestureOwner {
+    const fn ime_owns_double_shift(self) -> bool {
+        matches!(self, Self::AtomicIme)
+    }
+}
+
 #[interface(name = "org.freedesktop.IBus.Engine")]
 impl LayIbusEngine {
     #[zbus(name = "ProcessKeyEvent")]
@@ -27,8 +39,14 @@ impl LayIbusEngine {
         }
         self.consume_shift_gesture_handoff();
         let mut output = EngineOutput::legacy(&emitter);
-        self.process_key_event_with_output(&mut output, keyval, keycode, state)
-            .await
+        self.process_key_event_with_output(
+            &mut output,
+            keyval,
+            keycode,
+            state,
+            PhysicalShiftGestureOwner::Daemon,
+        )
+        .await
     }
 
     #[zbus(name = "ProcessKeyEventAtomicV1")]
@@ -296,6 +314,7 @@ impl LayIbusEngine {
         keyval: u32,
         keycode: u32,
         state: u32,
+        shift_gesture_owner: PhysicalShiftGestureOwner,
     ) -> fdo::Result<bool> {
         if !self.managed_input {
             return Ok(false);
@@ -324,14 +343,34 @@ impl LayIbusEngine {
             let pressed = is_key_press(state);
             self.shift_active = pressed;
             if pressed {
-                self.shift_pressed_at = Some(Instant::now());
+                self.shift_pressed_at = shift_gesture_owner
+                    .ime_owns_double_shift()
+                    .then(Instant::now);
                 self.shift_used_as_modifier = false;
+                if !shift_gesture_owner.ime_owns_double_shift() {
+                    self.last_shift_release_at = None;
+                }
                 if self.alt_completion_active {
                     self.alt_used_as_modifier = true;
                     self.shift_used_as_modifier = true;
                     return Ok(self.toggle_layout_from_modifier_hotkey());
                 }
             } else {
+                if !shift_gesture_owner.ime_owns_double_shift() {
+                    self.shift_pressed_at = None;
+                    self.shift_used_as_modifier = false;
+                    self.last_shift_release_at = None;
+                    trace::record_key(
+                        "legacy_shift_daemon_gesture_owner",
+                        keyval,
+                        keycode,
+                        false,
+                        None,
+                        self.tail_buffer.chars().count(),
+                        self.preedit_suffix.chars().count(),
+                    );
+                    return Ok(false);
+                }
                 let now = Instant::now();
                 let tapped = self.shift_pressed_at.take().is_some_and(|pressed_at| {
                     now.duration_since(pressed_at) <= Duration::from_millis(self.config.tap_max_ms)
@@ -412,6 +451,89 @@ mod causal_precondition_tests {
         assert!(!should_apply_auto_undo_before_postcondition(
             "waiting_exact_snapshot"
         ));
+    }
+}
+
+#[cfg(test)]
+mod shift_gesture_owner_tests {
+    use super::{LayIbusEngine, PhysicalShiftGestureOwner};
+    use crate::output::{
+        AtomicEffectBuilder, EngineOutput, PROPOSAL_FRAME_READY, PROPOSAL_NATIVE_UNHANDLED,
+    };
+    use crate::protocol::{KEY_LEFT_SHIFT, RELEASE_MASK};
+    use lay::config::LayConfig;
+    use std::sync::{Arc, Mutex};
+
+    fn engine() -> LayIbusEngine {
+        let mut config = LayConfig::default();
+        config.text_backend = "ime".to_string();
+        config.auto_switch_layout = false;
+        let mut engine = LayIbusEngine::new(
+            "/single-gesture-owner".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            config,
+        );
+        engine.buffer = "ывы".to_string();
+        engine.composition_cursor = engine.buffer.chars().count();
+        engine
+    }
+
+    fn observe_legacy_shift(engine: &mut LayIbusEngine, state: u32) -> u8 {
+        let mut builder = AtomicEffectBuilder::default();
+        let handled = {
+            let mut output = EngineOutput::atomic(&mut builder);
+            zbus::block_on(engine.process_key_event_with_output(
+                &mut output,
+                KEY_LEFT_SHIFT,
+                42,
+                state,
+                PhysicalShiftGestureOwner::Daemon,
+            ))
+            .expect("legacy Shift observation")
+        };
+        builder.finish(handled).0
+    }
+
+    fn dispatch_daemon_manual_toggle(engine: &mut LayIbusEngine) -> u8 {
+        let mut builder = AtomicEffectBuilder::default();
+        let handled = {
+            let mut output = EngineOutput::atomic(&mut builder);
+            zbus::block_on(engine.manual_toggle_active_text_target(&mut output))
+                .expect("daemon ManualToggleV3 dispatch")
+                .is_some()
+        };
+        builder.finish(handled).0
+    }
+
+    fn assert_one_mutation_when_daemon_dispatches(command_before_second_release: bool) {
+        let mut engine = engine();
+        let mut legacy_proposals = vec![
+            observe_legacy_shift(&mut engine, 0),
+            observe_legacy_shift(&mut engine, RELEASE_MASK),
+            observe_legacy_shift(&mut engine, 0),
+        ];
+
+        if !command_before_second_release {
+            legacy_proposals.push(observe_legacy_shift(&mut engine, RELEASE_MASK));
+        }
+        let command_proposal = dispatch_daemon_manual_toggle(&mut engine);
+        if command_before_second_release {
+            legacy_proposals.push(observe_legacy_shift(&mut engine, RELEASE_MASK));
+        }
+
+        assert!(legacy_proposals
+            .iter()
+            .all(|proposal| *proposal == PROPOSAL_NATIVE_UNHANDLED));
+        assert_eq!(command_proposal, PROPOSAL_FRAME_READY);
+        assert_eq!(engine.tail_buffer, "sds");
+    }
+
+    #[test]
+    fn one_legacy_physical_double_shift_has_one_mutation_owner_in_either_event_order() {
+        assert_one_mutation_when_daemon_dispatches(false);
+        assert_one_mutation_when_daemon_dispatches(true);
     }
 }
 

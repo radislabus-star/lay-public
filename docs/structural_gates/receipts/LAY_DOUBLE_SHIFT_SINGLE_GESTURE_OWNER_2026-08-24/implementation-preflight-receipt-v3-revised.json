@@ -1,0 +1,104 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "legacy-and-atomic-key-router",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/ibus_interface.rs",
+      "sha256": "b1876eed612f09f69695aa804be358c5d91542fd3d3b8e997335902cc3e8abc5",
+      "size_bytes": 15434
+    },
+    {
+      "exists": true,
+      "id": "atomic-event-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/atomic.rs",
+      "sha256": "bcbd82768469b4515c2e583f3d9c43e9890781d4bc22d55ea10a92ef6bfb1ac4",
+      "size_bytes": 19998
+    },
+    {
+      "exists": true,
+      "id": "daemon-to-ime-command-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_daemon/manual_trigger_runtime/fire.rs",
+      "sha256": "16792329c26adb55a3628a8b41b402b70e22de35c90360ba378d8dce7fc44098",
+      "size_bytes": 2737
+    },
+    {
+      "exists": true,
+      "id": "verified-ime-edit-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/shift.rs",
+      "sha256": "298af5a3af510412af4e237eb30b53d37b7cbf4cab4e63d23e05cc7afc07e4ec",
+      "size_bytes": 6426
+    },
+    {
+      "exists": true,
+      "id": "installed-duplicate-owner-engine-1-0-42",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "sha256": "730522ba76f52d92e572d112b064ca6b072def49f3ab0b8d3e46ee29dae597b2",
+      "size_bytes": 6758392
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 5,
+    "forbidden_side_effect_kinds": [
+      "change_verified_edit_primitive",
+      "deploy_before_cardinality_pass",
+      "disable_atomic_gesture_authority",
+      "local_cargo_build",
+      "restart_global_ibus",
+      "timing_or_debounce_mask",
+      "two_legacy_gesture_detectors",
+      "weaken_autocorrect_undo_priority",
+      "word_or_client_hardcode"
+    ],
+    "identity_contracts": 2,
+    "invariants": 5,
+    "planned_side_effect_kinds": [
+      "installed_runtime_mutation",
+      "remote_process_start",
+      "source_edit"
+    ],
+    "preserved_artifacts": 1,
+    "runtime_comparisons": 1,
+    "source_checks": 2,
+    "tests": 9
+  },
+  "manifest_sha256": "297931401bec7acd3b8ab711fe133c6e9e30c7207b8f1929f0ef0920b70f1908",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-key-router",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/ibus_interface.rs",
+      "sha256": "b1876eed612f09f69695aa804be358c5d91542fd3d3b8e997335902cc3e8abc5",
+      "size_bytes": 15434
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-verified-edit-owner",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/shift.rs",
+      "sha256": "298af5a3af510412af4e237eb30b53d37b7cbf4cab4e63d23e05cc7afc07e4ec",
+      "size_bytes": 6426
+    }
+  ],
+  "task_id": "LAY_DOUBLE_SHIFT_SINGLE_GESTURE_OWNER_IMPLEMENTATION_V3_2026-08-24",
+  "verdict": "READY_TO_IMPLEMENT"
+}

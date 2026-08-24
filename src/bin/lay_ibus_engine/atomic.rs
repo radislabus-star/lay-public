@@ -4,6 +4,7 @@ use std::sync::{Arc, Mutex, OnceLock};
 use zbus::fdo;
 
 use super::engine::{DeferredLearningAction, LayIbusEngine};
+use super::ibus_interface::PhysicalShiftGestureOwner;
 use super::output::{
     AtomicEffectBuilder, AtomicProposal, EngineOutput, PROPOSAL_CONSUMED_NO_EFFECT,
     PROPOSAL_FRAME_READY, PROPOSAL_NATIVE_UNHANDLED,
@@ -81,7 +82,13 @@ impl LayIbusEngine {
         let handled = {
             let mut output = EngineOutput::atomic(&mut builder);
             speculative
-                .process_key_event_with_output(&mut output, keyval, keycode, state)
+                .process_key_event_with_output(
+                    &mut output,
+                    keyval,
+                    keycode,
+                    state,
+                    PhysicalShiftGestureOwner::AtomicIme,
+                )
                 .await?
         };
         let proposal = builder.finish(handled);

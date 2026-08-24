@@ -1,0 +1,312 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_DOUBLE_SHIFT_SINGLE_GESTURE_OWNER_IMPLEMENTATION_V3_2026-08-24",
+  "revision_reason": "The first validation required explicit static veto coverage for the reused verified-edit and deployment routes and rejected the static test kind. This revision adds those scans and expresses the route-policy check as parity without changing implementation scope.",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "legacy-and-atomic-key-router",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/ibus_interface.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 15434,
+        "sha256": "b1876eed612f09f69695aa804be358c5d91542fd3d3b8e997335902cc3e8abc5"
+      }
+    },
+    {
+      "id": "atomic-event-owner",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/atomic.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 19998,
+        "sha256": "bcbd82768469b4515c2e583f3d9c43e9890781d4bc22d55ea10a92ef6bfb1ac4"
+      }
+    },
+    {
+      "id": "daemon-to-ime-command-owner",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_daemon/manual_trigger_runtime/fire.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 2737,
+        "sha256": "16792329c26adb55a3628a8b41b402b70e22de35c90360ba378d8dce7fc44098"
+      }
+    },
+    {
+      "id": "verified-ime-edit-owner",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/shift.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 6426,
+        "sha256": "298af5a3af510412af4e237eb30b53d37b7cbf4cab4e63d23e05cc7afc07e4ec"
+      }
+    },
+    {
+      "id": "installed-duplicate-owner-engine-1-0-42",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 6758392,
+        "sha256": "730522ba76f52d92e572d112b064ca6b072def49f3ab0b8d3e46ee29dae597b2"
+      }
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {
+        "id": "make-key-event-route-ownership-explicit",
+        "kind": "source_edit"
+      },
+      {
+        "id": "add-one-gesture-one-mutation-cardinality-proof",
+        "kind": "source_edit"
+      },
+      {
+        "id": "run-remote-engine-proof-and-release-build",
+        "kind": "remote_process_start"
+      },
+      {
+        "id": "rollback-protected-managed-runtime-install",
+        "kind": "installed_runtime_mutation"
+      }
+    ],
+    "forbidden": [
+      "timing_or_debounce_mask",
+      "two_legacy_gesture_detectors",
+      "disable_atomic_gesture_authority",
+      "weaken_autocorrect_undo_priority",
+      "change_verified_edit_primitive",
+      "word_or_client_hardcode",
+      "restart_global_ibus",
+      "local_cargo_build",
+      "deploy_before_cardinality_pass"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "pinned-key-router",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/ibus_interface.rs",
+      "sha256": "b1876eed612f09f69695aa804be358c5d91542fd3d3b8e997335902cc3e8abc5",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "timing_or_debounce_mask",
+          "regex": "(debounce|Duration::from_millis|shift_window_ms).{0,160}(duplicate|legacy|owner)|(duplicate|legacy|owner).{0,160}(debounce|Duration::from_millis|shift_window_ms)"
+        },
+        {
+          "effect": "disable_atomic_gesture_authority",
+          "regex": "process_atomic_key_event.{0,500}(disable|skip|ignore).{0,120}(shift|gesture|manual_toggle)"
+        },
+        {
+          "effect": "two_legacy_gesture_detectors",
+          "regex": "LegacyDaemonGesture.{0,1200}manual_toggle_active_text_target|manual_toggle_active_text_target.{0,1200}LegacyDaemonGesture"
+        },
+        {
+          "effect": "word_or_client_hardcode",
+          "regex": "(kitty|chrome|wechat|ывы|sds).{0,80}(if|match)|(?:if|match).{0,80}(kitty|chrome|wechat|ывы|sds)"
+        },
+        {
+          "effect": "restart_global_ibus",
+          "regex": "(kill|restart).{0,80}ibus-daemon"
+        },
+        {
+          "effect": "local_cargo_build",
+          "regex": "cargo (build|test|check)"
+        },
+        {
+          "effect": "deploy_before_cardinality_pass",
+          "regex": "Command::new|systemctl|install-release-binaries|lay-runtime-control"
+        }
+      ]
+    },
+    {
+      "id": "pinned-verified-edit-owner",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/shift.rs",
+      "sha256": "298af5a3af510412af4e237eb30b53d37b7cbf4cab4e63d23e05cc7afc07e4ec",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "weaken_autocorrect_undo_priority",
+          "regex": "manual_toggle_authority.{0,800}defer_pending_ime_auto_undo_until_visible"
+        },
+        {
+          "effect": "change_verified_edit_primitive",
+          "regex": "(unsafe|unchecked|bypass).{0,160}(authorize_backend_edit|commit_verified_active_composition)|(authorize_backend_edit|commit_verified_active_composition).{0,160}(unsafe|unchecked|bypass)"
+        }
+      ]
+    }
+  ],
+  "state_machine": {
+    "initial_state": "INSTALLED_1_0_42_DUPLICATE_LEGACY_GESTURE_OWNER",
+    "steps": [
+      {
+        "id": "separate-legacy-and-atomic-gesture-ownership",
+        "from": "INSTALLED_1_0_42_DUPLICATE_LEGACY_GESTURE_OWNER",
+        "to": "SOURCE_READY",
+        "mutates": true,
+        "failure_state": "SOURCE_EDIT_FAILED",
+        "cleanup": "retain the scoped source diff; installed 1.0.42 remains byte-identical",
+        "preserves": [
+          "installed-duplicate-owner-engine-1-0-42"
+        ],
+        "test_id": "source-edit-fault"
+      },
+      {
+        "id": "prove-one-gesture-one-mutation-remotely",
+        "from": "SOURCE_READY",
+        "to": "REMOTE_CARDINALITY_PASS",
+        "mutates": true,
+        "failure_state": "REMOTE_PROOF_FAILED",
+        "cleanup": "stop proof-owned remote process; installed 1.0.42 remains byte-identical",
+        "preserves": [
+          "installed-duplicate-owner-engine-1-0-42"
+        ],
+        "test_id": "remote-proof-fault"
+      },
+      {
+        "id": "install-and-run-physical-double-shift",
+        "from": "REMOTE_CARDINALITY_PASS",
+        "to": "PHYSICAL_DOUBLE_SHIFT_PASS",
+        "mutates": true,
+        "failure_state": "CANARY_ROLLED_BACK",
+        "cleanup": "restore exact 1.0.42 managed runtime bytes and active Lay engine without restarting global IBus",
+        "preserves": [
+          "installed-duplicate-owner-engine-1-0-42"
+        ],
+        "test_id": "canary-fault"
+      }
+    ],
+    "terminal_states": [
+      "PHYSICAL_DOUBLE_SHIFT_PASS",
+      "SOURCE_EDIT_FAILED",
+      "REMOTE_PROOF_FAILED",
+      "CANARY_ROLLED_BACK"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "installed-duplicate-owner-engine-1-0-42",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "policy": "immutable_until_remote_cardinality_pass",
+      "cursor_policy": "none",
+      "rollback_policy": "restore_exact_bytes",
+      "baseline_check_id": "installed-duplicate-owner-engine-1-0-42"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "physical-gesture-command-cardinality",
+      "producer": "lay-daemon physical Double Shift FSM on the legacy IBus route",
+      "consumer": "one ManualToggleV3 command and one verified IME edit",
+      "comparison": "four ordered physical Shift events produce exactly one text mutation",
+      "test_id": "legacy-cardinality"
+    },
+    {
+      "id": "atomic-gesture-cardinality",
+      "producer": "four ordered ProcessKeyEventAtomicV1 Shift events",
+      "consumer": "one atomic proposal frame",
+      "comparison": "atomic route retains exactly one IME-owned mutation and no daemon fallback",
+      "test_id": "atomic-cardinality"
+    }
+  ],
+  "runtime_comparisons": [
+    {
+      "id": "managed-runtime-process-boundary",
+      "source": "pre-install and post-install process plus executable snapshots",
+      "comparison": "exact_stable_projection",
+      "reason": "only managed Lay processes and binary hashes may change",
+      "stable_fields": [
+        "global_ibus_daemon_pid",
+        "active_engine_after_restore"
+      ],
+      "expected_to_change_fields": [
+        "lay_daemon_pid",
+        "lay_ibus_engine_pid",
+        "managed_binary_sha256"
+      ],
+      "observed_not_compared_fields": [
+        "trace_line_count",
+        "focus_object_path"
+      ],
+      "test_id": "runtime-process-parity"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "one-legacy-detector",
+      "statement": "lay-daemon is the only physical Double Shift detector on the legacy IBus route; ProcessKeyEvent observes modifiers but cannot mint a manual-toggle command",
+      "test_id": "legacy-cardinality"
+    },
+    {
+      "id": "atomic-owner-preserved",
+      "statement": "ProcessKeyEventAtomicV1 retains IME gesture detection because its mutation must be proposed in the same atomic frame",
+      "test_id": "atomic-cardinality"
+    },
+    {
+      "id": "undo-first",
+      "statement": "one daemon-owned legacy gesture still asks the IME owner to restore a valid pending autocorrect before ordinary layout projection",
+      "test_id": "undo-priority"
+    },
+    {
+      "id": "no-time-mask",
+      "statement": "duplicate execution is removed by ownership, not hidden by a debounce or a shorter gesture window",
+      "test_id": "route-policy-static"
+    },
+    {
+      "id": "mutation-primitive-unchanged",
+      "statement": "accepted terminal and composition edits keep their existing verifier and backend mutation primitives",
+      "test_id": "engine-regression"
+    }
+  ],
+  "tests": [
+    {
+      "id": "source-edit-fault",
+      "kind": "fault_injection",
+      "expected": "installed 1.0.42 remains byte-identical after source failure"
+    },
+    {
+      "id": "remote-proof-fault",
+      "kind": "fault_injection",
+      "expected": "no installed mutation after remote test or build failure"
+    },
+    {
+      "id": "canary-fault",
+      "kind": "fault_injection",
+      "expected": "exact prior managed runtime bytes restore without global IBus restart"
+    },
+    {
+      "id": "legacy-cardinality",
+      "kind": "parity",
+      "expected": "legacy ProcessKeyEvent contributes zero manual-toggle mutations and one daemon ManualToggleV3 dispatch contributes exactly one"
+    },
+    {
+      "id": "atomic-cardinality",
+      "kind": "parity",
+      "expected": "one atomic Double Shift produces exactly one speculative atomic frame"
+    },
+    {
+      "id": "undo-priority",
+      "kind": "parity",
+      "expected": "autocorrect then one physical Double Shift restores the exact original once"
+    },
+    {
+      "id": "route-policy-static",
+      "kind": "parity",
+      "expected": "legacy and atomic call sites select explicit disjoint gesture owners and add no timing dedupe"
+    },
+    {
+      "id": "engine-regression",
+      "kind": "parity",
+      "expected": "complete lay-ibus-engine and authority contracts preserve prior passing behavior"
+    },
+    {
+      "id": "runtime-process-parity",
+      "kind": "parity",
+      "expected": "global IBus remains stable while managed Lay runtime is replaced and active engine is restored"
+    }
+  ]
+}

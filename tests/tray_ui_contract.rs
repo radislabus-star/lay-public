@@ -80,6 +80,8 @@ fn settings_expose_only_user_owned_controls() {
         "Запоминать ручные правки",
         "Показывать хвост в скобках",
         "Исправить последнее слово",
+        "Длительность нажатия Shift",
+        "Интервал двойного Shift",
         "Отдельные клавиши RU / EN",
         "Среда переключения раскладки",
         "Подробный журнал действий",
@@ -96,8 +98,6 @@ fn settings_expose_only_user_owned_controls() {
         "Вес L2 кандидатов",
         "Вес L3 фразы",
         "NANDA ячейки",
-        "Тап",
-        "Окно Shift",
         "Multi-tap максимум",
         "Несколько нажатий триггера",
         "Исправлять перед Enter",
@@ -109,6 +109,18 @@ fn settings_expose_only_user_owned_controls() {
             "internal setting remains visible: {stale}"
         );
     }
+}
+
+#[test]
+fn double_shift_timing_controls_write_existing_bounded_runtime_keys() {
+    let settings = read_extension("settings_view.js");
+    let support = read_extension("tray_support.js");
+
+    assert!(settings.contains("'tap_max_ms'"));
+    assert!(settings.contains("'shift_window_ms'"));
+    assert!(settings.contains("this._save({restart: true})"));
+    assert!(support.contains("normalizeBoundedInteger(cfg.tap_max_ms"));
+    assert!(support.contains("cfg.shift_window_ms, DEFAULTS.shift_window_ms"));
 }
 
 #[test]

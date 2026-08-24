@@ -1,0 +1,78 @@
+{
+  "schema": "lay.release.receipt.v1",
+  "receipt_id": "LAY_1_0_42_CYCLIC_DOUBLE_SHIFT_FINAL_2026_08_24",
+  "recorded_at": "2026-08-24T05:02:13+03:00",
+  "release": "1.0.42",
+  "scope": "cyclic whole-token Double Shift, exact autocorrect undo priority, and bounded timing controls",
+  "verdict": "PASS",
+  "authority": {
+    "release_runtime_authority_changed": true,
+    "timing_ui_authority_changed": false,
+    "owner": "shared manual-toggle decision with lay-ibus-engine as the active IME tail and edit backend"
+  },
+  "automated_proofs": [
+    {
+      "proof": "GNOME extension JavaScript syntax",
+      "result": "PASS",
+      "denominator": "2/2 files on local and remote hosts"
+    },
+    {
+      "proof": "tray_ui_contract",
+      "result": "PASS",
+      "denominator": "18/18",
+      "elapsed_seconds": 0.0
+    },
+    {
+      "proof": "lay-ibus-engine",
+      "result": "PASS",
+      "denominator": "249/249",
+      "elapsed_seconds": 8.80,
+      "log": "/home/e/build/lay-double-shift-1.0.42/final-engine-1.0.42.log"
+    },
+    {
+      "proof": "typing_transition_authority_contract",
+      "result": "PASS",
+      "denominator": "21/21",
+      "elapsed_seconds": 0.0,
+      "log": "/home/e/build/lay-double-shift-1.0.42/final-transition-authority-1.0.42.log"
+    },
+    {
+      "proof": "release SHA-256 manifest",
+      "result": "PASS",
+      "denominator": "10/10 binaries"
+    }
+  ],
+  "physical_observations_before_timing_ui_install": [
+    "direct whole-token conversion produced file проверка",
+    "round-trip conversion returned file ghjdthrf",
+    "six cyclic conversions returned ghjdthrf",
+    "the first Double Shift after autocorrect restored the original token and the next gesture entered cyclic conversion",
+    "user accepted the installed 1.0.42 runtime behavior"
+  ],
+  "live_install": {
+    "lay_version": "1.0.42",
+    "daemon_version": "1.0.42",
+    "engine_version": "1.0.42",
+    "active_ibus_engine": "lay-ime-ru",
+    "extension_state": "ACTIVE",
+    "tap_max_ms": 350,
+    "shift_window_ms": 500,
+    "ibus_daemon_pid_before_and_after": 2076194,
+    "lay_daemon_pid_after": 3356364,
+    "lay_ibus_engine_pid_after": 3356392,
+    "installed_engine_sha256": "730522ba76f52d92e572d112b064ca6b072def49f3ab0b8d3e46ee29dae597b2"
+  },
+  "release_payload": {
+    "binary_count": 10,
+    "bytes": 47354480,
+    "build_elapsed": "3m 29s",
+    "build_max_rss_kib": 2625092,
+    "manifest": "docs/structural_gates/receipts/LAY_KITTY_DOUBLE_SHIFT_CYCLIC_HANDOFF_2026-08-24/release-1.0.42-sha256-v1.txt"
+  },
+  "not_tested": [
+    "No additional physical typing replay was run after the UI-only timing control installation.",
+    "This receipt does not claim new L1-L4 model quality or sentence-context coverage."
+  ],
+  "rollback": "/home/ubu/.local/lib/lay/rollback/1.0.41-pre-1.0.42-cyclic-double-shift-20260824-044302",
+  "preflight_receipt": "docs/structural_gates/receipts/LAY_KITTY_DOUBLE_SHIFT_CYCLIC_HANDOFF_2026-08-24/implementation-preflight-receipt-v2.json"
+}

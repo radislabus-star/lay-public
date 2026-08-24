@@ -268,3 +268,99 @@ Final rollback:
 
 Final receipt:
 `docs/structural_gates/receipts/LAY_KITTY_DOUBLE_SHIFT_ATOMIC_TERMINAL_OWNER_2026-08-24/final-installed-1.0.41-v1.json`.
+
+## 1.0.42 Physical Gesture Cardinality Regression
+
+The 1.0.42 cyclic layout handoff passed synthetic token cycling, but the live
+physical keyboard exposed two independent detectors for one gesture:
+
+```text
+physical Shift events
+├── lay-daemon FSM -> ManualToggleV3 -> verified IME edit
+└── legacy IBus ProcessKeyEvent -> local double-tap FSM -> verified IME edit
+```
+
+The two edits were individually valid but mutually inverse. The live trace
+recorded adjacent `ывы -> sds` and `sds -> ывы` plans before focus changed, so
+one Double Shift had zero visible net effect and four Shift presses appeared
+necessary. This invalidates the earlier physical PASS claim for 1.0.42; timing
+changes cannot repair command cardinality.
+
+## 1.0.43 Single Gesture Owner
+
+The repair makes gesture ownership explicit at the shared key-event entry:
+
+```text
+legacy ProcessKeyEvent
+-> lay-daemon owns physical Double Shift recognition
+-> IBus observes modifier state only
+-> one ManualToggleV3 command
+-> one verified IME edit
+
+ProcessKeyEventAtomicV1
+-> atomic IME owns Double Shift recognition
+-> one atomic proposal frame
+```
+
+The verified edit primitive, exact-tail checks, cyclic token projection and
+autocorrect-undo priority are unchanged. No debounce, word, application or
+layout-specific exception was added.
+
+Measured source evidence before installation:
+
+```text
+implementation preflight                         READY_TO_IMPLEMENT
+legacy event-order cardinality proof                         1/1 PASS
+complete lay-ibus-engine                                  250/250 PASS
+typing-transition authority contract                       21/21 PASS
+remote full-engine wall                                      9.01 s
+remote full-engine max RSS                              349,324 KiB
+runtime authority changed before install                           no
+physical keyboard postcondition                         NOT_TESTED
+```
+
+Preflight and source receipt:
+
+- `docs/structural_gates/preflights/LAY_DOUBLE_SHIFT_SINGLE_GESTURE_OWNER_IMPLEMENTATION_V3_2026-08-24.json`
+- `docs/structural_gates/receipts/LAY_DOUBLE_SHIFT_SINGLE_GESTURE_OWNER_2026-08-24/implementation-preflight-receipt-v3-revised.json`
+
+### Installed 1.0.43 client-visible gate
+
+The remotely built ten-binary release was installed behind the existing
+rollback point. Installed files, staged files and the two loaded authority
+executables have exact SHA-256 parity. The global `ibus-daemon` remained PID
+`2076194`.
+
+The first smoke that reused the already-running daemon is not evidence: that
+daemon had not opened the newly created virtual input device, so the Shift
+events never entered the gesture route. The accepted harness opens a dedicated
+daemon on the isolated test device only after a GTK or Kitty capture field has
+focus. It therefore exercises both the daemon detector and legacy IBus event
+observation without sending input to an unrelated user window.
+
+```text
+GTK direct: file ghjdthrf -> Double Shift       file проверка  PASS
+GTK round trip: the same token -> two gestures  file ghjdthrf  PASS
+GTK djn -> вот -> Double Shift                  djn file       PASS
+
+Kitty direct: file ghjdthrf -> Double Shift     file проверка  PASS
+Kitty round trip: the same token -> two gestures
+                                                  file ghjdthrf  PASS
+Kitty djn -> вот -> Double Shift                djn file       PASS
+
+direct accepted gesture mutation count                       1
+round-trip mutation count                                    2
+autocorrect-undo gesture mutation count                       1
+preceding text deletion                                      0
+legacy IBus local gesture mutations                          0
+committed-tail replacement latency                      41-109 us
+```
+
+The `доллора` fixture did not autocorrect in the installed corpus and then
+exercised ordinary layout projection. It is `NOT_APPLICABLE_NO_AUTOCORRECT`,
+not an undo failure and not part of the undo denominator. Human-keyboard
+confirmation after this installation remains separate from the client-visible
+uinput proof.
+
+Final receipt:
+`docs/structural_gates/receipts/LAY_DOUBLE_SHIFT_SINGLE_GESTURE_OWNER_2026-08-24/final-installed-1.0.43-v1.json`.

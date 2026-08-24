@@ -25,8 +25,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1787531399.487528,
-    "ast_hash": "c4d4a1a8cb85cbad7893724ba3c2f958",
+    "mtime": 1787538048.5574157,
+    "ast_hash": "7e4730fb3126de41417c3d628f6ebe19",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
@@ -45,8 +45,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1787531399.4885283,
-    "ast_hash": "906e02f3dfde6d31e9cc3a04194ec42a",
+    "mtime": 1787538048.5574157,
+    "ast_hash": "d8ea4c5a4e4a88898a98f94b94e6d5b4",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -865,8 +865,8 @@
     "semantic_hash": "562af74b70d3d9a2ef9b8fe78fb73ccf"
   },
   "src/bin/lay_ibus_engine/committed_tail.rs": {
-    "mtime": 1787515790.7537713,
-    "ast_hash": "79fbea35ab697a0cbc9a098ddfaa3cce",
+    "mtime": 1787534237.502344,
+    "ast_hash": "30f27fa13e5ae4fb598aca371bc7a7a4",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/composition_commit.rs": {
@@ -880,13 +880,13 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/engine.rs": {
-    "mtime": 1787530796.677526,
-    "ast_hash": "fb5ea2fa8ba99367c3cb599765a4961d",
+    "mtime": 1787534237.4953437,
+    "ast_hash": "87ebd73c9690bde2b990d6d9b4eff881",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/engine/profile_tests.rs": {
-    "mtime": 1787515730.052366,
-    "ast_hash": "32446cf6b8aeb07aeb4744f1b785fb1c",
+    "mtime": 1787534237.4823437,
+    "ast_hash": "b39d8755661f9efabad470c3364c5991",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/factory.rs": {
@@ -895,8 +895,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/ibus_interface.rs": {
-    "mtime": 1787383623.4521053,
-    "ast_hash": "c45b481c95b529e63fc1c3c5f4f03bc8",
+    "mtime": 1787537849.2814054,
+    "ast_hash": "246feef4297b46108dede207365676ca",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/key_decode.rs": {
@@ -925,8 +925,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/protocol.rs": {
-    "mtime": 1787529676.9140928,
-    "ast_hash": "8e890c6ced1731bdce2df62b6e6b0d33",
+    "mtime": 1787534237.4353435,
+    "ast_hash": "ca76c387c45caf900fa080a6f4851ef2",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/protocol/keys.rs": {
@@ -940,8 +940,8 @@
     "semantic_hash": "6cb0ccb27d824964bdbc826c780bad84"
   },
   "src/bin/lay_ibus_engine/protocol/state.rs": {
-    "mtime": 1787529676.9140928,
-    "ast_hash": "f549746eabdd13fcd53b96e011333aa7",
+    "mtime": 1787533958.9725819,
+    "ast_hash": "b8360ddb7027452be6a6d533e971c9ef",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/server.rs": {
@@ -950,8 +950,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/shift.rs": {
-    "mtime": 1787515790.6657708,
-    "ast_hash": "2a8b6ccf5df07fcc2336049b260a5464",
+    "mtime": 1787534237.4983437,
+    "ast_hash": "2116b6e0bada145a3a25b0989e1199a2",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/state.rs": {
@@ -960,8 +960,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/tail_memory.rs": {
-    "mtime": 1787529859.5780742,
-    "ast_hash": "17f7c3b6aa6965ee1b28e2fee1e2c824",
+    "mtime": 1787534268.9045243,
+    "ast_hash": "062d1612767a646ed6fd111b424cfbe2",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/text.rs": {
@@ -2385,8 +2385,8 @@
     "semantic_hash": ""
   },
   "tests/tray_ui_contract.rs": {
-    "mtime": 1786642120.482044,
-    "ast_hash": "09a9ae2a67042914ccaae38eeab47812",
+    "mtime": 1787536515.2141576,
+    "ast_hash": "1fe29e5f7d2d82806db954918e7570a2",
     "semantic_hash": ""
   },
   "tests/typing_assist_alternating_stress.rs": {
@@ -2500,13 +2500,13 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1786642117.0710492,
-    "ast_hash": "c4223d3f5d49314aa11209ab2bdd92e4",
+    "mtime": 1787538048.558416,
+    "ast_hash": "061d58c3be6ac64b50766f90b9d053b6",
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1787531399.4885283,
-    "ast_hash": "7c5bc9cd49f02f2f8ba33504d898d341",
+    "mtime": 1787538048.5564158,
+    "ast_hash": "95bf5016edce931e9f6aef72e5635e22",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -3080,8 +3080,8 @@
     "semantic_hash": ""
   },
   "tests/typing_transition_authority_contract.rs": {
-    "mtime": 1787352131.6750834,
-    "ast_hash": "6e9b56eb23c4ff0147f4e40c61d7e554",
+    "mtime": 1787534525.809223,
+    "ast_hash": "bcecf9328f29df03c08c92b8223367b9",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/preedit_readout.rs": {
@@ -7485,13 +7485,13 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/settings_view.js": {
-    "mtime": 1786642120.3569417,
-    "ast_hash": "c8f8ad2523d3750359ff28c7005d85c5",
+    "mtime": 1787536515.2141576,
+    "ast_hash": "e8a28060a2ec1a8bb17bf26ab9e3dac5",
     "semantic_hash": ""
   },
   "docs/lay-menu-settings-architecture.md": {
-    "mtime": 1786642120.2000444,
-    "ast_hash": "055c244990f7a44e7762830991e3ea0f",
+    "mtime": 1787536997.463996,
+    "ast_hash": "45e1623eb10bec0097466d6dbe8bac73",
     "semantic_hash": ""
   },
   "docs/receipts/menu-settings-1.0.27-post-install.json": {
@@ -13975,8 +13975,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/atomic.rs": {
-    "mtime": 1787516256.4091454,
-    "ast_hash": "53027f1a214d04d114294ab9b670d277",
+    "mtime": 1787537820.3021061,
+    "ast_hash": "37e553f744393eccd9a4251f07050a4d",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/output.rs": {
@@ -14780,8 +14780,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/atomic/proof.rs": {
-    "mtime": 1787513123.3553638,
-    "ast_hash": "8762e766b0d4af50d929018f1f453b71",
+    "mtime": 1787534614.521107,
+    "ast_hash": "e9df5a1beb5848a6febcccf5ef710d3f",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/space_autocorrect_prefetch/proof.rs": {
@@ -15030,8 +15030,8 @@
     "semantic_hash": ""
   },
   "docs/double-shift-physical-layout-contract.md": {
-    "mtime": 1787532435.4752703,
-    "ast_hash": "f370fc773bd8251cb13fed0a6ce12be9",
+    "mtime": 1787539449.5317554,
+    "ast_hash": "4d22cacc5c70d483db1654f6e517624c",
     "semantic_hash": ""
   },
   "docs/structural_gates/preflights/LAY_KITTY_DOUBLE_SHIFT_ATOMIC_TERMINAL_OWNER_IMPLEMENTATION_V1_2026-08-24.json": {
@@ -15117,6 +15117,66 @@
   "docs/structural_gates/receipts/LAY_KITTY_DOUBLE_SHIFT_ATOMIC_TERMINAL_OWNER_2026-08-24/release-1.0.41-sha256-v1.txt": {
     "mtime": 1787532435.4752703,
     "ast_hash": "68950b9e6dcfe5f4949a7ac6aeb65df9",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/preflights/LAY_DOUBLE_SHIFT_SINGLE_GESTURE_OWNER_IMPLEMENTATION_V3_2026-08-24.json": {
+    "mtime": 1787537699.1598299,
+    "ast_hash": "23b3f67b6f701b9239b67f5480a63b1b",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/preflights/LAY_KITTY_DOUBLE_SHIFT_CYCLIC_HANDOFF_IMPLEMENTATION_V1_2026-08-24.json": {
+    "mtime": 1787533345.2947278,
+    "ast_hash": "52f7ed9f80748615fab6e67c9ba0a45a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/preflights/LAY_KITTY_DOUBLE_SHIFT_CYCLIC_HANDOFF_IMPLEMENTATION_V2_2026-08-24.json": {
+    "mtime": 1787533431.8198214,
+    "ast_hash": "9133b8ba4d76f255a8d28bbe2246e348",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_DOUBLE_SHIFT_SINGLE_GESTURE_OWNER_2026-08-24/final-installed-1.0.43-v1.json": {
+    "mtime": 1787539449.5327556,
+    "ast_hash": "bb63fa8bc1f8a53160df2b9a458547ee",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_DOUBLE_SHIFT_SINGLE_GESTURE_OWNER_2026-08-24/implementation-preflight-receipt-v3-revised.json": {
+    "mtime": 1787537706.013681,
+    "ast_hash": "e7eead4a61c8b83e04831415a0d0f324",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_DOUBLE_SHIFT_SINGLE_GESTURE_OWNER_2026-08-24/implementation-preflight-receipt-v3.json": {
+    "mtime": 1787537658.9918926,
+    "ast_hash": "736fb21b82005cd2f159d9b13dac0894",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_KITTY_DOUBLE_SHIFT_CYCLIC_HANDOFF_2026-08-24/implementation-preflight-receipt-v1.json": {
+    "mtime": 1787533358.600904,
+    "ast_hash": "4d694be9a38130a9c31874aa7e037674",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_KITTY_DOUBLE_SHIFT_CYCLIC_HANDOFF_2026-08-24/implementation-preflight-receipt-v2.json": {
+    "mtime": 1787533443.6523118,
+    "ast_hash": "ebd094b89a0412a1c6e28155dde53653",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_KITTY_DOUBLE_SHIFT_CYCLIC_HANDOFF_2026-08-24/release-1.0.42-final-receipt.json": {
+    "mtime": 1787536997.4649959,
+    "ast_hash": "7529e6a7a530e108e2c233c5d251d0c7",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_KITTY_DOUBLE_SHIFT_CYCLIC_HANDOFF_2026-08-24/release-1.0.42-physical-pass-revocation-v1.json": {
+    "mtime": 1787538134.7102633,
+    "ast_hash": "1e54ee9fdf6cdd9fbd5b8f6909756d5e",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_DOUBLE_SHIFT_SINGLE_GESTURE_OWNER_2026-08-24/release-1.0.43-sha256-v1.txt": {
+    "mtime": 1787539449.5317554,
+    "ast_hash": "f42c55fcbc1258abbf48d9efb0bdff12",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_KITTY_DOUBLE_SHIFT_CYCLIC_HANDOFF_2026-08-24/release-1.0.42-sha256-v1.txt": {
+    "mtime": 1787536997.4649959,
+    "ast_hash": "faeb19a7bc6b9168616629d39ca40bd9",
     "semantic_hash": ""
   }
 }

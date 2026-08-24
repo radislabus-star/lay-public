@@ -1,6 +1,6 @@
 # Lay menu and settings architecture
 
-Status: accepted for Lay 1.0.27.
+Status: accepted for Lay 1.0.27; Double Shift timing ownership amended in 1.0.42.
 
 ## Ownership
 
@@ -47,6 +47,8 @@ defaults, config normalization, or runtime commands.
 | Input | Remember manual edits | local learning journal |
 | Input | Bracket completion tail | IME preedit renderer |
 | Keys | Manual correction trigger | daemon trigger dispatcher |
+| Keys | Maximum Shift tap duration | daemon and IME gesture recognizers |
+| Keys | Double Shift interval | daemon and IME gesture recognizers |
 | Keys | Dedicated RU/EN keys | daemon force-layout hotkey owner |
 | Compatibility | Layout environment | layout backend resolver |
 | Diagnostics | Detailed action journal | action and NANDA trace flags |
@@ -60,7 +62,6 @@ defaults, config normalization, or runtime commands.
 | L2/L3 weights | Model-authority calibration is not a casual user setting |
 | NANDA cells/passport | Research visualizer, not a product setting |
 | NANDA autocorrection | Duplicate internal authority switch |
-| Tap, Shift window, multi-tap timing | Internal compatibility tuning with no daily user contract |
 | Multiple trigger taps | Experimental behavior without a stable product workflow |
 | Correct before Enter | Not stable across applications and already documented as outside the public contract |
 | Window-bound layout (`ptah_alexs`) | No complete rule editor or cross-desktop owner; hidden focus execution was removed too |
@@ -75,6 +76,33 @@ defaults, config normalization, or runtime commands.
 Removed config keys are not deleted from `~/.config/lay/config.json`. The JS
 writer merges visible edits into the complete existing object so Rust-owned and
 future keys survive a settings change.
+
+## 1.0.42 Double Shift timing amendment
+
+`tap_max_ms` and `shift_window_ms` are user-owned accessibility parameters,
+not model calibration. The IME and daemon already consume the same two keys;
+the settings view now exposes bounded numeric controls for them. Changing a
+value reloads only Lay-managed runtime state. It does not alter the trigger
+owner, auto-undo priority, cyclic layout handoff, text mutation authority, or
+the global IBus process.
+
+### 1.0.42 evidence
+
+- Tested: JS syntax on local and remote hosts; `tray_ui_contract` 18/18;
+  `lay-ibus-engine` 249/249; transition authority contract 21/21; release
+  manifest 10/10; installed service/version/hash/config inspection.
+- Measured: engine test 8.80 s; installed timing values 350/500 ms; global
+  `ibus-daemon` PID 2076194 survived the Lay-managed restart; release payload
+  is 47,354,480 bytes across ten binaries.
+- Not tested in this amendment: no additional physical typing replay was run
+  after installing the UI-only timing controls. The cyclic and auto-undo
+  runtime had already passed physical use before this amendment.
+- Verdict scope: PASS for the 1.0.42 timing UI and installed runtime identity.
+  It is not a new L1-L4 quality claim.
+- Runtime authority changed by 1.0.42 cyclic replay: yes. Runtime authority
+  changed by this timing UI amendment: no.
+- Receipt:
+  `docs/structural_gates/receipts/LAY_KITTY_DOUBLE_SHIFT_CYCLIC_HANDOFF_2026-08-24/release-1.0.42-final-receipt.json`.
 
 ## Gates
 

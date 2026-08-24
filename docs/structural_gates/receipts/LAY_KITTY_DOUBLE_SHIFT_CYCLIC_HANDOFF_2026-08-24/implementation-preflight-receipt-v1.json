@@ -1,0 +1,144 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "shared-protocol-state",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/protocol/state.rs",
+      "sha256": "6b9a2c73abc6cdfd22dc27a0a0f10fa3f9c38fd51dcab49ef130573752e9f769",
+      "size_bytes": 1838
+    },
+    {
+      "exists": true,
+      "id": "tail-handoff-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/tail_memory.rs",
+      "sha256": "7c8a57400aad5641faf6d31d5adaf8ccb9b43b811f72ce759c659ee4daaeca53",
+      "size_bytes": 64902
+    },
+    {
+      "exists": true,
+      "id": "committed-tail-mutation-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/state.rs",
+      "sha256": "1619036d71d375e42496b462e186114a59605a9344e074a52d44877480e8f723",
+      "size_bytes": 42510
+    },
+    {
+      "exists": true,
+      "id": "atomic-event-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/atomic.rs",
+      "sha256": "bcbd82768469b4515c2e583f3d9c43e9890781d4bc22d55ea10a92ef6bfb1ac4",
+      "size_bytes": 19998
+    },
+    {
+      "exists": true,
+      "id": "gesture-detector",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/ibus_interface.rs",
+      "sha256": "b1876eed612f09f69695aa804be358c5d91542fd3d3b8e997335902cc3e8abc5",
+      "size_bytes": 15434
+    },
+    {
+      "exists": true,
+      "id": "installed-engine-1-0-41",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "sha256": "db85ea7621e7991bb619ebc93d8166f426de8751bf6afe4ea7f169ff1d80d1a2",
+      "size_bytes": 6750712
+    }
+  ],
+  "blockers": [
+    {
+      "code": "forbidden_effect_in_reused_source",
+      "field": "source_checks[0].forbidden_effect_patterns[1]",
+      "message": "generic_focus_tail_inheritance matched at line 723"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: deploy_before_physical_cycle_pass"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: reusable_shift_gesture_capability"
+    }
+  ],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 6,
+    "forbidden_side_effect_kinds": [
+      "change_daemon_uinput_fallback",
+      "change_terminal_mutation_primitive",
+      "deploy_before_physical_cycle_pass",
+      "generic_focus_tail_inheritance",
+      "local_cargo_build",
+      "restart_global_ibus",
+      "reusable_shift_gesture_capability",
+      "unbounded_handoff_lifetime",
+      "weaken_autocorrect_undo_priority",
+      "weaken_exact_tail_identity",
+      "word_or_client_hardcode"
+    ],
+    "identity_contracts": 2,
+    "invariants": 5,
+    "planned_side_effect_kinds": [
+      "installed_runtime_mutation",
+      "remote_process_start",
+      "source_edit"
+    ],
+    "preserved_artifacts": 1,
+    "runtime_comparisons": 1,
+    "source_checks": 3,
+    "tests": 9
+  },
+  "manifest_sha256": "e6460b3c44ef25c17c2a5664f18db715ce2db12f82684fd138eee93fe42f312a",
+  "safe_to_implement": false,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [
+        {
+          "effect": "generic_focus_tail_inheritance",
+          "line": 723
+        }
+      ],
+      "id": "pinned-tail-handoff-owner",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/tail_memory.rs",
+      "sha256": "7c8a57400aad5641faf6d31d5adaf8ccb9b43b811f72ce759c659ee4daaeca53",
+      "size_bytes": 64902
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-mutation-owner",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/state.rs",
+      "sha256": "1619036d71d375e42496b462e186114a59605a9344e074a52d44877480e8f723",
+      "size_bytes": 42510
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-gesture-detector",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/ibus_interface.rs",
+      "sha256": "b1876eed612f09f69695aa804be358c5d91542fd3d3b8e997335902cc3e8abc5",
+      "size_bytes": 15434
+    }
+  ],
+  "task_id": "LAY_KITTY_DOUBLE_SHIFT_CYCLIC_HANDOFF_IMPLEMENTATION_V1_2026-08-24",
+  "verdict": "BLOCKED_BEFORE_CODE"
+}

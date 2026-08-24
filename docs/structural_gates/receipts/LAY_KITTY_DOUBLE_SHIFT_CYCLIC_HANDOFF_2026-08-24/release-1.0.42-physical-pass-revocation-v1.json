@@ -1,0 +1,28 @@
+{
+  "schema": "lay.release.claim-revocation.v1",
+  "receipt_id": "LAY_1_0_42_PHYSICAL_DOUBLE_SHIFT_PASS_REVOCATION_2026_08_24",
+  "recorded_at": "2026-08-24T05:15:00+03:00",
+  "release": "1.0.42",
+  "revokes_receipt": "release-1.0.42-final-receipt.json",
+  "revoked_receipt_sha256": "07e2ea841ade0805bd9aeea5f39e19f49d4002bab44f1b001c9c6629047877e3",
+  "revoked_claim": "physical Double Shift has one visible mutation and cycles once per gesture",
+  "verdict": "REVOKED_BY_LIVE_PHYSICAL_COUNTEREVIDENCE",
+  "counterevidence": {
+    "user_observation": "four Shift presses were required for one visible conversion",
+    "mechanism": "one legacy physical gesture was recognized by both lay-daemon and IBus ProcessKeyEvent",
+    "trace": "release-1.0.42-duplicate-gesture-trace-v1.jsonl",
+    "trace_result": "two adjacent individually authorized inverse committed-tail mutations before focus change"
+  },
+  "scope": {
+    "revoked": [
+      "1.0.42 physical Double Shift cardinality PASS",
+      "1.0.42 user acceptance as proof of one-mutation ownership"
+    ],
+    "not_revoked": [
+      "1.0.42 binary and version identity observations",
+      "1.0.42 synthetic test denominators",
+      "exact autocorrect undo priority as a source invariant"
+    ]
+  },
+  "repair_target": "1.0.43 single physical gesture owner"
+}

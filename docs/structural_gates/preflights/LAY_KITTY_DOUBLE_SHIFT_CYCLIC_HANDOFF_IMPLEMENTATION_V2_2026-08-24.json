@@ -1,0 +1,194 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_KITTY_DOUBLE_SHIFT_CYCLIC_HANDOFF_IMPLEMENTATION_V2_2026-08-24",
+  "revision_reason": "V1 was blocked because one generic-focus veto matched the existing typed handoff constructor and two declared vetoes lacked static scans. V2 narrows the false-positive to generic lease-only authorization and adds explicit gesture-reuse and runtime-deployment tripwires without changing the implementation scope.",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "shared-protocol-state",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/protocol/state.rs",
+      "expect": {"mode": "0664", "size_bytes": 1838, "sha256": "6b9a2c73abc6cdfd22dc27a0a0f10fa3f9c38fd51dcab49ef130573752e9f769"}
+    },
+    {
+      "id": "tail-handoff-owner",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/tail_memory.rs",
+      "expect": {"mode": "0664", "size_bytes": 64902, "sha256": "7c8a57400aad5641faf6d31d5adaf8ccb9b43b811f72ce759c659ee4daaeca53"}
+    },
+    {
+      "id": "committed-tail-mutation-owner",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/state.rs",
+      "expect": {"mode": "0664", "size_bytes": 42510, "sha256": "1619036d71d375e42496b462e186114a59605a9344e074a52d44877480e8f723"}
+    },
+    {
+      "id": "atomic-event-owner",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/atomic.rs",
+      "expect": {"mode": "0664", "size_bytes": 19998, "sha256": "bcbd82768469b4515c2e583f3d9c43e9890781d4bc22d55ea10a92ef6bfb1ac4"}
+    },
+    {
+      "id": "gesture-detector",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/ibus_interface.rs",
+      "expect": {"mode": "0664", "size_bytes": 15434, "sha256": "b1876eed612f09f69695aa804be358c5d91542fd3d3b8e997335902cc3e8abc5"}
+    },
+    {
+      "id": "installed-engine-1-0-41",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "expect": {"mode": "0755", "size_bytes": 6750712, "sha256": "db85ea7621e7991bb619ebc93d8166f426de8751bf6afe4ea7f169ff1d80d1a2"}
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "add-typed-cycle-handoff-authority", "kind": "source_edit"},
+      {"id": "add-cross-engine-cycle-tests", "kind": "source_edit"},
+      {"id": "remote-engine-proof-and-release", "kind": "remote_process_start"},
+      {"id": "rollback-protected-engine-install", "kind": "installed_runtime_mutation"}
+    ],
+    "forbidden": [
+      "word_or_client_hardcode",
+      "generic_focus_tail_inheritance",
+      "unbounded_handoff_lifetime",
+      "reusable_shift_gesture_capability",
+      "weaken_autocorrect_undo_priority",
+      "weaken_exact_tail_identity",
+      "change_terminal_mutation_primitive",
+      "change_daemon_uinput_fallback",
+      "restart_global_ibus",
+      "local_cargo_build",
+      "deploy_before_physical_cycle_pass"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "pinned-tail-handoff-owner",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/tail_memory.rs",
+      "sha256": "7c8a57400aad5641faf6d31d5adaf8ccb9b43b811f72ce759c659ee4daaeca53",
+      "forbidden_effect_patterns": [
+        {"effect": "word_or_client_hardcode", "regex": "(kitty|chrome|ghjdthrf|проверка).{0,80}(if|match)|(?:if|match).{0,80}(kitty|chrome|ghjdthrf|проверка)"},
+        {"effect": "generic_focus_tail_inheritance", "regex": "preserve_active_path_until\\.is_some.{0,160}shift_gesture_handoff\\s*=\\s*Some"},
+        {"effect": "unbounded_handoff_lifetime", "regex": "shift_gesture_handoff.{0,240}(Duration::MAX|u64::MAX)"},
+        {"effect": "reusable_shift_gesture_capability", "regex": "shift_gesture_handoff\\s*\\.clone\\(|shift_gesture_handoff\\.as_ref\\(\\).{0,160}(return|clone)"},
+        {"effect": "deploy_before_physical_cycle_pass", "regex": "Command::new|systemctl|install-release-binaries|lay-runtime-control"},
+        {"effect": "restart_global_ibus", "regex": "(kill|restart).{0,80}ibus-daemon"},
+        {"effect": "local_cargo_build", "regex": "cargo (build|test|check)"}
+      ]
+    },
+    {
+      "id": "pinned-mutation-owner",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/state.rs",
+      "sha256": "1619036d71d375e42496b462e186114a59605a9344e074a52d44877480e8f723",
+      "forbidden_effect_patterns": [
+        {"effect": "weaken_exact_tail_identity", "regex": "(ignore|bypass).{0,120}(expected_tail|tail_epoch|backspaces)"},
+        {"effect": "change_terminal_mutation_primitive", "regex": "terminal_erase_prefix.{0,200}(uinput|replay)"},
+        {"effect": "change_daemon_uinput_fallback", "regex": "VirtualDevice|key_tap_frame"}
+      ]
+    },
+    {
+      "id": "pinned-gesture-detector",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/ibus_interface.rs",
+      "sha256": "b1876eed612f09f69695aa804be358c5d91542fd3d3b8e997335902cc3e8abc5",
+      "forbidden_effect_patterns": [
+        {"effect": "weaken_autocorrect_undo_priority", "regex": "manual_toggle_authority.{0,800}defer_pending_ime_auto_undo_until_visible"},
+        {"effect": "word_or_client_hardcode", "regex": "(kitty|ghjdthrf|проверка).{0,80}(if|match)"}
+      ]
+    }
+  ],
+  "state_machine": {
+    "initial_state": "INSTALLED_1_0_41_ONE_CYCLE_ONLY",
+    "steps": [
+      {
+        "id": "implement-typed-cycle-handoff",
+        "from": "INSTALLED_1_0_41_ONE_CYCLE_ONLY",
+        "to": "SOURCE_READY",
+        "mutates": true,
+        "failure_state": "SOURCE_EDIT_FAILED",
+        "cleanup": "retain only the scoped source diff; installed 1.0.41 remains byte-identical",
+        "preserves": ["installed-engine-1-0-41"],
+        "test_id": "source-edit-fault"
+      },
+      {
+        "id": "remote-cycle-proof",
+        "from": "SOURCE_READY",
+        "to": "REMOTE_PROOF_PASS",
+        "mutates": true,
+        "failure_state": "REMOTE_PROOF_FAILED",
+        "cleanup": "stop proof-owned remote process; installed runtime remains byte-identical",
+        "preserves": ["installed-engine-1-0-41"],
+        "test_id": "remote-proof-fault"
+      },
+      {
+        "id": "install-and-run-physical-cycle",
+        "from": "REMOTE_PROOF_PASS",
+        "to": "PHYSICAL_CYCLE_PASS",
+        "mutates": true,
+        "failure_state": "CANARY_ROLLED_BACK",
+        "cleanup": "restore exact 1.0.41 engine bytes and active Lay engine without restarting global IBus",
+        "preserves": ["installed-engine-1-0-41"],
+        "test_id": "canary-fault"
+      }
+    ],
+    "terminal_states": ["PHYSICAL_CYCLE_PASS", "SOURCE_EDIT_FAILED", "REMOTE_PROOF_FAILED", "CANARY_ROLLED_BACK"]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "installed-engine-1-0-41",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "policy": "immutable_until_remote_proof_pass",
+      "cursor_policy": "none",
+      "rollback_policy": "restore_exact_bytes",
+      "baseline_check_id": "installed-engine-1-0-41"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "cycle-handoff-identity",
+      "producer": "successful exact ImeManualToggle or ImeAutoUndo committed-tail transition",
+      "consumer": "one cross-engine Shift gesture continuation",
+      "comparison": "same exact tail bytes, tail epoch, live bounded layout handoff and opposite managed engine path",
+      "test_id": "cycle-handoff-parity"
+    },
+    {
+      "id": "one-shot-gesture-consumption",
+      "producer": "source engine transient Shift state",
+      "consumer": "first matching target engine event",
+      "comparison": "consume exactly once; mismatch, expiry, modifier use or second consumer receives no gesture authority",
+      "test_id": "one-shot-parity"
+    }
+  ],
+  "runtime_comparisons": [
+    {
+      "id": "runtime-process-boundary",
+      "source": "pre-install and post-install process plus executable snapshots",
+      "comparison": "exact_stable_projection",
+      "reason": "only the managed Lay engine bytes and PID may change",
+      "stable_fields": ["global_ibus_daemon_pid", "lay_daemon_pid", "active_engine_after_restore"],
+      "expected_to_change_fields": ["lay_ibus_engine_pid", "lay_ibus_engine_sha256"],
+      "observed_not_compared_fields": ["precognition_generation", "trace_line_count"],
+      "test_id": "runtime-process-parity"
+    }
+  ],
+  "invariants": [
+    {"id": "undo-first", "statement": "a valid pending autocorrect undo is consumed before ordinary layout cycling", "test_id": "undo-priority"},
+    {"id": "cycle-unbounded-by-count", "statement": "each completed Double Shift may start another RU-EN or EN-RU cycle; no one-shot count state exists", "test_id": "six-cycle-proof"},
+    {"id": "typed-cross-engine-only", "statement": "transient Shift state crosses engine paths only under a live exact post-layout tail capability", "test_id": "cycle-handoff-parity"},
+    {"id": "one-shot", "statement": "one published transient gesture has at most one target consumer", "test_id": "one-shot-parity"},
+    {"id": "mutation-owner-unchanged", "statement": "terminal replacement remains one verified terminal erase plus commit mutation", "test_id": "terminal-owner-parity"}
+  ],
+  "tests": [
+    {"id": "source-edit-fault", "kind": "fault_injection", "expected": "installed 1.0.41 engine remains byte-identical after source failure"},
+    {"id": "remote-proof-fault", "kind": "fault_injection", "expected": "no installed mutation after remote test or build failure"},
+    {"id": "canary-fault", "kind": "fault_injection", "expected": "exact prior engine bytes restore without global IBus restart"},
+    {"id": "undo-priority", "kind": "parity", "expected": "first Double Shift after autocorrect restores exact original; only the next gesture enters ordinary cycle"},
+    {"id": "cycle-handoff-parity", "kind": "parity", "expected": "split Shift gesture survives exact manual-toggle and auto-undo layout handoff, while generic focus changes do not"},
+    {"id": "one-shot-parity", "kind": "parity", "expected": "expired, mismatched, modifier-used and second-consumer routes receive zero toggle authority"},
+    {"id": "six-cycle-proof", "kind": "parity", "expected": "six settled Kitty Double Shift gestures alternate the whole exact token and finish on the original"},
+    {"id": "terminal-owner-parity", "kind": "parity", "expected": "every accepted Kitty cycle has one terminal_erase_commit mutation and zero daemon replay"},
+    {"id": "runtime-process-parity", "kind": "parity", "expected": "global IBus and daemon remain stable while the managed engine is replaced and restored to lay-ime-ru"}
+  ]
+}

@@ -116,6 +116,21 @@ export class LaySettingsView {
         return row;
     }
 
+    _timingRow(title, subtitle, key, minimum, maximum, step) {
+        const row = Adw.SpinRow.new_with_range(minimum, maximum, step);
+        row.title = title;
+        row.subtitle = subtitle;
+        row.value = this.cfg[key];
+        row.connect('notify::value', () => {
+            const value = Math.round(row.value);
+            if (value === this.cfg[key])
+                return;
+            this.cfg[key] = value;
+            this._save({restart: true});
+        });
+        return row;
+    }
+
     _buildInputGroup() {
         const group = new Adw.PreferencesGroup({
             title: 'Ввод',
@@ -177,6 +192,22 @@ export class LaySettingsView {
             'trigger',
             TRIGGER_OPTIONS,
             {restart: true}
+        ));
+        group.add(this._timingRow(
+            'Длительность нажатия Shift',
+            'Максимальная длительность одного короткого нажатия, мс',
+            'tap_max_ms',
+            100,
+            800,
+            25
+        ));
+        group.add(this._timingRow(
+            'Интервал двойного Shift',
+            'Максимальная пауза между двумя нажатиями, мс',
+            'shift_window_ms',
+            150,
+            1000,
+            25
         ));
         const forceSwitch = this._switchRow(
             'Отдельные клавиши RU / EN',

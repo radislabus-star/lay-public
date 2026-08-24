@@ -1,4 +1,5 @@
 use super::{LayIbusEngine, ManualToggleAuthority, WordInputMode, IBUS_CAP_SURROUNDING_TEXT};
+use crate::protocol::ShiftGestureHandoffAuthority;
 use lay::config::LayConfig;
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
@@ -14,6 +15,18 @@ fn engine() -> LayIbusEngine {
             ..LayConfig::default()
         },
     )
+}
+
+fn arm_exact_cycle(
+    engine: &mut LayIbusEngine,
+    tail: &str,
+    source_layout_is_ru: bool,
+    target_layout_is_ru: bool,
+) {
+    engine.tail_buffer = tail.to_string();
+    engine.layout_is_ru = target_layout_is_ru;
+    engine.publish_tail_handoff();
+    assert!(engine.arm_cyclic_layout_handoff(source_layout_is_ru, target_layout_is_ru));
 }
 
 #[test]
@@ -235,6 +248,284 @@ fn shift_gesture_handoff_is_typed_and_one_shot() {
     assert!(!target.shift_active);
     assert!(target.shift_pressed_at.is_none());
     assert!(target.last_shift_release_at.is_none());
+}
+
+#[test]
+fn ordinary_layout_cycle_handoff_is_exact_and_one_shot() {
+    let shared = Arc::new(Mutex::new(Default::default()));
+    let mut source = LayIbusEngine::new(
+        "/engine/us-cycle".to_string(),
+        Arc::clone(&shared),
+        false,
+        true,
+        LayConfig::default(),
+    );
+    assert!(source.bind_focus_path());
+    arm_exact_cycle(&mut source, "Пере ", false, true);
+    let pressed_at = Instant::now();
+    let previous_release = pressed_at - Duration::from_millis(100);
+    source.shift_active = true;
+    source.shift_pressed_at = Some(pressed_at);
+    source.last_shift_release_at = Some(previous_release);
+    source.publish_shift_gesture_handoff();
+    assert_eq!(
+        shared
+            .lock()
+            .expect("shared state")
+            .shift_gesture_handoff
+            .as_ref()
+            .map(|gesture| gesture.authority),
+        Some(ShiftGestureHandoffAuthority::CyclicLayout)
+    );
+
+    let mut target = LayIbusEngine::new(
+        "/engine/ru-cycle".to_string(),
+        Arc::clone(&shared),
+        true,
+        true,
+        LayConfig::default(),
+    );
+    assert!(target.bind_focus_path());
+    target.consume_shift_gesture_handoff();
+
+    assert!(target.shift_active);
+    assert_eq!(target.shift_pressed_at, Some(pressed_at));
+    assert_eq!(target.last_shift_release_at, Some(previous_release));
+    {
+        let state = shared.lock().expect("shared state");
+        assert!(state.cyclic_layout_handoff.is_none());
+        assert!(state.shift_gesture_handoff.is_none());
+    }
+
+    target.shift_active = false;
+    target.shift_pressed_at = None;
+    target.last_shift_release_at = None;
+    target.consume_shift_gesture_handoff();
+    assert!(!target.shift_active);
+    assert!(target.shift_pressed_at.is_none());
+    assert!(target.last_shift_release_at.is_none());
+}
+
+#[test]
+fn cyclic_layout_handoff_can_be_rearmed_for_every_completed_cycle() {
+    let shared = Arc::new(Mutex::new(Default::default()));
+    let mut current = LayIbusEngine::new(
+        "/engine/cycle-0".to_string(),
+        Arc::clone(&shared),
+        false,
+        true,
+        LayConfig::default(),
+    );
+    assert!(current.bind_focus_path());
+    let mut source_layout_is_ru = false;
+
+    for cycle in 1..=6 {
+        let target_layout_is_ru = !source_layout_is_ru;
+        let tail = if target_layout_is_ru {
+            "Пере "
+        } else {
+            "Gtht "
+        };
+        arm_exact_cycle(&mut current, tail, source_layout_is_ru, target_layout_is_ru);
+        let previous_release = Instant::now() - Duration::from_millis(100);
+        current.shift_active = false;
+        current.shift_pressed_at = None;
+        current.shift_used_as_modifier = false;
+        current.last_shift_release_at = Some(previous_release);
+        current.publish_shift_gesture_handoff();
+
+        let mut next = LayIbusEngine::new(
+            format!("/engine/cycle-{cycle}"),
+            Arc::clone(&shared),
+            target_layout_is_ru,
+            true,
+            LayConfig::default(),
+        );
+        assert!(next.bind_focus_path());
+        next.consume_shift_gesture_handoff();
+        assert_eq!(next.tail_buffer, tail);
+        assert_eq!(next.last_shift_release_at, Some(previous_release));
+        assert!(shared
+            .lock()
+            .expect("shared state")
+            .cyclic_layout_handoff
+            .is_none());
+
+        current = next;
+        source_layout_is_ru = target_layout_is_ru;
+    }
+}
+
+#[test]
+fn pending_auto_undo_keeps_priority_before_the_next_ordinary_cycle() {
+    let shared = Arc::new(Mutex::new(Default::default()));
+    let mut source = LayIbusEngine::new(
+        "/engine/undo-priority".to_string(),
+        Arc::clone(&shared),
+        true,
+        true,
+        LayConfig::default(),
+    );
+    assert!(source.bind_focus_path());
+    source.tail_buffer = "вот ".to_string();
+    source.publish_tail_handoff();
+    source.remember_pending_ime_auto_undo(
+        "djn ".to_string(),
+        "вот ".to_string(),
+        lay::typing_cpu::ObservedSystemTransition::LayoutProjection,
+    );
+    source.publish_active_path_preserve_handoff(Instant::now() + Duration::from_millis(700));
+    source.last_shift_release_at = Some(Instant::now() - Duration::from_millis(100));
+    source.publish_shift_gesture_handoff();
+    assert_eq!(
+        shared
+            .lock()
+            .expect("shared state")
+            .shift_gesture_handoff
+            .as_ref()
+            .map(|gesture| gesture.authority),
+        Some(ShiftGestureHandoffAuthority::PendingAutoUndo)
+    );
+
+    assert!(source.take_pending_ime_auto_undo().is_some());
+    arm_exact_cycle(&mut source, "djn ", true, false);
+    source.last_shift_release_at = Some(Instant::now() - Duration::from_millis(100));
+    source.publish_shift_gesture_handoff();
+    assert_eq!(
+        shared
+            .lock()
+            .expect("shared state")
+            .shift_gesture_handoff
+            .as_ref()
+            .map(|gesture| gesture.authority),
+        Some(ShiftGestureHandoffAuthority::CyclicLayout)
+    );
+}
+
+#[test]
+fn cyclic_layout_handoff_rejects_tail_epoch_mismatch() {
+    let shared = Arc::new(Mutex::new(Default::default()));
+    let mut source = LayIbusEngine::new(
+        "/engine/mismatch-us".to_string(),
+        Arc::clone(&shared),
+        false,
+        true,
+        LayConfig::default(),
+    );
+    assert!(source.bind_focus_path());
+    arm_exact_cycle(&mut source, "Пере ", false, true);
+    source.shift_active = true;
+    source.shift_pressed_at = Some(Instant::now());
+    source.publish_shift_gesture_handoff();
+
+    let mut target = LayIbusEngine::new(
+        "/engine/mismatch-ru".to_string(),
+        shared,
+        true,
+        true,
+        LayConfig::default(),
+    );
+    assert!(target.bind_focus_path());
+    target.tail_epoch = target.tail_epoch.wrapping_add(1);
+    target.consume_shift_gesture_handoff();
+
+    assert!(!target.shift_active);
+    let state = target.shared.lock().expect("shared state");
+    assert!(state.cyclic_layout_handoff.is_none());
+    assert!(state.shift_gesture_handoff.is_none());
+}
+
+#[test]
+fn expired_or_modifier_used_cycle_never_becomes_a_tap() {
+    let shared = Arc::new(Mutex::new(Default::default()));
+    let mut source = LayIbusEngine::new(
+        "/engine/expiry-us".to_string(),
+        Arc::clone(&shared),
+        false,
+        true,
+        LayConfig::default(),
+    );
+    assert!(source.bind_focus_path());
+    arm_exact_cycle(&mut source, "Пере ", false, true);
+    source.shift_active = true;
+    source.shift_pressed_at = Some(Instant::now());
+    source.shift_used_as_modifier = true;
+    source.last_shift_release_at = Some(Instant::now() - Duration::from_millis(100));
+    source.publish_shift_gesture_handoff();
+
+    let mut modifier_target = LayIbusEngine::new(
+        "/engine/modifier-ru".to_string(),
+        Arc::clone(&shared),
+        true,
+        true,
+        LayConfig::default(),
+    );
+    assert!(modifier_target.bind_focus_path());
+    modifier_target.consume_shift_gesture_handoff();
+    assert!(modifier_target.shift_used_as_modifier);
+
+    arm_exact_cycle(&mut modifier_target, "Gtht ", true, false);
+    modifier_target.shift_active = true;
+    modifier_target.shift_pressed_at = Some(Instant::now());
+    modifier_target.publish_shift_gesture_handoff();
+    {
+        let mut state = shared.lock().expect("shared state");
+        state.preserve_active_path_until = Some(Instant::now() - Duration::from_millis(1));
+        if let Some(handoff) = state.cyclic_layout_handoff.as_mut() {
+            handoff.expires_at = Instant::now() - Duration::from_millis(1);
+        }
+        if let Some(gesture) = state.shift_gesture_handoff.as_mut() {
+            gesture.expires_at = Instant::now() - Duration::from_millis(1);
+        }
+    }
+
+    let mut expired_target = LayIbusEngine::new(
+        "/engine/expired-us".to_string(),
+        shared,
+        false,
+        true,
+        LayConfig::default(),
+    );
+    assert!(expired_target.bind_focus_path());
+    expired_target.consume_shift_gesture_handoff();
+    assert!(!expired_target.shift_active);
+    assert!(expired_target.shift_pressed_at.is_none());
+}
+
+#[test]
+fn generic_focus_preservation_cannot_publish_shift_authority() {
+    let shared = Arc::new(Mutex::new(Default::default()));
+    let mut source = LayIbusEngine::new(
+        "/engine/generic-a".to_string(),
+        Arc::clone(&shared),
+        false,
+        true,
+        LayConfig::default(),
+    );
+    assert!(source.bind_focus_path());
+    source.tail_buffer = "tail ".to_string();
+    source.publish_tail_handoff();
+    source.publish_active_path_preserve_handoff(Instant::now() + Duration::from_millis(700));
+    source.shift_active = true;
+    source.shift_pressed_at = Some(Instant::now());
+    source.publish_shift_gesture_handoff();
+    assert!(shared
+        .lock()
+        .expect("shared state")
+        .shift_gesture_handoff
+        .is_none());
+
+    let mut target = LayIbusEngine::new(
+        "/engine/generic-b".to_string(),
+        shared,
+        true,
+        true,
+        LayConfig::default(),
+    );
+    assert!(target.bind_focus_path());
+    target.consume_shift_gesture_handoff();
+    assert!(!target.shift_active);
+    assert!(target.shift_pressed_at.is_none());
 }
 
 #[test]

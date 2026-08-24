@@ -1,0 +1,94 @@
+{
+  "schema": "lay.installed_runtime_receipt.v1",
+  "gate": "LAY_DOUBLE_SHIFT_SINGLE_GESTURE_OWNER_FINAL_1_0_43",
+  "recorded_at": "2026-08-24T05:43:08+03:00",
+  "verdict": "PASS_CLIENT_VISIBLE_UINPUT_HUMAN_KEYBOARD_PENDING",
+  "runtime_authority_changed": true,
+  "source": {
+    "baseline_commit": "6122a1b",
+    "authority_code_diff_sha256": "d4d4d360d8d27cad39dce60154ccbd73b2db45aa4a13fa2bc5bd61e595d02e8d",
+    "version": "1.0.43"
+  },
+  "root_cause": {
+    "release": "1.0.42",
+    "observed_effect": "one physical Double Shift produced two inverse committed-tail mutations",
+    "owners_before": [
+      "lay-daemon physical Shift FSM",
+      "legacy IBus ProcessKeyEvent local Shift FSM"
+    ],
+    "owners_after": [
+      "lay-daemon physical Shift FSM"
+    ],
+    "timing_adjustment_used": false
+  },
+  "remote_build": {
+    "host": "e@192.168.3.94",
+    "cargo_jobs": 20,
+    "legacy_event_order_cardinality": {"passed": 1, "failed": 0},
+    "complete_lay_ibus_engine_tests": {"passed": 250, "failed": 0, "wall_seconds": 9.01, "max_rss_kib": 349324},
+    "typing_transition_authority_contract": {"passed": 21, "failed": 0},
+    "tray_contract": {"passed": 18, "failed": 0},
+    "release_build_wall_seconds": 211,
+    "release_build_max_rss_kib": 2625312,
+    "release_binary_count": 10,
+    "release_binary_total_bytes": 47354608,
+    "sha256_manifest": "release-1.0.43-sha256-v1.txt"
+  },
+  "installed_runtime": {
+    "stage": "/home/ubu/.local/lib/lay/staging/1.0.43-single-gesture-owner-20260824-052803",
+    "rollback": "/home/ubu/.local/lib/lay/rollback/1.0.42-pre-1.0.43-single-gesture-owner-20260824-052803",
+    "staged_installed_binary_parity": "10/10 PASS",
+    "lay_daemon_pid": 3410795,
+    "lay_daemon_loaded_sha256": "d795f4c64f2498fc8bcea8c36e54c43ff841b10d98ec0a6b69b71be53370e34a",
+    "lay_ibus_engine_pid": 3410820,
+    "lay_ibus_engine_loaded_sha256": "522660358022d0633873a58b06d8d8c47822b8d2a8748f499d75f0f8dc98d06a",
+    "loaded_installed_hash_parity": "PASS",
+    "active_engine_after_gate": "lay-ime-ru",
+    "global_ibus_daemon_pid_before": 2076194,
+    "global_ibus_daemon_pid_after": 2076194,
+    "global_ibus_daemon_restarted": false,
+    "extension_runtime_version": "1.0.43",
+    "gnome_shell_cached_extension_version": "1.0.33"
+  },
+  "configuration": {
+    "trigger": "double-lshift",
+    "multi_tap_scope": false,
+    "tap_max_ms": 500,
+    "shift_window_ms": 800
+  },
+  "client_visible_gate": {
+    "gtk": {
+      "direct": {"before": "file ghjdthrf", "after": "file проверка", "mutations": 1, "verdict": "PASS"},
+      "round_trip": {"before": "file ghjdthrf", "after": "file ghjdthrf", "mutations": 2, "verdict": "PASS"},
+      "autocorrect_undo": {"autocorrected": "вот", "after_double_shift": "djn file", "mutations": 1, "verdict": "PASS"}
+    },
+    "kitty": {
+      "direct": {"before": "file ghjdthrf", "after": "file проверка", "mutations": 1, "verdict": "PASS"},
+      "round_trip": {"before": "file ghjdthrf", "after": "file ghjdthrf", "mutations": 2, "verdict": "PASS"},
+      "autocorrect_undo": {"autocorrected": "вот", "after_double_shift": "djn file", "mutations": 1, "verdict": "PASS"}
+    },
+    "legacy_local_mutations_per_daemon_owned_gesture": 0,
+    "preceding_text_deleted_chars": 0,
+    "committed_tail_replacement_latency_us": {"min": 41, "max": 109}
+  },
+  "excluded_observation": {
+    "fixture": "доллора",
+    "classification": "NOT_APPLICABLE_NO_AUTOCORRECT",
+    "reason": "the installed runtime did not autocorrect the fixture, so Double Shift exercised ordinary layout projection"
+  },
+  "not_tested": [
+    "human-keyboard confirmation after the 1.0.43 installation",
+    "post-release automated Chrome field",
+    "multi-day desktop residency"
+  ],
+  "verdict_scope": "Installed 1.0.43 bytes prove one daemon-owned mutation per Double Shift in focused GTK and Kitty fields, bidirectional cycling and exact undo after an observed autocorrect. Human-keyboard confirmation remains pending.",
+  "evidence": [
+    {"path": "/tmp/lay-1.0.43-single-double-shift-isolated-device-smoke.json", "sha256": "7ed637b3d8127fc068c7596540256fd6b5166593f4d012171abecea33ffc1168"},
+    {"path": "/tmp/lay-1.0.43-gtk-double-shift-pass.json", "sha256": "67377000995c49e648575f372f8ef2e949b80cffe2acbb560ba2e71d2d2d4624"},
+    {"path": "/tmp/lay-1.0.43-kitty-direct-v2.result", "sha256": "4d96764654ca60e940ac9697ba7661b71df5f43765a9caac312c46e0f4bd5254"},
+    {"path": "/tmp/lay-1.0.43-kitty-roundtrip-v2.result", "sha256": "fac67d49819d01f177677d1ddcea1572465d69beac3bf6e58ca6f99d1c48e381"},
+    {"path": "/tmp/lay-1.0.43-kitty-auto-undo-v2.result", "sha256": "7f7f5704025fbc986b97b24c5e5afd5b1e1b2e2bf12188012301aca260852ac7"},
+    {"path": "implementation-preflight-receipt-v3-revised.json"},
+    {"path": "release-1.0.43-sha256-v1.txt"}
+  ]
+}

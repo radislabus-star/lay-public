@@ -128,6 +128,57 @@ fn v27_cross_engine_shift_gesture_restores_exact_source() {
         .expect("shared state")
         .shift_gesture_handoff
         .is_none());
+
+    for (transaction, state) in [(506, 0), (507, RELEASE_MASK)] {
+        let first_cycle_tap = zbus::block_on(target.process_atomic_key_event(
+            KEY_LEFT_SHIFT,
+            42,
+            state,
+            envelope(transaction),
+            capability(3, true),
+            (RECEIPT_NONE, 0, Vec::new()),
+        ))
+        .expect("first ordinary cycle tap after exact undo");
+        assert_eq!(first_cycle_tap.0, PROPOSAL_NATIVE_UNHANDLED);
+    }
+
+    let mut cycle_target = engine_with_shared(
+        "/atomic/handoff-us-after-undo",
+        Arc::clone(&target.shared),
+        false,
+        "",
+    );
+    let second_cycle_press = zbus::block_on(cycle_target.process_atomic_key_event(
+        KEY_LEFT_SHIFT,
+        42,
+        0,
+        envelope(508),
+        capability(3, true),
+        (RECEIPT_NONE, 0, Vec::new()),
+    ))
+    .expect("cross-engine ordinary cycle press after exact undo");
+    assert_eq!(second_cycle_press.0, PROPOSAL_NATIVE_UNHANDLED);
+    let second_cycle_release = zbus::block_on(cycle_target.process_atomic_key_event(
+        KEY_LEFT_SHIFT,
+        42,
+        RELEASE_MASK,
+        envelope(509),
+        capability(3, true),
+        (RECEIPT_NONE, 0, Vec::new()),
+    ))
+    .expect("cross-engine ordinary cycle replacement after exact undo");
+    assert_eq!(second_cycle_release.0, PROPOSAL_FRAME_READY);
+    assert_eq!(committed_texts(&second_cycle_release), ["привет "]);
+    assert!(cycle_target
+        .settle_atomic_pending(41, &(RECEIPT_SUBMITTED_ATOMIC, 509, vec![11; DIGEST_BYTES]),));
+    assert_eq!(cycle_target.tail_buffer, "привет ");
+    assert!(cycle_target
+        .shared
+        .lock()
+        .expect("shared state")
+        .cyclic_layout_handoff
+        .as_ref()
+        .is_some_and(|handoff| handoff.source_path == cycle_target.path));
 }
 
 #[test]
