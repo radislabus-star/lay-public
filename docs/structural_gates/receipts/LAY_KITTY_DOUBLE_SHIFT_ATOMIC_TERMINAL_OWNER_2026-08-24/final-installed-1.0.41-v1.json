@@ -1,0 +1,67 @@
+{
+  "schema": "lay.installed_runtime_receipt.v1",
+  "gate": "LAY_KITTY_DOUBLE_SHIFT_ATOMIC_TERMINAL_OWNER_FINAL_1_0_41",
+  "date": "2026-08-24",
+  "verdict": "PASS_KITTY_FINAL_INSTALLED",
+  "runtime_authority_changed": true,
+  "source": {
+    "baseline_commit": "61081d0c71896ab881a4ae70d611ea07ab4703be",
+    "authority_code_diff_sha256": "c2cf5969b8b7df20f959267ad7048aedc376e6dbed5be6bea6625a9417526899",
+    "version": "1.0.41"
+  },
+  "remote_build": {
+    "host": "e@192.168.3.94",
+    "cargo_jobs": 20,
+    "focused_manual_toggle_tests": {"passed": 11, "failed": 0},
+    "complete_lay_ibus_engine_tests": {"passed": 243, "failed": 0, "wall_seconds": 8.79},
+    "cold_english_latency_budget": {"passed": 1, "failed": 0},
+    "candidate_generation_latency_budget": {"passed": 1, "failed": 0},
+    "release_build_wall_seconds": 212,
+    "cargo_target_bytes": 2545389568,
+    "release_binary_count": 10,
+    "release_binary_total_bytes": 47346800,
+    "sha256_manifest": "release-1.0.41-sha256-v1.txt"
+  },
+  "installed_runtime": {
+    "lay_version": "1.0.41",
+    "lay_daemon_version": "1.0.41",
+    "lay_ibus_engine_version": "1.0.41",
+    "lay_daemon_pid": 3231209,
+    "lay_daemon_loaded_sha256": "18c77a7998d2b877f07629c2d176c0faaf7aa7277d143fff9b537584facf25d0",
+    "lay_ibus_engine_pid": 3231248,
+    "lay_ibus_engine_loaded_sha256": "db85ea7621e7991bb619ebc93d8166f426de8751bf6afe4ea7f169ff1d80d1a2",
+    "loaded_installed_hash_parity": "PASS",
+    "managed_engine_count": 1,
+    "active_engine": "lay-ime-ru",
+    "global_ibus_daemon_pid_before": 2076194,
+    "global_ibus_daemon_pid_after": 2076194,
+    "installed_extension_version": "1.0.41",
+    "gnome_shell_cached_extension_version": "1.0.33",
+    "gnome_shell_restarted": false
+  },
+  "physical_kitty": {
+    "direct": {"before": "file ghjdthrf", "after": "file проверка", "verdict": "PASS", "mutation_us": 133},
+    "round_trip_first": {"before": "file ghjdthrf", "after": "file проверка", "verdict": "PASS", "mutation_us": 122},
+    "round_trip_second": {"before": "file проверка", "after": "file ghjdthrf", "verdict": "PASS", "mutation_us": 50},
+    "autocorrect_undo": {"autocorrected": "вот", "after_double_shift": "djn file", "verdict": "PASS", "mutation_us": 72},
+    "preceding_text_deleted_chars": 0,
+    "daemon_uinput_replay_on_accepted_terminal_events": 0,
+    "output_route": "terminal_erase_commit"
+  },
+  "not_tested": [
+    "post-release automated Chrome field",
+    "multi-day desktop residency",
+    "every focus-change permutation"
+  ],
+  "verdict_scope": "Final installed 1.0.41 bytes prove exact direct, bidirectional and immediate autocorrect-undo behavior in Kitty. Chrome remains user-observed on its unchanged prior route; broad residency is not claimed.",
+  "rollback": "/home/ubu/.local/lib/lay/rollback/1.0.40-pre-1.0.41-final-20260824-034200",
+  "evidence": [
+    "/tmp/lay-1.0.41-kitty-direct.result",
+    "/tmp/lay-1.0.41-kitty-roundtrip.result",
+    "/tmp/lay-1.0.41-kitty-auto-undo.result",
+    "/home/ubu/.local/share/lay/ibus_engine_debug.jsonl",
+    "candidate-physical-v1.json",
+    "design-route-receipt-v3.json",
+    "implementation-preflight-receipt-v3.json"
+  ]
+}

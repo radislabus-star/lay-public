@@ -25,8 +25,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1787525791.5159879,
-    "ast_hash": "f7a5c9a08e7646482db56e63755e5c5f",
+    "mtime": 1787531399.487528,
+    "ast_hash": "c4d4a1a8cb85cbad7893724ba3c2f958",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
@@ -45,8 +45,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1787525791.5169878,
-    "ast_hash": "ec14564938cad4d2b2e1c52b559cd312",
+    "mtime": 1787531399.4885283,
+    "ast_hash": "906e02f3dfde6d31e9cc3a04194ec42a",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -855,8 +855,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/bridge_actions.rs": {
-    "mtime": 1787525741.9915948,
-    "ast_hash": "dbb6c6ac9e8eca1d08ccb6f2a54c4143",
+    "mtime": 1787529676.9150927,
+    "ast_hash": "8af1b61227072337e3b4af023229eba4",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/bridge_policy.rs": {
@@ -880,8 +880,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/engine.rs": {
-    "mtime": 1787398684.0638433,
-    "ast_hash": "1e283c775fb2b1ba200f0a02dc73481c",
+    "mtime": 1787530796.677526,
+    "ast_hash": "fb5ea2fa8ba99367c3cb599765a4961d",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/engine/profile_tests.rs": {
@@ -925,8 +925,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/protocol.rs": {
-    "mtime": 1787383623.4481053,
-    "ast_hash": "de502530e28367c959196e45cc998feb",
+    "mtime": 1787529676.9140928,
+    "ast_hash": "8e890c6ced1731bdce2df62b6e6b0d33",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/protocol/keys.rs": {
@@ -940,8 +940,8 @@
     "semantic_hash": "6cb0ccb27d824964bdbc826c780bad84"
   },
   "src/bin/lay_ibus_engine/protocol/state.rs": {
-    "mtime": 1787515730.053366,
-    "ast_hash": "1dda1454b9227275a59601ac1b434c28",
+    "mtime": 1787529676.9140928,
+    "ast_hash": "f549746eabdd13fcd53b96e011333aa7",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/server.rs": {
@@ -955,13 +955,13 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/state.rs": {
-    "mtime": 1787381574.022285,
-    "ast_hash": "bce27f900b5d0c7c904e28d1b9a7e7a1",
+    "mtime": 1787529676.9160929,
+    "ast_hash": "fd33e7e8b2e7d9107e4f9c619126d3dd",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/tail_memory.rs": {
-    "mtime": 1787515730.0543659,
-    "ast_hash": "a690c96c97447f5dd2a470ab7c3148c9",
+    "mtime": 1787529859.5780742,
+    "ast_hash": "17f7c3b6aa6965ee1b28e2fee1e2c824",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/text.rs": {
@@ -2505,8 +2505,8 @@
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1787525791.5159879,
-    "ast_hash": "4a3687725ea203e306a1fd86307407a4",
+    "mtime": 1787531399.4885283,
+    "ast_hash": "7c5bc9cd49f02f2f8ba33504d898d341",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -2675,8 +2675,8 @@
     "semantic_hash": ""
   },
   "docs/ime-daemon-route-map-2026-06-20.md": {
-    "mtime": 1787513963.9038498,
-    "ast_hash": "582d26fe37d6f570f7fef6a6c8996c6a",
+    "mtime": 1787527289.2528052,
+    "ast_hash": "9792d4327ffb76ef81db592b80d80ce8",
     "semantic_hash": ""
   },
   "docs/l1-l4-intelligence-route.md": {
@@ -3265,8 +3265,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1787226449.0800304,
-    "ast_hash": "f7d94fdb5d2fb3183a38d3546ee093c1",
+    "mtime": 1787526819.7115133,
+    "ast_hash": "2e7d3da06bc34206a202a20ebb960c7b",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -15030,8 +15030,93 @@
     "semantic_hash": ""
   },
   "docs/double-shift-physical-layout-contract.md": {
-    "mtime": 1787526735.3940382,
-    "ast_hash": "5c46ef6825bb762cf18f7169ddf11bdc",
+    "mtime": 1787532435.4752703,
+    "ast_hash": "f370fc773bd8251cb13fed0a6ce12be9",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/preflights/LAY_KITTY_DOUBLE_SHIFT_ATOMIC_TERMINAL_OWNER_IMPLEMENTATION_V1_2026-08-24.json": {
+    "mtime": 1787530769.8285818,
+    "ast_hash": "5e74747133ce07887ee8a76c73c8c3ac",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/preflights/LAY_KITTY_DOUBLE_SHIFT_ATOMIC_TERMINAL_OWNER_ROUTE_V1_2026-08-24.json": {
+    "mtime": 1787530626.067568,
+    "ast_hash": "be18acad99398eaa6b6cb28d15bf5524",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/preflights/LAY_KITTY_DOUBLE_SHIFT_CONTROLLED_HANDOFF_IMPLEMENTATION_V1_2026-08-24.json": {
+    "mtime": 1787529614.1487234,
+    "ast_hash": "238a06e74348708733c5a16f459f6bf1",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_DOUBLE_SHIFT_EXACT_OBSERVED_TAIL_2026-08-24/installed-live-1.0.40.json": {
+    "mtime": 1787527289.251805,
+    "ast_hash": "618c5a0c6ec0c410dcfb765b7d156876",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_KITTY_DOUBLE_SHIFT_ATOMIC_TERMINAL_OWNER_2026-08-24/candidate-physical-v1.json": {
+    "mtime": 1787531480.062684,
+    "ast_hash": "f0509dbbdc7ec0c99e4c264dbf8103f7",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_KITTY_DOUBLE_SHIFT_ATOMIC_TERMINAL_OWNER_2026-08-24/design-route-receipt-v2.json": {
+    "mtime": 1787530614.0595446,
+    "ast_hash": "9d112db12fbaab31c8816bee5476c074",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_KITTY_DOUBLE_SHIFT_ATOMIC_TERMINAL_OWNER_2026-08-24/design-route-receipt-v3.json": {
+    "mtime": 1787530635.9125607,
+    "ast_hash": "a328b5c579ebd8848d0c5d67a2180cf0",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_KITTY_DOUBLE_SHIFT_ATOMIC_TERMINAL_OWNER_2026-08-24/design-route-receipt.json": {
+    "mtime": 1787530588.7035685,
+    "ast_hash": "d45a4c67333b6455760095c493e9dc68",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_KITTY_DOUBLE_SHIFT_ATOMIC_TERMINAL_OWNER_2026-08-24/final-installed-1.0.41-v1.json": {
+    "mtime": 1787532435.4752703,
+    "ast_hash": "fb39eed4d5328247cfc00e58e19299dd",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_KITTY_DOUBLE_SHIFT_ATOMIC_TERMINAL_OWNER_2026-08-24/implementation-preflight-receipt-v1.json": {
+    "mtime": 1787530721.9992611,
+    "ast_hash": "3bb93c0929983447a8d6fe1fb5aa1150",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_KITTY_DOUBLE_SHIFT_ATOMIC_TERMINAL_OWNER_2026-08-24/implementation-preflight-receipt-v2.json": {
+    "mtime": 1787530762.0357654,
+    "ast_hash": "f2380586210556ca5a3ace2f558fe590",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_KITTY_DOUBLE_SHIFT_ATOMIC_TERMINAL_OWNER_2026-08-24/implementation-preflight-receipt-v3.json": {
+    "mtime": 1787530777.8567312,
+    "ast_hash": "7dd4bdc803fede3ee400f013badef04f",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_KITTY_DOUBLE_SHIFT_CONTROLLED_HANDOFF_2026-08-24/design-route-receipt.json": {
+    "mtime": 1787528560.3254437,
+    "ast_hash": "583b5f34a00c3b7fbbeefaa8aa29e90b",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_KITTY_DOUBLE_SHIFT_CONTROLLED_HANDOFF_2026-08-24/implementation-preflight-receipt-v1.json": {
+    "mtime": 1787528560.4044454,
+    "ast_hash": "57bef4d6f6d61b9e723d6ed6bc3ceb04",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_KITTY_DOUBLE_SHIFT_CONTROLLED_HANDOFF_2026-08-24/implementation-preflight-receipt-v2.json": {
+    "mtime": 1787528586.1202872,
+    "ast_hash": "af1c017e3103cb5d961a3e3d4a9b05f1",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_KITTY_DOUBLE_SHIFT_CONTROLLED_HANDOFF_2026-08-24/implementation-preflight-receipt-v3.json": {
+    "mtime": 1787529622.8120015,
+    "ast_hash": "e9aaa8effff5e1cc59f20d0a7b1315e7",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/receipts/LAY_KITTY_DOUBLE_SHIFT_ATOMIC_TERMINAL_OWNER_2026-08-24/release-1.0.41-sha256-v1.txt": {
+    "mtime": 1787532435.4752703,
+    "ast_hash": "68950b9e6dcfe5f4949a7ac6aeb65df9",
     "semantic_hash": ""
   }
 }

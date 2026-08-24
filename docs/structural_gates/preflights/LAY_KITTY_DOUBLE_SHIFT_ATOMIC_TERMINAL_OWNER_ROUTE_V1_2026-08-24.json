@@ -1,0 +1,63 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id":"physical-double-shift","role":"interface"},
+    {"id":"daemon-trigger-dispatch","role":"orchestrator"},
+    {"id":"ime-v3-outcome","role":"producer"},
+    {"id":"pending-undo-authority","role":"authorization_owner"},
+    {"id":"pending-undo-output","role":"mutation_owner"},
+    {"id":"active-composition-authority","role":"authorization_owner"},
+    {"id":"active-composition-output","role":"mutation_owner"},
+    {"id":"committed-tail-output-capability","role":"evidence_owner"},
+    {"id":"committed-tail-plan","role":"authorization_owner"},
+    {"id":"atomic-committed-tail-output","role":"mutation_owner"},
+    {"id":"delegated-tail-lease","role":"evidence_owner"},
+    {"id":"daemon-replay-authority","role":"authorization_owner"},
+    {"id":"daemon-uinput-output","role":"mutation_owner"},
+    {"id":"fail-closed-terminal","role":"observer"},
+    {"id":"route-proof","role":"proof_owner"}
+  ],
+  "edges": [
+    {"id":"undo-entry","from":"physical-double-shift","relation":"calls","to":"daemon-trigger-dispatch","events":["pending-auto-undo"]},
+    {"id":"undo-v3","from":"daemon-trigger-dispatch","relation":"delegates","to":"ime-v3-outcome","events":["pending-auto-undo"]},
+    {"id":"undo-authority","from":"ime-v3-outcome","relation":"delegates","to":"pending-undo-authority","events":["pending-auto-undo"]},
+    {"id":"undo-output","from":"pending-undo-authority","relation":"delegates","to":"pending-undo-output","events":["pending-auto-undo"]},
+
+    {"id":"composition-entry","from":"physical-double-shift","relation":"calls","to":"daemon-trigger-dispatch","events":["active-composition"]},
+    {"id":"composition-v3","from":"daemon-trigger-dispatch","relation":"delegates","to":"ime-v3-outcome","events":["active-composition"]},
+    {"id":"composition-authority","from":"ime-v3-outcome","relation":"delegates","to":"active-composition-authority","events":["active-composition"]},
+    {"id":"composition-output","from":"active-composition-authority","relation":"delegates","to":"active-composition-output","events":["active-composition"]},
+
+    {"id":"committed-entry","from":"physical-double-shift","relation":"calls","to":"daemon-trigger-dispatch","events":["output-capable-committed-tail"]},
+    {"id":"committed-v3","from":"daemon-trigger-dispatch","relation":"delegates","to":"ime-v3-outcome","events":["output-capable-committed-tail"]},
+    {"id":"committed-capability","from":"ime-v3-outcome","relation":"calls","to":"committed-tail-output-capability","events":["output-capable-committed-tail"]},
+    {"id":"committed-plan","from":"committed-tail-output-capability","relation":"delegates","to":"committed-tail-plan","events":["output-capable-committed-tail"]},
+    {"id":"committed-output-exec","from":"committed-tail-plan","relation":"delegates","to":"atomic-committed-tail-output","events":["output-capable-committed-tail"]},
+    {"id":"committed-capability-data","from":"ime-v3-outcome","relation":"produces_for","to":"committed-tail-output-capability","events":["output-capable-committed-tail"]},
+    {"id":"committed-plan-data","from":"committed-tail-output-capability","relation":"passes_to","to":"committed-tail-plan","events":["output-capable-committed-tail"]},
+    {"id":"committed-output-authority","from":"committed-tail-plan","relation":"authorizes","to":"atomic-committed-tail-output","events":["output-capable-committed-tail"]},
+
+    {"id":"delegated-entry","from":"physical-double-shift","relation":"calls","to":"daemon-trigger-dispatch","events":["no-ime-output-capability"]},
+    {"id":"delegated-v3","from":"daemon-trigger-dispatch","relation":"delegates","to":"ime-v3-outcome","events":["no-ime-output-capability"]},
+    {"id":"delegated-lease","from":"ime-v3-outcome","relation":"calls","to":"delegated-tail-lease","events":["no-ime-output-capability"]},
+    {"id":"delegated-authority","from":"delegated-tail-lease","relation":"delegates","to":"daemon-replay-authority","events":["no-ime-output-capability"]},
+    {"id":"delegated-output","from":"daemon-replay-authority","relation":"delegates","to":"daemon-uinput-output","events":["no-ime-output-capability"]},
+
+    {"id":"mismatch-entry","from":"physical-double-shift","relation":"calls","to":"daemon-trigger-dispatch","events":["tail-or-capability-mismatch"]},
+    {"id":"mismatch-v3","from":"daemon-trigger-dispatch","relation":"delegates","to":"ime-v3-outcome","events":["tail-or-capability-mismatch"]},
+    {"id":"mismatch-evidence","from":"ime-v3-outcome","relation":"calls","to":"delegated-tail-lease","events":["tail-or-capability-mismatch"]},
+    {"id":"mismatch-stop","from":"delegated-tail-lease","relation":"observes","to":"fail-closed-terminal","events":["tail-or-capability-mismatch"]},
+
+    {"id":"proof-route","from":"fail-closed-terminal","relation":"proves","to":"route-proof","events":["atomic-terminal-owner-proof"]}
+  ],
+  "routes": [
+    {"id":"pending-undo-execution","event":"pending-auto-undo","kind":"execution","entry":"physical-double-shift","terminal":"pending-undo-output","required_roles":["interface","orchestrator","producer","authorization_owner","mutation_owner"],"path_cardinality":[{"from":"physical-double-shift","to":"pending-undo-output","min":1,"max":1}]},
+    {"id":"active-composition-execution","event":"active-composition","kind":"execution","entry":"physical-double-shift","terminal":"active-composition-output","required_roles":["interface","orchestrator","producer","authorization_owner","mutation_owner"],"path_cardinality":[{"from":"physical-double-shift","to":"active-composition-output","min":1,"max":1}]},
+    {"id":"committed-tail-execution","event":"output-capable-committed-tail","kind":"execution","entry":"physical-double-shift","terminal":"atomic-committed-tail-output","required_roles":["interface","orchestrator","producer","evidence_owner","authorization_owner","mutation_owner"],"path_cardinality":[{"from":"physical-double-shift","to":"atomic-committed-tail-output","min":1,"max":1}]},
+    {"id":"committed-tail-authority","event":"output-capable-committed-tail","kind":"authority","entry":"ime-v3-outcome","terminal":"atomic-committed-tail-output","required_roles":["producer","evidence_owner","authorization_owner","mutation_owner"],"path_cardinality":[{"from":"ime-v3-outcome","to":"atomic-committed-tail-output","min":1,"max":1}]},
+    {"id":"delegated-execution","event":"no-ime-output-capability","kind":"execution","entry":"physical-double-shift","terminal":"daemon-uinput-output","required_roles":["interface","orchestrator","producer","evidence_owner","authorization_owner","mutation_owner"],"path_cardinality":[{"from":"physical-double-shift","to":"daemon-uinput-output","min":1,"max":1}]},
+    {"id":"mismatch-stop","event":"tail-or-capability-mismatch","kind":"execution","entry":"physical-double-shift","terminal":"delegated-tail-lease","required_roles":["interface","orchestrator","producer","evidence_owner"],"path_cardinality":[{"from":"physical-double-shift","to":"delegated-tail-lease","min":1,"max":1}]},
+    {"id":"route-proof","event":"atomic-terminal-owner-proof","kind":"proof","entry":"fail-closed-terminal","terminal":"route-proof","required_roles":["observer","proof_owner"]}
+  ]
+}

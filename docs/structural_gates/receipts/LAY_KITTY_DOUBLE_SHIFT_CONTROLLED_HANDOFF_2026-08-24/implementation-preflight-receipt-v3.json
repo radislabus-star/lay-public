@@ -1,0 +1,174 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "route-contract",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/docs/structural_gates/preflights/LAY_DOUBLE_SHIFT_EXACT_OBSERVED_TAIL_ROUTE_V1_2026-08-24.json",
+      "sha256": "accf94b4fda7f368597166be9499b56389a5d214ae06b6027d5e4802ebc19394",
+      "size_bytes": 6903
+    },
+    {
+      "exists": true,
+      "id": "ime-bridge-actions",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/bridge_actions.rs",
+      "sha256": "9351a1485ea5398e6bc6035c96c02621caeebedd6a01d6ea32194c6754038c64",
+      "size_bytes": 14008
+    },
+    {
+      "exists": true,
+      "id": "ime-shift-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/shift.rs",
+      "sha256": "4365248ccede0cedfa0dd949dbb2a8ff09c12e002f139b59a1f8a75bc1866941",
+      "size_bytes": 6278
+    },
+    {
+      "exists": true,
+      "id": "ime-engine-state",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/engine.rs",
+      "sha256": "c277b0c4664b2953b2ca443b929980b908dc46212e29302608df30c0f2a3a827",
+      "size_bytes": 15653
+    },
+    {
+      "exists": true,
+      "id": "ime-runtime-state",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/state.rs",
+      "sha256": "b31753790706d433be76c2d5645e197bc91e2678da316f4650f1034f734381a5",
+      "size_bytes": 42493
+    },
+    {
+      "exists": true,
+      "id": "ime-shared-state",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/protocol/state.rs",
+      "sha256": "1316a5722246f3b9c2c01c82173cea982ed91cf28bb874edd6b592094b219df1",
+      "size_bytes": 1486
+    },
+    {
+      "exists": true,
+      "id": "ime-tail-memory",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/tail_memory.rs",
+      "sha256": "f997327b4632eae1511d8a41cf386965d1e336212f6680b808d688f055a3bc80",
+      "size_bytes": 59641
+    },
+    {
+      "exists": true,
+      "id": "installed-daemon-1-0-40",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+      "sha256": "5520cdf8690d83fbb715f93bf31c12094ec681ba5d3c0a5ac87b024934ee2df7",
+      "size_bytes": 8486480
+    },
+    {
+      "exists": true,
+      "id": "installed-engine-1-0-40",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "sha256": "64774f841b1e2bfdb149e0d8d9118a548f1100d20641a3d1a7197069ee69205a",
+      "size_bytes": 6745720
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 9,
+    "forbidden_side_effect_kinds": [
+      "accept_same_layout_as_handoff_target",
+      "arm_handoff_from_local_shift_path",
+      "extend_handoff_beyond_existing_bound",
+      "fixture_surface_in_runtime",
+      "global_ibus_restart",
+      "local_cargo_build",
+      "preserve_epoch_across_unarmed_soft_reset",
+      "preserve_tail_across_ordinary_focus_change",
+      "remove_rollback",
+      "second_mutation_fallback",
+      "weaken_exact_tail_lease"
+    ],
+    "identity_contracts": 3,
+    "invariants": 5,
+    "planned_side_effect_kinds": [
+      "installed_runtime_mutation",
+      "remote_process_start",
+      "source_edit"
+    ],
+    "preserved_artifacts": 2,
+    "runtime_comparisons": 1,
+    "source_checks": 6,
+    "tests": 12
+  },
+  "manifest_sha256": "26b54e3b01aa3d80644dfe944e1b1be79ee798fbb1e88f41b39a2356fbd97031",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-bridge-actions",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/bridge_actions.rs",
+      "sha256": "9351a1485ea5398e6bc6035c96c02621caeebedd6a01d6ea32194c6754038c64",
+      "size_bytes": 14008
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-shift-owner",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/shift.rs",
+      "sha256": "4365248ccede0cedfa0dd949dbb2a8ff09c12e002f139b59a1f8a75bc1866941",
+      "size_bytes": 6278
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-engine-state",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/engine.rs",
+      "sha256": "c277b0c4664b2953b2ca443b929980b908dc46212e29302608df30c0f2a3a827",
+      "size_bytes": 15653
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-runtime-state",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/state.rs",
+      "sha256": "b31753790706d433be76c2d5645e197bc91e2678da316f4650f1034f734381a5",
+      "size_bytes": 42493
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-shared-state",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/protocol/state.rs",
+      "sha256": "1316a5722246f3b9c2c01c82173cea982ed91cf28bb874edd6b592094b219df1",
+      "size_bytes": 1486
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-tail-memory",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/tail_memory.rs",
+      "sha256": "f997327b4632eae1511d8a41cf386965d1e336212f6680b808d688f055a3bc80",
+      "size_bytes": 59641
+    }
+  ],
+  "task_id": "LAY_KITTY_DOUBLE_SHIFT_CONTROLLED_HANDOFF_IMPLEMENTATION_V1_2026-08-24",
+  "verdict": "READY_TO_IMPLEMENT"
+}

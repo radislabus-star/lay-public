@@ -1,0 +1,45 @@
+{
+  "schema": "lay.structural_gate_receipt.v1",
+  "gate": "LAY_KITTY_DOUBLE_SHIFT_ATOMIC_TERMINAL_OWNER_CANDIDATE",
+  "date": "2026-08-24",
+  "verdict": "PASS_KITTY_SCOPE",
+  "runtime_authority_changed": true,
+  "tested": {
+    "design_route_gate": "PASS",
+    "implementation_preflight": "READY_TO_IMPLEMENT",
+    "focused_manual_toggle_tests": {"passed":11,"failed":0},
+    "complete_lay_ibus_engine_tests": {"passed":243,"failed":0},
+    "kitty_en_to_ru": {"before":"file ghjdthrf","after":"file проверка","verdict":"PASS"},
+    "kitty_round_trip": {"before":"file ghjdthrf","after":"file ghjdthrf","verdict":"PASS"},
+    "kitty_autocorrect_undo": {"autocorrected":"вот","after_double_shift":"djn file","verdict":"PASS"},
+    "preceding_text_deleted_chars": 0,
+    "daemon_uinput_replay_on_accepted_terminal_events": 0,
+    "global_ibus_daemon_pid": 2076194
+  },
+  "measured": {
+    "remote_host":"e@192.168.3.94",
+    "cargo_jobs":20,
+    "full_test_wall_seconds":11.64,
+    "full_test_max_rss_kib":324280,
+    "release_build_wall_seconds":51.38,
+    "release_build_max_rss_kib":1242976,
+    "candidate_engine_size_bytes":6750712,
+    "candidate_engine_sha256":"ba43d440f4510c45dea23a88b9ecad8c48bdfbd2ef81cc2ccdcd41ad9ae4a83d",
+    "terminal_mutation_latency_us":[114,88,47]
+  },
+  "not_tested": [
+    "post-canary automated Chrome field",
+    "multi-day desktop residency",
+    "every focus-change permutation"
+  ],
+  "verdict_scope": "The Kitty terminal committed-tail owner, exact token preservation, bidirectional projection and immediate autocorrect undo are proven. This receipt does not claim every client or long-term residency.",
+  "rollback": "/home/ubu/.local/lib/lay/rollback/1.0.40-pre-1.0.41-kitty-atomic-owner-20260824-032355",
+  "evidence": [
+    "/tmp/lay-kitty-atomic-proof.result",
+    "/tmp/lay-kitty-atomic-roundtrip.result",
+    "/tmp/lay-kitty-atomic-auto-undo.result",
+    "/home/ubu/.local/share/lay/ibus_engine_debug.jsonl",
+    "docs/structural_gates/receipts/LAY_KITTY_DOUBLE_SHIFT_ATOMIC_TERMINAL_OWNER_2026-08-24/design-route-receipt-v3.json",
+    "docs/structural_gates/receipts/LAY_KITTY_DOUBLE_SHIFT_ATOMIC_TERMINAL_OWNER_2026-08-24/implementation-preflight-receipt-v3.json"
+  ]
+}

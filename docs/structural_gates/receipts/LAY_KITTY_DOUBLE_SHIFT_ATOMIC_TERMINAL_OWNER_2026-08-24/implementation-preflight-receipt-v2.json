@@ -1,0 +1,146 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "route-contract",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/docs/structural_gates/preflights/LAY_KITTY_DOUBLE_SHIFT_ATOMIC_TERMINAL_OWNER_ROUTE_V1_2026-08-24.json",
+      "sha256": "671a7f4af9cc78c06a11205886068508f238afa8cdcf47fb73318c852da27b9f",
+      "size_bytes": 7252
+    },
+    {
+      "exists": true,
+      "id": "ime-engine-authority",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/engine.rs",
+      "sha256": "d6532390024c6c3162d8f9f82cafa405eefe7e3750b0b3054e8de03f10d81f87",
+      "size_bytes": 17631
+    },
+    {
+      "exists": true,
+      "id": "committed-tail-output",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/state.rs",
+      "sha256": "1619036d71d375e42496b462e186114a59605a9344e074a52d44877480e8f723",
+      "size_bytes": 42510
+    },
+    {
+      "exists": true,
+      "id": "committed-tail-planner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/committed_tail.rs",
+      "sha256": "a664fa64a3ecda4c49d7dd90563f31808f1f5d5406c5162aa4f55b40f2446678",
+      "size_bytes": 25559
+    },
+    {
+      "exists": true,
+      "id": "manual-toggle-precedence",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/shift.rs",
+      "sha256": "4365248ccede0cedfa0dd949dbb2a8ff09c12e002f139b59a1f8a75bc1866941",
+      "size_bytes": 6278
+    },
+    {
+      "exists": true,
+      "id": "daemon-manual-dispatch",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_daemon/manual_trigger_runtime/ime.rs",
+      "sha256": "1cf64e7a33e6c90b6f757eddf759dfafdb962fe599815011d3971db5632c8646",
+      "size_bytes": 3700
+    },
+    {
+      "exists": true,
+      "id": "installed-engine-1-0-40",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "sha256": "64774f841b1e2bfdb149e0d8d9118a548f1100d20641a3d1a7197069ee69205a",
+      "size_bytes": 6745720
+    },
+    {
+      "exists": true,
+      "id": "installed-daemon-1-0-40",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+      "sha256": "5520cdf8690d83fbb715f93bf31c12094ec681ba5d3c0a5ac87b024934ee2df7",
+      "size_bytes": 8486480
+    }
+  ],
+  "blockers": [
+    {
+      "code": "runtime_comparison_policy_invalid",
+      "field": "runtime_comparisons[0].comparison",
+      "message": "only exact_stable_projection is accepted in V1"
+    }
+  ],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 8,
+    "forbidden_side_effect_kinds": [
+      "change_uinput_frame_format",
+      "client_name_branch",
+      "enable_ime_owner_without_executable_output_profile",
+      "fixture_surface_in_runtime",
+      "global_ibus_restart",
+      "local_cargo_build",
+      "remove_rollback",
+      "second_mutation_fallback_after_dispatch",
+      "weaken_exact_tail_or_delete_count",
+      "weaken_pending_auto_undo_precedence"
+    ],
+    "identity_contracts": 2,
+    "invariants": 4,
+    "planned_side_effect_kinds": [
+      "installed_runtime_mutation",
+      "remote_process_start",
+      "source_edit"
+    ],
+    "preserved_artifacts": 2,
+    "runtime_comparisons": 1,
+    "source_checks": 3,
+    "tests": 9
+  },
+  "manifest_sha256": "840d4119a6a91df72812451725c53c86c02eef6dd089e0d094650b9e5fa50c59",
+  "safe_to_implement": false,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-engine-authority",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/engine.rs",
+      "sha256": "d6532390024c6c3162d8f9f82cafa405eefe7e3750b0b3054e8de03f10d81f87",
+      "size_bytes": 17631
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-output-owner",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/state.rs",
+      "sha256": "1619036d71d375e42496b462e186114a59605a9344e074a52d44877480e8f723",
+      "size_bytes": 42510
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-manual-precedence",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/shift.rs",
+      "sha256": "4365248ccede0cedfa0dd949dbb2a8ff09c12e002f139b59a1f8a75bc1866941",
+      "size_bytes": 6278
+    }
+  ],
+  "task_id": "LAY_KITTY_DOUBLE_SHIFT_ATOMIC_TERMINAL_OWNER_IMPLEMENTATION_V1_2026-08-24",
+  "verdict": "BLOCKED_BEFORE_CODE"
+}

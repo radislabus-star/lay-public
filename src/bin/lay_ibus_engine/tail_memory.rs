@@ -2,7 +2,8 @@ use super::engine::{
     LayIbusEngine, PendingImeCompletionLearning, PendingSystemOutcomeFeedback, SystemOutcomeKind,
 };
 use super::protocol::{
-    PendingImeAutoUndo, PendingImeAutoUndoRetry, SharedState, ShiftGestureHandoff,
+    DaemonDelegatedLayoutHandoff, PendingImeAutoUndo, PendingImeAutoUndoRetry, SharedState,
+    ShiftGestureHandoff,
 };
 use lay::text_edit::{VisibleTailSnapshot, VisibleTailSource};
 use std::time::{Duration, Instant};
@@ -521,6 +522,7 @@ impl LayIbusEngine {
         let Ok(mut state) = self.shared.lock() else {
             return;
         };
+        state.daemon_delegated_layout_handoff = None;
         state.handoff_tail_buffer = self.tail_buffer.clone();
         state.handoff_tail_epoch = self.tail_epoch;
         state.handoff_focus_receipt = self.focus_receipt.clone();
@@ -546,6 +548,7 @@ impl LayIbusEngine {
         state.handoff_focus_receipt = None;
         state.suppress_next_committed_tail_autocorrect = false;
         state.preserve_active_path_until = None;
+        state.daemon_delegated_layout_handoff = None;
         state.pending_auto_undo = None;
         state.pending_auto_undo_retry = None;
         state.shift_gesture_handoff = None;
@@ -575,6 +578,7 @@ impl LayIbusEngine {
             state.handoff_focus_receipt = None;
             state.suppress_next_committed_tail_autocorrect = false;
             state.preserve_active_path_until = None;
+            state.daemon_delegated_layout_handoff = None;
             state.pending_auto_undo = None;
             state.pending_auto_undo_retry = None;
             state.shift_gesture_handoff = None;
@@ -625,7 +629,64 @@ impl LayIbusEngine {
         let Ok(mut state) = self.shared.lock() else {
             return;
         };
+        state.daemon_delegated_layout_handoff = None;
         state.preserve_active_path_until = Some(until);
+    }
+
+    pub(super) fn arm_daemon_delegated_layout_handoff(&self, until: Instant) -> bool {
+        let Ok(mut state) = self.shared.lock() else {
+            return false;
+        };
+        if self.tail_buffer.is_empty()
+            || state.active_path.as_deref() != Some(self.path.as_str())
+            || state.handoff_tail_buffer != self.tail_buffer
+            || state.handoff_tail_epoch != self.tail_epoch
+        {
+            state.daemon_delegated_layout_handoff = None;
+            return false;
+        }
+        state.preserve_active_path_until = Some(until);
+        state.daemon_delegated_layout_handoff = Some(DaemonDelegatedLayoutHandoff {
+            source_path: self.path.clone(),
+            target_path: None,
+            target_layout_is_ru: !self.layout_is_ru,
+            tail_epoch: self.tail_epoch,
+            expires_at: until,
+        });
+        true
+    }
+
+    pub(super) fn publish_tail_handoff_after_soft_reset(&mut self) {
+        let preserve_epoch = {
+            let Ok(mut state) = self.shared.lock() else {
+                self.publish_tail_handoff();
+                return;
+            };
+            let now = Instant::now();
+            let exact = state
+                .daemon_delegated_layout_handoff
+                .as_ref()
+                .is_some_and(|handoff| {
+                    now <= handoff.expires_at
+                        && self.tail_epoch == handoff.tail_epoch
+                        && state.handoff_tail_epoch == handoff.tail_epoch
+                        && state.handoff_tail_buffer == self.tail_buffer
+                        && (self.path == handoff.source_path
+                            || handoff.target_path.as_deref() == Some(self.path.as_str()))
+                });
+            if !exact {
+                state.daemon_delegated_layout_handoff = None;
+            }
+            exact
+        };
+        if preserve_epoch {
+            super::trace::record(format!(
+                r#"{{"kind":"ibus_manual_toggle_handoff","route":"daemon_delegated_layout","stage":"soft_reset_epoch_preserved","tail_epoch":{}}}"#,
+                self.tail_epoch,
+            ));
+        } else {
+            self.publish_tail_handoff();
+        }
     }
 
     pub(super) fn shared_active_path_preserved(&self) -> bool {
@@ -639,6 +700,7 @@ impl LayIbusEngine {
             return true;
         }
         state.preserve_active_path_until = None;
+        state.daemon_delegated_layout_handoff = None;
         state.shift_gesture_handoff = None;
         false
     }
@@ -1339,11 +1401,13 @@ mod tests {
         for ch in "ghbdtn".chars() {
             engine.push_tail_char(ch);
         }
+        let epoch = engine.tail_epoch;
         engine.reset_for_ibus_soft_reset();
 
         assert_eq!(engine.tail_buffer, "ghbdtn");
         assert_eq!(engine.preedit_fast.token(), "ghbdtn");
         assert_eq!(engine.word_input_mode, Some(WordInputMode::ManagedCommit));
+        assert_eq!(engine.tail_epoch, epoch.wrapping_add(1));
     }
 
     #[test]
@@ -1553,6 +1617,84 @@ mod tests {
         publisher.publish_active_path_preserve_handoff(Instant::now() + Duration::from_millis(100));
 
         assert!(reader.shared_active_path_preserved());
+    }
+
+    #[test]
+    fn delegated_opposite_layout_handoff_preserves_epoch_through_soft_resets() {
+        let shared = Arc::new(Mutex::new(Default::default()));
+        let mut source = LayIbusEngine::new(
+            "/engine/us".to_string(),
+            Arc::clone(&shared),
+            false,
+            true,
+            LayConfig::default(),
+        );
+        assert!(source.bind_focus_path());
+        source.tail_buffer = "typed tail".to_string();
+        source.publish_tail_handoff();
+        let epoch = source.tail_epoch;
+        assert!(
+            source.arm_daemon_delegated_layout_handoff(Instant::now() + Duration::from_millis(700))
+        );
+
+        source.reset_for_ibus_soft_reset();
+        assert_eq!(source.tail_epoch, epoch);
+
+        let mut target = LayIbusEngine::new(
+            "/engine/ru".to_string(),
+            Arc::clone(&shared),
+            true,
+            true,
+            LayConfig::default(),
+        );
+        assert!(target.bind_focus_path());
+        target.reset_for_ibus_soft_reset();
+
+        assert_eq!(target.tail_buffer, "typed tail");
+        assert_eq!(target.tail_epoch, epoch);
+        let state = shared.lock().expect("shared state");
+        let handoff = state
+            .daemon_delegated_layout_handoff
+            .as_ref()
+            .expect("delegated capability");
+        assert_eq!(handoff.target_path.as_deref(), Some("/engine/ru"));
+        assert_eq!(state.handoff_tail_epoch, epoch);
+    }
+
+    #[test]
+    fn delegated_handoff_rejects_second_path_with_source_layout() {
+        let shared = Arc::new(Mutex::new(Default::default()));
+        let mut source = LayIbusEngine::new(
+            "/engine/us-a".to_string(),
+            Arc::clone(&shared),
+            false,
+            true,
+            LayConfig::default(),
+        );
+        assert!(source.bind_focus_path());
+        source.tail_buffer = "typed tail".to_string();
+        source.publish_tail_handoff();
+        let epoch = source.tail_epoch;
+        assert!(
+            source.arm_daemon_delegated_layout_handoff(Instant::now() + Duration::from_millis(700))
+        );
+
+        let mut same_layout = LayIbusEngine::new(
+            "/engine/us-b".to_string(),
+            Arc::clone(&shared),
+            false,
+            true,
+            LayConfig::default(),
+        );
+        assert!(same_layout.bind_focus_path());
+        assert!(shared
+            .lock()
+            .expect("shared state")
+            .daemon_delegated_layout_handoff
+            .is_none());
+
+        same_layout.reset_for_ibus_soft_reset();
+        assert_eq!(same_layout.tail_epoch, epoch.wrapping_add(1));
     }
 
     #[test]

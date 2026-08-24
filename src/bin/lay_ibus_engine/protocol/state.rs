@@ -26,6 +26,15 @@ pub(crate) struct ShiftGestureHandoff {
     pub(crate) last_shift_release_at: Option<Instant>,
 }
 
+#[derive(Debug, Clone)]
+pub(crate) struct DaemonDelegatedLayoutHandoff {
+    pub(crate) source_path: String,
+    pub(crate) target_path: Option<String>,
+    pub(crate) target_layout_is_ru: bool,
+    pub(crate) tail_epoch: u64,
+    pub(crate) expires_at: Instant,
+}
+
 #[derive(Debug, Clone, Default)]
 pub(crate) struct SharedState {
     pub(crate) active_path: Option<String>,
@@ -34,6 +43,7 @@ pub(crate) struct SharedState {
     pub(crate) handoff_focus_receipt: Option<String>,
     pub(crate) suppress_next_committed_tail_autocorrect: bool,
     pub(crate) preserve_active_path_until: Option<Instant>,
+    pub(crate) daemon_delegated_layout_handoff: Option<DaemonDelegatedLayoutHandoff>,
     pub(crate) pending_auto_undo: Option<PendingImeAutoUndo>,
     pub(crate) pending_auto_undo_retry: Option<PendingImeAutoUndoRetry>,
     pub(crate) shift_gesture_handoff: Option<ShiftGestureHandoff>,

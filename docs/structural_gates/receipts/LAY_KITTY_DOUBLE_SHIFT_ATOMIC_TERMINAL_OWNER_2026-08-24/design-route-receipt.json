@@ -1,0 +1,340 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "VETO",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": false,
+  "contract": "docs/structural_gates/preflights/LAY_KITTY_DOUBLE_SHIFT_ATOMIC_TERMINAL_OWNER_ROUTE_V1_2026-08-24.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "source_root": "/home/ubu/projects/lay-double-shift-1.0.40",
+  "node_count": 15,
+  "edge_count": 23,
+  "routes": [
+    {
+      "id": "pending-undo-execution",
+      "event": "pending-auto-undo",
+      "kind": "execution",
+      "entry": "physical-double-shift",
+      "via": [],
+      "terminal": "pending-undo-output",
+      "path_count": 0,
+      "paths": [],
+      "role_owners": {},
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "physical-double-shift",
+          "to": "pending-undo-output",
+          "via": [],
+          "graph": "execution",
+          "count": 0,
+          "minimum_count": 0,
+          "min": 1,
+          "max": 1,
+          "paths": []
+        }
+      ]
+    },
+    {
+      "id": "active-composition-execution",
+      "event": "active-composition",
+      "kind": "execution",
+      "entry": "physical-double-shift",
+      "via": [],
+      "terminal": "active-composition-output",
+      "path_count": 0,
+      "paths": [],
+      "role_owners": {},
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "physical-double-shift",
+          "to": "active-composition-output",
+          "via": [],
+          "graph": "execution",
+          "count": 0,
+          "minimum_count": 0,
+          "min": 1,
+          "max": 1,
+          "paths": []
+        }
+      ]
+    },
+    {
+      "id": "committed-tail-execution",
+      "event": "output-capable-committed-tail",
+      "kind": "execution",
+      "entry": "physical-double-shift",
+      "via": [],
+      "terminal": "atomic-committed-tail-output",
+      "path_count": 0,
+      "paths": [],
+      "role_owners": {},
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "physical-double-shift",
+          "to": "atomic-committed-tail-output",
+          "via": [],
+          "graph": "execution",
+          "count": 0,
+          "minimum_count": 0,
+          "min": 1,
+          "max": 1,
+          "paths": []
+        }
+      ]
+    },
+    {
+      "id": "committed-tail-authority",
+      "event": "output-capable-committed-tail",
+      "kind": "authority",
+      "entry": "ime-v3-outcome",
+      "via": [],
+      "terminal": "atomic-committed-tail-output",
+      "path_count": 0,
+      "paths": [],
+      "role_owners": {},
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "ime-v3-outcome",
+          "to": "atomic-committed-tail-output",
+          "via": [],
+          "graph": "authority",
+          "count": 0,
+          "minimum_count": 0,
+          "min": 1,
+          "max": 1,
+          "paths": []
+        }
+      ]
+    },
+    {
+      "id": "delegated-execution",
+      "event": "no-ime-output-capability",
+      "kind": "execution",
+      "entry": "physical-double-shift",
+      "via": [],
+      "terminal": "daemon-uinput-output",
+      "path_count": 0,
+      "paths": [],
+      "role_owners": {},
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "physical-double-shift",
+          "to": "daemon-uinput-output",
+          "via": [],
+          "graph": "execution",
+          "count": 0,
+          "minimum_count": 0,
+          "min": 1,
+          "max": 1,
+          "paths": []
+        }
+      ]
+    },
+    {
+      "id": "mismatch-stop",
+      "event": "tail-or-capability-mismatch",
+      "kind": "execution",
+      "entry": "physical-double-shift",
+      "via": [],
+      "terminal": "delegated-tail-lease",
+      "path_count": 1,
+      "paths": [
+        [
+          "physical-double-shift",
+          "daemon-trigger-dispatch",
+          "ime-v3-outcome",
+          "delegated-tail-lease"
+        ]
+      ],
+      "role_owners": {
+        "orchestrator": [
+          "daemon-trigger-dispatch"
+        ],
+        "evidence_owner": [
+          "delegated-tail-lease"
+        ],
+        "producer": [
+          "ime-v3-outcome"
+        ],
+        "interface": [
+          "physical-double-shift"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "physical-double-shift",
+          "to": "delegated-tail-lease",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "physical-double-shift",
+              "daemon-trigger-dispatch",
+              "ime-v3-outcome",
+              "delegated-tail-lease"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "route-proof",
+      "event": "atomic-terminal-owner-proof",
+      "kind": "proof",
+      "entry": "fail-closed-terminal",
+      "via": [],
+      "terminal": "route-proof",
+      "path_count": 1,
+      "paths": [
+        [
+          "fail-closed-terminal",
+          "route-proof"
+        ]
+      ],
+      "role_owners": {
+        "observer": [
+          "fail-closed-terminal"
+        ],
+        "proof_owner": [
+          "route-proof"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {
+    "output-capable-committed-tail": {
+      "authorization_owner": [],
+      "mutation_owner": [],
+      "candidate_rank_owner": [],
+      "display_rank_owner": [],
+      "evidence_owner": [],
+      "render_owner": []
+    }
+  },
+  "source_evidence": {
+    "expected": 0,
+    "verified": 0,
+    "complete": true
+  },
+  "issues": [
+    {
+      "code": "route_disconnected",
+      "message": "no path of the declared kind connects entry, ordered via nodes, and terminal",
+      "route": "pending-undo-execution",
+      "kind": "execution"
+    },
+    {
+      "code": "path_cardinality_violation",
+      "message": "event reaches the endpoint through the wrong number of same-kind paths",
+      "route": "pending-undo-execution",
+      "event": "pending-auto-undo",
+      "graph": "execution",
+      "source": "physical-double-shift",
+      "target": "pending-undo-output",
+      "count": 0,
+      "minimum": 1,
+      "maximum": 1,
+      "paths": []
+    },
+    {
+      "code": "route_disconnected",
+      "message": "no path of the declared kind connects entry, ordered via nodes, and terminal",
+      "route": "active-composition-execution",
+      "kind": "execution"
+    },
+    {
+      "code": "path_cardinality_violation",
+      "message": "event reaches the endpoint through the wrong number of same-kind paths",
+      "route": "active-composition-execution",
+      "event": "active-composition",
+      "graph": "execution",
+      "source": "physical-double-shift",
+      "target": "active-composition-output",
+      "count": 0,
+      "minimum": 1,
+      "maximum": 1,
+      "paths": []
+    },
+    {
+      "code": "route_disconnected",
+      "message": "no path of the declared kind connects entry, ordered via nodes, and terminal",
+      "route": "committed-tail-execution",
+      "kind": "execution"
+    },
+    {
+      "code": "path_cardinality_violation",
+      "message": "event reaches the endpoint through the wrong number of same-kind paths",
+      "route": "committed-tail-execution",
+      "event": "output-capable-committed-tail",
+      "graph": "execution",
+      "source": "physical-double-shift",
+      "target": "atomic-committed-tail-output",
+      "count": 0,
+      "minimum": 1,
+      "maximum": 1,
+      "paths": []
+    },
+    {
+      "code": "route_disconnected",
+      "message": "no path of the declared kind connects entry, ordered via nodes, and terminal",
+      "route": "committed-tail-authority",
+      "kind": "authority"
+    },
+    {
+      "code": "path_cardinality_violation",
+      "message": "event reaches the endpoint through the wrong number of same-kind paths",
+      "route": "committed-tail-authority",
+      "event": "output-capable-committed-tail",
+      "graph": "authority",
+      "source": "ime-v3-outcome",
+      "target": "atomic-committed-tail-output",
+      "count": 0,
+      "minimum": 1,
+      "maximum": 1,
+      "paths": []
+    },
+    {
+      "code": "route_disconnected",
+      "message": "no path of the declared kind connects entry, ordered via nodes, and terminal",
+      "route": "delegated-execution",
+      "kind": "execution"
+    },
+    {
+      "code": "path_cardinality_violation",
+      "message": "event reaches the endpoint through the wrong number of same-kind paths",
+      "route": "delegated-execution",
+      "event": "no-ime-output-capability",
+      "graph": "execution",
+      "source": "physical-double-shift",
+      "target": "daemon-uinput-output",
+      "count": 0,
+      "minimum": 1,
+      "maximum": 1,
+      "paths": []
+    }
+  ],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": false,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

@@ -105,11 +105,48 @@ impl LayIbusEngine {
                 (false, None)
             } else {
                 let now = Instant::now();
+                if state
+                    .daemon_delegated_layout_handoff
+                    .as_ref()
+                    .is_some_and(|handoff| now > handoff.expires_at)
+                {
+                    state.daemon_delegated_layout_handoff = None;
+                }
+                let delegated_target =
+                    state
+                        .daemon_delegated_layout_handoff
+                        .as_ref()
+                        .is_some_and(|handoff| {
+                            state.active_path.as_deref() == Some(handoff.source_path.as_str())
+                                && self.path != handoff.source_path
+                                && self.layout_is_ru == handoff.target_layout_is_ru
+                                && handoff
+                                    .target_path
+                                    .as_deref()
+                                    .map_or(true, |path| path == self.path)
+                                && state.handoff_tail_epoch == handoff.tail_epoch
+                                && !state.handoff_tail_buffer.is_empty()
+                        });
+                let delegated_path_attempt = state
+                    .daemon_delegated_layout_handoff
+                    .as_ref()
+                    .is_some_and(|handoff| {
+                        state.active_path.as_deref() == Some(handoff.source_path.as_str())
+                            && self.path != handoff.source_path
+                    });
+                if delegated_target {
+                    if let Some(handoff) = state.daemon_delegated_layout_handoff.as_mut() {
+                        handoff.target_path = Some(self.path.clone());
+                    }
+                } else if delegated_path_attempt {
+                    state.daemon_delegated_layout_handoff = None;
+                }
                 let preserve_handoff = state
                     .preserve_active_path_until
                     .is_some_and(|until| now <= until);
                 if !preserve_handoff {
                     state.preserve_active_path_until = None;
+                    state.daemon_delegated_layout_handoff = None;
                 }
                 state.active_path = Some(self.path.clone());
                 let handoff = preserve_handoff.then(|| {
@@ -127,6 +164,7 @@ impl LayIbusEngine {
                     state.pending_auto_undo = None;
                     state.pending_auto_undo_retry = None;
                     state.shift_gesture_handoff = None;
+                    state.daemon_delegated_layout_handoff = None;
                 }
                 (true, handoff)
             }
@@ -163,10 +201,14 @@ impl LayIbusEngine {
         if !self.buffer.is_empty() {
             return ManualToggleAuthority::ImeActiveComposition;
         }
-        // Cursor geometry is not proof that CommitText control characters can
-        // delete client text. A committed tail stays IME-owned only when the
-        // client advertises the typed SurroundingText deletion protocol.
-        if !self.last_tail_token_text().is_empty() && self.surrounding_text_supported {
+        let committed_token_chars = self.last_tail_token_text().chars().count();
+        // Keep authority and execution on the same typed capability. This
+        // covers SurroundingText and the existing terminal erase profile while
+        // preserving daemon delegation when no committed-tail output exists.
+        if committed_token_chars > 0
+            && u32::try_from(committed_token_chars)
+                .is_ok_and(|delete_chars| self.can_replace_committed_tail(delete_chars))
+        {
             return ManualToggleAuthority::ImeCommittedTail;
         }
         ManualToggleAuthority::DaemonWordBuffer
@@ -357,7 +399,7 @@ mod tests {
     }
 
     #[test]
-    fn manual_toggle_delegates_unproven_committed_tail_despite_cursor_geometry() {
+    fn manual_toggle_uses_ime_authority_for_terminal_output_capability() {
         let mut engine = engine(LayConfig {
             text_backend: "ime".to_string(),
             nanda_precognition: true,
@@ -365,6 +407,21 @@ mod tests {
         });
         engine.tail_buffer.push_str("typed ");
         engine.cursor_cell_width = 9;
+
+        assert_eq!(
+            engine.manual_toggle_authority(),
+            ManualToggleAuthority::ImeCommittedTail
+        );
+    }
+
+    #[test]
+    fn manual_toggle_delegates_nonempty_tail_without_an_output_capability() {
+        let mut engine = engine(LayConfig {
+            text_backend: "ime".to_string(),
+            nanda_precognition: true,
+            ..LayConfig::default()
+        });
+        engine.tail_buffer.push_str("typed");
 
         assert_eq!(
             engine.manual_toggle_authority(),

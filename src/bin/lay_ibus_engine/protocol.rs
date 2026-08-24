@@ -13,5 +13,6 @@ mod state;
 pub(crate) use keys::*;
 pub(crate) use modifiers::has_command_modifier;
 pub(crate) use state::{
-    PendingImeAutoUndo, PendingImeAutoUndoRetry, Shared, SharedState, ShiftGestureHandoff,
+    DaemonDelegatedLayoutHandoff, PendingImeAutoUndo, PendingImeAutoUndoRetry, Shared, SharedState,
+    ShiftGestureHandoff,
 };

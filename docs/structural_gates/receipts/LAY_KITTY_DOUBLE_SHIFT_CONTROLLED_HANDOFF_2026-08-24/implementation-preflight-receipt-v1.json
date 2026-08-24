@@ -1,0 +1,137 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "route-contract",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/docs/structural_gates/preflights/LAY_DOUBLE_SHIFT_EXACT_OBSERVED_TAIL_ROUTE_V1_2026-08-24.json",
+      "sha256": "accf94b4fda7f368597166be9499b56389a5d214ae06b6027d5e4802ebc19394",
+      "size_bytes": 6903
+    },
+    {
+      "exists": true,
+      "id": "ime-bridge-actions",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/bridge_actions.rs",
+      "sha256": "9d515bb6c02704f09b23166e8c0e1fd000cdc6a41c772cebd673b27fbb2aca4c",
+      "size_bytes": 10342
+    },
+    {
+      "exists": true,
+      "id": "ime-shift-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/shift.rs",
+      "sha256": "4365248ccede0cedfa0dd949dbb2a8ff09c12e002f139b59a1f8a75bc1866941",
+      "size_bytes": 6278
+    },
+    {
+      "exists": true,
+      "id": "ime-engine-state",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/engine.rs",
+      "sha256": "c277b0c4664b2953b2ca443b929980b908dc46212e29302608df30c0f2a3a827",
+      "size_bytes": 15653
+    },
+    {
+      "exists": true,
+      "id": "installed-daemon-1-0-40",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+      "sha256": "5520cdf8690d83fbb715f93bf31c12094ec681ba5d3c0a5ac87b024934ee2df7",
+      "size_bytes": 8486480
+    },
+    {
+      "exists": true,
+      "id": "installed-engine-1-0-40",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "sha256": "64774f841b1e2bfdb149e0d8d9118a548f1100d20641a3d1a7197069ee69205a",
+      "size_bytes": 6745720
+    }
+  ],
+  "blockers": [
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: local_cargo_build"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: remove_rollback"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: second_mutation_fallback"
+    }
+  ],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 6,
+    "forbidden_side_effect_kinds": [
+      "arm_handoff_from_local_shift_path",
+      "extend_handoff_beyond_existing_bound",
+      "fixture_surface_in_runtime",
+      "global_ibus_restart",
+      "local_cargo_build",
+      "preserve_tail_across_ordinary_focus_change",
+      "remove_rollback",
+      "second_mutation_fallback",
+      "weaken_exact_tail_lease"
+    ],
+    "identity_contracts": 2,
+    "invariants": 4,
+    "planned_side_effect_kinds": [
+      "installed_runtime_mutation",
+      "remote_process_start",
+      "source_edit"
+    ],
+    "preserved_artifacts": 2,
+    "runtime_comparisons": 1,
+    "source_checks": 3,
+    "tests": 9
+  },
+  "manifest_sha256": "6c905f21b02f987d3675ca00854963cbad8e929a172d6aed354fef4929c505ed",
+  "safe_to_implement": false,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-bridge-actions",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/bridge_actions.rs",
+      "sha256": "9d515bb6c02704f09b23166e8c0e1fd000cdc6a41c772cebd673b27fbb2aca4c",
+      "size_bytes": 10342
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-shift-owner",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/shift.rs",
+      "sha256": "4365248ccede0cedfa0dd949dbb2a8ff09c12e002f139b59a1f8a75bc1866941",
+      "size_bytes": 6278
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-engine-state",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/engine.rs",
+      "sha256": "c277b0c4664b2953b2ca443b929980b908dc46212e29302608df30c0f2a3a827",
+      "size_bytes": 15653
+    }
+  ],
+  "task_id": "LAY_KITTY_DOUBLE_SHIFT_CONTROLLED_HANDOFF_IMPLEMENTATION_V1_2026-08-24",
+  "verdict": "BLOCKED_BEFORE_CODE"
+}

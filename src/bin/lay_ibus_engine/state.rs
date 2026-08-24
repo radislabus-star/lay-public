@@ -392,7 +392,7 @@ impl LayIbusEngine {
         self.handled_press_keycodes.clear();
         self.surrounding_text_snapshot = None;
         self.rebuild_preedit_fast_from_tail();
-        self.publish_tail_handoff();
+        self.publish_tail_handoff_after_soft_reset();
     }
 
     /// Replaces text that has already been committed into the focused client.

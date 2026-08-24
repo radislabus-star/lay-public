@@ -6,6 +6,9 @@ use super::output::EngineOutput;
 use super::state::CommittedTailReplaceRequest;
 use lay::manual_toggle::ImeManualToggleOutcome;
 use lay::text_edit::{VisibleTailSnapshot, VisibleTailSource};
+use std::time::{Duration, Instant};
+
+const DAEMON_DELEGATED_LAYOUT_HANDOFF_WINDOW: Duration = Duration::from_millis(700);
 
 impl LayImeBridge {
     pub(super) fn active_path(&self) -> Option<String> {
@@ -196,12 +199,39 @@ impl LayImeBridge {
         engine.refresh_empty_tail_from_handoff();
         let authority = engine.manual_toggle_authority();
         let mut output = EngineOutput::legacy(emitter);
+        let target_layout_is_ru = engine.manual_toggle_active_text_target(&mut output).await?;
+        arm_daemon_delegated_layout_handoff(&engine, authority, target_layout_is_ru);
         Ok(manual_toggle_outcome_for_authority(
             atomic_route_active,
             authority,
-            engine.manual_toggle_active_text_target(&mut output).await?,
+            target_layout_is_ru,
         ))
     }
+}
+
+fn arm_daemon_delegated_layout_handoff(
+    engine: &LayIbusEngine,
+    authority: ManualToggleAuthority,
+    target_layout_is_ru: Option<bool>,
+) {
+    if target_layout_is_ru.is_some()
+        || authority != ManualToggleAuthority::DaemonWordBuffer
+        || engine.tail_buffer.is_empty()
+    {
+        return;
+    }
+
+    if !engine.arm_daemon_delegated_layout_handoff(
+        Instant::now() + DAEMON_DELEGATED_LAYOUT_HANDOFF_WINDOW,
+    ) {
+        return;
+    }
+    super::trace::record(format!(
+        r#"{{"kind":"ibus_manual_toggle_handoff","route":"daemon_delegated_layout","preserve_ms":{},"tail_chars":{},"tail_epoch":{}}}"#,
+        DAEMON_DELEGATED_LAYOUT_HANDOFF_WINDOW.as_millis(),
+        engine.tail_buffer.chars().count(),
+        engine.tail_epoch,
+    ));
 }
 
 fn manual_toggle_outcome_for_authority(
@@ -245,6 +275,8 @@ fn visible_text_for_source(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use lay::config::LayConfig;
+    use std::sync::{Arc, Mutex};
 
     #[test]
     fn manual_toggle_delegates_only_non_atomic_daemon_authority() {
@@ -290,5 +322,97 @@ mod tests {
             VisibleTailSource::DaemonWordBuffer.bridge_state(),
             "passive:daemon-word-buffer"
         );
+    }
+
+    #[test]
+    fn daemon_rpc_delegation_preserves_exact_tail_across_one_layout_handoff() {
+        let shared = Arc::new(Mutex::new(Default::default()));
+        let mut source = LayIbusEngine::new(
+            "/engine/us".to_string(),
+            Arc::clone(&shared),
+            false,
+            true,
+            LayConfig::default(),
+        );
+        assert!(source.bind_focus_path());
+        source.tail_buffer = "file ghjdthrf".to_string();
+        source.publish_tail_handoff();
+        let expected_epoch = source.tail_epoch;
+        let expected_focus = source.focus_receipt.clone();
+
+        arm_daemon_delegated_layout_handoff(&source, ManualToggleAuthority::DaemonWordBuffer, None);
+
+        let mut target = LayIbusEngine::new(
+            "/engine/ru".to_string(),
+            shared,
+            true,
+            true,
+            LayConfig::default(),
+        );
+        assert!(target.bind_focus_path());
+        assert_eq!(target.tail_buffer, "file ghjdthrf");
+        assert_eq!(target.tail_epoch, expected_epoch);
+        assert_eq!(target.focus_receipt, expected_focus);
+        assert_eq!(
+            target.manual_toggle_authority(),
+            ManualToggleAuthority::DaemonWordBuffer
+        );
+        let state = target.shared.lock().expect("shared state");
+        let handoff = state
+            .daemon_delegated_layout_handoff
+            .as_ref()
+            .expect("typed delegated handoff");
+        assert_eq!(handoff.source_path, "/engine/us");
+        assert_eq!(handoff.target_path.as_deref(), Some("/engine/ru"));
+        assert!(handoff.target_layout_is_ru);
+        assert_eq!(handoff.tail_epoch, expected_epoch);
+    }
+
+    #[test]
+    fn handled_or_empty_daemon_reply_does_not_arm_layout_handoff() {
+        let shared = Arc::new(Mutex::new(Default::default()));
+        let mut engine = LayIbusEngine::new(
+            "/engine/us".to_string(),
+            Arc::clone(&shared),
+            false,
+            true,
+            LayConfig::default(),
+        );
+        assert!(engine.bind_focus_path());
+
+        arm_daemon_delegated_layout_handoff(&engine, ManualToggleAuthority::DaemonWordBuffer, None);
+        assert!(shared
+            .lock()
+            .expect("shared state")
+            .preserve_active_path_until
+            .is_none());
+        assert!(shared
+            .lock()
+            .expect("shared state")
+            .daemon_delegated_layout_handoff
+            .is_none());
+
+        engine.tail_buffer = "ghjdthrf".to_string();
+        engine.publish_tail_handoff();
+        arm_daemon_delegated_layout_handoff(
+            &engine,
+            ManualToggleAuthority::DaemonWordBuffer,
+            Some(true),
+        );
+        assert!(shared
+            .lock()
+            .expect("shared state")
+            .preserve_active_path_until
+            .is_none());
+    }
+
+    #[test]
+    fn local_shift_delegation_cannot_arm_cross_path_tail_inheritance() {
+        let production = include_str!("shift.rs")
+            .split("#[cfg(test)]")
+            .next()
+            .expect("production source");
+
+        assert!(!production.contains("publish_active_path_preserve_handoff"));
     }
 }

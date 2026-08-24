@@ -1,0 +1,211 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_KITTY_DOUBLE_SHIFT_ATOMIC_TERMINAL_OWNER_IMPLEMENTATION_V1_2026-08-24",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "route-contract",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/docs/structural_gates/preflights/LAY_KITTY_DOUBLE_SHIFT_ATOMIC_TERMINAL_OWNER_ROUTE_V1_2026-08-24.json",
+      "expect": {"mode":"0664","size_bytes":7252,"sha256":"671a7f4af9cc78c06a11205886068508f238afa8cdcf47fb73318c852da27b9f"}
+    },
+    {
+      "id": "ime-engine-authority",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/engine.rs",
+      "expect": {"mode":"0664","size_bytes":17631,"sha256":"d6532390024c6c3162d8f9f82cafa405eefe7e3750b0b3054e8de03f10d81f87"}
+    },
+    {
+      "id": "committed-tail-output",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/state.rs",
+      "expect": {"mode":"0664","size_bytes":42510,"sha256":"1619036d71d375e42496b462e186114a59605a9344e074a52d44877480e8f723"}
+    },
+    {
+      "id": "committed-tail-planner",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/committed_tail.rs",
+      "expect": {"mode":"0664","size_bytes":25559,"sha256":"a664fa64a3ecda4c49d7dd90563f31808f1f5d5406c5162aa4f55b40f2446678"}
+    },
+    {
+      "id": "manual-toggle-precedence",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/shift.rs",
+      "expect": {"mode":"0664","size_bytes":6278,"sha256":"4365248ccede0cedfa0dd949dbb2a8ff09c12e002f139b59a1f8a75bc1866941"}
+    },
+    {
+      "id": "daemon-manual-dispatch",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_daemon/manual_trigger_runtime/ime.rs",
+      "expect": {"mode":"0664","size_bytes":3700,"sha256":"1cf64e7a33e6c90b6f757eddf759dfafdb962fe599815011d3971db5632c8646"}
+    },
+    {
+      "id": "installed-engine-1-0-40",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "expect": {"mode":"0755","size_bytes":6745720,"sha256":"64774f841b1e2bfdb149e0d8d9118a548f1100d20641a3d1a7197069ee69205a"}
+    },
+    {
+      "id": "installed-daemon-1-0-40",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+      "expect": {"mode":"0755","size_bytes":8486480,"sha256":"5520cdf8690d83fbb715f93bf31c12094ec681ba5d3c0a5ac87b024934ee2df7"}
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id":"align-manual-authority-with-existing-output-capability","kind":"source_edit"},
+      {"id":"add-capability-and-fallback-tests","kind":"source_edit"},
+      {"id":"remote-focused-tests-and-release-build","kind":"remote_process_start"},
+      {"id":"rollback-protected-engine-canary","kind":"installed_runtime_mutation"}
+    ],
+    "forbidden": [
+      "client_name_branch",
+      "fixture_surface_in_runtime",
+      "weaken_pending_auto_undo_precedence",
+      "weaken_exact_tail_or_delete_count",
+      "enable_ime_owner_without_executable_output_profile",
+      "second_mutation_fallback_after_dispatch",
+      "change_uinput_frame_format",
+      "local_cargo_build",
+      "global_ibus_restart",
+      "remove_rollback"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "pinned-engine-authority",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/engine.rs",
+      "sha256": "d6532390024c6c3162d8f9f82cafa405eefe7e3750b0b3054e8de03f10d81f87",
+      "forbidden_effect_patterns": [
+        {"effect":"client_name_branch","regex":"(kitty|chrome|chromium|terminal).{0,80}(if|match)|(?:if|match).{0,80}(kitty|chrome|chromium)"},
+        {"effect":"fixture_surface_in_runtime","regex":"if .{0,80}(ghjdthrf|проверка)"},
+        {"effect":"enable_ime_owner_without_executable_output_profile","regex":"ImeCommittedTail.{0,160}(cursor_cell_width|surrounding_text_supported)(?!.*can_replace_committed_tail)"},
+        {"effect":"global_ibus_restart","regex":"(kill|restart).*ibus-daemon"},
+        {"effect":"local_cargo_build","regex":"cargo (build|test|check)"},
+        {"effect":"remove_rollback","regex":"(remove|unlink|rm).{0,80}rollback"}
+      ]
+    },
+    {
+      "id": "pinned-output-owner",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/state.rs",
+      "sha256": "1619036d71d375e42496b462e186114a59605a9344e074a52d44877480e8f723",
+      "forbidden_effect_patterns": [
+        {"effect":"weaken_exact_tail_or_delete_count","regex":"(ignore|bypass).{0,120}(expected_tail|backspaces|delete_chars)"},
+        {"effect":"second_mutation_fallback_after_dispatch","regex":"(commit_text|delete_surrounding_text).{0,400}fallback.{0,120}(uinput|replay)"},
+        {"effect":"change_uinput_frame_format","regex":"key_tap_frame|VirtualDevice"},
+        {"effect":"fixture_surface_in_runtime","regex":"if .{0,80}(ghjdthrf|проверка|kitty)"}
+      ]
+    },
+    {
+      "id": "pinned-manual-precedence",
+      "path": "/home/ubu/projects/lay-double-shift-1.0.40/src/bin/lay_ibus_engine/shift.rs",
+      "sha256": "4365248ccede0cedfa0dd949dbb2a8ff09c12e002f139b59a1f8a75bc1866941",
+      "forbidden_effect_patterns": [
+        {"effect":"weaken_pending_auto_undo_precedence","regex":"manual_toggle_authority.{0,800}defer_pending_ime_auto_undo_until_visible"},
+        {"effect":"fixture_surface_in_runtime","regex":"if .{0,80}(ghjdthrf|проверка|kitty)"}
+      ]
+    }
+  ],
+  "state_machine": {
+    "initial_state": "ROLLED_BACK_1_0_40",
+    "steps": [
+      {
+        "id":"implement-capability-aligned-authority",
+        "from":"ROLLED_BACK_1_0_40",
+        "to":"SOURCE_READY",
+        "mutates":true,
+        "failure_state":"SOURCE_EDIT_FAILED",
+        "cleanup":"retain scoped diff; installed 1.0.40 remains byte-identical",
+        "preserves":["installed-engine-1-0-40","installed-daemon-1-0-40"],
+        "test_id":"source-edit-fault"
+      },
+      {
+        "id":"remote-focused-proof",
+        "from":"SOURCE_READY",
+        "to":"REMOTE_PROOF_PASS",
+        "mutates":true,
+        "failure_state":"REMOTE_PROOF_FAILED",
+        "cleanup":"stop proof-owned process only; installed runtime remains byte-identical",
+        "preserves":["installed-engine-1-0-40","installed-daemon-1-0-40"],
+        "test_id":"remote-proof-fault"
+      },
+      {
+        "id":"install-engine-canary",
+        "from":"REMOTE_PROOF_PASS",
+        "to":"PHYSICAL_MATRIX_PASS",
+        "mutates":true,
+        "failure_state":"CANARY_ROLLED_BACK",
+        "cleanup":"restore exact engine bytes, reselect prior Lay engine and restart no global IBus process",
+        "preserves":["installed-engine-1-0-40","installed-daemon-1-0-40"],
+        "test_id":"canary-fault"
+      }
+    ],
+    "terminal_states":["PHYSICAL_MATRIX_PASS","SOURCE_EDIT_FAILED","REMOTE_PROOF_FAILED","CANARY_ROLLED_BACK"]
+  },
+  "preserved_artifacts": [
+    {
+      "id":"installed-engine-1-0-40",
+      "path":"/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "policy":"immutable_until_remote_proof_pass",
+      "cursor_policy":"none",
+      "rollback_policy":"restore_exact_bytes",
+      "baseline_check_id":"installed-engine-1-0-40"
+    },
+    {
+      "id":"installed-daemon-1-0-40",
+      "path":"/home/ubu/.local/lib/lay/bin/lay-daemon",
+      "policy":"immutable_for_entire_change",
+      "cursor_policy":"none",
+      "rollback_policy":"restore_exact_bytes",
+      "baseline_check_id":"installed-daemon-1-0-40"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id":"manual-authority-output-capability-parity",
+      "producer":"CommittedTailOutputProfile::select and can_replace_committed_tail for the exact token delete count",
+      "consumer":"manual_toggle_authority committed-tail branch",
+      "comparison":"IME committed-tail authority is selected if and only if a nonempty exact token has an executable existing output profile",
+      "test_id":"authority-capability-parity"
+    },
+    {
+      "id":"terminal-single-mutation-owner",
+      "producer":"toggle_committed_tail_target verified edit plan",
+      "consumer":"replace_committed_tail terminal erase CommitText",
+      "comparison":"terminal output uses one authorized committed-tail mutation containing delete controls plus replacement and never daemon per-key replay",
+      "test_id":"terminal-single-owner"
+    }
+  ],
+  "runtime_comparisons": [
+    {
+      "id":"lay-runtime-process-boundary",
+      "source":"pre-canary and post-canary process snapshots",
+      "comparison":"exact_stable_projection",
+      "reason":"the engine process and engine hash must change while global IBus, daemon bytes and active engine identity remain stable",
+      "stable_fields":["global_ibus_daemon_pid","lay_daemon_sha256","active_engine_name"],
+      "expected_to_change_fields":["lay_ibus_engine_pid","lay_ibus_engine_sha256"],
+      "observed_not_compared_fields":["per-key-trace-order","background-precognition-generation"],
+      "test_id":"runtime-process-parity"
+    }
+  ],
+  "invariants": [
+    {"id":"undo-first","statement":"exact autocorrect undo remains before every ordinary layout toggle route","test_id":"undo-priority"},
+    {"id":"one-terminal-mutation","statement":"an output-capable committed terminal tail has exactly one IME mutation owner and never enters daemon uinput replay","test_id":"terminal-single-owner"},
+    {"id":"fallback-fail-closed","statement":"missing output capability delegates only through the exact typed tail lease and any mismatch performs zero mutation","test_id":"fallback-fail-closed"},
+    {"id":"no-client-hardcode","statement":"runtime selection depends on typed output capability, never application or fixture identity","test_id":"no-client-hardcode"}
+  ],
+  "tests": [
+    {"id":"source-edit-fault","kind":"fault_injection","expected":"installed binaries remain byte-identical when source editing fails"},
+    {"id":"remote-proof-fault","kind":"fault_injection","expected":"no local runtime mutation when remote tests or build fail"},
+    {"id":"canary-fault","kind":"fault_injection","expected":"exact 1.0.40 engine bytes restored without global IBus restart"},
+    {"id":"authority-capability-parity","kind":"parity","expected":"surrounding and terminal profiles select ImeCommittedTail; unavailable profile selects DaemonWordBuffer"},
+    {"id":"terminal-single-owner","kind":"parity","expected":"Kitty EN-RU and RU-EN replace the exact current token with no dropped or excess characters and daemon reports no uinput replay"},
+    {"id":"undo-priority","kind":"parity","expected":"immediate Double Shift after autocorrect restores exact original before layout toggle"},
+    {"id":"fallback-fail-closed","kind":"parity","expected":"missing or mismatched exact tail performs zero mutation"},
+    {"id":"no-client-hardcode","kind":"parity","expected":"runtime production source contains no Kitty, Chrome or fixture branch"},
+    {"id":"runtime-process-parity","kind":"parity","expected":"global IBus PID, daemon bytes and active engine name remain stable"}
+  ]
+}
