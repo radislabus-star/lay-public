@@ -2500,8 +2500,8 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1787835096.0824664,
-    "ast_hash": "25579606951a13450858957d141c894e",
+    "mtime": 1787863552.286621,
+    "ast_hash": "ac650739270f3fcb581ff63340d86db8",
     "semantic_hash": ""
   },
   "VERSIONING.md": {
@@ -28705,13 +28705,13 @@
     "semantic_hash": ""
   },
   "docs/project-cleanup-2026-08-27.md": {
-    "mtime": 1787838909.9545152,
-    "ast_hash": "9082da8280bc66ce185bec3d3fed5b5c",
+    "mtime": 1787840154.5003839,
+    "ast_hash": "ce71d7d092fa0d30f3685c6f59701075",
     "semantic_hash": ""
   },
   "scripts/README.md": {
-    "mtime": 1787838909.9545152,
-    "ast_hash": "a0734eec3dc4248746235f671e0436a9",
+    "mtime": 1787840154.5003839,
+    "ast_hash": "f119339d73258f7fe98864eec53f31b9",
     "semantic_hash": ""
   },
   "src/typing_transition/proposal_admission/structural_guards.rs": {
